@@ -24,21 +24,23 @@ environment:
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
 
-    - PYTHON: "C:\\Python33-x64"
-      PYTHON_VERSION: "3.3.5"
-      PYTHON_ARCH: "64"
-      WINDOWS_SDK_VERSION: "v7.1"
+#    - PYTHON: "C:\\Python33-x64"
+#      PYTHON_VERSION: "3.3.5"
+#      PYTHON_ARCH: "64"
+#      WINDOWS_SDK_VERSION: "v7.1"
 
-    - PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4.1"
-      PYTHON_ARCH: "64"
-      WINDOWS_SDK_VERSION: "v7.1"
+#    - PYTHON: "C:\\Python34-x64"
+#      PYTHON_VERSION: "3.4.1"
+#      PYTHON_ARCH: "64"
+#      WINDOWS_SDK_VERSION: "v7.1"
 
 init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
 
 install:
   - "powershell appveyor\\install.ps1"
+  # https://chocolatey.org
+  - cinst swig
 
 build: off
 
