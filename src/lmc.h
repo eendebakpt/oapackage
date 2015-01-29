@@ -345,7 +345,7 @@ inline array_link rootPlus(const arraydata_t &ad) {
 
 
 #ifdef _WIN32
-// on windows do not use smart points, it is a mess
+// on windows do not use smart pointers, it is a mess
 //#if _MSC_VER >= 1600
 #else
 #define SDSMART

@@ -42,7 +42,7 @@ inline void printfd_handler(const char *file, const char* func, int line, const 
 #include "arraytools.h"
 #include "mathtools.h"
 
-#ifdef WIN32
+#if (_MSC_VER >= 100)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4996)
 #endif

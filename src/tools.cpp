@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <fstream>
 
-#ifdef WIN32
+#ifdef (_MSC_VER >= 100)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4996)
 #endif

@@ -1299,7 +1299,7 @@ if (verbose>=2) printfd("main effects\n");
 			tmp=Z.col ( ii+1 ).transpose() * Z.col ( ii+1 );
 
 			//eigenInfo ( tmp, "denom" );
-			ME.col ( meoffset+ii ) =sqrt ( N ) *Z.col ( ii+1 ) / sqrt ( tmp ( 0,0 ) );
+			ME.col ( meoffset+ii ) =sqrt ( double(N) ) *Z.col ( ii+1 ) / sqrt ( double( tmp ( 0,0 ) ) );
 //			ME{jj}(:,ii)=sqrt(N)*Z{jj}(:,ii+1)/sqrt(Z{jj}(:,ii+1)'*Z{jj}(:,ii+1));
 
 		}
