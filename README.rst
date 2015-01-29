@@ -12,12 +12,12 @@ Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays, P.T. Eende
 
 The code was written by:
 
-Pieter Eendebak <pieter.eendebak@gmail.com>
-Vincent Brouerius van Nidek
+* Pieter Eendebak <pieter.eendebak@gmail.com>
+* Vincent Brouerius van Nidek
 
 Ideas contributed by:
 
-Eric Schoen <eric.schoen@tno.nl>
+* Eric Schoen <eric.schoen@tno.nl>
 
 See the file LICENSE.txt for copyright details.
 
