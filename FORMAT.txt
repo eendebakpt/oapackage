@@ -1,0 +1,44 @@
+Orthoginal arrays are stored in array files (extension .oa or .oa.gz). There is a text format and a binary format.
+
+TEXT
+
+Arrays are stored in plain files. The first line contains the number of columns, the number of rows and the number of arrays (or -1 if the number of arrays is not specified). Then for each array a single line with the index of the array, followed by N lines containing the array 
+
+BINARY
+
+Every binary file starts with a header, which as the following format:
+
+[INT32] 65 (magic identifier)
+[INT32] b: Format: number of bits per number. Currently supported are 1 and 8
+[INT32] N: number of rows
+[INT32] k: kumber of columns
+[INT32] Number of arrays (can be -1 if unknown)
+[INT32] Binary format number: 1001: normal, 1002: binary diff, 1003: binary diff zero
+[INT32] Reserved integer
+[INT32] Reserved integer
+
+The normal binary format has the following format. For each array:
+
+[INT32] Index
+[Nxk elements] The elements contain b bits
+
+This format allows for random access.
+The binary diff and binary diff zero formats are special formats.
+
+
+COMPRESSION
+
+An array file can be compressed using gzip. Most tools can read these compressed files transparently. Writing to compressed array files is not supported at the moment. 
+
+
+OTHER FILES
+
+The analysis tools (oaanalyse) writes data to disk in binary format. The format is:
+
+[FLOAT64] Magic number 30397995;
+[FLOAT64] Magic number 12224883;
+[FLOAT64] nc: Number of rows 
+[FLOAT64] nr: Number of columns
+
+And then nc*nr [FLOAT64] values
+

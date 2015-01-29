@@ -1,0 +1,24 @@
+include FORMAT.txt
+include LICENSE.txt
+include ALGORITHM.txt
+include ChangeLog
+include example.r
+include oalib_wrap.cxx
+
+recursive-include src *.h *.cpp
+
+#graft python
+#graft oalib
+graft Eigen
+graft utils
+exclude TODO
+exclude oalib_wrap_dev.cxx
+
+# do not include development code
+exclude src/oadevelop.cpp
+exclude src/oadevelop.h
+exclude utils/oa_depth_extend.cpp
+exclude utils/oatest.cpp
+exclude utils/oaclustergather.cpp
+
+
