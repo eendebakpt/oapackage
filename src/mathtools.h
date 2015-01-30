@@ -29,7 +29,7 @@
 //#include <Eigen3.2.1/src/Core/products/GeneralBlockPanelKernel.h>
 
 
-#ifdef (_MSC_VER >= 100)
+#if defined(_MSC_VER)
 #pragma warning(disable: 4996)
 #pragma warning (disable : 4068 )
 #pragma warning (disable : 4267 )

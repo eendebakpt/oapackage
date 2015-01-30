@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <fstream>
 
-#ifdef (_MSC_VER >= 100)
+#if defined(_MSC_VER)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4996)
 #endif
