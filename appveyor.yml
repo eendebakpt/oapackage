@@ -7,17 +7,19 @@ environment:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
 
   matrix:
+    fast_finish: true
+    
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.8"
       PYTHON_ARCH: "32"
 
-#    - PYTHON: "C:\\Python33"
-#      PYTHON_VERSION: "3.3.5"
-#      PYTHON_ARCH: "32"
+    - PYTHON: "C:\\Python33"
+      PYTHON_VERSION: "3.3.5"
+      PYTHON_ARCH: "32"
 
-#    - PYTHON: "C:\\Python34"
-#      PYTHON_VERSION: "3.4.1"
-#      PYTHON_ARCH: "32"
+    - PYTHON: "C:\\Python34"
+      PYTHON_VERSION: "3.4.1"
+      PYTHON_ARCH: "32"
 
 #    - PYTHON: "C:\\Python27-x64"
 #      PYTHON_VERSION: "2.7.8"

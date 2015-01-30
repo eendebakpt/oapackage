@@ -1,0 +1,51 @@
+OA performance testing
+OAlib: version 1.9.4
+Compile date: Feb  7 2014 12:24:43
+Eigen version: 3.2.0
+eigen: JacobiSVD threshold 2.22045e-16
+Optimization: __OPTIMIZE__
+Compile time options: OACHECK, FREQELEM, USE_SMALLSTEP, USE_TPLUSCOLUMN, SYMMBLOCKS
+columns sorting method: flipSort
+
+System:
+  Python: 2.7.4 (default, Sep 26 2013, 03:20:26)  [GCC 4.7.3]
+  Machine: Linux woelmuis 3.8.0-35-generic #50-Ubuntu SMP Tue Dec 3 01:24:59 UTC 2013 x86_64 x86_64
+
+Running tests:
+
+runExtend: N=48, k=6, t=3
+runExtend: N=32, k=6, t=3
+runExtend: N=16, k=16, t=2
+runExtend: N=96, k=8, t=4
+total time 4.312 [s]
+extra testing cases
+runExtend: N=24, k=5, t=2
+runExtend: N=18, k=9, t=2
+readarrayfile: problem with file /home/eendebakpt/misc/oa/oacode/../testdata/unstable-rank.oa
+ readarrayfile 0
+readarrayfile: problem with file /home/eendebakpt/misc/oa/oacode/../testdata/unstable-rank-extended.oa
+ readarrayfile 0
+runExtend: N=16, k=6, t=2
+Orthogonal Arrays 1.9.4
+For more details see the files README.txt and LICENSE.txt
+oaanalyse: reading 1 file(s)
+oaanalyse: openmp 1
+file ../testdata/test64.oa
+   read 1937 array(s) (size 64 15)
+analyseArrays (j-values): 1937 arrays, jj 4
+  calculation (j-filter) for array 0/1937
+  calculation (rank, Defficiency) for array 0/1937
+  statistics calculation (GWLP) for array 0/1937
+pytest5: running oaanalyse
+-----
+
+Results:
+
+runExtend(N=48, k=6, t=3, l=2): time 0.15 [s]
+runExtend(N=32, k=6, t=3, l=2): time 0.19 [s]
+runExtend(N=16, k=16, t=2, l=2): time 3.54 [s]
+runExtend(N=96, k=8, t=4, l=2): time 4.31 [s]
+runExtend(N=24, k=5, t=2, l=[3, 2]): time 4.43 [s]
+runExtend(N=18, k=9, t=2, l=[2, 3]): time 4.45 [s]
+Total time: 4.312 [s], 4.454 [s], 6.917 [s]
+   should be of order 4.4 [s], 4.6 [s], 5.9 [s] 

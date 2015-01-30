@@ -22,7 +22,7 @@
 
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
-void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
+void DAEefficiecyWithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
 
 /// Calculate the rank of the second order interaction matrix of an orthogonal array, the rank, D-efficiency and VIF-efficiency are appended to the second argument
 int array_rank_D_B(const array_link &al, std::vector<double> *ret = 0, int verbose=0);

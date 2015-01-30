@@ -24,7 +24,7 @@ const char *svn_version = "$Id: oaoptions.cpp 6 2012-05-02 23:34:04Z eendebakpt 
 /** Return version of program */
 std::string version()
 {
-    std::string v = "1.9.70";
+    std::string v = "1.9.80";
     return v;
 }
 

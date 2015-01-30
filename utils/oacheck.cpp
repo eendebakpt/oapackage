@@ -521,8 +521,6 @@ int main ( int argc, char* argv[] ) {
         }
         case MODE_CHECKJ5XFAST:
         {
-            //          printf("oacheck: WARNING: MODE_CHECKJ5X: untested code\n");
-
             //OAextend oaextend;
             oaextend.setAlgorithm(MODE_J5ORDERX, &ad);
 
@@ -530,7 +528,7 @@ int main ( int argc, char* argv[] ) {
             reduction->mode = OA_TEST;
             reduction->init_state=COPY;
 	    if (1) {
-	      // FIXME: make special MODE for this
+	      // TODO: make special MODE for this
             array_link al(array, ad.N, ad.ncols, -10);
 	    reduction->updateSDpointer(al);
 	   // reduction->sd->show(2);

@@ -772,11 +772,9 @@ array_link array2xf(const array_link &al)
 using namespace Eigen;
 
 #include <Eigen/LU>
-//#include <Eigen/FullPivLU.h>
 
-// FIXME: restructure naming of Aefficiency (remove old B label) and VIF
 
-void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose)
+void DAEefficiecyWithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose)
 {
    // printfd("start\n");
 
@@ -785,8 +783,6 @@ void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff
 
     JacobiSVD<Eigen::MatrixXd> svd(x);
 
-//const Eigen::Matrix3f U = svd.matrixU();
-//const Eigen::Matrix3f V = svd.matrixV();
     const Eigen::VectorXd S = svd.singularValues();
     int rank2 = svd.nonzeroSingularValues();
     if(rank2!=rank) {
@@ -820,7 +816,6 @@ void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff
     if (verbose>=3)
         printf("N %d, m %d\n", N, m);
 
-
     if (S[m-1]<1e-15 || rank < m) {
         if (verbose>=2) {
             printf("   array is singular, setting D-efficiency to zero\n");
@@ -852,8 +847,6 @@ void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff
                 printf("  DeffDirect %f\n", DeffDirect);
 
             }
-
-
         }
         Deff=0;
         vif=0;
@@ -894,16 +887,6 @@ void ABwithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff
     Eigen::ArrayXd Sa=Smat.array();
     Deff = exp(2*Sa.log().sum()/m)/N;
 
-    /*
-      A=1;
-    for(int i=0; i<m; i++)
-    	A *= S[i]*S[i];
-
-    A= pow(A, 1./m);
-    A/= N;
-    */
-
-
     if (verbose>=2) {
         printf("ABwithSVD: Defficiency %.3f, Aefficiency %.3f (%.3f), Eefficiency %.3f\n", Deff, vif, vif*m, Eeff);
 
@@ -936,7 +919,7 @@ int array_rank_D_B(const array_link &al, std::vector<double> *ret  , int verbose
     int rank;
 
     //ABold(mymatrix, A, B, rank, verbose);
-    ABwithSVD(mymatrix, Deff, B, Eeff, rank, verbose);
+    DAEefficiecyWithSVD(mymatrix, Deff, B, Eeff, rank, verbose);
 
     if (ret!=0) {
         ret->push_back( rank );
@@ -993,7 +976,6 @@ double Defficiency(const array_link &al, int verbose) {
 
         Eigen::FullPivLU<MatrixXd> lu_decomp(mymatrix);
     int rank = lu_decomp.rank();
-
 
     Eigen::MatrixXd mm = mymatrix.transpose() * mymatrix;
     SelfAdjointEigenSolver<Eigen::MatrixXd> es;

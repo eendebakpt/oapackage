@@ -1,0 +1,22 @@
+OA performance testing
+OAlib: version 1.01
+Compile date: Mar  4 2012 14:43:34
+Compile time options: OACHECK, OADEBUG, OAOVERFLOW, FREQELEM, USE_ROW_SYMMETRY, USE_SMALLSTEP, INIT_COL_PREVIOUS, SYMMBLOCKS
+
+System:
+  Python: 2.7.2+ (default, Oct  4 2011, 20:06:09)  [GCC 4.6.1]
+  Machine: Linux kermit 3.0.0-16-generic #28-Ubuntu SMP Fri Jan 27 17:44:39 UTC 2012 x86_64 x86_64
+
+Running tests:
+
+runExtend: N=48, k=6, t=3
+runExtend: N=16, k=16, t=2
+runExtend: N=96, k=8, t=4
+total time 6.989 [s]
+
+Results:
+
+runExtend(N=48, k=6, t=3, l=2): time 0.23 [s]
+runExtend(N=16, k=16, t=2, l=2): time 6.03 [s]
+runExtend(N=96, k=8, t=4, l=2): time 6.99 [s]
+Total time: 6.989 [s]

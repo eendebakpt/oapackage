@@ -1,0 +1,32 @@
+OA performance testing
+OAlib: version 1.8.1
+Compile date: Feb 28 2013 23:42:47
+SVN version: $Id: oaoptions.cpp 6 2012-05-02 23:34:04Z eendebakpt $
+Compile time options: OACHECK, FREQELEM, USE_SMALLSTEP, USE_TPLUSCOLUMN, SYMMBLOCKS
+columns sorting method: flipSort
+
+System:
+  Python: 2.7.3 (default, Aug  1 2012, 05:14:39)  [GCC 4.6.3]
+  Machine: Linux woelmuis 3.2.0-37-generic #58-Ubuntu SMP Thu Jan 24 15:28:10 UTC 2013 x86_64 x86_64
+
+Running tests:
+
+runExtend: N=48, k=6, t=3
+runExtend: N=32, k=6, t=3
+runExtend: N=16, k=16, t=2
+runExtend: N=96, k=8, t=4
+total time 4.507 [s]
+extra testing cases
+runExtend: N=24, k=5, t=2
+runExtend: N=18, k=9, t=2
+-----
+
+Results:
+
+runExtend(N=48, k=6, t=3, l=2): time 0.15 [s]
+runExtend(N=32, k=6, t=3, l=2): time 0.19 [s]
+runExtend(N=16, k=16, t=2, l=2): time 3.73 [s]
+runExtend(N=96, k=8, t=4, l=2): time 4.51 [s]
+runExtend(N=24, k=5, t=2, l=[3, 2]): time 4.63 [s]
+runExtend(N=18, k=9, t=2, l=[2, 3]): time 4.66 [s]
+Total time: 4.507 [s]

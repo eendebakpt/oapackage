@@ -104,8 +104,6 @@ int main(int argc, char* argv[])
     if (verbose)
       printf("oaextendA: Afinal %.4f, kfinal %d\n", Afinal, kfinal);
   
-    // FIXME: remove static code in LMC tests
-
     std::vector<std::vector<double> > edata; /// structure that contains the D-efficiencies and loss factors
     extend_array_dynamic(arraylist, *ad, oaextend, earrays, edata, kfinal,  Afinal, directcheck, verbose);
 
