@@ -1,0 +1,184 @@
+1.9.70
+
+Upload to Python Package Index
+
+1.9.61
+
+Remove dependency on Boost
+Update Python package according to packaging guidelines
+Updated numpy.i
+Make code compile with Win64 again
+Cleared code warnings detected with CLANG
+Added big integer class to deal with extremely large symmetry groups
+Added check on overflow of symmetry group size
+Added reduceDOP method to aray_link, added to unit test
+Added msstdint.h to deal with older versions of Visual Studio
+Added random initialization of arrays
+Implemented second order model matrix for mixed-level arrays
+Implemented Defficiencies for mixed-level arrays
+
+
+1.9.15
+
+Fix bug in oaanalye for jj=4
+Fix element access of an array in Python again
+Added clone() method to array_link
+Added Ds-efficiency
+Work on D-optimal arrays in Python code
+Update documentation
+Prepare code for interface to R
+
+
+1.9.14
+
+Make openmp work better in depth_extend_hybrid
+
+1.9.13
+
+Changed output of oa_depth_extend to be more compact
+Added 2-level algorithm to oaunittest
+Improve speed of 2-level algorithm
+
+1.9.12
+
+Added depth_extend_hybrid
+Added reduction.initStatic() to extend function
+
+1.9.11
+
+Fix issue with progress printing in depth_extend_direct
+
+1.9.10
+
+Create special column comparison function for 2-level arrays
+Restructure J5-order code
+Make code thread safe
+Implement OPENMP mode for oa_depth_extend
+Fix bug in printing output for oaanalyse
+Improvements to fastj function
+Completed symmetry method (fast for single arrays, initialization needs work)
+Remove ctypes import from Python examples
+Make writing in existing binary array files possible
+Restructure oa_depth_extend code to split extension calculation and depth search
+Updates to VSC scripts
+
+1.9.9
+
+Added oastreaming
+Cleanup up code
+Implemented fast column comparison (using freq table) [implemented for 2-level arrays only]
+Implemented lightweight array class (larray)
+Implemented ojbect pool for re-use of small objects
+Implemented symmetry group method [not complete]
+
+1.9.8
+
+Fix issue with oa_depth_extend: for arrays with large symmetry group revert to the old method
+Fix issue with oa_depth_extend: reduction->lastcol was not set properly
+
+1.9.7
+
+Cleanup code, add documentation
+oa_depth_extend: for arrays with very large row symmetry group do not cache extension columns
+
+1.9.6
+
+Fix small bug in oainfo for binary data files
+
+1.9.5
+
+Fix bug in hstack function
+Make oaanalye use only 1 thread when printing data to stdout.
+Update build system
+
+1.9.4
+
+Make oaextendmpi compile on Antwerpen cluster
+Updated Defficiency function: check rank using FullPivLU to detect singular matrices
+Make code for dealing with Hadamard matrices available in Python
+Added composition operator for array transformations
+Added inverse function for array transformations
+Updated LMCreduction_train
+
+1.9.3
+
+Clean up code
+For oaextendA write the loss factors to disk
+Fix segmentation fault in oainfo when reading invalid files
+Added oacat utility
+Make oaanalyse use OpenMP for GWLP calculations
+Update performance tests
+Update to Eigen 3.2.0
+Fix bug in mvalue_t (!= operator)
+Added oaunittest 
+Fix issue with Aefficiency: if the VIF-efficiency is infinite it is represented as zero, Aefficiency should be 0 in that case
+
+1.9.2
+
+Fix Windows compile errors
+
+1.9.1
+
+Use openmp in oaanalyse
+Update documentation
+Rename oaextendmpi.cpp to oaextend.cpp and move MPI function to mpitools
+
+1.9.0
+
+Clean up build scripts
+Create Windows 7 python package
+Fix naming of A-efficiency and VIF-efficiency
+Added truncation of GWLP values
+
+1.8.9
+
+Make oaclustergather use OpenMP (in pareto calculations)
+Updated VSC scripts
+Added indexing in Pyton interface
+
+1.8.8
+
+Fix bug in oaclustergather
+Added documentation, clean up interfaces
+
+1.8.7
+
+Restructure Python examples, added some safety checks to oalib
+Make Python3 compatible
+
+1.8.6
+
+Small changes
+
+1.8.5
+
+Restructure code, fix bug in oacheck (array was not initialized in reduction class)
+
+1.8.3
+
+Completed evenodd scripts for VSC cluster
+
+1.8.0
+
+Added md5 sums to Python package
+Implemented j45 method for even-odd arrays
+
+1.7.9
+
+Restructure code, fixes for Antwerpen HCP cluster
+
+1.7.7
+
+- Added binary diff format (undocumented)
+- Cleanup code
+
+1.7.5
+
+- Improved rank calculations
+- Added GWPL calculations for non-symmetric arrays
+- Restructure code, prepare for new release
+
+1.5.0
+
+- Added support for reading gzip compressed array files
+
