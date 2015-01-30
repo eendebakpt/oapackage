@@ -53,7 +53,9 @@ else:
   else:
     sources += ['oalib.i']
     swig_opts=['-modern', '-c++', '-w503,401,362' , '-Isrc/']
-
+    if platform.system()=='Windows':
+      swig_opts+=['-DWIN32', '-D_WIN32']
+    
   
 if 'VSC_SCRATCH' in os.environ.keys():
   # we are running on the VSC cluster
