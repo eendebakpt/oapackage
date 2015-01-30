@@ -7,7 +7,7 @@ environment:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
 
   matrix:
-    fast_finish: true
+#    fast_finish: true
     
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.8"
