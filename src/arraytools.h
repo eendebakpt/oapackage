@@ -20,6 +20,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4018)
+#pragma warning(disable: 4244)
 #include "msstdint.h" 
 
 #ifndef int32_t

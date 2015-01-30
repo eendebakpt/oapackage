@@ -1957,7 +1957,7 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
 		int coloffset = this->N*i;
 		array_t s = this->getfactorlevel ( i );
  
-		int step = floor(N/s);
+		int step = floor( double(N)/s);
 		//printf("randomarray: col %d: s %d, step %d\n", i, s, step );
 		if ( strength==1 ) {
 			for ( int j=0; j<s; j++ ) {
