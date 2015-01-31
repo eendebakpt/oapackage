@@ -182,9 +182,11 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig
         
     page.h1('Results for array class %s ' %  xstr)
     
-    
-    ss='The Pareto optimaly was calculated according to the statistics \(D\), \(D_1\) and \(D_s\)'
-    page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss))
+
+    # mathjax is not updated properly...    
+    ss='The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
+    ss='The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
+    page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss) )
     
     page.h2('Table of Pareto optimal arrays ')
     

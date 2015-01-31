@@ -116,7 +116,7 @@ scripts=['scripts/example_python_testing.py']
 packages=['oapackage']
 
 setup (name = 'OApackage',
-       version = '1.9.80',
+       version = '1.9.81',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
