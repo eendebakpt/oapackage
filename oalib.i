@@ -67,6 +67,11 @@ import_array();
 
 %extend array_link {
 %insert("python") %{
+def showarray(self):
+  """ Show array"""
+  # overridden to fix problems with ipython
+  print(self.showarrayS() )
+  
 def getarray(self, verbose=0, *args):
   if verbose:
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))

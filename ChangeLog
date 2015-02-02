@@ -1,3 +1,12 @@
+1.9.88
+
+Improve build system
+Add optimization of mixed-level arrays
+
+1.9.81
+
+Make command output compatible with ipython
+
 1.9.80
 
 Upload to Python Package Index

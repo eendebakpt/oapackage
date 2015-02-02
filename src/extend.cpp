@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <numeric>
 
-
+ 
 #ifdef _WIN32
 #include <math.h>
 //#define isnan(x) _isnan(x)
@@ -1179,7 +1179,7 @@ int extend_arraylist ( const arraylist_t & alist, arraydata_t &fullad,  OAextend
 	return n;
 }
 
-arraylist_t runExtend (  arraydata_t adata, int nmax, int verbose )
+arraylist_t runExtendRoot (  arraydata_t adata, int nmax, int verbose )
 {
 
 	array_link al = adata.create_root();

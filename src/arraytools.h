@@ -41,13 +41,12 @@ typedef unsigned __int32 uint32_t;
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-//#include <list>
 #include <vector>
 #include <deque>
 #include <iostream>
 #include <ostream>
 #include <iomanip>
-#include <ostream>
+#include <ostream> 
 #include <sstream>
 #include <fstream>
 
@@ -825,6 +824,9 @@ int n_rows=this->n_rows;
 
     }
 
+//private:
+  std::string showarrayS() const;
+  
 };
 
 // concatenate 2 arrays in horizontal direction
@@ -1556,6 +1558,26 @@ void write_array_format(std::ostream &ss, const atype *array, const int nrows, c
     }
 }
 
+
+/** Write a formatted array
+ */
+template <class atype>
+void write_array_format(const atype *array, const int nrows, const int ncols, int width = 3)
+{
+    int count;
+    for(int j = 0; j < nrows; j++)
+    {
+        count = j;
+        for(int k = 0; k < ncols; k++)
+        {
+            const char *s = (k<ncols-1)? " ":"\n";
+            printf("%3i%s", static_cast<int>(array[count]), s);
+            count += nrows;
+        }
+    }
+    fflush(stdout);
+    setbuf(stdout, NULL);
+}
 /** @brief Write a formatted array
  */
 template <class atype>

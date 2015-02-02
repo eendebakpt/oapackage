@@ -35,7 +35,7 @@ oadev=0
 srcs=[ 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp','mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'arraytools.cpp', 'md5.cpp','strength.cpp']
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension
-if os.path.exists('src/oadevelop.cpp') and 0:
+if os.path.exists('src/oadevelop.cpp') and 1:
   oadev=1
   print('Building development code')
   srcs=[ 'oadevelop.cpp']+srcs
@@ -44,12 +44,13 @@ srcs=[ 'src/' + ff for ff in srcs]
 
 if oadev:
   sources = ['oalib_wrap_dev.cxx'] + srcs + ['bitarray/bit_array.cpp']
+  swig_opts=[]
 else:
   sources = srcs + ['bitarray/bit_array.cpp']
 
   if 0:
     sources += ['oalib_wrap.cxx'] 
-    swig_opts=''
+    swig_opts=[]
   else:
     sources += ['oalib.i']
     swig_opts=['-modern', '-c++', '-w503,401,362' , '-Isrc/']
@@ -116,7 +117,7 @@ scripts=['scripts/example_python_testing.py']
 packages=['oapackage']
 
 setup (name = 'OApackage',
-       version = '1.9.81',
+       version = '1.9.89',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",

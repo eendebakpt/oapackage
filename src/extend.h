@@ -166,7 +166,7 @@ int extend_array(carray_t *array, const arraydata_t *, const colindex_t extensio
 
 
 /// simple wrapper function
-arraylist_t runExtend(arraydata_t adata, int nmax, int verbose=0);
+arraylist_t runExtendRoot(arraydata_t adata, int nmax, int verbose=0); 
 
 
 /* Helper functions and development code */

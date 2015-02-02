@@ -1008,12 +1008,21 @@ void array_link::showproperties() const
 //  int t = this->strength();
 	return;
 }
+ 
 
+std::string array_link::showarrayS() const
+{
+	std::stringstream ss;
+	ss << "array: \n";
+	write_array_format ( ss, array, this->n_rows, this->n_columns );
+	return ss.str();
+}
 
 void array_link::showarray() const
 {
 	printf ( "array: \n" );
-	write_array_format ( cout, array, this->n_rows, this->n_columns );
+	//write_array_format ( std::cout, array, this->n_rows, this->n_columns );	// does not work with ipython...
+	write_array_format ( array, this->n_rows, this->n_columns );
 //write_array(stdout, this->array, this->n_rows, this->n_columns);
 }
 

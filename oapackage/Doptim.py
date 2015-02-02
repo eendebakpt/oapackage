@@ -72,8 +72,12 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     else:
         colors=np.zeros( (nn,1) )
     
-    mycmap = brewer2mpl.get_map('Set1', 'qualitative', 3).mpl_colors
-    
+    try:
+        mycmap = brewer2mpl.get_map('Set1', 'qualitative', 3).mpl_colors
+    except:
+        mycmap= [ matplotlib.cm.jet(ii) for ii in range(4)]
+        pass
+            
     
     idx=np.unique(colors).astype(int)
     
@@ -87,6 +91,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     figh.set_facecolor('w')
     ax = plt.subplot(111)
     
+    nonparetoidx=np.setdiff1d(range(nn), paretoidx)
+    ax.scatter(data[fi,nonparetoidx], data[si,nonparetoidx], s=33, c=(.5,.5,.5), linewidths=0, alpha=alpha, label='Non-pareto design')
+
     for jj, ii in enumerate(idx):
         gidx=(colors==ii).nonzero()[0]
         gp=np.intersect1d(paretoidx, gidx)
@@ -97,8 +104,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
         ax.scatter(data[fi,gp], data[si,gp], s=52, c=cc, linewidths=0, alpha=alpha, label=lbls[jj])
         plt.draw()
     
-    nonparetoidx=np.setdiff1d(range(nn), paretoidx)
-    ax.scatter(data[fi,nonparetoidx], data[si,nonparetoidx], s=33, c=(.5,.5,.5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
     if data[si,:].std()<1e-3:        
         y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
@@ -162,7 +167,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
     if verbose:
         print('generateDpage: writen scatterplot to %s' % scatterfile)
-    plt.savefig(scatterfile)
+    plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25)
 
     #%% Create page
 
@@ -195,7 +200,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig
     page.p('All Pareto optimal arrays: %s' % istrlnk )
     
     
-    page.img(src=urlprefix+'scatterplot.png')
+    page.img(src=urlprefix+'scatterplot.png', style="margin: 10px;")
     
     citationstr = markup.oneliner.a('Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='http://dx.doi.org/10.1002/jcd.20236')
     
@@ -221,8 +226,18 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig
 # TODO: implement in C
 # TODO: what is the proper criterium?
 # TODO: implement fast update of xf
+# TODO: add check to capture mixed arrays
 
 def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
+    """ Optimize arrays """
+    # get factor levels
+    s=A0.getarray().max(axis=0)+1
+    sx=tuple(s.astype(np.int64))
+    sg=oalib.symmetry_group( sx )    
+    gidx=tuple(sg.gidx)
+    gsize=tuple(sg.gsize)
+    gstart=tuple(sg.gstart)
+    
     Dinitial=A0.Defficiency()
     if verbose:
         print('optimDeff: initial Deff %.4f' % Dinitial )
@@ -238,7 +253,10 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
         r=np.random.randint(N)
         c=np.random.randint(k)
         r2=np.random.randint(N)
-        c2=np.random.randint(k)
+        # make sure c2 is in proper column
+        #c2=np.random.randint(k)
+        c2 = gstart[gidx[c]] + oalib.fastrand() % gsize[gidx[c]]
+        #print('  %d,%d <--> %d,%d' % (r,c,r2,c2))
 
 
         #o=A[r, c]; o2=A[r2, c2]

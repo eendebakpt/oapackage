@@ -124,9 +124,21 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 
 # for debugging
-set(COPTS "-g -Os" ) # -std=c++0x ")
-set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
+#set(COPTS "-g -Os" ) # -std=c++0x ")
+#set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
 #set(COPTS "-g -O3 -msse2" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
+
+if(OADEV)
+  if(WIN32)
+  else()
+    set(LINKOPTS "${LINKOPTS} -s")
+  endif()
+else()
+  if(WIN32)
+  else()
+    set(LINKOPTS "${LINKOPTS} -s")
+  endif()
+endif()
 
 #message(STATUS "Setting debug compilation on!")
 #set(COPTS "-g -O0 ") # -std=c++0x
@@ -556,7 +568,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSIO
 
 set(OADEVPACK 0)
 set(CPACK_SOURCE_IGNORE_FILES "tests.txt$;/vsc/;/old/;/Eigen3.2/;/Eigen-devel/;/Eigen3.1/;/buildvs/;a.out$;/TestingCommands;/testing/;tags$;nauty$;_oalib.so$;Makefile$;setup.py~$;ChangeLog~$;CMakeFiles$;TODO$;oaconfig-speedtest.txt$;CMakeCache.txt;cmake_install.cmake;.pyc$;/oacode.kdev4;/OA.kde;.cpp~$;/CMakeLists-develop.txt;/build/;/matlabtools/;/xml/;/pythonscripts/;/miscx/;/performancetest/;/oldx/;/buildwin/;/html/;/testsuite/;/.svn/;${CPACK_SOURCE_IGNORE_FILES}")
-set(CPACK_SOURCE_IGNORE_FILES "oatest2.cpp;/build2/;PrecompiledHeader.cmake;/Eigen3.2.1/" ${CPACK_SOURCE_IGNORE_FILES})
+set(CPACK_SOURCE_IGNORE_FILES "example.so;oatest2.cpp;/build2/;PrecompiledHeader.cmake;/Eigen3.2.1/" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "/.git/;x.txt;/appveyor/;/dist/;/build2/;/hopper/;/OAlib.egg-info/;/buildx/;/OApackage.egg-info/;x2.txt;appveyor.yml;oalib_wrap_dev.cxx;oalib_wrap.cpp;oalib_wrap.cxx;sandbox;" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "\\\\.cpp~$" "\\\\.txt~$" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "~$" ${CPACK_SOURCE_IGNORE_FILES})

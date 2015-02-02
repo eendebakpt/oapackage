@@ -84,6 +84,17 @@ def timeString(tt=None):
     ts=strftime("%Y-%m-%d %H:%M:%S", tt)
     return ts
 
+def findfilesR(p, patt):
+    """ Get a list of files (recursive) """
+    lst=[]
+    for root, dirs, files in os.walk(p, topdown=False):
+        lst+=[ os.path.join(root, f) for f in files]
+        #for name in files:
+        #    lst += [name]
+    rr=re.compile(patt)   
+    lst = [l for l in lst if re.match(rr, l)]
+    return lst
+    
 def findfiles(p, patt=None):
     """ Get a list of files """
     lst=os.listdir(p)
@@ -653,4 +664,34 @@ def DefficiencyBound(D, k, k2):
     m2=1.+k2+k2*(k2-1)/2
     D2=D**(m/m2)
     return D2
-    
+
+#%% Misc
+
+try:
+    import matplotlib
+    import matplotlib.pyplot as plt
+except:
+    pass
+
+def setWindowRectangle(x,y=None,w=None,h=None, mngr=None, be=None):
+    """ Position the current Matplotlib figure at the specified position
+    Usage: setWindowRectangle(x,y,w,h)    
+    """
+    if y is None:
+        y=x[1]
+        w=x[2]
+        h=x[3]
+        x=x[0]
+    if mngr is None:
+        mngr = plt.get_current_fig_manager()
+    be=matplotlib.get_backend()
+    if be=='WXAgg':
+        mngr.canvas.manager.window.SetPosition((x,y))
+        mngr.canvas.manager.window.SetSize((w,h))
+    else:
+        # assume Qt canvas
+        mngr.canvas.manager.window.move(x,y)
+        mngr.canvas.manager.window.resize(w,h)
+        mngr.canvas.manager.window.setGeometry(x,y,w,h)
+        #mngr.window.setGeometry(x,y,w,h)
+        
