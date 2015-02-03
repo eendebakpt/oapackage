@@ -158,12 +158,16 @@ void print_options(std::ostream &outx)
 	//	out << "INIT_COL_PREVIOUS" << sep;
 	
 	#ifdef SYMMBLOCKS
-	outx << "SYMMBLOCKS" << std::endl;
+	outx << "SYMMBLOCKS" << sep;
 	#endif
 
 	#ifdef JCHECK
-	outx << "JCHECK" << std::endl;
+	outx << "JCHECK" << sep;
 	#endif
+	#ifdef OADEV
+	outx << "OADEV" << sep;
+	#endif
+	outx << std::endl;
 
 	outx << "columns sorting method: " << oacolSortName << std::endl;
 

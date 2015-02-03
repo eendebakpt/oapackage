@@ -7,9 +7,11 @@ setup.py file for SWIG example
 #%% Load packages
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from setuptools import Extension 
+from setuptools.command.test import test as TestCommand
+
 from codecs import open  # To use a consistent encoding
 from os import path
-import os
+import os,sys
 import numpy as np
 import platform
 
@@ -29,6 +31,32 @@ if not opt is None:
     os.environ['OPT'] = opt
 
 #print('OPT %s' % opt)
+
+
+#%% Test suite
+
+class OATest(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = []
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import oapackage
+        print('oapackage test: oalib version %s' % oapackage.version() )
+	al=oapackage.exampleArray(0,0)
+	Deff=al.Defficiency()
+	errno=0
+        #errno = pytest.main(self.pytest_args)
+        sys.exit(errno)
+
 
 #%% Define sources of the package
 oadev=0
@@ -117,7 +145,7 @@ scripts=['scripts/example_python_testing.py']
 packages=['oapackage']
 
 setup (name = 'OApackage',
-       version = '1.9.89',
+       version = '1.9.90',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
@@ -130,13 +158,17 @@ setup (name = 'OApackage',
        #packages=['oalib'],
        #packages=find_packages(exclude=['oahelper']),
         data_files = data_files,
+#        test_suite = "oapackage.unittest",
     scripts=scripts,
+    tests_require=['oapackage'],
+    cmdclass = {'test': OATest},
        py_modules = ['oalib'],	
 	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
 	      'Programming Language :: Python :: 2',
 	      'Programming Language :: Python :: 2.7',
 	      'Programming Language :: Python :: 3',
+	      'Programming Language :: Python :: 3.3',
 	      'Programming Language :: Python :: 3.4', 
 	      ]
        )

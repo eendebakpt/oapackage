@@ -2,8 +2,8 @@ include FORMAT.txt
 include LICENSE.txt
 include ALGORITHM.txt
 include ChangeLog
-include example.r
-include oalib_wrap.cxx
+#include example.r
+#include oalib_wrap.cxx
 
 recursive-include src *.h *.cpp
 
@@ -13,6 +13,7 @@ graft Eigen
 graft utils
 exclude TODO
 exclude oalib_wrap_dev.cxx
+exclude oalib_wrap.cxx
 
 # do not include development code
 exclude src/oadevelop.cpp

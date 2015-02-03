@@ -138,7 +138,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
 
 #import researchOA
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig=False,  urlprefix='', makeheader=True, verbose=1):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,0],nofig=False,  urlprefix='', makeheader=True, verbose=1):
     
     #%% Prepare data
     pp = oahelper.createPareto(dds)
@@ -162,7 +162,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, optimfunc=[1,0,0],nofig
 
     #lbls= ['Optimization of $D+.5 D_s$', 'Optimization of $D+  0.5 D_s$', 'Optimization of $D+3*Ds$', 'Optimization of $D+3*D_s$']
     lbls= ['Optimization of $D$'] 
-    x=generateDscatter(dds, lbls=lbls, fig=20, nofig=nofig)
+    x=generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
  
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
     if verbose:
