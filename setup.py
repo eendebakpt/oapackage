@@ -71,8 +71,15 @@ if os.path.exists('src/oadevelop.cpp') and 1:
 srcs=[ 'src/' + ff for ff in srcs]
 
 if oadev:
-  sources = ['oalib_wrap_dev.cxx'] + srcs + ['bitarray/bit_array.cpp']
+  sources =   srcs + ['bitarray/bit_array.cpp']
+  #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
   swig_opts=[]
+
+  sources += ['oalib.i']
+  swig_opts=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/'] # , '-o oalib_wrap_dev.cxx']
+  if platform.system()=='Windows':
+      swig_opts+=['-DWIN32', '-D_WIN32']
+
 else:
   sources = srcs + ['bitarray/bit_array.cpp']
 

@@ -671,6 +671,7 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
 except:
+    print('oahelper: matplotlib cannot be found, not all functionality is available')
     pass
 
 def setWindowRectangle(x,y=None,w=None,h=None, mngr=None, be=None):

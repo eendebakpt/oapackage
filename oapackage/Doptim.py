@@ -14,8 +14,11 @@ import oalib
 import sys, os
 import numpy as np
 import time
-import matplotlib.pyplot as plt
-
+try:
+    import matplotlib.pyplot as plt
+except:
+    print('Doptim: matplotlib cannot be found, not all functionality is available')
+    pass
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 
