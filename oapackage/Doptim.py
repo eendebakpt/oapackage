@@ -15,6 +15,7 @@ import sys, os
 import numpy as np
 import time
 try:
+    import matplotlib
     import matplotlib.pyplot as plt
 except:
     print('Doptim: matplotlib cannot be found, not all functionality is available')
@@ -58,7 +59,6 @@ try:
 except:
 	pass
 
-import matplotlib
 
 def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):        
     data=dds.T

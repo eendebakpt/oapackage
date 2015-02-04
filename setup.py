@@ -51,9 +51,11 @@ class OATest(TestCommand):
         #import here, cause outside the eggs aren't loaded
         import oapackage
         print('oapackage test: oalib version %s' % oapackage.version() )
-	al=oapackage.exampleArray(0,0)
-	Deff=al.Defficiency()
-	errno=0
+
+
+        al=oapackage.exampleArray(0, 0)
+        Deff=al.Defficiency()
+        errno=0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
