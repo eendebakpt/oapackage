@@ -350,6 +350,14 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 
 }
 
+#include <Eigen/SVD>
+#include <Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/LU>
+
+using namespace Eigen;
+
+
 
 int main ( int argc, char* argv[] )
 {
@@ -391,6 +399,28 @@ int main ( int argc, char* argv[] )
 	setloglevel ( verbose );
 
 	
+	{
+		array_link al = exampleArray(aidx);
+		al.show();
+		
+		Eigen::MatrixXd ww;
+		  ww = array2eigenModelMatrix(al);
+		for(int ii=0; ii<10; ii++) {
+			al.Defficiencies();
+		//detXtX(ww);
+		}
+		exit(0);
+		
+		std::vector<double> dd;
+		for(int ii=0; ii<10000; ii++) {
+			al = exampleArray(aidx);
+			 dd=al.Defficiencies();
+		}
+		printf("dd "); display_vector(dd); std::cout << std::endl;
+		exit(0);
+		
+		
+	}
 	{
 		array_link al = exampleArray(aidx);
 		arraydata_t arrayclass=arraylink2arraydata(al);

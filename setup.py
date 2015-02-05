@@ -49,12 +49,13 @@ class OATest(TestCommand):
 
     def run_tests(self):
         #import here, cause outside the eggs aren't loaded
+        print('## oapackage test: load package' )
         import oapackage
-        print('oapackage test: oalib version %s' % oapackage.version() )
-
-
-        al=oapackage.exampleArray(0, 0)
+        print('## oapackage test: oalib version %s' % oapackage.version() )
+        ii=0
+        al=oapackage.exampleArray(ii, 0)
         Deff=al.Defficiency()
+        print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
         errno=0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)

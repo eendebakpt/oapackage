@@ -246,8 +246,10 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
         print('optimDeff: initial Deff %.4f' % Dinitial )
     N=A0.n_rows
     k=A0.n_columns
-    d=A0.Defficiency()
-    d=0
+
+    # initialize score
+    D, Ds, D1=A0.Defficiencies()
+    d = alpha[0]*D+alpha[1]*Ds+alpha[2]*D1
     A=A0.clone()
     lc=0
     for ii in range(0,niter): 
@@ -276,9 +278,9 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
         if (dn>=d):
             if dn>d:
                 lc=ii
-            d=dn
             if verbose>=2:
-                print('ii %d: %.4f' % (ii, dn))
+                print('ii %d: %.6f -> %.6f' % (ii, d, dn))
+            d=dn
                 
         else:
             # restore to original
@@ -304,7 +306,7 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
 
 #%%
 
-def Doptimize(arrayclass, niter=10, optimfunc=[1,0,0], verbose=1, maxtime=20):
+def Doptimize(arrayclass, nrestarts=10, niter=8000, optimfunc=[1,0,0], verbose=1, maxtime=120):
     """ ... """
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr() )
@@ -313,12 +315,12 @@ def Doptimize(arrayclass, niter=10, optimfunc=[1,0,0], verbose=1, maxtime=20):
     scores=np.zeros( (0,1))
     dds=np.zeros( (0,3)) 
     sols=oalib.arraylist_t()
-    for ii in range(niter):
+    for ii in range(nrestarts):
         if verbose:
-            oahelper.tprint('Doptim: iteration %d/%d' % (ii, niter))
+            oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
         al=arrayclass.randomarray(1)
 
-        score, Ax= optimDeff(al, verbose=0, niter=7000, alpha=optimfunc)
+        score, Ax= optimDeff(al, verbose=0, niter=niter, alpha=optimfunc)
         dd=Ax.Defficiencies()
         if time.time()-t0 > maxtime:
             if verbose:
@@ -328,7 +330,7 @@ def Doptimize(arrayclass, niter=10, optimfunc=[1,0,0], verbose=1, maxtime=20):
         scores=np.vstack( (scores, [score]) )
         dds=np.vstack( (dds, dd) )
         sols.push_back(Ax)
-        if verbose:
+        if verbose>=2:
             print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
     if verbose:
         print('Doptim: done' )

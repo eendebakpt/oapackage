@@ -892,7 +892,36 @@ array_link exampleArray ( int idx, int verbose )
 		return al;
 		break;
 	}
+	case 11: {
+		if ( verbose )
+			printf ( "exampleArray: D-optimal array in OA(44, 2^8)\n" );
 
+		//
+		array_link al ( 44,8, 0 );
+		int tmp[] = 	{1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0,
+        1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0,
+       0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0,
+        0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+       1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1,
+      1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0,
+        1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1,
+       1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1,
+        0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1,
+     0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0,
+        0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1,
+      1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0,
+        0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1,
+      1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1,
+        0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0 };
+
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		return al;
+		break;
+	}
+
+	
+       
 	case 9: {
 		if ( verbose )
 			printf ( "exampleArray: array in OA(40, 2^7), D-optimal\n" );
@@ -1545,7 +1574,11 @@ std::vector<double> array_link::Defficiencies ( int verbose ) const
 	}
 
 
+
+	
 	Eigen::MatrixXd tmp = ( X.transpose() *X/n );
+	
+	
 	double f1 = tmp.determinant();
 	double f2 = ( X2.transpose() *X2/n ).determinant();
 	double t = ( X1i.transpose() *X1i/n ).determinant();
@@ -1571,6 +1604,11 @@ std::vector<double> array_link::Defficiencies ( int verbose ) const
 			printf ( "Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1);
 		}
 
+		if (0) {
+			double dd = detXtX(X/sqrt(double(n)) );double Dnew = pow ( dd, 1./m );
+		printf("D %.15f -> %.15f\n", D, Dnew);
+		}
+		
 	std::vector<double> d ( 3 );
 	d[0]=D;
 	d[1]=Ds;

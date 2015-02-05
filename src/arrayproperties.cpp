@@ -961,7 +961,56 @@ std::vector<int> Jcharacteristics(const array_link &al, int jj, int verbose)
     return js.vals;
 }
 
+/// calculate determinant of X^T X by using the SVD
+double detXtX(const Eigen::MatrixXd &mymatrix, int verbose) {
+double dd=-1; double dd2=-1;
+  int n = mymatrix.rows();
+  int m = mymatrix.cols();
+  int N = n;
+  
+  //    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
+  //  int rank = lu_decomp.rank();
 
+    Eigen::MatrixXd mm = mymatrix.transpose() * mymatrix;
+    SelfAdjointEigenSolver<Eigen::MatrixXd> es;
+    es.compute(mm);
+    const Eigen::VectorXd SS =  es.eigenvalues();
+    Eigen::VectorXd S = SS; //sqrt(S);
+
+      if (S[m-1]<1e-15 ) {
+        if (verbose>=2) {
+            printf("   array is singular, setting det to zero\n");
+	    
+	}
+      dd=0;
+      return dd;	
+      }
+      
+    for(int j=0; j<m; j++) {
+        if (S[j]<1e-14) {
+            if (verbose>=3)
+                printf("  singular!\n");
+            S[j]=0;
+        }
+        else {
+            S[j]=sqrt(S[j]);
+        }
+    }
+
+        Eigen::MatrixXd Smat(S);
+    Eigen::ArrayXd Sa=Smat.array();
+    dd = exp(2*Sa.log().sum());
+
+	//
+
+    if (S[0]<1e-15) {
+        if (verbose>=2)
+            printf("Avalue: singular matrix\n");
+        dd=0;
+        return dd;
+    }
+    return dd;
+}
 
 double Defficiency(const array_link &al, int verbose) {
 
