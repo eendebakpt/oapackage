@@ -58,6 +58,14 @@ typedef unsigned __int32 uint32_t;
 /// show information about Eigen matrix
 void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );
 
+
+// helper function for Python interface
+void eigen2numpyHelper(double* pymat1, int n, const Eigen::MatrixXd &m);
+
+    
+Eigen::VectorXd dummy();
+Eigen::MatrixXd dummy2();
+
 #ifdef USEZLIB
 #include <zlib.h>
 #endif

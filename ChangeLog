@@ -1,7 +1,12 @@
+1.9.95
+
+Automatically convert Eigen::MatrixXd to numpy in Python interface
+
 1.9.88
 
 Improve build system
 Add optimization of mixed-level arrays
+
 
 1.9.81
 

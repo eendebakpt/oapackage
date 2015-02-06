@@ -402,6 +402,8 @@ int main ( int argc, char* argv[] )
 	{
 		array_link al = exampleArray(aidx);
 		al.show();
+		al.showarray();
+		al.show();
 		
 		Eigen::MatrixXd ww;
 		  ww = array2eigenModelMatrix(al);

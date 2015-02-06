@@ -37,6 +37,7 @@ import_array();
 #endif
 %}
 
+%apply (double* ARGOUT_ARRAY1, int DIM1) {(double* pymat1, int nrows)}
 %apply (double* ARGOUT_ARRAY2, int DIM1, int DIM2) {(double* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(int* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* pymat1, int n)}
@@ -47,6 +48,13 @@ import_array();
 
 
 %{
+#include <Eigen/Core>
+#include <Eigen/Dense>
+//#include <Eigen/Dense>
+
+//#include <Python.h>
+#include <numpy/arrayobject.h>
+
 #ifdef WIN32
 #else
 #include <stdint.h>
@@ -65,12 +73,87 @@ import_array();
 #endif
 %}
 
+/* Instantiate a few different versions of the template */
+//%template(EigenMatrix2) std::vector<float>;
+//%template(EigenMatrix) Eigen::Matrix<double, Dynamic, Dynamic>;
+
+//%template(EigenMatrix) Eigen::MatrixXd;
+
+/*
+%pythoncode %{ 
+def eigen2numpy(m):
+  print('convert eigen to numpy matrix')
+  
+  m.rows()
+
+%}
+*/
+
+%typemap(in) Eigen::MatrixXd (Eigen::MatrixXd inputEigen)
+{
+  /* note that Eigen is column-major by default and numpy is row major by default */
+  int rows = 0;
+  int cols = 0;
+
+  PyArrayObject *pp = (PyArrayObject *)($input);
+  rows = PyArray_DIM(pp,0);
+  cols = PyArray_DIM(pp,1);
+
+  PyArrayObject* temp;
+  PyArg_ParseTuple($input, "O", &temp);  
+
+  inputEigen.resize(rows,cols);
+  inputEigen.fill(0);
+
+  double *  values = ((double *) PyArray_DATA( pp ));
+  for (long int i = 0; i != rows; ++i){
+      for(long int j = 0; j != cols; ++j){
+          // std::cout << "data " << data[i] << std::endl;
+          inputEigen(i,j) = values[i*rows+j];
+      }
+  }  
+
+}
+
+// see http://sourceforge.net/p/swig/mailman/message/32490448/
+//http://mail.scipy.org/pipermail/numpy-discussion/2013-February/065637.html
+%typemap(out) Eigen::VectorXd 
+{
+    npy_intp dims[1] = {$1.size()};
+    PyObject* array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+    double* data = ((double *) (PyArray_DATA( (PyArrayObject*) array ) ) );
+    for (int i = 0; i != dims[0]; ++i){
+        *data++ = $1.data()[i];
+    }
+    $result = array;
+}
+%typemap(out) Eigen::MatrixXd 
+{
+  /* note that Eigen is column-major by default and numpy is row major by default */
+
+  const int verbose=0;
+  if (verbose) {
+    printf("typemap out for Eigen::MatrixXd: \n");
+    eigenInfo($1);
+    }
+    Eigen::MatrixXd mt = $1.transpose();
+    
+    npy_intp dims[2] = {$1.rows(), $1.cols() };
+    PyObject* array = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+    double* data = ((double *) (PyArray_DATA( (PyArrayObject*) array ) ) );
+    for (int i = 0; i != dims[0]*dims[1]; ++i){
+        *data++ = mt.data()[i];
+    }
+    $result = array;
+}
+
+
 %extend array_link {
 %insert("python") %{
 def showarray(self):
   """ Show array"""
   # overridden to fix problems with ipython
-  print(self.showarrayS() )
+  print(self.showarrayS(), end='',flush=True)
   
 def getarray(self, verbose=0, *args):
   if verbose:
@@ -151,12 +234,6 @@ namespace std {
 
 
 // prevent memory leaks
-#ifdef OADEV
-
-//%newobject extend_arraylist;
-//arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend);
-#endif
-
 
 //%newobject readarrayfile;
 //arraylist_t & readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 

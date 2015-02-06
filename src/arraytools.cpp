@@ -1245,6 +1245,32 @@ Eigen::MatrixXd array2eigenX2 ( const array_link &al )
 
 #include <Eigen/Dense>
 
+Eigen::VectorXd dummy()
+{
+	printf("dummy: create VectorXd\n");
+	Eigen::VectorXd v(3);
+	v[0]=1; v[1]=2;	v[2]=4;
+	return v;
+}
+Eigen::MatrixXd dummy2()
+{
+	printf("dummy2: create MatrixXd\n"); fflush(stdout);
+ Eigen::MatrixXd m(2,2);
+  m(0,0) = 3; m(1,0) = 2.5; m(0,1) = -1;
+//	printf("dummy2: return MatrixXd\n"); fflush(stdout);
+	return m;
+}
+
+// helper function for Python interface
+void eigen2numpyHelper(double* pymat1, int n, const Eigen::MatrixXd &m) {
+        //for(size_t i=0; i<n; i++) {
+        //    pymat[i]=this->array[i];
+        //}
+	eigenInfo(m);
+	printf("pymat1 %ld\n", (long)pymat1);
+      std::copy(m.data(),m.data()+m.size(), pymat1);
+    }
+
 void eigenInfo ( const Eigen::MatrixXd m, const char *str, int verbose )
 {
 	if (verbose==1)
@@ -2271,6 +2297,7 @@ jstruct_t::jstruct_t ( const array_link &al, int jj )
 	const int k=al.n_columns;
 	const int N = al.n_rows;
 
+	
 	this->init ( N, k, jj );
 	if ( jj==4 && 1 )
 		this->calcj4 ( al );
@@ -2292,6 +2319,16 @@ void jstruct_t::init ( int N_, int k_, int jj_ )
 	this->N = N_;
 	this->k = k_;
 	this->jj = jj_;
+	
+	if (this->jj<0) {
+	printf("jstruct_j: J-characteristics for J<0 are undefined, setting J to 0\n");
+	jj=0;
+	}
+	if (this->jj>20) {
+	printf("jstruct_j: J-characteristics for J>20 are not supported, setting J to 0\n");
+	jj=0;
+	}
+	
 	this->nc = ncombs ( k_, jj_ );
 	vals = std::vector<int> ( nc );
 //  printf("jstruct_t(N,k,jj): vals %d\n", this->vals);
