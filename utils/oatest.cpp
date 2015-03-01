@@ -39,10 +39,10 @@ void mydebug10 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 
 	lmc_t r;
 	LMCreduction_t reduction ( &adata );
-	 t0 =get_time_ms();
+	t0 =get_time_ms();
 	LMCreduction_t reductionx=reduction;
 	r = LMCcheck ( al, adata, oaextend, reductionx ) ;
-	 dt =get_time_ms()-t0;
+	dt =get_time_ms()-t0;
 	reductionx.symms.makeColpermsUnique();
 	reductionx.symms.showColperms();
 	reductionx.symms.showSymmetries();
@@ -119,10 +119,10 @@ void mydebug5 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverb
 
 	reductionsub.symms.showSymmetries();
 	reductionsub.symms.showColcombs();
-	
+
 	dt =get_time_ms()-t0;
 	printf ( "### pre-compute: time: %.3f [ms]\n", 1e3*dt );
-	
+
 	int niter=250;
 	lmc_t rn = r;
 	t0 =get_time_ms();
@@ -134,19 +134,19 @@ void mydebug5 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverb
 	}
 	dt =get_time_ms()-t0;
 	printf ( "### new lmt_t %d: time: %.3f [ms]\n", rn, 1e3*dt/niter );
-	
-	
-		 t0 =get_time_ms();
-	 LMCreduction_t reductionx=reduction;
-	 niter=4;
+
+
+	t0 =get_time_ms();
+	LMCreduction_t reductionx=reduction;
+	niter=4;
 	for ( int ix=0; ix<niter; ix++ ) {
 		reductionx.init_state=COPY;
 		r = LMCcheck ( al, adata, oaextend, reductionx ) ;
 	}
-	 dt =get_time_ms()-t0;
-	 if (niter>0){
-	printf ( "### original lmc_t: %d, time: %.3f [ms]\n\n", ( int ) r, 1e3*dt/niter );
-	 }
+	dt =get_time_ms()-t0;
+	if ( niter>0 ) {
+		printf ( "### original lmc_t: %d, time: %.3f [ms]\n\n", ( int ) r, 1e3*dt/niter );
+	}
 }
 
 
@@ -164,29 +164,29 @@ void mydebug ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbo
 
 	printf ( "mydebug! al %d %d\n", al.n_rows, al.n_columns );
 	LMCreduction_t reduction ( &adata );
-LMCreduction_t reductionx = reduction;
+	LMCreduction_t reductionx = reduction;
 
-	if (0) {
-	t0 =get_time_ms();
-	 reductionx=reduction;
-	//oaextend.setAlgorithm(MODE_J4);
-	for ( int ix=0; ix<niter; ix++ ) {
-		reductionx.init_state=COPY;
-		r = LMCcheck ( al, adata, oaextend, reductionx ) ;
-	}
-	 dt =get_time_ms()-t0;
-	printf ( "### original lmc_t: %d, time: %.3f [ms]\n\n", ( int ) r, 1e3*dt );
-	}
-	
 	if ( 0 ) {
-		 t0 =get_time_ms();
-		 reductionx=reduction;
+		t0 =get_time_ms();
+		reductionx=reduction;
+		//oaextend.setAlgorithm(MODE_J4);
+		for ( int ix=0; ix<niter; ix++ ) {
+			reductionx.init_state=COPY;
+			r = LMCcheck ( al, adata, oaextend, reductionx ) ;
+		}
+		dt =get_time_ms()-t0;
+		printf ( "### original lmc_t: %d, time: %.3f [ms]\n\n", ( int ) r, 1e3*dt );
+	}
+
+	if ( 0 ) {
+		t0 =get_time_ms();
+		reductionx=reduction;
 		oaextend.setAlgorithm ( MODE_LMC_SYMMETRY );
 		for ( int ix=0; ix<niter; ix++ ) {
 			reductionx.init_state=COPY;
 			r = LMCcheck ( al, adata, oaextend, reductionx ) ;
 		}
-		 dt =get_time_ms()-t0;
+		dt =get_time_ms()-t0;
 		printf ( "### symmetry lmc_t: %d, time: %.3f [ms]\n\n", ( int ) r, 1e3*dt );
 
 	}
@@ -205,15 +205,15 @@ LMCreduction_t reductionx = reduction;
 	dt =get_time_ms()-t0;
 	printf ( "### pre-compute: time: %.3f [ms]\n", 1e3*dt );
 
-	if (0) {
-int nc=6;
-printf("## symmetrices with %d cols:\n", nc);	
-	symmetryset xx= reductionsub.symms.symmetries[nc];
-	                    for( symmetryset::const_iterator it = xx.begin(); it != xx.end(); it++) {
-                        it->show();
-                    }
+	if ( 0 ) {
+		int nc=6;
+		printf ( "## symmetrices with %d cols:\n", nc );
+		symmetryset xx= reductionsub.symms.symmetries[nc];
+		for ( symmetryset::const_iterator it = xx.begin(); it != xx.end(); it++ ) {
+			it->show();
+		}
 	}
-                    
+
 
 	//reductionsub.showColperms(1);
 	if ( dverbose ) {
@@ -234,7 +234,7 @@ printf("## symmetrices with %d cols:\n", nc);
 	for ( int ix=0; ix<niter; ix++ ) {
 		copy_array ( al.array, reduction.array, adata.N, adata.ncols ); // hack?
 		reduction.updateSDpointer ( al );
-		
+
 		rn = LMCcheckSymmetryMethod ( al, adata, oaextend, reduction, reductionsub, dverbose ) ;
 	}
 	dt =get_time_ms()-t0;
@@ -355,13 +355,15 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 #include <Eigen/Core>
 #include <Eigen/LU>
 
+#include "Deff.h"
+
 using namespace Eigen;
 
 
 
 int main ( int argc, char* argv[] )
 {
-		AnyOption opt;
+	AnyOption opt;
 	/* parse command line options */
 	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
 	opt.setOption ( "output", 'o' );
@@ -369,8 +371,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
 	opt.setOption ( "dverbose", 'd' );
-    opt.setOption ( "rows" );
-    opt.setOption ( "cols" );
+	opt.setOption ( "rows" );
+	opt.setOption ( "cols" );
 	opt.setOption ( "mdebug", 'm' );
 	opt.setOption ( "oaconfig", 'c' ); /* file that specifies the design */
 
@@ -395,141 +397,179 @@ int main ( int argc, char* argv[] )
 	int dverbose = opt.getIntValue ( 'd', 1 );
 	int md = opt.getIntValue ( 'm', 0 );
 	int aidx = opt.getIntValue ( 'i', 0 );
-    int rr = opt.getIntValue("rows", 40);
-    int cc = opt.getIntValue("cols", 7);
+	int rr = opt.getIntValue ( "rows", 40 );
+	int cc = opt.getIntValue ( "cols", 7 );
 
 	srand ( r );
 	int verbose = opt.getIntValue ( 'v', NORMAL );
 	setloglevel ( verbose );
 
-	
-	if(1)
-	    {
+	if ( 0 ) {
+
+		arraydata_t adata ( 2, 80, 0, 7 );
+		int niter=10000;
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+		double t0=get_time_ms();
+		for ( int jjj=0; jjj<10; jjj++ ) {
+			for ( int i=0; i<4800; i++ ) {
+				array_link al = adata.randomarray ( 0 );
+				std::vector<double> dd = al.Defficiencies();
+			}
+		}
+		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+	}
+		if ( 1 ) {
+		arraydata_t adata ( 2, 80, 0, 7 );
+		int niter=10000;
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+			double t0=get_time_ms();
+			for ( int i=0; i<10; i++ ) {
+				array_link al = adata.randomarray ( 0 );
+				std::vector<double> dd = al.Defficiencies();
+				int dmethod = DOPTIM_SWAP;
+				//dmethod = DOPTIM_NONE;
+				array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
+			}
+			printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+		
+		return 0;
+	}
+
+	if ( 0 ) {
 // test PEC sequence
-      srand(get_time_ms() );
-    array_link al(rr,cc,-1);
-    arraydata_t arrayclass(2, rr, 1, cc);
-    arrayclass.show();
-for(int i=0; i<al.n_columns*al.n_rows; i++) al.array[i]=rand()%2;
-
-      double t0=(get_time_ms() );
-
-    std::vector<double> pec = PECsequence(al);
-    printf("PEC: " ); display_vector(pec);  printf(" \n" );
-printf("dt: %.1f [s]\n" , get_time_ms()-t0);
-return 0;
-    }
-
-    
-	if(0)
-	{
-			array_link al = exampleArray(aidx);
-		al.showarray();
-		return 0;
-	}
-	{
-		for(int k=0; k<aidx; k++) fastrand();
-		
-		const int N = 9;
-		arraydata_t arrayclass(3, N, 2, 2);
+		srand ( get_time_ms() );
+		array_link al ( rr,cc,-1 );
+		arraydata_t arrayclass ( 2, rr, 1, cc );
 		arrayclass.show();
-	array_link al0=arrayclass.randomarray(0)	;
-	 //al0 = array_link(3,2,0);al0.at(0,0) =0; al0.at(1,0)=0; al0.at(2,0)=1;	al0.at(0,1) =0; al0.at(1,1)=1; al0.at(2,1)=1;
-	al0.showarray();
-	
-	
-	printf("D %f\n", al0.Defficiency() );
-	printf("-----\n");
-	Eigen::MatrixXd mm= al0.getModelMatrix(2);
-	std::cout << mm << std::endl;
-	
-	printf("-----\n");
-	mm = array2eigenModelMatrix(al0);
-	std::cout << mm << std::endl;
-	exit(0);
+		for ( int i=0; i<al.n_columns*al.n_rows; i++ )
+			al.array[i]=rand() %2;
+
+		double t0= ( get_time_ms() );
+
+		std::vector<double> pec = PECsequence ( al );
+		printf ( "PEC: " );
+		display_vector ( pec );
+		printf ( " \n" );
+		printf ( "dt: %.1f [s]\n" , get_time_ms()-t0 );
+		return 0;
 	}
-	
-	
+
+
+	if ( 0 ) {
+		array_link al = exampleArray ( aidx );
+		al.showarray();
+		return 0;
+	}
 	{
-		array_link al = exampleArray(aidx);
+		for ( int k=0; k<aidx; k++ )
+			fastrand();
+
+		const int N = 9;
+		arraydata_t arrayclass ( 3, N, 2, 2 );
+		arrayclass.show();
+		array_link al0=arrayclass.randomarray ( 0 )	;
+		//al0 = array_link(3,2,0);al0.at(0,0) =0; al0.at(1,0)=0; al0.at(2,0)=1;	al0.at(0,1) =0; al0.at(1,1)=1; al0.at(2,1)=1;
+		al0.showarray();
+
+
+		printf ( "D %f\n", al0.Defficiency() );
+		printf ( "-----\n" );
+		Eigen::MatrixXd mm= al0.getModelMatrix ( 2 );
+		std::cout << mm << std::endl;
+
+		printf ( "-----\n" );
+		mm = array2eigenModelMatrix ( al0 );
+		std::cout << mm << std::endl;
+		exit ( 0 );
+	}
+
+
+	{
+		array_link al = exampleArray ( aidx );
 		al.show();
-		std::cout << al.getModelMatrix(2) << std::endl;
-printf("------\n");
-		std::cout << array2eigenModelMatrix(al) << std::endl;
-			exit(0);
+		std::cout << al.getModelMatrix ( 2 ) << std::endl;
+		printf ( "------\n" );
+		std::cout << array2eigenModelMatrix ( al ) << std::endl;
+		exit ( 0 );
 		al.showarray();
 		al.show();
-		
+
 		Eigen::MatrixXd ww;
-		  ww = array2eigenModelMatrix(al);
-		for(int ii=0; ii<10; ii++) {
+		ww = array2eigenModelMatrix ( al );
+		for ( int ii=0; ii<10; ii++ ) {
 			al.Defficiencies();
-		//detXtX(ww);
+			//detXtX(ww);
 		}
-		exit(0);
-		
+		exit ( 0 );
+
 		std::vector<double> dd;
-		for(int ii=0; ii<10000; ii++) {
-			al = exampleArray(aidx);
-			 dd=al.Defficiencies();
+		for ( int ii=0; ii<10000; ii++ ) {
+			al = exampleArray ( aidx );
+			dd=al.Defficiencies();
 		}
-		printf("dd "); display_vector(dd); std::cout << std::endl;
-		exit(0);
-		
-		
+		printf ( "dd " );
+		display_vector ( dd );
+		std::cout << std::endl;
+		exit ( 0 );
+
+
 	}
 	{
-		array_link al = exampleArray(aidx);
-		arraydata_t arrayclass=arraylink2arraydata(al);
-		
-		arrayclass.randomarray(1).showarray();
-		return 0;
-		
-		 al = exampleArray(aidx);
-	al.showarray();
-	
-	Eigen::MatrixXd ME = array2eigenME(al);
-	std::cout << "---- ME ----\n";
-	std::cout << ME << std::endl;
-	
+		array_link al = exampleArray ( aidx );
+		arraydata_t arrayclass=arraylink2arraydata ( al );
 
-	//std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mm3 = array2eigenModelMatrix2 ( al, 2 );
-	//std::cout <<"gr\n" << mm3.first << std::endl;
+		arrayclass.randomarray ( 1 ).showarray();
+		return 0;
+
+		al = exampleArray ( aidx );
+		al.showarray();
+
+		Eigen::MatrixXd ME = array2eigenME ( al );
+		std::cout << "---- ME ----\n";
+		std::cout << ME << std::endl;
+
+
+		//std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mm3 = array2eigenModelMatrix2 ( al, 2 );
+		//std::cout <<"gr\n" << mm3.first << std::endl;
 
 //		std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mmx = array2eigenModelMatrix2 (al );
 
-	std::vector<double> dd = al.Defficiencies(2);
-	printf("Defficiencies: %f %f %f\n", dd[0], dd[1], dd[2]);
-	printf("Defficiency: %f\n", al.Defficiency() );
-	//std::cout << "mmx\n"<< mmx.first << std::endl ;
+		std::vector<double> dd = al.Defficiencies ( 2 );
+		printf ( "Defficiencies: %f %f %f\n", dd[0], dd[1], dd[2] );
+		printf ( "Defficiency: %f\n", al.Defficiency() );
+		//std::cout << "mmx\n"<< mmx.first << std::endl ;
 
-	if (verbose>=2) {
-	
-Eigen::MatrixXd mm = al.getModelMatrix(2, 1);
-	std::cout << "model matrix\n" << mm << std::endl;
+		if ( verbose>=2 ) {
+
+			Eigen::MatrixXd mm = al.getModelMatrix ( 2, 1 );
+			std::cout << "model matrix\n" << mm << std::endl;
+		}
+
+		return 0 ;
+
 	}
-	
-	return 0 ;
-	
-}
-	
-	if (0) {
+
+	if ( 0 ) {
 		const char *fname = "/home/eendebakpt/tmp/test.oa";
-	arraylist_t ll = readarrayfile(fname);
-	printf("read %zu arrays\n", ll.size());
-	array_link al= ll[0];
-	
-	al.show();
-	al.showarray();
-	printf("go!\n"); 
-	array_link r = reduceDOPform(al,1);
-	printf("done!\n");
+		arraylist_t ll = readarrayfile ( fname );
+		printf ( "read %zu arrays\n", ll.size() );
+		array_link al= ll[0];
+
+		al.show();
+		al.showarray();
+		printf ( "go!\n" );
+		array_link r = reduceDOPform ( al,1 );
+		printf ( "done!\n" );
 //	sleep(1);
-	std::cout.flush();
-	exit(0);
+		std::cout.flush();
+		exit ( 0 );
 	}
 
-	
+
 	if ( 0 ) {
 		const char *fname = "/home/eendebakpt/tmp/x.oa";
 		const char *fm = "r+b";

@@ -64,36 +64,33 @@ class OATest(TestCommand):
 #%% Define sources of the package
 oadev=0
 srcs=[ 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp','mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'arraytools.cpp', 'md5.cpp','strength.cpp']
+srcs=srcs+[ 'Deff.cpp']
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension
-if os.path.exists('src/oadevelop.cpp') and 1:
+if os.path.exists('src/oadevelop.cpp') and 0:
   oadev=1
   print('Building development code')
   srcs=[ 'oadevelop.cpp']+srcs
 
 srcs=[ 'src/' + ff for ff in srcs]
+sources =   srcs + ['bitarray/bit_array.cpp']
+swig_opts=[]
 
 if oadev:
-  sources =   srcs + ['bitarray/bit_array.cpp']
   #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
-  swig_opts=[]
 
   sources += ['oalib.i']
-  swig_opts=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/'] # , '-o oalib_wrap_dev.cxx']
-  if platform.system()=='Windows':
-      swig_opts+=['-DWIN32', '-D_WIN32']
+  swig_opts+=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/'] # , '-o oalib_wrap_dev.cxx']
 
 else:
-  sources = srcs + ['bitarray/bit_array.cpp']
-
   if 0:
     sources += ['oalib_wrap.cxx'] 
-    swig_opts=[]
   else:
     sources = ['oalib.i'] + sources
-    swig_opts=['-modern', '-c++', '-w503,401,362' , '-Isrc/']
-    if platform.system()=='Windows':
-      swig_opts+=['-DWIN32', '-D_WIN32']
+    swig_opts+=['-modern', '-c++', '-w503,401,362' , '-Isrc/']
+
+if platform.system()=='Windows':
+    swig_opts+=['-DWIN32', '-D_WIN32']
     
   
 if 'VSC_SCRATCH' in os.environ.keys():
@@ -155,7 +152,7 @@ scripts=['scripts/example_python_testing.py']
 packages=['oapackage']
 
 setup (name = 'OApackage',
-       version = '1.9.90',
+       version = '1.9.98',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
@@ -173,6 +170,7 @@ setup (name = 'OApackage',
     tests_require=['oapackage'],
     cmdclass = {'test': OATest},
        py_modules = ['oalib'],	
+       zip_safe=False,
 	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
 	      'Programming Language :: Python :: 2',

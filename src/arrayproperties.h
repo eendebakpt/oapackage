@@ -46,7 +46,7 @@ double Eefficiency(const array_link &al, int verbose=0);
 std::vector<double> projDeff(const array_link &al, int kp, int verbose);
 
 /// Return the projection estimation capacity sequence of a design
-std::vector<double> PECsequence(const array_link &al, int verbose=1);
+std::vector<double> PECsequence(const array_link &al, int verbose=0);
 
 
 /// Return the distance distribution of a design

@@ -246,21 +246,24 @@ def optimDeffhelper(classdata):
     arrayclass=oalib.arraydata_t(2, N, 1, k)
     al=arrayclass.randomarray(1)
 
-    vv= optimDeff(al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
+    vv= optimDeffPython(al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
     return vv[0], vv[1].getarray()
     
-def optimDeff(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1,0,0], method=0):
+def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1,0,0], method=0):
     """ Optimize arrays """
     # get factor levels
     if arrayclass is None:
-        s=arrayclass.getS()
-    else:
         s=A0.getarray().max(axis=0)+1
+    else:
+        s=arrayclass.getS()
+        arrayclass
     sx=tuple(s.astype(np.int64))
     sg=oalib.symmetry_group( sx )    
     gidx=tuple(sg.gidx)
     gsize=tuple(sg.gsize)
     gstart=tuple(sg.gstart)
+    
+    nx=0
     
     Dinitial=A0.Defficiency()
     if verbose:
@@ -290,12 +293,14 @@ def optimDeff(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1
 
         #o=A[r, c]; o2=A[r2, c2]
         o=A._at(r,c); o2=A._at(r2,c2) # no extra error checking
-        if o==o2:
-            continue
         # swap
-        if method==0:
+        if method==oalib.DOPTIM_SWAP:
             # swap
+            if o==o2:
+                continue
             A._setvalue(r,c,o2); A._setvalue(r2,c2,o)   
+        elif method==oalib.DOPTIM_NONE:
+            tmp=0
         else:
             # flip
             A._setvalue(r,c,1-o); 
@@ -304,20 +309,23 @@ def optimDeff(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1
             dn = alpha(A)
         else:
             D, Ds, D1=A.Defficiencies()
+            nx=nx+1
             #print(alpha)
             dn = alpha[0]*D+alpha[1]*Ds+alpha[2]*D1
         if (dn>=d):
             if dn>d:
                 lc=ii
+                d=dn
             if verbose>=2:
                 print('ii %d: %.6f -> %.6f' % (ii, d, dn))
-            d=dn
                 
         else:
             # restore to original
-            if method==0:
+            if method==oalib.DOPTIM_SWAP:
                 A._setvalue(r,c,o)
                 A._setvalue(r2,c2,o2)
+            elif method==oalib.DOPTIM_NONE:
+                tmp=0
             else:
                 A._setvalue(r,c,o)
         if (ii-lc)>nabort:
@@ -333,7 +341,9 @@ def optimDeff(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1
             print('optimDeff: final Deff improved: %.4f -> %.4f' % (Dinitial, A.Defficiency()) )
         else:
             print('optimDeff: final Deff %.4f' % A.Defficiency() )
-            
+
+    if verbose>=2:
+        print('nx %d' % nx)            
     return d, A
 
 
@@ -349,13 +359,21 @@ def filterPareto(scores, dds, sols, verbose=0):
     psols=[sols[i] for i in paretoidx]
 
     return pscores, pdds, psols
+
+#%%
     
-def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, method=0):
-    """ ... """
+def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=0):
+    """ Calculate D-optimal designs
+    
+    
+    """
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr() )
     t0=time.time()
 
+    if optimfunc is None:
+        optimfunc=[1,2,0]
+        
     scores=np.zeros( (0,1))
     dds=np.zeros( (0,3)) 
     sols=[]  #oalib.arraylist_t()
@@ -365,8 +383,20 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
             oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
         al=arrayclass.randomarray(1)
 
-        score, Ax= optimDeff(al, verbose=0, niter=niter, alpha=optimfunc, method=method)
-        dd=Ax.Defficiencies()
+
+        
+        #array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int method=-1, int niter=10000, int nabort=2500);
+
+        if isinstance(optimfunc, list):
+            alpha=optimfunc
+            Ax= oalib.optimDeff(al, arrayclass, alpha, verbose>=2, method, niter)
+            dd=Ax.Defficiencies()
+            score = oalib.scoreD(dd, optimfunc)
+        else:
+            score, Ax= optimDeffPython(al, verbose=0, niter=niter, alpha=optimfunc, method=method)
+            dd=Ax.Defficiencies()
+        
+        
         if time.time()-t0 > maxtime:
             if verbose:
                 print('Doptim: max time exceeded, aborting')
@@ -381,13 +411,30 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
         if selectpareto and ii%502==0:
             scores,dds,sols=filterPareto(scores, dds, sols)
 
+        #print(dds.shape)
+        
     if verbose:
         print('Doptim: done' )
 
     if selectpareto:
         scores,dds,sols=filterPareto(scores, dds, sols)
 
-        
+    #print(dds.shape)
+    
+    # sort 
+    idx = np.argsort(-scores.flatten() )        
+    #print(idx.shape)
+    #print(scores.shape)
+    scores=scores[idx]
+    dds=dds[idx,:]
+    sols=[sols[ii] for ii in idx]
+    print(dds.shape)
+    if not nout is None:
+        # sort the arrays
+        scores=scores[0:nout]
+        dds=dds[range(nout),:]
+        sols=sols[0:nout]
+    #print(dds.shape)        
     return scores, dds, sols
 
 

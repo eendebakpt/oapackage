@@ -3,7 +3,8 @@
  * 
  */
 
-#pragma once
+#ifndef DEFF_H
+#define DEFF_H
 
 #include "arraytools.h"
 #include "arrayproperties.h"
@@ -14,5 +15,9 @@
 
 double scoreD(const std::vector<double> dd, const std::vector<double> alpha);
 
-array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int method=-1, int niter=10000, int nabort=2500);
+enum {DOPTIM_SWAP, DOPTIM_UPDATE, DOPTIM_AUTOMATIC, DOPTIM_FLIP, DOPTIM_NONE};
 
+array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int optimmethod = DOPTIM_AUTOMATIC, int niter=10000, int nabort=2500);
+
+
+#endif 

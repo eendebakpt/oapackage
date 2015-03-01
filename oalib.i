@@ -68,6 +68,7 @@ import_array();
 #include "arrayproperties.h"
 #include "extend.h"
 #include "lmc.h"
+#include "Deff.h"
 #ifdef OADEV
 #include "oadevelop.h"
 #endif
@@ -268,6 +269,7 @@ import numpy
 %include "tools.h"
 %include "arrayproperties.h"
 %include "md5.h"
+%include "Deff.h"
 %include "pareto.h"
 %include "extend.h"
 %include "lmc.h"

@@ -144,6 +144,8 @@ endif()
 #set(COPTS "-g -O0 ") # -std=c++0x
 #set(COPTS "-g  ") # -std=c++0x
 
+#set(COPTS "-g  -O2") # -std=c++0x
+
 if(WIN32)
   set(COPTS "/MT /wd4018 /wd4996")  
 endif()

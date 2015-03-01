@@ -488,6 +488,7 @@ std::vector<double> dd(ncomb);
 int m = 1 + kp + kp*(kp-1)/2;
 int N = al.n_rows;
 
+if (verbose)
     printf("projDeff: k %d, kp %d: start with %lld combinations \n", kk, kp, ncomb);
 
 //#pragma omp parallel for
