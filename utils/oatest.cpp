@@ -369,6 +369,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
 	opt.setOption ( "dverbose", 'd' );
+    opt.setOption ( "rows" );
+    opt.setOption ( "cols" );
 	opt.setOption ( "mdebug", 'm' );
 	opt.setOption ( "oaconfig", 'c' ); /* file that specifies the design */
 
@@ -393,15 +395,68 @@ int main ( int argc, char* argv[] )
 	int dverbose = opt.getIntValue ( 'd', 1 );
 	int md = opt.getIntValue ( 'm', 0 );
 	int aidx = opt.getIntValue ( 'i', 0 );
+    int rr = opt.getIntValue("rows", 40);
+    int cc = opt.getIntValue("cols", 7);
 
 	srand ( r );
 	int verbose = opt.getIntValue ( 'v', NORMAL );
 	setloglevel ( verbose );
 
 	
+	if(1)
+	    {
+// test PEC sequence
+      srand(get_time_ms() );
+    array_link al(rr,cc,-1);
+    arraydata_t arrayclass(2, rr, 1, cc);
+    arrayclass.show();
+for(int i=0; i<al.n_columns*al.n_rows; i++) al.array[i]=rand()%2;
+
+      double t0=(get_time_ms() );
+
+    std::vector<double> pec = PECsequence(al);
+    printf("PEC: " ); display_vector(pec);  printf(" \n" );
+printf("dt: %.1f [s]\n" , get_time_ms()-t0);
+return 0;
+    }
+
+    
+	if(0)
+	{
+			array_link al = exampleArray(aidx);
+		al.showarray();
+		return 0;
+	}
+	{
+		for(int k=0; k<aidx; k++) fastrand();
+		
+		const int N = 9;
+		arraydata_t arrayclass(3, N, 2, 2);
+		arrayclass.show();
+	array_link al0=arrayclass.randomarray(0)	;
+	 //al0 = array_link(3,2,0);al0.at(0,0) =0; al0.at(1,0)=0; al0.at(2,0)=1;	al0.at(0,1) =0; al0.at(1,1)=1; al0.at(2,1)=1;
+	al0.showarray();
+	
+	
+	printf("D %f\n", al0.Defficiency() );
+	printf("-----\n");
+	Eigen::MatrixXd mm= al0.getModelMatrix(2);
+	std::cout << mm << std::endl;
+	
+	printf("-----\n");
+	mm = array2eigenModelMatrix(al0);
+	std::cout << mm << std::endl;
+	exit(0);
+	}
+	
+	
 	{
 		array_link al = exampleArray(aidx);
 		al.show();
+		std::cout << al.getModelMatrix(2) << std::endl;
+printf("------\n");
+		std::cout << array2eigenModelMatrix(al) << std::endl;
+			exit(0);
 		al.showarray();
 		al.show();
 		

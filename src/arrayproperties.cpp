@@ -473,6 +473,94 @@ std::vector<double> macwilliams_transform_mixed(const ndarray<double> &B, const 
     return A;
 }
 
+
+/** Calculate D-efficiencies for all projection designs */
+std::vector<double> projDeff(const array_link &al, int kp, int verbose=0)
+{
+
+    int kk = al.n_columns;
+  //colperm_t cp = new_comb_init<int>(kp);
+  std::vector<int> cp(kp); for(int i=0; i<kp;i++) cp[i]=i;
+  long long ncomb = ncombsm<long long>(kk, kp);
+
+std::vector<double> dd(ncomb);  
+
+int m = 1 + kp + kp*(kp-1)/2;
+int N = al.n_rows;
+
+    printf("projDeff: k %d, kp %d: start with %lld combinations \n", kk, kp, ncomb);
+
+//#pragma omp parallel for
+    for(long long i=0; i<ncomb; i++)
+  {
+   
+    array_link alsub = al.selectColumns(cp);
+    if (m>N)
+      dd[i]=0;
+    else
+      dd[i] = alsub.Defficiency();
+
+    if (verbose>=2)
+      printf("projDeff: k %d, kp %d: i %ld, D %f\n", kk, kp, (long)i, dd[i]);
+    next_comb(cp ,kp, kk);
+    
+  }
+  
+  if (verbose)
+    printf("projDeff: k %d, kp %d: done\n", kk, kp);
+  
+  return dd;
+}
+
+/**
+ * 
+ * Calculate the projection estimation capacity sequence for a design.
+ * 
+ * See "Ranking Non-regular Designs", J.L. Loeppky
+ * 
+ */
+std::vector<double> PECsequence(const array_link &al, int verbose)
+{
+    
+  int N = al.n_rows;
+
+  int kk = al.n_columns;
+  std::vector<double> pec(kk);
+
+  if (kk>=20) {
+   printf("PECsequence: error: not defined for 20 or more columns\n" );
+   pec[0]=-1;
+   return pec;
+  }
+  
+
+#ifdef DOOPENMP  
+#pragma omp parallel for
+#endif
+  for(int i=0; i<kk; i++)
+  {
+      int kp = i+1;
+    int m = 1 + kp + kp*(kp-1)/2;
+
+    if (m>N) {
+      pec[i]=0;
+  } else{
+      std::vector<double> dd = projDeff(al, kp, verbose>=2);
+
+      double ec=0;
+      for(unsigned long j=0; j<dd.size(); j++) ec += dd[j]>0;
+      
+      ec=ec/dd.size();
+      
+      pec[i]=ec;
+  }
+  }
+  
+  return pec;
+}
+
+
+
 /** calculate GWLP (generalized wordlength pattern)
  *
  * Based on: "GENERALIZED MINIMUM ABERRATION FOR ASYMMETRICAL

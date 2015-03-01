@@ -147,14 +147,19 @@ def eigen2numpy(m):
     $result = array;
 }
 
+%pythoncode %{
+import sys
+%}
 
 %extend array_link {
 %insert("python") %{
+
 def showarray(self):
   """ Show array"""
   # overridden to fix problems with ipython
-  print(self.showarrayS(), end='',flush=True)
-  
+  #print(self.showarrayS(), end='',flush=True)	# not valid in python2
+  sys.stdout.write(self.showarrayS())
+
 def getarray(self, verbose=0, *args):
   if verbose:
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))
@@ -205,6 +210,13 @@ def __setitem__(self,index, value):
 
 
 %feature("autodoc", "1");
+// to generate the oadoxy.i:
+// doxygen Doxyfile
+// python doxy2swig.py xml/index.xml oadoxy.i
+// see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
+
+%include "oadoxy.i"
+
 
 // http://www.swig.org/Doc2.0/Python.html#Python_nn47
 //%include "carrays.i"

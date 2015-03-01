@@ -141,7 +141,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
 
 #import researchOA
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,0],nofig=False,  urlprefix='', makeheader=True, verbose=1):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,0],nofig=False,  urlprefix='', makeheader=True, verbose=1, lbls=None):
     
     #%% Prepare data
     pp = oahelper.createPareto(dds)
@@ -164,7 +164,8 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     istrlnk = markup.oneliner.a('paretoarrays.oa', href=urlprefix+pfile0)
 
     #lbls= ['Optimization of $D+.5 D_s$', 'Optimization of $D+  0.5 D_s$', 'Optimization of $D+3*Ds$', 'Optimization of $D+3*D_s$']
-    lbls= ['Optimization of $D$'] 
+    if lbls is None:
+        lbls= ['Optimization of $D$'] 
     x=generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
  
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
@@ -231,10 +232,30 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
 # TODO: implement fast update of xf
 # TODO: add check to capture mixed arrays
 
-def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
+def optimDeffhelper(classdata):
+    """ Helper function that is suitable for the multi-processing framework """
+
+    N=classdata[0]
+    k=classdata[1]
+    alpha=classdata[2]
+    method=classdata[3]
+    p=classdata[4]
+    nabort=p.get('nabort', 2500)    
+    niter=p.get('nabort', 12000)
+    
+    arrayclass=oalib.arraydata_t(2, N, 1, k)
+    al=arrayclass.randomarray(1)
+
+    vv= optimDeff(al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
+    return vv[0], vv[1].getarray()
+    
+def optimDeff(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1,0,0], method=0):
     """ Optimize arrays """
     # get factor levels
-    s=A0.getarray().max(axis=0)+1
+    if arrayclass is None:
+        s=arrayclass.getS()
+    else:
+        s=A0.getarray().max(axis=0)+1
     sx=tuple(s.astype(np.int64))
     sg=oalib.symmetry_group( sx )    
     gidx=tuple(sg.gidx)
@@ -248,8 +269,11 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
     k=A0.n_columns
 
     # initialize score
-    D, Ds, D1=A0.Defficiencies()
-    d = alpha[0]*D+alpha[1]*Ds+alpha[2]*D1
+    if str(type(alpha))=="<type 'function'>":
+        d = alpha(A0)
+    else:
+        D, Ds, D1=A0.Defficiencies()
+        d = alpha[0]*D+alpha[1]*Ds+alpha[2]*D1
     A=A0.clone()
     lc=0
     for ii in range(0,niter): 
@@ -265,15 +289,22 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
 
 
         #o=A[r, c]; o2=A[r2, c2]
-        o=A._at(r,c); o2=A._at(r2,c2) # no-extra error checking
+        o=A._at(r,c); o2=A._at(r2,c2) # no extra error checking
         if o==o2:
             continue
         # swap
-        A._setvalue(r,c,o2); A._setvalue(r2,c2,o)   
-        if alpha is None:
-            dn=A.Defficiency()
+        if method==0:
+            # swap
+            A._setvalue(r,c,o2); A._setvalue(r2,c2,o)   
+        else:
+            # flip
+            A._setvalue(r,c,1-o); 
+            
+        if str(type(alpha))=="<type 'function'>":
+            dn = alpha(A)
         else:
             D, Ds, D1=A.Defficiencies()
+            #print(alpha)
             dn = alpha[0]*D+alpha[1]*Ds+alpha[2]*D1
         if (dn>=d):
             if dn>d:
@@ -284,9 +315,12 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
                 
         else:
             # restore to original
-            A._setvalue(r,c,o)
-            A._setvalue(r2,c2,o2)
-        if (ii-lc)>1200:
+            if method==0:
+                A._setvalue(r,c,o)
+                A._setvalue(r2,c2,o2)
+            else:
+                A._setvalue(r,c,o)
+        if (ii-lc)>nabort:
             if verbose:
                 print('optimDeff: early abort ii %d, lc %d' % (ii, lc))
             break
@@ -306,7 +340,17 @@ def optimDeff(A0, niter=2000, verbose=1, alpha=[1,0,0]):
 
 #%%
 
-def Doptimize(arrayclass, nrestarts=10, niter=8000, optimfunc=[1,0,0], verbose=1, maxtime=120):
+def filterPareto(scores, dds, sols, verbose=0):
+    pp = oahelper.createPareto(dds, verbose=0)   
+    paretoidx=np.array(pp.allindices())
+
+    pscores=scores[paretoidx]   
+    pdds=dds[paretoidx]       
+    psols=[sols[i] for i in paretoidx]
+
+    return pscores, pdds, psols
+    
+def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, method=0):
     """ ... """
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr() )
@@ -314,13 +358,14 @@ def Doptimize(arrayclass, nrestarts=10, niter=8000, optimfunc=[1,0,0], verbose=1
 
     scores=np.zeros( (0,1))
     dds=np.zeros( (0,3)) 
-    sols=oalib.arraylist_t()
+    sols=[]  #oalib.arraylist_t()
+       
     for ii in range(nrestarts):
         if verbose:
             oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
         al=arrayclass.randomarray(1)
 
-        score, Ax= optimDeff(al, verbose=0, niter=niter, alpha=optimfunc)
+        score, Ax= optimDeff(al, verbose=0, niter=niter, alpha=optimfunc, method=method)
         dd=Ax.Defficiencies()
         if time.time()-t0 > maxtime:
             if verbose:
@@ -329,11 +374,19 @@ def Doptimize(arrayclass, nrestarts=10, niter=8000, optimfunc=[1,0,0], verbose=1
 
         scores=np.vstack( (scores, [score]) )
         dds=np.vstack( (dds, dd) )
-        sols.push_back(Ax)
+        sols.append(Ax)
         if verbose>=2:
             print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
+            
+        if selectpareto and ii%502==0:
+            scores,dds,sols=filterPareto(scores, dds, sols)
+
     if verbose:
         print('Doptim: done' )
+
+    if selectpareto:
+        scores,dds,sols=filterPareto(scores, dds, sols)
+
         
     return scores, dds, sols
 

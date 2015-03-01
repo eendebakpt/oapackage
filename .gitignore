@@ -47,3 +47,6 @@ performancetest/test0-22012012.txt
 performancetest/test0-22112014.txt
 performancetest/test0-23032012.txt
 performancetest/test0-25112012.txt
+tools.o
+xml
+mexstandalone.h

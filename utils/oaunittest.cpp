@@ -111,6 +111,16 @@ int main ( int argc, char* argv[] )
         myassert(al3==al12, "unittest error: composition of array transformations\n");
     }
 
+        {
+// test PEC sequence
+for(int ii=0; ii<6; ii++) {
+	  array_link al  = exampleArray(ii, 0);
+    std::vector<double> pec = PECsequence(al);
+    printf("oaunittest: PEC for array %d: ", ii ); display_vector(pec);  printf(" \n" );
+}
+    }
+
+    
     /** Test extend of arrays **/
     {
               cprintf(verbose, "%s: extend arrays\n", bstr);

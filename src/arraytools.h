@@ -24,6 +24,8 @@
 #include "msstdint.h" 
 
 #ifndef int32_t
+
+//extern std::pair< C::iterator, C::iterator > r;
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 #endif
@@ -33,7 +35,10 @@ typedef unsigned __int32 uint32_t;
 // No visual studio!
 #else
 // assume zlib is present on unix
+#ifdef NOZLIB
+#else
 #define USEZLIB 1
+#endif
 #endif
 #endif
 
@@ -137,7 +142,12 @@ typedef const int const_colindex_t; /** constant version of type used for column
 typedef array_t* array_p;	/** pointer to array */
 typedef carray_t* carray_p;	/** point to constant array */
 
+//#define XX
+#ifdef XX
+typedef std::vector<int> rowperm_t;	/** type of row permutation */
+#else
 typedef rowindex_t* rowperm_t;	/** type of row permutation */
+#endif
 typedef colindex_t* colperm_t; /** type of column permutation */
 typedef array_t* levelperm_t;  /** type of level permutation */
 
@@ -1040,7 +1050,7 @@ class array_transformation_t
 {
 public:
     rowperm_t	rperm;		/// row permutation
-    colperm_t	colperm;	/// column permutation
+    colperm_t	cperm;	/// column permutation
     levelperm_t	*lperms;	/// level permutations
     const arraydata_t *ad;	/// type of array
 
@@ -1097,7 +1107,7 @@ public:
         perform_inv_perm(b.rperm, c.rperm, this->ad->N, a.rperm);
 
         // perform the column permutations
-        perform_inv_perm(b.colperm, c.colperm, nc, a.colperm);
+        perform_inv_perm(b.cperm, c.cperm, nc, a.cperm);
         //invert_permutation(tmpc, nc, c.colperm);
 
         //colperm_t tmpcolpermai = invert_permutation ( a.colperm, nc);
@@ -1106,7 +1116,7 @@ public:
 
         /* level permutations */
         for ( colindex_t ci=0; ci<ad->ncols; ci++ ) {
-            levelperm_t l1 = b.lperms[a.colperm[ci]];
+            levelperm_t l1 = b.lperms[a.cperm[ci]];
             levelperm_t l2 = a.lperms[ci];
 
             composition_perm(l1, l2, this->ad->s[ci], c.lperms[ci]);
@@ -1140,7 +1150,7 @@ public:
         array_t *tmp = create_array ( ad );
 
         /* column permutations */
-        perform_inv_column_permutation ( source, tmp, colperm, ad->N, ad->ncols );
+        perform_inv_column_permutation ( source, tmp, cperm, ad->N, ad->ncols );
 
         /* level permutations */
         for ( colindex_t c=0; c<ad->ncols; c++ ) {
@@ -1162,6 +1172,15 @@ public:
 
     void show ( std::ostream &out ) const;
 
+    std::vector<int> rowperm() const;
+    std::vector<int> colperm() const;
+    std::vector<int> lvlperm(int c) const;
+      
+    
+    void setrowperm(std::vector<int>rp);
+    void setcolperm(std::vector<int>colperm);
+    void setlevelperm(int colindex, std::vector<int> lvlperm);
+      
 private:
     void init(); 	/// initialize permutation structures
     void free(); 	/// free permutation structures and arraydata_t structure
@@ -1719,11 +1738,11 @@ inline void vectorvector2binfile ( const std::string fname, const std::vector<st
 
 /* Convertion to Eigen matrices */
 
-/// convert array to second order interaction matrix in Eigen format
+/// convert 2-level array to second order interaction matrix in Eigen format
 Eigen::MatrixXd array2eigenX2(const array_link &al);
 Eigen::MatrixXd array2eigenX1(const array_link &al, int intercept=1);
 
-/// convert array to second order model matrix (intercept, X1, X2)
+/// convert 2-level array to second order model matrix (intercept, X1, X2)
  Eigen::MatrixXd array2eigenModelMatrix(const array_link &al);
 
 

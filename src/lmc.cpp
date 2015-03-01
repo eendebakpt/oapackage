@@ -579,7 +579,7 @@ void LMCreduction_t::updateTransformation ( const arraydata_t &ad, const dyndata
 //    for ( rowindex_t x=0; x<ad.N; x++ )
   //      this->transformation->rperm[x] = dyndatacpy.rowsort[x].r;
     /* copy column permutation */
-    copy_perm ( dyndatacpy.colperm, this->transformation->colperm, ad.ncols );
+    copy_perm ( dyndatacpy.colperm, this->transformation->cperm, ad.ncols );
 
     // @pte
     //void debug_show_reduction(reduction, original,  ad, "####3 new reduction:\n");
@@ -602,7 +602,7 @@ void LMCreduction_t::updateFromLoop ( const arraydata_t &ad, const dyndata_t &dy
     //for ( rowindex_t x=0; x<ad.N; x++ )
     //    this->transformation->rperm[x] = dyndatacpy.rowsort[x].r;
     /* copy column permutation */
-    copy_perm ( dyndatacpy.colperm, this->transformation->colperm, ad.ncols );
+    copy_perm ( dyndatacpy.colperm, this->transformation->cperm, ad.ncols );
 
     // @pte
     //void debug_show_reduction(reduction, original,  ad, "####3 new reduction:\n");
@@ -613,7 +613,7 @@ void LMCreduction_t::updateFromLoop ( const arraydata_t &ad, const dyndata_t &dy
 
     if (0) {
         printf("LMCreduction_t::updateFromLoop (red %ld): colperm ", nred);
-        print_perm(this->transformation->colperm, this->transformation->ad->ncols);
+        print_perm(this->transformation->cperm, this->transformation->ad->ncols);
         printf("new array:\n");
         print_array(this->array, ad.N, ad.ncols);
     }

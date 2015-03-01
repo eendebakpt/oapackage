@@ -1123,16 +1123,18 @@ inline std::vector<object> perform_perm ( const std::vector<object> src, const s
 
 /// Perform inverse permutation
 template <class object, class numtype>
+inline void perform_inv_perm ( const std::vector<object> src, std::vector<object> target, const int n, const std::vector<numtype> perm )
+{
+    for ( int i=0; i<n; i++ ) {  
+        target[i]=src[perm[i]];
+    }
+}
+
+/// Perform inverse permutation
+template <class object, class numtype>
 inline void perform_inv_perm ( const object *const src, object *const target, const int n, const numtype * perm )
 {
-    for ( int i=0; i<n; i++ ) {
-#ifdef OADEBUG9
-      
-      if (perm[i]>100) {
-	printf("error! perm[i]>100\n");
-	target[-1]=-1; // trick to trigger valgrind
-      }
-#endif      
+    for ( int i=0; i<n; i++ ) {   
         target[i]=src[perm[i]];
     }
 }
@@ -1742,5 +1744,8 @@ inline Type krawtchouks ( Type j, Type x, Type n )
 // return random integer
 int fastrand();
 void seedfastrand(int s);
+
+// return random integer in range 0 to k-1
+int fastrandK(int k);
 
 #endif

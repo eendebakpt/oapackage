@@ -30,6 +30,63 @@ int get_file_status ( FILE* f )
 }
 
 #endif
+
+    std::vector<int> array_transformation_t::rowperm() const
+    {
+		std::vector<int> ww(this->rperm, this->rperm+this->ad->N );
+		return ww;
+	}
+	
+    std::vector<int> array_transformation_t::colperm() const {
+		std::vector<int> ww(this->cperm, this->cperm+this->ad->N );
+		return ww;
+	}
+    std::vector<int> array_transformation_t::lvlperm(int c) const
+    {
+		if (c<0 || c>= this->ad->ncols ) {
+			std::vector<int> ww;
+		return ww;	
+		}
+		std::vector<int> ww(this->lperms[c], this->lperms[c]+this->ad->s[c] );
+		return ww;
+	}
+
+
+    void array_transformation_t::setrowperm(std::vector<int>rp)
+	{
+		if ( (int)rp.size()!=this->ad->N)
+		{
+			printf("array_transformation_t::setrowperm: argument has wrong dimensions\n");
+			return;
+		}
+		std::copy(rp.begin(), rp.end(), this->rperm );
+	}
+    void array_transformation_t::setcolperm(std::vector<int>colperm)
+	{
+		if ( (int)colperm.size()!=this->ad->ncols)
+		{
+			printf("array_transformation_t::setrowperm: argument has wrong dimensions\n");
+			return;
+		}
+		std::copy(colperm.begin(), colperm.end(), this->cperm );
+	}
+    void array_transformation_t::setlevelperm(int colindex, std::vector<int> lvlperm)
+	{
+		if (colindex<0 || colindex>=this->ad->ncols) {
+			printf("array_transformation_t::setrowperm: argument has wrong dimensions\n");
+			return;
+		}
+		if ( (int)lvlperm.size()!=this->ad->s[colindex])
+		{
+			printf("array_transformation_t::setrowperm: argument has wrong dimensions\n");
+			return;
+		}
+		std::copy(lvlperm.begin(), lvlperm.end(), this->lperms[colindex]);
+	}
+		
+      
+
+	
 /**
  * @brief Print an array transformation to an output stream
  * @param out
@@ -42,7 +99,7 @@ void array_transformation_t::show ( std::ostream & out ) const
 	} else {
 		out << std::endl;
 		out << "column permutation: ";
-		print_perm ( out, colperm, ad->ncols );
+		print_perm ( out, cperm, ad->ncols );
 
 		out << "level perms:" << endl;
 		for ( colindex_t c=0; c<ad->ncols; c++ ) {
@@ -64,7 +121,7 @@ array_transformation_t::array_transformation_t ( )
 	ad = 0;
 	rperm = 0;
 	lperms = 0;
-	colperm= 0;
+	cperm= 0;
 }
 
 /**
@@ -89,7 +146,7 @@ array_transformation_t::array_transformation_t ( const array_transformation_t &t
 
 	// copy data
 	std::copy ( tt.rperm, tt.rperm+ad->N, rperm );
-	std::copy ( tt.colperm, tt.colperm+ad->ncols, colperm );
+	std::copy ( tt.cperm, tt.cperm+ad->ncols, cperm );
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
 		std::copy ( tt.lperms[c], tt.lperms[c]+ ad->s[c], lperms[c] );
 	}
@@ -99,7 +156,7 @@ array_transformation_t::array_transformation_t ( const array_transformation_t &t
 void array_transformation_t::reset()
 {
 	init_perm ( this->rperm, this->ad->N );
-	init_perm<colindex_t> ( this->colperm, ad->ncols );
+	init_perm<colindex_t> ( this->cperm, ad->ncols );
 
 	for ( colindex_t c=0; c<ad->ncols; c++ )
 		init_perm ( lperms[c], ad->s[c] );
@@ -110,7 +167,7 @@ void array_transformation_t::init()
 {
 //printf("array_transformation_t::init\n");
 	rperm = new_perm_init<rowindex_t> ( ad->N );
-	colperm = new_perm_init<colindex_t> ( ad->ncols );
+	cperm = new_perm_init<colindex_t> ( ad->ncols );
 
 	lperms = new levelperm_t [ad->ncols];
 	for ( colindex_t c=0; c<ad->ncols; c++ )
@@ -125,7 +182,7 @@ void array_transformation_t::free()
 //printf("array_transformation_t::free\n");
 	delete_perm ( rperm );
 //printf("array_transformation_t::free: delete colperm (ad %ld)\n", long(ad));
-	delete_perm ( colperm );
+	delete_perm ( cperm );
 //printf("array_transformation_t::free: delete lperms\n");
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
 		delete_perm ( lperms[c] );
@@ -156,7 +213,7 @@ array_transformation_t& array_transformation_t::operator= ( const array_transfor
 
 	// copy data
 	std::copy ( tt.rperm, tt.rperm+ad->N, rperm );
-	std::copy ( tt.colperm, tt.colperm+ad->ncols, colperm );
+	std::copy ( tt.cperm, tt.cperm+ad->ncols, cperm );
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
 		std::copy ( tt.lperms[c], tt.lperms[c]+ ad->s[c], lperms[c] );
 	}
@@ -171,7 +228,7 @@ array_transformation_t::~array_transformation_t()
 {
 	//this->print(cout);
 	delete_perm ( rperm );
-	delete_perm ( colperm );
+	delete_perm ( cperm );
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
 		delete_perm ( lperms[c] );
 	}
@@ -184,7 +241,7 @@ bool array_transformation_t::isIdentity() const
 {
 	//	printf("isIdentity:\n");
 	for ( int i=0; i<ad->ncols; ++i ) {
-		if ( colperm[i]!=i ) {
+		if ( cperm[i]!=i ) {
 			return 0;
 		}
 	}
@@ -233,7 +290,7 @@ void array_transformation_t::randomize()
 
 	/* column permutation */
 	for ( int x=0; x<ad->ncolgroups; x++ ) {
-		random_perm ( colperm+ad->colgroupindex[x], +ad->colgroupsize[x] );
+		random_perm ( cperm+ad->colgroupindex[x], +ad->colgroupsize[x] );
 	}
 	//cout << "random permutation: col perm "; print_perm(colperm, ad->ncols);
 
@@ -250,7 +307,7 @@ void array_transformation_t::randomizecolperm()
 {
 	/* column permutation */
 	for ( int x=0; x<ad->ncolgroups; x++ ) {
-		random_perm ( colperm+ad->colgroupindex[x], +ad->colgroupsize[x] );
+		random_perm ( cperm+ad->colgroupindex[x], +ad->colgroupsize[x] );
 	}
 }
 
@@ -260,14 +317,14 @@ array_transformation_t array_transformation_t::inverse() const
 
 
 	invert_permutation ( this->rperm, this->ad->N, A.rperm );
-	invert_permutation ( this->colperm, this->ad->ncols, A.colperm );
+	invert_permutation ( this->cperm, this->ad->ncols, A.cperm );
 
 	/* level permutations */
 	for ( colindex_t ci=0; ci<ad->ncols; ci++ ) {
 //	  levelperm_t l1 = b.lperms[tmpcolpermai[ci]];
 //	  levelperm_t l2 = a.lperms[ci];
 
-		colindex_t cir = this->colperm[ci];
+		colindex_t cir = this->cperm[ci];
 //	  colindex_t cir = A.colperm[ci];
 
 		invert_permutation ( this->lperms[ci], this->ad->s[ci], A.lperms[cir] );
@@ -920,6 +977,54 @@ array_link exampleArray ( int idx, int verbose )
 		break;
 	}
 
+	case 12: {
+		if ( verbose )
+			printf ( "exampleArray: even-odd array OA(64, 2^13)\n" );
+
+		//
+		array_link al ( 64, 13, 0 );
+		int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+       1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+       0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+       1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
+       1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1,
+       1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+       1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1,
+       0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+       0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+       1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0,
+       0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1,
+       0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+       1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1,
+       0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0,
+       0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+       1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0,
+       0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1,
+       0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1,
+       1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0,
+       1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1,
+       1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0,
+       1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0,
+       1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+       0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1,
+       1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1,
+       0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1,
+       0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0,
+       1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1,
+       0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1,
+       1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0,
+       1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1,
+       1, 0, 0, 1};
+
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		return al;
+		break;
+	}
 	
        
 	case 9: {
@@ -1154,7 +1259,7 @@ std::vector<int> numberModelParams(const array_link &al, int order=2)
     Eigen::MatrixXd array_link::getModelMatrix(int order, int intercept ) const
     {int verbose=0;
 		int N = this->n_rows;
-	std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mmx = array2eigenModelMatrixMixed (*this, 1 );
+	std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mmx = array2eigenModelMatrixMixed (*this, 2 );
 
 	//std::cout << mmx.first;
 	
@@ -1287,14 +1392,15 @@ return mm.first;
 	
 }
 
-// code from Eric Schoen
+// code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair<Eigen::MatrixXd,Eigen::MatrixXd> array2eigenModelMatrixMixed ( const array_link &al, int verbose )
 {
-	if (verbose>=2) printf("start");
+	//verbose=2;
+	if (verbose>=2) printf("array2eigenModelMatrixMixed: start");
 	
 	int N = al.n_rows;
 	int k =  al.n_columns;
-	arraydata_t arrayclass = arraylink2arraydata ( al, 0, 2 );
+	arraydata_t arrayclass = arraylink2arraydata ( al, 0, 0 );
 	std::vector<int> s = arrayclass.getS();
 
 	std::vector<int> df = s;
@@ -1303,6 +1409,7 @@ std::pair<Eigen::MatrixXd,Eigen::MatrixXd> array2eigenModelMatrixMixed ( const a
 	//printf("df: %d\n", df.size() );
 
 	if ( verbose>=2 ) {
+		arrayclass.show(); 
 		printf ( "array2eigenME: N %d, k %d\n", N, k );
 		printf ( "df " );
 		printf_vector ( df, "%d " );
@@ -1330,7 +1437,20 @@ if (verbose>=2) printfd("main effects\n");
 			}
 		}
 
-		if ( verbose >=3 ) {
+		    // make Helmert contrasts (these are automatically orthogonal)
+		    for(int r=0; r<N; r++) {
+				//printf("r: %d\n", r);
+					int v = AA(r,c);
+					Z(r, 0) = 1;
+					if(v>0) {
+					Z(r, v)=v;	
+					}
+					for(int q=1; q<v; q++) Z(r,q)=0;
+					for(int q=v+1; q<md+1; q++) Z(r,q)=-1;
+				
+			}
+    
+		if ( verbose >=2 ) {
 			eigenInfo ( Z , "Z first stage " );
 			std::cout << Z << std::endl;
 
@@ -1352,6 +1472,9 @@ if (verbose>=2) printfd("main effects\n");
 				std::cout << tmp2 << std::endl;
 			}
 			Eigen::MatrixXd b = tmp.colPivHouseholderQr().solve ( tmp2 );
+			
+			b *= 0;
+			
 			//Eigen::MatrixXd b =  tmp2; // should be ! tmp\tmp2;
 			if ( verbose>=3 ) {
 				eigenInfo ( Z.block ( 0,0,N,ii+1 ) , "Z.block(0,0,N,ii+1) " );
@@ -1487,6 +1610,10 @@ Eigen::MatrixXd array2eigenModelMatrix ( const array_link &al )
 	int n = al.n_rows;
 	int m = 1 + k + k* ( k-1 ) /2;
 
+		if(n*k>0) {
+	assert(*std::max_element(al.array, al.array+al.n_columns*al.n_rows)<2 );
+		}
+		
 	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,m );
 
 	// init first column
@@ -1568,16 +1695,13 @@ double array_link::DsEfficiency ( int verbose ) const
 	return Ds;
 }
 
-std::vector<double> array_link::Defficiencies ( int verbose ) const
+std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) 
 {
-	const array_link &al = *this;
-	int k = al.n_columns;
+		int k = al.n_columns;
 	int k1 = al.n_columns+1;
 	int n = al.n_rows; int N=n;
 	int m = 1 + k + k* ( k-1 ) /2;
 
-	arraydata_t arrayclass = arraylink2arraydata(al);
-	
 	Eigen::MatrixXd X1i, X2, X;
 	if ( arrayclass.is2level() ) {
 	 X1i = array2eigenX1 ( al, 1 );
@@ -1587,7 +1711,7 @@ std::vector<double> array_link::Defficiencies ( int verbose ) const
 	} else {
 		if (verbose>=2)
 			printf("Defficiencies: mixed design!\n");
-	std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mm = array2eigenModelMatrixMixed (*this, 0 );
+	std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mm = array2eigenModelMatrixMixed (al, 0 );
 	Eigen::MatrixXd X1=mm.first;
 	//eigenInfo(X1, "X1");
 	//eigenInfo(X1i, "X1i");
@@ -1598,12 +1722,8 @@ std::vector<double> array_link::Defficiencies ( int verbose ) const
 	X << Eigen::MatrixXd::Constant(N, 1, 1),  X1, X2;
 	
 	}
-
-
-
 	
 	Eigen::MatrixXd tmp = ( X.transpose() *X/n );
-	
 	
 	double f1 = tmp.determinant();
 	double f2 = ( X2.transpose() *X2/n ).determinant();
@@ -1640,6 +1760,17 @@ std::vector<double> array_link::Defficiencies ( int verbose ) const
 	d[1]=Ds;
 	d[2]=D1;
 	return d;
+	
+}
+
+std::vector<double> array_link::Defficiencies ( int verbose ) const
+{
+	const array_link &al = *this;
+
+	arraydata_t arrayclass = arraylink2arraydata(al);
+	
+	return ::Defficiencies(al, arrayclass, verbose);
+	
 }
 
 
@@ -1977,8 +2108,10 @@ void arraydata_t::complete_arraydata()
 		this->strength=this->ncols;
 	}
 	if ( this->strength<1 ) {
-		printf ( "arraydata_t: warning strength < 1, setting to 1\n" );
-		this->strength=1;
+		if (verbose>=2) {
+		printf ( "arraydata_t: warning strength < 1\n" );
+		}
+		//this->strength=1;
 	}
 	arraydata_t *ad = this;
 	this->calcoaindex ( ad->strength );
@@ -2695,7 +2828,7 @@ template <class TypeIn, class TypeOut>
 void readblob ( TypeOut *dst, int n, FILE *fid )
 {
 	TypeIn *src = new TypeIn [n];
-	fread ( ( void * ) src, sizeof ( TypeIn ), n, fid );
+	int r = fread ( ( void * ) src, sizeof ( TypeIn ), n, fid );
 
 	for ( int i=0; i<n; i++ )
 		dst[i] = src[i];
@@ -2786,7 +2919,7 @@ void read_array ( FILE *fid, array_t *array, const int nrows, const int ncols )
 	for ( int j = 0; j < nrows; j++ ) {
 		count = j;
 
-		fgets ( buf, maxbuf, fid );
+		char *r = fgets ( buf, maxbuf, fid );
 		stringstream ss ( stringstream::in | stringstream::out );
 		ss << buf;
 
@@ -3149,7 +3282,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 
 		char buf[1];
 		buf[0]=-1;
-		fread ( buf, sizeof ( char ), 1, this->nfid );
+		int r = fread ( buf, sizeof ( char ), 1, this->nfid );
 		if ( buf[0] < 48 || buf[0] > 57 ) {
 			// printf("   read char %d\n", int(buf[0]));
 			if ( verbose>=1 )
@@ -3158,9 +3291,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 			return;
 
 		}
-		fseek ( this->nfid,0, SEEK_SET );
+		r = fseek ( this->nfid,0, SEEK_SET );
 
-		fscanf ( this->nfid, "%i %i %i\n", &this->ncols, &this->nrows, &this->narrays );
+		r = fscanf ( this->nfid, "%i %i %i\n", &this->ncols, &this->nrows, &this->narrays );
 		this->nbits = 0;
 		//printf("arrayfile_t: text mode\n");
 		if ( verbose>=2 ) {
@@ -3580,10 +3713,12 @@ int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols )
 
 	switch ( this->mode ) {
 	case arrayfile::ATEXT:
-		fscanf ( nfid, "%d\n", &index );
+	{
+		int r = fscanf ( nfid, "%d\n", &index );
 		//printf("index %d\n", index);
 		::read_array ( nfid, array, nrows, ncols );
 		break;
+	}
 	case arrayfile::ABINARY: {
 		int result = afread ( &index, sizeof ( int32_t ), 1 );
 		if ( result!=1 ) {
@@ -4010,7 +4145,11 @@ void  selectArrays ( const arraylist_t &al,   std::vector<int> &idx, arraylist_t
 void  selectArrays ( const arraylist_t &al,   std::vector<long> &idx, arraylist_t &rl )
 {
 	for ( std::vector<long>::iterator it = idx.begin(); it<idx.end(); it++ ) {
+		if ( (*it)>=0 && ( (*it)<(int)al.size() ) )
 		rl.push_back ( al.at ( *it ) );
+		else {
+		printf("selectArrays: index %ld out of bounds!\n", *it);	
+		}
 	}
 }
 

@@ -50,8 +50,8 @@ endif()
 message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
 
-set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/mathtools.h src/oaoptions.h src/tools.h)
-set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp bitarray/bit_array.cpp)
+set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h)
+set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp bitarray/bit_array.cpp src/Deff.cpp)
 
 set(headersextend ${headers} src/extend.h src/strength.h src/lmc.h src/nonroot.h )
 set(srcsextend ${srcs} src/extend.cpp src/lmc.cpp src/nonroot.cpp )
@@ -220,6 +220,9 @@ else()
   add_compile_flags(oalib)
   add_library(oalibshared SHARED ${srcsextend} ${headersextend})
   add_compile_flags(oalib)
+    TARGET_LINK_LIBRARIES(oalib m z)
+    TARGET_LINK_LIBRARIES(oalibshared m z)
+
 endif()
 
 if (OAEXTEND)
@@ -322,6 +325,75 @@ endif()
 #include(PrecompiledHeader.cmake)
 #add_precompiled_header(oapareto src/pareto.h src/mathtools.h)
 #add_precompiled_header(oapareto src/mathtools.h)
+
+####### Octave / Matlab support ##########################
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
+
+find_package(Matlab)
+message(STATUS "Matlab: ${MATLAB_FOUND}, Matlab_LIBRARIES ${Matlab_LIBRARIES}")
+set(MATLAB_FOUND ${Matlab_FOUND})
+set(MATLAB_LIBRARIES ${Matlab_LIBRARIES})
+
+if(MATLAB_FOUND)
+  message(STATUS ${srcs})
+  set(Ditems Doptim)
+  ADD_LIBRARY(Doptim EXCLUDE_FROM_ALL SHARED mex/Doptim.cpp)
+  set_target_properties(${item} PROPERTIES COMPILE_FLAGS "-DMATLAB_MEX_FILE ${COPTS} ")
+
+  ADD_EXECUTABLE(Doptimbin EXCLUDE_FROM_ALL mex/Doptim.cpp) #  ${srcs} ${srcsextend})
+	      set_target_properties(${item} PROPERTIES COMPILE_FLAGS "-DMATLAB_MEX_FILE ${COPTS} -DMAINMEX")
+  list(APPEND Ditems Doptimbin)
+  #ADD_EXECUTABLE(Doptim mex/Doptim.cpp ${srcs} ${srcsextend})
+
+	
+	message(STATUS "libs ${MATLAB_LIBRARIES}")
+
+	    foreach(item  ${Ditems})
+message(STATUS "adding ${item}")
+	    if(WIN32)
+	    TARGET_LINK_LIBRARIES(${item} m z )
+	    endif()
+	    TARGET_LINK_LIBRARIES(${item} ${MATLAB_LIBRARIES})
+	    TARGET_LINK_LIBRARIES(${item} oalib)
+
+	    GET_TARGET_PROPERTY(itemtype ${item} TYPE)
+
+	    if(WIN32)
+	    set(MEXEXTX ".mexw${BITNESS}")
+
+		  if (${itemtype} MATCHES "EXECUTABLE")
+			  SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX "")
+		  else()
+		  if (CYGWIN)
+			  SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ${MEXEXTX})
+		  else()
+			  SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ${MEXEXTX} LINK_FLAGS /export:mexFunction)
+		  endif()
+
+		  endif()
+
+	    else(WIN32)
+		     # set_target_properties(${item} PROPERTIES LINK_FLAGS "-s")	# strip
+	    endif(WIN32)
+	    
+	    if (${itemtype} MATCHES "EXECUTABLE")
+	    SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX "")
+	  else()
+
+	    #message(STATUS "${item} TYPE ${itemtype}: mex suffix")
+	    if(WIN32)
+SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexw${BITNESS}")
+else()
+SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexa${BITNESS}")
+endif()
+	  endif()
+	  set_target_properties(${item} PROPERTIES PREFIX "")
+	endforeach()
+endif()
+
+#  matlab -nojvm -r "Doptim; exit"
+
 
 ####### Python support ##########################
 
@@ -557,7 +629,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "1")
 SET(CPACK_PACKAGE_VERSION_MINOR "9")
-SET(CPACK_PACKAGE_VERSION_PATCH "80")
+SET(CPACK_PACKAGE_VERSION_PATCH "95")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 
