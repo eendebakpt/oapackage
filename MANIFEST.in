@@ -17,6 +17,7 @@ graft utils
 exclude TODO
 exclude oalib_wrap_dev.cxx
 exclude oalib_wrap.cxx
+exclude oalib.py
 
 # do not include development code
 exclude src/oadevelop.cpp

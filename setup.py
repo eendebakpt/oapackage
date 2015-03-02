@@ -79,7 +79,7 @@ swig_opts=[]
 if oadev:
   #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
 
-  sources += ['oalib.i']
+  sources = ['oalib.i'] + sources
   swig_opts+=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/'] # , '-o oalib_wrap_dev.cxx']
 
 else:
@@ -151,8 +151,32 @@ scripts=['scripts/example_python_testing.py']
 
 packages=['oapackage']
 
+# fix from:
+# http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
+
+#from distutils.command.build import build
+from setuptools.command.install import install
+
+#class CustomBuild(build):
+#    def run(self):
+#        self.run_command('build_ext')
+#        build.run(self)
+
+
+class CustomInstall(install):
+    def run(self):
+        self.run_command('build_ext')
+        self.do_egg_install()
+
+#setup(
+#    cmdclass={'build': CustomBuild, 'install': CustomInstall},
+#    py_modules=['module1'],
+#    ext_modules=[module1]
+#)
+
 setup (name = 'OApackage',
-       version = '1.9.98',
+      cmdclass = {'test': OATest, 'install': CustomInstall},
+       version = '1.9.101',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
@@ -160,6 +184,7 @@ setup (name = 'OApackage',
        description = """Python interface to Orthogonal Array library""",
 	keywords=[ "orthogonal arrays, design of experiments"],
        ext_modules = [oalib_module],
+       py_modules = ['oalib'],	
       # packages=find_packages(exclude=['oahelper']),
        packages=packages,
        #packages=['oalib'],
@@ -168,8 +193,6 @@ setup (name = 'OApackage',
 #        test_suite = "oapackage.unittest",
     scripts=scripts,
     tests_require=['oapackage'],
-    cmdclass = {'test': OATest},
-       py_modules = ['oalib'],	
        zip_safe=False,
 	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
