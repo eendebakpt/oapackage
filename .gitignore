@@ -50,3 +50,6 @@ performancetest/test0-25112012.txt
 tools.o
 xml
 mexstandalone.h
+_oalib.so
+oalib_wrap.cxx
+oalib.py

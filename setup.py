@@ -166,7 +166,10 @@ from setuptools.command.install import install
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
-        self.do_egg_install()
+	install.run(self)
+        #self.run_command('install')
+        #self.do_egg_install()
+
 
 #setup(
 #    cmdclass={'build': CustomBuild, 'install': CustomInstall},
@@ -175,8 +178,9 @@ class CustomInstall(install):
 #)
 
 setup (name = 'OApackage',
+      #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '1.9.101',
+       version = '1.9.102',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
