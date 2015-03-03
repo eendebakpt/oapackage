@@ -197,16 +197,33 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     ss='The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
     page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss) )
 
-    if 1:
-        FIXME: select best design
+    if narrays>0:
+
+        scores=calcScore(dds, optimfunc)
+        tmp, dd, sols = selectDn(scores, dds, allarrays, nout=1)
+        A=sols[0]
+        bestdesignfile=os.path.join(outputdir, 'best-design.oa')
+        oalib.writearrayfile(bestdesignfile, A)
+        
         page.h2('Best design')
-        page.p('The best design: ')
-        page.p('D-efficiency: %.3f' % A.Defficiency() )
+        page.p('The best design: %s.' % e.a('best-design.oa', href=os.path.join(urlprefix, 'best-design.oa')))
+        
+        page.p()
+        
+        dd=dd[0]
+        page.span('D-efficiency: %.4f, ' % A.Defficiency() ); #page.br()
+        page.span('D<sub>s</sub>-efficiency: %.4f, ' % dd[1] );# page.br()
+        page.span('D<sub>1</sub>-efficiency: %.4f' % dd[2] ); page.br()
+        page.span('A-efficiency: %.3f' % A.Aefficiency() ); page.br()
+        gwlp=A.GWLP()
+        #gwlp=','.join(['%.3f' % xq for xq in gwlp])
+        gwlp=oahelper.gwlp2str(gwlp, jstr=', ')
+        page.span('Generalized wordlength pattern: %s' % gwlp ); page.br()
         #page.p('D-efficiency: %.3f' % A.Defficiency() )
         pec=oalib.PECsequence(A)
-        pec=','.join(['%.3f' % x for x in pec])
-        page.p('PEC-sequence: %s' % pec )
-    
+        pec=','.join(['%.3f' % xq for xq in pec])
+        page.span('PEC-sequence: %s' % pec )
+        page.br()
     
     page.h2('Table of Pareto optimal arrays ')
     
@@ -260,6 +277,14 @@ def optimDeffhelper(classdata):
     vv= optimDeffPython(al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
     return vv[0], vv[1].getarray()
     
+def calcScore(dds, optimfunc):
+    n=dds.shape[0]
+    scores=np.zeros( n, )    
+    for ii,d in enumerate(dds):
+        alpha=optimfunc        
+        scores[ii]= alpha[0]*d[0]+alpha[1]*d[1]+alpha[2]*d[2]
+    return scores
+        
 def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1,0,0], method=0):
     """ Optimize arrays """
     # get factor levels
@@ -372,6 +397,20 @@ def filterPareto(scores, dds, sols, verbose=0):
     return pscores, pdds, psols
 
 #%%
+   
+def selectDn(scores, dds, sols, nout=1):
+    idx = np.argsort(-scores.flatten() )        
+    #print(idx.shape)
+    #print(scores.shape)
+    scores=scores[idx]
+    dds=dds[idx,:]
+    sols=[sols[ii] for ii in idx]
+    if not nout is None:
+        # sort the arrays
+        scores=scores[0:nout]
+        dds=dds[range(nout),:]
+        sols=sols[0:nout]
+    return scores, dds, sols
     
 def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=0):
     """ Calculate D-optimal designs
@@ -432,20 +471,9 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
 
     #print(dds.shape)
     
-    # sort 
-    idx = np.argsort(-scores.flatten() )        
-    #print(idx.shape)
-    #print(scores.shape)
-    scores=scores[idx]
-    dds=dds[idx,:]
-    sols=[sols[ii] for ii in idx]
-    print(dds.shape)
-    if not nout is None:
-        # sort the arrays
-        scores=scores[0:nout]
-        dds=dds[range(nout),:]
-        sols=sols[0:nout]
-    #print(dds.shape)        
+    # sort & select
+    scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
+    
     return scores, dds, sols
 
 
