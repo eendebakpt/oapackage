@@ -689,6 +689,10 @@ def setWindowRectangle(x,y=None,w=None,h=None, mngr=None, be=None):
     if be=='WXAgg':
         mngr.canvas.manager.window.SetPosition((x,y))
         mngr.canvas.manager.window.SetSize((w,h))
+    elif be=='agg':
+            #mngr.canvas.manager.window.setGeometry(x,y,w,h)
+            mngr.canvas.manager.window.SetPosition((x,y))
+            mngr.canvas.manager.window.resize(w,h)
     else:
         # assume Qt canvas
         mngr.canvas.manager.window.move(x,y)

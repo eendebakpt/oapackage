@@ -196,6 +196,17 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     ss='The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
     ss='The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
     page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss) )
+
+    if 1:
+        FIXME: select best design
+        page.h2('Best design')
+        page.p('The best design: ')
+        page.p('D-efficiency: %.3f' % A.Defficiency() )
+        #page.p('D-efficiency: %.3f' % A.Defficiency() )
+        pec=oalib.PECsequence(A)
+        pec=','.join(['%.3f' % x for x in pec])
+        page.p('PEC-sequence: %s' % pec )
+    
     
     page.h2('Table of Pareto optimal arrays ')
     

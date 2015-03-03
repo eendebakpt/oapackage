@@ -9,6 +9,7 @@ $BASE_URL = "https://www.python.org/ftp/python/"
 $GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 $GET_PIP_PATH = "C:\get-pip.py"
 
+# move get-pip.py local, since https://bootstrap.pypa.io/ is not available
 
 function DownloadPython ($python_version, $platform_suffix) {
     $webclient = New-Object System.Net.WebClient
@@ -86,6 +87,8 @@ function InstallPip ($python_home) {
     $python_path = $python_home + "\python.exe"
     if (-not(Test-Path $pip_path)) {
         Write-Host "Installing pip..."
+	Write-Host "Installing pip: $GET_PIP_URL, $GET_PIP_PATH"
+
         $webclient = New-Object System.Net.WebClient
         $webclient.DownloadFile($GET_PIP_URL, $GET_PIP_PATH)
         Write-Host "Executing:" $python_path $GET_PIP_PATH
