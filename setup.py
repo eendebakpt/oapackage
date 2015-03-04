@@ -166,7 +166,7 @@ from setuptools.command.install import install
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
-	install.run(self)
+        install.run(self)
         #self.run_command('install')
         #self.do_egg_install()
 
