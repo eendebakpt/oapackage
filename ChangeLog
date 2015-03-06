@@ -1,4 +1,4 @@
-1.9.105
+1.9.102
 
 Automatically convert Eigen::MatrixXd to numpy in Python interface
 Fix D-efficiency for mixed-level arrays
