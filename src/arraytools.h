@@ -596,8 +596,10 @@ public:
   /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
     bool is2level() const;
 
+
+      
     // manipulation of arrays
-    
+
     /// return array with selected column removed
     array_link deleteColumn(int index) const;
 
@@ -623,9 +625,6 @@ public:
 
     /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency
     std::vector<double> Defficiencies(int verbose=0) const;
-
-    /// apply a random permutation of rows, columns and levels
-    array_link randomperm() const;
     
     /*** calculate average variation inflation factor
      *
@@ -638,7 +637,6 @@ public:
 
     /// calculate E-efficiency
     double Eefficiency() const;
-
     
     /// Calculate F-values of a matrix
     std::vector<int> Fvalues(int jj) const;
@@ -646,6 +644,9 @@ public:
     /// Calculate J-characteristics of matrix
     std::vector<int> Jcharacteristics(int jj=4) const;
 
+    /// Calculate the projective estimation capacity sequence
+    std::vector<double> PECsequence() const;
+    
     /// calculate rank of array
     int rank() const;
 
@@ -664,6 +665,8 @@ public:
      */
     double CL2discrepancy() const;
 
+    /// apply a random permutation of rows, columns and levels
+    array_link randomperm() const;
     
     /// This function calculates Helmert contrasts for the factors of an input design. 
     /// implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
@@ -843,8 +846,13 @@ int n_rows=this->n_rows;
     }
 
 //private:
-  std::string showarrayS() const;
+  std::string showarrayS() const; 
   
+  
+    long data(); /// return pointer to data, needed for swig interface
+
+  
+  //void initswig(); /// provide hook for Python __array_interface__ initialization
 };
 
 // concatenate 2 arrays in horizontal direction

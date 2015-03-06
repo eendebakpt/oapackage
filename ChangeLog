@@ -1,4 +1,4 @@
-1.9.98
+1.9.105
 
 Automatically convert Eigen::MatrixXd to numpy in Python interface
 Fix D-efficiency for mixed-level arrays
@@ -8,6 +8,7 @@ Add commands to compile mex files with Octave and Matlab
 Add doxygen documentation to SWIG interfaces
 Update unittest with PECsequence
 Update OApackage manual
+Added __array_interface__ to array_link object
 
 1.9.88
 

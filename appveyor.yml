@@ -43,6 +43,9 @@ matrix:
 init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
 
+cache:
+  - C:\tmp -> \appveyor\install_numpy.ps1
+  
 install:
   - ECHO "Filesystem root:"
   - ps: "ls \"C:/\""
@@ -67,8 +70,18 @@ install:
   # target Python version and architecture
   - "%WITH_COMPILER% pip install wheel"
   #- "%WITH_COMPILER% pip install twine"
-  - "%WITH_COMPILER% pip install numpy"
+  
+  # Now that wheel has been installed, check to see if a numpy wheel has been
+  # made yet. If it hasn't, compile it and put it in C:\tmp.
+  - "powershell ./appveyor/install_numpy.ps1"
+  
+  #- "%WITH_COMPILER% pip wheel --wheel-dir=c:\numpy\ numpy"
+  #- "%WITH_COMPILER% pip install numpy"
     
+  # This is where I install numpy from the pre-built wheel I compiled either
+  # earlier in this session, or in a previous session.
+  - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
+  
   # https://chocolatey.org
   - cinst swig
 

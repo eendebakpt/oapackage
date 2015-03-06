@@ -625,6 +625,9 @@ array_link::array_link ( const array_t *array, rowindex_t nrows, colindex_t ncol
 {
 	//printf("array_link::constructor: from array (index %d)\n", index);
 	this->array = clone_array ( array, nrows, ncols );
+	
+	//initswig();
+
 }
 
 //! Create array link from vector
@@ -637,6 +640,8 @@ array_link::array_link ( const std::vector<int> &v, rowindex_t nrows, colindex_t
 	//printf("array_link::constructor: from array (index %d)\n", index);
 	this->array = create_array ( nrows, ncols );
 	std::copy ( v.begin(), v.begin() +nrows*ncols, this->array );
+	
+	//initswig();
 }
 
 //! Default constructor
@@ -657,6 +662,9 @@ void array_link::init ( rowindex_t r, colindex_t c )
 	n_columns=c;
 
 	this->array = create_array ( n_rows, n_columns );
+
+	//initswig();
+
 }
 
 
@@ -677,6 +685,9 @@ array_link::~array_link()
 array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_ ) : n_rows ( nrows ), n_columns ( ncols ), index ( index_ )
 {
 	this->array = create_array ( nrows, ncols );
+	
+//	initswig();
+
 }
 
 //! Create array link with array
@@ -685,6 +696,9 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
 // printf("array_link::array_link: nrows %d, ncols %d\n", nrows, ncols);
 	this->array = create_array ( nrows, ncols );
 	this->setarraydata ( data, nrows*ncols );
+	
+//	initswig();
+
 }
 
 
@@ -1143,7 +1157,17 @@ void array_link::showproperties() const
 	return;
 }
  
-
+long array_link::data() 
+{
+		//return static_cast<long>(array);
+		return ((long)array); 
+}
+/*
+void array_link::initswig() 
+{
+	//printf("initswig! C side\n");
+}
+*/
 std::string array_link::showarrayS() const
 {
 	std::stringstream ss;
@@ -1802,6 +1826,11 @@ std::vector<int> array_link::Fvalues ( int jj ) const
 	jstruct_t js ( *this, jj );
 	std::vector<int> FF=js.calculateF();
 	return FF;
+}
+
+std::vector<double> array_link::PECsequence() const
+{
+		return ::PECsequence(*this);
 }
 
 std::vector<int> array_link::Jcharacteristics ( int jj ) const

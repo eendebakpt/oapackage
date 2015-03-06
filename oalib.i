@@ -152,9 +152,34 @@ def eigen2numpy(m):
 import sys
 %}
 
+
+
+//%pythonappend array_link::initswig() %{
+//   #do something after C++ call
+//   self.__array_interface__ = dict()
+//   self.__array_interface__['version']=3
+//   self.__array_interface__['shape']=(self.n_rows, self.n_columns)
+//   self.__array_interface__['typestr']='<i4'
+//   self.__array_interface__['data']=self.array
+//   print('initswig: Python side: done')
+//%} */ 
+
 %extend array_link {
 %insert("python") %{
+#__array_interface__ = None
 
+def __getattr__(self, attr):
+    if attr=='__array_interface__':
+      a = dict()
+      a['version']=3
+      a['shape']=(self.n_rows, self.n_columns)
+      a['typestr']='<i2'
+      a['data']=(self.data(), False)
+      return a
+    else:
+      raise AttributeError("%r object has no attribute %r" %
+                         (self.__class__, attr))
+                         
 def showarray(self):
   """ Show array"""
   # overridden to fix problems with ipython

@@ -53,3 +53,5 @@ mexstandalone.h
 _oalib.so
 oalib_wrap.cxx
 oalib.py
+wheelhouse
+get-pip.py
