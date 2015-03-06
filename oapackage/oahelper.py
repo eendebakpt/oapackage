@@ -476,7 +476,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     """ Run extension algorithm and return arrays """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N,k,t))
-    if isinstance(l, types.ListType):
+    if isinstance(l, list): # types.ListType):
         ll=l
     else:
         ll =[l]

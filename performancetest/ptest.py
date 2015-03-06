@@ -18,6 +18,7 @@ import subprocess
 import time
 import getopt
 import platform
+from imp import reload
 
 oadir=os.path.join(os.path.expanduser('~'), 'misc/oa/oacode/')
 sys.path.append(oadir)
@@ -44,7 +45,7 @@ def pytest7(verbose=1):
 	    alr=al2.reduceLMC()
 	    c=al==alr
 	    if not c:
-		print('pytest7: error: reduction of randomized array failed!' )
+	       print('pytest7: error: reduction of randomized array failed!' )
 
 #%%
 
@@ -127,7 +128,7 @@ def pytest5(verbose=1):
 		print('pytest5: running oaanalyse')
 	t0=time.time()
 	os.system(cmd)
-    	ta=(time.time()-t0)
+	ta=(time.time()-t0)
 	return ta
 
 def pytest2(oadir, verbose=1):
@@ -227,10 +228,10 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv[1:], "h", ["help"])
-        except getopt.error, msg:
+        except getopt.error as msg:
              raise Usage(msg)
         # more code, unchanged
-    except Usage, err:
+    except Usage as err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
         return 2
