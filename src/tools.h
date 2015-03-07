@@ -260,12 +260,14 @@ static inline int row_rank(array_t *array, const int n_columns, const int n_rows
  * @param index Value index for each of the columns of the array
  * @return
  */
-static inline array_t row_rank_partial(const carray_t *array, rowindex_t n_rows, const vindex_t *index, colindex_t start_idx, colindex_t end_idx, const colperm_t &colperm, rowindex_t row )
+static inline int row_rank_partial(const carray_t *array, rowindex_t n_rows, const vindex_t *index, colindex_t start_idx, colindex_t end_idx, const colperm_t &colperm, rowindex_t row )
 {
-    array_t	sum = 0;
+    int	sum = 0;
+    const array_t *ar = array+row;
     for(colindex_t i = start_idx; i < end_idx; i++)
     {
-        sum += index[i] * array[row+n_rows*colperm[i]];
+        //sum += index[i] * array[row+n_rows*colperm[i]];
+        sum += index[i] * ar[n_rows*colperm[i]];
     }
     return sum;
 }

@@ -672,8 +672,10 @@ public:
     dyndata_t ( int N, int col=0 );
     dyndata_t ( const dyndata_t *dd );
     dyndata_t ( const dyndata_t & );
-    dyndata_t & operator= ( const dyndata_t & );
     ~dyndata_t();
+
+
+    dyndata_t & operator= ( const dyndata_t & );
     void show() const;
 
     void reset();
@@ -792,8 +794,10 @@ public:
                 this->rowsort[i].r=this->rowsortl[i];
         }
     }
-private:
+
     void copydata ( const dyndata_t &dd );
+private:
+    void initdata ( const dyndata_t &dd );
 
 };
 
