@@ -175,6 +175,8 @@ def __getattr__(self, attr):
       a['shape']=(self.n_rows, self.n_columns)
       a['typestr']='<i2'
       a['data']=(self.data(), False)
+      # convert from the OAP column-major style to Numpy row-major style
+      a['strides']=(2, 2*self.n_rows)
       return a
     else:
       raise AttributeError("%r object has no attribute %r" %
@@ -187,6 +189,7 @@ def showarray(self):
   sys.stdout.write(self.showarrayS())
 
 def getarray(self, verbose=0, *args):
+  """ Return Numpy style array """
   if verbose:
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))
   x=self.getarraydata( int(self.n_rows*self.n_columns) )
@@ -199,6 +202,7 @@ def setarray(self, X, verbose=0):
   #iv =_oalib.intVector(X.flatten().tolist())
   self.setarraydata(iv, X.size)
 def __getitem__(self,index):
+  """ Return element of array """
   if type(index)==int:
       if index<0 or index > self.n_rows*self.n_columns:
         raise IndexError('index out of bounds')

@@ -1176,6 +1176,16 @@ std::string array_link::showarrayS() const
 	return ss.str();
 }
 
+void array_link::showarraycompact() const
+{
+	for ( int r=0; r<this->n_rows; r++ ) {
+		for ( int c=0; c<this->n_columns; c++ ) {
+			printf ( "%d", this->_at ( r,c ) );
+		}
+		printf ( "\n" );
+	}
+}
+
 void array_link::showarray() const
 {
 	printf ( "array: \n" );

@@ -193,9 +193,6 @@ void OAextend::setAlgorithmAuto ( arraydata_t *ad )
 
 void OAextend::setAlgorithm ( algorithm_t algorithm,  arraydata_t *ad )
 {
-#ifdef CLASSICCODE
-	algorithm=MODE_ORIGINAL;
-#endif
 	this->algmode = algorithm;
 
 	switch ( this->algmode ) {

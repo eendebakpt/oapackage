@@ -3403,7 +3403,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
             // set necessary components of dyndata (these might be changed inside LMCreduce
             //newdyndata.col=col+k;
             //dyndata_t newdyndata = dyndata_t ( dyndata );
-            newdyndata = dyndata;
+            newdyndata = *dyndata;
             newdyndata.col=newdyndata.col+k;
 
             perform_inv_perm ( dyndata->colperm, colperm_p[col], ad->ncols, localcolperm );

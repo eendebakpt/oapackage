@@ -120,7 +120,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-result -fPIC  -fpermissive -g")
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -O0 -g")
-  set(COPTS " -fpermissive -O3 -g")
+  set(COPTS " -fpermissive -O3 ")
 endif ()
 
 # for debugging

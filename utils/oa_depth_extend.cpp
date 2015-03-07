@@ -230,7 +230,8 @@ dextend.loglevelcol=7;
 		//exit(0);
 	}
 	// loop over all arrays
-	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
+
+	//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
 //printfd("dextend.setposition ( al.n_columns=%d, ai=%d, arraylist->size(), 0, 0 )\n", al.n_columns, ai );

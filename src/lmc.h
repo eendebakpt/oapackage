@@ -861,6 +861,8 @@ void random_transformation ( array_t *array, const arraydata_t *adp );
 /* main functions for LMC reduction */
 lmc_t LMCreduction_train ( const array_link &al, const arraydata_t* ad, LMCreduction_t *reduction,const OAextend &oaextend ) ;
 lmc_t LMCreduction_train ( const array_t* original, const arraydata_t* ad, const dyndata_t *dyndata, LMCreduction_t *reduction,const OAextend &oaextend ) ;
+
+/// helper function
 lmc_t LMCreduce ( array_t const *original,  array_t const *array, const arraydata_t* ad, const dyndata_t *dyndata, LMCreduction_t *reduction,const OAextend &oaextend );
 /// Perform reduction or LMC check without root trick
 lmc_t LMCreduceFull ( carray_t* original, const array_t *array, const arraydata_t* ad, const dyndata_t *dyndata, LMCreduction_t *reduction,const OAextend &oaextend, LMC_static_struct_t &tmpStatic );

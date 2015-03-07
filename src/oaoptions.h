@@ -10,10 +10,10 @@
 //#include <iostream>
 #include <string>
 
-// reduce options of programs to only classic algorithms
+// reduce options of programs to only allow classic algorithms
 #ifdef OADEV
 #else
-#define CLASSICCODE
+//#define CLASSICCODE
 #endif
 
 /* clean memory management */

@@ -590,6 +590,9 @@ public:
     /// print array to stdout
     void showarray() const;
 
+        /// print array to stdout
+    void showarraycompact() const;
+
     /// print array properties to stdout
     void showproperties() const;
 
@@ -700,18 +703,21 @@ public:
     {
         return this->array[r+this->n_rows*c];
     }
-    array_t _at(const rowindex_t, const colindex_t) const; /// no error checking
-    array_t _at(const int index) const;  /// no error checking
+    array_t _at(const rowindex_t, const colindex_t) const; /// get element at specified position, no error checking
+    array_t _at(const int index) const;  /// get element at specified position, no error checking
 
-    array_t at(const rowindex_t, const colindex_t) const;
-    array_t at(const int index) const;
-    array_t & at(const rowindex_t, const colindex_t);
+    array_t at(const rowindex_t, const colindex_t) const; /// get element at specified position
+    array_t at(const int index) const; /// get element at specified position    
+    array_t & at(const rowindex_t, const colindex_t); /// get element at specified position
+    
     /// set all elements in the array to a value
     void setconstant(array_t val);
 
+    /// set value of an array
     void setvalue(int row, int col, int val);
-    void setvalue(int row, int col, double val);
-    void _setvalue(int row, int col, int val);	/// no error checking!
+    void setvalue(int row, int col, double val);     /// set value of an array
+
+    void _setvalue(int row, int col, int val);	/// set value of an array, no error checking!
     
     /// print information about array
     void show() const {
@@ -1495,6 +1501,7 @@ int readarrayfile(const char *fname, arraylist_t * arraylist, int verbose=1, int
 /// read list of arrays from file
 arraylist_t readarrayfile(const char *fname, int verbose=1, int *setcols = 0);
 
+/// write a list of arrays to file on disk
 int writearrayfile(const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows=0, int ncols=0);
 
 /// write a single array to file
