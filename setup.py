@@ -177,6 +177,8 @@ class CustomInstall(install):
 #    ext_modules=[module1]
 #)
 
+install_requires=['numpy>=1.8', 'matplotlib']
+
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
@@ -198,7 +200,8 @@ setup (name = 'OApackage',
     scripts=scripts,
     tests_require=['oapackage'],
        zip_safe=False,
-	requires=['numpy', 'matplotlib'],
+	requires=['numpy'],
+	install_requires=install_requires,
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
 	      'Programming Language :: Python :: 2',
 	      'Programming Language :: Python :: 2.7',
