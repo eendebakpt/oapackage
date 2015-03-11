@@ -19,17 +19,21 @@ here = path.abspath(path.dirname(__file__))
 
 
 #%% Hack to remove option for c++ code
-# see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
-from setuptools.py31compat import get_path, get_config_vars
+try:
+	# see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
+	from setuptools.py31compat import get_path, get_config_vars
 
-(opt,) = get_config_vars('OPT')
+	(opt,) = get_config_vars('OPT')
 
-#print('OPT %s' % opt)
+	#print('OPT %s' % opt)
 
-if not opt is None:
-    opt = " ".join(    flag for flag in opt.split() if flag != '-Wstrict-prototypes' )
-    os.environ['OPT'] = opt
-
+	if not opt is None:
+		opt = " ".join( flag for flag in opt.split() if flag != '-Wstrict-prototypes' )
+		os.environ['OPT'] = opt
+except:
+	import setuptools
+	print('old version of setuptools: %s'  % setuptools.__version__ )
+	pass
 #print('OPT %s' % opt)
 
 
@@ -177,8 +181,6 @@ class CustomInstall(install):
 #    ext_modules=[module1]
 #)
 
-install_requires=['numpy>=1.8', 'matplotlib']
-
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
@@ -200,8 +202,7 @@ setup (name = 'OApackage',
     scripts=scripts,
     tests_require=['oapackage'],
        zip_safe=False,
-	requires=['numpy'],
-	install_requires=install_requires,
+	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
 	      'Programming Language :: Python :: 2',
 	      'Programming Language :: Python :: 2.7',
