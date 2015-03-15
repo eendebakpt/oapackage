@@ -184,7 +184,7 @@ class CustomInstall(install):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '1.9.102',
+       version = '1.9.110',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",

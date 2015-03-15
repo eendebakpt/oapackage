@@ -753,7 +753,7 @@ int arrayrank(const array_link &al)
     return rank;
 }
 
-
+/*
 void ABold(const Eigen::MatrixXd &mymatrix, double &A, double &B, int &rank, int verbose)
 {
     Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp(mymatrix);
@@ -801,6 +801,7 @@ void ABold(const Eigen::MatrixXd &mymatrix, double &A, double &B, int &rank, int
         B=0;
     }
 }
+*/
 
 /// convret array to second order interaction matrix
 inline void array2eigenxf(const array_link &al, Eigen::MatrixXd &mymatrix)
@@ -1088,6 +1089,61 @@ double dd=-1; double dd2=-1;
 
         Eigen::MatrixXd Smat(S);
     Eigen::ArrayXd Sa=Smat.array();
+    dd = exp(2*Sa.log().sum());
+
+	//
+
+    if (S[0]<1e-15) {
+        if (verbose>=2)
+            printf("Avalue: singular matrix\n");
+        dd=0;
+        return dd;
+    }
+    return dd;
+}
+
+typedef Eigen::MatrixXf MyMatrixf;
+typedef Eigen::ArrayXf MyArrayf;
+typedef Eigen::VectorXf MyVectorf;
+
+
+double detXtXfloat(const MyMatrixf &mymatrix, int verbose) {
+double dd=-1; double dd2=-1;
+  int n = mymatrix.rows();
+  int m = mymatrix.cols();
+  int N = n;
+  
+  //    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
+  //  int rank = lu_decomp.rank();
+
+    MyMatrixf mm = mymatrix.transpose() * mymatrix;
+    SelfAdjointEigenSolver<MyMatrixf> es;
+    es.compute(mm);
+    const MyVectorf SS =  es.eigenvalues();
+    MyVectorf S = SS; //sqrt(S);
+
+      if (S[m-1]<1e-15 ) {
+        if (verbose>=2) {
+            printf("   array is singular, setting det to zero\n");
+	    
+	}
+      dd=0;
+      return dd;	
+      }
+      
+    for(int j=0; j<m; j++) {
+        if (S[j]<1e-14) {
+            if (verbose>=3)
+                printf("  singular!\n");
+            S[j]=0;
+        }
+        else {
+            S[j]=sqrt(S[j]);
+        }
+    }
+
+        MyMatrixf Smat(S);
+    MyArrayf Sa=Smat.array();
     dd = exp(2*Sa.log().sum());
 
 	//

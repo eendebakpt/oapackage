@@ -60,12 +60,17 @@ typedef unsigned __int32 uint32_t;
 #include <Eigen/Core>
 
 
+/// default float matrix type used
+//typedef Eigen::MatrixXf MatrixFloat;
+typedef Eigen::MatrixXd MatrixFloat;
+
 /// show information about Eigen matrix
-void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );
+//void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );
+void eigenInfo ( const MatrixFloat m, const char *str="eigen", int verbose=1 );
 
 
 // helper function for Python interface
-void eigen2numpyHelper(double* pymat1, int n, const Eigen::MatrixXd &m);
+void eigen2numpyHelper(double* pymat1, int n, const MatrixFloat &m);
 
     
 Eigen::VectorXd dummy();
@@ -673,7 +678,7 @@ public:
     
     /// This function calculates Helmert contrasts for the factors of an input design. 
     /// implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
-    Eigen::MatrixXd getModelMatrix(int order, int intercept = 1) const;
+    MatrixFloat getModelMatrix(int order, int intercept = 1) const;
 
     /* Interal function (public, but not in documentation */
 
@@ -820,11 +825,11 @@ public:
     
     
       /// return the array as an Eigen matrix
-      inline   Eigen::MatrixXd  getEigenMatrix() const
+      inline  MatrixFloat  getEigenMatrix() const
       {
       int k = this->n_columns;
       int n = this->n_rows;
-      Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero(n,k);
+      MatrixFloat mymatrix = MatrixFloat::Zero(n,k);
 
       // init array
       for (int c=0; c<k; ++c) {
@@ -1753,17 +1758,18 @@ inline void vectorvector2binfile ( const std::string fname, const std::vector<st
 
 /* Convertion to Eigen matrices */
 
+
 /// convert 2-level array to second order interaction matrix in Eigen format
-Eigen::MatrixXd array2eigenX2(const array_link &al);
-Eigen::MatrixXd array2eigenX1(const array_link &al, int intercept=1);
+MatrixFloat array2eigenX2(const array_link &al);
+MatrixFloat array2eigenX1(const array_link &al, int intercept=1);
 
 /// convert 2-level array to second order model matrix (intercept, X1, X2)
- Eigen::MatrixXd array2eigenModelMatrix(const array_link &al);
+MatrixFloat array2eigenModelMatrix(const array_link &al);
 
 
-Eigen::MatrixXd array2eigenME ( const array_link &al, int verbose = 1);
+MatrixFloat array2eigenME ( const array_link &al, int verbose = 1);
 
-std::pair<Eigen::MatrixXd,Eigen::MatrixXd> array2eigenModelMatrixMixed ( const array_link &al, int verbose = 1);
+std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_link &al, int verbose = 1);
 
 #endif
 

@@ -22,6 +22,7 @@
 
 /// calculate determinant of X^T X by using the SVD
 double detXtX(const Eigen::MatrixXd &mymatrix, int verbose=1);
+double detXtXfloat(const Eigen::MatrixXf &mymatrix, int verbose=1);
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
 void DAEefficiecyWithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose);

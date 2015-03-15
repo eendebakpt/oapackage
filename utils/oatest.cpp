@@ -360,6 +360,8 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 using namespace Eigen;
 
 
+std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
+
 
 int main ( int argc, char* argv[] )
 {
@@ -404,6 +406,29 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', NORMAL );
 	setloglevel ( verbose );
 
+		if ( 1 ) {
+		arraydata_t adata ( 2, 64, 0, 7 );
+		int niter=10000;
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+			double t0=get_time_ms();
+			for ( int i=0; i<10000; i++ ) {
+				array_link al = adata.randomarray ( 0 );
+				//std::vector<double> dd = al.Defficiencies();
+				
+				arraydata_t arrayclass = arraylink2arraydata(al);
+				std::vector<double> dd = Defficiencies(al, arrayclass, 0);
+
+				//int dmethod = DOPTIM_SWAP;
+				//dmethod = DOPTIM_NONE;
+				//array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
+			}
+			printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+		
+		return 0;
+	}
+
 	if ( 0 ) {
 
 		arraydata_t adata ( 2, 80, 0, 7 );
@@ -420,7 +445,7 @@ int main ( int argc, char* argv[] )
 		}
 		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
 	}
-		if ( 1 ) {
+	if ( 1 ) {
 		arraydata_t adata ( 2, 80, 0, 7 );
 		int niter=10000;
 		std::vector<double> alpha ( 3 );
@@ -478,7 +503,7 @@ int main ( int argc, char* argv[] )
 
 		printf ( "D %f\n", al0.Defficiency() );
 		printf ( "-----\n" );
-		Eigen::MatrixXd mm= al0.getModelMatrix ( 2 );
+		MatrixFloat mm= al0.getModelMatrix ( 2 );
 		std::cout << mm << std::endl;
 
 		printf ( "-----\n" );
@@ -498,7 +523,7 @@ int main ( int argc, char* argv[] )
 		al.showarray();
 		al.show();
 
-		Eigen::MatrixXd ww;
+		MatrixFloat ww;
 		ww = array2eigenModelMatrix ( al );
 		for ( int ii=0; ii<10; ii++ ) {
 			al.Defficiencies();
@@ -528,7 +553,7 @@ int main ( int argc, char* argv[] )
 		al = exampleArray ( aidx );
 		al.showarray();
 
-		Eigen::MatrixXd ME = array2eigenME ( al );
+		MatrixFloat ME = array2eigenME ( al );
 		std::cout << "---- ME ----\n";
 		std::cout << ME << std::endl;
 
@@ -545,7 +570,7 @@ int main ( int argc, char* argv[] )
 
 		if ( verbose>=2 ) {
 
-			Eigen::MatrixXd mm = al.getModelMatrix ( 2, 1 );
+			MatrixFloat mm = al.getModelMatrix ( 2, 1 );
 			std::cout << "model matrix\n" << mm << std::endl;
 		}
 

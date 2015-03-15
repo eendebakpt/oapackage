@@ -1,3 +1,7 @@
+1.9.134
+
+Increase speed of D-efficiencies calculation
+
 1.9.102
 
 Automatically convert Eigen::MatrixXd to numpy in Python interface
