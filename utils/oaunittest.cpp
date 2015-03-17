@@ -31,7 +31,7 @@ void permute ( Type *source, Type *target, const std::vector<int> p )
 		target[i]=source[p[i]];
 }
 
-int oaunittest(int verbose, writetests=0)
+int oaunittest(int verbose, int writetests=0)
 {
 	double t0=get_time_ms();
 		const char *bstr = "OA unittest";
