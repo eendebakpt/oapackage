@@ -1,6 +1,7 @@
 1.9.134
 
 Increase speed of D-efficiencies calculation
+Make openmp enabled version of Doptimize
 
 1.9.102
 

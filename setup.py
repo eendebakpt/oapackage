@@ -141,6 +141,12 @@ if os.name=='nt':
 else:
   oalib_module.extra_compile_args += ['-O2', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
 
+
+if platform.node()=='marmot' or  platform.node()=='goffer':
+  # openmp version of code
+  oalib_module.extra_compile_args+=['-fopenmp', '-DDOOPENMP']
+  oalib_module.extra_link_args+=['-fopenmp']
+      
 if oadev:
   oalib_module.extra_compile_args.append('-DOADEV')
 
@@ -184,7 +190,7 @@ class CustomInstall(install):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '1.9.110',
+       version = '1.9.111',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",

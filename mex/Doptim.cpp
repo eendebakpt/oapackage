@@ -11,6 +11,7 @@
 #include <sys/timeb.h>
 
 
+#include "Deff.h"
 #include "mex.h"
 
 
@@ -133,67 +134,20 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 
 	arraydata_t arrayclass ( s, N, 0, k );
 
-	std::vector<std::vector<double> > dds;
-	arraylist_t AA;
 
 	int niter=12000;
 	int nabort=3000;
-	int method=1;
+	int method=1; 
 
 	double t0 = get_time_ms();
 	bool abort = false;
 
 
-#ifdef DOOPENMP
-	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
-#endif
-	for ( int i=0; i<nrestarts; i++ ) {
-		if ( abort )
-			continue;
-
-#ifdef DOOPENMP
-		#pragma omp critical
-#endif
-		{
-			if ( verbose && i%5==0 ) {
-				mexPrintf ( "Doptim: iteration %d/%d\n", i, nrestarts );
-#ifdef MAINMEX
-#else
-				mexEvalString ( "drawnow" );
-#endif
-			}
-		}
-
-		array_link al = arrayclass.randomarray ( 1 );
-
-
-		array_link  A = optimDeff ( al,  arrayclass, alpha, verbose, method, niter,  nabort );
-		std::vector<double> dd = A.Defficiencies();
-		if ( verbose>=2 ) {
-			mexPrintf ( "Doptim: iteration %d/%d: %f %f %f\n", i, nrestarts, dd[0], dd[1], dd[2] );
-		}
-
-#ifdef DOOPENMP
-		#pragma omp critical
-#endif
-		{
-			AA.push_back ( A );
-			dds.push_back ( dd );
-		}
-
-		if ( ( get_time_ms()-t0 ) > maxtime ) {
-			if ( verbose )
-				mexPrintf ( "max running time exceeded, aborting\n" );
-			#pragma omp critical
-			{
-				abort=true;
-			}
-			//break;
-		}
-	}
-
-	// loop is complete
-
+	DoptimReturn rr = Doptimize(arrayclass, nrestarts, niter, alpha, verbose, method, maxtime, nabort );
+	std::vector<std::vector<double> > dds = rr.first;
+	arraylist_t AA = rr.second;
+	
+	
 	if ( verbose>=2 ) {
 		mexPrintf ( "generated %d designs, selecting best %d design(s)\n", AA.size(), nout );
 	}
@@ -250,5 +204,5 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 	return;
 }
 
-//#include "mexstandalone.h"
+#include "mexstandalone.h"
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

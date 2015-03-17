@@ -412,7 +412,7 @@ def selectDn(scores, dds, sols, nout=1):
         sols=sols[0:nout]
     return scores, dds, sols
     
-def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=0):
+def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=0, nabort=3000):
     """ Calculate D-optimal designs
     
     
@@ -423,45 +423,53 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
 
     if optimfunc is None:
         optimfunc=[1,2,0]
-        
-    scores=np.zeros( (0,1))
-    dds=np.zeros( (0,3)) 
-    sols=[]  #oalib.arraylist_t()
-       
-    for ii in range(nrestarts):
-        if verbose:
-            oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
-        al=arrayclass.randomarray(1)
 
-
-        
-        #array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int method=-1, int niter=10000, int nabort=2500);
-
-        if isinstance(optimfunc, list):
-            alpha=optimfunc
-            Ax= oalib.optimDeff(al, arrayclass, alpha, verbose>=2, method, niter)
-            dd=Ax.Defficiencies()
-            score = oalib.scoreD(dd, optimfunc)
-        else:
-            score, Ax= optimDeffPython(al, verbose=0, niter=niter, alpha=optimfunc, method=method)
-            dd=Ax.Defficiencies()
-        
-        
-        if time.time()-t0 > maxtime:
+    if 1 and isinstance(optimfunc, list):
+        rr=oalib.Doptimize(arrayclass, nrestarts, niter=niter, alpha=optimfunc, verbose=1, method=method, maxtime=maxtime, nabort=nabort)
+        dds=rr[0]
+        dds=np.array([x for x in dds])
+        sols=rr[1]
+        scores=np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
+        #dt=time.time()-t0
+    else:                
+        scores=np.zeros( (0,1))
+        dds=np.zeros( (0,3)) 
+        sols=[]  #oalib.arraylist_t()
+           
+        for ii in range(nrestarts):
             if verbose:
-                print('Doptim: max time exceeded, aborting')
-            break
-
-        scores=np.vstack( (scores, [score]) )
-        dds=np.vstack( (dds, dd) )
-        sols.append(Ax)
-        if verbose>=2:
-            print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
+                oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
+            al=arrayclass.randomarray(1)
+    
+    
             
-        if selectpareto and ii%502==0:
-            scores,dds,sols=filterPareto(scores, dds, sols)
-
-        #print(dds.shape)
+            #array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int method=-1, int niter=10000, int nabort=2500);
+    
+            if isinstance(optimfunc, list):
+                alpha=optimfunc
+                Ax= oalib.optimDeff(al, arrayclass, alpha, verbose>=2, method, niter, nabort)
+                dd=Ax.Defficiencies()
+                score = oalib.scoreD(dd, optimfunc)
+            else:
+                score, Ax= optimDeffPython(al, verbose=0, niter=niter, alpha=optimfunc, method=method, nabort=nabort)
+                dd=Ax.Defficiencies()
+            
+            
+            if time.time()-t0 > maxtime:
+                if verbose:
+                    print('Doptim: max time exceeded, aborting')
+                break
+    
+            scores=np.vstack( (scores, [score]) )
+            dds=np.vstack( (dds, dd) )
+            sols.append(Ax)
+            if verbose>=2:
+                print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
+                
+            if selectpareto and ii%502==0:
+                scores,dds,sols=filterPareto(scores, dds, sols)
+    
+            #print(dds.shape)
         
     if verbose:
         print('Doptim: done' )

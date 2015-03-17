@@ -6,10 +6,84 @@
 #include "arraytools.h"
 #include "arrayproperties.h"
 
+#ifdef DOOPENMP
+#include "omp.h" 
+#endif
+
 
 #include "Deff.h"
 
 
+#ifndef myprintf
+#define myprintf printf
+#endif
+
+
+DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime , int nabort )
+{
+		double t0 = get_time_ms();
+	std::vector<std::vector<double> > dds;
+	arraylist_t AA;
+
+
+	
+	bool abort=false;
+	
+	#ifdef DOOPENMP
+	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
+#endif
+	for ( int i=0; i<nrestarts; i++ ) {
+		if ( abort )
+			continue;
+
+#ifdef DOOPENMP
+		#pragma omp critical
+#endif
+		{
+			if ( verbose && i%5==0 ) {
+				myprintf ( "Doptim: iteration %d/%d\n", i, nrestarts );
+#ifdef MAINMEX
+#else
+#ifdef MATLAB_MEX
+				mexEvalString ( "drawnow" );
+#endif
+#endif
+			}
+		}
+
+		array_link al = arrayclass.randomarray ( 1 );
+
+
+		array_link  A = optimDeff ( al,  arrayclass, alpha, verbose, method, niter,  nabort );
+		std::vector<double> dd = A.Defficiencies();
+		if ( verbose>=2 ) {
+			myprintf ( "Doptim: iteration %d/%d: %f %f %f\n", i, nrestarts, dd[0], dd[1], dd[2] );
+		}
+
+#ifdef DOOPENMP
+		#pragma omp critical
+#endif
+		{
+			AA.push_back ( A );
+			dds.push_back ( dd );
+		}
+
+		if ( ( get_time_ms()-t0 ) > maxtime ) {
+			if ( verbose )
+				myprintf ( "max running time exceeded, aborting\n" );
+			#pragma omp critical
+			{
+				abort=true;
+			}
+			//break;
+		}
+	}
+
+	// loop is complete
+
+	return DoptimReturn( dds, AA);
+
+}
 
 double scoreD ( const std::vector<double> dd, const std::vector<double> alpha )
 {
@@ -20,7 +94,7 @@ double scoreD ( const std::vector<double> dd, const std::vector<double> alpha )
 
 }
 
-array_link  optimDeff ( const array_link &A0,  arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niter, int nabort )
+array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niter, int nabort )
 {
 
 	int nx=0;

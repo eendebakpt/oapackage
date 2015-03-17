@@ -47,7 +47,10 @@ import_array();
 %apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(array_t* pymat2, int nrows, int ncols)}
 
 
+%include "std_pair.i"
+
 %{
+#include <utility>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 //#include <Eigen/Dense>
@@ -302,9 +305,13 @@ import numpy
 %include "pareto.h"
 %include "extend.h"
 %include "lmc.h"
+%include "Deff.h"
+
 #ifdef OADEV
 %include "oadevelop.h"
 #endif
+
+%template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
 
 %template(mvalue_t_long) mvalue_t<long>;
 %template(mvalue_t_double) mvalue_t<double>;
@@ -318,6 +325,8 @@ import numpy
 //%template(DequeParetoLong) std::deque< Pareto< mvalue_t< long >,long >;
 //%template(GWLPvalueVector2) std::vector<GWLPvalue>; 
 %template(GWLPvalueVector) std::vector< mvalue_t<double> >;
+
+%template(vector_vector_double) std::vector< std::vector<double> >;
 
 /* representation functions */
 
