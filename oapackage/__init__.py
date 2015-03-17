@@ -16,7 +16,7 @@ def unittest():
   print('oapackage: oalib version %s' % oalib.version() )
   al=oalib.array_link()
   ii=0
-  al=oapackage.exampleArray(ii, 0)
+  al=oalib.exampleArray(ii, 0)
   Deff=al.Defficiency()
   print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 

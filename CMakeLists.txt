@@ -206,10 +206,10 @@ set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter pare
 set(progsextend )
 
 if(OAEXTEND)
-  list(APPEND progs oacheck oastreaming )
+  list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oaunittest oa_depth_extend oaextendA oareduceDOP oaclustergather)
+  list(APPEND progs oatest oa_depth_extend oaextendA oareduceDOP oaclustergather)
 endif()
    
 if (WIN32)

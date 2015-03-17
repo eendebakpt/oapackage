@@ -31,42 +31,10 @@ void permute ( Type *source, Type *target, const std::vector<int> p )
 		target[i]=source[p[i]];
 }
 
-/**
-* @brief Read in files with arrays and join them into a single file
-* @param argc
-* @param argv[]
-* @return
-*/
-int main ( int argc, char* argv[] )
+int oaunittest(int verbose, writetests=0)
 {
-
-	AnyOption opt;
-	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
-	opt.setOption ( "verbose", 'v' );
-
-	opt.addUsage ( "OA: unittest: Perform some checks on the code" );
-	opt.addUsage ( "Usage: unittest [OPTIONS]" );
-	opt.addUsage ( "" );
-	opt.addUsage ( " -v  --verbose  			Print documentation" );
-
-	opt.processCommandArgs ( argc, argv );
-	int verbose = opt.getIntValue ( 'v', 1 );
-
-	if ( opt.getFlag ( "help" ) || opt.getFlag ( 'h' ) ) {
-		opt.printUsage();
-		exit ( 0 );
-	}
-
 	double t0=get_time_ms();
-
-	if ( verbose ) {
-		print_copyright();
-	}
-	if ( verbose>=2 ) {
-		print_options ( std::cout );
-	}
-
-	const char *bstr = "OA unittest";
+		const char *bstr = "OA unittest";
 	cprintf ( verbose, "%s: start\n", bstr );
 
 	arraydata_t adata ( 2, 20, 2, 6 );
@@ -281,6 +249,8 @@ int main ( int argc, char* argv[] )
 	}
 #ifdef HAVE_BOOST
 
+	
+	if(writetests)
 	{
 		cprintf ( verbose,"OA unittest: reading and writing of files\n" );
 
@@ -317,6 +287,47 @@ int main ( int argc, char* argv[] )
 
 	cprintf ( verbose,"OA unittest: complete %.3f [s]!\n", ( get_time_ms() - t0 ) );
 	cprintf ( verbose,"OA unittest: also run ptest.py to perform checks!\n" );
+
+	return 0;
+	
+}
+
+/**
+* @brief Read in files with arrays and join them into a single file
+* @param argc
+* @param argv[]
+* @return
+*/
+int main ( int argc, char* argv[] )
+{
+
+	AnyOption opt;
+	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
+	opt.setOption ( "verbose", 'v' );
+
+	opt.addUsage ( "OA: unittest: Perform some checks on the code" );
+	opt.addUsage ( "Usage: unittest [OPTIONS]" );
+	opt.addUsage ( "" );
+	opt.addUsage ( " -v  --verbose  			Print documentation" );
+
+	opt.processCommandArgs ( argc, argv );
+	int verbose = opt.getIntValue ( 'v', 1 );
+
+	if ( opt.getFlag ( "help" ) || opt.getFlag ( 'h' ) ) {
+		opt.printUsage();
+		exit ( 0 );
+	}
+
+
+	if ( verbose ) {
+		print_copyright();
+	}
+	if ( verbose>=2 ) {
+		print_options ( std::cout );
+	}
+
+	oaunittest(verbose, 1);
+	
 
 	return 0;
 }
