@@ -61,8 +61,10 @@ typedef unsigned __int32 uint32_t;
 
 
 /// default float matrix type used
-//typedef Eigen::MatrixXf MatrixFloat;
+//typedef Eigen::MatrixXf MatrixFloat; typedef float eigenFloat;
+
 typedef Eigen::MatrixXd MatrixFloat;
+typedef double eigenFloat;
 
 /// show information about Eigen matrix
 //void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );

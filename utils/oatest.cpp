@@ -413,7 +413,7 @@ int main ( int argc, char* argv[] )
 		alpha[0]=1;
 		alpha[1]=1;
 			double t0=get_time_ms();
-			for ( int i=0; i<10000; i++ ) {
+			for ( int i=0; i<10000+10000*aidx; i++ ) {
 				array_link al = adata.randomarray ( 0 );
 				//std::vector<double> dd = al.Defficiencies();
 				

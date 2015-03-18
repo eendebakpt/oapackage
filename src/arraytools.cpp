@@ -1682,7 +1682,7 @@ MatrixFloat array2eigenX1 ( const array_link &al )
 
 //Eigen::MatrixXd array2eigenME ( const array_link &al, int verbose );
 
-MatrixFloat array2eigenModelMatrix ( const array_link &al )
+Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 {
 	int k = al.n_columns;
 	int n = al.n_rows;
@@ -1692,8 +1692,14 @@ MatrixFloat array2eigenModelMatrix ( const array_link &al )
 		assert ( *std::max_element ( al.array, al.array+al.n_columns*al.n_rows ) <2 );
 	}
 
-	MatrixFloat mymatrix = MatrixFloat::Zero ( n,m );
+	//MatrixFloat mymatrix = MatrixFloat::Zero ( n,m );
+	//eigenFloat *data = mymatrix.data();
+	
+	// create data in integer type (we are working with 2-level arrays, convert them later */
+	Eigen::MatrixXi mymatrix = Eigen::MatrixXi::Zero ( n,m );
+	int *data = mymatrix.data();
 
+	
 	// init first column
 	int ww=0;
 	for ( int r=0; r<n; ++r ) {
@@ -1704,28 +1710,40 @@ MatrixFloat array2eigenModelMatrix ( const array_link &al )
 	ww=1;
 	for ( int c=0; c<k; ++c ) {
 		int ci = c*n;
+
+		std::copy(al.array+ci, al.array+ci+n, data+(ww+c)*n);
 		for ( int r=0; r<n; ++r ) {
-			mymatrix ( r, ww+c ) = al.array[r+ci];
+			//mymatrix ( r, ww+c ) = al.array[r+ci];		
 		}
 	}
 
 	// init interactions
 	ww=k+1;
+
 	for ( int c=0; c<k; ++c ) {
 		for ( int c2=0; c2<c; ++c2 ) {
 			int ci = c*n;
 			int ci2 = c2*n;
 
 			for ( int r=0; r<n; ++r ) {
-				mymatrix ( r, ww ) = ( al.array[r+ci]+al.array[r+ci2] ) %2;
+				//mymatrix ( r, ww ) = ( al.array[r+ci]+al.array[r+ci2] ) %2;
+				data[r+ww*n] = ( al.array[r+ci]+al.array[r+ci2] ) %2;
+				//if (mymatrix(r,ww) != ( al.array[r+ci]+al.array[r+ci2] ) %2 ) exit(1);
 			}
 			ww++;
 		}
 	}
 
-	mymatrix.array() -= .5;
-	mymatrix.array() *= 2;
+	mymatrix.array() *=2; mymatrix.array() -= 1;
+	//mymatrix.array() -= .5; mymatrix.array() *= 2;
+
 	return mymatrix;
+	//return mymatrix;
+}
+
+MatrixFloat array2eigenModelMatrix ( const array_link &al )
+{
+	return array2eigenModelMatrixInt(al).cast<eigenFloat>();
 }
 
 #include <Eigen/Dense>
@@ -1786,20 +1804,21 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 	int N=n;
 	int m = 1 + k + k* ( k-1 ) /2;
 
-	MyMatrix X1i, X;
+	MyMatrix X;
 	
 	int n2fi = -1; /// number of 2-factor interactions in contrast matrix
 	int nme = -1;	/// number of main effects in contrast matrix
 	
 	if ( arrayclass.is2level() ) {
-		X1i = array2eigenX1 ( al, 1 );
+		//Eigen::MatrixXi Xint =  array2eigenModelMatrixInt ( al );
+		//matXtX = ( Xint.transpose() *(Xint) ).cast<eigenFloat>() /n;
+
 		X = array2eigenModelMatrix ( al );
 
+		//X1i = array2eigenX1 ( al, 1 );
 		//	X2 = array2eigenX2 ( al );
 		//X2 = X.block ( 0, 1+k, N, k* ( k-1 ) /2 );
-
 		//std::cout << "X2\n" << X2 << std::endl; std::cout << "X2a\n" << X2a << std::endl;
-
 		//if (X2a==X2) printf("equal!"); exit(0);
 
 		n2fi =  k* ( k-1 ) /2;
@@ -1808,12 +1827,11 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		if ( verbose>=2 )
 			printf ( "Defficiencies: mixed design!\n" );
 		std::pair<MyMatrix,MyMatrix> mm = array2eigenModelMatrixMixed ( al, 0 );
-		MyMatrix X1=mm.first;
+		const MyMatrix &X1=mm.first;
 		const MyMatrix &X2=mm.second;
-		//eigenInfo(X1, "X1");
 		//eigenInfo(X1i, "X1i");
-		X1i.resize ( N, 1+X1.cols() );
-		X1i << MyMatrix::Constant ( N, 1, 1 ),  X1;
+		//X1i.resize ( N, 1+X1.cols() );
+		//X1i << MyMatrix::Constant ( N, 1, 1 ),  X1;
 		//X2=mm.second;
 		X.resize ( N, 1+X1.cols() +X2.cols() );
 		X << MyMatrix::Constant ( N, 1, 1 ),  X1, X2;
@@ -1821,7 +1839,10 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		n2fi = X2.cols();
 		nme = X1.cols();
 
+
 	}
+	MyMatrix matXtX = ( X.transpose() *(X) ) /n;
+	//Matrix X1i =  X.block(0,0,N, 1+nme);
 
 	/*
 	// https://forum.kde.org/viewtopic.php?f=74&t=85616&p=146569&hilit=multiply+transpose#p146569
@@ -1836,7 +1857,6 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 
 	matXtX.triangularView<Eigen::StrictlyLower>() = matXtX.transpose();
 */
-	MyMatrix matXtX = ( X.transpose() *X/n );
 
 	if (0)
 	{
