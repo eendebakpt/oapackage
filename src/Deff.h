@@ -29,7 +29,13 @@ enum {DOPTIM_SWAP, DOPTIM_UPDATE, DOPTIM_AUTOMATIC, DOPTIM_FLIP, DOPTIM_NONE};
 array_link  optimDeff(const array_link &A0,  const arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int optimmethod = DOPTIM_AUTOMATIC, int niter=10000, int nabort=2500);
 
 
-typedef std::pair< std::vector<std::vector<double> >, arraylist_t > DoptimReturn;
+//typedef std::pair< std::vector<std::vector<double> >, arraylist_t > DoptimReturn;
+
+struct DoptimReturn {
+  std::vector<std::vector<double> > dds;
+  arraylist_t designs;
+};
+
 
 /// optimize designs 
 DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime = 100000, int nabort=3000 );

@@ -81,7 +81,10 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 
 	// loop is complete
 
-	return DoptimReturn( dds, AA);
+	DoptimReturn a = {dds, AA};
+	//a.first;
+	
+	return a; // DoptimReturn( dds, AA);
 
 }
 

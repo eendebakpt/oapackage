@@ -1798,6 +1798,11 @@ typedef MatrixFloat MyMatrix;
 
 std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & arrayclass, int verbose )
 {
+	if ((al.n_rows>500) || (al.n_columns>500) )
+	{
+		printf("Defficiencies: array size not supported\n");
+		return std::vector<double>(3);
+	}
 	int k = al.n_columns;
 	int k1 = al.n_columns+1;
 	int n = al.n_rows;

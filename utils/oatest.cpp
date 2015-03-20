@@ -406,6 +406,22 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', NORMAL );
 	setloglevel ( verbose );
 
+	
+	if (1) {
+	
+		arraydata_t arrayclass ( 2, 8, 0, 2 );
+		int nrestarts=40; 
+		int niter=9000;
+		std::vector<double> alpha(3); alpha[0]=1; alpha[1]=1; alpha[2]=0; 
+		int nabort=1000;
+		DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
+		//arraylist_t ll = rr.second;
+		arraylist_t ll = rr.designs;
+		for(size_t ii=0; ii<ll.size(); ii++) {
+			printf("ii %d: ", (int)ii); ll[ii].show();
+		}
+		return 0;
+	}
 		if ( 1 ) {
 		arraydata_t adata ( 2, 64, 0, 7 );
 		int niter=10000;

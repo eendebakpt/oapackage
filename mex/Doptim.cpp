@@ -56,23 +56,24 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 		mexPrintf ( "Usage: Doptim(N, levels, [nrestarts], [alpha], [verbose], [maxtime])\n" );
 		mexPrintf ( "   calculates D-optimal designs, " );
 		mexPrintf ( "written by Pieter Eendebak <pieter.eendebak@gmail.com>\n\n" );
+		mexPrintf ( "The function optimizes designs according to the optimization function:\n" );
+		mexPrintf ( "\n	F= alpha(1)*D + alpha(2) * Ds + alpha(3) * D1\n\n" );
 		mexPrintf ( "Input arguments:\n" );
 		mexPrintf ( "   N (integer): number of runs\n" );
 		mexPrintf ( "   s (array): levels of the factors\n" );
 		mexPrintf ( "   nrestarts (integer, default is 40): number of restarts\n" );
 		mexPrintf ( "   alpha (3x1 array, default is [1,1,0]): weights for the various efficiency measures\n" );
-		mexPrintf ( "   verbose (integer, default is 1): output level\n" );
+		mexPrintf ( "   verbose (integer, default is 1): Determines the output level. Higher is more output\n" );
 		mexPrintf ( "   maxtime (double, default: 150): maximum running time in seconds\n" );
 		mexPrintf ( "Output arguments:\n" );
-		mexPrintf ( "   A (Nxk or Nxkxm array): generated design(s)\n" );
+		mexPrintf ( "   A (Nxk or Nxkxm array): the generated design(s). m is equal to the number of restarts specified.\n" );
 		mexPrintf ( "   d (3x1 or 3xm array): computed values of D-efficiency, Ds and D1\n" );
 		mexPrintf ( "\n" );
-		mexPrintf ( "The function optimizes design according to the optimization function:\n" );
-		mexPrintf ( "\n	F= alpha(1)*D + alpha(2) * Ds + alpha(2) * D1\n\n" );
 		mexPrintf ( "For more details see the webpage http://www.pietereendebak.nl/oapackage.\n" );
 		mexPrintf ( "\n" );
 
 		mexPrintf ( "Example: [A, d] = Doptim(40, [2,2,2,2,2,2], 10, [1,2,0])\n\n" );
+		//mexPrintf ( "Example: [A, d] = Doptim(18, [3,3,2,2], 10, [1,2,0])\n\n" );
 
 		mexPrintf ( "   built: %s %s\n", __DATE__, __TIME__ );
 		mexPrintf ( "error: Doptim: requires at least 3 input arguments!\n" );
@@ -144,8 +145,8 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 
 
 	DoptimReturn rr = Doptimize(arrayclass, nrestarts, niter, alpha, verbose, method, maxtime, nabort );
-	std::vector<std::vector<double> > dds = rr.first;
-	arraylist_t AA = rr.second;
+	//std::vector<std::vector<double> > dds = rr.first; 	arraylist_t AA = rr.second;
+	std::vector<std::vector<double> > dds = rr.dds; 	arraylist_t AA = rr.designs;
 	
 	
 	if ( verbose>=2 ) {

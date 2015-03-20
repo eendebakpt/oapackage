@@ -144,6 +144,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
 def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,0],nofig=False,  urlprefix='', makeheader=True, verbose=1, lbls=None):
     
     #%% Prepare data
+    if verbose:
+        print('generateDpage: dds %s' % str(dds.shape) )
+       
     pp = oahelper.createPareto(dds)
     paretoidx=np.array(pp.allindices())
 
@@ -151,11 +154,35 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     npareto=pp.number()
     
 
+    if verbose:
+        print('generateDpage: narrays %d' % narrays)
+
     xstr=oahelper.series2htmlstr(arrayclass, case=1)
     xstrplain=oahelper.series2htmlstr(arrayclass, html=0, case=1)
 
+    if verbose:
+        print('generateDpage: selectParetoArrays ' )
+        if 0:
+            print('debuggg')
+            print(len(allarrays))
+            print(allarrays)
+            allarrays=tuple(allarrays)
+            print(pp)
+            
+            def selectParetoArrays(allarrays, pp):
+                paretoarrays=oalib.arraylist_t()
+                paretoidx=np.array(pp.allindices())
+                ww=oalib.longVector( tuple(paretoidx.tolist()))
+                oalib.selectArrays(allarrays, ww, paretoarrays)
+                return paretoarrays
+            paretoarrays = oahelper.selectParetoArrays(allarrays, pp)
+            print('done')
+        
     paretoarrays = oahelper.selectParetoArrays(allarrays, pp)
     at= array2Dtable(paretoarrays, verbose=1)
+
+    if verbose:
+        print('generateDpage: write file with Pareto arrays' )
  
     pfile0='paretoarrays.oa'
     pfile=os.path.join(outputdir, pfile0)
@@ -424,13 +451,20 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
     if optimfunc is None:
         optimfunc=[1,2,0]
 
+    
     if 1 and isinstance(optimfunc, list):
         rr=oalib.Doptimize(arrayclass, nrestarts, niter=niter, alpha=optimfunc, verbose=1, method=method, maxtime=maxtime, nabort=nabort)
-        dds=rr[0]
+        dds, sols=rr.dds, rr.designs
         dds=np.array([x for x in dds])
-        sols=rr[1]
-        scores=np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
+        sols=[x.clone() for x in sols]
+        #dds,sols=rr[0],rr[1]        
+        #dds=rr[0]
+        #sols=[x.clone() for x in sols]
         #dt=time.time()-t0
+        scores=np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
+        
+        #dt=time.time()-t0
+
     else:                
         scores=np.zeros( (0,1))
         dds=np.zeros( (0,3)) 
@@ -472,8 +506,8 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
             #print(dds.shape)
         
     if verbose:
-        print('Doptim: done' )
-
+        print('Doptim: done (%d arrays)' % len(sols) )
+        #print(sols)
     if selectpareto:
         scores,dds,sols=filterPareto(scores, dds, sols)
 
