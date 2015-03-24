@@ -24,7 +24,109 @@ import time
 
 #%%
 
+try:
+    try:
+        from PySide import QtGui
+    except:
+        from PyQt4 import QtGui
+    
+    _applocalqt=None
+    def monitorSizes(verbose=0):  
+        """ Return monitor sizes """
+        if sys.platform == 'win32':
+            import ctypes
+            user32 = ctypes.windll.user32
+            wa = [[0,0, user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)]]
+        else:
+            tmp=QtGui.QApplication.startingUp()
+            if 0:
+                print('starting QApplication: startingUp %d'  % tmp)
+            if tmp:
+                _applocalqt = QtGui.QApplication([])
+                _qd=QtGui.QDesktopWidget()
+            else:
+                if 0:
+                    print('get QDesktopWidget()')         
+                _qd=QtGui.QDesktopWidget()
+
+            nmon=_qd.screenCount()
+            wa=[_qd.screenGeometry(ii) for ii in range(nmon)]
+            wa=[ [w.x(), w.y(), w.width(), w.height()] for w in wa]
+            
+            if 0:
+                #import gtk # issues with OpenCV...
+                window = gtk.Window()
+                screen = window.get_screen()
+                
+                nmon=screen.get_n_monitors()        
+                wa=[screen.get_monitor_geometry(ii) for ii in range(nmon)]
+                wa=[ [w.x, w.y, w.width, w.height] for w in wa]
+    
+            if verbose:
+                for ii, w in enumerate(wa):
+                    print('monitor %d: %s'  % (ii,str(w)) )        
+        return wa
+except:
+    def monitorSizes(verbose=0): 
+        return [ [0,0,1280,720] ]
+    pass
+
+def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
+    """ Tile figure windows on a specified area """
+    mngr = plt.get_current_fig_manager()
+    be=matplotlib.get_backend()
+    if ww==None:
+        ww=monitorSizes()[-1]
+
+    w=ww[2]/geometry[0]
+    h=ww[3]/geometry[1]
+    
+    #wm=plt.get_current_fig_manager()
+
+    if verbose:
+        print('tilefigs: ww %s, w %d h %d'  %( str(ww), w,h))
+    for ii,f in enumerate(lst):
+        if not plt.fignum_exists(f):
+            continue
+        fig=plt.figure(f)
+        iim=ii% np.prod(geometry)
+        ix=iim% geometry[0]
+        iy=np.floor(float(iim)/geometry[0])
+        x=ww[0]+ix*w
+        y=ww[1]+iy*h
+        if verbose:
+            print('ii %d: %d %d: f %d: %d %d %d %d'  % (ii, ix, iy, f,x,y,w,h))
+            if verbose>=2:
+                print('  window %s' % mngr.get_window_title() )
+        if be=='WXAgg':
+            fig.canvas.manager.window.SetPosition((x,y))
+            fig.canvas.manager.window.SetSize((w,h))
+        if be=='WX':
+            fig.canvas.manager.window.SetPosition((x,y))
+            fig.canvas.manager.window.SetSize((w,h))
+        if be=='agg':
+            fig.canvas.manager.window.SetPosition((x,y))
+            fig.canvas.manager.window.resize(w,h)
+        if be=='Qt4Agg' or be=='QT4' or be=='QT5Agg':
+            # assume Qt canvas
+            try:
+                fig.canvas.manager.window.move(x,y)
+                fig.canvas.manager.window.resize(w,h)
+                fig.canvas.manager.window.setGeometry(x,y,w,h)
+                #mngr.window.setGeometry(x,y,w,h)
+            except Exception as e:
+                print('problem with window manager: ', )
+                print(be)
+                print(e)
+                pass
+        if raisewindows:
+            mngr.window.raise_()
+        if tofront:
+            plt.figure(f)
+
+#%%            
 def selectParetoArrays(allarrays, pp):
+    """ Select arrays using a Pareto object """
     paretoarrays=oalib.arraylist_t()
     paretoidx=np.array(pp.allindices())
     ww=oalib.longVector( tuple(paretoidx.tolist()))

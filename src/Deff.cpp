@@ -19,7 +19,7 @@
 #endif
 
 
-DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime , int nabort )
+DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestartsmax, int niter, std::vector<double> alpha, int verbose, int method, double maxtime , int nabort )
 {
 		double t0 = get_time_ms();
 	std::vector<std::vector<double> > dds;
@@ -29,10 +29,12 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 	
 	bool abort=false;
 	
+	int nrestarts=0;
+	
 	#ifdef DOOPENMP
 	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 #endif
-	for ( int i=0; i<nrestarts; i++ ) {
+	for ( int i=0; i<nrestartsmax; i++ ) {
 		if ( abort )
 			continue;
 
@@ -41,7 +43,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 #endif
 		{
 			if ( verbose && i%5==0 ) {
-				myprintf ( "Doptim: iteration %d/%d\n", i, nrestarts );
+				myprintf ( "Doptim: iteration %d/%d\n", i, nrestartsmax );
 #ifdef MAINMEX
 #else
 #ifdef MATLAB_MEX
@@ -57,7 +59,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 		array_link  A = optimDeff ( al,  arrayclass, alpha, verbose, method, niter,  nabort );
 		std::vector<double> dd = A.Defficiencies();
 		if ( verbose>=2 ) {
-			myprintf ( "Doptim: iteration %d/%d: %f %f %f\n", i, nrestarts, dd[0], dd[1], dd[2] );
+			myprintf ( "Doptim: iteration %d/%d: %f %f %f\n", i, nrestartsmax, dd[0], dd[1], dd[2] );
 		}
 
 #ifdef DOOPENMP
@@ -66,6 +68,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 		{
 			AA.push_back ( A );
 			dds.push_back ( dd );
+			nrestarts++;
 		}
 
 		if ( ( get_time_ms()-t0 ) > maxtime ) {
@@ -81,7 +84,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, 
 
 	// loop is complete
 
-	DoptimReturn a = {dds, AA};
+	DoptimReturn a = {dds, AA, nrestarts};
 	//a.first;
 	
 	return a; // DoptimReturn( dds, AA);

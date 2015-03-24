@@ -68,7 +68,8 @@ class OATest(TestCommand):
 #%% Define sources of the package
 oadev=0
 srcs=[ 'arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp','mathtools.cpp', 'oaoptions.cpp', 'tools.cpp',  'md5.cpp','strength.cpp']
-srcs=srcs+[ 'Deff.cpp']
+srcs=srcs+[ 'Deff.cpp' ]
+#srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension
 if os.path.exists('src/oadevelop.cpp') and 0:
@@ -206,7 +207,7 @@ setup (name = 'OApackage',
         data_files = data_files,
 #        test_suite = "oapackage.unittest",
     scripts=scripts,
-    tests_require=['oapackage'],
+    tests_require=['numpy'],
        zip_safe=False,
 	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 

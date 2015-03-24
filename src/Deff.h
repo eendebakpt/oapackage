@@ -32,8 +32,9 @@ array_link  optimDeff(const array_link &A0,  const arraydata_t &arrayclass, std:
 //typedef std::pair< std::vector<std::vector<double> >, arraylist_t > DoptimReturn;
 
 struct DoptimReturn {
-  std::vector<std::vector<double> > dds;
-  arraylist_t designs;
+  std::vector<std::vector<double> > dds;	/// scores generated
+  arraylist_t designs;	/// designs generated
+  int nrestarts;	/// final number of restarts performed
 };
 
 

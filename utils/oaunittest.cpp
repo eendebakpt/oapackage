@@ -18,6 +18,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
+#include "Deff.h"
 
 #ifdef HAVE_BOOST
 #include <string>
@@ -79,6 +80,16 @@ int oaunittest(int verbose, int writetests=0)
 		myassert ( al3==al12, "unittest error: composition of array transformations\n" );
 	}
 
+	{
+		cprintf ( verbose, "%s: Doptimize \n", bstr );
+		const int N=40;
+		const int t = 0;
+		arraydata_t arrayclass ( 2, N, t, 6 );
+		 std::vector<double> alpha(3); alpha[0]=1; alpha[1]=1; alpha[2]=0;
+		DoptimReturn rr =  Doptimize(arrayclass, 10, 100, alpha, 0, 0, 100, 60);
+		
+	}
+	
 	{
 // test PEC sequence
 		for ( int ii=0; ii<6; ii++ ) {

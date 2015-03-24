@@ -180,7 +180,7 @@ function InstallMinicondaPip ($python_home) {
 function main () {
     InstallPython $env:PYTHON_VERSION $env:PYTHON_ARCH $env:PYTHON
     InstallPip $env:PYTHON
-    InstallPackage $env:PYTHON wheel
+    #InstallPackage $env:PYTHON wheel
     # select numpy 1.8.2 to speed up compile times...
     #InstallPackage $env:PYTHON numpy==1.8.2
 }

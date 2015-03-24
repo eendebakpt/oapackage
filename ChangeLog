@@ -3,6 +3,7 @@
 Increase speed of D-efficiencies calculation
 Make openmp enabled version of Doptimize
 Increase speed of array2eigenModelMatrix
+Output number of restarts in Doptimize
 
 1.9.102
 

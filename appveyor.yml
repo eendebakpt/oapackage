@@ -83,7 +83,7 @@ install:
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
   
   # https://chocolatey.org
-  - cinst swig
+  - cinst -y swig
 
 build: off
 
