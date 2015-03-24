@@ -1317,7 +1317,7 @@ MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const
 {
 	int verbose=0;
 	int N = this->n_rows;
-	std::pair<MatrixFloat,MatrixFloat> mmx = array2eigenModelMatrixMixed ( *this, 2 );
+	std::pair<MatrixFloat,MatrixFloat> mmx = array2eigenModelMatrixMixed ( *this, 0 );
 
 	//std::cout << mmx.first;
 
