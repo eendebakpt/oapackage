@@ -280,12 +280,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
 
 #%%
 
-#%%
-# TODO: do the arrays need to have strength 1?
-# TODO: implement in C
-# TODO: what is the proper criterium?
 # TODO: implement fast update of xf
-# TODO: add check to capture mixed arrays
 
 def optimDeffhelper(classdata):
     """ Helper function that is suitable for the multi-processing framework """
@@ -456,7 +451,8 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
         rr=oalib.Doptimize(arrayclass, nrestarts, niter=niter, alpha=optimfunc, verbose=1, method=method, maxtime=maxtime, nabort=nabort)
         dds, sols=rr.dds, rr.designs
         dds=np.array([x for x in dds])
-        sols=[x.clone() for x in sols]
+        sols=[x.clone() for x in sols]  # needed because of SWIG wrapping of struct type
+        nrestarts=rr.nrestarts
         #dds,sols=rr[0],rr[1]        
         #dds=rr[0]
         #sols=[x.clone() for x in sols]
@@ -470,15 +466,12 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
         dds=np.zeros( (0,3)) 
         sols=[]  #oalib.arraylist_t()
            
+        nrestarts=0       
         for ii in range(nrestarts):
             if verbose:
                 oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' % (ii, nrestarts, time.time()-t0, maxtime), dt=4)
             al=arrayclass.randomarray(1)
-    
-    
             
-            #array_link  optimDeff(const array_link &A0,  arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int method=-1, int niter=10000, int nabort=2500);
-    
             if isinstance(optimfunc, list):
                 alpha=optimfunc
                 Ax= oalib.optimDeff(al, arrayclass, alpha, verbose>=2, method, niter, nabort)
@@ -497,6 +490,8 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
             scores=np.vstack( (scores, [score]) )
             dds=np.vstack( (dds, dd) )
             sols.append(Ax)
+            nrestarts=nrestarts+1
+
             if verbose>=2:
                 print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
                 
@@ -516,7 +511,7 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
     # sort & select
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
     
-    return scores, dds, sols
+    return scores, dds, sols, nrestarts
 
 
 #%%

@@ -124,6 +124,21 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
         if tofront:
             plt.figure(f)
 
+
+def enlargelims(factor=1.05):
+    """ Enlarge the limits of a plot
+    Example:   
+      >>> enlargelims(1.1)
+    """
+    xl=plt.xlim()        
+    d=(factor-1)*(xl[1]-xl[0])/2
+    xl=(xl[0]-d,xl[1]+d)
+    plt.xlim(xl)
+    yl=plt.ylim()   
+    d=(factor-1)*(yl[1]-yl[0])/2
+    yl=(yl[0]-d,yl[1]+d)
+    plt.ylim(yl)
+    
 #%%            
 def selectParetoArrays(allarrays, pp):
     """ Select arrays using a Pareto object """
