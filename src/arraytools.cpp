@@ -1791,132 +1791,14 @@ double array_link::DsEfficiency ( int verbose ) const
 	return Ds;
 }
 
-#include <Eigen/Dense>
 
-//typedef Eigen::MatrixXd MyMatrix;
-typedef MatrixFloat MyMatrix;
-
-std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & arrayclass, int verbose )
-{
-	if ((al.n_rows>500) || (al.n_columns>500) )
-	{
-		printf("Defficiencies: array size not supported\n");
-		return std::vector<double>(3);
-	}
-	int k = al.n_columns;
-	int k1 = al.n_columns+1;
-	int n = al.n_rows;
-	int N=n;
-	int m = 1 + k + k* ( k-1 ) /2;
-
-	MyMatrix X;
-	
-	int n2fi = -1; /// number of 2-factor interactions in contrast matrix
-	int nme = -1;	/// number of main effects in contrast matrix
-	
-	if ( arrayclass.is2level() ) {
-		//Eigen::MatrixXi Xint =  array2eigenModelMatrixInt ( al );
-		//matXtX = ( Xint.transpose() *(Xint) ).cast<eigenFloat>() /n;
-
-		X = array2eigenModelMatrix ( al );
-
-		//X1i = array2eigenX1 ( al, 1 );
-		//	X2 = array2eigenX2 ( al );
-		//X2 = X.block ( 0, 1+k, N, k* ( k-1 ) /2 );
-		//std::cout << "X2\n" << X2 << std::endl; std::cout << "X2a\n" << X2a << std::endl;
-		//if (X2a==X2) printf("equal!"); exit(0);
-
-		n2fi =  k* ( k-1 ) /2;
-		nme = k;
-	} else {
-		if ( verbose>=2 )
-			printf ( "Defficiencies: mixed design!\n" );
-		std::pair<MyMatrix,MyMatrix> mm = array2eigenModelMatrixMixed ( al, 0 );
-		const MyMatrix &X1=mm.first;
-		const MyMatrix &X2=mm.second;
-		//eigenInfo(X1i, "X1i");
-		//X1i.resize ( N, 1+X1.cols() );
-		//X1i << MyMatrix::Constant ( N, 1, 1 ),  X1;
-		//X2=mm.second;
-		X.resize ( N, 1+X1.cols() +X2.cols() );
-		X << MyMatrix::Constant ( N, 1, 1 ),  X1, X2;
-		
-		n2fi = X2.cols();
-		nme = X1.cols();
-
-
-	}
-	MyMatrix matXtX = ( X.transpose() *(X) ) /n;
-	//Matrix X1i =  X.block(0,0,N, 1+nme);
-
-	/*
-	// https://forum.kde.org/viewtopic.php?f=74&t=85616&p=146569&hilit=multiply+transpose#p146569
-	MyMatrix matXtX(X.cols(), X.cols());
-	//		matXtX.setZero();
-	//		printf("assign triangularView\n");
-	matXtX.triangularView<Eigen::Upper>() = X.transpose() *X/n;
-
-	//		matXtX.sefladjointView<Upper>().rankUpdate(X.transpose() );
-
-	//		printf("assign triangularView (lower)\n");
-
-	matXtX.triangularView<Eigen::StrictlyLower>() = matXtX.transpose();
-*/
-
-	if (0)
-	{
-	Eigen::MatrixXf dummy = matXtX.cast<float>();
-	double dum1 = matXtX.determinant();
-	double dum2 = dummy.determinant();
-	}
-	double f1 = matXtX.determinant();
-	double f2 = ( matXtX.block(1+nme, 1+nme, n2fi, n2fi) ).determinant();
-	//double f2 = ( X2.transpose() *X2/n ).determinant();
-	double t = ( matXtX.block(0,0,1+nme, 1+nme) ).determinant();
-	//double t = ( X1i.transpose() *X1i/n ).determinant();
-
-	double D=0, Ds=0, D1=0;
-	if ( fabs ( f1 ) <1e-15 ) {
-		if ( verbose>=1 ) {
-			printf ( "Defficiencies: model matrix does not have max rank, setting D-efficiency to zero\n" );
-		}
-
-	} else {
-		if ( verbose>=2 ) {
-			printf ( "Defficiencies: f1 %f, f2 %f, t %f\n", f1, f2, t );
-		}
-
-
-		Ds = pow ( ( f1/f2 ), 1./k1 );
-		D = pow ( f1, 1./m );
-	}
-	D1 = pow ( t, 1./k1 );
-
-	if ( verbose>=2 ) {
-		printf ( "Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1 );
-	}
-
-	if ( 0 ) {
-		double dd = detXtX( X/sqrt ( double ( n ) ) );
-		double Dnew = pow ( dd, 1./m );
-		printf ( "D %.15f -> %.15f\n", D, Dnew );
-	}
-
-	std::vector<double> d ( 3 );
-	d[0]=D;
-	d[1]=Ds;
-	d[2]=D1;
-	return d;
-
-}
-
-std::vector<double> array_link::Defficiencies ( int verbose ) const
+std::vector<double> array_link::Defficiencies ( int verbose, int addDs0 ) const
 {
 	const array_link &al = *this;
 
 	arraydata_t arrayclass = arraylink2arraydata ( al );
 
-	return ::Defficiencies ( al, arrayclass, verbose );
+	return ::Defficiencies ( al, arrayclass, verbose,  addDs0 );
 
 }
 

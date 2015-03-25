@@ -603,10 +603,8 @@ public:
     /// print array properties to stdout
     void showproperties() const;
 
-  /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
+    /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
     bool is2level() const;
-
-
       
     // manipulation of arrays
 
@@ -634,7 +632,7 @@ public:
     double DsEfficiency(int verbose=0) const;
 
     /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency
-    std::vector<double> Defficiencies(int verbose=0) const;
+    std::vector<double> Defficiencies(int verbose=0, int addDs0 = 0) const;
     
     /*** calculate average variation inflation factor
      *

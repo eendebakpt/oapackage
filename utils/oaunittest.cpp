@@ -216,10 +216,10 @@ int oaunittest(int verbose, int writetests=0)
 		if ( 1 ) {
 			al = exampleArray ( 9, vb );
 			al.showproperties();
-			d = al.Defficiencies();
+			d = al.Defficiencies(0, 1);
 			//printf("verbose: %d\n", verbose);
 			if ( verbose>=2 )
-				printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
+				printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
 			if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
 				printf ( "oaunittest: error: Defficiency not good!\n" );
 			}
@@ -231,19 +231,22 @@ int oaunittest(int verbose, int writetests=0)
 		if ( verbose>=2 )
 			printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
 		if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
-			printf ( "oaunittest: error: Defficiency not good!\n" );
+			printf ( "oaunittest: error: Defficiency of examlple array 8 not good!\n" );
 		}
 
 		al = exampleArray ( 13, vb );
 		//al.showarray();
 		//al.showproperties();
 		
-		d = al.Defficiencies();
+		d = al.Defficiencies(0,1);
 		if ( verbose>=2 )
 			printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
 
-		if ( ( fabs( d[0]-0.939014) > 1e-4 ) || ( fabs( d[1]-0.896812) > 1e-4 )  || ( fabs( d[2]-1) > 1e-4 )  ) {
-			printf("error: D-efficiencies of example array incorrect!\n");
+		if ( ( fabs( d[0]-0.939014) > 1e-4 ) || ( fabs( d[3]-0.896812) > 1e-4 )  || ( fabs( d[2]-1) > 1e-4 )  ) {
+			printf("ERROR: D-efficiencies of example array 13 incorrect! \n");
+		d = al.Defficiencies(2,1);
+						printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
+
 		exit(1);	
 		}
 		

@@ -33,6 +33,8 @@ int array_rank_D_B(const array_link &al, std::vector<double> *ret = 0, int verbo
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition
 double Defficiency(const array_link &al, int verbose=0);
 
+std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & arrayclass, int verbose, int addDs0 );
+
 /// Calculate VIF-efficiency of matrix
 double VIFefficiency(const array_link &al, int verbose=0);
 

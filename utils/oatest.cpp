@@ -356,11 +356,12 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 #include <Eigen/LU>
 
 #include "Deff.h"
+#include "arraytools.h"
 
 using namespace Eigen;
 
 
-std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
+//std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
 
 
 int main ( int argc, char* argv[] )
@@ -407,7 +408,7 @@ int main ( int argc, char* argv[] )
 	setloglevel ( verbose );
 
 	
-	if (1) {
+	if (0) {
 	
 		arraydata_t arrayclass ( 2, 8, 0, 2 );
 		int nrestarts=40; 
@@ -434,7 +435,7 @@ int main ( int argc, char* argv[] )
 				//std::vector<double> dd = al.Defficiencies();
 				
 				arraydata_t arrayclass = arraylink2arraydata(al);
-				std::vector<double> dd = Defficiencies(al, arrayclass, 0);
+				std::vector<double> dd = Defficiencies(al, arrayclass, 0, 0);
 
 				//int dmethod = DOPTIM_SWAP;
 				//dmethod = DOPTIM_NONE;
