@@ -235,7 +235,7 @@ class page:
         self.content.append( text )
 
 
-    def init( self, lang='en', css=None, metainfo=None, title=None, header=None,
+    def init( self, lang='en', css=None, metainfo=None, title=None, header=None, htmlheader=None,
               footer=None, charset=None, encoding=None, doctype=None, bodyattrs=None, htmlattrs=None, script=None ):
         """This method is used for complete documents with appropriate
         doctype, encoding, title, etc information. For an HTML/XML snippet
@@ -299,6 +299,8 @@ class page:
                 self.title( title )
             if script is not None:
                 self.scripts( script )
+            if htmlheader is not None:
+                self.content.append( htmlheader )
             self.head.close()
             if bodyattrs is not None:
                 self.body( **bodyattrs )

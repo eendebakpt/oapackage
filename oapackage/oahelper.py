@@ -257,7 +257,47 @@ def choose(n, k):
     return ntok
 #    return fac(n)/(fac(n-k)*fac(k))
 
-def array2latex(ltable, htable=None):
+def array2latex(X, header=0, hlines=[], floatfmt='%g', hlinespace=None, mode='tabular', tabchar='c'):
+    """ Convert numpy array to Latex tabular """
+    ss=''
+    if header:
+        if mode=='tabular':
+            if len(tabchar)==1:
+                cc=tabchar * X.shape[1]
+            else:
+                cc=tabchar + tabchar[-1] * (X.shape[1]-len(tabchar) )
+            ss += '\\begin{tabular}{%s}' % cc + chr(10)
+        elif mode=='psmallmatrix':
+            ss+='\\begin{psmallmatrix}' + chr(10)
+        else:
+            ss+='\\begin{pmatrix}' + chr(10)
+        #ss += '\hline' + chr(10)
+    for ii in range(X.shape[0]):
+        r=X[ii,:]
+#        for jj in range(X.shape[1]):
+#            v=r[jj]
+        if isinstance(r[0], str):
+            ss += ' & '.join(['%s' % x for x in r] )
+        else:
+            ss += ' & '.join([floatfmt % x for x in r] )
+        if ii<(X.shape[0])-1 or not header:
+            ss += '  \\\\' + chr(10)
+        else:
+            ss += '  ' + chr(10)            
+        if ii in hlines:
+            ss+='\hline' + chr(10)
+            if hlinespace!=None:
+                ss+= '\\rule[+%.2fex]{0pt}{0pt}' % hlinespace
+    if header:
+        if mode=='tabular':
+            ss += '\\end{tabular}'
+        elif mode=='psmallmatrix':
+            ss+='\\end{psmallmatrix}'  + chr(10)
+        else:
+            ss+='\\end{pmatrix}'  + chr(10)
+    return ss
+    
+def array2latex_old(ltable, htable=None):
     """ Write a numpy array to latex format """
     print('please use array2latex from researchOA instead')
     ss=''

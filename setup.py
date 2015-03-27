@@ -143,7 +143,7 @@ else:
   oalib_module.extra_compile_args += ['-O2', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
 
 
-if platform.node()=='marmot' or  platform.node()=='goffer':
+if platform.node()=='marmot' or  platform.node()=='goffer' or platform.node()=='pte':
   # openmp version of code
   oalib_module.extra_compile_args+=['-fopenmp', '-DDOOPENMP']
   oalib_module.extra_link_args+=['-fopenmp']
@@ -191,7 +191,7 @@ class CustomInstall(install):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '1.9.112',
+       version = '1.9.134',
        author      = "Pieter Eendebak",
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",

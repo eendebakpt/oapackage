@@ -42,7 +42,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestartsmax, int nite
 		#pragma omp critical
 #endif
 		{
-			if ( verbose && i%5==0 ) {
+			if ( verbose && i%25==0 ) {
 				myprintf ( "Doptim: iteration %d/%d\n", i, nrestartsmax );
 #ifdef MAINMEX
 #else
@@ -56,7 +56,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestartsmax, int nite
 		array_link al = arrayclass.randomarray ( 1 );
 
 
-		array_link  A = optimDeff ( al,  arrayclass, alpha, verbose, method, niter,  nabort );
+		array_link  A = optimDeff ( al,  arrayclass, alpha, verbose>=2, method, niter,  nabort );
 		std::vector<double> dd = A.Defficiencies();
 		if ( verbose>=2 ) {
 			myprintf ( "Doptim: iteration %d/%d: %f %f %f\n", i, nrestartsmax, dd[0], dd[1], dd[2] );
@@ -216,6 +216,10 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 
 	std::vector<double> dd = A.Defficiencies();
 	double dn = scoreD ( dd, alpha );
+
+		if ( verbose ) {
+		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd0[0] );
+	}
 
 	//printf("nx %d\n", nx);
 	return A;
