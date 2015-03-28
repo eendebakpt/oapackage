@@ -126,7 +126,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     plt.ylabel('D-efficiency', fontsize=16)
 
     plt.axis('image')    
-    plt.legend=ax.legend(loc=3, scatterpoints=1) #, fontcolor=almost_black)
+    pltlegend=ax.legend(loc=3, scatterpoints=1) #, fontcolor=almost_black)
     if not nofig:
         plt.show()
     #time.sleep(0.01)
