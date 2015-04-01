@@ -242,8 +242,8 @@ public:
 
 enum ordering_t {ORDER_LEX, ORDER_J5};
 
-/**
- * @brief contains static data of an array
+/** @brief Contain the class of the design (number of rows, columns, levels)
+ * 
  */
 struct arraydata_t
 {
@@ -262,9 +262,9 @@ struct arraydata_t
 
 public:
     /// create new arraydata_t object
-    arraydata_t(array_t s, rowindex_t N_, colindex_t strength, colindex_t nc);
-    arraydata_t(const std::vector<int> s, rowindex_t N_, colindex_t t, colindex_t nc);
-    arraydata_t(carray_t *s_, rowindex_t N_, colindex_t strength, colindex_t nc);
+    arraydata_t(array_t s, rowindex_t N_, colindex_t strength, colindex_t ncols);
+    arraydata_t(const std::vector<int> s, rowindex_t N, colindex_t strength, colindex_t ncols);
+    arraydata_t(carray_t *s_, rowindex_t N, colindex_t strength, colindex_t ncols);
     arraydata_t(const arraydata_t &adp); /// copy constructor
 
     arraydata_t(const arraydata_t *adp, colindex_t newncols); /// copy constructor

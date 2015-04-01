@@ -257,9 +257,11 @@ def choose(n, k):
     return ntok
 #    return fac(n)/(fac(n-k)*fac(k))
 
-def array2latex(X, header=0, hlines=[], floatfmt='%g', hlinespace=None, mode='tabular', tabchar='c'):
+def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
     """ Convert numpy array to Latex tabular """
     ss=''
+    if comment is not None:
+        ss+='%% %s\n' % str(comment)
     if header:
         if mode=='tabular':
             if len(tabchar)==1:
