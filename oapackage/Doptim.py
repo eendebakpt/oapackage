@@ -126,7 +126,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     plt.ylabel('D-efficiency', fontsize=16)
 
     try:
-        oahelper.setWindowRectangle( 2000,10,800, 600)
+        oahelper.setWindowRectangle( 2000,10,860, 600)
     except:
         pass
 
@@ -278,6 +278,8 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     page.p('Citation notice: if you make use of the results on this page, please cite the following paper:')
     page.p('%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010.' % citationstr)
     
+    page.p('Generated with oapackage %s, date %s.' % (oalib.version(), oahelper.timeString()) )
+
     outfile=os.path.join(outputdir ,'Dresults.html' )
     fid=open(outfile, 'wt')
     fid.write(str(page))

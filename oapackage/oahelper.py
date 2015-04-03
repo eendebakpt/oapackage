@@ -173,10 +173,12 @@ def niceplot(ax, fig=None, despine=True, verbose=0, legend=None, almost_black='#
         # Remove the line around the legend box, and instead fill it with a light grey
         # Also only use one point for the scatterplot legend because the user will
         # get the idea after just one, they don't need three.
-        light_grey = np.array([float(248)/float(255)]*3)
+        light_grey = np.array([float(241)/float(255)]*3)
         rect = legend.get_frame()
         rect.set_facecolor(light_grey)
-        rect.set_linewidth(0.0)
+        middle_grey = np.array([float(151)/float(255)]*3)
+        rect.set_edgecolor(middle_grey)
+        #rect.set_linewidth(0.0)
         
         # Change the legend label colors to almost black, too
         texts = legend.texts
