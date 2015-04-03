@@ -3,12 +3,14 @@ include LICENSE
 include ALGORITHM.txt
 include ChangeLog
 include oadoxy.i
+include numpy.i
 include mex/compile.m
 
 #include example.r
 #include oalib_wrap.cxx
 
 recursive-include src *.h *.cpp
+recursive-include bitarray *.h *.cpp
 
 #graft python
 #graft oalib
