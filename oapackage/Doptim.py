@@ -141,7 +141,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     if not nofig:
         plt.draw()
 
-    hh = dict({'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
+    hh = dict({'ax':ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
 #%%
 
@@ -200,7 +200,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     if lbls is None:
         lbls= ['Optimization of $D$'] 
     hh=generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
-    oahelper.niceplot(hh['ax'], despine=True, legend=hh['pltlegend'])
+    oahelper.niceplot(hh.get('ax', None), despine=True, legend=hh['pltlegend'])
 
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
     if verbose:

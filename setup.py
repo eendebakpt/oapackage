@@ -91,7 +91,7 @@ else:
   if 0:
     sources += ['oalib_wrap.cxx'] 
   else:
-    sources = ['oalib.i'] + sources
+    sources = ['oalib.i'] + sorted(sources)
     swig_opts+=['-modern', '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
 
 if platform.system()=='Windows':
