@@ -1,4 +1,4 @@
-# OApackage
+# Orthogonal Array package
 # pieter.eendebak@gmail.com
 
 __all__ = ['oahelper']
@@ -23,14 +23,17 @@ def autodoctest():
     """
     return
 
-def unittest():
+def unittest(verbose=1):
+  """ Perform some unit testing, return True if succesfull """
   print('oapackage: oalib version %s' % oalib.version() )
   al=oalib.array_link()
   ii=0
   al=oalib.exampleArray(ii, 0)
   Deff=al.Defficiency()
-  print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
-
+  if verbose>=2:
+      print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
+  return True
+  
 if __name__ == "__main__":
     """ Dummy main for oapackage """
     import doctest

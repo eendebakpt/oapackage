@@ -1,9 +1,9 @@
 include FORMAT.txt
-include LICENSE.txt
+include LICENSE
 include ALGORITHM.txt
 include ChangeLog
 include oadoxy.i
-include compile.m
+include mex/compile.m
 
 #include example.r
 #include oalib_wrap.cxx

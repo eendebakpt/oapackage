@@ -122,8 +122,13 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
                 tmp=plt.scatter(Ds, D, s=60, color='r', label='Strength 3');
         plt.draw()
         
-    plt.xlabel('$D_s$-efficiency', fontsize=16)
+    xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
     plt.ylabel('D-efficiency', fontsize=16)
+
+    try:
+        oahelper.setWindowRectangle( 2000,10,800, 600)
+    except:
+        pass
 
     plt.axis('image')    
     pltlegend=ax.legend(loc=3, scatterpoints=1) #, fontcolor=almost_black)
@@ -136,7 +141,8 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     if not nofig:
         plt.draw()
 
-
+    hh = dict({'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
+    return hh
 #%%
 
 #import researchOA
@@ -193,8 +199,9 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     #lbls= ['Optimization of $D+.5 D_s$', 'Optimization of $D+  0.5 D_s$', 'Optimization of $D+3*Ds$', 'Optimization of $D+3*D_s$']
     if lbls is None:
         lbls= ['Optimization of $D$'] 
-    x=generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
- 
+    hh=generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
+    oahelper.niceplot(hh['ax'], despine=True, legend=hh['pltlegend'])
+
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
     if verbose:
         print('generateDpage: writen scatterplot to %s' % scatterfile)
@@ -222,7 +229,10 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     # mathjax is not updated properly...    
     ss='The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
     ss='The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
-    page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss) )
+    if npareto==1:
+        page.p('Generated %d arrays, %d is Pareto optimal. %s' % (narrays, npareto, ss) )
+    else:
+        page.p('Generated %d arrays, %d are Pareto optimal. %s' % (narrays, npareto, ss) )
 
     if narrays>0:
 

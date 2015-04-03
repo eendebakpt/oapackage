@@ -22,6 +22,11 @@ import re
 from time import gmtime, strftime
 import time
 
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
+
 #%%
 
 try:
@@ -123,6 +128,70 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
             mngr.window.raise_()
         if tofront:
             plt.figure(f)
+
+
+#%% Make nice plots
+# http://blog.olgabotvinnik.com/prettyplotlib/
+
+def niceplot(ax, fig=None, despine=True, verbose=0, legend=None, almost_black='#222222'):
+    """ Create a good looking plot
+
+    The code: 
+        - removes spines
+        - makes legend and spines lighter
+        - makes legend lighter
+    
+    """
+    
+    # Remove top and right axes lines ("spines")
+    if verbose:
+        print('niceplot: remove spines')
+
+    spines_to_keep = ['bottom', 'left']
+    if despine:
+        spines_to_remove = ['top', 'right']
+        for spine in spines_to_remove:
+            ax.spines[spine].set_visible(False)
+    else:
+        spines_to_keep+=['top', 'right']
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+
+    if verbose:
+        print('niceplot: reduce spine intensity')
+
+    for spine in spines_to_keep:
+        ax.spines[spine].set_linewidth(0.5)
+        ax.spines[spine].set_color(almost_black)
+
+    ax.tick_params(axis='both', direction='out')
+
+    if not legend is None:
+        if verbose:
+            print('niceplot: adjust legend')
+
+        # Remove the line around the legend box, and instead fill it with a light grey
+        # Also only use one point for the scatterplot legend because the user will
+        # get the idea after just one, they don't need three.
+        light_grey = np.array([float(248)/float(255)]*3)
+        rect = legend.get_frame()
+        rect.set_facecolor(light_grey)
+        rect.set_linewidth(0.0)
+        
+        # Change the legend label colors to almost black, too
+        texts = legend.texts
+        for t in texts:
+            t.set_color(almost_black)
+
+        #ttx=legend.get_texts()
+        #[v.set_color(almost_black) for v in ttx]
+
+    #fig.tight_layout(pad=0.1)
+    if not fig is None:
+        fig.tight_layout(pad=1.0)
+
+    plt.draw()
+    plt.show()
 
 
 def enlargelims(factor=1.05):

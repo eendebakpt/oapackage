@@ -212,6 +212,23 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+#%%
+
+def testExtendBinary(verbose=1):
+    repos=dict()
+    repos['oatest1.txt'] = 'result-16.2-2-2-2-2-2-2-2.oa';
+    repos['oatest2.txt'] = 'result-18.3-3-3-3-3.oa';
+    repos['oatest3.txt'] = 'result-8.4-2-1-4-2-2.oa';
+    repos['oatest4.txt'] = 'result-28.7-2-2-2.oa';
+    repos['oatest5.txt'] = 'result-16.2-2-2-2-2-2-2-2-2.oa';
+    repos['oatest6.txt'] = 'result-25.5-5-5-5.oa';
+    repos['oatest7.txt'] = 'result-64.2-2-2-2-2-2.oa';
+    repos['oatest8.txt'] = 'result-56.2-2-2-2-2.oa';
+
+
+#testExtendBinary()
+
+#%%
 def main(argv=None):
     """ Main testing function """
     print('OA performance testing')
