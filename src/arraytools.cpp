@@ -3317,7 +3317,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 		char buf[1];
 		buf[0]=-1;
 		int r = fread ( buf, sizeof ( char ), 1, this->nfid );
-		if ( buf[0] < 48 || buf[0] > 57 ) {
+		if ( buf[0] < 48 || buf[0] > 57 || r<0 ) {
 			// printf("   read char %d\n", int(buf[0]));
 			if ( verbose>=1 )
 				fprintf ( stderr,  "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
