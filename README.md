@@ -1,7 +1,7 @@
 Orthogonal Array Package
 ========================
 
-(version 1.9.102)
+(version 1.9.314)
 
 The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
@@ -19,7 +19,7 @@ Ideas contributed by:
 
 * Eric Schoen <eric.schoen@tno.nl>
 
-See the file LICENSE.txt for copyright details.
+See the file LICENSE for copyright details.
 
 Data format
 -----------
@@ -31,6 +31,8 @@ To examine the result files one can use the oacat tool from the package, or the 
 
 Installation
 ------------
+
+[![Build status](https://ci.appveyor.com/api/projects/status/f6ia9br95soimf9u?svg=true)](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8)
 
 The Python interface to the package is available on the Python Package index.
 Installation can be done using the following command::

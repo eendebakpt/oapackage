@@ -1,4 +1,4 @@
-Copyright (c) 2011-2012, Pieter Eendebak <pieter.eendebak@gmail.com>
+Copyright (c) 2011-2015, Pieter Eendebak <pieter.eendebak@gmail.com>
 Copyright (c) 2009, TNO Science & Industry
 
 Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ####################################################################################
   
   
-Citation notice: if you use this work or any results of this work, please cite the work (see the file README.txt for details).
+Citation notice: if you use this work or any results of this work, please cite the work (see the file README.md for details).
 For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 
