@@ -135,8 +135,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     if not nofig:
         plt.show()
     #time.sleep(0.01)
-    plt.grid(b=True, which='both', color='0.85',linestyle='-')
-    
+    ax.grid(b=True, which='both', color='0.85',linestyle='-')
+    ax.set_axisbelow(True)
+
     
     if not nofig:
         plt.draw()
@@ -269,7 +270,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     page.p('All Pareto optimal arrays: %s' % istrlnk )
     
     
-    page.img(src=urlprefix+'scatterplot.png', style="margin: 10px;")
+    page.img(src=urlprefix+'scatterplot.png', style="margin: 10px; width:95%; min-width: 300px; max-width:1400px;")
     
     citationstr = markup.oneliner.a('Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='http://dx.doi.org/10.1002/jcd.20236')
     
