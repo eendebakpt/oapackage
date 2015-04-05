@@ -337,6 +337,13 @@ public:
     }
 } 
 
+%extend array_transformation_t {
+public:
+    std::string __repr__() {
+      return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+    }
+} 
+
 %extend array_link {
 public:
     std::string __repr__() {
