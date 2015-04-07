@@ -17,6 +17,11 @@ int dummy::operator< ( const dummy &rhs ) const
     }
 */
 
+void set_srand(unsigned int s)
+{
+srand(s);  
+}
+
 template<class Type>
 void symmetry_group::init(const std::vector<Type> vals, bool ascendingx, int verbose)
 {

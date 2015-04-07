@@ -886,6 +886,25 @@ def showtriangles(jresults, showindex=1):
                 xx=[vals[v] for v in range(idx[kk], idx[kk+1])]
                 s=','.join(map(str, xx))
                 print('%s' % s)
+#%%
+
+from oapackage import markup
+import webbrowser
+import tempfile
+
+def testHtml(hh):
+    """ Test a short snippet of HTML """
+    page=markup.page()
+    page.init()
+    page.body()
+    page.add(hh)
+    page.body.close()
+    tmp, f = tempfile.mkstemp('.html')
+    with open(f, 'wt') as fname:
+        fname.write(str(page))
+        fname.close()
+        webbrowser.open(fname.name)
+
                 
 #%%                
 def DefficiencyBound(D, k, k2):

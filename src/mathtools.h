@@ -769,6 +769,9 @@ bool next_perm ( std::vector<permutationType> &s )
     return false;
 }
 
+/// set the random number seed using srand
+void set_srand(unsigned int s);
+
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 /*
 * Specialized function for permutations of length two
