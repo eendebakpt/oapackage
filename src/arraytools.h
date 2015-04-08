@@ -1095,8 +1095,10 @@ public:
 	/// initialize to a random transformation
 	void randomize();
 
-	/// initialize with a random column transformation
+	/// initialize with a random column permutation
 	void randomizecolperm();
+	/// initialize with a random row permutation
+	void randomizerowperm();
 
 	/// apply transformation to an array_link object
 	array_link apply ( const array_link &al ) const {
@@ -1191,7 +1193,7 @@ public:
 	void show ( std::ostream &out ) const;
 
 	std::vector<int> rowperm() const;
-	std::vector<int> colperm() const;
+	std::vector<int> colperm() const; /// return the column permutation of the transformation
 	std::vector<int> lvlperm ( int c ) const;
 
 

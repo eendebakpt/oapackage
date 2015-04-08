@@ -126,8 +126,10 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     plt.ylabel('D-efficiency', fontsize=16)
 
     try:
-        oahelper.setWindowRectangle( 2000,10,860, 600)
-    except:
+        oahelper.setWindowRectangle( 10,10,860, 600)
+    except Exception as e:
+        print('generateDscatter: setWindowRectangle failed')
+        #print(e)
         pass
 
     plt.axis('image')    
@@ -206,7 +208,12 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     scatterfile=os.path.join(outputdir, 'scatterplot.png')
     if verbose:
         print('generateDpage: writen scatterplot to %s' % scatterfile)
-    plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25)
+    plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
+
+#xSize = 3 #inches
+#ySize = xSize/xPix*yPix
+#gcf().set_inches_size(xSize,ySize)
+#gcf().savefig('test.png',dpi=xSize/xPix)
 
     #%% Create page
 
@@ -270,7 +277,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1,0,
     page.p('All Pareto optimal arrays: %s' % istrlnk )
     
     
-    page.img(src=urlprefix+'scatterplot.png', style="margin: 10px; width:95%; min-width: 300px; max-width:1400px;")
+    page.img(src=urlprefix+'scatterplot.png', style="margin: 10px; width:95%; min-width: 300px;  max-width:1100px; height: auto; ")
     
     citationstr = markup.oneliner.a('Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='http://dx.doi.org/10.1002/jcd.20236')
     

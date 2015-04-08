@@ -210,6 +210,11 @@ array_link::showarray() const
 
 print array to stdout ";
 
+%feature("docstring")  array_link::showarraycompact "void
+array_link::showarraycompact() const
+
+print array to stdout ";
+
 %feature("docstring")  array_link::showproperties "void
 array_link::showproperties() const
 
@@ -257,15 +262,10 @@ array_link::DsEfficiency(int verbose=0) const
 calculate main effect robustness (or Ds-optimality) ";
 
 %feature("docstring")  array_link::Defficiencies "std::vector<double>
-array_link::Defficiencies(int verbose=0) const
+array_link::Defficiencies(int verbose=0, int addDs0=0) const
 
 calculate D-efficiency, calculate main effect robustness (or Ds-
 optimality) and D1-efficiency ";
-
-%feature("docstring")  array_link::randomperm "array_link
-array_link::randomperm() const
-
-apply a random permutation of rows, columns and levels ";
 
 %feature("docstring")  array_link::VIFefficiency "double
 array_link::VIFefficiency() const ";
@@ -289,6 +289,11 @@ Calculate F-values of a matrix. ";
 array_link::Jcharacteristics(int jj=4) const
 
 Calculate J-characteristics of matrix. ";
+
+%feature("docstring")  array_link::PECsequence "std::vector<double>
+array_link::PECsequence() const
+
+Calculate the projective estimation capacity sequence. ";
 
 %feature("docstring")  array_link::rank "int array_link::rank() const
 
@@ -318,7 +323,12 @@ The method is from \"A connection between uniformity and aberration in
 regular fractions of two-level factorials\", Fang and Mukerjee, 2000
 ";
 
-%feature("docstring")  array_link::getModelMatrix "Eigen::MatrixXd
+%feature("docstring")  array_link::randomperm "array_link
+array_link::randomperm() const
+
+apply a random permutation of rows, columns and levels ";
+
+%feature("docstring")  array_link::getModelMatrix "MatrixFloat
 array_link::getModelMatrix(int order, int intercept=1) const
 
 This function calculates Helmert contrasts for the factors of an input
@@ -350,37 +360,47 @@ rowindex_t, const colindex_t) const ";
 %feature("docstring")  array_link::_at "array_t array_link::_at(const
 int index) const
 
-no error checking ";
+get element at specified position, no error checking ";
 
 %feature("docstring")  array_link::at "array_t array_link::at(const
 rowindex_t, const colindex_t) const
 
-no error checking ";
+get element at specified position, no error checking ";
 
 %feature("docstring")  array_link::at "array_t array_link::at(const
-int index) const ";
+int index) const
+
+get element at specified position ";
 
 %feature("docstring")  array_link::at "array_t& array_link::at(const
-rowindex_t, const colindex_t) ";
+rowindex_t, const colindex_t)
+
+get element at specified position ";
 
 %feature("docstring")  array_link::setconstant "void
 array_link::setconstant(array_t val)
 
+get element at specified position
+
 set all elements in the array to a value ";
 
 %feature("docstring")  array_link::setvalue "void
-array_link::setvalue(int row, int col, int val) ";
+array_link::setvalue(int row, int col, int val)
+
+set value of an array ";
 
 %feature("docstring")  array_link::setvalue "void
 array_link::setvalue(int row, int col, double val) ";
 
 %feature("docstring")  array_link::_setvalue "void
-array_link::_setvalue(int row, int col, int val) ";
+array_link::_setvalue(int row, int col, int val)
+
+set value of an array ";
 
 %feature("docstring")  array_link::show "void array_link::show()
 const
 
-no error checking!
+set value of an array, no error checking!
 
 print information about array ";
 
@@ -465,7 +485,7 @@ array_link::reduceDOP() const
 
 return the delete-one-factor-projection form of the array ";
 
-%feature("docstring")  array_link::getEigenMatrix "Eigen::MatrixXd
+%feature("docstring")  array_link::getEigenMatrix "MatrixFloat
 array_link::getEigenMatrix() const
 
 return the array as an Eigen matrix ";
@@ -478,6 +498,8 @@ array ";
 
 %feature("docstring")  array_link::showarrayS "std::string
 array_link::showarrayS() const ";
+
+%feature("docstring")  array_link::data "long array_link::data() ";
 
 
 // File: classarray__transformation__t.xml
@@ -510,7 +532,7 @@ default constructor ";
 %feature("docstring")  array_transformation_t::~array_transformation_t
 "array_transformation_t::~array_transformation_t()
 
-Assignment operator. ";
+assignment operator ";
 
 %feature("docstring")  array_transformation_t::show "void
 array_transformation_t::show() const
@@ -541,7 +563,12 @@ initialize to a random transformation ";
 %feature("docstring")  array_transformation_t::randomizecolperm "void
 array_transformation_t::randomizecolperm()
 
-initialize with a random column transformation ";
+initialize with a random column permutation ";
+
+%feature("docstring")  array_transformation_t::randomizerowperm "void
+array_transformation_t::randomizerowperm()
+
+initialize with a random row permutation ";
 
 %feature("docstring")  array_transformation_t::apply "array_link
 array_transformation_t::apply(const array_link &al) const
@@ -570,7 +597,9 @@ array_transformation_t::show(std::ostream &out) const ";
 
 %feature("docstring")  array_transformation_t::colperm "std::vector<int> array_transformation_t::colperm() const ";
 
-%feature("docstring")  array_transformation_t::lvlperm "std::vector<int> array_transformation_t::lvlperm(int c) const ";
+%feature("docstring")  array_transformation_t::lvlperm "std::vector<int> array_transformation_t::lvlperm(int c) const
+
+return the column permutation of the transformation ";
 
 %feature("docstring")  array_transformation_t::setrowperm "void
 array_transformation_t::setrowperm(std::vector< int >rp) ";
@@ -586,20 +615,20 @@ lvlperm) ";
 // File: structarraydata__t.xml
 %feature("docstring") arraydata_t "
 
-contains static data of an array
+Contain the class of the design (number of rows, columns, levels)
 
 C++ includes: arraytools.h ";
 
 %feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(array_t s, rowindex_t N_, colindex_t
-strength, colindex_t nc)
+strength, colindex_t ncols)
 
 create new arraydata_t object ";
 
-%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const std::vector< int > s, rowindex_t N_,
-colindex_t t, colindex_t nc) ";
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const std::vector< int > s, rowindex_t N,
+colindex_t strength, colindex_t ncols) ";
 
-%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(carray_t *s_, rowindex_t N_, colindex_t
-strength, colindex_t nc) ";
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(carray_t *s_, rowindex_t N, colindex_t
+strength, colindex_t ncols) ";
 
 %feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const arraydata_t &adp) ";
 
@@ -622,6 +651,12 @@ return true if the array is of mixed type ";
 arraydata_t::is2level() const
 
 return true if the array is a 2-level array ";
+
+%feature("docstring")  arraydata_t::randomarray "array_link
+arraydata_t::randomarray(int strength=0, int ncols=-1) const
+
+return random array from the class. this operation is only valid for
+strength 0 or 1 ";
 
 %feature("docstring")  arraydata_t::writeConfigFile "void
 arraydata_t::writeConfigFile(const char *filename) const
@@ -681,12 +716,6 @@ arraydata_t::show_colgroups() const ";
 
 %feature("docstring")  arraydata_t::calcoaindex "void
 arraydata_t::calcoaindex(colindex_t strength) ";
-
-%feature("docstring")  arraydata_t::randomarray "array_link
-arraydata_t::randomarray(int strength=0, int ncols=-1) const
-
-return random array from the class. this operation is only valid for
-strength 0 or 1 ";
 
 %feature("docstring")  arraydata_t::create_root "array_link
 arraydata_t::create_root() const
@@ -860,6 +889,10 @@ dextend_t::filterArrays(const array_link &al, const arraylist_t
 filter the arrays based on values in filter ";
 
 
+// File: structDoptimReturn.xml
+%feature("docstring") DoptimReturn "C++ includes: Deff.h ";
+
+
 // File: structdyndata__t.xml
 %feature("docstring") dyndata_t "
 
@@ -949,6 +982,9 @@ dyndata_t::initrowsortl() ";
 dyndata_t::rowsortl2rowsort()
 
 helper function ";
+
+%feature("docstring")  dyndata_t::copydata "void
+dyndata_t::copydata(const dyndata_t &dd) ";
 
 
 // File: structextend__data__t.xml
@@ -1720,11 +1756,6 @@ symmetry_group_walker::next() ";
 // File: namespacestd.xml
 
 
-// File: mexstandalone_8h.xml
-%feature("docstring")  main "int main(int argc, const char *argv[])
-";
-
-
 // File: analysis_8h.xml
 
 
@@ -1736,6 +1767,9 @@ symmetry_group_walker::next() ";
 &mymatrix, int verbose=1)
 
 calculate determinant of X^T X by using the SVD ";
+
+%feature("docstring")  detXtXfloat "double detXtXfloat(const
+Eigen::MatrixXf &mymatrix, int verbose=1) ";
 
 %feature("docstring")  DAEefficiecyWithSVD "void
 DAEefficiecyWithSVD(const Eigen::MatrixXd &x, double &Deff, double
@@ -1757,6 +1791,10 @@ array_link &al, int verbose=0)
 Calculate D-efficiency for a 2-level array using symmetric eigenvalue
 decomposition. ";
 
+%feature("docstring")  Defficiencies "std::vector<double>
+Defficiencies(const array_link &al, const arraydata_t &arrayclass, int
+verbose, int addDs0) ";
+
 %feature("docstring")  VIFefficiency "double VIFefficiency(const
 array_link &al, int verbose=0)
 
@@ -1771,6 +1809,21 @@ Calculate A-efficiency of matrix. ";
 array_link &al, int verbose=0)
 
 Calculate A-efficiency of matrix (1 over the VIF-efficiency) ";
+
+%feature("docstring")  projDeff "std::vector<double> projDeff(const
+array_link &al, int kp, int verbose)
+
+Return the D-efficiencies for the projection designs. ";
+
+%feature("docstring")  PECsequence "std::vector<double>
+PECsequence(const array_link &al, int verbose=0)
+
+Return the projection estimation capacity sequence of a design. ";
+
+%feature("docstring")  distance_distribution "std::vector<double>
+distance_distribution(const array_link &al)
+
+Return the distance distribution of a design. ";
 
 %feature("docstring")  Jcharacteristics "std::vector<int>
 Jcharacteristics(const array_link &al, int jj=4, int verbose=0)
@@ -1865,12 +1918,12 @@ Return index of an array. ";
 
 // File: arraytools_8h.xml
 %feature("docstring")  arrayfile::eigenInfo "void eigenInfo(const
-Eigen::MatrixXd m, const char *str=\"eigen\", int verbose=1)
+MatrixFloat m, const char *str=\"eigen\", int verbose=1)
 
 show information about Eigen matrix ";
 
 %feature("docstring")  arrayfile::eigen2numpyHelper "void
-eigen2numpyHelper(double *pymat1, int n, const Eigen::MatrixXd &m) ";
+eigen2numpyHelper(double *pymat1, int n, const MatrixFloat &m) ";
 
 %feature("docstring")  arrayfile::dummy "Eigen::VectorXd dummy() ";
 
@@ -2086,7 +2139,9 @@ read list of arrays from file ";
 %feature("docstring")  arrayfile::writearrayfile "int
 writearrayfile(const char *fname, const arraylist_t *arraylist,
 arrayfile::arrayfilemode_t mode=arrayfile::ATEXT, int nrows=0, int
-ncols=0) ";
+ncols=0)
+
+write a list of arrays to file on disk ";
 
 %feature("docstring")  arrayfile::writearrayfile "int
 writearrayfile(const char *fname, const array_link &al,
@@ -2208,34 +2263,50 @@ std::vector< double > > vals, int writeheader, int na)
 
 Write a vector of vector elements to binary file. ";
 
-%feature("docstring")  arrayfile::array2eigenX2 "Eigen::MatrixXd
+%feature("docstring")  arrayfile::array2eigenX2 "MatrixFloat
 array2eigenX2(const array_link &al)
 
 convert 2-level array to second order interaction matrix in Eigen
 format ";
 
-%feature("docstring")  arrayfile::array2eigenX1 "Eigen::MatrixXd
+%feature("docstring")  arrayfile::array2eigenX1 "MatrixFloat
 array2eigenX1(const array_link &al, int intercept=1) ";
 
-%feature("docstring")  arrayfile::array2eigenModelMatrix "Eigen::MatrixXd array2eigenModelMatrix(const array_link &al)
+%feature("docstring")  arrayfile::array2eigenModelMatrix "MatrixFloat
+array2eigenModelMatrix(const array_link &al)
 
 convert 2-level array to second order model matrix (intercept, X1, X2)
 ";
 
-%feature("docstring")  arrayfile::array2eigenME "Eigen::MatrixXd
+%feature("docstring")  arrayfile::array2eigenME "MatrixFloat
 array2eigenME(const array_link &al, int verbose=1) ";
 
-%feature("docstring")  arrayfile::array2eigenModelMatrixMixed "std::pair<Eigen::MatrixXd,Eigen::MatrixXd>
-array2eigenModelMatrixMixed(const array_link &al, int verbose=1) ";
+%feature("docstring")  arrayfile::array2eigenModelMatrixMixed "std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed(const
+array_link &al, int verbose=1) ";
 
 
 // File: Deff_8h.xml
 %feature("docstring")  scoreD "double scoreD(const std::vector<
-double > dd, const std::vector< double > alpha) ";
+double > dd, const std::vector< double > alpha)
+
+calculate from from set of efficiencies ";
 
 %feature("docstring")  optimDeff "array_link optimDeff(const
-array_link &A0, arraydata_t &arrayclass, std::vector< double > alpha,
-int verbose=1, int method=-1, int niter=10000, int nabort=2500) ";
+array_link &A0, const arraydata_t &arrayclass, std::vector< double >
+alpha, int verbose=1, int optimmethod=DOPTIM_AUTOMATIC, int
+niter=10000, int nabort=2500)
+
+Optimize a design according to the optimization function specified.
+
+Arguments: arrayclass: structure describing the design class alpha:
+(3x1 array) verbose: output level ";
+
+%feature("docstring")  Doptimize "DoptimReturn Doptimize(const
+arraydata_t &arrayclass, int nrestarts, int niter, std::vector< double
+> alpha, int verbose, int method, double maxtime=100000, int
+nabort=3000)
+
+optimize designs ";
 
 
 // File: extend_8h.xml
@@ -2369,7 +2440,9 @@ const dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend
 %feature("docstring")  LMCreduce "lmc_t LMCreduce(array_t const
 *original, array_t const *array, const arraydata_t *ad, const
 dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend
-&oaextend) ";
+&oaextend)
+
+helper function ";
 
 %feature("docstring")  LMCreduceFull "lmc_t LMCreduceFull(carray_t
 *original, const array_t *array, const arraydata_t *ad, const
@@ -2608,6 +2681,10 @@ i/Binomial_coefficient#Computing_the_value_ of_binomial_coefficients
 
 %feature("docstring")  next_perm "bool next_perm(std::vector<
 permutationType > &s) ";
+
+%feature("docstring")  set_srand "void set_srand(unsigned int s)
+
+set the random number seed using srand ";
 
 %feature("docstring")  next_perm_twoperm "void
 next_perm_twoperm(permutationType *s, const int len) ";
@@ -3234,7 +3311,7 @@ n_rows:
 
 index:  ";
 
-%feature("docstring")  row_rank_partial "static array_t
+%feature("docstring")  row_rank_partial "static int
 row_rank_partial(const carray_t *array, rowindex_t n_rows, const
 vindex_t *index, colindex_t start_idx, colindex_t end_idx, const
 colperm_t &colperm, rowindex_t row)

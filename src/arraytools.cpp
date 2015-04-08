@@ -40,7 +40,7 @@ std::vector<int> array_transformation_t::rowperm() const
 
 std::vector<int> array_transformation_t::colperm() const
 {
-	std::vector<int> ww ( this->cperm, this->cperm+this->ad->N );
+	std::vector<int> ww ( this->cperm, this->cperm+this->ad->ncols);
 	return ww;
 }
 std::vector<int> array_transformation_t::lvlperm ( int c ) const
@@ -310,6 +310,11 @@ void array_transformation_t::randomizecolperm()
 	}
 }
 
+/// initialize to a random transformation
+void array_transformation_t::randomizerowperm()
+{
+	random_perm ( this->rperm, ad->N );
+}
 array_transformation_t array_transformation_t::inverse() const
 {
 	array_transformation_t A ( *this );
