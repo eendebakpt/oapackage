@@ -188,11 +188,20 @@ class CustomInstall(install):
 #    ext_modules=[module1]
 #)
 
+# PyPi does not support markdown....
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except(IOError, ImportError):
+    long_description = open('README.md').read()
+    
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
        version = '1.9.316',
        author      = "Pieter Eendebak",
+       description = "Package to generate and analyse orthogonal arrays and optimal designs",
+       long_description=long_description,
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
        url='http://www.pietereendebak.nl/oapackage/index.html',
