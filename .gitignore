@@ -58,3 +58,4 @@ get-pip.py
 oapackage.kdev4
 legacy
 _oalib.cpython-34m.so
+examples/.gitignore

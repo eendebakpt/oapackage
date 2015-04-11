@@ -8,8 +8,8 @@
 import sys
 import os
 import numpy as np
-from scipy.special import binom
-from math import factorial
+#from scipy.special import binom
+#from math import factorial
 
 #%%
 def oa2graph(A, adata, verbose=1):
