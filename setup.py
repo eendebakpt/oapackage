@@ -196,7 +196,7 @@ try:
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
 except(IOError, ImportError):
-    long_description = open('README.md').read()
+    long_description = open('README.md', 'rt').read()
     
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
