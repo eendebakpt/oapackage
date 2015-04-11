@@ -1,7 +1,7 @@
 Orthogonal Array Package
 ========================
 
-(version 1.9.316)
+(version 1.9.317)
 
 The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
@@ -48,7 +48,7 @@ The program uses a cmake build system. From the commandline type::
 Data format
 -----------
 
-Arrays are stored in plain files or binary files. For text files the first line contains the number of columns, the number of rows and the number of arrays (or -1 if the number of arrays is not specified). Then for each array a single line with the index of the array, followed by N lines containing the array. The binary format is suitable for storing a very high numbers of arrays and supports random access. Also see the file FORMAT.txt
+Arrays are stored in plain files or binary files. For text files the first line contains the number of columns, the number of rows and the number of arrays (or -1 if the number of arrays is not specified). Then for each array a single line with the index of the array, followed by N lines containing the array. The binary format is suitable for storing a very high numbers of arrays and supports random access. Also see the file `FORMAT.txt`.
 
 To examine the result files one can use the oacat tool from the package, or the standard UNIX utilities cat, less, head and tail.
 
