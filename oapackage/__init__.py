@@ -25,13 +25,19 @@ def autodoctest():
 
 def unittest(verbose=1):
   """ Perform some unit testing, return True if succesfull """
-  print('oapackage: oalib version %s' % oalib.version() )
+  if verbose:
+      print('oapackage: unittest: oalib version %s' % oalib.version() )
   al=oalib.array_link()
   ii=0
   al=oalib.exampleArray(ii, 0)
+  arrayclass=oalib.arraylink2arraydata(al)
   Deff=al.Defficiency()
   if verbose>=2:
       print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
+      
+  # test graphtools      
+  from . graphtools import oa2graph
+  tmp=oa2graph(al, arrayclass)      
   return True
   
 if __name__ == "__main__":

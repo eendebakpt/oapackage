@@ -56,10 +56,13 @@ class OATest(TestCommand):
         print('## oapackage test: load package' )
         import oapackage
         print('## oapackage test: oalib version %s' % oapackage.version() )
-        ii=0
-        al=oapackage.exampleArray(ii, 0)
-        Deff=al.Defficiency()
-        print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
+        
+        oapackage.unittest(verbose=1)
+        if 0:
+            ii=0
+            al=oapackage.exampleArray(ii, 0)
+            Deff=al.Defficiency()
+            print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
         errno=0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -205,7 +208,7 @@ setup (name = 'OApackage',
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
        url='http://www.pietereendebak.nl/oapackage/index.html',
-       description = """Python interface to Orthogonal Array library""",
+#       description = """Python interface to Orthogonal Array library""",
 	keywords=[ "orthogonal arrays, design of experiments"],
        ext_modules = [oalib_module],
        py_modules = ['oalib'],	
@@ -214,7 +217,7 @@ setup (name = 'OApackage',
        #packages=['oalib'],
        #packages=find_packages(exclude=['oahelper']),
         data_files = data_files,
-#        test_suite = "oapackage.unittest",
+        test_suite = "oapackage.unittest",
     scripts=scripts,
     tests_require=['numpy'],
        zip_safe=False,
