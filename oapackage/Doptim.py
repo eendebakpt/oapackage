@@ -28,6 +28,7 @@ from oapackage.markup import oneliner as e
 #%%
 
 def array2Dtable(sols, verbose=1, titlestr=None):
+    """ Generate HTML table with information about for a list of designs """
     #page.p()
     na=len(sols)
     page=markup.page()
@@ -60,31 +61,30 @@ except:
 	pass
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):        
+def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20, scatterarea=80): 
+    """ Generate scatter plot for D and Ds efficiencies """       
     data=dds.T
     pp = oahelper.createPareto(dds)
     paretoidx=np.array(pp.allindices())
 
     nn=dds.shape[0]
-    area=40*np.ones( nn,) 
-    area[np.array(pp.allindices())]=80
+    area=scatterarea*np.ones( nn,) /2 
+    area[np.array(pp.allindices())]=scatterarea
     alpha=1.0
     
     if dds.shape[1]>3:
         colors=dds[:,3]
     else:
         colors=np.zeros( (nn,1) )
+
+    idx=np.unique(colors).astype(int)
     
     try:
-        mycmap = brewer2mpl.get_map('Set1', 'qualitative', 3).mpl_colors
+        mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
     except:
         mycmap= [ matplotlib.cm.jet(ii) for ii in range(4)]
         pass
             
-    
-    idx=np.unique(colors).astype(int)
-    
-
     
     # For remaining spines, thin out their line and change the black to a slightly off-black dark grey
     almost_black = '#202020'
@@ -95,8 +95,10 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
     ax = plt.subplot(111)
     
     nonparetoidx=np.setdiff1d(range(nn), paretoidx)
-    ax.scatter(data[fi,nonparetoidx], data[si,nonparetoidx], s=33, c=(.5,.5,.5), linewidths=0, alpha=alpha, label='Non-pareto design')
+    
+    ax.scatter(data[fi,nonparetoidx], data[si,nonparetoidx], s=.33*scatterarea, c=(.5,.5,.5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
+    #print(area)
     for jj, ii in enumerate(idx):
         gidx=(colors==ii).nonzero()[0]
         gp=np.intersect1d(paretoidx, gidx)
@@ -104,7 +106,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20):
         color = mycmap[jj]
         cc=[color]*len(gp)
         print('index %d: %d points' % (ii, gidx.size))
-        ax.scatter(data[fi,gp], data[si,gp], s=52, c=cc, linewidths=0, alpha=alpha, label=lbls[jj])
+        ax.scatter(data[fi,gp], data[si,gp], s=scatterarea, c=cc, linewidths=0, alpha=alpha, label=lbls[jj]) # , zorder=4)
         plt.draw()
     
 
