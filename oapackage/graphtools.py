@@ -8,8 +8,7 @@
 import sys
 import os
 import numpy as np
-#from scipy.special import binom
-#from math import factorial
+import oalib
 
 #%%
 def oa2graph(A, adata, verbose=1):
@@ -172,11 +171,20 @@ def reduceBliss(al, arrayclass, verbose=1):
     
 #%%
 
+def makearraylink(al):
+    if isinstance(al, np.ndarray):
+            tmp=oalib.array_link()
+            tmp.setarray(al)
+            al=tmp
+    return al
+    
 def selectIsomorphismClasses(sols, arrayclass, verbose=1):
     """ Select isomorphism classes from a list of designs """
     # perform check on array data type
     mm=[]
     for ii, al in enumerate(sols):
+        al=makearraylink(al)
+        
         pp,tt=reduceBliss(al, arrayclass, verbose>=2)
         tt=graph2arrayTransformation(pp, arrayclass)
         alx=tt.apply(al)
