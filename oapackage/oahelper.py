@@ -133,7 +133,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
 #%% Make nice plots
 # http://blog.olgabotvinnik.com/prettyplotlib/
 
-def niceplot(ax, fig=None, despine=True, verbose=0, legend=None, almost_black='#222222'):
+def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True, tightlayout=True, legend=None, almost_black='#222222'):
     """ Create a good looking plot
 
     The code: 
@@ -189,8 +189,11 @@ def niceplot(ax, fig=None, despine=True, verbose=0, legend=None, almost_black='#
         #[v.set_color(almost_black) for v in ttx]
 
     #fig.tight_layout(pad=0.1)
-    if not fig is None:
+    if not fig is None and tightlayout:
         fig.tight_layout(pad=1.0)
+
+    if figurebg and fig is not None:
+        fig.set_facecolor('w')
 
     plt.draw()
     plt.show()
@@ -905,6 +908,35 @@ def testHtml(hh):
         fname.close()
         webbrowser.open(fname.name)
 
+def designStandardError(al):    
+    """ Return standard errors for a design
+
+    Arguments
+    ---------
+    
+        al - design
+
+    Output
+    ------
+    
+        m0, m1, m2 - standard errors
+    
+    """
+    
+    X=np.matrix(al.getModelMatrix(2))
+    k=al.n_columns
+    
+    m=1+k+k*(k-1)/2
+    
+    M=(X.transpose()*X).I
+    #M=(X.transpose()*X)
+    
+    mm=np.array(M.diagonal() ).flatten()
+    
+    m1=mm[1:(1+k)].flatten(); m1=m1[np.argsort(m1)]
+    m2=mm[(1+k):]; m2=m2[np.argsort(m2)]
+    m0=mm[0]
+    return m0,m1, m2
                 
 #%%                
 def DefficiencyBound(D, k, k2):

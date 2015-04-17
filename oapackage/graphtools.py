@@ -209,6 +209,9 @@ def selectIsomorphismClasses(sols, arrayclass, verbose=1):
     a,b=np.unique(qqq, return_inverse=True)
     #a,b=np.unique(qqq, return_index=True)
     
+    if verbose>=1: 
+            print('selectIsomorphismClasses: reduce %d to %d' % (len(sols), np.unique(b).size) )
+
     return b, mm
 
     

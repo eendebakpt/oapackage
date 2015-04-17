@@ -522,13 +522,15 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
     
             #print(dds.shape)
         
+    if selectpareto:
+        if verbose>=2:
+            print('Doptim: before Pareto filter (%d arrays)' % len(sols) )
+        scores,dds,sols=filterPareto(scores, dds, sols)
+
     if verbose:
         print('Doptim: done (%d arrays)' % len(sols) )
         #print(sols)
-    if selectpareto:
-        scores,dds,sols=filterPareto(scores, dds, sols)
 
-    #print(dds.shape)
     
     # sort & select
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
