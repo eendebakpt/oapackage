@@ -928,7 +928,9 @@ def designStandardError(al):
     
     m=1+k+k*(k-1)/2
     
-    M=(X.transpose()*X).I
+    #scalefac=np.sqrt(al.n_rows)
+    scalefac=1
+    M=(X.transpose()*X/scalefac).I
     #M=(X.transpose()*X)
     
     mm=np.array(M.diagonal() ).flatten()
