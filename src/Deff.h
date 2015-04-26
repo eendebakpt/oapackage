@@ -39,7 +39,12 @@ struct DoptimReturn {
 
 
 /// optimize designs 
-DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime = 100000, int nabort=3000 );
+DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime = 100000, int nabort=5000 );
 
+extern "C" {
 
+// wrapper function for R
+//double DoptimizeR(int *N, int *k, int *nrestarts, int *niter, double *alpha1, double *alpha2, double *alpha3, int *verbose, int *method, double *maxtime , int *nabort );
+
+}
 #endif 

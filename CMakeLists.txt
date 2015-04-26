@@ -23,7 +23,7 @@ if (NumPy_FOUND)
 endif()
 
 #find_package(MPI QUIET)	# Needed for legacy code and OpenMP functionality
-#find_package(MPI)	# Needed for legacy code
+find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
@@ -51,7 +51,7 @@ message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
 
 set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h)
-set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp bitarray/bit_array.cpp src/Deff.cpp)
+set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/Deff.cpp)
 
 set(headersextend ${headers} src/extend.h src/strength.h src/lmc.h src/nonroot.h )
 set(srcsextend ${srcs} src/extend.cpp src/lmc.cpp src/nonroot.cpp )
@@ -118,9 +118,9 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX)
   #message(STATUS "CMAKE_COMPILER_IS_GNUCXX ${CMAKE_COMPILER_IS_GNUCXX}")
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-result -fPIC  -fpermissive -g")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -fpermissive -g")
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -O0 -g")
-  set(COPTS " -fpermissive -O3 ")
+  set(COPTS " -fpermissive -O3 -DEIGEN_MPL2_ONLY")
 endif ()
 
 # for debugging
@@ -245,8 +245,9 @@ if (OAEXTEND)
     endif()
     #message(STATUS "   libs ${MPI_LIBRARIES}; flags ${MPI_COMPILE_FLAGS}; libs ${MPI_LIBRARIES}")
     include_directories( ${MPI_INCLUDE_PATH} )
+    include_directories( src/mpitools )
 
-  add_executable(oaextendmpi EXCLUDE_FROM_ALL "utils/oaextend.cpp" ${srcs} "src/mpitools.cpp")
+  add_executable(oaextendmpi EXCLUDE_FROM_ALL "utils/oaextend.cpp" ${headersextend} ${srcsextend} "src/mpitools/mpitools.cpp")
   target_link_libraries(oaextendmpi ${MPI_LIBRARIES})
   if(MPI_COMPILE_FLAGS)
     set_target_properties(oaextendmpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
@@ -439,7 +440,7 @@ add_custom_command(
 
 add_custom_command(
   TARGET R2 POST_BUILD
-  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
+  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   DEPENDS 
 )
@@ -496,7 +497,7 @@ endif()
 
 #set(OPTS -fPIC -DNEWINTERFACE -Wno-return-type -Wno-unused-variable -Wno-unused-result)
 if (0)
-set(PSRC src/tools.cpp src/arrayproperties.cpp src/mathtools.cpp src/arraytools.cpp src/strength.cpp src/lmc.cpp bitarray/bit_array.cpp)
+set(PSRC src/tools.cpp src/arrayproperties.cpp src/mathtools.cpp src/arraytools.cpp src/strength.cpp src/lmc.cpp src/bitarray/bit_array.cpp)
 set(PSRC ${srcs})
 set(POBJ tools.o arrayproperties.o oaoptions.o bit_array.o mathtools.o arraytools.o extend.o strength.o lmc.o)
 

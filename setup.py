@@ -81,7 +81,7 @@ if os.path.exists('src/oadevelop.cpp') and 0:
   srcs=[ 'oadevelop.cpp']+srcs
 
 srcs=[ 'src/' + ff for ff in srcs]
-sources =   srcs + ['bitarray/bit_array.cpp']
+sources =   srcs + ['src/bitarray/bit_array.cpp']
 swig_opts=[]
 
 if oadev:

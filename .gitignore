@@ -59,3 +59,4 @@ oapackage.kdev4
 legacy
 _oalib.cpython-34m.so
 examples/.gitignore
+src/.gitignore

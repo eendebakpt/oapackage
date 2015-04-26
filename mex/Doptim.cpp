@@ -163,7 +163,6 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 
 
 	// sort according to values
-
 	std::vector<double> sval ( AA.size() );
 	for ( size_t i=0; i<AA.size(); i++ ) {
 		sval[i]=-scoreD ( dds[i], alpha );

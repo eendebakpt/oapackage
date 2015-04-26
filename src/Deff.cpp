@@ -3,6 +3,8 @@
  *
  */
 
+#include <stdio.h>
+
 #include "arraytools.h"
 #include "arrayproperties.h"
 
@@ -226,5 +228,61 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 //      return std::pair<array_link, std::vector<double> >(A, dd);
 }
 
+#include <algorithm> 
+
+extern "C" {
+	
+double DoptimizeR(int *_N, int *_k, int *nrestarts, int *_niter, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *_method, double *maxtime , int *nabort, double *output )
+{
+
+int niter=*_niter;
+int method=*_method;
+int N = *_N;
+int k = *_k;
+int verbose = *_verbose;
+
+output[0]=1;
+output[1]=2;
+output[2]=3;
+output[3]=4;
+
+if (verbose>=2)
+	printf("DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter, *alpha1);
+
+ arraydata_t arrayclass(2, N, 0, k);
+std::vector<double> alpha(3);
+alpha[0]=std::max(*alpha1,0.);
+alpha[1]=std::max(*alpha2, 0.);
+alpha[2]=std::max(*alpha3,0.);
+
+DoptimReturn rr = Doptimize(arrayclass, *nrestarts, niter, alpha,  verbose,  method, *maxtime,  *nabort);
+
+	std::vector<std::vector<double> > dds = rr.dds; 	arraylist_t AA = rr.designs;
+
+	// sort according to values
+	std::vector<double> sval ( AA.size() );
+	for ( size_t i=0; i<AA.size(); i++ ) {
+		sval[i]=-scoreD ( dds[i], alpha );
+	}
+
+	indexsort sorter ( sval );
+
+	AA=sorter.sorted ( AA );
+	dds=sorter.sorted ( dds );
+
+array_link best = AA[0];
+
+std::copy(best.array, best.array+N*k, output);
+
+if (verbose>=2) {
+	printf("DoptimizeR: done\n");
+}
+//best.showarray();
+
+return best.Defficiency();
+
+}
+
+} // extern "C"
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

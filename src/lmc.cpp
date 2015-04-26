@@ -1512,10 +1512,9 @@ lmc_t LMCreduce_root_level_perm ( array_t const *original, const arraydata_t* ad
 		// update sort structure
 		// OPTIMIZE: only perform partial copy
 
-		//FIXME: is rowsortl allocation copied from dyndata?????
-		// FIXME: update dyndatatmp rowsort with generic function (e.g. rowsortl if needed)
+		// TODO: update dyndatatmp rowsort with generic function (e.g. rowsortl if needed)
 		for ( rowindex_t k=0; k<ad->N; k++ ) {
-			// FIXME: is this valid if the root is not properly sorted?
+			// TODO: is this valid if the root is not properly sorted?
 			// 	this assumes that after the LMC_root_sort the root is already in blocks
 			dyndatatmp.rowsort[rootrowperms[l][k]].r=rowsort[k].r;
 		}
@@ -1777,7 +1776,7 @@ lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	arraydata_t ad ( adin );
 	ad.complete_arraydata_splitn ( jj );	// split column group!
 
-	// FIXME: this bites with ad and adin, they are different?!
+	// TODO: this bites with ad and adin, they are different?!
 	tmpStatic.update ( &ad );
 
 	int nc = ncombs ( ad.ncols, jj );
@@ -2099,7 +2098,7 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 	//ret = LMCreduce_root_level_perm_full ( array, &ad, &dyndata,&reduction, tmpStatic );
 
 
-	//   adfix.complete_arraydata_splitn(5); // FIXME: needed?
+	//   adfix.complete_arraydata_splitn(5); 
 
 	std::vector<int> splits = symmetrygroup2splits ( sg, ad.ncols, verbose );
 
@@ -2157,7 +2156,7 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 
 inline double jj452double ( const double *ww )
 {
-	//	FIXME: check multiplication factor
+	//	TODO: check multiplication factor
 	// the maximum value of the J4 characteristics is N. we create a unique value out of the pair by multiplication
 	double val=0;
 	for ( size_t i=0; i<6; i++ )
@@ -2324,7 +2323,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 			printf ( "--\n" );
 			print_array ( "al.array:\n", array,  al.n_rows,5 );
 		}
-//        nc=1; // HACK, PTE
+//        nc=1; // 
 	}
 
 	// loop over all possible combinations for the first jj columns
@@ -2430,7 +2429,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 			retx= jj45split ( array, ad.N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction );
 
 			if ( retx==LMC_LESS ) {
-				// FIXME: is this needed? HACK
+				// NOTE: is this needed? 
 				//reduction.updateLastCol(4);
 			}
 
@@ -2508,7 +2507,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 
 	lmc_t r = LMC_EQUAL;
 
-	// FIXME: add assert to type of adata
+	// TODO: add assert to type of adata
 
 	std::vector<colindex_t> pinit = permutation<colindex_t> ( ad.ncols );
 
@@ -2586,7 +2585,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 			}
 			/* pass to non-root stage */
 			if ( oaextend.getAlgorithm() ==MODE_LMC_SYMMETRY || oaextend.getAlgorithm() ==MODE_J5ORDERXFAST || oaextend.getAlgorithm() ==MODE_LMC_2LEVEL ) {
-				// FIXME: make call to LMCreduce_non_root_2level more generic
+				// TODO: make call to LMCreduce_non_root_2level more generic
 				dyndata.initrowsortl();
 				//dyndata.ro
 				r= LMCreduce_non_root_2level ( al.array, &adfix, &dyndata,& reduction, oaextend, *tmpStatic );
@@ -2976,7 +2975,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 		OAextend x = oaextend;
 		arraydata_t adx ( ad );
 		x.setAlgorithm ( MODE_J5ORDERX, &adx );
-		x.setAlgorithm ( MODE_J5ORDERXFAST, &adx );	 // FIXME!!!!!!!!!!!!!!!!!!!!!!!!!1
+		x.setAlgorithm ( MODE_J5ORDERXFAST, &adx );	 // TODO: work this out
 		//x.setAlgorithm(MODE_ORIGINAL, &adx);
 		// LMCreduction_t reductionsub2 = calculateSymmetryGroups( al, adx,  x, 0, 1);
 		if ( dverbose ) {
@@ -3094,7 +3093,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 
 lmc_t LMCreduction_train ( const array_link &al, const arraydata_t* ad, LMCreduction_t *reduction, const OAextend &oaextend )
 {
-	//FIXME: pass oaextend options to reduction train
+	//TODO: pass oaextend options to reduction train
 	dyndata_t dyndata ( ad->N, 0 );
 	// OAextend oaextend;
 	return LMCreduction_train ( al.array, ad, &dyndata, reduction , oaextend ) ;

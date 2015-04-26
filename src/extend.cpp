@@ -139,7 +139,7 @@ void OAextend::updateArraydata ( arraydata_t *ad ) const
 	if ( ad==0 )
 		return;
 
-	// FIXME: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be static in more places)
+	// TODO: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be static in more places)
 
 	switch ( this->algmode ) {
 	case MODE_LMC_SYMMETRY:
@@ -247,7 +247,7 @@ rowindex_t find_row_symm ( carray_t *array, const arraydata_t *ad, const colinde
 
 	rowvalues = new array_t[ad->N];
 	for ( int i=0; i<ad->N; i++ ) {
-		// FIXME: max value of rowvalues is of the order s^ncols
+		// NOTE: max value of rowvalues is of the order s^ncols
 		rowvalues[i] = row_rank_partial ( array, 0, col, i, ad->N, vindex );
 	}
 

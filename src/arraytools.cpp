@@ -11,8 +11,9 @@
 #include "tools.h"
 #include "mathtools.h"
 #include "arrayproperties.h"
-#include "lmc.h"
 #include "strength.h"
+
+#include "lmc.h"
 
 #include <Eigen/Core>
 #include <Eigen/Dense>

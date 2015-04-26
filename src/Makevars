@@ -1,0 +1,5 @@
+#CFLAGS = -I. -Ibitarray/ -I../
+#CXXFLAGS = -I. -Ibitarray/ -I../
+
+PKG_CFLAGS = -I. -Ibitarray/ -I../
+PKG_CPPFLAGS = -I. -Ibitarray/ -I../
