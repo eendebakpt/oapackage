@@ -14,7 +14,7 @@
 //std::vector<int> v( tmp, tmp+3 );
 //std::vector<double> alpha0(tmp, tmp+3);
 
-/// calculate from from set of efficiencies
+/// calculate score from from set of efficiencies
 double scoreD(const std::vector<double> dd, const std::vector<double> alpha);
 
 enum {DOPTIM_SWAP, DOPTIM_UPDATE, DOPTIM_AUTOMATIC, DOPTIM_FLIP, DOPTIM_NONE};

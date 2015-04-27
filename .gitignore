@@ -60,3 +60,4 @@ legacy
 _oalib.cpython-34m.so
 examples/.gitignore
 src/.gitignore
+src/oapackage.so

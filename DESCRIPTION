@@ -1,0 +1,9 @@
+Package: oapackage
+Type: Package
+Title: Orthogonal Array package
+Version: 1.9.318
+Date: 2015-04-26
+Author: P.T. Eendebak
+Maintainer: P.T. Eendebak <pieter.eendebak@gmail.com>
+Description: Interface to D-optimal design generation code of OA package
+License: BSD

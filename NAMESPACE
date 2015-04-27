@@ -1,0 +1,3 @@
+useDynLib(oapackage)
+exportPattern("^[[:alpha:]]+")
+
