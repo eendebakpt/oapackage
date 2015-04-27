@@ -176,7 +176,7 @@ arraylist_t runExtendRoot(arraydata_t adata, int nmax, int verbose=0);
 enum {DCALC_ALWAYS, DCALC_COND};
 
 
-/*** Helper structure for dynamic extension
+/** @brief Helper structure for dynamic extension
  * 
  * 
  * 

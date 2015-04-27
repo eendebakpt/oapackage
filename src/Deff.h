@@ -6,13 +6,8 @@
 #ifndef DEFF_H
 #define DEFF_H
 
-
 #include "arraytools.h"
 #include "arrayproperties.h"
-
-//double tmp[] = { 1,1,0};
-//std::vector<int> v( tmp, tmp+3 );
-//std::vector<double> alpha0(tmp, tmp+3);
 
 /// calculate score from from set of efficiencies
 double scoreD(const std::vector<double> dd, const std::vector<double> alpha);
@@ -31,6 +26,9 @@ array_link  optimDeff(const array_link &A0,  const arraydata_t &arrayclass, std:
 
 //typedef std::pair< std::vector<std::vector<double> >, arraylist_t > DoptimReturn;
 
+/** @brief Structure containing results of the Doptimize function
+ * 
+ */
 struct DoptimReturn {
   std::vector<std::vector<double> > dds;	/// scores generated
   arraylist_t designs;	/// designs generated
@@ -38,13 +36,8 @@ struct DoptimReturn {
 };
 
 
-/// optimize designs 
+/// function to generate optimal designs 
 DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestarts, int niter, std::vector<double> alpha, int verbose, int method, double maxtime = 100000, int nabort=5000 );
 
-extern "C" {
 
-// wrapper function for R
-//double DoptimizeR(int *N, int *k, int *nrestarts, int *niter, double *alpha1, double *alpha2, double *alpha3, int *verbose, int *method, double *maxtime , int *nabort );
-
-}
 #endif 

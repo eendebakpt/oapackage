@@ -52,6 +52,7 @@ inline double round(double x) {
 
 #include <queue>
 
+/*
 // from: http://codereview.stackexchange.com/questions/13979/simple-object-pool-template-container-in-c
 template <class TYPE>
 class object_pool2
@@ -92,9 +93,11 @@ object_pool2()
 }
 
 };
+*/
 
 // from: http://codereview.stackexchange.com/questions/13979/simple-object-pool-template-container-in-c
 template <class TYPE>
+/// Class to make a pool of objects that can be re-used
 class object_pool
 {
     std::vector< TYPE *> pool;
@@ -177,6 +180,7 @@ public:
 };
 
 template <class numtype>
+/// lightweight array class
 class larray {
 public:
     numtype *d;
@@ -1559,6 +1563,7 @@ public:
 };
 
 
+/// class to walk over all element of a symmetry group
 class symmetry_group_walker
 {
 public:

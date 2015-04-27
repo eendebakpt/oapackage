@@ -1,6 +1,8 @@
 ## Example code for calling Doptimize function from R
-library(devtools)
-load_all('oapackage')
+#library(devtools)
+#load_all('oapackage')
+library(oapackage)
+#library(oapackage, lib.loc='...')
 
 # set variables
 
