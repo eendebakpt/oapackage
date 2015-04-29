@@ -242,7 +242,7 @@ public:
 
 enum ordering_t {ORDER_LEX, ORDER_J5};
 
-/** @brief Contain the class of the design (number of rows, columns, levels)
+/** @brief Contains properties of the design (number of rows, columns, levels)
  *
  */
 struct arraydata_t {
