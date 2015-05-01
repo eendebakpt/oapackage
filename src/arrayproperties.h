@@ -199,7 +199,7 @@ inline double Dvalue2Cvalue ( double A, int ka )
 }
 
 /// Return index of an array
-inline int get_oaindex(carray_t *s, const colindex_t strength, const colindex_t N)
+inline int get_oaindex(const array_t *s, const colindex_t strength, const colindex_t N)
 {
     int oaindex = N;
     for(colindex_t z=0; z<strength; z++)

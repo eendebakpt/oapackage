@@ -21,7 +21,6 @@
 
 #include "lmc.h"
 
-// FIXME: fold non_root and non_root_j4 into each other: only difference: TPLUSONECOLUMN?
 
 /// default reduction function for non-root stage
 lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic ) ;

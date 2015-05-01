@@ -1,5 +1,5 @@
 /*! \file Deff.h
- *  \brief Contains functions to optimize designs
+ *  \brief Contains functions to generate optimal designs
  * 
  */
 
@@ -12,6 +12,7 @@
 /// calculate score from from set of efficiencies
 double scoreD(const std::vector<double> dd, const std::vector<double> alpha);
 
+/// different algorithms for the optimization routines
 enum {DOPTIM_SWAP, DOPTIM_UPDATE, DOPTIM_AUTOMATIC, DOPTIM_FLIP, DOPTIM_NONE};
 
 /** Optimize a design according to the optimization function specified.

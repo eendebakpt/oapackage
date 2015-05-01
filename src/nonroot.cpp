@@ -6,7 +6,9 @@
 #include "lmc.h"
 #include "extend.h"
 
-//static void cpy_dyndata_rowsort(const dyndata_t *src, dyndata_t *dest)  __attribute__ ((noinline));
+
+// TODO: fold non_root and non_root_j4 into each other: only difference: TPLUSONECOLUMN?
+
 inline void cpy_dyndata_rowsort ( const dyndata_t *src, dyndata_t *dest )
 {
 #ifdef OADEBUG
@@ -40,6 +42,7 @@ inline void cpy_dyndata_rowsortl ( const dyndata_t *src, dyndata_t *dest )
 
     memcpy ( dest->rowsortl, src->rowsortl, sizeof ( rowsortlight_t ) *dest->N );
 }
+
 void debug_check_rowsort_overflow ( const arraydata_t *ad, const rowsort_t *rowsort, const dyndata_t* dd, rowindex_t cur_row )
 {
 #ifdef OAOVERFLOW

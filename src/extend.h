@@ -161,17 +161,13 @@ arraylist_t extend_array(const array_link &al, arraydata_t &arrayclass);
 /// extend an array with a single column
 int extend_array(carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions, OAextend const &oaextend );
 
-/// hack
-//int extend_array_large(carray_t *origarray,  arraydata_t *fullad, colindex_t extensioncol, arraylist_t &extensions, OAextend const &oaextend, int largecol = 20);
-
-
 /// simple wrapper function
 arraylist_t runExtendRoot(arraydata_t adata, int nmax, int verbose=0); 
 
 
 /* Helper functions and development code */
 
- enum {DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI};
+enum {DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI};
 
 enum {DCALC_ALWAYS, DCALC_COND};
 
