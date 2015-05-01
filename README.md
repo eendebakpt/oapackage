@@ -28,7 +28,7 @@ Installation
 [![Build status](https://ci.appveyor.com/api/projects/status/f6ia9br95soimf9u?svg=true)](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8)
 [![Version](https://pypip.in/v/OApackage/badge.svg)](https://pypi.python.org/pypi/OApackage/)
 
-The Python interface to the package is available on the [Python Package index](http://https://pypi.python.org/pypi/OApackage/).
+The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
 Installation can be done using the following command::
 
 
