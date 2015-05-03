@@ -456,7 +456,7 @@ def selectDn(scores, dds, sols, nout=1):
         sols=sols[0:nout]
     return scores, dds, sols
     
-def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=0, nabort=3000):
+def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, nabort=0):
     """ Calculate D-optimal designs
     
     
@@ -470,7 +470,7 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
 
     
     if 1 and isinstance(optimfunc, list):
-        rr=oalib.Doptimize(arrayclass, nrestarts, niter=niter, alpha=optimfunc, verbose=1, method=method, maxtime=maxtime, nabort=nabort)
+        rr=oalib.Doptimize(arrayclass, nrestarts, alpha=optimfunc, verbose=1, method=method, niter=niter, maxtime=maxtime, nabort=nabort)
         dds, sols=rr.dds, rr.designs
         dds=np.array([x for x in dds])
         sols=[x.clone() for x in sols]  # needed because of SWIG wrapping of struct type
