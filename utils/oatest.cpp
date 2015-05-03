@@ -363,6 +363,31 @@ using namespace Eigen;
 
 //std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
 
+array_link  finalcheck ( const array_link &al,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niterx, int nabortx )
+{
+	int nabort=al.n_rows*al.n_columns+2;
+	int niter= nabort+5;
+	array_link  al2 = optimDeff2level ( al, arrayclass, alpha, verbose>=3,  DOPTIM_UPDATE,  niter, nabort );
+
+
+	std::vector<double> dd0 = al.Defficiencies();
+	double d0 = scoreD ( dd0, alpha );
+
+	std::vector<double> dd = al2.Defficiencies();
+	double d = scoreD ( dd, alpha );
+
+	if ( d>d0 ) {
+		printf ( "finalcheck: %f -> %f\n", d0, d );
+	}
+
+	return al2;
+}
+
+
+//TODO: use optimDeff2level by default
+//TODO: make enum for selection strategy?
+//TODO: IMPLEMENT flip method as well
+//TODO: Run valgrind...
 
 int main ( int argc, char* argv[] )
 {
@@ -376,6 +401,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "dverbose", 'd' );
 	opt.setOption ( "rows" );
 	opt.setOption ( "cols" );
+	opt.setOption ( "nrestarts" );
+	opt.setOption ( "niter" );
 	opt.setOption ( "mdebug", 'm' );
 	opt.setOption ( "oaconfig", 'c' ); /* file that specifies the design */
 
@@ -404,45 +431,94 @@ int main ( int argc, char* argv[] )
 	int cc = opt.getIntValue ( "cols", 7 );
 
 	srand ( r );
-	int verbose = opt.getIntValue ( 'v', NORMAL );
+	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
-	
-	if (0) {
-	
-		arraydata_t arrayclass ( 2, 8, 0, 2 );
-		int nrestarts=40; 
-		int niter=9000;
-		std::vector<double> alpha(3); alpha[0]=1; alpha[1]=1; alpha[2]=0; 
-		int nabort=1000;
-		DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
-		//arraylist_t ll = rr.second;
-		arraylist_t ll = rr.designs;
-		for(size_t ii=0; ii<ll.size(); ii++) {
-			printf("ii %d: ", (int)ii); ll[ii].show();
+
+	if ( 1 ) {
+
+		double t0=get_time_ms();
+		arraydata_t arrayclass ( 2, rr, 0, cc );
+		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
+		int niter=opt.getIntValue ( "niter", 20000 );
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+		alpha[2]=0;
+		int nabort=-1;
+		array_link al = arrayclass.randomarray();
+		al = arrayclass.randomarray();
+		int ro = aidx;
+		std::vector<double> m ( nrestarts );
+		for ( int i=0; i<nrestarts; i++ ) {
+// al = arrayclass.randomarray();
+			seedfastrand ( i+ro );
+			srand ( i+ro );
+			array_link  al2 = optimDeff ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort );
+			//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
+			//array_link  alx = finalcheck(al2, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort);
+
+			std::vector<double> dd = al2.Defficiencies();
+			double d = scoreD ( dd, alpha );
+			m[i]=d;
 		}
+		double dt=get_time_ms()-t0;
+		double mean = accumulate ( m.begin(), m.end(), 0.0 ) / m.size();
+		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
+
+
+		t0=get_time_ms();
+		for ( int i=0; i<nrestarts; i++ ) {
+// al = arrayclass.randomarray();
+			seedfastrand ( i+ro );
+			srand ( i+ro );
+			nabort=al.n_columns*al.n_rows+1;
+			array_link  al2 = optimDeff2level ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort );
+			//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
+			std::vector<double> dd = al2.Defficiencies();
+			double d = scoreD ( dd, alpha );
+
+			m[i]=d;
+		}
+		dt=get_time_ms()-t0;
+		mean = accumulate ( m.begin(), m.end(), 0.0 ) / m.size();
+		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
 		return 0;
+
 	}
-		if ( 1 ) {
+
+
+
+
+
+
+
+
+
+
+	// ################################
+
+
+	if ( 1 ) {
 		arraydata_t adata ( 2, 64, 0, 7 );
 		int niter=10000;
 		std::vector<double> alpha ( 3 );
 		alpha[0]=1;
 		alpha[1]=1;
-			double t0=get_time_ms();
-			for ( int i=0; i<10000+10000*aidx; i++ ) {
-				array_link al = adata.randomarray ( 0 );
-				//std::vector<double> dd = al.Defficiencies();
-				
-				arraydata_t arrayclass = arraylink2arraydata(al);
-				std::vector<double> dd = Defficiencies(al, arrayclass, 0, 0);
+		double t0=get_time_ms();
+		for ( int i=0; i<10000+10000*aidx; i++ ) {
+			array_link al = adata.randomarray ( 0 );
+			//std::vector<double> dd = al.Defficiencies();
 
-				//int dmethod = DOPTIM_SWAP;
-				//dmethod = DOPTIM_NONE;
-				//array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
-			}
-			printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
-		
+			arraydata_t arrayclass = arraylink2arraydata ( al );
+			std::vector<double> dd = Defficiencies ( al, arrayclass, 0, 0 );
+
+			//int dmethod = DOPTIM_SWAP;
+			//dmethod = DOPTIM_NONE;
+			//array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
+		}
+		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+
 		return 0;
 	}
 
@@ -468,16 +544,16 @@ int main ( int argc, char* argv[] )
 		std::vector<double> alpha ( 3 );
 		alpha[0]=1;
 		alpha[1]=1;
-			double t0=get_time_ms();
-			for ( int i=0; i<10; i++ ) {
-				array_link al = adata.randomarray ( 0 );
-				std::vector<double> dd = al.Defficiencies();
-				int dmethod = DOPTIM_SWAP;
-				//dmethod = DOPTIM_NONE;
-				array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
-			}
-			printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
-		
+		double t0=get_time_ms();
+		for ( int i=0; i<10; i++ ) {
+			array_link al = adata.randomarray ( 0 );
+			std::vector<double> dd = al.Defficiencies();
+			int dmethod = DOPTIM_SWAP;
+			//dmethod = DOPTIM_NONE;
+			array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
+		}
+		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+
 		return 0;
 	}
 

@@ -11,7 +11,6 @@ k=7
 N = 8
 k=3
 nrestarts=16
-niter=10000
 alpha1=1
 alpha2=1
 alpha3=0
@@ -19,7 +18,7 @@ verbose=1
 method=0
 maxtime=100 # max running time in seconds
 
-p = Doptimize(N, k, nrestarts, alpha1, alpha2, alpha3, verbose, niter, method, maxtime ) 
+p = Doptimize(N, k, nrestarts, alpha1, alpha2, alpha3, verbose, method, maxtime ) 
 
 print('resulting design:')
 print(p)

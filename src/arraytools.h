@@ -263,7 +263,7 @@ public:
 	/// create new arraydata_t object
 	arraydata_t ( array_t s, rowindex_t N_, colindex_t strength, colindex_t ncols );
 	arraydata_t ( const std::vector<int> s, rowindex_t N, colindex_t strength, colindex_t ncols );
-	arraydata_t ( carray_t *s_, rowindex_t N, colindex_t strength, colindex_t ncols );
+	arraydata_t ( const array_t *s_, rowindex_t N, colindex_t strength, colindex_t ncols );
 	arraydata_t ( const arraydata_t &adp ); /// copy constructor
 
 	arraydata_t ( const arraydata_t *adp, colindex_t newncols ); /// copy constructor

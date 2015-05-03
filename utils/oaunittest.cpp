@@ -86,12 +86,21 @@ int oaunittest(int verbose, int writetests=0)
 		const int t = 0;
 		arraydata_t arrayclass ( 2, N, t, 6 );
 		 std::vector<double> alpha(3); alpha[0]=1; alpha[1]=1; alpha[2]=0;
-		DoptimReturn rr =  Doptimize(arrayclass, 10, 100, alpha, 0, 0, 100, 60);
-		
+		 int niter=5000;
+		 double t00 =get_time_ms();
+		DoptimReturn rr =  Doptimize(arrayclass, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
+
+
+		array_t ss[7] ={3,3,2,2,2,2,2};
+				arraydata_t arrayclass ( ss, 36, t, 7 );
+		DoptimReturn rr =  Doptimize(arrayclass, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
+
+		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t0 );
 	}
 	
 	{
 // test PEC sequence
+		cprintf ( verbose, "%s: PEC sequence\n", bstr );
 		for ( int ii=0; ii<6; ii++ ) {
 			array_link al  = exampleArray ( ii, 0 );
 			std::vector<double> pec = PECsequence ( al );
@@ -268,7 +277,6 @@ int oaunittest(int verbose, int writetests=0)
 	{
 		cprintf ( verbose,"OA unittest: reading and writing of files\n" );
 
-
 		boost::filesystem::path tmpdir = boost::filesystem::temp_directory_path();
 		boost::filesystem::path temp = boost::filesystem::unique_path ( "test-%%%%%%%.oa" );
 
@@ -294,7 +302,6 @@ int oaunittest(int verbose, int writetests=0)
 		// TODO: implement writing of binary files...
 
 //      oainfo(tempstr.c_str() );
-
 	}
 
 #endif

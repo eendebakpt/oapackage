@@ -1903,7 +1903,7 @@ int array_diff ( carray_p A, carray_p B, const rowindex_t r, const colindex_t c,
 }
 
 /// create new arraydata_t object
-arraydata_t::arraydata_t ( carray_t *s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 )
+arraydata_t::arraydata_t ( const array_t *s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 )
 {
 	s = new array_t[nc];
 	memcpy ( ( void * ) s, ( const void * ) s_, sizeof ( array_t ) *nc );

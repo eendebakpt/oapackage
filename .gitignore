@@ -60,3 +60,6 @@ examples/.gitignore
 src/.gitignore
 src/oapackage.so
 .Rdata
+.RData
+src/stest
+src/oadevelop.o

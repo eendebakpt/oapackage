@@ -27,11 +27,12 @@
 #' @param verbose Integer that determines the amount of debug output
 #' @param method Integer, default: 0
 #' @return A matrixs containing the generated design
-Doptimize=function(N, k, nrestarts, alpha1=1, alpha2=0, alpha3=0, verbose=1, niter=20000,  method=0, maxtime=500, nabort=6000) {
+Doptimize=function(N, k, nrestarts, alpha1=1, alpha2=0, alpha3=0, verbose=1, method=0, niter=100000, maxtime=500) {
 
+nabort <- -1
 nn <- N*k
 #print('call')
-tmp <- .C('DoptimizeR', as.integer(N), as.integer(k), as.integer(nrestarts), as.integer(niter), as.double(alpha1), as.double(alpha2), as.double(alpha3), as.integer(verbose), as.integer(method), as.double(maxtime), as.integer(nabort), result=double(nn) ) 
+tmp <- .C('DoptimizeR', as.integer(N), as.integer(k), as.integer(nrestarts), as.double(alpha1), as.double(alpha2), as.double(alpha3), as.integer(verbose), as.integer(method), as.integer(niter), as.double(maxtime), as.integer(nabort), result=double(nn) ) 
 #print(tmp)
 #print('done')
 p = tmp[['result']]

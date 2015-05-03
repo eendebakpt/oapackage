@@ -9,7 +9,7 @@
 #include "arrayproperties.h"
 
 #ifdef DOOPENMP
-#include "omp.h" 
+#include "omp.h"
 #endif
 
 
@@ -21,19 +21,21 @@
 #endif
 
 
-DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestartsmax, int niter, std::vector<double> alpha, int verbose, int method, double maxtime , int nabort )
+DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestartsmax, std::vector<double> alpha, int verbose, int method, int niter, double maxtime , int nabort )
 {
-		double t0 = get_time_ms();
+	if ( method==DOPTIM_AUTOMATIC )
+		method = DOPTIM_UPDATE;
+
+	double t0 = get_time_ms();
 	std::vector<std::vector<double> > dds;
 	arraylist_t AA;
 
 
-	
 	bool abort=false;
-	
+
 	int nrestarts=0;
-	
-	#ifdef DOOPENMP
+
+#ifdef DOOPENMP
 	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 #endif
 	for ( int i=0; i<nrestartsmax; i++ ) {
@@ -88,7 +90,7 @@ DoptimReturn Doptimize(const arraydata_t &arrayclass, int nrestartsmax, int nite
 
 	DoptimReturn a = {dds, AA, nrestarts};
 	//a.first;
-	
+
 	return a; // DoptimReturn( dds, AA);
 
 }
@@ -104,10 +106,18 @@ double scoreD ( const std::vector<double> dd, const std::vector<double> alpha )
 
 array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niter, int nabort )
 {
+	const int N = arrayclass.N;
+	const int k = arrayclass.ncols;
+
+
+	if ( nabort<=0 ) {
+		if (arrayclass.is2level() )
+		nabort=(N*k)+1;
+			else
+		nabort=(N*k)*(arrayclass.s[0])+2;
+	}
 
 	int nx=0;
-	int N = arrayclass.N;
-	int k = arrayclass.ncols;
 	//#get factor levels
 	std::vector<int> s = arrayclass.getS();
 
@@ -128,23 +138,27 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 
 	// initialize score
 	double d = scoreD ( dd0, alpha );
-//   gsize=tuple(sg.gsize)
-//   gstart=tuple(sg.gstart)
 
 	int lc=0;	// index of last change to array
+
+	// initialize arary with random permutation
+	const int nn = N*k;
+	std::vector<int> updatepos = permutation<int> ( nn );
+	std::random_shuffle ( updatepos.begin(), updatepos.end() );
+	int updateidx = 0;
 
 
 //#pragma omp for
 	for ( int ii=0; ii<niter; ii++ ) {
-
 		// select random row and column
-		int r = fastrandK ( N );		
-		int c = fastrandK ( k );
+		int r = updatepos[updateidx] % N;
+		int c = updatepos[updateidx] / N;
+		updateidx= ( updateidx+1 ) % ( nn );
+
 		int r2 = fastrandK ( N );
-		
-		r=rand()%N; c=rand()%k; r2=rand()%N;
-		
-		//int c2 = fastrandK(k);
+
+		//r=rand()%N; c=rand()%k; r2=rand()%N;
+
 		// make sure column is proper column group
 		int c2 = sg.gstart[sg.gidx[c]] + fastrandK ( sg.gsize[gidx[c]] );
 
@@ -153,14 +167,12 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 		array_t o2 = A._at ( r2,c2 ); // no extra error checking
 
 		// update
-		
-					if (optimmethod==DOPTIM_SWAP && o==o2)
-				continue;
+
+		if ( optimmethod==DOPTIM_SWAP && o==o2 )
+			continue;
 
 		switch ( optimmethod ) {
 		case DOPTIM_SWAP: // swap
-			
-			
 			A._setvalue ( r,c,o2 );
 			A._setvalue ( r2,c2,o );
 			break;
@@ -172,7 +184,11 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 		case DOPTIM_FLIP: // flip
 			A._setvalue ( r,c,1-o );
 			break;
-			case DOPTIM_NONE:
+		case DOPTIM_NONE:
+			break;
+		default
+				:
+			printf ( "optimDeff: no such optimization method\n" );
 			break;
 		}
 		// evaluate
@@ -180,6 +196,10 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 		nx++;
 		double dn = scoreD ( dd, alpha );
 
+
+		if ( verbose>=4 ) {
+			printf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
+		}
 
 		// switch back if necessary
 
@@ -202,14 +222,14 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 				A._setvalue ( r,c,o );
 				break;
 			case DOPTIM_NONE:
-			break;
+				break;
 			}
 		}
 
 		// check progress
 		if ( ( ii-lc ) >nabort ) {
 			if ( verbose>=2 )
-				printf ( "optimDeff: early abort ii %d, lc %d\n", ii, lc );
+				printf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
 			//abort=true;
 			break;
 		}
@@ -219,8 +239,8 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 	std::vector<double> dd = A.Defficiencies();
 	double dn = scoreD ( dd, alpha );
 
-		if ( verbose ) {
-		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd0[0] );
+	if ( verbose ) {
+		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
 	}
 
 	//printf("nx %d\n", nx);
@@ -228,60 +248,202 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 //      return std::pair<array_link, std::vector<double> >(A, dd);
 }
 
-#include <algorithm> 
 
-extern "C" {
-	
-double DoptimizeR(int *_N, int *_k, int *nrestarts, int *_niter, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *_method, double *maxtime , int *nabort, double *output )
+array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niter, int nabort )
 {
 
-int niter=*_niter;
-int method=*_method;
-int N = *_N;
-int k = *_k;
-int verbose = *_verbose;
+	int nx=0;
+	int N = arrayclass.N;
+	int k = arrayclass.ncols;
+	std::vector<int> s = arrayclass.getS();
 
-output[0]=1;
-output[1]=2;
-output[2]=3;
-output[3]=4;
-
-if (verbose>=2)
-	printf("DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter, *alpha1);
-
- arraydata_t arrayclass(2, N, 0, k);
-std::vector<double> alpha(3);
-alpha[0]=std::max(*alpha1,0.);
-alpha[1]=std::max(*alpha2, 0.);
-alpha[2]=std::max(*alpha3,0.);
-
-DoptimReturn rr = Doptimize(arrayclass, *nrestarts, niter, alpha,  verbose,  method, *maxtime,  *nabort);
-
-	std::vector<std::vector<double> > dds = rr.dds; 	arraylist_t AA = rr.designs;
-
-	// sort according to values
-	std::vector<double> sval ( AA.size() );
-	for ( size_t i=0; i<AA.size(); i++ ) {
-		sval[i]=-scoreD ( dds[i], alpha );
+	if ( ! arrayclass.is2level() ) {
+		printf ( "optimDeff2level: error arrayclass is not 2-level\n" );
+		return A0;
 	}
 
-	indexsort sorter ( sval );
+	if ( nabort<=0 ) {
+		nabort=N*k+2;
+	}
 
-	AA=sorter.sorted ( AA );
-	dds=sorter.sorted ( dds );
+	if ( optimmethod==DOPTIM_UPDATE ) {
+		if ( arrayclass.is2level() )
+			optimmethod=DOPTIM_FLIP;
+	}
+	array_link A = A0;
 
-array_link best = AA[0];
+	std::vector<double> dd0 = A0.Defficiencies();
 
-std::copy(best.array, best.array+N*k, output);
+	if ( verbose ) {
+		printf ( "optimDeff: initial D-efficiency %.4f\n",  dd0[0] );
+	}
 
-if (verbose>=2) {
-	printf("DoptimizeR: done\n");
+	// initialize arary with random permutation
+	std::vector<int> updatepos = permutation<int> ( N*k );
+	std::random_shuffle ( updatepos.begin(), updatepos.end() );
+	int updateidx = 0;
+
+	// initialize score
+	double d = scoreD ( dd0, alpha );
+
+	int lc=0;	// index of last change to array
+
+	int nn = updatepos.size();
+
+//#pragma omp for
+	for ( int ii=0; ii<niter; ii++ ) {
+
+		// select random row and column
+		int r = updatepos[updateidx] % N;
+		int c = updatepos[updateidx] / N;
+		updateidx= ( updateidx+1 ) % ( nn );
+
+		int r2 = fastrandK ( N );
+		int c2 = fastrandK ( k );
+
+		// get values
+		array_t o = A._at ( r,c );
+		array_t o2 = A._at ( r2,c2 ); // no extra error checking
+
+		// update
+
+		if ( optimmethod==DOPTIM_SWAP && o==o2 )
+			continue;
+
+		switch ( optimmethod ) {
+		case DOPTIM_SWAP: // swap
+
+
+			A._setvalue ( r,c,o2 );
+			A._setvalue ( r2,c2,o );
+			break;
+		case DOPTIM_UPDATE: { // random update
+			int val = fastrandK ( s[c] );
+			A._setvalue ( r,c,val );
+			break;
+		}
+		case DOPTIM_FLIP: // flip
+			A._setvalue ( r,c,1-o );
+			break;
+		case DOPTIM_NONE:
+			break;
+		default
+				:
+			printf ( "optimDeff: no such optimization method\n" );
+			break;
+		}
+		// evaluate
+		std::vector<double> dd = A.Defficiencies();
+		nx++;
+		double dn = scoreD ( dd, alpha );
+
+
+		if ( verbose>=4 ) {
+			printf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
+		}
+
+		// switch back if necessary
+
+		if ( dn>=d ) {
+			if ( dn>d )  {
+				lc=ii;
+				if ( verbose>=3 )
+					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
+				d=dn;
+			}
+		} else {
+			// restore to original
+			switch ( optimmethod ) {
+			case DOPTIM_SWAP:
+				A._setvalue ( r,c,o );
+				A._setvalue ( r2,c2,o2 );
+				break;
+			case DOPTIM_FLIP:
+			case DOPTIM_UPDATE:
+				A._setvalue ( r,c,o );
+				break;
+			case DOPTIM_NONE:
+				break;
+			}
+		}
+
+		// check progress
+		if ( ( ii-lc ) >nabort ) {
+			if ( verbose>=2 )
+				printf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
+			//abort=true;
+			break;
+		}
+
+	}
+
+	std::vector<double> dd = A.Defficiencies();
+	double dn = scoreD ( dd, alpha );
+
+	if ( verbose ) {
+		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
+	}
+
+	//printf("nx %d\n", nx);
+	return A;
+//      return std::pair<array_link, std::vector<double> >(A, dd);
 }
+
+#include <algorithm>
+
+extern "C" {
+
+	double DoptimizeR ( int *_N, int *_k, int *nrestarts, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *_method, int *_niter, double *maxtime , int *nabort, double *output )
+	{
+
+		int niter=*_niter;
+		int method=*_method;
+		int N = *_N;
+		int k = *_k;
+		int verbose = *_verbose;
+
+		output[0]=1;
+		output[1]=2;
+		output[2]=3;
+		output[3]=4;
+
+		if ( verbose>=2 )
+			printf ( "DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter, *alpha1 );
+
+		arraydata_t arrayclass ( 2, N, 0, k );
+		std::vector<double> alpha ( 3 );
+		alpha[0]=std::max ( *alpha1,0. );
+		alpha[1]=std::max ( *alpha2, 0. );
+		alpha[2]=std::max ( *alpha3,0. );
+
+		DoptimReturn rr = Doptimize ( arrayclass, *nrestarts, alpha,  verbose,  method, niter, *maxtime,  *nabort );
+
+		std::vector<std::vector<double> > dds = rr.dds;
+		arraylist_t AA = rr.designs;
+
+		// sort according to values
+		std::vector<double> sval ( AA.size() );
+		for ( size_t i=0; i<AA.size(); i++ ) {
+			sval[i]=-scoreD ( dds[i], alpha );
+		}
+
+		indexsort sorter ( sval );
+
+		AA=sorter.sorted ( AA );
+		dds=sorter.sorted ( dds );
+
+		array_link best = AA[0];
+
+		std::copy ( best.array, best.array+N*k, output );
+
+		if ( verbose>=2 ) {
+			printf ( "DoptimizeR: done\n" );
+		}
 //best.showarray();
 
-return best.Defficiency();
+		return best.Defficiency();
 
-}
+	}
 
 } // extern "C"
 
