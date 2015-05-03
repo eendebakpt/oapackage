@@ -92,8 +92,8 @@ int oaunittest(int verbose, int writetests=0)
 
 
 		array_t ss[7] ={3,3,2,2,2,2,2};
-				arraydata_t arrayclass ( ss, 36, t, 7 );
-		DoptimReturn rr =  Doptimize(arrayclass, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
+				arraydata_t arrayclassmixed ( ss, 36, t, 5 );
+		 rr =  Doptimize(arrayclassmixed, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
 
 		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t0 );
 	}
