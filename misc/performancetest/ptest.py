@@ -21,8 +21,8 @@ import platform
 from imp import reload
 
 oadir=os.path.join(os.path.expanduser('~'), 'misc/oa/oacode/')
-sys.path.append(oadir)
-sys.path.append(os.path.join(oadir, 'python'))
+#sys.path.append(oadir)
+#sys.path.append(os.path.join(oadir, 'python'))
    
 import oalib; reload(oalib)
 import oapackage.oahelper as oahelper; reload(oahelper)
@@ -123,7 +123,7 @@ def pytest2level(verbose=1):
 
 def pytest5(verbose=1):
 	""" Performance of analysis algorithms """
-	cmd = 'export OMP_NUM_THREADS=1; oaanalyse --gwp -A ../testdata/test64.oa'
+	cmd = 'export OMP_NUM_THREADS=1; oaanalyse --gwp -A %s' % os.path.join(oadir,'testdata', 'test64.oa') 
 	if verbose:
 		print('pytest5: running oaanalyse')
 	t0=time.time()
@@ -132,9 +132,9 @@ def pytest5(verbose=1):
 	return ta
 
 def pytest2(oadir, verbose=1):
-    afile=os.path.join(oadir, '.', 'testdata', 'unstable-rank.oa')
+    afile=os.path.join(oadir, 'testdata', 'unstable-rank.oa')
     sols=oalib.readarrayfile(afile)
-    afile=os.path.join(oadir, '.', 'testdata', 'unstable-rank-extended.oa')
+    afile=os.path.join(oadir, 'testdata', 'unstable-rank-extended.oa')
     sols=oalib.readarrayfile(afile)
 
     for ii,al in enumerate(sols):
