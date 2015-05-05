@@ -322,6 +322,7 @@ def optimDeffhelper(classdata):
     return vv[0], vv[1].getarray()
     
 def calcScore(dds, optimfunc):
+    """ Calculate D-efficiency score using multiple efficiencies and a weight factor """
     n=dds.shape[0]
     scores=np.zeros( n, )    
     for ii,d in enumerate(dds):
@@ -431,6 +432,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
 #%%
 
 def filterPareto(scores, dds, sols, verbose=0):
+    """ From a list of designs select only the pareto optimal designs """
     pp = oahelper.createPareto(dds, verbose=0)   
     paretoidx=np.array(pp.allindices())
 
@@ -443,6 +445,7 @@ def filterPareto(scores, dds, sols, verbose=0):
 #%%
    
 def selectDn(scores, dds, sols, nout=1):
+    """ Select best arrays according to given scores """
     idx = np.argsort(-scores.flatten() )        
     #print(idx.shape)
     #print(scores.shape)
@@ -456,8 +459,30 @@ def selectDn(scores, dds, sols, nout=1):
         sols=sols[0:nout]
     return scores, dds, sols
     
-def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, nabort=0):
+def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0):
     """ Calculate D-optimal designs
+    
+
+    Arguments
+    ---------
+    arryaclass : object
+        Specifies the type of design to optimize
+    nrestarts : integer
+        Number of restarts of the algorithm
+    optimfunc : list with 3 floats
+        Gives the optimization weights 
+    verbose : integer
+        A higher numer gives more output
+    maxtime: float
+        Maximum running time of the algorithm
+    selectpareto : boolean, default is True
+        If True then only the Pareto optimal designs are returned
+    nout : integer, default None
+        Number of designs to return. If None,  return all designs
+        
+    Returns
+    -------
+    scores, dds, designs, nrestarts
     
     
     """
@@ -528,7 +553,8 @@ def Doptimize(arrayclass, nrestarts=10, niter=12000, optimfunc=[1,0,0], verbose=
         scores,dds,sols=filterPareto(scores, dds, sols)
 
     if verbose:
-        print('Doptim: done (%d arrays)' % len(sols) )
+        dt=time.time()-t0
+        print('Doptim: done (%d arrays, %.1f [s])' % (len(sols), dt) )
         #print(sols)
 
     

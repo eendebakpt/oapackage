@@ -615,7 +615,7 @@ lvlperm) ";
 // File: structarraydata__t.xml
 %feature("docstring") arraydata_t "
 
-Contain the class of the design (number of rows, columns, levels)
+Contains properties of the design (number of rows, columns, levels)
 
 C++ includes: arraytools.h ";
 
@@ -627,7 +627,7 @@ create new arraydata_t object ";
 %feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const std::vector< int > s, rowindex_t N,
 colindex_t strength, colindex_t ncols) ";
 
-%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(carray_t *s_, rowindex_t N, colindex_t
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const array_t *s_, rowindex_t N, colindex_t
 strength, colindex_t ncols) ";
 
 %feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const arraydata_t &adp) ";
@@ -867,7 +867,11 @@ arraysymmetry::show() const ";
 
 
 // File: structdextend__t.xml
-%feature("docstring") dextend_t "C++ includes: extend.h ";
+%feature("docstring") dextend_t "
+
+Helper structure for dynamic extension.
+
+C++ includes: extend.h ";
 
 %feature("docstring")  dextend_t::dextend_t "dextend_t::dextend_t()
 ";
@@ -890,7 +894,11 @@ filter the arrays based on values in filter ";
 
 
 // File: structDoptimReturn.xml
-%feature("docstring") DoptimReturn "C++ includes: Deff.h ";
+%feature("docstring") DoptimReturn "
+
+Structure containing results of the Doptimize function.
+
+C++ includes: Deff.h ";
 
 
 // File: structdyndata__t.xml
@@ -1175,7 +1183,11 @@ return 1 if all vals are zero ";
 
 
 // File: classlarray.xml
-%feature("docstring") larray "C++ includes: mathtools.h ";
+%feature("docstring") larray "
+
+lightweight array class
+
+C++ includes: mathtools.h ";
 
 %feature("docstring")  larray::larray "larray< numtype >::larray() ";
 
@@ -1415,7 +1427,11 @@ OAextend::__repr__() const ";
 
 
 // File: classobject__pool.xml
-%feature("docstring") object_pool "C++ includes: mathtools.h ";
+%feature("docstring") object_pool "
+
+Class to make a pool of objects that can be re-used.
+
+C++ includes: mathtools.h ";
 
 %feature("docstring")  object_pool::object_pool "object_pool< TYPE
 >::object_pool()
@@ -1454,40 +1470,6 @@ TYPE >::end() const ";
 
 %feature("docstring")  object_pool::Delete "void object_pool< TYPE
 >::Delete(TYPE *t) ";
-
-
-// File: classobject__pool2.xml
-%feature("docstring") object_pool2 "C++ includes: mathtools.h ";
-
-%feature("docstring")  object_pool2::begin "iterator object_pool2<
-TYPE >::begin() ";
-
-%feature("docstring")  object_pool2::end "iterator object_pool2< TYPE
->::end() ";
-
-%feature("docstring")  object_pool2::begin "const_iterator
-object_pool2< TYPE >::begin() const ";
-
-%feature("docstring")  object_pool2::end "const_iterator
-object_pool2< TYPE >::end() const ";
-
-%feature("docstring")  object_pool2::at "TYPE& object_pool2< TYPE
->::at(std::size_t index) ";
-
-%feature("docstring")  object_pool2::at "TYPE const& object_pool2<
-TYPE >::at(std::size_t index) const ";
-
-%feature("docstring")  object_pool2::size "size_t object_pool2< TYPE
->::size() const ";
-
-%feature("docstring")  object_pool2::add "size_t object_pool2< TYPE
->::add() ";
-
-%feature("docstring")  object_pool2::rem "void object_pool2< TYPE
->::rem(size_t &a) ";
-
-%feature("docstring")  object_pool2::object_pool2 "object_pool2< TYPE
->::object_pool2() ";
 
 
 // File: classPareto.xml
@@ -1733,8 +1715,11 @@ show the symmetry group ";
 
 
 // File: classsymmetry__group__walker.xml
-%feature("docstring") symmetry_group_walker "C++ includes:
-mathtools.h ";
+%feature("docstring") symmetry_group_walker "
+
+class to walk over all element of a symmetry group
+
+C++ includes: mathtools.h ";
 
 %feature("docstring")  symmetry_group_walker::symmetry_group_walker "symmetry_group_walker::symmetry_group_walker(symmetry_group sg) ";
 
@@ -1910,7 +1895,7 @@ int ka)
 
 convert D-efficiency value to C value ";
 
-%feature("docstring")  get_oaindex "int get_oaindex(carray_t *s,
+%feature("docstring")  get_oaindex "int get_oaindex(const array_t *s,
 const colindex_t strength, const colindex_t N)
 
 Return index of an array. ";
@@ -2289,24 +2274,31 @@ array_link &al, int verbose=1) ";
 %feature("docstring")  scoreD "double scoreD(const std::vector<
 double > dd, const std::vector< double > alpha)
 
-calculate from from set of efficiencies ";
+calculate score from from set of efficiencies ";
 
 %feature("docstring")  optimDeff "array_link optimDeff(const
 array_link &A0, const arraydata_t &arrayclass, std::vector< double >
 alpha, int verbose=1, int optimmethod=DOPTIM_AUTOMATIC, int
-niter=10000, int nabort=2500)
+niter=100000, int nabortx=0)
 
 Optimize a design according to the optimization function specified.
 
 Arguments: arrayclass: structure describing the design class alpha:
 (3x1 array) verbose: output level ";
 
-%feature("docstring")  Doptimize "DoptimReturn Doptimize(const
-arraydata_t &arrayclass, int nrestarts, int niter, std::vector< double
-> alpha, int verbose, int method, double maxtime=100000, int
-nabort=3000)
+%feature("docstring")  optimDeff2level "array_link
+optimDeff2level(const array_link &A0, const arraydata_t &arrayclass,
+std::vector< double > alpha, int verbose=1, int
+optimmethod=DOPTIM_AUTOMATIC, int niter=100000, int nabort=0)
 
-optimize designs ";
+debugging function ";
+
+%feature("docstring")  Doptimize "DoptimReturn Doptimize(const
+arraydata_t &arrayclass, int nrestarts, std::vector< double > alpha,
+int verbose, int method=DOPTIM_AUTOMATIC, int niter=100000, double
+maxtime=100000, int nabort=5000)
+
+function to generate optimal designs ";
 
 
 // File: extend_8h.xml
@@ -2343,8 +2335,6 @@ extend an array with a single column ";
 
 %feature("docstring")  runExtendRoot "arraylist_t
 runExtendRoot(arraydata_t adata, int nmax, int verbose=0)
-
-hack
 
 simple wrapper function ";
 
@@ -2568,10 +2558,14 @@ Type > &v, Type defaultvalue)
 Return minimum element of a std::vector. ";
 
 %feature("docstring")  permutation "std::vector<NumType>
-permutation(int n) ";
+permutation(int n)
+
+create permutation of specified length ";
 
 %feature("docstring")  array2vector "std::vector<NumType>
-array2vector(const NumTypeIn *x, int len) ";
+array2vector(const NumTypeIn *x, int len)
+
+convert array given by pointer to std::vector ";
 
 %feature("docstring")  array2larray "larray<NumType>
 array2larray(const NumTypeIn *x, int len) ";
@@ -3016,67 +3010,6 @@ filename)
 calculate md5 sum of a file on disk ";
 
 
-// File: mpitools_8h.xml
-%feature("docstring")  stop_slaves "int stop_slaves() ";
-
-%feature("docstring")  collect_solutions_single "int
-collect_solutions_single(arraylist_t &extensions, const arraydata_t
-*ad)
-
-Collect all solutions from a single slave.
-
-The solutions are collected fromn the firs slave that reports to be
-done. ";
-
-%feature("docstring")  slave_print "void slave_print(const int level,
-const char *message,...) ";
-
-%feature("docstring")  send_int "void send_int(int msg, int slave) ";
-
-%feature("docstring")  receive_int_slave "int receive_int_slave() ";
-
-%feature("docstring")  send_array_header "void
-send_array_header(arraydata_t *ad, colindex_t extensioncol, int slave)
-";
-
-%feature("docstring")  extend_array_mpi "void
-extend_array_mpi(arraylist_t::iterator first, int narrays, arraydata_t
-*ad, colindex_t extensioncol, int slave) ";
-
-%feature("docstring")  extend_array_mpi "void
-extend_array_mpi(array_t *array, arraydata_t *ad, colindex_t
-extensioncol, int slave) ";
-
-%feature("docstring")  collect_solutions_all "int
-collect_solutions_all(arraylist_t &extensions, const arraydata_t *ad)
-
-Collect solutions from all slaves.
-
-The solutions are collected fromn the firs slave that reports to be
-done. ";
-
-%feature("docstring")  extend_slave_code "int extend_slave_code(const
-int this_rank, OAextend const &oaextend)
-
-Main function for the slaves in MPI configuration. ";
-
-%feature("docstring")  collect_solutions_slave "void
-collect_solutions_slave(arraylist_t &extensions, const arraydata_t
-*ad, const int slave, int nsols)
-
-Collect all solutions from the slave specified.
-
-The solutions are stored in a list that is specified as an argument.
-";
-
-%feature("docstring")  mpi_send_solution "void
-mpi_send_solution(array_t *array, rowindex_t nr, colindex_t nc) ";
-
-%feature("docstring")  mpi_receive_solution "void
-mpi_receive_solution(array_t *array, rowindex_t nr, colindex_t nc, int
-slave) ";
-
-
 // File: msstdint_8h.xml
 
 
@@ -3169,9 +3102,6 @@ Copy the frequency count table. ";
 check_divisibility(const arraydata_t *)
 
 check whether an array passes divisibility test ";
-
-%feature("docstring")  malloc2di_irr "int** malloc2di_irr(int **,
-const int, const int *, const int) ";
 
 %feature("docstring")  valid_element "bool valid_element(const
 extend_data_t *es, const extendpos *p, carray_t *array) ";

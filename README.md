@@ -1,7 +1,7 @@
 Orthogonal Array Package
 ========================
 
-(version 1.9.317)
+(version 2.0)
 
 The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.

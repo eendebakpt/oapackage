@@ -18,13 +18,11 @@ std::string compile_information()
 	return ss.str();
 }
 
-// use:svn propset svn:keywords Id src/oaoptions.cpp
-const char *svn_version = "$Id: oaoptions.cpp 6 2012-05-02 23:34:04Z eendebakpt $";
 
 /** Return version of program */
 std::string version()
 {
-    std::string v = "1.9.317";
+    std::string v = "2.0.0";
     return v;
 }
 
@@ -32,7 +30,7 @@ std::string version()
  */
 void print_copyright_old()
 {
-	printf("Orthogonal Arrays %s: Copyright TNO Science & Industry (2010), Copyright Pieter Eendebak (2011-2014)\n", version().c_str());
+	printf("Orthogonal Arrays %s: Copyright TNO Science & Industry (2010), Copyright Pieter Eendebak (2011-2015)\n", version().c_str());
 	printf("For more details see the files README.txt and LICENSE.txt\n");
 }
 
