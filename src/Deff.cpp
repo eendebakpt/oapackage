@@ -111,10 +111,12 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 
 
 	if ( nabort<=0 ) {
-		if (arrayclass.is2level() )
-		nabort=(N*k)+1;
-			else
+		if (arrayclass.is2level() ) {
+		nabort=(N*k)*2+1;	// factor 2 to compensate for equal error switches
+		}
+			else {
 		nabort=(N*k)*(arrayclass.s[0])+2;
+			}
 	}
 
 	int nx=0;
@@ -151,8 +153,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 //#pragma omp for
 	for ( int ii=0; ii<niter; ii++ ) {
 		// select random row and column
-		int r = updatepos[updateidx] % N;
-		int c = updatepos[updateidx] / N;
+		int r = updatepos[updateidx] % N; int c = updatepos[updateidx] / N;
 		updateidx= ( updateidx+1 ) % ( nn );
 
 		int r2 = fastrandK ( N );
@@ -209,8 +210,18 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass,  s
 				if ( verbose>=3 )
 					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
 				d=dn;
+			} else {
+				if (verbose>=2) {
+								printf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );				 
+				}
 			}
 		} else {
+			
+			if ( (dn+1e-10)>=d ){
+				if (verbose>=2) {
+			printf("element within 1e-12! d %f, dn %f\n", d, dn);	
+				}
+			}
 			// restore to original
 			switch ( optimmethod ) {
 			case DOPTIM_SWAP:
@@ -294,8 +305,8 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 	for ( int ii=0; ii<niter; ii++ ) {
 
 		// select random row and column
-		int r = updatepos[updateidx] % N;
-		int c = updatepos[updateidx] / N;
+		//int r = updatepos[updateidx] % N; int c = updatepos[updateidx] / N;
+		int r = fastrandK(N); int c = fastrandK(k);
 		updateidx= ( updateidx+1 ) % ( nn );
 
 		int r2 = fastrandK ( N );
@@ -350,6 +361,8 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 				if ( verbose>=3 )
 					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
 				d=dn;
+			} else {
+					printf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );				 
 			}
 		} else {
 			// restore to original

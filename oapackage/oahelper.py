@@ -213,7 +213,9 @@ def enlargelims(factor=1.05):
     yl=(yl[0]-d,yl[1]+d)
     plt.ylim(yl)
     
-#%%            
+#%% 
+
+           
 def selectParetoArrays(allarrays, pp):
     """ Select arrays using a Pareto object """
     paretoarrays=oalib.arraylist_t()
@@ -982,4 +984,12 @@ def setWindowRectangle(x,y=None,w=None,h=None, mngr=None, be=None):
         mngr.canvas.manager.window.resize(w,h)
         mngr.canvas.manager.window.setGeometry(x,y,w,h)
         #mngr.window.setGeometry(x,y,w,h)
+
+def makearraylink(al):
+    """ Convert array to array_link object """
+    if isinstance(al, np.ndarray):
+            tmp=oalib.array_link()
+            tmp.setarray(al)
+            al=tmp
+    return al
         

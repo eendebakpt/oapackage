@@ -443,9 +443,26 @@ def filterPareto(scores, dds, sols, verbose=0):
     return pscores, pdds, psols
 
 #%%
+
+def scoreDn(dds, optimfunc):
+    scores =np.array([ oalib.scoreD(dd, [1,2,0]) for dd in dds] )
+    return scores
    
 def selectDn(scores, dds, sols, nout=1):
-    """ Select best arrays according to given scores """
+    """ Select best arrays according to given scores 
+        The resulting data is sorted
+
+    Arguments
+    ---------
+    scores : array
+    dds : array
+    sols : list
+    
+    Returns
+    -------
+    scores, dds, sols : sorted arrays
+    
+    """
     idx = np.argsort(-scores.flatten() )        
     #print(idx.shape)
     #print(scores.shape)
@@ -454,6 +471,7 @@ def selectDn(scores, dds, sols, nout=1):
     sols=[sols[ii] for ii in idx]
     if not nout is None:
         # sort the arrays
+        nout = np.minimum(nout, scores.size)
         scores=scores[0:nout]
         dds=dds[range(nout),:]
         sols=sols[0:nout]
@@ -506,6 +524,8 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=18
         #dt=time.time()-t0
         scores=np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
         
+        if verbose>=3:
+            print('Doptimize: max D: %.6f' % np.max([A.Defficiency() for A in sols]) )
         #dt=time.time()-t0
 
     else:                

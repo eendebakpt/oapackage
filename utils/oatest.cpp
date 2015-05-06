@@ -434,54 +434,117 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
+	if ( 0 ) {
+		int N = 10;
+		int k =3;
+		const int nn = N*k;
+		std::vector<int> updatepos = permutation<int> ( nn );
+		if ( r==0 ) {
+			std::random_shuffle ( updatepos.begin(), updatepos.end() );
+		}
+		int updateidx = 0;
+
+		int niter=nn;
+
+//#pragma omp for
+		for ( int ii=0; ii<niter; ii++ ) {
+			// select random row and column
+			int r = updatepos[updateidx] % N;
+			int c = updatepos[updateidx] / N;
+			printf ( "ii %d: pos %3d: %3d %3d\n", ii, updatepos[ii], r, c );
+
+			updateidx++;
+		}
+
+		return 0;
+	}
 
 	if ( 1 ) {
-
-		double t0=get_time_ms();
+		double dt, mean;
 		arraydata_t arrayclass ( 2, rr, 0, cc );
 		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
-		int niter=opt.getIntValue ( "niter", 20000 );
+		int niter=opt.getIntValue ( "niter", 60000 );
 		std::vector<double> alpha ( 3 );
 		alpha[0]=1;
-		alpha[1]=1;
+		alpha[1]=0;
 		alpha[2]=0;
-		int nabort=-1;
+		int nabort=0;
 		array_link al = arrayclass.randomarray();
+		array_link al3;
 		al = arrayclass.randomarray();
 		int ro = aidx;
-		std::vector<double> m ( nrestarts );
-		for ( int i=0; i<nrestarts; i++ ) {
-// al = arrayclass.randomarray();
-			seedfastrand ( i+ro );
-			srand ( i+ro );
-			array_link  al2 = optimDeff ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort );
-			//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
-			//array_link  alx = finalcheck(al2, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort);
 
-			std::vector<double> dd = al2.Defficiencies();
-			double d = scoreD ( dd, alpha );
-			m[i]=d;
+		int ni=10;
+		std::vector<double> mm ( ni );
+		std::vector<double> m ( nrestarts );
+
+//					seedfastrand(ro); srand(ro); nabort=md; array_link  al2 = optimDeff ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort ); return 0;
+
+
+		double t0=get_time_ms();
+		for ( int j=0; j<ni; j++ ) {
+				seedfastrand ( ro+100*j);
+				srand ( ro+100*j );
+		al = arrayclass.randomarray();
+			for ( int i=0; i<nrestarts; i++ ) {
+				seedfastrand ( i+ro +100*j);
+				srand ( i+ro+100*j );
+				array_link  al2 = optimDeff ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
+				//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
+				//array_link  alx = finalcheck(al2, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort);
+
+				std::vector<double> dd = al2.Defficiencies();
+				double d = scoreD ( dd, alpha );
+				m[i]=d;
+
+				if ( 1 ) {
+				srand ( i+ro+200*j );
+					//al2 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, 3000 );
+					al3 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_SWAP,  niter, 6300 );
+					dd = al3.Defficiencies();
+					d = scoreD ( dd, alpha );
+					if (d> m[i]+1e-8 ) {
+						printf ( "check! %.8f (%.6f %.6f) -> %.8f (%.6f %.6f)\n", m[i], al2.Defficiency(), al2.DsEfficiency() , d, al3.Defficiency(), al3.DsEfficiency() );
+					}
+				//m[i]=d;
+
+				}
+			}
+			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
+						printf("  mm[%d] %.4f\n", j, mm[j]);
+
 		}
-		double dt=get_time_ms()-t0;
-		double mean = accumulate ( m.begin(), m.end(), 0.0 ) / m.size();
+		dt=get_time_ms()-t0;
+		mean = accumulate ( mm.begin(), mm.end(), 0.0 ) / mm.size();
 		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
 
 
+
 		t0=get_time_ms();
+				for ( int j=0; j<ni; j++ ) {
+				seedfastrand (ro+ 100*j);
+				srand (ro+ 100*j );
+		al = arrayclass.randomarray();
+
 		for ( int i=0; i<nrestarts; i++ ) {
 // al = arrayclass.randomarray();
-			seedfastrand ( i+ro );
-			srand ( i+ro );
+				seedfastrand ( i+ro +100*j);
+				srand ( i+ro+100*j );
+
 			nabort=al.n_columns*al.n_rows+1;
-			array_link  al2 = optimDeff2level ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort );
+			array_link  al2 = optimDeff2level ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
 			//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
 			std::vector<double> dd = al2.Defficiencies();
 			double d = scoreD ( dd, alpha );
 
 			m[i]=d;
 		}
+			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
+			printf("  mm[%d] %.4f\n", j, mm[j]);
+			
+		}
 		dt=get_time_ms()-t0;
-		mean = accumulate ( m.begin(), m.end(), 0.0 ) / m.size();
+		mean = accumulate ( mm.begin(), mm.end(), 0.0 ) / mm.size();
 		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
 		return 0;
 
