@@ -445,10 +445,11 @@ def filterPareto(scores, dds, sols, verbose=0):
 #%%
 
 def scoreDn(dds, optimfunc):
-    scores =np.array([ oalib.scoreD(dd, [1,2,0]) for dd in dds] )
+    """ Calculate scores from various efficiencies """
+    scores =np.array([ oalib.scoreD(dd, optimfunc) for dd in dds] )
     return scores
    
-def selectDn(scores, dds, sols, nout=1):
+def selectDn(scores, dds, sols, nout=1, sortfull=False):
     """ Select best arrays according to given scores 
         The resulting data is sorted
 
@@ -457,13 +458,18 @@ def selectDn(scores, dds, sols, nout=1):
     scores : array
     dds : array
     sols : list
+    nout : integer or None
+        Number of results to return. None means return all results
     
     Returns
     -------
     scores, dds, sols : sorted arrays
     
     """
-    idx = np.argsort(-scores.flatten() )        
+    if sortfull:
+        idx=np.lexsort( [dds[:, ii] for ii in range(dds.shape[1])] + [scores] )[::-1]
+    else:
+        idx = np.argsort(-scores.flatten() )        
     #print(idx.shape)
     #print(scores.shape)
     scores=scores[idx]
