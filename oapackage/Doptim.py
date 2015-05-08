@@ -18,7 +18,7 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
 except:
-    print('Doptim: matplotlib cannot be found, not all functionality is available')
+    #print('Doptim: matplotlib cannot be found, not all functionality is available')
     pass
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper

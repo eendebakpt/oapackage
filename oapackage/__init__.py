@@ -9,7 +9,8 @@ oalib.log_print(-oalib.SYSTEM, '')
 from oalib import *
 from . oahelper import *
 from . Doptim import *
-import scanf
+#import scanf
+from . import scanf
 
 #%%
 

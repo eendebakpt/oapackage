@@ -555,7 +555,7 @@ import traceback
 try:
     import dateutil
 except:
-    print('oahelper: could not load datautil package...')
+    #print('oahelper: could not load datautil package...')
     pass
         
 def parseProcessingTime(logfile, verbose=0):

@@ -11,7 +11,7 @@ include mex/compile.m
 #include oalib_wrap.cxx
 
 recursive-include src *.h *.cpp
-recursive-include bitarray *.h *.cpp
+#recursive-include bitarray *.h *.cpp
 
 #graft python
 #graft oalib
