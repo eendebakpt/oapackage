@@ -449,23 +449,29 @@ def scoreDn(dds, optimfunc):
     scores =np.array([ oalib.scoreD(dd, optimfunc) for dd in dds] )
     return scores
    
-def selectDn(scores, dds, sols, nout=1, sortfull=False):
+def selectDn(scores, dds, sols, nout=1, sortfull=True):
     """ Select best arrays according to given scores 
         The resulting data is sorted
 
     Arguments
     ---------
     scores : array
+        scores for the designs
     dds : array
+        array with efficiencies of the designs
     sols : list
+        list of designs
     nout : integer or None
         Number of results to return. None means return all results
     
     Returns
     -------
     scores, dds, sols : sorted arrays
-    
     """
+
+    if len(sols)==0:       
+        return scores, dds, sols
+    
     if sortfull:
         idx=np.lexsort( [dds[:, ii] for ii in range(dds.shape[1])] + [scores] )[::-1]
     else:
