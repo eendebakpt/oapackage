@@ -102,6 +102,7 @@ Eigen::MatrixXd dummy2();
 %ignore arrayfile_t::arrayNbits;
 %ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
+%ignore ::writebinheader;
 #endif
 
 extern "C" {

@@ -16,7 +16,7 @@ import numpy as np
 import functools
 from collections import Counter
 import operator
-import types
+#import types
 import fileinput
 import re
 from time import gmtime, strftime
@@ -43,10 +43,8 @@ try:
             user32 = ctypes.windll.user32
             wa = [[0,0, user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)]]
         else:
-            tmp=QtGui.QApplication.startingUp()
-            if 0:
-                print('starting QApplication: startingUp %d'  % tmp)
-            if tmp:
+            _applocalqt = QtGui.QApplication.instance()
+            if _applocalqt is None:
                 _applocalqt = QtGui.QApplication([])
                 _qd=QtGui.QDesktopWidget()
             else:
@@ -58,15 +56,6 @@ try:
             wa=[_qd.screenGeometry(ii) for ii in range(nmon)]
             wa=[ [w.x(), w.y(), w.width(), w.height()] for w in wa]
             
-            if 0:
-                #import gtk # issues with OpenCV...
-                window = gtk.Window()
-                screen = window.get_screen()
-                
-                nmon=screen.get_n_monitors()        
-                wa=[screen.get_monitor_geometry(ii) for ii in range(nmon)]
-                wa=[ [w.x, w.y, w.width, w.height] for w in wa]
-    
             if verbose:
                 for ii, w in enumerate(wa):
                     print('monitor %d: %s'  % (ii,str(w)) )        

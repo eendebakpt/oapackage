@@ -15,7 +15,7 @@ recursive-include src *.h *.cpp
 
 #graft python
 #graft oalib
-graft Eigen
+#graft Eigen
 graft utils
 exclude TODO
 exclude oalib_wrap_dev.cxx

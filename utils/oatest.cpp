@@ -459,7 +459,7 @@ int main ( int argc, char* argv[] )
 		return 0;
 	}
 
-	if ( 1 ) {
+	if ( 0 ) {
 		double dt, mean;
 		arraydata_t arrayclass ( 2, rr, 0, cc );
 		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
@@ -561,8 +561,29 @@ int main ( int argc, char* argv[] )
 
 	// ################################
 
-
+	
 	if ( 1 ) {
+		arraydata_t adata ( 2, rr, 0, cc );
+		int niter=10000;
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+		double t0=get_time_ms();
+		arraylist_t sols;
+		for ( int i=0; i<20; i++ ) {
+			array_link al = adata.randomarray ( 0 );
+	sols.push_back(al);
+		}
+	DoptimReturn a = DoptimizeMixed(sols, adata, alpha, verbose);
+	DoptimReturn a2 = DoptimizeMixed(a.designs, adata, alpha, verbose);
+	DoptimReturn a3 = DoptimizeMixed(a2.designs, adata, alpha, verbose);
+		
+	// TODO: incorporate into python code, C++ solution for sorting designs
+	// balance iteration with niter
+return 0;
+}
+
+	if ( 0 ) {
 		arraydata_t adata ( 2, 64, 0, 7 );
 		int niter=10000;
 		std::vector<double> alpha ( 3 );

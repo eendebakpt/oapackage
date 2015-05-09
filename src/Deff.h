@@ -37,11 +37,15 @@ struct DoptimReturn {
 	std::vector<std::vector<double> > dds;	/// scores generated
 	arraylist_t designs;	/// designs generated
 	int nrestarts;	/// final number of restarts performed
+	int nimproved;
 };
 
 
 /// function to generate optimal designs
-DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestarts, std::vector<double> alpha, int verbose, int method = DOPTIM_AUTOMATIC, int niter = 100000, double maxtime = 100000, int nabort=5000 );
+DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestarts, const std::vector<double> alpha, int verbose, int method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort=5000 );
+
+DoptimReturn DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector<double> alpha, int verbose=1, int nabort=-1);
+
 
 
 #endif
