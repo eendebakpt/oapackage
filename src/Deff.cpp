@@ -54,7 +54,7 @@ DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestartsmax, std::v
 		#pragma omp critical
 #endif
 		{
-			if ( verbose && ( i%200==0 || i==nrestartsmax-1 ) ) {
+			if ( verbose && ( i%500==0 || i==nrestartsmax-1 ) ) {
 				myprintf ( "Doptimize: iteration %d/%d\n", i, nrestartsmax );
 				MATLABUPDATE	// helper macro from matlab interface
 			}
@@ -132,7 +132,7 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 		#pragma omp critical
 #endif
 		{
-			if ( verbose && ( i%50==0 || i==nn-1 ) ) {
+			if ( verbose && ( i%100==0 || i==nn-1 ) ) {
 				myprintf ( "DoptimizeMixed: iteration %d/%d\n", ( int ) i, ( int ) nn );
 				MATLABUPDATE	// helper macro from matlab interface
 			}
@@ -183,7 +183,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 
 	if ( nabort<=0 ) {
 		if ( arrayclass.is2level() ) {
-			nabort= ( N*k ) *2+1;	// factor 2 to compensate for equal error switches
+			nabort= ( N*k ) *2.5+1;	// factor 2 to compensate for equal error switches
 		} else {
 			nabort= ( N*k ) * ( arrayclass.s[0] ) +2;
 		}
@@ -278,6 +278,8 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 		if ( dn>=d ) {
 			if ( dn>d )  {
 				lc=ii;
+				//std::random_shuffle ( updatepos.begin(), updatepos.end() );	// update the sequence of positions to try
+
 				if ( verbose>=3 )
 					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
 				d=dn;

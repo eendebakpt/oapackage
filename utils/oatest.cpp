@@ -434,6 +434,53 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
+	if (1) {
+		double dt, mean;
+		arraydata_t arrayclass ( 2, rr, 0, cc );
+		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
+		int niter=opt.getIntValue ( "niter", 160000 );
+		std::vector<double> alpha ( 3 ); alpha[0]=1; alpha[1]=0.5; alpha[2]=0;
+		array_link al = arrayclass.randomarray();
+		int ro = aidx;
+
+		double t0=get_time_ms();
+		for ( int j=0; j<nrestarts; j++ ) {
+				seedfastrand ( ro+100*j);
+				srand ( ro+100*j );
+				array_link  al2 = optimDeff ( al, arrayclass, alpha, 0,  DOPTIM_UPDATE,  niter, 0 );
+			}
+			printf("dt %.1f [ms]\n", 1e3*get_time_ms(t0) );
+return 0;
+	}
+	
+	if (1)
+	{
+	arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
+	array_link al = sols[0];
+	arraydata_t arrayclass = arraylink2arraydata(al);
+	arrayclass=arraydata_t(2, 70, 0, 7);
+	
+	if (aidx>10)
+		al=arrayclass.randomarray(1);
+	double D = Defficiency(al,2);
+	
+	printf("---------\n");
+	std::vector<double> dd = Defficiencies ( al,  arrayclass, 2, 0);
+
+
+	double t0=get_time_ms();
+	for(int i=0; i<1000; i++) {
+		double D = Defficiency(al,0);
+	}
+	printf("time %.1f [ms]\n", 1e3*get_time_ms(t0));	
+	t0=get_time_ms();
+	for(int i=0; i<1000; i++) {
+		Defficiencies(al,arrayclass,0,0);
+	}
+	printf("time %.1f [ms]\n", 1e3*get_time_ms(t0));	
+	return 0;
+	}
+	
 	if ( 0 ) {
 		int N = 10;
 		int k =3;

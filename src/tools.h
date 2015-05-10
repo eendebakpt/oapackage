@@ -545,6 +545,9 @@ int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_array
 /// return time with milisecond precision
 double get_time_ms();
 
+/// return time difference with milisecond precision
+double get_time_ms(double t0);
+
 /// trim a string by removing the specified characters from the left and right
 void trim( std::string& str, const std::string& trimChars = "" );
 

@@ -90,6 +90,8 @@ void print_options(std::ostream &outx)
 	outx << "array_t type: sizeof(array_t) " << sizeof(array_t) << std::endl;
 	//outx << "SVN version: " << svn_version << std::endl;
 
+    outx << "floating point type: sizeof(float) " << sizeof(float) << ", sizeof(double) " << sizeof(double) << ", sizeof(long double) " << sizeof(long double) <<  std::endl;
+
 	outx << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
 	
 	    Eigen::MatrixXd mymatrix(1,1);

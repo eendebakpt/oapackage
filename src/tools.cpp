@@ -341,6 +341,12 @@ double get_time_ms()
     return (double)tb.time + ((double) tb.millitm/1000.0f);
 }
 
+double get_time_ms(double t0)
+{
+    struct timeb	tb;
+    ftime(&tb);
+    return (double)tb.time + ((double) tb.millitm/1000.0f) - t0;
+}
 const std::string whiteSpaces( " \f\n\r\t\v" );
 
 

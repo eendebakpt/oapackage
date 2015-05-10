@@ -59,12 +59,22 @@ typedef unsigned __int32 uint32_t;
 
 #include <Eigen/Core>
 
+namespace Eigen {
+typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixXld;
+}
 
 /// default float matrix type used
-//typedef Eigen::MatrixXf MatrixFloat; typedef float eigenFloat;
+//typedef Eigen::MatrixXf MatrixFloat; typedef Eigen::ArrayXf ArrayFloat; typedef float eigenFloat;
 
-typedef Eigen::MatrixXd MatrixFloat;
-typedef double eigenFloat;
+
+// use double
+typedef Eigen::MatrixXd MatrixFloat; typedef Eigen::ArrayXd ArrayFloat; typedef Eigen::VectorXd VectorFloat; typedef double eigenFloat;
+
+// use long double
+//typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixFloat; typedef Eigen::Array<long double, Eigen::Dynamic, Eigen::Dynamic> ArrayFloat; typedef Eigen::Matrix<long double, Eigen::Dynamic, 1> VectorFloat; typedef long double eigenFloat;
+
+
+
 
 /// show information about Eigen matrix
 //void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );

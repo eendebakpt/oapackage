@@ -41,7 +41,7 @@ double VIFefficiency(const array_link &al, int verbose=0);
 /// Calculate A-efficiency of matrix
 double Aefficiency(const array_link &al, int verbose=0);
 
-/// Calculate A-efficiency of matrix (1 over the VIF-efficiency)
+/// Calculate E-efficiency of matrix (1 over the VIF-efficiency)
 double Eefficiency(const array_link &al, int verbose=0);
 
 
