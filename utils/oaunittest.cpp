@@ -110,6 +110,7 @@ int oaunittest(int verbose, int writetests=0)
 		}
 	}
 
+	// TODO: add D-near-zero to D-efficiencies test...
 
 	/** Test extend of arrays **/
 	{

@@ -81,37 +81,38 @@ void print_options()
  */
 void print_options(std::ostream &outx)
 {
+  std::string tabsep ="  ";
   
   	outx << "Orthogonal Array Package " << version() << std::endl;
 	
 	outx << "Compile date: " << __DATE__ << " " << __TIME__ << std::endl;
 	//outx << "SVN version: " << svn_version << std::endl;
 
-	outx << "array_t type: sizeof(array_t) " << sizeof(array_t) << std::endl;
+	outx <<tabsep << "array_t type: sizeof(array_t) " << sizeof(array_t) << std::endl;
 	//outx << "SVN version: " << svn_version << std::endl;
 
-    outx << "floating point type: sizeof(float) " << sizeof(float) << ", sizeof(double) " << sizeof(double) << ", sizeof(long double) " << sizeof(long double) <<  std::endl;
+    outx <<tabsep << "floating point type: sizeof(float) " << sizeof(float) << ", sizeof(double) " << sizeof(double) << ", sizeof(long double) " << sizeof(long double) <<  std::endl;
 
-	outx << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
+	outx <<tabsep << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
 	
 	    Eigen::MatrixXd mymatrix(1,1);
         Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp(mymatrix);
 	
-	outx << "eigen: JacobiSVD threshold " << lu_decomp.threshold () << std::endl;
+	outx <<tabsep << "eigen: JacobiSVD threshold " << lu_decomp.threshold () << std::endl;
 	
 	// http://sourceforge.net/p/predef/wiki/Compilers/
 #ifdef WIN32
 #else
-	outx << "Compiler: __VERSION__ " << __VERSION__ << std::endl;
+	outx <<tabsep << "Compiler: __VERSION__ " << __VERSION__ << std::endl;
 #endif
-	outx << "Compiler: __GNUC_VERSION__ " << __GNUC_VERSION__ << std::endl;
-	outx << "Compiler: __INTEL_COMPILER " << __INTEL_COMPILER << std::endl;
+	outx <<tabsep << "Compiler: __GNUC_VERSION__ " << __GNUC_VERSION__ << std::endl;
+	outx <<tabsep << "Compiler: __INTEL_COMPILER " << __INTEL_COMPILER << std::endl;
 	
 	
 #ifdef __OPTIMIZE__
-	outx << "Optimization: __OPTIMIZE__" << std::endl;	
+	outx << tabsep << "Optimization: __OPTIMIZE__" << std::endl;	
 #endif
-	outx << "Compile time options: "; // << std::endl;
+	outx <<tabsep << "Compile time options: "; // << std::endl;
 	std::string sep = ", ";
 
 	#ifdef OAANALYZE
@@ -169,7 +170,7 @@ void print_options(std::ostream &outx)
 	#endif
 	outx << std::endl;
 
-	outx << "columns sorting method: " << oacolSortName << std::endl;
+	outx << tabsep << "columns sorting method: " << oacolSortName << std::endl;
 
 	
 }

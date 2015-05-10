@@ -1274,12 +1274,12 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 
 	double D=0, Ds=0, D1=0;
 	int rank = m;
-	if ( fabs ( f1 ) <1e-20 ) {
+	if ( fabs ( f1 ) <1e-15 ) {
 		Eigen::FullPivLU<MyMatrix> lu_decomp ( X );
 		rank = lu_decomp.rank();
 
 		if ( verbose>=1 ) {
-			printf ( "Defficiencies: rank of model matrix %d/%d, f1 %e\n", rank, m, f1 );
+			printf ( "Defficiencies: rank of model matrix %d/%d, f1 %e, f2i %e\n", rank, m, f1, f2i );
 		}
 	}
 	if ( rank<m ) {

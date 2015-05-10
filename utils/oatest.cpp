@@ -434,7 +434,7 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
-	if (1) {
+	if (0) {
 		double dt, mean;
 		arraydata_t arrayclass ( 2, rr, 0, cc );
 		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
@@ -455,7 +455,8 @@ return 0;
 	
 	if (1)
 	{
-	arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
+	//arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
+	arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero2.oa");
 	array_link al = sols[0];
 	arraydata_t arrayclass = arraylink2arraydata(al);
 	arrayclass=arraydata_t(2, 70, 0, 7);
