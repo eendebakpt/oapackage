@@ -63,3 +63,4 @@ src/oapackage.so
 .RData
 src/stest
 src/oadevelop.o
+dev/
