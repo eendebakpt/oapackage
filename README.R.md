@@ -15,3 +15,10 @@ Installation from a package file can be done with
 > R CMD INSTALL [PACKAGEFILE]
 
 
+Development
+-----------
+
+> install.packages('devtools')
+> library(devtools)
+> load_all('oapackage')
+> document("oapackage") 

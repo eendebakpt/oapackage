@@ -838,7 +838,7 @@ def jseq(xx, comb):
     return jseq
         
 def sortrows(x):
-    """ Sort rows of an array """
+    """ Sort rows of an array, return indices"""
     if len(x.shape)==1:
         nn=1
         sind=np.argsort(x) # or np.argsort(x, order=('x', 'y'))

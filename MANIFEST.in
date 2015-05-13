@@ -23,8 +23,8 @@ exclude oalib_wrap.cxx
 exclude oalib.py
 
 # do not include development code
-exclude src/oadevelop.cpp
-exclude src/oadevelop.h
+exclude dev/oadevelop.cpp
+exclude dev/oadevelop.h
 exclude utils/oa_depth_extend.cpp
 exclude utils/oatest.cpp
 exclude utils/oaclustergather.cpp

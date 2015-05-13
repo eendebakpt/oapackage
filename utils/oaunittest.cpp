@@ -110,8 +110,27 @@ int oaunittest(int verbose, int writetests=0)
 		}
 	}
 
-	// TODO: add D-near-zero to D-efficiencies test...
+	{
+		cprintf ( verbose, "%s: D-efficiency test\n", bstr );
+	//  D-efficiency near-zero test
+{
+array_link al = exampleArray(14);
+double D= al.Defficiency();
+std::vector<double> dd = al.Defficiencies();
+printf("D %f, D (method 2) %f\n", D, dd[0] );
+assert( fabs(D-dd[0])<1e-4 );
+}
+{
+array_link al = exampleArray(15);
+double D= al.Defficiency();
+std::vector<double> dd = al.Defficiencies();
+printf("D %f, D (method 2) %f\n", D, dd[0] );
+assert( fabs(D-dd[0])<1e-4 );
+assert( fabs(D-0.335063) < 1e-3 );
+}
 
+	}
+	
 	/** Test extend of arrays **/
 	{
 		cprintf ( verbose, "%s: extend arrays\n", bstr );

@@ -75,12 +75,12 @@ srcs=srcs+[ 'Deff.cpp' ]
 #srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension
-if os.path.exists('src/oadevelop.cpp') and 0:
+srcs=[ 'src/' + ff for ff in srcs]
+if os.path.exists('dev/oadevelop.cpp') and 0:
   oadev=1
   print('Building development code')
-  srcs=[ 'oadevelop.cpp']+srcs
+  srcs=[ 'dev/oadevelop.cpp']+srcs
 
-srcs=[ 'src/' + ff for ff in srcs]
 sources =   srcs + ['src/bitarray/bit_array.cpp']
 swig_opts=[]
 
@@ -88,7 +88,7 @@ if oadev:
   #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
 
   sources = ['oalib.i'] + sources
-  swig_opts+=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/'] # , '-o oalib_wrap_dev.cxx']
+  swig_opts+=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
 
 else:
   if 0:

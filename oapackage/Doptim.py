@@ -473,7 +473,7 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         return scores, dds, sols
     
     if sortfull:
-        idx=np.lexsort( [dds[:, ii] for ii in range(dds.shape[1])] + [scores] )[::-1]
+        idx=np.lexsort( [dds[:, ii] for ii in range(dds.shape[1])[::-1]] + [scores] )[::-1]
     else:
         idx = np.argsort(-scores.flatten() )        
     #print(idx.shape)
@@ -489,13 +489,13 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         sols=sols[0:nout]
     return scores, dds, sols
     
-def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0):
+def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
     
 
     Arguments
     ---------
-    arryaclass : object
+    arrayclass : object
         Specifies the type of design to optimize
     nrestarts : integer
         Number of restarts of the algorithm
@@ -525,7 +525,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=18
 
     
     if 1 and isinstance(optimfunc, list):
-        rr=oalib.Doptimize(arrayclass, nrestarts, alpha=optimfunc, verbose=1, method=method, niter=niter, maxtime=maxtime, nabort=nabort)
+        rr=oalib.Doptimize(arrayclass, nrestarts, alpha=optimfunc, verbose=dverbose, method=method, niter=niter, maxtime=maxtime, nabort=nabort)
         dds, sols=rr.dds, rr.designs
         dds=np.array([x for x in dds])
         sols=[x.clone() for x in sols]  # needed because of SWIG wrapping of struct type
@@ -537,10 +537,11 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1,0,0], verbose=1, maxtime=18
         scores=np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
         
         if verbose>=3:
-            print('Doptimize: max D: %.6f' % np.max([A.Defficiency() for A in sols]) )
+            print('Doptimize: max score %.3f, max D: %.6f' % (np.max(scores), np.max([A.Defficiency() for A in sols]) ) )
         #dt=time.time()-t0
 
     else:                
+        raise Exception('code not tested....')
         scores=np.zeros( (0,1))
         dds=np.zeros( (0,3)) 
         sols=[]  #oalib.arraylist_t()
