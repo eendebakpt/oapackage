@@ -119,6 +119,19 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
             plt.figure(f)
 
 
+def plot2Dline(line, *args, **kwargs):
+    """ Plot a 2D line in a matplotlib figure """
+    if np.abs(line[1])>.001:
+        xx=plt.xlim()
+        xx=np.array(xx)
+        yy=(-line[2]-line[0]*xx)/line[1]
+        plt.plot(xx,yy,*args, **kwargs)
+    else:
+        yy=np.array(plt.ylim())
+        xx=(-line[2]-line[1]*yy)/line[0]
+        plt.plot(xx,yy,*args, **kwargs)
+
+
 #%% Make nice plots
 # http://blog.olgabotvinnik.com/prettyplotlib/
 
