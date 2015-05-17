@@ -917,13 +917,13 @@ def designStandardError(al):
 
     Arguments
     ---------
-    
-        al - design
+    al : array
+            design
 
     Output
     ------
-    
-        m0, m1, m2 - standard errors
+    m0, m1, m2 : arrays
+            standard errors
     
     """
     
@@ -942,7 +942,9 @@ def designStandardError(al):
     m1=mm[1:(1+k)].flatten(); m1=m1[np.argsort(m1)]
     m2=mm[(1+k):]; m2=m2[np.argsort(m2)]
     m0=mm[0]
-    return m0,m1, m2
+    return np.sqrt(m0),np.sqrt(m1), np.sqrt(m2)
+    #return m0,m1, m2
+    
                 
 #%%                
 def DefficiencyBound(D, k, k2):
