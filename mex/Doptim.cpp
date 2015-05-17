@@ -12,8 +12,10 @@
 
 
 #include "Deff.h"
-#include "mex.h"
+#include "arraytools.h"
+#include "arrayproperties.h"
 
+#include "mex.h"
 
 #ifdef DOOPENMP
 #include "omp.h"
@@ -38,9 +40,7 @@ inline double mxGetOptionalDouble ( int n_in, const mxArray **prhs, int pos, dou
 }
 
 
-#include "arraytools.h"
-#include "arrayproperties.h"
-#include "Deff.h"
+
 
 void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 {

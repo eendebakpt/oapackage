@@ -5,7 +5,6 @@
 #include <time.h>
 #include <algorithm>
 #include <numeric>
-#include <algorithm>
 
 #include <Eigen/SVD>
 #include <Eigen/Dense>
@@ -366,10 +365,6 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 
 	return Bp;
 }
-
-//#include <cassert>
-
-#include <algorithm>
 
 
 std::vector<double> distance_distribution ( const array_link &al )
@@ -1173,8 +1168,6 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 	}
 	return dd;
 }
-
-#include <Eigen/Dense>
 
 //typedef Eigen::MatrixXd MyMatrix;
 typedef MatrixFloat MyMatrix;

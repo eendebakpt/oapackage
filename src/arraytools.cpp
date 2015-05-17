@@ -17,7 +17,6 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <Eigen/Dense>
 
 using namespace std;
 
@@ -1449,8 +1448,6 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 }
 
 
-#include <Eigen/Dense>
-
 Eigen::VectorXd dummy()
 {
 	printf ( "dummy: create VectorXd\n" );
@@ -1789,8 +1786,6 @@ MatrixFloat array2eigenModelMatrix ( const array_link &al )
 {
 	return array2eigenModelMatrixInt(al).cast<eigenFloat>();
 }
-
-#include <Eigen/Dense>
 
 double array_link::DsEfficiency ( int verbose ) const
 {

@@ -719,7 +719,7 @@ public:
 	}
     }
     
-    /// set row permutation
+    /// get row permutation
     void getRowperm(rowperm_t &rperm) const {
 	if(this->rowsortl==0) {
         for ( rowindex_t x=0; x<this->N; x++ )
@@ -738,13 +738,6 @@ public:
         return rp;
     }
 
-    /*std::vector<rowindex_t> getRowperm() const {
-     std::vector<rowindex_t> rp(this->N);
-     for(int i=0; i<this->N; i++)
-       rp[i]=this->rowsort[i].r;
-     return rp;
-    }
-    */
     
     /// return column permutation
     colpermtypelight getColperm() const {

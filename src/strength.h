@@ -305,7 +305,6 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 			}
 			strengthcheck.freqtable[i][valindex]++;
 		}
-// printf ( "columns %d: ...\n ", i );
 
 		for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
 			//    printf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
