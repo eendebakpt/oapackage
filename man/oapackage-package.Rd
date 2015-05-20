@@ -34,9 +34,7 @@ two-factor interactions},
 \keyword{ design }
 \keyword{ D-optimal }
 \seealso{
-The key design generating functions: \code{\link{Doptimize}}. }
+The documententation for \code{\link{Doptimize}}. }
 \examples{
-    ### For an example see the file example.R included in the packages.
-  
-    
+    ### For an example see the file example.R or example_design_usage.R included in the packages.    
 }

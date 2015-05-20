@@ -2,6 +2,7 @@ include README.md
 include FORMAT.txt
 include LICENSE
 include ALGORITHM.txt
+include CMakeLists.txt
 include ChangeLog
 include oadoxy.i
 include numpy.i
@@ -15,7 +16,7 @@ recursive-include src *.h *.cpp
 
 #graft python
 #graft oalib
-#graft Eigen
+graft src/Eigen
 graft utils
 exclude TODO
 exclude oalib_wrap_dev.cxx
