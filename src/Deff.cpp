@@ -598,11 +598,13 @@ extern "C" {
 		dds=sorter.sorted ( dds );
 
 		array_link best = AA[0];
+std::vector<double> dd = best.Defficiencies();
 
 		std::copy ( best.array, best.array+N*k, output );
 
-		//print('Doptimize: max D: %.6f' % np.max([A.Defficiency() for A in sols]) )
-
+		if (verbose>=1) {
+		printf("Doptimize: generated design with D = %.6f, Ds = %.6f\n",dd[0], dd[1] );
+		}
 		if ( verbose>=2 ) {
 			printf ( "DoptimizeR: done\n" );
 		}
