@@ -57,15 +57,15 @@ try:
 
             nmon = _qd.screenCount()
             wa = [_qd.screenGeometry(ii) for ii in range(nmon)]
-            wa = [ [w.x(), w.y(), w.width(), w.height()] for w in wa]
+            wa = [[w.x(), w.y(), w.width(), w.height()] for w in wa]
 
             if verbose:
                 for ii, w in enumerate(wa):
-                    print('monitor %d: %s'  % (ii, str(w)))
+                    print('monitor %d: %s' % (ii, str(w)))
         return wa
 except:
     def monitorSizes(verbose=0):
-        return [[0, 0, 1280, 720] ]
+        return [[0, 0, 1280, 720]]
     pass
 
 
@@ -76,24 +76,24 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
     if ww == None:
         ww = monitorSizes()[-1]
 
-    w = ww[2]/geometry[0]
-    h = ww[3]/geometry[1]
+    w = ww[2] / geometry[0]
+    h = ww[3] / geometry[1]
 
     # wm=plt.get_current_fig_manager()
 
     if verbose:
-        print('tilefigs: ww %s, w %d h %d'  % (str(ww), w, h))
+        print('tilefigs: ww %s, w %d h %d' % (str(ww), w, h))
     for ii, f in enumerate(lst):
         if not plt.fignum_exists(f):
             continue
         fig = plt.figure(f)
         iim = ii % np.prod(geometry)
         ix = iim % geometry[0]
-        iy = np.floor(float(iim)/geometry[0])
-        x = ww[0]+ix*w
-        y = ww[1]+iy*h
+        iy = np.floor(float(iim) / geometry[0])
+        x = ww[0] + ix * w
+        y = ww[1] + iy * h
         if verbose:
-            print('ii %d: %d %d: f %d: %d %d %d %d'  %
+            print('ii %d: %d %d: f %d: %d %d %d %d' %
                   (ii, ix, iy, f, x, y, w, h))
             if verbose >= 2:
                 print('  window %s' % mngr.get_window_title())
@@ -129,11 +129,11 @@ def plot2Dline(line, *args, **kwargs):
     if np.abs(line[1]) > .001:
         xx = plt.xlim()
         xx = np.array(xx)
-        yy = (-line[2]-line[0]*xx)/line[1]
+        yy = (-line[2] - line[0] * xx) / line[1]
         plt.plot(xx, yy, *args, **kwargs)
     else:
         yy = np.array(plt.ylim())
-        xx = (-line[2]-line[1]*yy)/line[0]
+        xx = (-line[2] - line[1] * yy) / line[0]
         plt.plot(xx, yy, *args, **kwargs)
 
 
@@ -180,10 +180,10 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True, tightlayout=T
         # Remove the line around the legend box, and instead fill it with a light grey
         # Also only use one point for the scatterplot legend because the user will
         # get the idea after just one, they don't need three.
-        light_grey = np.array([float(241) / float(255)]*3)
+        light_grey = np.array([float(241) / float(255)] * 3)
         rect = legend.get_frame()
         rect.set_facecolor(light_grey)
-        middle_grey = np.array([float(151) / float(255)]*3)
+        middle_grey = np.array([float(151) / float(255)] * 3)
         rect.set_edgecolor(middle_grey)
         # rect.set_linewidth(0.0)
 
@@ -212,12 +212,12 @@ def enlargelims(factor=1.05):
       >>> enlargelims(1.1)
     """
     xl = plt.xlim()
-    d = (factor-1)*(xl[1]-xl[0])/2
-    xl = (xl[0]-d, xl[1]+d)
+    d = (factor - 1) * (xl[1] - xl[0]) / 2
+    xl = (xl[0] - d, xl[1] + d)
     plt.xlim(xl)
     yl = plt.ylim()
-    d = (factor-1)*(yl[1]-yl[0])/2
-    yl = (yl[0]-d, yl[1]+d)
+    d = (factor - 1) * (yl[1] - yl[0]) / 2
+    yl = (yl[0] - d, yl[1] + d)
     plt.ylim(yl)
 
 #%%
@@ -227,7 +227,7 @@ def selectParetoArrays(allarrays, pp):
     """ Select arrays using a Pareto object """
     paretoarrays = oalib.arraylist_t()
     paretoidx = np.array(pp.allindices())
-    ww = oalib.longVector( tuple(paretoidx.tolist()))
+    ww = oalib.longVector(tuple(paretoidx.tolist()))
     oalib.selectArrays(allarrays, ww, paretoarrays)
     return paretoarrays
 
@@ -246,7 +246,7 @@ def createPareto(dds, verbose=1):
     pp = oalib.ParetoDoubleLong()
 
     for ii in range(dds.shape[0]):
-        v = dds[ii,:]
+        v = dds[ii, :]
         pp.addvalue(v, ii)
 
     if verbose:
@@ -267,7 +267,7 @@ def static_var(varname, value):
 @static_var("time", 0)
 def tprint(string, dt=1, output=False):
     """ Print progress of a loop every dt seconds """
-    if (time.time()-tprint.time) > dt:
+    if (time.time() - tprint.time) > dt:
         print(string)
         tprint.time = time.time()
         if output:
@@ -293,7 +293,7 @@ def findfilesR(p, patt):
     """ Get a list of files (recursive) """
     lst = []
     for root, dirs, files in os.walk(p, topdown=False):
-        lst += [ os.path.join(root, f) for f in files]
+        lst += [os.path.join(root, f) for f in files]
         # for name in files:
         #    lst += [name]
     rr = re.compile(patt)
@@ -340,14 +340,14 @@ def fac(n):
     if n == 1 or n == 0:
         return 1
     else:
-        return n * fac(n-1)
+        return n * fac(n - 1)
 
 
 def choose(n, k):
     """ Return n choose k """
     ntok = 1
     for t in xrange(min(k, n - k)):
-        ntok = ntok * (n-t)//(t+1)
+        ntok = ntok * (n - t) // (t + 1)
     return ntok
 #    return fac(n)/(fac(n-k)*fac(k))
 
@@ -362,7 +362,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             if len(tabchar) == 1:
                 cc = tabchar * X.shape[1]
             else:
-                cc = tabchar + tabchar[-1] * (X.shape[1]-len(tabchar) )
+                cc = tabchar + tabchar[-1] * (X.shape[1] - len(tabchar))
             ss += '\\begin{tabular}{%s}' % cc + chr(10)
         elif mode == 'psmallmatrix':
             ss += '\\begin{psmallmatrix}' + chr(10)
@@ -370,14 +370,14 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '\\begin{pmatrix}' + chr(10)
         # ss += '\hline' + chr(10)
     for ii in range(X.shape[0]):
-        r = X[ii,:]
+        r = X[ii, :]
 #        for jj in range(X.shape[1]):
 #            v=r[jj]
         if isinstance(r[0], str):
             ss += ' & '.join(['%s' % x for x in r])
         else:
             ss += ' & '.join([floatfmt % x for x in r])
-        if ii < (X.shape[0])-1 or not header:
+        if ii < (X.shape[0]) - 1 or not header:
             ss += '  \\\\' + chr(10)
         else:
             ss += '  ' + chr(10)
@@ -389,9 +389,9 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
         if mode == 'tabular':
             ss += '\\end{tabular}'
         elif mode == 'psmallmatrix':
-            ss += '\\end{psmallmatrix}'  + chr(10)
+            ss += '\\end{psmallmatrix}' + chr(10)
         else:
-            ss += '\\end{pmatrix}'  + chr(10)
+            ss += '\\end{pmatrix}' + chr(10)
     return ss
 
 
@@ -402,11 +402,12 @@ def array2latex_old(ltable, htable=None):
     ccc = 'c' * ltable.shape[1]
     ss += '\\begin{tabular}{%s}\n' % ccc
     if not htable == None:
-        ss += " \\\\\n".join([" & ".join(['\\textbf{%s}' % val for val in htable])] )
+        ss += " \\\\\n".join(
+            [" & ".join(['\\textbf{%s}' % val for val in htable])])
         ss += ' \\\\ \n'
         ss += '\\hline \n'
     for ii in range(0, ltable.shape[0]):
-        line = ltable[ii,:]
+        line = ltable[ii, :]
         ss += " & ".join([str(val) for val in line])
         ss += ' \\\\ \n'
     ss += '\\end{tabular}\n'
@@ -551,7 +552,7 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         r = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
         if verbose >= 2:
             print('selectArrays: write array file %s in mode %d' %
-                  (outfile, afmode) )
+                  (outfile, afmode))
     else:
         if verbose >= 2:
             print('output file %s already exists' % outfile)
@@ -621,7 +622,7 @@ def parseProcessingTime(logfile, verbose=0):
             # else:
             #    print('invalid line? %s' % line)
         if tstart != None and tend != None:
-            dt = tend-tstart
+            dt = tend - tstart
             dtt = dt.total_seconds()
         else:
             dtt = -1
@@ -631,7 +632,7 @@ def parseProcessingTime(logfile, verbose=0):
             traceback.print_exc(file=sys.stdout)
         dtt = -1
     if not dtr == None:
-        if abs(dtr-dtt) > 10:
+        if abs(dtr - dtt) > 10:
             print(
                 'parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]' % (dtt, dtr))
     return dtt
@@ -656,7 +657,7 @@ def safemax(data, default=0):
 def series2htmlstr(ad, html=1, case=0):
     """ Convert arraydata_t to html formatted string """
 #    s=[ad.s[ii] for ii in range(0, ad.ncols)]
-    s = list( ad.getS() )
+    s = list(ad.getS())
     p = -1
     n = 0
     aa = []
@@ -668,7 +669,7 @@ def series2htmlstr(ad, html=1, case=0):
             bb.append(1)
         else:
             bb[-1] += 1
-        n = n+1
+        n = n + 1
     if case == 0:
         if bb[-1] > 1:
             bb[-1] = 'a'
@@ -688,20 +689,20 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
         return '-'
     if isinstance(gmadata, tuple):
         # do nothing
-        gmadata;
+        gmadata
     else:
         if isinstance(gmadata, list):
             # do nothing
-            gmadata;
+            gmadata
         else:
             gmadata[gmadata < 0] = 0
-        if not( np.abs(gmadata[0]-1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
+        if not(np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
             print('warning: data are not good GWPL data!!!!')
             return ''
             # pdb.set_trace()
     bgma = np.around(gmadata, decimals=12)
     if not t == None:
-        bgma = bgma[(t+1):]
+        bgma = bgma[(t + 1):]
     if sformat == None:
         gstr = jstr.join([floatformat(v, mind=2, maxd=4) for v in bgma])
     else:
@@ -718,11 +719,11 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
     v = []
     for ii, js in enumerate(jresults):
         # js.show()
-    #    if not np.array(js.vals)[0]==0:
-    #        solseo.append(sols0[ii])
+        #    if not np.array(js.vals)[0]==0:
+        #        solseo.append(sols0[ii])
         v.append(js.vals[0])
 
-    si = [ i for (i, j) in sorted(enumerate(v), key=operator.itemgetter(1))]
+    si = [i for (i, j) in sorted(enumerate(v), key=operator.itemgetter(1))]
     for jj in si:
         if v[jj] > 0:
             solseo.append(sols0[jj])
@@ -734,12 +735,12 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single array """
     oaoptions = oalib.OAextend()
-    sols0 = oalib.arraylist_t();
-    solsx = oalib.arraylist_t();
+    sols0 = oalib.arraylist_t()
+    solsx = oalib.arraylist_t()
     sols0.push_back(A)
     N = A.n_rows
     k = A.n_columns
-    n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx )
+    n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
     if verbose >= 2:
         print(' extend to %d: %d solutions' % (ii, solsx.size()))
     sys.stdout.flush()
@@ -754,7 +755,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
         ll = l
     else:
         ll = [l]
-    ll = ll + [ll[-1]]  * (k-len(ll))
+    ll = ll + [ll[-1]] * (k - len(ll))
     s = oalib.intVector(ll)
     adata = oalib.arraydata_t(s, N, t, k)
     al = oalib.array_link(adata.N, adata.strength, 1)
@@ -788,11 +789,11 @@ def compressOAfile(afile, decompress=False, verbose=1):
     """ Compress an OA array file """
     af = oalib.arrayfile_t(afile, 0)
     if verbose >= 2:
-        print('file %s: binary %s' % (afile, af.isbinary()) )
+        print('file %s: binary %s' % (afile, af.isbinary()))
     if not sys.platform == 'linux2':
         if verbose:
             print('compressOAfile: not compressing file %s (platform not supported)' %
-                  afile )
+                  afile)
         return False
     if af.isbinary() and not af.iscompressed and sys.platform == 'linux2':
         if verbose:
@@ -806,18 +807,18 @@ def compressOAfile(afile, decompress=False, verbose=1):
         if not af.isbinary():
             if verbose:
                 print('compressOAfile: not compressing file %s (file is in text mode)' %
-                      afile )
+                      afile)
         else:
             if verbose:
                 print('compressOAfile: not compressing file %s (file %s is compressed)' %
-                      (afile, af.filename ) )
+                      (afile, af.filename))
         return False
 
 if 0:
     def pointer2np(p, sz):
         """ Convert array pointer to numpy array """
         if isinstance(sz, tuple):
-            1;
+            1
         else:
             sz = (sz,)
         ip = oalib.intArray.frompointer(p)
@@ -838,9 +839,9 @@ if 0:
         ncols = al.n_columns
         func = ctypes.pythonapi.PyBuffer_FromMemory
         func.restype = ctypes.py_object
-        buffer = func(w.__long__(), nrows*ncols*2*2 )
-        xx = np.frombuffer( buffer, np.int32, count=nrows*ncols )
-        xx = xx.reshape( (ncols, nrows)).transpose()
+        buffer = func(w.__long__(), nrows * ncols * 2 * 2)
+        xx = np.frombuffer(buffer, np.int32, count=nrows * ncols)
+        xx = xx.reshape((ncols, nrows)).transpose()
         return xx
 
 from collections import Counter
@@ -849,10 +850,10 @@ from collections import Counter
 def getposjvals(A, t, verbose=1):
     N = A.shape[0]
     k = A.shape[1]
-    ncols = t+1
-    jstep = 2**(t+1)
-    njvals = int(1+(float(N)/jstep))
-    jvals = [N-jstep*l for l in range(0, njvals)]
+    ncols = t + 1
+    jstep = 2**(t + 1)
+    njvals = int(1 + (float(N) / jstep))
+    jvals = [N - jstep * l for l in range(0, njvals)]
     return jvals
 
 
@@ -872,7 +873,7 @@ def arraystats(A, verbose=1):
     vals = pointer2np(js.vals, js.nc)
     jvals = getposjvals(A, 3, verbose=0)
 
-    jv = np.zeros(len(jvals) )
+    jv = np.zeros(len(jvals))
     c = Counter(abs(vals))
     for ii, xx in enumerate(jvals):
         if c.has_key(xx):
@@ -881,16 +882,15 @@ def arraystats(A, verbose=1):
         print('Possible j-values: %s' % jvals, end="")
         print('     values: %s' % jv.astype(int))
 
-
     N = A.shape[0]
-    Ak = (1/N^2)*sum(vals**2)
+    Ak = (1 / N ^ 2) * sum(vals**2)
     print('Ak: %s' % Ak)
     return Ak
 
 
 def jseq(xx, comb):
-    pp = functools.reduce(lambda y, i: xx[:, i]+y, comb, 0)
-    jseq = 1-2*np.mod(pp, 2)
+    pp = functools.reduce(lambda y, i: xx[:, i] + y, comb, 0)
+    jseq = 1 - 2 * np.mod(pp, 2)
     return jseq
 
 
@@ -898,18 +898,18 @@ def sortrows(x):
     """ Sort rows of an array, return indices"""
     if len(x.shape) == 1:
         nn = 1
-        sind = np.argsort(x) # or np.argsort(x, order=('x', 'y'))
+        sind = np.argsort(x)  # or np.argsort(x, order=('x', 'y'))
         return sind
     else:
         nn = x.shape[1]
-    dt = [ ('x%d' % xx, 'f8')  for xx in range(0, nn)]
+    dt = [('x%d' % xx, 'f8') for xx in range(0, nn)]
     if x.size == 0:
         # hack
         sind = np.array([])
         return sind
-    v = [tuple(x[kk,:]) for kk in range(0, x.shape[0]) ]
+    v = [tuple(x[kk, :]) for kk in range(0, x.shape[0])]
     w = np.array(v, dtype=dt)
-    sind = np.argsort(w) # or np.argsort(x, order=('x', 'y'))
+    sind = np.argsort(w)  # or np.argsort(x, order=('x', 'y'))
     return sind
 
 
@@ -928,15 +928,15 @@ def showtriangles(jresults, showindex=1):
     i = 0
     idx = [i]
     for j in range(4, js.k + 1):
-        nn = choose(j-1, 3)
-        i = i+nn
+        nn = choose(j - 1, 3)
+        i = i + nn
         idx.append(i)
     for jj, js in enumerate(jresults):
         vals = oalib.intArray.frompointer(js.vals)
         if showindex:
             print('i: %d' % jj)
         for kk in range(0, js.k - 3):
-            xx = [vals[v] for v in range(idx[kk], idx[kk+1])]
+            xx = [vals[v] for v in range(idx[kk], idx[kk + 1])]
             s = ','.join(map(str, xx))
             print('%s' % s)
 #%%
@@ -978,18 +978,18 @@ def designStandardError(al):
     X = np.matrix(al.getModelMatrix(2))
     k = al.n_columns
 
-    m = 1+k+k*(k-1)/2
+    m = 1 + k + k * (k - 1) / 2
 
     # scalefac=np.sqrt(al.n_rows)
     scalefac = 1
-    M = (X.transpose()*X/scalefac).I
+    M = (X.transpose() * X / scalefac).I
     # M=(X.transpose()*X)
 
-    mm = np.array(M.diagonal() ).flatten()
+    mm = np.array(M.diagonal()).flatten()
 
-    m1 = mm[1:(1+k)].flatten()
+    m1 = mm[1:(1 + k)].flatten()
     m1 = m1[np.argsort(m1)]
-    m2 = mm[(1+k):]
+    m2 = mm[(1 + k):]
     m2 = m2[np.argsort(m2)]
     m0 = mm[0]
     return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)
@@ -999,9 +999,9 @@ def designStandardError(al):
 #%%
 def DefficiencyBound(D, k, k2):
     """ Calculate the D-efficiency bound of an arrays extensions """
-    m = 1.+k+k*(k-1)/2
-    m2 = 1.+k2+k2*(k2-1)/2
-    D2 = D**(m/m2)
+    m = 1. + k + k * (k - 1) / 2
+    m2 = 1. + k2 + k2 * (k2 - 1) / 2
+    D2 = D**(m / m2)
     return D2
 
 #%% Misc
@@ -1014,7 +1014,8 @@ except:
         'oahelper: matplotlib cannot be found, not all functionality is available')
     pass
 
-def setWindowRectangle(x, y=None,w=None,h=None, mngr=None, be=None):
+
+def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
     """ Position the current Matplotlib figure at the specified position
     Usage: setWindowRectangle(x,y,w,h)
     """

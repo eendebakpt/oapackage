@@ -5,6 +5,7 @@ include ALGORITHM.txt
 include CMakeLists.txt
 include ChangeLog
 include oadoxy.i
+include oaconfig.txt
 include numpy.i
 include mex/compile.m
 

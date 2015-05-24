@@ -1,12 +1,9 @@
 #include <string>
 #include <sstream>
-//#include <stdint.h>
 
 
 #include "arraytools.h"
-//extern "C" {
 #include "bitarray/bit_array.h"
-//}
 
 #include "tools.h"
 #include "mathtools.h"
@@ -2449,7 +2446,7 @@ void jstruct_t::calcj4 ( const array_link &al )
 	for ( int i=0; i<al.n_columns; i++ ) {
 		for ( int j=0; j<al.n_columns; j++ ) {
 			int idx=i+j*al.n_columns;
-// loop over all rows of original array
+			// loop over all rows of original array
 			for ( int x=0; x<nr; x++ ) {
 				//dtable.array[x+idx*dtable.n_rows] = al.atfast ( x, i ) + al.atfast ( x, j );
 				dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
@@ -2479,9 +2476,6 @@ void jstruct_t::calcj4 ( const array_link &al )
 				int tmp = o1[xr]  + o2[xr]; // dtable.atfast ( xr, idx2 );
 				tmp %= 2;
 				jv += tmp;
-				//if(x==0) {
-				//printf("x %d: row %d: %d\n", x, xr, tmp);
-				//}
 			}
 //			jv %= 2;
 		}
