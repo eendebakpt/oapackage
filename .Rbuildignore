@@ -45,6 +45,8 @@ scripts/.Rdata
 src/bitarray/Makefile
 src/mpitools/*
 
+#src/extend.*
+
 
 
 

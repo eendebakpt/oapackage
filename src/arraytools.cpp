@@ -555,7 +555,7 @@ array_link array_link::clone() const
 void array_link::setvalue ( int r, int c, int val )
 {
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-		fprintf ( stderr,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+		fprintf ( stdout,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 		return;
 	}
 
@@ -565,7 +565,7 @@ void array_link::setvalue ( int r, int c, int val )
 void array_link::setvalue ( int r, int c, double val )
 {
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-		fprintf ( stderr,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+		fprintf ( stdout,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 		return;
 	}
 
@@ -591,7 +591,7 @@ array_t array_link::at ( const rowindex_t r, const colindex_t c ) const
 {
 //#ifdef OADEBUG
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-		fprintf ( stderr,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+		fprintf ( stdout,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 		return 0;
 	}
 //#endif
@@ -606,7 +606,7 @@ array_t & array_link::at ( const rowindex_t r, const colindex_t c )
 {
 #ifdef OADEBUG
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-		fprintf ( stderr,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+		fprintf ( stdout,  "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 		return this->array[0];
 	}
 #endif
@@ -636,7 +636,7 @@ array_link::array_link ( const array_t *array, rowindex_t nrows, colindex_t ncol
 array_link::array_link ( const std::vector<int> &v, rowindex_t nrows, colindex_t ncols, int index_ ) : n_rows ( nrows ), n_columns ( ncols ), index ( index_ )
 {
 	if ( v.size() != ( size_t ) nrows*ncols ) {
-		fprintf ( stderr, "array_link: error size of vector does not match number of rows and columns\n" );
+		fprintf ( stdout, "array_link: error size of vector does not match number of rows and columns\n" );
 		return;
 	}
 	//printf("array_link::constructor: from array (index %d)\n", index);
@@ -1942,7 +1942,7 @@ arraydata_t::arraydata_t ( const array_t *s_, rowindex_t N_, colindex_t t, colin
 arraydata_t::arraydata_t ( const std::vector<int> s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 )
 {
 	if ( ( int ) s_.size() <nc ) {
-		fprintf ( stderr, "arraydata_t: warning: in constructor size s < number of columns nc)\n" );
+		fprintf ( stdout, "arraydata_t: warning: in constructor size s < number of columns nc)\n" );
 		nc=s_.size();
 	}
 
@@ -1966,7 +1966,7 @@ template void array_link::setarraydata ( const std::vector<long> tmp, int n );
 arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 )
 {
 	if ( s_<1 || s_>100 ) {
-		fprintf ( stderr, "arraydata_t: level factors should be > 0 and < 100\n" );
+		fprintf ( stdout, "arraydata_t: level factors should be > 0 and < 100\n" );
 	}
 	s = new array_t[nc];
 	for ( int i=0; i<nc; i++ )
@@ -2028,9 +2028,10 @@ void arraydata_t::writeConfigFile ( const char *file ) const
 
 	outFile.open ( file );
 	if ( !outFile ) {
-		std::cerr << "Unable to open file " << file << std::endl;
+		std::cout << "writeConfigFile: unable to open file " << file << std::endl;
 		//throw -1;
 		//exit(1); // terminate with error
+		return;
 	}
 
 	/* read design specifications: runs, strength, number of factors */
@@ -3319,7 +3320,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 		default
 				:
 			this->mode=arrayfile::AERROR;
-			fprintf ( stderr,  "arrayfile_t::arrayfile_t : error opening binary file (binary_mode %d)\n", binary_mode );
+			fprintf ( stdout,  "arrayfile_t::arrayfile_t : error opening binary file (binary_mode %d)\n", binary_mode );
 			break;
 		}
 
@@ -3331,7 +3332,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 		}
 
 		if ( result!=1 )
-			fprintf ( stderr,  "open binary file: wrong count in afread! %d\n", result );
+			fprintf ( stdout,  "open binary file: wrong count in afread! %d\n", result );
 	} else {
 		if ( iscompressed ) {
 			if ( verbose ) {
@@ -3353,7 +3354,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 		if ( buf[0] < 48 || buf[0] > 57 || r<0 ) {
 			// printf("   read char %d\n", int(buf[0]));
 			if ( verbose>=1 )
-				fprintf ( stderr,  "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+				fprintf ( stdout,  "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
 			this->closefile();
 			return;
 
@@ -3368,7 +3369,7 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 		}
 		if ( this->nrows<0 || this->nrows>20000 || this->ncols<0 || this->ncols>10000 || this->narrays<0 ) {
 			if ( verbose>=1 )
-				fprintf ( stderr, "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+				fprintf ( stdout, "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
 			this->nfid=0;
 			this->gzfid=0;
 		}
@@ -3645,7 +3646,7 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 		printf ( " arrayfile_t::read_array_binary_zero: gp\n" );
 
 	if ( a.n_columns!=diffarray.n_columns && diffarray.n_columns!=-1 && diffarray.n_columns!=0 ) {
-		fprintf ( stderr, "arrayfile_t::read_array_binary_zero: error different number of columns %d %d\n", diffarray.n_columns, a.n_columns );
+		fprintf ( stdout, "arrayfile_t::read_array_binary_zero: error different number of columns %d %d\n", diffarray.n_columns, a.n_columns );
 		return array_link::INDEX_ERROR;
 	}
 
@@ -3658,7 +3659,7 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 		// error reading array, we could have reached the end of the file
 		if ( this->narrays==-1 ) {
 		} else {
-			fprintf ( stderr, "arrayfile_t::read_array_binary_zero: error reading array: index %d, result %d\n", index, result );
+			fprintf ( stdout, "arrayfile_t::read_array_binary_zero: error reading array: index %d, result %d\n", index, result );
 		}
 		index=array_link::INDEX_ERROR;
 		return index;
@@ -3731,7 +3732,7 @@ int arrayfile_t::read_array ( array_link &a )
 			// error reading array, we could have reached the end of the file
 			if ( this->narrays==-1 ) {
 			} else {
-				fprintf ( stderr,  "error reading array: index %d, result %d\n", index, result );
+				fprintf ( stdout,  "error reading array: index %d, result %d\n", index, result );
 			}
 			index=-1;
 			a.index=index;
@@ -3803,7 +3804,7 @@ int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols )
 	break;
 	default
 			:
-		fprintf ( stderr,  "arrayfile_t::read_array: error: no such mode %d\n", this->mode );
+		fprintf ( stdout,  "arrayfile_t::read_array: error: no such mode %d\n", this->mode );
 		break;
 	}
 
@@ -4041,15 +4042,6 @@ int appendarrayfile ( const char *fname, const array_link al )
 		}
 	}
 
-	if ( 0 ) {
-		printfd ( "hack...\n" );
-		fseek ( afile->nfid, 0, SEEK_SET );
-		char buf[4]= {0,1,3,4};
-		int r = fwrite ( buf, 1, 4, afile->nfid );
-		printfd ( "written %d bytes...\n", r );
-		exit ( 0 );
-	}
-
 	//afile->setVerbose(3);
 	//printf("afile state: %s\n", afile->showstr().c_str() );
 
@@ -4188,7 +4180,7 @@ array_link selectArrays ( const std::string filename, int ii )
 	arrayfile_t af ( filename );
 	array_link al ( af.nrows, af.ncols, -1 );
 	if ( ii<0 ) {
-		fprintf ( stderr,  "selectArrays: error: negative index\n" );
+		fprintf ( stdout,  "selectArrays: error: negative index\n" );
 		return al;
 	}
 	if ( af.mode==ABINARY ) {
@@ -4227,7 +4219,7 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<int> &idx )
 		if ( val>=0 && val<= ( int ) al.size() )
 			rl.push_back ( al.at ( val ) );
 		else
-			fprintf ( stderr,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
+			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
 	}
 	return rl;
 }
@@ -4240,7 +4232,7 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<long> &idx )
 		if ( val>=0 && val<= ( int ) al.size() )
 			rl.push_back ( al.at ( val ) );
 		else
-			fprintf ( stderr,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
+			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
 	}
 	return rl;
 }

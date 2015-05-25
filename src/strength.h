@@ -18,7 +18,7 @@ typedef int freq_t;		/* used for counting t-tuples in strength check */
 typedef freq_t** strength_freq_table;
 
 strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements );
-strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues );
+//strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues );
 
 
 rev_index *create_reverse_colcombs_fixed ( const int ncolcombs );

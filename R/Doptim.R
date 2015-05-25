@@ -1,9 +1,3 @@
-# Testing functions
-#foo <- function(x){x*2}
-
-#cfoo=function(a,b){.C('cfoo',as.double(a),as.double(b),c=as.double(0))$c}
-#cppfoo=function(a,b){.C('cppfoo',as.double(a),as.double(b),c=as.double(0))$c}
-
 #### Wrap Doptimize function
 
 #' Wrapper function for OApackage Doptimize function.
@@ -48,3 +42,8 @@ A <- array(p, dim=c(N,k) )
 #
 # setwd(...)
 # devtools::document() 
+
+# Testing functions
+#foo <- function(x){x*2}
+#cfoo=function(a,b){.C('cfoo',as.double(a),as.double(b),c=as.double(0))$c}
+

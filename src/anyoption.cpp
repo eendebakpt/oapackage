@@ -135,7 +135,7 @@ AnyOption::init(int maxopt, int maxcharopt )
 		cout << endl << "OPTIONS ERROR : Failed allocating memory" ;
 		cout << endl ;
 		cout << "Exiting." << endl ;
-		exit (0);
+		throw;
 	}
 }
 

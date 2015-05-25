@@ -17,10 +17,13 @@ int dummy::operator< ( const dummy &rhs ) const
     }
 */
 
+#ifdef RPACKAGE
+#else
 void set_srand(unsigned int s)
 {
 srand(s);  
 }
+#endif
 
 template<class Type>
 void symmetry_group::init(const std::vector<Type> vals, bool ascendingx, int verbose)

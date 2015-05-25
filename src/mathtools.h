@@ -729,8 +729,11 @@ bool next_perm ( std::vector<permutationType> &s )
 	return false;
 }
 
+#ifdef RPACKAGE
+#else
 /// set the random number seed using srand
 void set_srand ( unsigned int s );
+#endif
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 /*

@@ -50,7 +50,8 @@ extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad
 	// allocate table for frequency count cache system
 	this->freqtable_cache = new strength_freq_table [this->N];
 	for(int zz=0;zz<this->N;zz++) {
-		this->freqtable_cache[zz] = new_strength_freq_table(es->ncolcombs, es->nvalues);
+	  int dummy;
+		this->freqtable_cache[zz] = new_strength_freq_table(es->ncolcombs, es->nvalues, dummy);
 	}
 
 	#ifdef FREQELEM
@@ -110,17 +111,6 @@ strength_freq_table new_strength_freq_table(int ncolcombs, int *nvalues, int &ne
 	return frequencies;
 }
 
-/**
- * @brief Constructor
- * @param ncolcombs 
- * @param nvalues 
- * @return 
- */
-strength_freq_table new_strength_freq_table(int ncolcombs, int *nvalues)
-{
-	strength_freq_table frequencies = malloc2d_irr<int>(ncolcombs, nvalues);
-	return frequencies;
-}
 
 
 /**

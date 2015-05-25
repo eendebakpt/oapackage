@@ -40,16 +40,12 @@ inline double mxGetOptionalDouble ( int n_in, const mxArray **prhs, int pos, dou
 }
 
 
-
-
 void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 {
 
 #ifdef DOOPENMP
 #include "omp.h"
 #endif
-
-
 
 	/* Parse input */
 	if ( n_in < 3 ) {
@@ -130,11 +126,7 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 	}
 
 	//const mwSize *dims = mxGetDimensions(prhs[0]);
-
-
-
 	arraydata_t arrayclass ( s, N, 0, k );
-
 
 	int niter=12000;
 	int nabort=3000;

@@ -5,5 +5,8 @@ Version: 2.0.2
 Date: 2015-05-25
 Author: P. T. Eendebak
 Maintainer: P. T. Eendebak <pieter.eendebak@gmail.com>
-Description: Interface to D-optimal design generation code of the Ortogonal Array package. For more information also see http://www.pietereendebak.nl/oapackage.
-License: BSD
+Description: Interface to D-optimal design generation code of the Ortogonal Array package. The package can generate D-optimal designs with specified number of runs and factors. The D-optimality is defined in terms of a user specified optimization function.
+License: BSD_2_clause + file LICENSE
+URL: http://www.pietereendebak.nl/oapackage
+Depends: 
+Suggests: ggplot2, reshape2

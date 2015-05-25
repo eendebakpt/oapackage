@@ -86,22 +86,22 @@ arraydata_t* readConfigFile(const char *file)
     inFile >> str >> ncols;
     assert(strcmp(str.c_str(), "nfactors "));
     if (N>10000 || N<1) {
-        std::cerr << "readConfigFile: file " << file << ": invalid number of runs " << N << endl;
+        printf("readConfigFile: file %s: invalid number of runs %d\n", file, N );
         return 0;
     }
     if (strength>1000 || strength<1) {
-        std::cerr << "readConfigFile: file " << file << ": invalid strength " << strength << endl;
+        printf("readConfigFile: file %s: invalid strength %d\n", file, strength);
         return 0;
     }
     if (ncols>1000 || ncols<1) {
-        std::cerr << "readConfigFile: file " << file << ": invalid ncols " << ncols << endl;
+        printf("readConfigFile: file %s: invalid ncols %d\n", file, ncols);
         return 0;
     }
     s = (array_t *)malloc(ncols*sizeof(array_t));
     for(int j = 0; j < ncols; j++) {
         inFile >> s[j];
         if ((s[j]<1) || (s[j]>15)) {
-            std::cerr << "warning: number of levels specified is " << s[j] << endl;
+            printf("warning: number of levels specified is %d\n", s[j]);
             //exit(1);
         }
     }
