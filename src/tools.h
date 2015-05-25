@@ -124,7 +124,11 @@ inline void mycheck(int condition, const char *message, ...)
         vprintf(message, va);
         va_end(va);
 //  printf ( "mycheck %d: %s", condition, str);
+#ifdef RPACKAGE
+  throw;
+#else
         exit(1);
+#endif
     }
 
 }
@@ -133,7 +137,11 @@ inline void myassert(int condition, const char *str)
 {
     if(condition==0) {
         printf ( "myassert: %s", str);
+#ifdef RPACKAGE
+  throw;
+#else
         exit(1);
+#endif
     }
 }
 
@@ -399,8 +407,9 @@ DataType **malloc2d(const numtype nrows, const int rowsize)
     data = new DataType* [nrows];
     // if debugging, check for memory allocation
     if(data==0) {
-        printf("error with memory allocation\n");
-        exit(0);
+        printf("malloc2d: error with memory allocation\n");
+	throw;
+        //exit(0);
     }
 
     //printf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);

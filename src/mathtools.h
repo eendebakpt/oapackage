@@ -1459,7 +1459,7 @@ public:
 			if ( f != 0 && ( std::numeric_limits< long long>::max() / f ) < s ) {
 				// multiplication would exceed range of unsigned
 				printf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
-				exit ( 1 );
+				throw;
 				return -1;
 			}
 

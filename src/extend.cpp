@@ -826,7 +826,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 #ifdef OACHECK
 	if ( fullad->strength<1 ) {
 		log_print ( SYSTEM, " extend_array: error: function not defined for strength < 1\n" );
-		exit ( 1 );
+		throw;
 	}
 #endif
 

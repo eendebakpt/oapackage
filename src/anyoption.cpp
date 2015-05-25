@@ -554,7 +554,7 @@ AnyOption::addOptionError( const char *opt )
 	cout << "While adding the option : \""<< opt << "\"" << endl;
 	cout << "Exiting." << endl ;
 	cout << endl ;
-	exit(0);
+	throw;
 }
 
 void
@@ -565,7 +565,7 @@ AnyOption::addOptionError( char opt )
 	cout << "While adding the option: \""<< opt << "\"" << endl;
 	cout << "Exiting." << endl ;
 	cout << endl ;
-	exit(0);
+	throw;
 }
 
 void
@@ -1161,6 +1161,5 @@ AnyOption::addUsageError( const char *line )
 	cout << "While adding the usage/help  : \""<< line << "\"" << endl;
 	cout << "Exiting." << endl ;
 	cout << endl ;
-	exit(0);
-
+		throw;
 }

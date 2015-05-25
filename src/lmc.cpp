@@ -2451,7 +2451,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 				setloglevel ( DEBUG );
 
 				double retx = jj45split ( array, ad.N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction, 2 );
-				exit ( 0 );
+				throw;
 			}
 		}
 #endif
@@ -2593,7 +2593,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 			} else {
 				printf ( "oaextend problem: " );
 				oaextend.info();
-				exit ( 0 );
+				throw;
 				r= LMCreduce_non_root ( al.array, &adfix, &dyndata,& reduction, oaextend, *tmpStatic );
 			}
 
@@ -2910,7 +2910,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 	if ( reduction.init_state==INIT_STATE_INVALID ) {
 		printf ( "LMCcheck: reduction.init_state is INVALID, please set it to COPY or INIT!\n" );
 		//oaextend.info();
-		exit ( 0 );
+		throw;
 	}
 	if ( reduction.init_state==SETROOT ) {
 		log_print ( DEBUG, "LMCcheck: reduction.init_state is SETROOT\n" );
@@ -3344,7 +3344,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 		if ( reduction->init_state==INIT_STATE_INVALID ) {
 			// TODO: remove this code
 			printf ( "LMCreduce: reduction.init_state is INIT_STATE_INVALID\n" );
-			exit ( 0 );
+			throw;
 		}
 		if ( reduction->init_state==COPY ) {
 			reduction->setArray ( array, ad->N, ad->ncols );

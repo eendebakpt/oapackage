@@ -1464,6 +1464,7 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
                     }
                     dyndatacpy->col = dyndata->col;  // TODO: needed?
 
+                    /*
                     if (ret==LMC_EQUAL && 0) {
                         int vv=0;
                         if (vv) {
@@ -1501,6 +1502,7 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
                         }
 
                     }
+                    */
                 } else 	{
                     ret =  LMC_check_col_j5order ( reduction->array, original, lperm, ad, dyndatacpy );
                 }

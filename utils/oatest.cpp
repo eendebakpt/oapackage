@@ -479,8 +479,11 @@ return 0;
 		Defficiencies(al,arrayclass,0,0);
 	}
 	printf("time %.1f [ms]\n", 1e3*get_time_ms(t0));	
+
+		//throw; printf("throw done!\n");
 	return 0;
 	}
+	
 	
 	if ( 0 ) {
 		int N = 10;
