@@ -5,8 +5,7 @@
 \title{Wrapper function for OApackage Doptimize function.}
 \usage{
 Doptimize(N, k, nrestarts, alpha1 = 1, alpha2 = 0, alpha3 = 0,
-  verbose = 1, niter = 20000, method = 0, maxtime = 500,
-  nabort = 6000)
+  verbose = 1, method = 0, niter = 1e+05, maxtime = 500)
 }
 \arguments{
 \item{N}{Number of runs}
@@ -24,6 +23,10 @@ Doptimize(N, k, nrestarts, alpha1 = 1, alpha2 = 0, alpha3 = 0,
 \item{verbose}{Integer that determines the amount of debug output}
 
 \item{method}{Integer, default: 0}
+
+\item{niter}{Integer (maximum number if iteration steps in the optimization)}
+
+\item{maxtime}{Float (maximum running time before aborting the optimization)}
 }
 \value{
 A matrixs containing the generated design
@@ -37,7 +40,7 @@ design is optimized for the specified criterium.
 The criterium that is optimized is:
 	alpha1*D + alpha2*Ds + alpha3 * D1
 
-There D is the D-efficiency of the design and Ds and D1 other efficiency measures.
+Here D is the D-efficiency of the design and Ds and D1 other efficiency measures.
 For more details see http://pietereendebak.nl/oapackage/Doptim.html
 }
 

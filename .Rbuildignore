@@ -6,9 +6,11 @@ html
 dist
 legacy
 mex
+mex/*
 oapackage
 OApackage.egg-info
 performancetest
+performancetest/*
 pythondevelop
 sandbox
 testdata
@@ -29,6 +31,8 @@ oalib_wrap.cpp
 oalib.i
 numpy.i
 oalib.py
+FORMAT.txt
+MANIFEST.in
 oalib.pyc
 _oalib.cpython-34m.so
 _oalib.so
@@ -37,5 +41,10 @@ README.Matlab.md
 setup.py
 setup.cfg
 scripts/.*py
+scripts/.Rdata
+src/bitarray/Makefile
+src/mpitools/*
+
+
 
 

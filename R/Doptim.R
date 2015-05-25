@@ -26,6 +26,8 @@
 #' @param alpha3 Parameter
 #' @param verbose Integer that determines the amount of debug output
 #' @param method Integer, default: 0
+#' @param niter Integer (maximum number if iteration steps in the optimization)
+#' @param maxtime Float (maximum running time before aborting the optimization)
 #' @return A matrixs containing the generated design
 Doptimize=function(N, k, nrestarts, alpha1=1, alpha2=0, alpha3=0, verbose=1, method=0, niter=100000, maxtime=500) {
 

@@ -1742,7 +1742,7 @@ lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 		std::cout.flush();
 //	sleep(2);
 //	std::cout.flush();
-		exit ( 0 );
+		throw;
 	}
 	if ( reduction.init_state==COPY ) {
 		reduction.setArray ( al );
@@ -1758,7 +1758,7 @@ lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	assert ( jj>=adin.strength );
 	if ( adin.strength!=3 ) {
 		printf ( "LMCcheckj4: error: strength not equal to 3\n" );
-		exit ( 1 );
+		throw;
 	}
 
 	// 	printf("entering LMCcheckj4:\n");
