@@ -434,7 +434,7 @@ struct LMCreduction_t {
             long ns=0, ncp=0, ncc=0;
             for(size_t i=0; i<symmetries.size(); i++) {
 	      if (verbose>=2) {
-            printf("  symm_t: k %zu: symms %zu\n", i, symmetries[i].size() );
+            printf("  symm_t: k %ld: symms %ld\n", (long)i, (long)symmetries[i].size() );
 	      }
                 ns+=symmetries[i].size();
 	    }
@@ -458,7 +458,7 @@ struct LMCreduction_t {
 
                 std::vector< colpermtype >::iterator last = std::unique(xx.colperms[i].begin(), xx.colperms[i].end());
                 if (dverbose>=2) {
-                    printf("makeColpermsUnique: i %zu vals %zu, unique %d\n", i, xx.colperms[i].size(), (int)( last - xx.colperms[i].begin()) );
+                    printf("makeColpermsUnique: i %ld vals %ld, unique %d\n", (long)i, (long) xx.colperms[i].size(), (int)( last - xx.colperms[i].begin()) );
                 }
                 xx.colperms[i].erase(last,  xx.colperms[i].end());
 
@@ -486,7 +486,7 @@ struct LMCreduction_t {
         }
         void showColperms(int verbose=1) const {
             for(size_t i=0; i<=(size_t)ncols; i++) {
-                printf("LMCreduction: column permutations with %zu cols: %zu/%ld\n", i, colperms[i].size(), ncombs<long>(ncols, i) );
+                printf("LMCreduction: column permutations with %d cols: %ld/%ld\n", (int)i, (long)colperms[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
                     for( colpermset::const_iterator it = colperms[i].begin(); it != colperms[i].end(); it++) {
                         print_perm( *it );
@@ -497,7 +497,7 @@ struct LMCreduction_t {
 	
         void showColcombs(int verbose=1) const {
             for(size_t i=0; i<=(size_t)ncols; i++) {
-                printf("LMCreduction: column combinations with %zu cols: %zu/%ld\n", i, colcombs[i].size(), ncombs<long>(ncols, i) );
+                printf("LMCreduction: column combinations with %d cols: %d/%ld\n", (int)i, (int)colcombs[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
                     for( colpermset::const_iterator it = colcombs[i].begin(); it != colcombs[i].end(); it++) {
                         print_perm( *it );
@@ -507,7 +507,7 @@ struct LMCreduction_t {
         }
         void showSymmetries(int verbose=1) const {
             for(size_t i=0; i<(size_t)symmetries.size() ; i++) {
-                printf("LMCreduction: symmetries with %zu cols: %zu/%ld\n", i, symmetries[i].size(), ncombs<long>(ncols, i) );
+                printf("LMCreduction: symmetries with %ld cols: %ld/%ld\n", (long)i, (long)symmetries[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2 || (i==60 )) {
                     for( symmetryset::const_iterator it = symmetries[i].begin(); it != symmetries[i].end(); it++) {
                         it->show();

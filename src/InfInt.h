@@ -52,6 +52,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 //#include "Profiler.h"
 
@@ -87,7 +88,9 @@ static const ELEM_TYPE DIGIT_COUNT = 4;
 static const int powersOfTen[] = { 1, 10, 100, 1000};
 #else // uses 10^9 (int) as the base
 typedef int ELEM_TYPE;
-typedef long long PRODUCT_TYPE;
+//typedef long long PRODUCT_TYPE;
+typedef int64_t PRODUCT_TYPE;
+
 static const ELEM_TYPE BASE = 1000000000;
 static const ELEM_TYPE UPPER_BOUND = 999999999;
 static const ELEM_TYPE DIGIT_COUNT = 9;
@@ -137,20 +140,20 @@ public:
     InfInt(const std::string& s);
     InfInt(int l);
     InfInt(long l);
-    InfInt(long long l);
+    //InfInt(long long l);
     InfInt(unsigned int l);
     InfInt(unsigned long l);
-    InfInt(unsigned long long l);
+    //InfInt(unsigned long long l);
 
     /* assignment operators */
     const InfInt& operator=(const char* c);
     const InfInt& operator=(const std::string& s);
     const InfInt& operator=(int l);
     const InfInt& operator=(long l);
-    const InfInt& operator=(long long l);
+    //const InfInt& operator=(long long l);
     const InfInt& operator=(unsigned int l);
     const InfInt& operator=(unsigned long l);
-    const InfInt& operator=(unsigned long long l);
+    //const InfInt& operator=(unsigned long long l);
 
     /* unary increment/decrement operators */
     const InfInt& operator++();
@@ -199,10 +202,10 @@ public:
     /* conversion to primitive types */
     int toInt() const; // throw
     long toLong() const; // throw
-    long long toLongLong() const; // throw
+    //long long toLongLong() const; // throw
     unsigned int toUnsignedInt() const; // throw
-    unsigned long toUnsignedLong() const; // throw
-    unsigned long long toUnsignedLongLong() const; // throw
+    //unsigned long toUnsignedLong() const; // throw
+    //unsigned long long toUnsignedLongLong() const; // throw
 
 private:
     static ELEM_TYPE dInR(const InfInt& R, const InfInt& D);
@@ -263,6 +266,7 @@ inline InfInt::InfInt(long l) : pos(l >= 0)
     } while (l > 0);
 }
 
+/*
 inline InfInt::InfInt(long long l) : pos(l >= 0)
 {
     if (!pos)
@@ -281,6 +285,7 @@ inline InfInt::InfInt(long long l) : pos(l >= 0)
 #endif
     } while (l > 0);
 }
+*/
 
 inline InfInt::InfInt(unsigned int l) : pos(true)
 {
@@ -300,6 +305,7 @@ inline InfInt::InfInt(unsigned long l) : pos(true)
     } while (l > 0);
 }
 
+/*
 inline InfInt::InfInt(unsigned long long l) : pos(true)
 {
     do
@@ -308,7 +314,7 @@ inline InfInt::InfInt(unsigned long long l) : pos(true)
         l = l / BASE;
     } while (l > 0);
 }
-
+*/
 inline const InfInt& InfInt::operator=(const char* c)
 {
     fromString(c);
@@ -355,6 +361,7 @@ inline const InfInt& InfInt::operator=(long l)
     return *this;
 }
 
+/*
 inline const InfInt& InfInt::operator=(long long l)
 {
     pos = l >= 0;
@@ -376,6 +383,7 @@ inline const InfInt& InfInt::operator=(long long l)
     } while (l > 0);
     return *this;
 }
+*/
 
 inline const InfInt& InfInt::operator=(unsigned int l)
 {
@@ -400,7 +408,7 @@ inline const InfInt& InfInt::operator=(unsigned long l)
     } while (l > 0);
     return *this;
 }
-
+/*
 inline const InfInt& InfInt::operator=(unsigned long long l)
 {
     pos = true;
@@ -412,7 +420,7 @@ inline const InfInt& InfInt::operator=(unsigned long long l)
     } while (l > 0);
     return *this;
 }
-
+*/
 inline const InfInt& InfInt::operator++()
 {
     val[0] += (pos ? 1 : -1);
@@ -962,6 +970,7 @@ inline long InfInt::toLong() const
     return pos ? result : -result;
 }
 
+/*
 inline long long InfInt::toLongLong() const
 {//PROFILED_SCOPE
     if (*this > LONG_LONG_MAX || *this < LONG_LONG_MIN)
@@ -977,6 +986,7 @@ inline long long InfInt::toLongLong() const
     }
     return pos ? result : -result;
 }
+*/
 
 inline unsigned int InfInt::toUnsignedInt() const
 {//PROFILED_SCOPE
@@ -994,6 +1004,7 @@ inline unsigned int InfInt::toUnsignedInt() const
     return result;
 }
 
+/*
 inline unsigned long InfInt::toUnsignedLong() const
 {//PROFILED_SCOPE
     if (!pos || *this > ULONG_MAX)
@@ -1009,7 +1020,8 @@ inline unsigned long InfInt::toUnsignedLong() const
     }
     return result;
 }
-
+*/
+/*
 inline unsigned long long InfInt::toUnsignedLongLong() const
 {//PROFILED_SCOPE
     if (!pos || *this > ULONG_LONG_MAX)
@@ -1025,6 +1037,7 @@ inline unsigned long long InfInt::toUnsignedLongLong() const
     }
     return result;
 }
+*/
 
 inline void InfInt::truncateToBase()
 {//PROFILED_SCOPE

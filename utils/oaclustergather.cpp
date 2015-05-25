@@ -134,7 +134,7 @@ int main ( int argc, char* argv[] )
 				#pragma omp parallel for
 				for ( int i=0; i<(int)arraylist.size(); i++ ) {
 					if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
-						printf ( "oaclustergather: file %d, array %d/%zu\n", jj, i, arraylist.size() );
+						printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
 						printf ( "  " );
 						pset.show ( 1 );
 //#ifdef OPENMP
@@ -157,7 +157,7 @@ int main ( int argc, char* argv[] )
 				}
 
 				if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit1-1 ) ) && verbose>=1 ) ) {
-					printf ( "oaclustergather: file %d/%d, %zu arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit1, arraylist.size(), pset.number(), pset.numberindices() );
+					printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit1, arraylist.size(), pset.number(), pset.numberindices() );
 					//printf ( "  " ); pset.show ( 1 );
 				}
 			}
@@ -181,7 +181,7 @@ int main ( int argc, char* argv[] )
 					arraylist_t arraylist = readarrayfile ( afile.c_str(), 0 );
 					for ( size_t i=0; i<arraylist.size(); i++ ) {
 						if ( verbose>=2 || ( ( i%10000==0 ) && verbose>=1 ) ) {
-							printf ( "oaclustergather: file %d/%d %s, array %zu/%zu: %d Pareto values, %d Pareto elements\n", jj, nsplit0, subfile.c_str(), i, arraylist.size(), pset.number(), pset.numberindices() );
+							printf ( "oaclustergather: file %d/%d %s, array %ld/%ld: %d Pareto values, %d Pareto elements\n", jj, nsplit0, subfile.c_str(), i, arraylist.size(), pset.number(), pset.numberindices() );
 							//printf ( "  " ); pset.show ( 1 );
 						}
 

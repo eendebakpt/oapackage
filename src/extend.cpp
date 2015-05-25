@@ -1190,7 +1190,7 @@ arraylist_t runExtendRoot (  arraydata_t adata, int nmax, int verbose )
 		arraylist_t solsx;
 		extend_arraylist ( sols, adata, oaoptions, ii, solsx );
 		if ( verbose ) {
-			printf ( "runExtend: ncols %d: %zu arrays\n", ii+1, solsx.size() );
+			printf ( "runExtend: ncols %d: %ld arrays\n", ii+1, (long)solsx.size() );
 		}
 		sols=solsx;
 

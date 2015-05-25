@@ -130,7 +130,7 @@ void bit_array_set_bit(BIT_ARRAY* bitarr, bit_index_t b)
     errno = EDOM;
 
     throw;
-    exit(EXIT_FAILURE);
+    //(EXIT_FAILURE);
   }
 
   bitarr->words[bindex(b)] |= ((word_t)1 << (boffset(b)));
@@ -148,7 +148,7 @@ void bit_array_clear_bit(BIT_ARRAY* bitarr, bit_index_t b)
     errno = EDOM;
 
     throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   bitarr->words[bindex(b)] &= ~((word_t)1 << (boffset(b)));
@@ -171,7 +171,7 @@ char bit_array_get_bit(BIT_ARRAY* bitarr, bit_index_t b)
     errno = EDOM;
 
     throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   return (bitarr->words[bindex(b)] >> (boffset(b))) & 0x1;
@@ -293,7 +293,7 @@ void bit_array_and(BIT_ARRAY* dest, BIT_ARRAY* src1, BIT_ARRAY* src2)
     fprintf(stderr, "bit_array.c: bit_array_and() : "
                     "dest, src1 and src2 must be of the same length\n");
     throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(src1->num_of_bits);
@@ -314,7 +314,7 @@ void bit_array_or(BIT_ARRAY* dest, BIT_ARRAY* src1, BIT_ARRAY* src2)
     fprintf(stderr, "bit_array.c: bit_array_and() : "
                     "dest, src1 and src2 must be of the same length\n");
        throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(src1->num_of_bits);
@@ -335,7 +335,7 @@ void bit_array_xor(BIT_ARRAY* dest, BIT_ARRAY* src1, BIT_ARRAY* src2)
     fprintf(stderr, "bit_array.c: bit_array_and() : "
                     "dest, src1 and src2 must be of the same length\n");
    throw;
-   exit(EXIT_FAILURE);
+   //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(src1->num_of_bits);
@@ -355,7 +355,7 @@ void bit_array_not(BIT_ARRAY* dest, BIT_ARRAY* src)
     fprintf(stderr, "bit_array.c: bit_array_and() : "
                     "dest and src1 must be of the same length\n");
    throw;
-   exit(EXIT_FAILURE);
+   //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(dest->num_of_bits);
@@ -609,7 +609,7 @@ int bit_array_get_int(BIT_ARRAY* bitarr, bit_index_t start)
     fprintf(stderr, "bit_array.c: bit_array_get_long() - out of bounds error "
                     "(index: %lu, length: %lu)\n", start, bitarr->num_of_bits);
     throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(bitarr->num_of_bits);
@@ -640,7 +640,7 @@ char bit_array_get_char(BIT_ARRAY* bitarr, bit_index_t start)
     fprintf(stderr, "bit_array.c: bit_array_get_long() - out of bounds error "
                     "(index: %lu, length: %lu)\n", start, bitarr->num_of_bits);
     throw;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
   }
 
   word_addr_t num_of_words = nwords(bitarr->num_of_bits);

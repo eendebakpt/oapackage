@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include <vector>
+#include <stdint.h>
 #include <string.h>
 #include <deque>
 #include <cmath>
@@ -149,7 +150,7 @@ public:
 		pool.push_back ( t );
 		//if (pool.size() % 100000==0) printf("object_pool::Delete() stored object %zu\n", pool.size() );
 		if ( verbose || 0 ) {
-			printf ( "  object_pool::Delete() stored object %zu\n", pool.size() );
+			printf ( "  object_pool::Delete() stored object %ld\n", (long)pool.size() );
 		}
 
 	}
@@ -729,10 +730,22 @@ bool next_perm ( std::vector<permutationType> &s )
 	return false;
 }
 
+/* Random number generators */
+
+// return random integer
+int fastrand();
+void seedfastrand ( int s );
+
+// return random integer in range 0 to k-1
+int fastrandK ( int k );
+
 #ifdef RPACKAGE
+// R packages are not allowed to use rand
+#define myrand fastrand
 #else
 /// set the random number seed using srand
 void set_srand ( unsigned int s );
+#define myrand rand
 #endif
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
@@ -809,13 +822,15 @@ numtype* permutationLex ( numtype k, objecttype *s, numtype n )
 	return s;
 }
 
+
+
 template <class objecttype, class numtype>
 /** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
  */
 void random_perm ( objecttype *s, numtype len )
 {
 	for ( numtype i=0; i<len-1; i++ ) {
-		numtype j = i+rand() % ( len-i );
+		numtype j = i+myrand() % ( len-i );
 		std::swap ( s[i], s[j] );
 	}
 }
@@ -1450,13 +1465,13 @@ private:
 public:
 
 	/// return size of the group of all permutations respecting the symmetry
-	long long permsize() const {
-		long long  s = 1;
+	int64_t permsize() const {
+		int64_t  s = 1;
 		for ( int i=0; i<ngroups; i++ ) {
-			long long f = factorial<long> ( gsize[i] );
+			int64_t f = factorial<long> ( gsize[i] );
 
 			//printf("i %d: f %ld, s %ld s int %d, max %ld\n", i,f, s, (int)(s), std::numeric_limits< long long>::max() );
-			if ( f != 0 && ( std::numeric_limits< long long>::max() / f ) < s ) {
+			if ( f != 0 && ( std::numeric_limits< int64_t>::max() / f ) < s ) {
 				// multiplication would exceed range of unsigned
 				printf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
 				throw;
@@ -1703,14 +1718,6 @@ inline Type krawtchouks ( Type j, Type x, Type n )
 
 
 
-/* Random number generators */
-
-// return random integer
-int fastrand();
-void seedfastrand ( int s );
-
-// return random integer in range 0 to k-1
-int fastrandK ( int k );
 
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -1938,7 +1938,7 @@ arraydata_t::arraydata_t ( const array_t *s_, rowindex_t N_, colindex_t t, colin
 	s = new array_t[nc];
 	memcpy ( ( void * ) s, ( const void * ) s_, sizeof ( array_t ) *nc );
 	complete_arraydata();
-} ;
+} 
 arraydata_t::arraydata_t ( const std::vector<int> s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 )
 {
 	if ( ( int ) s_.size() <nc ) {
@@ -1951,7 +1951,7 @@ arraydata_t::arraydata_t ( const std::vector<int> s_, rowindex_t N_, colindex_t 
 	// for(int i=0; i<nc; i++) s[i]=s_[i];
 	std::copy ( s_.begin(), s_.begin() +nc, s );
 	complete_arraydata();
-} ;
+} 
 
 /// instantiate function
 template void array_link::setarraydata ( const short int* tmp, int n );
@@ -1972,7 +1972,7 @@ arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t n
 	for ( int i=0; i<nc; i++ )
 		s[i]=s_;
 	complete_arraydata();
-} ;
+} 
 
 
 arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols )
@@ -2133,7 +2133,7 @@ std::string arraydata_t::idstrseriesfull() const
 	}
 	fname += "-t" + printfstring ( "%d", this->strength );
 	return fname;
-};
+}
 
 /// return full identifier string
 std::string arraydata_t::fullidstr ( int series ) const
@@ -2160,7 +2160,7 @@ std::string arraydata_t::idstr() const
 		fname += itos ( s[i] );
 	}
 	return fname;
-};
+}
 
 
 /**
@@ -4038,7 +4038,6 @@ int appendarrayfile ( const char *fname, const array_link al )
 			printf ( "rr %d, something went wrong with fwrite()! %s\n", rr, strerror ( errno ) );
 			printf ( "  written rr %d\n", rr );
 			afile->seek ( afile->narrays );
-			exit ( 0 );
 		}
 	}
 
@@ -4219,7 +4218,7 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<int> &idx )
 		if ( val>=0 && val<= ( int ) al.size() )
 			rl.push_back ( al.at ( val ) );
 		else
-			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
+			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %d\n", val, (int)al.size() );
 	}
 	return rl;
 }
@@ -4232,7 +4231,7 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<long> &idx )
 		if ( val>=0 && val<= ( int ) al.size() )
 			rl.push_back ( al.at ( val ) );
 		else
-			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %zu\n", val, al.size() );
+			fprintf ( stdout,  "selectArrays: error: index out of bounds: index %d, size %ld\n", val, (long)al.size() );
 	}
 	return rl;
 }

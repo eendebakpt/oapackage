@@ -244,7 +244,7 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 
 	double dt = get_time_ms()-t0;
 	if ( verbose ) {
-		printf ( "DoptimizeMixed: improved %d/%zu arrays, %.2f [s]\n", nimproved, nn, dt );
+		printf ( "DoptimizeMixed: improved %d/%ld arrays, %.2f [s]\n", nimproved, (long)nn, dt );
 	}
 
 	// loop is complete

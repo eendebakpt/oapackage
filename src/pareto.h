@@ -120,10 +120,10 @@ class Pareto
       void show ( int verbose=1 ) {
          if ( verbose==0 )
             return;
-         printf ( "Pareto: %zu optimal values, %d objects\n", elements.size(),  numberindices()  );
+         printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
          if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
-               printf ( "value %zu: ", i );
+               printf ( "value %d: ", (int)i );
                detail::display_vector ( elements[i].value, "; " );
                printf ( "\n" );
                if ( verbose>=3 ) {
@@ -190,7 +190,7 @@ class Pareto
          p.indices.push_back ( idx );
          this->elements.push_back ( p );
          if ( verbose>=2 )
-            printf ( "Pareto: addvalue: new elem, total is %zu\n", this->elements.size() );
+            printf ( "Pareto: addvalue: new elem, total is %ld\n", (long)this->elements.size() );
          return true;
       }
 };

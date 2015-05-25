@@ -486,7 +486,7 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 	std::vector<int> cp ( kp );
 	for ( int i=0; i<kp; i++ )
 		cp[i]=i;
-	long long ncomb = ncombsm<long long> ( kk, kp );
+	int64_t ncomb = ncombsm<int64_t> ( kk, kp );
 
 	std::vector<double> dd ( ncomb );
 
@@ -494,10 +494,10 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 	int N = al.n_rows;
 
 	if ( verbose )
-		printf ( "projDeff: k %d, kp %d: start with %lld combinations \n", kk, kp, ncomb );
+		printf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, (long)ncomb );
 
 //#pragma omp parallel for
-	for ( long long i=0; i<ncomb; i++ ) {
+	for ( int64_t i=0; i<ncomb; i++ ) {
 
 		array_link alsub = al.selectColumns ( cp );
 		if ( m>N )
@@ -1434,7 +1434,7 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 
 	for ( size_t i=0; i<arraylist.size(); i++ ) {
 		if ( verbose>=2 || ( ( i%2000==0 ) && verbose>=1 ) ) {
-			printf ( "parsePareto: array %zu/%zu\n", i, arraylist.size() );
+			printf ( "parsePareto: array %ld/%ld\n", (long)i, (long)arraylist.size() );
 		}
 		if ( ( ( i%10000==0 ) && verbose>=1 ) ) {
 			pset.show ( 1 );

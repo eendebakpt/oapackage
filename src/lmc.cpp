@@ -102,9 +102,9 @@ LMC_static_struct_t * getGlobalStaticIndexed ( int n )
 	//return &globalStatic;
 
 	if ( verbose )
-		printf ( "getGlobalStatic: n %d, pool size %zu\n", n, globalStaticPool.size() );
+		printf ( "getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size() );
 	if ( n>= ( int ( globalStaticPool.size() ) ) ) {
-		printf ( "  allocating new element in globalStaticPool: n %d, pool size %zu\n", n, globalStaticPool.size() );
+		printf ( "  allocating new element in globalStaticPool: n %d, pool size %ld\n", n, (long) globalStaticPool.size() );
 		size_t psize = globalStaticPool.size();
 		//globalStaticPool.resize(n+1);
 		for ( int jj=psize; jj<=n; jj++ ) {
@@ -438,7 +438,7 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation ( const dyndata_t *dyndata
 	if ( symmetries[n].size() % 500000 == 0 ) {
 		int nrows=symmetries[n][0].rowperm->size();
 
-		printf ( "LMCreduction_t::storeSymmetryPermutation: stored permutation %zu for %d cols\n", symmetries[n].size(), n );
+		printf ( "LMCreduction_t::storeSymmetryPermutation: stored permutation %ld for %d cols\n", (long)symmetries[n].size(), n );
 		long es=0;
 		for ( int i=0; i< ( int ) symmetries.size(); i++ ) {
 			es+= nrows*sizeof ( rowindex_t ) *symmetries[i].size()  + symmetries[i].size() *sizeof ( colindex_t ) *n;
@@ -1649,7 +1649,7 @@ void clear_fracs()
 {
 	nfrac1=0;
 	nfrac2=0;
-};
+}
 
 /** @brief Calculate J-characteristic for a column combination
 *
@@ -2243,7 +2243,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	if ( reduction.init_state==INIT_STATE_INVALID ) {
 		// TODO: remove this code
 		printf ( "LMCcheckj5: reduction.init_state is INVALID\n" );
-		exit ( 0 );
+		throw;
 	}
 
 
@@ -2534,7 +2534,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 		// continue;
 		if ( dverbose ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: symmetryset i %d: %zu, dt %.3f [ms]\n", i, reductionsub.symms.symmetries[i].size(), 1e3*dt );
+			printf ( "LMCcheckSymmetryMethod: symmetryset i %d: %ld, dt %.3f [ms]\n", i, (long)reductionsub.symms.symmetries[i].size(), 1e3*dt );
 		}
 		// split column groups
 		std::vector<int> splits; // = symmetrygroup2splits(sg, ad.ncols, verbose);
@@ -2628,7 +2628,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 		// break;
 		if ( dverbose ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: colcombs i %d: %zu, dt %.1f [ms]\n", i, reductionsub.symms.colcombs[i].size(), 1e3* dt );
+			printf ( "LMCcheckSymmetryMethod: colcombs i %d: %ld, dt %.1f [ms]\n", i, (long)reductionsub.symms.colcombs[i].size(), 1e3* dt );
 //    printf("original check: %d, time: %.3f [ms]\n", (int)r, 1e3*dt);
 
 		}
@@ -2702,7 +2702,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 	for ( int i=ad.strength; i<ad.ncols+1-1; i++ ) {
 		if ( dverbose>=2 ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: colperms i %d: %zu, dt %.1f [ms]\n", i, reductionsub.symms.colperms[i].size(), 1e3*dt );
+			printf ( "LMCcheckSymmetryMethod: colperms i %d: %ld, dt %.1f [ms]\n", i, (long)reductionsub.symms.colperms[i].size(), 1e3*dt );
 //    printf("original check: %d, time: %.3f [ms]\n", (int)r, 1e3*dt);
 
 		}

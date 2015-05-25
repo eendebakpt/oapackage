@@ -479,7 +479,7 @@ static inline array_t* create_array ( const int nrows, const int ncols )
 #ifdef OADEBUG
 	if ( array==NULL ) {
 		printf ( "problem with malloc %d %d, exiting!!!\n", nrows, ncols );
-		exit ( 1 );
+		throw;
 	}
 #endif
 	return array;
@@ -736,7 +736,7 @@ public:
 
 	/// print information about array
 	void show() const {
-		printf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, array );
+		printf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, (void *)array );
 	}
 	std::string showstr() const {
 		std::stringstream s;
@@ -1716,7 +1716,7 @@ void doublevector2binfile ( const std::string fname, std::vector<Type> vals, int
 	FILE *fid = fopen ( fname.c_str(), "wb" );
 	if ( fid==0 ) {
 		fprintf ( stderr, "doublevector2binfile: error with file %s\n", fname.c_str() );
-		exit ( 1 );
+		throw;
 	}
 	if ( writeheader ) {
 		writebinheader ( fid, vals.size(), 1 );
@@ -1737,7 +1737,7 @@ inline void vectorvector2binfile ( const std::string fname, const std::vector<st
 	if ( fid==0 ) {
 		fprintf ( stderr, "vectorvector2binfile: error with file %s\n", fname.c_str() );
 
-		exit ( 1 );
+		throw;
 	}
 
 	if ( na==-1 ) {

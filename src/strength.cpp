@@ -61,7 +61,7 @@ extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad
 	this->freqtable_elem = malloc2d<int>(x, this->ncolcombs);
 	#endif
 		
-};
+}
 
 
 /**

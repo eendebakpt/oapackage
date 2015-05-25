@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
     for(size_t i=0; i<arraylist->size(); i++) {
         if (verbose>=2 || ( (i%1000==0) && verbose>=1) ) {
-            printf("oapareto: array %zu/%zu\n", i, arraylist->size() );
+            printf("oapareto: array %ld/%ld\n", i, arraylist->size() );
         }
         if ( ( (i%2000==0) && verbose>=1) ) {
             pset.show(1);
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
     }
 
     if (verbose)
-        printf(" %zu arrays -> %d pareto values, %d pareto arrays \n", arraylist->size(), pset.number(),pset.numberindices() );
+        printf(" %ld arrays -> %d pareto values, %d pareto arrays \n", arraylist->size(), pset.number(),pset.numberindices() );
     pset.show(verbose);
 
     std::vector<long> idx = pset.allindices();

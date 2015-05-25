@@ -139,7 +139,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 
 		for ( int kk=adata.strength; kk<adata.ncols; kk++ ) {
 			aa[kk+1] = extend_arraylist ( aa[kk], adata, oaextendx );
-			printf ( "  extend: column %d->%d: %zu->%zu arrays\n", kk, kk+1, aa[kk].size(), aa[kk+1].size() );
+			printf ( "  extend: column %d->%d: %ld->%ld arrays\n", kk, kk+1, aa[kk].size(), aa[kk+1].size() );
 
 		}
 		myassert ( aa[adata.ncols].size() ==75, "number of arrays" );
@@ -180,7 +180,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 		for ( int kk=adata.strength; kk<adata.ncols; kk++ ) {
 			aa[kk+1] = extend_arraylist ( aa[kk], adata, oaextendx );
 			aa2[kk+1] = extend_arraylist ( aa2[kk], adata2, oaextendx2 );
-			printf ( "  extend: column %d->%d: %zu->%zu arrays, 2-level method %zu->%zu arrays\n", kk, kk+1, aa[kk].size(), aa[kk+1].size(), aa2[kk].size(), aa2[kk+1].size() );
+			printf ( "  extend: column %d->%d: %ld->%ld arrays, 2-level method %ld->%ld arrays\n", kk, kk+1, aa[kk].size(), aa[kk+1].size(), aa2[kk].size(), aa2[kk+1].size() );
 
 			if ( aa[kk+1]!=aa2[kk+1] ) {
 				printf ( "oaunittest: error: 2-level algorithm unequal to original algorithm\n" );

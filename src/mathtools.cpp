@@ -31,7 +31,7 @@ void symmetry_group::init(const std::vector<Type> vals, bool ascendingx, int ver
     //verbose=2;
   
     if (verbose>=2) {
-        printf("symmetry_group::init: %zu elements: ", vals.size() );
+        printf("symmetry_group::init: %ld elements: ", vals.size() );
         for(size_t i=0; i<vals.size(); i++)
             std::cout << vals[i] << ", ";
         printf("\n");
@@ -183,7 +183,7 @@ symmetry_group::symmetry_group(const std::vector<mvalue_t<int> > vals, bool asce
     printf("\n");
    for(size_t i=0; i< (size_t)perms.size(); i++) {
      if (verbose>=2) {
-     printf("  block %zu: ", i);
+     printf("  block %ld: ", i);
      print_perm(perms[i] );
      }
      else {

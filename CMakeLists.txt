@@ -122,6 +122,8 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -fpermissive -g")
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS " -fpermissive -O3 -DEIGEN_MPL2_ONLY")
+  
+  set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
 endif ()
 
 # for debugging

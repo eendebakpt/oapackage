@@ -809,7 +809,7 @@ return 0;
 	if ( 0 ) {
 		const char *fname = "/home/eendebakpt/tmp/test.oa";
 		arraylist_t ll = readarrayfile ( fname );
-		printf ( "read %zu arrays\n", ll.size() );
+		printf ( "read %ld arrays\n", ll.size() );
 		array_link al= ll[0];
 
 		al.show();
@@ -877,7 +877,7 @@ return 0;
 
 		std::vector<int> rr ( lst.size() );
 #ifdef _OPENMP
-		printf ( "openmp: num arrays %zu, omp_get_num_threads() %d\n", lst.size(), omp_get_num_threads() );
+		printf ( "openmp: num arrays %ld, omp_get_num_threads() %d\n", lst.size(), omp_get_num_threads() );
 #endif
 		int lmccount=0;
 
@@ -987,7 +987,7 @@ return 0;
 		oaextend.j5structure=J5_45;
 		double t0 =get_time_ms();
 		for ( size_t i=0; i<lst.size(); i++ ) {
-			printf ( "array %zu\n", i );
+			printf ( "array %ld\n", i );
 			array_link al = lst[i];
 			lmc_t r = LMCcheck ( al, adata, oaextend, reduction ) ;
 			//lmc_t r = LMCcheckj5(al, adata, reduction, oaextend) ;

@@ -23,6 +23,8 @@ xml
 ALGORITHM.txt
 ChangeLog
 CMakeLists.txt
+CONTRIBUTORS.md
+README.R.md
 Doxyfile
 doxy2swig.py
 oaconfig.txt
