@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <errno.h>
 #include <time.h>
 #include <algorithm>
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #endif
 
+#include "printfheader.h"
 #include "mathtools.h"
 #include "tools.h"
 #include "arraytools.h"
@@ -60,10 +61,10 @@ public:
 			cumprod[i+1] = cumprod[i]*dims[i];
 
 		if ( verbose ) {
-			printf ( "ndarray: dimension %d, total %d\n", k, n );
-			printf ( "  cumprod: " );
+			myprintf ( "ndarray: dimension %d, total %d\n", k, n );
+			myprintf ( "  cumprod: " );
 			printf_vector ( cumprod, "%d " );
-			printf ( "\n" );
+			myprintf ( "\n" );
 		}
 		data = new Type[n];
 		std::fill ( data, data+n, 0 );
@@ -84,7 +85,7 @@ public:
 	void show() const {
 		for ( int i=0; i<n; i++ ) {
 			std::string idxstr=tmpidxstr ( i );
-			printf ( "B[%d] = B%s = %f\n", i, idxstr.c_str(), ( double ) data[i] );
+			myprintf ( "B[%d] = B%s = %f\n", i, idxstr.c_str(), ( double ) data[i] );
 		}
 	}
 
@@ -263,7 +264,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 	for ( size_t i=0; i<dims.size(); i++ )
 		dims[i] = ad.colgroupsize[i];
 	if ( verbose>=3 ) {
-		printf ( "distance_distribution_mixed before: \n" ); //display_vector(dd); std::cout << std::endl;
+		myprintf ( "distance_distribution_mixed before: \n" ); //display_vector(dd); std::cout << std::endl;
 		B.show();
 	}
 
@@ -273,7 +274,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 			dHmixed ( N, n, al, r1, r2, dh, sg.ngroups, sg.gidx );
 
 			if ( verbose>=4 ) {
-				printf ( "distance_distribution_mixed: rows %d %d: ", r1, r2 );
+				myprintf ( "distance_distribution_mixed: rows %d %d: ", r1, r2 );
 				print_perm ( dh, sg.ngroups );
 			}
 			int v = B.get ( dh );
@@ -282,13 +283,13 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 			if ( verbose>=3 ) {
 				int w=B.getlinearidx ( dh );
 				if ( w==0 ) {
-					printf ( " r1 %d, r2 %d\n", r1, r2 );
+					myprintf ( " r1 %d, r2 %d\n", r1, r2 );
 				}
 			}
 		}
 	}
 	if ( verbose>=3 ) {
-		printf ( "distance_distribution_mixed low: \n" ); //display_vector(dd); std::cout << std::endl;
+		myprintf ( "distance_distribution_mixed low: \n" ); //display_vector(dd); std::cout << std::endl;
 		B.show();
 	}
 
@@ -299,17 +300,17 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 	B.set ( dh, v+N );
 
 	if ( verbose>=3 ) {
-		printf ( "distance_distribution_mixed integer: \n" ); //display_vector(dd); std::cout << std::endl;
+		myprintf ( "distance_distribution_mixed integer: \n" ); 
 		B.show();
 	}
 
 	for ( int x=0; x<B.n; x++ ) {
-		// printf("xxxx %d/ %d\n", x, B.n);
+		// myprintf("xxxx %d/ %d\n", x, B.n);
 		B.data[x] /= N;
 	}
 
 	if ( verbose ) {
-		printf ( "distance_distribution_mixed: \n" ); //display_vector(dd); std::cout << std::endl;
+		myprintf ( "distance_distribution_mixed: \n" ); 
 		B.show();
 	}
 
@@ -317,13 +318,13 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 
 
 	if ( 0 ) {
-		printf ( "test: " );
+		myprintf ( "test: " );
 		int tmp[100];
 		int li0= 1;
 		B.linear2idx ( li0, tmp );
 		int li = B.getlinearidx ( tmp );
 		print_perm ( tmp, sg.ngroups );
-		printf ( " linear index: %d -> %d\n", li0, li );
+		myprintf ( " linear index: %d -> %d\n", li0, li );
 	}
 
 }
@@ -333,17 +334,17 @@ template <class Type>
 std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 {
 	int n = B.size()-1;
-	// printf("macwilliams_transform: %d\n", n);
+	// myprintf("macwilliams_transform: %d\n", n);
 	std::vector<double> Bp ( n+1 );
 
 	if ( s==2 ) {
 		for ( int j=0; j<=n; j++ ) {
 			Bp[j]=0;
 			for ( int i=0; i<=n; i++ ) {
-				//printf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
+				//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
 				Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
-				//printf("--\n");
-				//	printf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
+				//myprintf("--\n");
+				//	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
 
 			}
 			Bp[j] /= N;
@@ -354,14 +355,14 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 		for ( int j=0; j<=n; j++ ) {
 			Bp[j]=0;
 			for ( int i=0; i<=n; i++ ) {
-				//printf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
+				//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
 				Bp[j] +=  B[i] * krawtchouk<long> ( j, i, n, s ); // pow(s, -n)
-				//printf("--\n");
+				//myprintf("--\n");
 			}
 			Bp[j] /= N;
 		}
 	}
-	// printf("macwilliams_transform: n %d, s %d: Bp ", n, s); display_vector(Bp); std::cout << std::endl;
+	// myprintf("macwilliams_transform: n %d, s %d: Bp ", n, s); display_vector(Bp); std::cout << std::endl;
 
 	return Bp;
 }
@@ -374,7 +375,7 @@ std::vector<double> distance_distribution ( const array_link &al )
 
 	// calculate distance distribution
 
-	//printf("distance_distribution\n");
+	//myprintf("distance_distribution\n");
 	std::vector<double> dd ( n+1 );
 
 
@@ -390,7 +391,7 @@ std::vector<double> distance_distribution ( const array_link &al )
 	for ( int x=0; x<=n; x++ ) {
 		dd[x] /= N;
 	}
-	//printf("distance_distribution: "); display_vector(dd); std::cout << std::endl;
+	//myprintf("distance_distribution: "); display_vector(dd); std::cout << std::endl;
 
 	return dd;
 }
@@ -401,17 +402,19 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 {
 // TODO: calculation is not very efficient
 	if ( verbose ) {
-		printf ( "macwilliams_transform_mixed:\n" );
-		printf ( "sx: " );
+		myprintf ( "macwilliams_transform_mixed:\n" );
+#ifdef FULLPACKAGE
+		myprintf ( "sx: " );
 		display_vector ( sx );
-		printf ( "\n" );
+#endif
+		myprintf ( "\n" );
 	}
 
 	//int v = sg.n;
 //sg.gsize;
 
 	int jprod = B.n; // std::accumulate(sg.gsize.begin(), sg.gsize.begin()+sg.ngroups, 1, multiplies<int>());
-	//printf("jprod: %d/%d\n", jprod, B.n);
+	//myprintf("jprod: %d/%d\n", jprod, B.n);
 
 	int jtotal = 0;
 
@@ -422,10 +425,10 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 
 	for ( int j=0; j<Bout.n; j++ ) {
 		//if (verbose)
-//	printf("macwilliams_transform_mixed: Bout[%d]= %d\n", j, 0 );
+//	myprintf("macwilliams_transform_mixed: Bout[%d]= %d\n", j, 0 );
 
 		Bout.linear2idx ( j, iout );
-		//printf("  j %d: iout[0] %d\n", j, iout[0]);
+		//myprintf("  j %d: iout[0] %d\n", j, iout[0]);
 		Bout.setlinear ( j, 0 ); // [j]=0;
 
 		for ( int i=0; i<B.n; i++ ) {
@@ -437,21 +440,21 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 				long ii = bi[f];
 				long ni = B.dims[f]-1;
 				long si = sx[f];
-				//printf("  f %d ji %d, ni %ld, ni %ld, si %d\n", f, (int)ji, ii, ni, si);
+				//myprintf("  f %d ji %d, ni %ld, ni %ld, si %d\n", f, (int)ji, ii, ni, si);
 				fac *= krawtchouk ( ji,ii, ni, si );
 				if ( verbose>=4 )
-					printf ( "  Bout[%d] += %.1f * %ld (%d %d %d)\n", j , ( double ) B.data[i] , fac, ( int ) ji, ( int ) ii, ( int ) ni );
+					myprintf ( "  Bout[%d] += %.1f * %ld (%d %d %d)\n", j , ( double ) B.data[i] , fac, ( int ) ji, ( int ) ii, ( int ) ni );
 			}
 			Bout.data[j] += B.data[i] * fac;
 
 		}
 		Bout.data[j] /= N;
 		if ( verbose>=2 )
-			printf ( "macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.tmpidxstr ( j ).c_str(), Bout.data[j] );
+			myprintf ( "macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.tmpidxstr ( j ).c_str(), Bout.data[j] );
 	}
 
 	if ( verbose>=1 ) {
-		printf ( "Bout: \n" );
+		myprintf ( "Bout: \n" );
 		Bout.show();
 	}
 
@@ -460,13 +463,13 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	std::vector<double> A ( sg.n+1 );
 
 	for ( int i=0; i<jprod; i++ ) {
-		//printf("   %s\n", B.tmpidxstr(i).c_str() );
+		//myprintf("   %s\n", B.tmpidxstr(i).c_str() );
 		Bout.linear2idx ( i, bi );
 		int jsum=0;
 		for ( int j=0; j<Bout.k; j++ )
 			jsum += bi[j];
 		if ( verbose>=2 )
-			printf ( "   jsum %d/%d, i %d\n", jsum, ( int ) A.size(), i );
+			myprintf ( "   jsum %d/%d, i %d\n", jsum, ( int ) A.size(), i );
 		A[jsum]+=Bout.data[i];
 
 	}
@@ -494,7 +497,7 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 	int N = al.n_rows;
 
 	if ( verbose )
-		printf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, (long)ncomb );
+		myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, (long)ncomb );
 
 //#pragma omp parallel for
 	for ( int64_t i=0; i<ncomb; i++ ) {
@@ -506,13 +509,13 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 			dd[i] = alsub.Defficiency();
 
 		if ( verbose>=2 )
-			printf ( "projDeff: k %d, kp %d: i %ld, D %f\n", kk, kp, ( long ) i, dd[i] );
+			myprintf ( "projDeff: k %d, kp %d: i %ld, D %f\n", kk, kp, ( long ) i, dd[i] );
 		next_comb ( cp ,kp, kk );
 
 	}
 
 	if ( verbose )
-		printf ( "projDeff: k %d, kp %d: done\n", kk, kp );
+		myprintf ( "projDeff: k %d, kp %d: done\n", kk, kp );
 
 	return dd;
 }
@@ -533,7 +536,7 @@ std::vector<double> PECsequence ( const array_link &al, int verbose )
 	std::vector<double> pec ( kk );
 
 	if ( kk>=20 ) {
-		printf ( "PECsequence: error: not defined for 20 or more columns\n" );
+		myprintf ( "PECsequence: error: not defined for 20 or more columns\n" );
 		pec[0]=-1;
 		return pec;
 	}
@@ -576,20 +579,20 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 {
 	arraydata_t adata = arraylink2arraydata ( al );
 	symmetry_group sg ( adata.getS(), false );
-	//printf(" adata.ncolgroups: %d/%d\n", adata.ncolgroups, sg.ngroups);
+	//myprintf(" adata.ncolgroups: %d/%d\n", adata.ncolgroups, sg.ngroups);
 
 	std::vector<int> dims ( adata.ncolgroups );
 	for ( unsigned int i=0; i<dims.size(); i++ )
 		dims[i] = adata.colgroupsize[i]+1;
 
-	//          printf("  dims:        "); display_vector<int>(dims, "%d "); std::cout << endl;
+	//          myprintf("  dims:        "); display_vector<int>(dims, "%d "); std::cout << endl;
 
 	ndarray<double> B ( dims );
 	ndarray<double> Bout ( dims );
 
 	distance_distribution_mixed ( al, B, verbose );
 	if ( verbose>=3 ) {
-		printf ( "GWLPmixed: distance distrubution\n" );
+		myprintf ( "GWLPmixed: distance distrubution\n" );
 		B.show();
 	}
 
@@ -627,14 +630,14 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
 	int k ;
 	for ( k=0; k<al.n_columns; k++ ) {
 		array_t *mine = std::max_element ( al.array+N*k, al.array+ ( N* ( k+1 ) ) );
-		// printf( "s %d, %d\n", s, *mine+1);
+		// myprintf( "s %d, %d\n", s, *mine+1);
 		if ( *mine+1 != s )
 			break;
 	}
 	int domixed= ( k<al.n_columns );
 	//domixed=1;
 	if ( verbose )
-		printf ( "GWLP: N %d, s %d, domixed %d\n", N, s, domixed );
+		myprintf ( "GWLP: N %d, s %d, domixed %d\n", N, s, domixed );
 
 
 	if ( domixed ) {
@@ -644,12 +647,14 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
 	} else {
 		// calculate distance distribution
 		std::vector<double> B = distance_distributionT ( al );
+#ifdef FULLPACKAGE
 		if ( verbose ) {
-			printf ( "distance_distributionT: " );
+			myprintf ( "distance_distributionT: " );
 			display_vector ( B );
 			std::cout << std::endl;
 		}
-		//double sum_of_elems =std::accumulate( B.begin(), B.end(),0.); printf("   sum %.3f\n", sum_of_elems);
+#endif
+		//double sum_of_elems =std::accumulate( B.begin(), B.end(),0.); myprintf("   sum %.3f\n", sum_of_elems);
 
 // calculate GWP
 		std::vector<double> gma = macwilliams_transform ( B, N, s );
@@ -887,9 +892,12 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 	if ( rank2!=rank ) {
 		if ( verbose>=3 ) {
 			printf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
-			if ( verbose>=4 ) {
+
+#ifdef FULLPACKAGE
+			if ( verbose>=4 && FULLPACKAGEX) {
 				std::cout << "Its singular values are:" << std::endl << S << std::endl;
 			}
+#endif
 		}
 	}
 	int m = x.cols();
@@ -899,25 +907,26 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		Deff=0;
 		vif=0;
 		Eeff=0;
-		if ( verbose>=3 ) {
+#ifdef FULLPACKAGE
+		if ( verbose>=3 && FULLPACKAGEX) {
 			Eigen::MatrixXd Smat ( S );
 			Eigen::ArrayXd Sa=Smat.array();
 			double Deff = exp ( 2*Sa.log().sum() /m ) /N;
 
 			std::cout << printfstring ( "  singular matrix: m (%d) > N (%d): rank ", m, N ) << rank << std::endl;
 			int mx = std::min ( m, N );
-			printf ( "   Deff %e, smallest eigenvalue %e, rank lu %d\n", Deff, S[mx-1], rank );
+			myprintf ( "   Deff %e, smallest eigenvalue %e, rank lu %d\n", Deff, S[mx-1], rank );
 
 		}
-
+#endif
 		return;
 	}
 	if ( verbose>=3 )
-		printf ( "N %d, m %d\n", N, m );
+		myprintf ( "N %d, m %d\n", N, m );
 
 	if ( S[m-1]<1e-15 || rank < m ) {
 		if ( verbose>=2 ) {
-			printf ( "   array is singular, setting D-efficiency to zero\n" );
+			myprintf ( "   array is singular, setting D-efficiency to zero\n" );
 
 			if ( 0 ) {
 				Eigen::MatrixXd mymatrix = x;
@@ -929,7 +938,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 				for ( int j=0; j<m; j++ ) {
 					if ( S[j]<1e-14 ) {
 						if ( verbose>=3 )
-							printf ( "  singular!\n" );
+							myprintf ( "  singular!\n" );
 						S[j]=0;
 					} else {
 
@@ -941,7 +950,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 				Eigen::ArrayXd Sa=Smat.array();
 				double DeffDirect = exp ( 2*Sa.log().sum() /m ) /N;
 
-				printf ( "  DeffDirect %f\n", DeffDirect );
+				myprintf ( "  DeffDirect %f\n", DeffDirect );
 
 			}
 		}
@@ -952,22 +961,26 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		int rankold=rank2;
 		//Eigen::FullPivLU<MatrixXd> lu(x);
 		//rank=lu.rank();
+#ifdef FULLPACKAGE
 		if ( verbose>=3 ) {
 			Eigen::MatrixXd Smat ( S );
 			Eigen::ArrayXd Sa=Smat.array();
 			double Deff = exp ( 2*Sa.log().sum() /m ) /N;
 
 			std::cout << "  singular matrix: the rank of A is " << rank << std::endl;
-			printf ( "   Deff %e, smallest eigenvalue %e, rankold %d, rank lu %d\n", Deff, S[m-1], rankold, rank );
+			myprintf ( "   Deff %e, smallest eigenvalue %e, rankold %d, rank lu %d\n", Deff, S[m-1], rankold, rank );
 
 		}
 		if ( verbose>=4 )
 			std::cout << "Its singular values are:" << std::endl << S << std::endl;
+#endif
 		return;
 	}
-	if ( verbose>=3 )
+#ifdef FULLPACKAGE
+if ( verbose>=3 )
 		std::cout << "Its singular values are:" << std::endl << S << std::endl;
-	//cout << "x:\n"<< x << std::endl;
+#endif
+//cout << "x:\n"<< x << std::endl;
 
 	Eeff = S[m-1]*S[m-1]/N;
 	//cout << "Its singular values are:" << endl << S/sqrt(N) << endl;
@@ -985,12 +998,12 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 	Deff = exp ( 2*Sa.log().sum() /m ) /N;
 
 	if ( verbose>=2 ) {
-		printf ( "ABwithSVD: Defficiency %.3f, Aefficiency %.3f (%.3f), Eefficiency %.3f\n", Deff, vif, vif*m, Eeff );
+		myprintf ( "ABwithSVD: Defficiency %.3f, Aefficiency %.3f (%.3f), Eefficiency %.3f\n", Deff, vif, vif*m, Eeff );
 
 		Eigen::FullPivLU<MatrixXd> lu ( x );
 		int ranklu=lu.rank();
 
-		printf ( "   Defficiency %e, smallest eigenvalue %e, rank %d, rank lu %d\n", Deff, S[m-1], rank, ranklu );
+		myprintf ( "   Defficiency %e, smallest eigenvalue %e, rank %d, rank lu %d\n", Deff, S[m-1], rank, ranklu );
 
 	}
 }
@@ -1081,7 +1094,7 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 
 	if ( S[m-1]<1e-15 ) {
 		if ( verbose>=2 ) {
-			printf ( "   array is singular, setting det to zero\n" );
+			myprintf ( "   array is singular, setting det to zero\n" );
 
 		}
 		dd=0;
@@ -1091,7 +1104,7 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 	for ( int j=0; j<m; j++ ) {
 		if ( S[j]<1e-14 ) {
 			if ( verbose>=3 )
-				printf ( "  singular!\n" );
+				myprintf ( "  singular!\n" );
 			S[j]=0;
 		} else {
 			S[j]=sqrt ( S[j] );
@@ -1106,7 +1119,7 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 
 	if ( S[0]<1e-15 ) {
 		if ( verbose>=2 )
-			printf ( "Avalue: singular matrix\n" );
+			myprintf ( "Avalue: singular matrix\n" );
 		dd=0;
 		return dd;
 	}
@@ -1137,7 +1150,7 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 
 	if ( S[m-1]<1e-15 ) {
 		if ( verbose>=2 ) {
-			printf ( "   array is singular, setting det to zero\n" );
+			myprintf ( "   array is singular, setting det to zero\n" );
 
 		}
 		dd=0;
@@ -1147,7 +1160,7 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 	for ( int j=0; j<m; j++ ) {
 		if ( S[j]<1e-14 ) {
 			if ( verbose>=3 )
-				printf ( "  singular!\n" );
+				myprintf ( "  singular!\n" );
 			S[j]=0;
 		} else {
 			S[j]=sqrt ( S[j] );
@@ -1162,7 +1175,7 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 
 	if ( S[0]<1e-15 ) {
 		if ( verbose>=2 )
-			printf ( "Avalue: singular matrix\n" );
+			myprintf ( "Avalue: singular matrix\n" );
 		dd=0;
 		return dd;
 	}
@@ -1175,7 +1188,7 @@ typedef MatrixFloat MyMatrix;
 std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & arrayclass, int verbose, int addDs0 )
 {
 	if ( ( al.n_rows>500 ) || ( al.n_columns>500 ) ) {
-		printf ( "Defficiencies: array size not supported\n" );
+		myprintf ( "Defficiencies: array size not supported\n" );
 		return std::vector<double> ( 3 );
 	}
 	int k = al.n_columns;
@@ -1199,13 +1212,13 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		//	X2 = array2eigenX2 ( al );
 		//X2 = X.block ( 0, 1+k, N, k* ( k-1 ) /2 );
 		//std::cout << "X2\n" << X2 << std::endl; std::cout << "X2a\n" << X2a << std::endl;
-		//if (X2a==X2) printf("equal!"); exit(0);
+		//if (X2a==X2) myprintf("equal!"); exit(0);
 
 		n2fi =  k* ( k-1 ) /2;
 		nme = k;
 	} else {
 		if ( verbose>=2 )
-			printf ( "Defficiencies: mixed design!\n" );
+			myprintf ( "Defficiencies: mixed design!\n" );
 		std::pair<MyMatrix,MyMatrix> mm = array2eigenModelMatrixMixed ( al, 0 );
 		const MyMatrix &X1=mm.first;
 		const MyMatrix &X2=mm.second;
@@ -1228,12 +1241,12 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 	// https://forum.kde.org/viewtopic.php?f=74&t=85616&p=146569&hilit=multiply+transpose#p146569
 	MyMatrix matXtX(X.cols(), X.cols());
 	//		matXtX.setZero();
-	//		printf("assign triangularView\n");
+	//		myprintf("assign triangularView\n");
 	matXtX.triangularView<Eigen::Upper>() = X.transpose() *X/n;
 
 	//		matXtX.sefladjointView<Upper>().rankUpdate(X.transpose() );
 
-	//		printf("assign triangularView (lower)\n");
+	//		myprintf("assign triangularView (lower)\n");
 
 	matXtX.triangularView<Eigen::StrictlyLower>() = matXtX.transpose();
 	*/
@@ -1272,19 +1285,19 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		rank = lu_decomp.rank();
 
 		if ( verbose>=1 ) {
-			printf ( "Defficiencies: rank of model matrix %d/%d, f1 %e, f2i %e\n", rank, m, f1, f2i );
+			myprintf ( "Defficiencies: rank of model matrix %d/%d, f1 %e, f2i %e\n", rank, m, f1, f2i );
 		}
 	}
 	if ( rank<m ) {
 		if ( verbose>=1 ) {
-			printf ( "Defficiencies: model matrix does not have max rank, setting D-efficiency to zero (f1 %e)\n", f1 );
-			printf ( "   rank lu_decomp %d/%d\n", rank, m ) ;
-			printf ( "   calculated D %f\n", pow ( f1, 1./m ) );
+			myprintf ( "Defficiencies: model matrix does not have max rank, setting D-efficiency to zero (f1 %e)\n", f1 );
+			myprintf ( "   rank lu_decomp %d/%d\n", rank, m ) ;
+			myprintf ( "   calculated D %f\n", pow ( f1, 1./m ) );
 		}
 
 	} else {
 		if ( verbose>=2 ) {
-			printf ( "Defficiencies: f1 %f, f2i %f, t %f\n", f1, f2i, t );
+			myprintf ( "Defficiencies: f1 %f, f2i %f, t %f\n", f1, f2i, t );
 		}
 
 
@@ -1294,14 +1307,14 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 	D1 = pow ( t, 1./k1 );
 
 	if ( verbose>=2 ) {
-		printf ( "Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1 );
+		myprintf ( "Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1 );
 	}
 
 	/*
 	if ( 0 ) {
 		double dd = detXtX( X/sqrt ( double ( n ) ) );
 		double Dnew = pow ( dd, 1./m );
-		printf ( "D %.15f -> %.15f\n", D, Dnew );
+		myprintf ( "D %.15f -> %.15f\n", D, Dnew );
 	} */
 
 	std::vector<double> d ( 3 );
@@ -1351,7 +1364,7 @@ double Defficiency ( const array_link &al, int verbose )
 			Eigen::FullPivLU<DMatrix> lu_decomp2 ( mm );
 			int rank2 = lu_decomp2.rank();
 
-			printf ( "Defficiency: array is singular (rank %d/%d/%d), setting D-efficiency to zero (S[m-1] %e)\n", rank, rank2, m, S[m-1] );
+			myprintf ( "Defficiency: array is singular (rank %d/%d/%d), setting D-efficiency to zero (S[m-1] %e)\n", rank, rank2, m, S[m-1] );
 
 		}
 		Deff=0;
@@ -1361,7 +1374,7 @@ double Defficiency ( const array_link &al, int verbose )
 	for ( int j=0; j<m; j++ ) {
 		if ( S[j]<1e-14 ) {
 			if ( verbose>=3 )
-				printf ( "  singular!\n" );
+				myprintf ( "  singular!\n" );
 			S[j]=0;
 		} else {
 			S[j]=sqrt ( S[j] );
@@ -1374,16 +1387,16 @@ double Defficiency ( const array_link &al, int verbose )
 
 		if ( ! ( S2[m-1]<1e-15 ) ) {
 			for ( int ii=0; ii<m-3; ii++ ) {
-				printf ( "ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver svd %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
+				myprintf ( "ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver svd %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
 			}
 			for ( int ii=m-3; ii<m-1; ii++ ) {
-				printf ( "ii %d: %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
+				myprintf ( "ii %d: %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
 			}
 
 			DMatrix Smat ( S );
 			DArray Sa=Smat.array();
 			Deff = exp ( 2*Sa.log().sum() /m ) /N;
-			printf ( "  Aold: %.6f\n", Deff );
+			myprintf ( "  Aold: %.6f\n", Deff );
 		}
 	}
 //	cout << "----" << S << std::endl;
@@ -1391,11 +1404,11 @@ double Defficiency ( const array_link &al, int verbose )
 
 	//   int rank = svd.nonzeroSingularValues();
 
-	//printf("Avalue: S size %d %d\n", (int) S.cols(), (int) S.rows());
+	//myprintf("Avalue: S size %d %d\n", (int) S.cols(), (int) S.rows());
 
 	if ( S[0]<1e-15 ) {
 		if ( verbose>=2 )
-			printf ( "Avalue: singular matrix\n" );
+			myprintf ( "Avalue: singular matrix\n" );
 		Deff=0;
 		return Deff;
 	}
@@ -1405,7 +1418,7 @@ double Defficiency ( const array_link &al, int verbose )
 	Deff = exp ( 2*Sa.log().sum() /m ) /N;
 
 	if ( verbose>=2 ) {
-		printf ( "Avalue: A %.6f (S[0] %e)\n", Deff, S[0] );
+		myprintf ( "Avalue: A %.6f (S[0] %e)\n", Deff, S[0] );
 	}
 
 	Deff = std::min ( Deff,1. );	// for numerical stability
@@ -1434,7 +1447,7 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 
 	for ( size_t i=0; i<arraylist.size(); i++ ) {
 		if ( verbose>=2 || ( ( i%2000==0 ) && verbose>=1 ) ) {
-			printf ( "parsePareto: array %ld/%ld\n", (long)i, (long)arraylist.size() );
+			myprintf ( "parsePareto: array %ld/%ld\n", (long)i, (long)arraylist.size() );
 		}
 		if ( ( ( i%10000==0 ) && verbose>=1 ) ) {
 			pset.show ( 1 );

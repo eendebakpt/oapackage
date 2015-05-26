@@ -37,12 +37,14 @@ typedef unsigned __int32 uint32_t;
 // assume zlib is present on unix
 #ifdef NOZLIB
 #else
+#ifdef FULLPACKAGE
 #define USEZLIB 1
 #endif
 #endif
 #endif
+#endif
 
-#include <stdio.h>
+#include "printfheader.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -830,11 +832,12 @@ public:
 	/// return the row_symmetry group of an array
 	symmetry_group row_symmetry_group() const;
 
+#ifdef FULLPACKAGE	
 	/// return the LMC form of the array
 	array_link reduceLMC() const;
 	/// return the delete-one-factor-projection form of the array
 	array_link reduceDOP() const;
-
+#endif
 
 	/// return the array as an Eigen matrix
 	inline  MatrixFloat  getEigenMatrix() const {
@@ -1222,7 +1225,7 @@ private:
 
 /** functions for working with array files*/
 
-
+#ifdef FULLPACKAGE
 
 namespace arrayfile
 {
@@ -1432,7 +1435,7 @@ private:
 	void write_array_binary ( const array_link &A );
 	void write_array_binary_diff ( const array_link &A );
 	void write_array_binary_diffzero ( const array_link &A );
-
+	
 public:
 	int getnbits() {
 		return nbits;
@@ -1529,6 +1532,35 @@ int writearrayfile ( const char *fname, const array_link &al, arrayfile::arrayfi
 /// append a single array to an array file. creates a new file if no file exists
 int appendarrayfile ( const char *fname, const array_link al );
 
+/// Make a selection of arrays from binary array file, append to list
+void selectArrays ( const std::string filename,  std::vector<int> &idx, arraylist_t &fl, int verbose=0 );
+
+/// Select a single array from a file
+array_link selectArrays ( std::string filename, int ii );
+
+arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits=8 );
+
+int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode = ATEXT);
+
+#endif // FULLPACKAGE
+
+template <class atype>
+/// write array to output stream
+void write_array_format ( std::ostream &ss, const atype *array, const int nrows, const int ncols, int width=3 )
+{
+	assert ( array!=0 || ncols==0 );
+
+	int count;
+	for ( int j = 0; j < nrows; j++ ) {
+		count = j;
+		for ( int k = 0; k < ncols; k++ ) {
+			const char *s = ( k<ncols-1 ) ? " ":"\n";
+			ss << std::setw ( width ) << array[count] << s;
+			count += nrows;
+		}
+	}
+}
+
 /// Make a selection of arrays
 arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<int> &idx );
 /// Make a selection of arrays
@@ -1537,12 +1569,6 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<long> &idx );
 /// Make a selection of arrays, append to list
 void selectArrays ( const arraylist_t &al,  std::vector<int> &idx, arraylist_t &fl );
 void selectArrays ( const arraylist_t &al,  std::vector<long> &idx, arraylist_t &fl );
-
-/// Make a selection of arrays from binary array file, append to list
-void selectArrays ( const std::string filename,  std::vector<int> &idx, arraylist_t &fl, int verbose=0 );
-
-/// Select a single array from a file
-array_link selectArrays ( std::string filename, int ii );
 
 /// Make a selection of arrays, keep
 template <class Container, class IntType>
@@ -1597,26 +1623,6 @@ inline void appendArrays ( const arraylist_t &al, arraylist_t &dst )
 	}
 }
 
-arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits=8 );
-
-
-template <class atype>
-/// write array to output stream
-void write_array_format ( std::ostream &ss, const atype *array, const int nrows, const int ncols, int width=3 )
-{
-	assert ( array!=0 || ncols==0 );
-
-	int count;
-	for ( int j = 0; j < nrows; j++ ) {
-		count = j;
-		for ( int k = 0; k < ncols; k++ ) {
-			const char *s = ( k<ncols-1 ) ? " ":"\n";
-			ss << std::setw ( width ) << array[count] << s;
-			count += nrows;
-		}
-	}
-}
-
 
 /** Write a formatted array
  */
@@ -1632,8 +1638,11 @@ void write_array_format ( const atype *array, const int nrows, const int ncols, 
 			count += nrows;
 		}
 	}
+#ifdef RPACKAGE	
+#else
 	fflush ( stdout );
 	setbuf ( stdout, NULL );
+#endif	
 }
 /** @brief Write a formatted array
  */

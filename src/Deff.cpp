@@ -3,7 +3,7 @@
  *
  */
 
-#include <stdio.h>
+#include <printfheader.h>
 
 #include "arraytools.h"
 #include "arrayproperties.h"
@@ -14,7 +14,6 @@
 
 
 #include "Deff.h"
-
 
 #ifndef myprintf
 #define myprintf printf
@@ -198,7 +197,7 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 		nabort = arrayclass.N*arrayclass.ncols*20+500;
 
 	if ( verbose>=3 )
-		printf ( "DoptimizeMixed: nabort %d\n", nabort );
+		myprintf ( "DoptimizeMixed: nabort %d\n", nabort );
 #ifdef DOOPENMP
 	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 #endif
@@ -232,7 +231,7 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 
 		if ( score2>score0 ) {
 			if ( verbose>=2 )
-				printf ( "DoptimizeMixed: array %d/%d: improve %.6f -> %.6f -> %.6f\n", ( int ) i, ( int ) nn, score0, score1, score2 );
+				myprintf ( "DoptimizeMixed: array %d/%d: improve %.6f -> %.6f -> %.6f\n", ( int ) i, ( int ) nn, score0, score1, score2 );
 
 			nimproved=nimproved+1;
 		}
@@ -244,7 +243,7 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 
 	double dt = get_time_ms()-t0;
 	if ( verbose ) {
-		printf ( "DoptimizeMixed: improved %d/%ld arrays, %.2f [s]\n", nimproved, (long)nn, dt );
+		myprintf ( "DoptimizeMixed: improved %d/%ld arrays, %.2f [s]\n", nimproved, (long)nn, dt );
 	}
 
 	// loop is complete
@@ -283,7 +282,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 	std::vector<double> dd0 = A0.Defficiencies();
 
 	if ( verbose ) {
-		printf ( "optimDeff: initial D-efficiency %.4f\n",  dd0[0] );
+		myprintf ( "optimDeff: initial D-efficiency %.4f\n",  dd0[0] );
 	}
 
 	// initialize score
@@ -294,7 +293,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 	// initialize arary with random permutation
 	const int nn = N*k;
 	std::vector<int> updatepos = permutation<int> ( nn );
-	std::random_shuffle ( updatepos.begin(), updatepos.end() );
+	my_random_shuffle ( updatepos.begin(), updatepos.end() );
 	int updateidx = 0;
 
 
@@ -338,7 +337,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 			break;
 		default
 				:
-			printf ( "optimDeff: no such optimization method\n" );
+			myprintf ( "optimDeff: no such optimization method\n" );
 			break;
 		}
 		// evaluate
@@ -348,7 +347,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 
 
 		if ( verbose>=4 ) {
-			printf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
+			myprintf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
 		}
 
 		// switch back if necessary
@@ -359,18 +358,18 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 				//std::random_shuffle ( updatepos.begin(), updatepos.end() );	// update the sequence of positions to try
 
 				if ( verbose>=3 )
-					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
+					myprintf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
 				d=dn;
 			} else {
 				if ( verbose>=2 ) {
-					printf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );
+					myprintf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );
 				}
 			}
 		} else {
 
 			if ( ( dn+1e-10 ) >=d ) {
 				if ( verbose>=2 ) {
-					printf ( "element within 1e-12! d %f, dn %f\n", d, dn );
+					myprintf ( "element within 1e-12! d %f, dn %f\n", d, dn );
 				}
 			}
 			// restore to original
@@ -391,7 +390,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 		// check progress
 		if ( ( ii-lc ) >nabort ) {
 			if ( verbose>=2 )
-				printf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
+				myprintf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
 			//abort=true;
 			break;
 		}
@@ -402,10 +401,10 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 	double dn = scoreD ( dd, alpha );
 
 	if ( verbose ) {
-		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
+		myprintf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
 	}
 
-	//printf("nx %d\n", nx);
+	//myprintf("nx %d\n", nx);
 	return A;
 //      return std::pair<array_link, std::vector<double> >(A, dd);
 }
@@ -420,7 +419,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 	std::vector<int> s = arrayclass.getS();
 
 	if ( ! arrayclass.is2level() ) {
-		printf ( "optimDeff2level: error arrayclass is not 2-level\n" );
+		myprintf ( "optimDeff2level: error arrayclass is not 2-level\n" );
 		return A0;
 	}
 
@@ -437,12 +436,12 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 	std::vector<double> dd0 = A0.Defficiencies();
 
 	if ( verbose ) {
-		printf ( "optimDeff: initial D-efficiency %.4f\n",  dd0[0] );
+		myprintf ( "optimDeff: initial D-efficiency %.4f\n",  dd0[0] );
 	}
 
 	// initialize arary with random permutation
 	std::vector<int> updatepos = permutation<int> ( N*k );
-	std::random_shuffle ( updatepos.begin(), updatepos.end() );
+	my_random_shuffle ( updatepos.begin(), updatepos.end() );
 	int updateidx = 0;
 
 	// initialize score
@@ -492,7 +491,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 			break;
 		default
 				:
-			printf ( "optimDeff: no such optimization method\n" );
+			myprintf ( "optimDeff: no such optimization method\n" );
 			break;
 		}
 		// evaluate
@@ -502,7 +501,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 
 
 		if ( verbose>=4 ) {
-			printf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
+			myprintf ( "  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,o, o2, d, dn );
 		}
 
 		// switch back if necessary
@@ -511,10 +510,10 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 			if ( dn>d )  {
 				lc=ii;
 				if ( verbose>=3 )
-					printf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
+					myprintf ( "optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn );
 				d=dn;
 			} else {
-				printf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );
+				myprintf ( "optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn );
 			}
 		} else {
 			// restore to original
@@ -535,7 +534,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 		// check progress
 		if ( ( ii-lc ) >nabort ) {
 			if ( verbose>=2 )
-				printf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
+				myprintf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
 			//abort=true;
 			break;
 		}
@@ -546,10 +545,10 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 	double dn = scoreD ( dd, alpha );
 
 	if ( verbose ) {
-		printf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
+		myprintf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
 	}
 
-	//printf("nx %d\n", nx);
+	//myprintf("nx %d\n", nx);
 	return A;
 //      return std::pair<array_link, std::vector<double> >(A, dd);
 }
@@ -573,7 +572,7 @@ extern "C" {
 		output[3]=4;
 
 		if ( verbose>=2 )
-			printf ( "DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter, *alpha1 );
+			myprintf ( "DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter, *alpha1 );
 
 		arraydata_t arrayclass ( 2, N, 0, k );
 		std::vector<double> alpha ( 3 );
@@ -603,10 +602,10 @@ std::vector<double> dd = best.Defficiencies();
 		std::copy ( best.array, best.array+N*k, output );
 
 		if (verbose>=1) {
-		printf("Doptimize: generated design with D = %.6f, Ds = %.6f\n",dd[0], dd[1] );
+		myprintf("Doptimize: generated design with D = %.6f, Ds = %.6f\n",dd[0], dd[1] );
 		}
 		if ( verbose>=2 ) {
-			printf ( "DoptimizeR: done\n" );
+			myprintf ( "DoptimizeR: done\n" );
 		}
 //best.showarray();
 

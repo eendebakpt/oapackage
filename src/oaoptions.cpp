@@ -30,22 +30,22 @@ std::string version()
  */
 void print_copyright_old()
 {
-	printf("Orthogonal Arrays %s: Copyright TNO Science & Industry (2010), Copyright Pieter Eendebak (2011-2015)\n", version().c_str());
-	printf("For more details see the files README.txt and LICENSE.txt\n");
+	myprintf("Orthogonal Arrays %s: Copyright TNO Science & Industry (2010), Copyright Pieter Eendebak (2011-2015)\n", version().c_str());
+	myprintf("For more details see the files README.txt and LICENSE.txt\n");
 }
 
 /** @brief Print copyright notice
  */
 void print_copyright()
 {
-	printf("Orthogonal Arrays %s\n", version().c_str());
-	printf("For more details see the files README.txt and LICENSE.txt\n");
+	myprintf("Orthogonal Arrays %s\n", version().c_str());
+	myprintf("For more details see the files README.txt and LICENSE.txt\n");
 }
 /** @brief Print brief copyright notice
  */
 void print_copyright_light()
 {
-	printf("Orthogonal Array package %s\n", version().c_str());
+	myprintf("Orthogonal Array package %s\n", version().c_str());
 }
 
 #include <Eigen/Core>
@@ -72,7 +72,10 @@ void print_copyright_light()
 
 void print_options()
 {
+#ifdef RPACKAGE
+#else
  print_options(std::cout); 
+#endif
 }
 
 /**
@@ -184,7 +187,7 @@ int globalHackOption(int i, int val) {
       hopts[i]=val;
     return hopts[i];
   }
-  printf("globalHackOption: error: invalid index\n");
+  myprintf("globalHackOption: error: invalid index\n");
   return -1;
 }
 #endif

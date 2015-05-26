@@ -46,6 +46,11 @@ scripts/.*py
 scripts/.Rdata
 src/bitarray/Makefile
 src/mpitools/*
+src/lmc.*
+src/extend.*
+src/bit_array.*
+src/nonroot.*
+src/anyoption.*
 
 #src/extend.*
 

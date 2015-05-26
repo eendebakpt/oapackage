@@ -59,6 +59,7 @@ set(srcsextend ${srcs} src/extend.cpp src/lmc.cpp src/nonroot.cpp )
 set(headersextend ${headersextend} src/InfInt.h)
 set(srcsextend ${srcsextend} src/InfInt.cpp)
 
+
 if(OADEV)
   set(headersextend ${headersextend} dev/oadevelop.h)
   set(srcsextend ${srcsextend} dev/oadevelop.cpp)
@@ -335,6 +336,17 @@ endif()
 #add_precompiled_header(oapareto src/pareto.h src/mathtools.h)
 #add_precompiled_header(oapareto src/mathtools.h)
 
+##### R test
+if("$ENV{USER}" STREQUAL "eendebakpt")
+  set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/md5.h src/mathtools.h src/oaoptions.h src/tools.h)
+  set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/md5.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
+
+  add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
+  set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE ${COPTS} -Isrc -I/usr/share/R/include")
+  #set_target_properties(Rtest PROPERTIES LINK_FLAGS "-lR")
+  TARGET_LINK_LIBRARIES(Rtest R)
+endif()
+
 ####### Octave / Matlab support ##########################
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
@@ -411,13 +423,13 @@ add_custom_target( swig )
 if(WIN32)
  add_custom_command(
 	TARGET swig PRE_BUILD 
-	COMMAND swig -c++  -DOADEV -w503,401,362 -python -Isrc/ -o oalib_wrap_dev.cxx oalib.i
+	COMMAND swig -c++  -DOADEV -w503,401,362 -python -Idev/ -Isrc/ -o oalib_wrap_dev.cxx oalib.i
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
   else()
  add_custom_command(
 	TARGET swig PRE_BUILD 
-	COMMAND swig -c++ -DWIN32 -D_WIN32 -DOADEV -w503,401,362 -python -Isrc/ -o oalib_wrap_dev.cxx oalib.i
+	COMMAND swig -c++ -DWIN32 -D_WIN32 -DOADEV -w503,401,362 -python -Idev/ -Isrc/ -o oalib_wrap_dev.cxx oalib.i
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
   endif()
@@ -434,12 +446,12 @@ else()
 endif()
 endif()
 
-add_custom_target( R )
+add_custom_target( Rswig )
 add_custom_target( R2 )
 
 add_custom_command(
-  TARGET R POST_BUILD
-  COMMAND swig -c++ -DOADEV -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
+  TARGET Rswig POST_BUILD
+  COMMAND swig -c++ -DOADEV -Idev/ -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   DEPENDS 
 )

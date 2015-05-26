@@ -18,6 +18,9 @@
 #include <algorithm>
 #include <iterator>
 
+#include <stdio.h>
+#include "printfheader.h"
+
 inline std::string base_name(std::string const & path)
 {
   return path.substr(path.find_last_of("/\\") + 1);
@@ -28,7 +31,7 @@ inline void printfd_handler(const char *file, const char* func, int line, const 
   s=base_name(s);
   
   const char *fileshort = s.c_str();  
-  printf("file %s: function %s: line %d: ", fileshort, func, line);
+  myprintf("file %s: function %s: line %d: ", fileshort, func, line);
     
         va_list va;
         va_start(va, message);
@@ -110,7 +113,9 @@ public:
     nullStream (): std::ostream(NULL) {}
 };
 
+#ifdef FULLPACKAGE
 std::ostream& logstream(int level);
+#endif
 //ostream &streamloglevel(ostream &stream);
 
 std::string system_uname();
@@ -120,10 +125,10 @@ inline void mycheck(int condition, const char *message, ...)
     if(condition==0) {
         va_list		va;
         va_start(va, message);
-        printf("mycheck: ");
+        myprintf("mycheck: ");
         vprintf(message, va);
         va_end(va);
-//  printf ( "mycheck %d: %s", condition, str);
+//  myprintf ( "mycheck %d: %s", condition, str);
 #ifdef RPACKAGE
   throw;
 #else
@@ -136,7 +141,7 @@ inline void mycheck(int condition, const char *message, ...)
 inline void myassert(int condition, const char *str)
 {
     if(condition==0) {
-        printf ( "myassert: %s", str);
+        myprintf ( "myassert: %s", str);
 #ifdef RPACKAGE
   throw;
 #else
@@ -149,8 +154,8 @@ inline void myassert(int condition, const char *str)
 inline void myassertdebug(int condition, const char *str)
 {
     if(condition==0) {
-        printf ( "myassert: %s", str);
-        printf("... aborting\n");
+        myprintf ( "myassert: %s", str);
+        myprintf("... aborting\n");
         exit(1);
     }
 }
@@ -173,7 +178,10 @@ inline int cprintf(int check, const char *message, ...)
 
 /// flush to stdout
 inline void ff() {
-    fflush(stdout);
+#ifdef RPACKAGE
+#else
+  fflush(stdout);
+#endif
 }
 
 /******************/
@@ -407,12 +415,12 @@ DataType **malloc2d(const numtype nrows, const int rowsize)
     data = new DataType* [nrows];
     // if debugging, check for memory allocation
     if(data==0) {
-        printf("malloc2d: error with memory allocation\n");
+        myprintf("malloc2d: error with memory allocation\n");
 	throw;
         //exit(0);
     }
 
-    //printf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);
+    //myprintf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);
     data[0] = new DataType [nrows*rowsize];
 
     int offset = 0;
@@ -480,6 +488,7 @@ void print_array(const array_t *array, const rowindex_t r, const colindex_t c);
 /// Print array to stdout
 void print_array(const array_link &A);
 
+#ifdef FULLPACKAGE
 template <class atype>
 /// print vector
 void display_vector(const std::vector<atype> &v)
@@ -487,15 +496,17 @@ void display_vector(const std::vector<atype> &v)
     const char *sep = " ";
     std::copy(v.begin(), v.end(), std::ostream_iterator<atype>(std::cout, sep));
 }
+#endif
 
 template <class atype>
 /// print vector
 void printf_vector(const std::vector<atype> &v, const char *format)
 {
     for(unsigned int i=0; i<v.size(); i++)
-        printf(format, v[i]);
+        myprintf(format, v[i]);
 }
 
+#ifdef FULLPACKAGE
 template <class atype>
 void show_array_dyn(const atype *array, const int x, const int y)
 {
@@ -513,6 +524,7 @@ void show_array_dyn(const atype *array, const int x, const int y)
         std::cout << "\n";
     }
 }
+#endif
 
 /// Counts the number of occurences of each value in an array
 void countelements(carray_t* array, const int nelemenets, const int maxval, int* elements);
@@ -524,7 +536,7 @@ void countelements(carray_t* array, const int nelemenets, const int maxval, int*
  */
 inline void addelement(const array_t elem, int* elements)
 {
-    //printf("adding element as position %d\n", elem);
+    //myprintf("adding element as position %d\n", elem);
     elements[elem]++;
 }
 
@@ -547,8 +559,6 @@ void analysis_show_counter(const std::string &p);
 
 
 
-
-int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode = ATEXT);
 
 
 /// return time with milisecond precision
@@ -753,9 +763,9 @@ inline void printdoubleasbits ( double decker )
 {
     unsigned char * desmond = ( unsigned char * ) & decker;
     for ( size_t i = 0; i < sizeof ( double ); i++ ) {
-        printf ( "%02X ", desmond[i] );
+        myprintf ( "%02X ", desmond[i] );
     }
-    printf ( "\n" );
+    myprintf ( "\n" );
 }
 
 #endif

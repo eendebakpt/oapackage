@@ -8,9 +8,14 @@
 #ifndef STRENGTH_H
 #define STRENGTH_H
 
+#include "printfheader.h"
 #include "tools.h"
 #include "arraytools.h"
+#include "arrayproperties.h"
+
+#ifdef FULLPACKAGE
 #include "extend.h"
+#endif
 
 struct rev_index;
 
@@ -75,7 +80,7 @@ struct strength_check_t {
 			ncolcombs = ncombs ( n, k );
 
 			if ( verbose )
-				printf ( "strength_check_t: set_colcombs: ncolcombs %d, strength %d\n", ncolcombs, strength );
+				myprintf ( "strength_check_t: set_colcombs: ncolcombs %d, strength %d\n", ncolcombs, strength );
 			this->colcombs = malloc2d<colindex_t> ( ncolcombs, strength );
 			this->lambda = ( int* ) malloc ( ncolcombs * sizeof ( int ) );
 			this->nvalues = ( int* ) malloc ( ncolcombs * sizeof ( int ) );
@@ -94,7 +99,7 @@ struct strength_check_t {
 				prod = 1;
 				for ( int j = 0; j < strength; j++ ) {
 					if ( verbose>=2 )
-						printf ( "i %d j %d: %d\n", i, j, colcombs[i][j] );
+						myprintf ( "i %d j %d: %d\n", i, j, colcombs[i][j] );
 					prod *= s[colcombs[i][j]];
 				}
 				nvalues[i] = prod;
@@ -114,9 +119,9 @@ struct strength_check_t {
 
 
 	void info() const {
-		printf ( "strength_check_t: %d column combintations: \n", ncolcombs );
+		myprintf ( "strength_check_t: %d column combintations: \n", ncolcombs );
 		for ( int i=0; i<ncolcombs; i++ ) {
-			printf ( "   " );
+			myprintf ( "   " );
 			print_perm ( colcombs[i], strength );
 		}
 
@@ -130,13 +135,13 @@ struct strength_check_t {
 		register int	i, j;
 
 		for ( i = 0; i < ncolcombs; i++ ) {
-			printf ( "%i:\t", i );
+			myprintf ( "%i:\t", i );
 			for ( j = 0; j < nvalues[i]; j++ ) {
-				printf ( "%2i ", freqtable[i][j] );
+				myprintf ( "%2i ", freqtable[i][j] );
 			}
-			printf ( "\n" );
+			myprintf ( "\n" );
 		}
-		printf ( "\n" );
+		myprintf ( "\n" );
 	}
 
 };
@@ -214,7 +219,6 @@ inline void copy_freq_table ( strength_freq_table source, strength_freq_table ta
 /// check whether an array passes divisibility test
 bool check_divisibility ( const arraydata_t * );
 
-bool valid_element ( const extend_data_t *es, const extendpos *p, carray_t *array );
 
 void print_frequencies ( int **frequencies, const int nelements, const int *lambda, const int N );
 
@@ -266,10 +270,10 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 	/* set column combinations with extending column fixed */
 
 	if ( verbose>=2 )
-		printf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
+		myprintf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
 	strengthcheck.set_colcombs ( ad );
 
-	//printf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
+	//myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
 	strengthcheck.indices = set_indices ( strengthcheck.colcombs, ad.s, ad.strength, strengthcheck.ncolcombs );	//sets indices for frequencies, does the malloc as well
 
 	strengthcheck.create_reverse_colcombs_fixed();
@@ -281,14 +285,14 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 		strengthcheck.info();
 
 	if ( verbose>=2 ) {
-		printf ( "before:\n" );
+		myprintf ( "before:\n" );
 		strengthcheck.print_frequencies ( );
 	}
-//   printf ( "  table of size %d\n", strengthcheck.freqtablesize );
-//   printf ( "  strength %d: %d\n", ad.strength, val );
+//   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
+//   myprintf ( "  strength %d: %d\n", ad.strength, val );
 
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
-		//printf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
+		//myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
 
 		for ( int r=0; r<ad.N; r++ ) {
 
@@ -300,17 +304,17 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 				valindex = valindex*s+val;
 			}
 			if ( verbose>=2 ) {
-				printf ( "  row %d: ", r );
-				printf ( " value index %d\n", valindex );
+				myprintf ( "  row %d: ", r );
+				myprintf ( " value index %d\n", valindex );
 			}
 			strengthcheck.freqtable[i][valindex]++;
 		}
 
 		for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
-			//    printf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
+			//    myprintf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
 			if ( strengthcheck.freqtable[i][j]!=ad.N/strengthcheck.nvalues[i] ) {
 				if ( verbose>=2 )
-					printf ( "no good strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], strengthcheck.nvalues[i] );
+					myprintf ( "no good strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], strengthcheck.nvalues[i] );
 				val=false;
 				break;
 			}
@@ -319,14 +323,18 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 		if ( val==false )
 			break;
 	}
-	//printf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
+	//myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
 	if ( verbose>=2 ) {
-		printf ( "table of counted value pairs\n" );
+		myprintf ( "table of counted value pairs\n" );
 		strengthcheck.print_frequencies ( );
 	}
 
 	return val;
 }
+
+#ifdef FULLPACKAGE
+bool valid_element ( const extend_data_t *es, const extendpos *p, carray_t *array );
+#endif
 
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

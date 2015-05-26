@@ -10,7 +10,9 @@
 #include "arrayproperties.h"
 #include "strength.h"
 
+#ifdef FULLPACKAGE
 #include "lmc.h"
+#endif
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -54,7 +56,7 @@ std::vector<int> array_transformation_t::lvlperm ( int c ) const
 void array_transformation_t::setrowperm ( std::vector<int>rp )
 {
 	if ( ( int ) rp.size() !=this->ad->N ) {
-		printf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
+		myprintf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
 		return;
 	}
 	std::copy ( rp.begin(), rp.end(), this->rperm );
@@ -62,7 +64,7 @@ void array_transformation_t::setrowperm ( std::vector<int>rp )
 void array_transformation_t::setcolperm ( std::vector<int>colperm )
 {
 	if ( ( int ) colperm.size() !=this->ad->ncols ) {
-		printf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
+		myprintf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
 		return;
 	}
 	std::copy ( colperm.begin(), colperm.end(), this->cperm );
@@ -70,11 +72,11 @@ void array_transformation_t::setcolperm ( std::vector<int>colperm )
 void array_transformation_t::setlevelperm ( int colindex, std::vector<int> lvlperm )
 {
 	if ( colindex<0 || colindex>=this->ad->ncols ) {
-		printf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
+		myprintf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
 		return;
 	}
 	if ( ( int ) lvlperm.size() !=this->ad->s[colindex] ) {
-		printf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
+		myprintf ( "array_transformation_t::setrowperm: argument has wrong dimensions\n" );
 		return;
 	}
 	std::copy ( lvlperm.begin(), lvlperm.end(), this->lperms[colindex] );
@@ -720,6 +722,8 @@ std::string array_link::md5() const
 	}
 }
 
+#ifdef FULLPACKAGE
+
 /**
  * @brief Print an array to a stream (formatted)
  * @param stream
@@ -731,6 +735,8 @@ std::ostream &operator<< ( std::ostream & stream, const array_link &A )
 	write_array_format ( stream, A.array, A.n_rows, A.n_columns );
 	return stream;
 }
+
+#endif // FULLPACKAGE
 
 array_link array_link::selectFirstColumns ( int ii ) const
 {
@@ -1134,6 +1140,8 @@ if ( verbose )
 	return array_link ( 1,1,-1 );
 }
 
+#ifdef FULLPACKAGE // related to LMC
+
 array_link array_link::reduceDOP() const
 {
 	array_link d = reduceDOPform ( *this, 0 );
@@ -1166,6 +1174,8 @@ array_link array_link::reduceLMC() const
 	return reduction.getArray();
 
 }
+
+#endif
 
 symmetry_group array_link::row_symmetry_group() const
 {
@@ -1208,15 +1218,15 @@ bool array_link::is2level() const
 
 void array_link::showproperties() const
 {
-	printf ( "array: %d rows, %d cols\n", this->n_rows, this->n_columns );
-	printf ( "  strength %d, rank %d\n", this->strength(), this->rank() );
-	printf ( "  D-efficiency %.3f\n", this->Defficiency() );
+	myprintf ( "array: %d rows, %d cols\n", this->n_rows, this->n_columns );
+	myprintf ( "  strength %d, rank %d\n", this->strength(), this->rank() );
+	myprintf ( "  D-efficiency %.3f\n", this->Defficiency() );
 	std::vector<double> gwlp = this->GWLP();
-	printf ( "  GWLP " );
+#ifdef FULLPACKAGE		
+	myprintf ( "  GWLP " );
 	display_vector ( gwlp );
-	printf ( "\n" );
-
-//  int t = this->strength();
+	myprintf ( "\n" );
+#endif
 	return;
 }
 
@@ -1228,7 +1238,7 @@ long array_link::data()
 /*
 void array_link::initswig()
 {
-	//printf("initswig! C side\n");
+	//myprintf("initswig! C side\n");
 }
 */
 std::string array_link::showarrayS() const
@@ -1243,15 +1253,15 @@ void array_link::showarraycompact() const
 {
 	for ( int r=0; r<this->n_rows; r++ ) {
 		for ( int c=0; c<this->n_columns; c++ ) {
-			printf ( "%d", this->_at ( r,c ) );
+			myprintf ( "%d", this->_at ( r,c ) );
 		}
-		printf ( "\n" );
+		myprintf ( "\n" );
 	}
 }
 
 void array_link::showarray() const
 {
-	printf ( "array: \n" );
+	myprintf ( "array: \n" );
 	//write_array_format ( std::cout, array, this->n_rows, this->n_columns );	// does not work with ipython...
 	write_array_format ( array, this->n_rows, this->n_columns );
 //write_array(stdout, this->array, this->n_rows, this->n_columns);
@@ -1260,13 +1270,13 @@ void array_link::showarray() const
 void array_link::create_root ( const arraydata_t &ad )
 {
 	if ( ! ( ad.N<=this->n_rows ) ) {
-		printf ( "array_link::create_root: number of columns too small for root of size %d\n", ad.N );
+		myprintf ( "array_link::create_root: number of columns too small for root of size %d\n", ad.N );
 		return;
 	}
-	// printf("ad.strength %d, this->n_columns %d\n", ad.strength, this->n_columns );
+	// myprintf("ad.strength %d, this->n_columns %d\n", ad.strength, this->n_columns );
 
 	if ( ! ( ad.strength<=this->n_columns ) ) {
-		printf ( "array_link::create_root: number of columns (%d) too small for specified strength %d\n", this->n_columns, ad.strength );
+		myprintf ( "array_link::create_root: number of columns (%d) too small for specified strength %d\n", this->n_columns, ad.strength );
 		return;
 	}
 	assert ( ad.strength<=this->n_columns );
@@ -1284,17 +1294,17 @@ void create_root ( array_t *array, const arraydata_t *ad )
 {
 	int steps = ad->N;
 	for ( colindex_t i = 0; i < ad->strength; i++ ) { /* loop over all root columns */
-		// printf("create_root: i %d\n", i);
+		// myprintf("create_root: i %d\n", i);
 		steps /= ad->s[i];			//adjust nr of steps per collumn
 		if ( steps==0 ) {
-			//printf("create_root: steps=0, updating to 1\n");
+			//myprintf("create_root: steps=0, updating to 1\n");
 			steps=1;
 		}
 		array_t l = 0;
 		int coloffset = i * ad->N;
 		for ( int j = 0; j < ad->N; j+= steps ) {	//big steps
 			for ( int k = 0; k < steps; k++ ) { //small steps
-				//printf("create_root: i j k %d %d %d\n", i, j,k);
+				//myprintf("create_root: i j k %d %d %d\n", i, j,k);
 				array[coloffset + j + k] = l;
 			}
 			l++;
@@ -1302,7 +1312,7 @@ void create_root ( array_t *array, const arraydata_t *ad )
 				l = 0;	//reset value, it has looped
 		}
 	}
-	//    printf("create_root: done\n");
+	//    myprintf("create_root: done\n");
 }
 
 /*!
@@ -1330,7 +1340,7 @@ std::vector<int> numberModelParams ( const array_link &al, int order=2 )
 	n[1]=al.n_columns;
 
 	if ( order>2 ) {
-		printf ( "numberModelParams: not implemented for order > 2\n" );
+		myprintf ( "numberModelParams: not implemented for order > 2\n" );
 	}
 	arraydata_t arrayclass = arraylink2arraydata ( al, 0, 2 );
 	std::vector<int> s = arrayclass.getS();
@@ -1369,7 +1379,7 @@ MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const
 
 	if ( order==2 ) {
 		if ( verbose>=2 )
-			printf ( "array_link::getModelMatrix %d+%d+%d\n", np[0], np[1], np[2] );
+			myprintf ( "array_link::getModelMatrix %d+%d+%d\n", np[0], np[1], np[2] );
 	}
 	if ( order==0 ) {
 		return intcpt;
@@ -1389,7 +1399,7 @@ MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const
 		return mm;
 	}
 
-	printf ( "array_link::getModelMatrix: order > 2 not supported!\n" );
+	myprintf ( "array_link::getModelMatrix: order > 2 not supported!\n" );
 	return intcpt;
 }
 
@@ -1447,7 +1457,7 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 
 Eigen::VectorXd dummy()
 {
-	printf ( "dummy: create VectorXd\n" );
+	myprintf ( "dummy: create VectorXd\n" );
 	Eigen::VectorXd v ( 3 );
 	v[0]=1;
 	v[1]=2;
@@ -1456,7 +1466,7 @@ Eigen::VectorXd dummy()
 }
 Eigen::MatrixXd dummy2()
 {
-	printf ( "dummy2: create MatrixXd\n" );
+	myprintf ( "dummy2: create MatrixXd\n" );
 	fflush ( stdout );
 	Eigen::MatrixXd m ( 2,2 );
 	m ( 0,0 ) = 3;
@@ -1473,24 +1483,24 @@ void eigen2numpyHelper ( double* pymat1, int n, const Eigen::MatrixXd &m )
 	//    pymat[i]=this->array[i];
 	//}
 	//eigenInfo ( m );
-	printf ( "pymat1 %ld\n", ( long ) pymat1 );
+	myprintf ( "pymat1 %ld\n", ( long ) pymat1 );
 	std::copy ( m.data(),m.data() +m.size(), pymat1 );
 }
 
 void eigenInfo ( const MatrixFloat m, const char *str, int verbose )
 {
 	if ( verbose==1 )
-		printf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+		myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
 	if ( verbose==2 )
-		printf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+		myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
 
 }
 void eigenInfoF ( const Eigen::MatrixXf m, const char *str, int verbose )
 {
 	if ( verbose==1 )
-		printf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+		myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
 	if ( verbose==2 )
-		printf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+		myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
 
 }
 
@@ -1506,7 +1516,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 {
 	//verbose=2;
 	if ( verbose>=2 )
-		printf ( "array2eigenModelMatrixMixed: start" );
+		myprintf ( "array2eigenModelMatrixMixed: start" );
 
 	int N = al.n_rows;
 	int k =  al.n_columns;
@@ -1514,16 +1524,16 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 	std::vector<int> s = arrayclass.getS();
 
 	std::vector<int> df = s;
-	//printf("df: %d\n", df.size() );
+	//myprintf("df: %d\n", df.size() );
 	std::transform ( df.begin(), df.end(),  df.begin(), std::bind2nd ( std::minus<int>(), 1.0 ) );
-	//printf("df: %d\n", df.size() );
+	//myprintf("df: %d\n", df.size() );
 
 	if ( verbose>=2 ) {
 		arrayclass.show();
-		printf ( "array2eigenME: N %d, k %d\n", N, k );
-		printf ( "df " );
+		myprintf ( "array2eigenME: N %d, k %d\n", N, k );
+		myprintf ( "df " );
 		printf_vector ( df, "%d " );
-		printf ( "\n" );
+		myprintf ( "\n" );
 
 	}
 	MatrixFloat  AA = al.getEigenMatrix();
@@ -1550,7 +1560,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
 		// make Helmert contrasts (these are automatically orthogonal)
 		for ( int r=0; r<N; r++ ) {
-			//printf("r: %d\n", r);
+			//myprintf("r: %d\n", r);
 			int v = AA ( r,c );
 			Z ( r, 0 ) = 1;
 			if ( v>0 ) {
@@ -1571,7 +1581,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
 		for ( int ii=0; ii<md; ii++ ) {
 			if ( verbose>=3 ) {
-				printf ( "array2eigenME: calculate ii %d\n", ii );
+				myprintf ( "array2eigenME: calculate ii %d\n", ii );
 
 				eigenInfo ( Z.block ( 0,0,N,ii+1 ), "Zx" );
 			}
@@ -1616,7 +1626,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
 	/* 2fi */
 	if ( verbose>=2 )
-		printf ( "2fi\n" );
+		myprintf ( "2fi\n" );
 
 	MatrixFloat tfi = MatrixFloat::Zero ( N, np[2] );
 
@@ -1652,7 +1662,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
 
 	if ( verbose>=2 )
-		printf ( "done\n" );
+		myprintf ( "done\n" );
 
 
 	return std::pair<MatrixFloat,MatrixFloat> ( ME, tfi );
@@ -1809,19 +1819,19 @@ double array_link::DsEfficiency ( int verbose ) const
 	double Ds = 0;
 	if ( fabs ( f1 ) <1e-15 ) {
 		if ( verbose )
-			printf ( "DsEfficiency: f1 < 1e-15, setting Ds to zero\n" );
+			myprintf ( "DsEfficiency: f1 < 1e-15, setting Ds to zero\n" );
 	} else {
 		Ds=pow ( ( f1/f2 ), 1./k1 );
 	}
 	if ( verbose )
-		printf ( "f1 %e, f2 %e, Ds %f\n", f1, f2, Ds );
+		myprintf ( "f1 %e, f2 %e, Ds %f\n", f1, f2, Ds );
 #else
 	MatrixFloat tmp = ( X.transpose() *X );
 	double f1 = tmp.determinant();
 	double f2 = ( X2.transpose() *X2 ).determinant();
 	double Ds = pow ( ( f1/f2 ), 1./k1 ) /n;
 	if ( verbose )
-		printf ( "scale after: f1 %f, f2 %f, Ds %f\n", f1, f2, Ds );
+		myprintf ( "scale after: f1 %f, f2 %f, Ds %f\n", f1, f2, Ds );
 #endif
 
 	return Ds;
@@ -1853,7 +1863,7 @@ double array_link::VIFefficiency() const
 }
 double array_link::Aefficiency() const
 {
-	printf ( "warning: definition of Aefficiency has changed!\n" );
+	myprintf ( "warning: definition of Aefficiency has changed!\n" );
 	return ::Aefficiency ( *this );
 }
 
@@ -1889,7 +1899,7 @@ int array_link::strength() const
 	int t=-1;
 	for ( int i=0; i<=this->n_columns; i++ ) {
 		int b = strength_check ( *this, i );
-		// printf("strength_check %d->%d\n", i, b);
+		// myprintf("strength_check %d->%d\n", i, b);
 		if ( b )
 			t=i;
 		else
@@ -2202,6 +2212,7 @@ void arraydata_t::complete_arraydata()
 	std::copy ( sg.gsize.begin(), sg.gsize.end(), ad->colgroupsize );
 
 // check
+#ifdef FULLPACKAGE	
 	int nbits = 8*sizeof ( rowsort_value_t );
 	rowsort_value_t val=1;
 	for ( int i=0; i<ad->ncols; i++ ) {
@@ -2216,7 +2227,7 @@ void arraydata_t::complete_arraydata()
 
 	}
 	//std::cout << "max rowsort value: "<< val << printfstring(" (ncols %d, nbits %d)", ad->ncols, nbits) <<  std::endl;
-
+#endif
 //ad->ncolgroups = symm_group_index<array_t, colindex_t>(ad->s, ad->ncols, dummy, ad->colgroupindex, ad->colgroupsize);
 	//delete [] dummy;
 }
@@ -2654,12 +2665,14 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
 			cout << printfstring ( "array %d: abberation %.3f j-values ", ii, js->A );
 			print_perm ( cout, js->vals, js->nc );
 		}
+#ifdef FULLPACKAGE		
 		if ( verbose>=2 ) {
 			std::vector<int> FF=js->calculateF();
 			printf ( "F%d (high to low): ", jj );
 			display_vector ( FF );
 			std::cout << std::endl;
 		}
+#endif
 		delete_perm ( pp );
 		//delete [] js;
 
@@ -2734,107 +2747,6 @@ void write_array_latex ( FILE *fid, carray_t *array, const int nrows, const int 
 }
 
 
-/// dummy constructor
-/*   arrayfile_t::arrayfile_t()
-    {
-        filename="";
-        iscompressed=0;
-        nfid=0;
-        gzfid=0;
-        nrows=-1;
-        ncols=-1;
-        narrays=-1;
-        narraycounter=0;
-        nbits=-1;
-        mode=AERROR;
-
-        verbose=1;
-    }
-    */
-bool arrayfile_t::isbinary() const
-{
-	return ( this->mode==ABINARY || this->mode==ABINARY_DIFF || this->mode==ABINARY_DIFFZERO );
-}
-
-
-void arrayfile_t::append_array ( const array_link &a, int specialindex )
-{
-	int r;
-	if ( ! this->isopen() ) {
-		return;
-	}
-
-	arrayfile_t *afile = this;
-	int index;
-	if ( specialindex==-1 )
-		index=a.index;
-	else
-		index=specialindex;
-
-	switch ( afile->mode ) {
-	case arrayfile::ATEXT:
-		fprintf ( afile->nfid, "%i\n", index );
-		write_array ( afile->nfid, a.array, a.n_rows, a.n_columns );
-		break;
-	case arrayfile::ALATEX:
-		fprintf ( afile->nfid, "%i\n", index );
-		write_array_latex ( afile->nfid, a.array, a.n_rows, a.n_columns );
-		break;
-	case arrayfile::ABINARY: {
-		r = fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
-		if ( r!=sizeof ( int32_t ) *1 ) {
-			printfd ( "error during write to file\n" );
-		}
-		//printf("   %d %d\n", a.n_rows, a.n_columns);
-		afile->write_array_binary ( a.array, a.n_rows, a.n_columns );
-		break;
-	}
-	case arrayfile::ABINARY_DIFF: {
-		fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
-		afile->write_array_binary_diff ( a );
-		break;
-	}
-	case arrayfile::ABINARY_DIFFZERO: {
-		//fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
-		afile->write_array_binary_diffzero ( a );
-		break;
-	}
-	default
-			:
-		std::cout << "warning: arrayfile_t::append_array: no such mode " << afile->mode << std::endl;
-		break;
-	}
-	narraycounter++;
-}
-
-/// return true if file is open
-int arrayfile_t::isopen() const
-{
-#ifdef USEZLIB
-	return ( this->nfid != 0 || this->gzfid != 0 );
-#else
-	return ( this->nfid != 0 );
-#endif
-}
-
-int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx )
-{
-	arraylist_t::const_iterator	it;
-
-	assert ( this->nfid );
-
-	for ( it = arrays.begin(); it != arrays.end(); it++ ) {
-
-		//cout << "writing arrays in mode " << afile->mode << endl;
-
-		this->append_array ( *it, startidx );
-		startidx++;
-	}
-
-	return 0;
-
-//   return ::append_arrays ( this, arrays, startidx );
-}
 
 
 /**
@@ -2918,59 +2830,6 @@ void readblob ( TypeOut *dst, int n, gzFile gzfid )
 }
 #endif
 
-/**
- * @brief Read a binary array from a file
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
-void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int ncols )
-{
-//	  printf("  arrayfile_t::read_array_binary: gr %d\n", this->nbits);
-	switch ( this->nbits ) {
-
-	case 1: {
-
-		// construct bit array
-		BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
-		word_addr_t num_of_words = nwords ( nrows*ncols );
-		int result = afread ( bitarr->words,num_of_words,sizeof ( word_t ) );
-		assert ( result );
-
-		// fill bit array
-		for ( int i=0; i<nrows*ncols; i++ ) {
-			// TODO: this can be made much faster by parsing multiple bits
-			array[i] = bit_array_get_bit_nocheck ( bitarr, i );
-		}
-		bit_array_free ( bitarr );
-
-		//printf("1-bit read not implemented yet\n");
-
-		break;
-	}
-	case 8:
-#ifdef USEZLIB
-		if ( this->iscompressed )
-			readblob<char, array_t> ( array, nrows*ncols, this->gzfid );
-		else
-#endif
-			readblob<char, array_t> ( array, nrows*ncols, this->nfid );
-		break;
-	case 32:
-#ifdef USEZLIB
-		if ( this->iscompressed )
-			readblob<int32_t, array_t> ( array, nrows*ncols, this->gzfid );
-		else
-#endif
-			readblob<int32_t, array_t> ( array, nrows*ncols, this->nfid );
-		break;
-	default
-			:
-		printf ( " no such number of bits supported\n" );
-		break;
-	}
-}
 
 /**
  * @brief Read an array from a file
@@ -3000,101 +2859,6 @@ void read_array ( FILE *fid, array_t *array, const int nrows, const int ncols )
 }
 
 
-/**
- * @brief Create array file
- * @param fname
- * @param rows
- * @param cols
- * @param narrays
- * @return
- */
-arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode, int nbits )
-{
-	//printf("create array file: mode %d\n", mode);
-	std::string s = fname;
-	arrayfile_t *afile = new arrayfile_t ( s, rows, cols, narrays, mode, nbits );
-
-	return afile;
-}
-
-
-void arrayfile_t::closefile()
-{
-	if ( verbose>=2 )
-		printf ( "arrayfile_t::closefile(): nfid %ld\n", ( long ) nfid ) ;
-
-	if ( ! this->isopen() ) {
-		if ( verbose>=2 )
-			printf ( "arrayfile_t::closefile(): file already closed\n" ) ;
-		return;
-	}
-	//   printf ( "arrayfile_t: closefile(): filename %s, nfid %ld, narrays %d, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narrays, narraycounter, this->rwmode );
-
-	if ( verbose>=3 ) {
-		printf ( "arrayfile_t::closefile: narrays: %d\n", narrays );
-		printf ( "arrayfile_t::closefile: narraycounter: %d\n", narraycounter );
-		printf ( "arrayfile_t::closefile: rwmode: %d\n", rwmode );
-	}
-
-	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
-		if ( verbose>=2 )
-			printf ( "arrayfile_t: closing binary file, updating numbers %d->%d\n", narrays, narraycounter );
-		if ( verbose>=3 )
-			printf ( "arrayfile_t: nfid %ld\n", long ( nfid ) );
-		if ( nfid != 0 ) {
-			long pos = ftell ( nfid );
-			//printfd("seek to from %ld to 4\n", pos);
-			int r = fseek ( nfid, 4*sizeof ( int32_t ), SEEK_SET );
-			//printfd("seek result %d\n", r);
-			r = this->afwrite ( &narraycounter, sizeof ( int32_t ), 1 );
-			if ( verbose>=2 )
-				printf ( "   arrayfile_t::closefile: result of write: %d\n", ( int ) r );
-			fseek ( nfid, pos, SEEK_SET ); // place back pointer
-		}
-
-	}
-
-
-	// close file handles
-	if ( this->nfid!=0 ) {
-		fclose ( this->nfid );
-		this->nfid=0;
-	}
-#ifdef USEZLIB
-	if ( this->gzfid!=0 ) {
-		gzclose ( this->gzfid );
-		this->gzfid=0;
-	}
-#endif
-//delete afile;
-}
-
-arrayfile_t::~arrayfile_t()
-{
-#ifdef SWIG
-	swigcheck();
-#endif
-
-	if ( verbose>=2 )
-		printf ( "arrayfile_t: destructor: filename %s, nfid %ld, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narraycounter, this->rwmode );
-
-
-	closefile();
-	/*
-	// close file handles
-	if ( nfid!=0 ) {
-	    fclose ( nfid );
-	    nfid=0;
-	}
-	#ifdef USEZLIB
-	if ( gzfid!=0 ) {
-	    gzclose ( gzfid );
-	    gzfid=0;
-	}
-	#endif
-	*/
-}
-
 #ifdef HAVE_BOOST
 #include "boost/filesystem.hpp"
 #endif
@@ -3114,460 +2878,92 @@ bool file_exists ( const char *filename )
 	}
 #endif
 }
-// arrayfile_t::arrayfile_t(const char *fname) {
-// 	const std::string s = fname;
-// 	this->arrayfile_t(s);
-// }
 
-arrayfile_t::arrayfile_t ()
+
+
+#ifdef FULLPACKAGE 	// related to arrayfile_t
+
+bool arrayfile_t::isbinary() const
 {
-	this->verbose=0;
-
-	//this->verbose=2;
-	//printf("arrayfile_t::arrayfile_t ()\n");
-	this->nfid=0;
-	this->filename="";
-#ifdef USEZLIB
-	this->gzfid=0;
-#endif
-
-	this->mode=ATEXT;
-
-	this->rwmode=READ;
-
-	this->nrows=0;
-	this->ncols=0;
-	this->narrays=0;
-	this->narraycounter=0;
-
+	return ( this->mode==ABINARY || this->mode==ABINARY_DIFF || this->mode==ABINARY_DIFFZERO );
 }
 
-void arrayfile_t::createfile ( const std::string fname, int nrows, int ncols, int narrays, arrayfilemode_t m , int nb )
+
+void arrayfile_t::append_array ( const array_link &a, int specialindex )
 {
-	this->closefile();
-
-	this->verbose=0;
-	this->filename=fname;
-
-	this->iscompressed=0;
-#ifdef USEZLIB
-	this->gzfid=0;
-#endif
-	this->nrows=nrows;
-	this->ncols=ncols;
-	this->narrays=narrays;
-	this->narraycounter=0;
-	this->mode=m;
-	this->rwmode=WRITE;
-	this->nbits = nb;	// only used in binary mode
-#ifdef OADEBUG2
-	printf ( "arrayfile_t: opening %s in mode %d, nb %d\n", fname.c_str(), this->mode, nb );
-#endif
-
-	if ( strcmp ( fname.c_str(), "<standard output>" ) ==0 ) {
-		this->nfid = stdout;
-	} else {
-		this->nfid = fopen ( fname.c_str(), "w+b" );
-		if ( this->nfid==0 ) {
-			printf ( "arrayfile_t: ERROR: problem opening %s\n", fname.c_str() );
-			return;
-		}
-	}
-	writeheader();
-
-}
-
-arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
-{
-
-	int warngz = verbose>=1;
-#ifdef SWIG
-	swigcheck();
-#endif
-
-	narraycounter=-1;	// make invalid
-
-	this->verbose=verbose;
-
-	std::string fname = fnamein;
-	this->rwmode=arrayfile::READ;
-	this->filename = fname;
-	this->narrays=-1;	// initialize to -1
-
-	if ( verbose>=3 )
-		printfd ( "start\n" );
-
-	std::string gzname = fname+".gz";
-	//printf("arrayfile_t::arrayfile_t: %s -> %s\n", fname.c_str(), gzname.c_str() );
-	if ( ! file_exists ( fname.c_str() ) && file_exists ( gzname.c_str() ) ) {
-		if ( verbose && warngz ) {
-			printf ( "  file %s does not exist, but gzipped file does\n", fname.c_str() );
-		}
-		this->filename = gzname;
-		fname=gzname;
-	}
-
-#ifdef USEZLIB
-	// simple check for compressed files
-	if ( verbose>=2 )
-		printfd ( "zlib file %s\n", fname.c_str() );
-	if ( fname.substr ( fname.find_last_of ( "." ) + 1 ) == "gz" ) {
-		this->iscompressed=1;
-		this->gzfid = gzopen ( fname.c_str(), "rb" );
-		this->nfid=0;
-		if ( verbose>=2 )
-			printf ( "   opened file |%s| in compressed mode: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
-	} else {
-		this->iscompressed=0;
-		this->nfid = fopen ( fname.c_str(), "r+b" );
-		//printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
-		if ( 0 ) {
-			fseek ( nfid, 0, SEEK_SET );
-			char buf[4]= {0,1,3,4};
-			int r = fwrite ( buf, 1, 4, nfid );
-			printfd ( "written %d bytes...\n", r );
-		}
-		this->gzfid=0;
-		if ( verbose>=2 )
-			printf ( "   opened file |%s|: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
-	}
-#else
-	this->iscompressed=0;
-	this->nfid = fopen ( fname.c_str(), "r+b" );
-	// printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
-	this->gzfid=0;
-#endif
-
-	if ( verbose>=2 )
-		printf ( " nfid %ld, gzfid %ld, isopen %d \n", ( long ) nfid, ( long ) gzfid, this->isopen() );
-
+	int r;
 	if ( ! this->isopen() ) {
-		if ( verbose ) {
-			printf ( "problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
-		}
-		this->closefile();
 		return;
 	}
-	int magic;
-	int result = afread ( &magic,1,sizeof ( int32_t ) );
-	if ( result==0 ) {
-		this->closefile();
-		return;
-	}
-	if ( this->nfid ) {
-		fclose ( this->nfid );
-		this->nfid=0;
-	}
-#ifdef USEZLIB
-	if ( this->gzfid ) {
-		gzclose ( this->gzfid );
-		this->gzfid=0;
-	}
-#endif
 
-	if ( verbose>=2 )
-		printf ( "arrayfile_t: reading array file %s, magic %d\n", fname.c_str(), magic );
+	arrayfile_t *afile = this;
+	int index;
+	if ( specialindex==-1 )
+		index=a.index;
+	else
+		index=specialindex;
 
-
-// read the header
-	if ( magic==65 ) {
-		// we have a file in binary format
-#ifdef USEZLIB
-		if ( iscompressed ) {
-			this->gzfid = gzopen ( fname.c_str(), "rb" );
-		} else {
-			this->nfid = fopen ( fname.c_str(), "r+b" );
-		}
-#else
-		this->nfid = fopen ( fname.c_str(), "r+b" );
-#endif
-
-		int result = afread ( &magic,1,sizeof ( int32_t ) );
-		result = afread ( &this->nbits,sizeof ( int32_t ),1 );
-		assert ( result==1 );
-		result = afread ( &this->nrows,sizeof ( int32_t ),1 );
-		assert ( result==1 );
-		result = afread ( &this->ncols,sizeof ( int32_t ),1 );
-		assert ( result==1 );
-		result = afread ( &this->narrays,sizeof ( int32_t ),1 );
-
-		int binary_mode;
-
-		int reserved;
-		result = afread ( &binary_mode,sizeof ( int32_t ),1 );
-		assert ( result==1 );
-		result = afread ( &reserved,sizeof ( int32_t ),1 );
-		result = afread ( &reserved,sizeof ( int32_t ),1 );
-
-		//printf("arrayfile_t: constructor: binary_mode %d\n", binary_mode);
-
-		switch ( binary_mode ) {
-		case 1001:
-			this->mode=arrayfile::ABINARY;
-			break;
-		case 1002:
-			this->mode=arrayfile::ABINARY_DIFF;
-			break;
-		case 1003:
-			this->mode=arrayfile::ABINARY_DIFFZERO;
-			break;
-		case 0:
-			if ( verbose ) {
-				printf ( "  arrayfile_t::arrayfile_t: legacy file format, file %s!\n", this->filename.c_str() );
-			}
-			this->mode=arrayfile::ABINARY;
-			break;
-		default
-				:
-			this->mode=arrayfile::AERROR;
-			fprintf ( stdout,  "arrayfile_t::arrayfile_t : error opening binary file (binary_mode %d)\n", binary_mode );
-			break;
-		}
-
-		if ( this->mode == arrayfile::ABINARY_DIFFZERO && this->nbits!=1 ) {
-			printf ( "arrayfile_t: error for mode ABINARY_DIFFZERO we need 1 bit: bits %d\n", this->nbits );
-			this->mode=AERROR;
-			this->closefile();
-			return;
-		}
-
-		if ( result!=1 )
-			fprintf ( stdout,  "open binary file: wrong count in afread! %d\n", result );
-	} else {
-		if ( iscompressed ) {
-			if ( verbose ) {
-				printf ( "   compressed file: file or corrupt or gzipped text file, cannot read compressed files in TEXT mode..\n" );
-			}
-			this->mode=AERROR;
-			this->closefile();
-			return;
-		} else {
-			this->nfid = fopen ( fname.c_str(), "rb" );
-			this->gzfid=0;
-		}
-
-		this->mode=arrayfile::ATEXT;
-
-		char buf[1];
-		buf[0]=-1;
-		int r = fread ( buf, sizeof ( char ), 1, this->nfid );
-		if ( buf[0] < 48 || buf[0] > 57 || r<0 ) {
-			// printf("   read char %d\n", int(buf[0]));
-			if ( verbose>=1 )
-				fprintf ( stdout,  "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
-			this->closefile();
-			return;
-
-		}
-		r = fseek ( this->nfid,0, SEEK_SET );
-
-		r = fscanf ( this->nfid, "%i %i %i\n", &this->ncols, &this->nrows, &this->narrays );
-		this->nbits = 0;
-		//printf("arrayfile_t: text mode\n");
-		if ( verbose>=2 ) {
-			printf ( "arrayfile_t: text mode: header %d %d %d\n",  this->ncols, this->nrows, this->narrays );
-		}
-		if ( this->nrows<0 || this->nrows>20000 || this->ncols<0 || this->ncols>10000 || this->narrays<0 ) {
-			if ( verbose>=1 )
-				fprintf ( stdout, "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
-			this->nfid=0;
-			this->gzfid=0;
-		}
-
-
-	}
-
-	narraycounter=0;
-
-	if ( verbose>=2 )
-		printf ( "   arrayfile_t::arrayfile_t: mode %d, nrows %d, ncols %d, narrays %d\n", mode, this->nrows, this->ncols, this->narrays );
-
-}
-
-
-/**
- * @brief Write an array in binary mode to a file
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
-void arrayfile_t::write_array_binary_diff ( const array_link &A )
-{
-	myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
-
-	myassertdebug ( A.maxelement() <= 1, "arrayfile_t::write_array_binary_diff: array is not binary" );
-
-	int ngood=0;
-
-	rowindex_t N = this->nrows;
-	const int num=N*sizeof ( array_t );
-
-	if ( 0 ) {
-		diffarray.show();
-		diffarray.showarray();
-		printf ( "-------------\n" );
-	}
-	if ( 0 ) {
-		A.show();
-		A.showarray();
-		printf ( "-------------\n" );
-	}
-
-//    printf("write_array_binary_diff: i %d\n", i);
-
-	for ( int i=0; i<diffarray.n_columns; i++ ) {
-// printf("write_array_binary_diff: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));
-		if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
-			ngood++;
-
-		} else
-			break;
-	}
-
-	int32_t nwrite=A.n_columns-ngood;
-	//printf("write_array_binary_diff: %d good columns, writing %d to disk\n", ngood, nwrite);
-	array_link rest = A.selectLastColumns ( nwrite );
-
-	int n = fwrite ( ( const void* ) &nwrite,sizeof ( int32_t ),1, nfid );
-
-	this->write_array_binary ( rest );
-
-// update with previous array
-	this->diffarray = A;
-}
-
-/**
- * @brief Write an array in binary mode to a file
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
-void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
-{
-	myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
-	int ngood=0;
-
-	rowindex_t N = this->nrows;
-	const int num=N*sizeof ( array_t );
-
-	for ( int i=0; i<diffarray.n_columns; i++ ) {
-//printf("write_array_binary_diffzero: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));
-		if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
-			ngood++;
-
-		} else
-			break;
-	}
-
-	int16_t nwrite=A.n_columns-ngood;
-	//printf("write_array_binary_diffzero: nwrite %d, ngood %d\n", nwrite, ngood);
-	//A.show();
-	array_link rest = A.selectLastColumns ( nwrite );
-
-	int n = fwrite ( ( const void* ) &nwrite,sizeof ( int16_t ),1, nfid );
-
-	//printf("diffarray:\n"); this->diffarray.show();
-
-	if ( diffarray.n_columns>0 ) {
-
-		array_link diffrest = this->diffarray.selectLastColumns ( nwrite );
-
-		array_link z = rest-diffrest;
-		for ( int i=0; i<z.n_columns*z.n_rows; i++ )
-			z.array[i] = ( 2+z.array[i] ) % 2;
-
-//   printf("write_array_binary_diff: %d good columns, writing %d to disk\n", ngood, nwrite);
-		//  printf ( "diffzero: writing rest: fraction non-zero %.2f\n", z.nonzero_fraction() );
-		//z.transposed().showarray();
-
-
-		//printf("write_array_binary_diffzero: writing array: "); z.show();
-		this->write_array_binary ( z );
-	} else {
-		array_link z = rest;
-		//printf("write_array_binary_diffzero: writing array (i): "); z.show();
-		this->write_array_binary ( z );
-	}
-
-// update with previous array
-	this->diffarray = A;
-}
-
-/// Write an array in binary mode to a file
-void arrayfile_t::write_array_binary ( const array_link &A )
-{
-	write_array_binary ( A.array, A.n_rows, A.n_columns );
-}
-
-
-/**
- * @brief Write an array in binary mode to a file
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
-void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const int ncols )
-{
-#ifdef OADEBUG
-	int m=0;
-	for ( int i=0; i<nrows*ncols; ++i )
-		if ( array[i]>m )
-			m=array[i];
-	if ( this->nbits==1 ) {
-		if ( m>1 )
-			printf ( "ERRROR!\n" );
-	}
-#endif
-
-//printf("arrayfile_t::write_array_binary: nbits %d\n", this->nbits);
-
-	// TODO: the type of array should be taken into account?
-	if ( sizeof ( array_t ) ==sizeof ( int32_t ) && this->nbits==32 )
-		int n = fwrite ( ( const void* ) array,sizeof ( int32_t ),nrows*ncols,nfid );
-	else {
-		switch ( this->nbits ) {
-		case 8:
-			writeblob<array_t, char> ( array, nrows*ncols,nfid );
-			break;
-		case 32:
-			writeblob<array_t, int32_t> ( array, nrows*ncols, nfid );
-			break;
-		case 1: {
-			//printf("writing array in binary mode\n");
-
-			// construct bit array
-			BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
-			// fill bit array
-			for ( int i=0; i<nrows*ncols; i++ ) {
-				if ( array[i] )
-					bit_array_set_bit ( bitarr, i );
-				else
-					bit_array_clear_bit ( bitarr, i );
-			}
-			word_addr_t num_of_words = nwords ( nrows*ncols ); //printf("num_of_words: %d\n", (int)num_of_words);
-
-			fwrite ( bitarr->words,num_of_words,sizeof ( word_t ), this->nfid );
-
-#ifdef OADEBUG2
-			printf ( "1-bit write: %ld bytes for array with %d elements\n", num_of_words*sizeof ( word_t ), nrows*ncols );
-#endif
-			bit_array_free ( bitarr );
-		}
-
+	switch ( afile->mode ) {
+	case arrayfile::ATEXT:
+		fprintf ( afile->nfid, "%i\n", index );
+		write_array ( afile->nfid, a.array, a.n_rows, a.n_columns );
 		break;
-		default
-				:
-			printf ( "error: number of bits not supported\n" );
-			break;
+	case arrayfile::ALATEX:
+		fprintf ( afile->nfid, "%i\n", index );
+		write_array_latex ( afile->nfid, a.array, a.n_rows, a.n_columns );
+		break;
+	case arrayfile::ABINARY: {
+		r = fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
+		if ( r!=sizeof ( int32_t ) *1 ) {
+			printfd ( "error during write to file\n" );
 		}
+		//printf("   %d %d\n", a.n_rows, a.n_columns);
+		afile->write_array_binary ( a.array, a.n_rows, a.n_columns );
+		break;
 	}
+	case arrayfile::ABINARY_DIFF: {
+		fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
+		afile->write_array_binary_diff ( a );
+		break;
+	}
+	case arrayfile::ABINARY_DIFFZERO: {
+		//fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
+		afile->write_array_binary_diffzero ( a );
+		break;
+	}
+	default
+			:
+		std::cout << "warning: arrayfile_t::append_array: no such mode " << afile->mode << std::endl;
+		break;
+	}
+	narraycounter++;
 }
 
+/// return true if file is open
+int arrayfile_t::isopen() const
+{
+#ifdef USEZLIB
+	return ( this->nfid != 0 || this->gzfid != 0 );
+#else
+	return ( this->nfid != 0 );
+#endif
+}
 
+int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx )
+{
+	arraylist_t::const_iterator	it;
 
+	assert ( this->nfid );
+
+	for ( it = arrays.begin(); it != arrays.end(); it++ ) {
+
+		//cout << "writing arrays in mode " << afile->mode << endl;
+
+		this->append_array ( *it, startidx );
+		startidx++;
+	}
+	return 0;
+}
 
 arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int narrays, arrayfilemode_t m, int nb )
 {
@@ -3975,6 +3371,619 @@ int writearrayfile ( const char *fname, const arraylist_t *arraylist, arrayfile:
 	return i;
 }
 
+arrayfile_t::arrayfile_t ()
+{
+	this->verbose=0;
+
+	//this->verbose=2;
+	//printf("arrayfile_t::arrayfile_t ()\n");
+	this->nfid=0;
+	this->filename="";
+#ifdef USEZLIB
+	this->gzfid=0;
+#endif
+
+	this->mode=ATEXT;
+
+	this->rwmode=READ;
+
+	this->nrows=0;
+	this->ncols=0;
+	this->narrays=0;
+	this->narraycounter=0;
+
+}
+
+void arrayfile_t::createfile ( const std::string fname, int nrows, int ncols, int narrays, arrayfilemode_t m , int nb )
+{
+	this->closefile();
+
+	this->verbose=0;
+	this->filename=fname;
+
+	this->iscompressed=0;
+#ifdef USEZLIB
+	this->gzfid=0;
+#endif
+	this->nrows=nrows;
+	this->ncols=ncols;
+	this->narrays=narrays;
+	this->narraycounter=0;
+	this->mode=m;
+	this->rwmode=WRITE;
+	this->nbits = nb;	// only used in binary mode
+
+	if ( strcmp ( fname.c_str(), "<standard output>" ) ==0 ) {
+		this->nfid = stdout;
+	} else {
+		this->nfid = fopen ( fname.c_str(), "w+b" );
+		if ( this->nfid==0 ) {
+			printf ( "arrayfile_t: ERROR: problem opening %s\n", fname.c_str() );
+			return;
+		}
+	}
+	writeheader();
+
+}
+
+arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
+{
+
+	int warngz = verbose>=1;
+#ifdef SWIG
+	swigcheck();
+#endif
+
+	narraycounter=-1;	// make invalid
+
+	this->verbose=verbose;
+
+	std::string fname = fnamein;
+	this->rwmode=arrayfile::READ;
+	this->filename = fname;
+	this->narrays=-1;	// initialize to -1
+
+	if ( verbose>=3 )
+		printfd ( "start\n" );
+
+	std::string gzname = fname+".gz";
+	//printf("arrayfile_t::arrayfile_t: %s -> %s\n", fname.c_str(), gzname.c_str() );
+	if ( ! file_exists ( fname.c_str() ) && file_exists ( gzname.c_str() ) ) {
+		if ( verbose && warngz ) {
+			printf ( "  file %s does not exist, but gzipped file does\n", fname.c_str() );
+		}
+		this->filename = gzname;
+		fname=gzname;
+	}
+
+#ifdef USEZLIB
+	// simple check for compressed files
+	if ( verbose>=2 )
+		printfd ( "zlib file %s\n", fname.c_str() );
+	if ( fname.substr ( fname.find_last_of ( "." ) + 1 ) == "gz" ) {
+		this->iscompressed=1;
+		this->gzfid = gzopen ( fname.c_str(), "rb" );
+		this->nfid=0;
+		if ( verbose>=2 )
+			printf ( "   opened file |%s| in compressed mode: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
+	} else {
+		this->iscompressed=0;
+		this->nfid = fopen ( fname.c_str(), "r+b" );
+		//printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
+		if ( 0 ) {
+			fseek ( nfid, 0, SEEK_SET );
+			char buf[4]= {0,1,3,4};
+			int r = fwrite ( buf, 1, 4, nfid );
+			printfd ( "written %d bytes...\n", r );
+		}
+		this->gzfid=0;
+		if ( verbose>=2 )
+			printf ( "   opened file |%s|: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
+	}
+#else
+	this->iscompressed=0;
+	this->nfid = fopen ( fname.c_str(), "r+b" );
+	// printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
+	this->gzfid=0;
+#endif
+
+	if ( verbose>=2 )
+		printf ( " nfid %ld, gzfid %ld, isopen %d \n", ( long ) nfid, ( long ) gzfid, this->isopen() );
+
+	if ( ! this->isopen() ) {
+		if ( verbose ) {
+			printf ( "problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+		}
+		this->closefile();
+		return;
+	}
+	int magic;
+	int result = afread ( &magic,1,sizeof ( int32_t ) );
+	if ( result==0 ) {
+		this->closefile();
+		return;
+	}
+	if ( this->nfid ) {
+		fclose ( this->nfid );
+		this->nfid=0;
+	}
+#ifdef USEZLIB
+	if ( this->gzfid ) {
+		gzclose ( this->gzfid );
+		this->gzfid=0;
+	}
+#endif
+
+	if ( verbose>=2 )
+		printf ( "arrayfile_t: reading array file %s, magic %d\n", fname.c_str(), magic );
+
+
+// read the header
+	if ( magic==65 ) {
+		// we have a file in binary format
+#ifdef USEZLIB
+		if ( iscompressed ) {
+			this->gzfid = gzopen ( fname.c_str(), "rb" );
+		} else {
+			this->nfid = fopen ( fname.c_str(), "r+b" );
+		}
+#else
+		this->nfid = fopen ( fname.c_str(), "r+b" );
+#endif
+
+		int result = afread ( &magic,1,sizeof ( int32_t ) );
+		result = afread ( &this->nbits,sizeof ( int32_t ),1 );
+		assert ( result==1 );
+		result = afread ( &this->nrows,sizeof ( int32_t ),1 );
+		assert ( result==1 );
+		result = afread ( &this->ncols,sizeof ( int32_t ),1 );
+		assert ( result==1 );
+		result = afread ( &this->narrays,sizeof ( int32_t ),1 );
+
+		int binary_mode;
+
+		int reserved;
+		result = afread ( &binary_mode,sizeof ( int32_t ),1 );
+		assert ( result==1 );
+		result = afread ( &reserved,sizeof ( int32_t ),1 );
+		result = afread ( &reserved,sizeof ( int32_t ),1 );
+
+		//printf("arrayfile_t: constructor: binary_mode %d\n", binary_mode);
+
+		switch ( binary_mode ) {
+		case 1001:
+			this->mode=arrayfile::ABINARY;
+			break;
+		case 1002:
+			this->mode=arrayfile::ABINARY_DIFF;
+			break;
+		case 1003:
+			this->mode=arrayfile::ABINARY_DIFFZERO;
+			break;
+		case 0:
+			if ( verbose ) {
+				printf ( "  arrayfile_t::arrayfile_t: legacy file format, file %s!\n", this->filename.c_str() );
+			}
+			this->mode=arrayfile::ABINARY;
+			break;
+		default
+				:
+			this->mode=arrayfile::AERROR;
+			fprintf ( stdout,  "arrayfile_t::arrayfile_t : error opening binary file (binary_mode %d)\n", binary_mode );
+			break;
+		}
+
+		if ( this->mode == arrayfile::ABINARY_DIFFZERO && this->nbits!=1 ) {
+			printf ( "arrayfile_t: error for mode ABINARY_DIFFZERO we need 1 bit: bits %d\n", this->nbits );
+			this->mode=AERROR;
+			this->closefile();
+			return;
+		}
+
+		if ( result!=1 )
+			fprintf ( stdout,  "open binary file: wrong count in afread! %d\n", result );
+	} else {
+		if ( iscompressed ) {
+			if ( verbose ) {
+				printf ( "   compressed file: file or corrupt or gzipped text file, cannot read compressed files in TEXT mode..\n" );
+			}
+			this->mode=AERROR;
+			this->closefile();
+			return;
+		} else {
+			this->nfid = fopen ( fname.c_str(), "rb" );
+			this->gzfid=0;
+		}
+
+		this->mode=arrayfile::ATEXT;
+
+		char buf[1];
+		buf[0]=-1;
+		int r = fread ( buf, sizeof ( char ), 1, this->nfid );
+		if ( buf[0] < 48 || buf[0] > 57 || r<0 ) {
+			// printf("   read char %d\n", int(buf[0]));
+			if ( verbose>=1 )
+				fprintf ( stdout,  "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+			this->closefile();
+			return;
+
+		}
+		r = fseek ( this->nfid,0, SEEK_SET );
+
+		r = fscanf ( this->nfid, "%i %i %i\n", &this->ncols, &this->nrows, &this->narrays );
+		this->nbits = 0;
+		//printf("arrayfile_t: text mode\n");
+		if ( verbose>=2 ) {
+			printf ( "arrayfile_t: text mode: header %d %d %d\n",  this->ncols, this->nrows, this->narrays );
+		}
+		if ( this->nrows<0 || this->nrows>20000 || this->ncols<0 || this->ncols>10000 || this->narrays<0 ) {
+			if ( verbose>=1 )
+				fprintf ( stdout, "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+			this->nfid=0;
+			this->gzfid=0;
+		}
+
+
+	}
+
+	narraycounter=0;
+
+	if ( verbose>=2 )
+		printf ( "   arrayfile_t::arrayfile_t: mode %d, nrows %d, ncols %d, narrays %d\n", mode, this->nrows, this->ncols, this->narrays );
+
+}
+
+
+/*!
+  save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of processors,
+  the number of factors and the number of columns so far. Then the file header contains the number of columns in the design,
+  the number of runs and the number of arrays in the file.
+  \brief Saves the arrays from solutions
+  \param solutions List of arrays
+  \param p Characteristic numbers of OA
+  \param n_arrays Number of arrays found
+  \param n_procs Number of processors in system, for filename
+  */
+int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode)
+{
+    // OPTIMIZE: make this modular, save arrays in blocks
+
+    string fname = resultprefix;
+    fname += "-" + oafilestring(ad);
+
+
+    int nb = arrayfile_t::arrayNbits(*ad);
+    //printf(" save_arrays nb: %d\n", nb);
+    arrayfile_t *afile = new arrayfile_t(fname.c_str(), ad->N, ad->ncols, n_arrays, mode, nb);
+    int	startidx = 1;
+    afile->append_arrays(solutions, startidx);
+    afile->finisharrayfile();
+    delete afile;
+
+    return 0;
+}
+
+
+void arrayfile_t::closefile()
+{
+	if ( verbose>=2 )
+		printf ( "arrayfile_t::closefile(): nfid %ld\n", ( long ) nfid ) ;
+
+	if ( ! this->isopen() ) {
+		if ( verbose>=2 )
+			printf ( "arrayfile_t::closefile(): file already closed\n" ) ;
+		return;
+	}
+	//   printf ( "arrayfile_t: closefile(): filename %s, nfid %ld, narrays %d, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narrays, narraycounter, this->rwmode );
+
+	if ( verbose>=3 ) {
+		printf ( "arrayfile_t::closefile: narrays: %d\n", narrays );
+		printf ( "arrayfile_t::closefile: narraycounter: %d\n", narraycounter );
+		printf ( "arrayfile_t::closefile: rwmode: %d\n", rwmode );
+	}
+
+	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
+		if ( verbose>=2 )
+			printf ( "arrayfile_t: closing binary file, updating numbers %d->%d\n", narrays, narraycounter );
+		if ( verbose>=3 )
+			printf ( "arrayfile_t: nfid %ld\n", long ( nfid ) );
+		if ( nfid != 0 ) {
+			long pos = ftell ( nfid );
+			//printfd("seek to from %ld to 4\n", pos);
+			int r = fseek ( nfid, 4*sizeof ( int32_t ), SEEK_SET );
+			//printfd("seek result %d\n", r);
+			r = this->afwrite ( &narraycounter, sizeof ( int32_t ), 1 );
+			if ( verbose>=2 )
+				printf ( "   arrayfile_t::closefile: result of write: %d\n", ( int ) r );
+			fseek ( nfid, pos, SEEK_SET ); // place back pointer
+		}
+
+	}
+
+
+	// close file handles
+	if ( this->nfid!=0 ) {
+		fclose ( this->nfid );
+		this->nfid=0;
+	}
+#ifdef USEZLIB
+	if ( this->gzfid!=0 ) {
+		gzclose ( this->gzfid );
+		this->gzfid=0;
+	}
+#endif
+//delete afile;
+}
+
+arrayfile_t::~arrayfile_t()
+{
+#ifdef SWIG
+	swigcheck();
+#endif
+
+	if ( verbose>=2 )
+		printf ( "arrayfile_t: destructor: filename %s, nfid %ld, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narraycounter, this->rwmode );
+
+
+	closefile();
+	/*
+	// close file handles
+	if ( nfid!=0 ) {
+	    fclose ( nfid );
+	    nfid=0;
+	}
+	#ifdef USEZLIB
+	if ( gzfid!=0 ) {
+	    gzclose ( gzfid );
+	    gzfid=0;
+	}
+	#endif
+	*/
+}
+
+/**
+ * @brief Create array file
+ * @param fname
+ * @param rows
+ * @param cols
+ * @param narrays
+ * @return
+ */
+arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode, int nbits )
+{
+	//printf("create array file: mode %d\n", mode);
+	std::string s = fname;
+	arrayfile_t *afile = new arrayfile_t ( s, rows, cols, narrays, mode, nbits );
+
+	return afile;
+}
+
+/**
+ * @brief Read a binary array from a file
+ * @param fid
+ * @param array
+ * @param nrows
+ * @param ncols
+ */
+void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int ncols )
+{
+//	  printf("  arrayfile_t::read_array_binary: gr %d\n", this->nbits);
+	switch ( this->nbits ) {
+
+	case 1: {
+
+		// construct bit array
+		BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
+		word_addr_t num_of_words = nwords ( nrows*ncols );
+		int result = afread ( bitarr->words,num_of_words,sizeof ( word_t ) );
+		assert ( result );
+
+		// fill bit array
+		for ( int i=0; i<nrows*ncols; i++ ) {
+			// TODO: this can be made much faster by parsing multiple bits
+			array[i] = bit_array_get_bit_nocheck ( bitarr, i );
+		}
+		bit_array_free ( bitarr );
+
+		//printf("1-bit read not implemented yet\n");
+
+		break;
+	}
+	case 8:
+#ifdef USEZLIB
+		if ( this->iscompressed )
+			readblob<char, array_t> ( array, nrows*ncols, this->gzfid );
+		else
+#endif
+			readblob<char, array_t> ( array, nrows*ncols, this->nfid );
+		break;
+	case 32:
+#ifdef USEZLIB
+		if ( this->iscompressed )
+			readblob<int32_t, array_t> ( array, nrows*ncols, this->gzfid );
+		else
+#endif
+			readblob<int32_t, array_t> ( array, nrows*ncols, this->nfid );
+		break;
+	default
+			:
+		printf ( " no such number of bits supported\n" );
+		break;
+	}
+}
+
+/**
+ * @brief Write an array in binary mode to a file
+ * @param fid
+ * @param array
+ * @param nrows
+ * @param ncols
+ */
+void arrayfile_t::write_array_binary_diff ( const array_link &A )
+{
+	myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
+
+	myassertdebug ( A.maxelement() <= 1, "arrayfile_t::write_array_binary_diff: array is not binary" );
+
+	int ngood=0;
+
+	rowindex_t N = this->nrows;
+	const int num=N*sizeof ( array_t );
+
+	if ( 0 ) {
+		diffarray.show();
+		diffarray.showarray();
+		printf ( "-------------\n" );
+	}
+	if ( 0 ) {
+		A.show();
+		A.showarray();
+		printf ( "-------------\n" );
+	}
+
+//    printf("write_array_binary_diff: i %d\n", i);
+
+	for ( int i=0; i<diffarray.n_columns; i++ ) {
+// printf("write_array_binary_diff: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));
+		if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
+			ngood++;
+
+		} else
+			break;
+	}
+
+	int32_t nwrite=A.n_columns-ngood;
+	//printf("write_array_binary_diff: %d good columns, writing %d to disk\n", ngood, nwrite);
+	array_link rest = A.selectLastColumns ( nwrite );
+
+	int n = fwrite ( ( const void* ) &nwrite,sizeof ( int32_t ),1, nfid );
+
+	this->write_array_binary ( rest );
+
+// update with previous array
+	this->diffarray = A;
+}
+
+/**
+ * @brief Write an array in binary mode to a file
+ * @param fid
+ * @param array
+ * @param nrows
+ * @param ncols
+ */
+void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
+{
+	myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
+	int ngood=0;
+
+	rowindex_t N = this->nrows;
+	const int num=N*sizeof ( array_t );
+
+	for ( int i=0; i<diffarray.n_columns; i++ ) {
+//printf("write_array_binary_diffzero: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));
+		if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
+			ngood++;
+
+		} else
+			break;
+	}
+
+	int16_t nwrite=A.n_columns-ngood;
+	//printf("write_array_binary_diffzero: nwrite %d, ngood %d\n", nwrite, ngood);
+	//A.show();
+	array_link rest = A.selectLastColumns ( nwrite );
+
+	int n = fwrite ( ( const void* ) &nwrite,sizeof ( int16_t ),1, nfid );
+
+	if ( diffarray.n_columns>0 ) {
+
+		array_link diffrest = this->diffarray.selectLastColumns ( nwrite );
+
+		array_link z = rest-diffrest;
+		for ( int i=0; i<z.n_columns*z.n_rows; i++ )
+			z.array[i] = ( 2+z.array[i] ) % 2;
+
+		//printf("write_array_binary_diffzero: writing array: "); z.show();
+		this->write_array_binary ( z );
+	} else {
+		array_link z = rest;
+		//printf("write_array_binary_diffzero: writing array (i): "); z.show();
+		this->write_array_binary ( z );
+	}
+
+// update with previous array
+	this->diffarray = A;
+}
+
+/// Write an array in binary mode to a file
+void arrayfile_t::write_array_binary ( const array_link &A )
+{
+	write_array_binary ( A.array, A.n_rows, A.n_columns );
+}
+
+
+/**
+ * @brief Write an array in binary mode to a file
+ * @param fid
+ * @param array
+ * @param nrows
+ * @param ncols
+ */
+void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const int ncols )
+{
+#ifdef OADEBUG
+	int m=0;
+	for ( int i=0; i<nrows*ncols; ++i )
+		if ( array[i]>m )
+			m=array[i];
+	if ( this->nbits==1 ) {
+		if ( m>1 )
+			printf ( "ERRROR!\n" );
+	}
+#endif
+
+//printf("arrayfile_t::write_array_binary: nbits %d\n", this->nbits);
+
+	// TODO: the type of array should be taken into account?
+	if ( sizeof ( array_t ) ==sizeof ( int32_t ) && this->nbits==32 )
+		int n = fwrite ( ( const void* ) array,sizeof ( int32_t ),nrows*ncols,nfid );
+	else {
+		switch ( this->nbits ) {
+		case 8:
+			writeblob<array_t, char> ( array, nrows*ncols,nfid );
+			break;
+		case 32:
+			writeblob<array_t, int32_t> ( array, nrows*ncols, nfid );
+			break;
+		case 1: {
+			//printf("writing array in binary mode\n");
+
+			// construct bit array
+			BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
+			// fill bit array
+			for ( int i=0; i<nrows*ncols; i++ ) {
+				if ( array[i] )
+					bit_array_set_bit ( bitarr, i );
+				else
+					bit_array_clear_bit ( bitarr, i );
+			}
+			word_addr_t num_of_words = nwords ( nrows*ncols ); //printf("num_of_words: %d\n", (int)num_of_words);
+
+			fwrite ( bitarr->words,num_of_words,sizeof ( word_t ), this->nfid );
+
+			//printf ( "1-bit write: %ld bytes for array with %d elements\n", num_of_words*sizeof ( word_t ), nrows*ncols );
+			bit_array_free ( bitarr );
+		}
+
+		break;
+		default
+				:
+			printf ( "error: number of bits not supported\n" );
+			break;
+		}
+	}
+}
+
 #include <errno.h>
 
 int writearrayfile ( const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode )
@@ -4000,17 +4009,11 @@ int appendarrayfile ( const char *fname, const array_link al )
 	if ( dverbose )
 		printf ( "\n### appendarrayfile: opened array file: %s\n", afile->showstr().c_str() );
 
-
-
-
 	if ( ! afile->isopen() ) {
 		printf ( "appendarrayfile: creating new array file %s\n", fname );
-
-
 		{
-			nrows=al.n_rows; //
+			nrows=al.n_rows; 
 			ncols=al.n_columns;
-
 			nb = arrayfile_t::arrayNbits ( al );
 		}
 
@@ -4041,14 +4044,9 @@ int appendarrayfile ( const char *fname, const array_link al )
 		}
 	}
 
-	//afile->setVerbose(3);
-	//printf("afile state: %s\n", afile->showstr().c_str() );
-
 	//printf("before append: afile->narrays %d, narraycounter %d\n", afile->narrays, afile->narraycounter);
 	afile->seek ( afile->narrays );
 	//printf("after seek: afile->narrays %d, narraycounter %d, ftell %ld\n", afile->narrays, afile->narraycounter, ftell(afile->nfid) );
-
-	//int IsReadOnly = afile->nfid->_flag;
 
 #ifdef WIN32
 #else
@@ -4060,16 +4058,6 @@ int appendarrayfile ( const char *fname, const array_link al )
 		printf ( "# file status mod 4: %d\n", fs % 4 );
 	}
 #endif
-
-
-	if ( 0 ) {
-		char buf[4]= {1,2,3,4};
-		int p = fseek ( afile->nfid, 0, SEEK_SET );
-		printf ( "  p %d\n", p );
-		int rr=fwrite ( buf, 1, 4, afile->nfid );
-		printf ( "  written rr %d\n", rr );
-		afile->seek ( afile->narrays );
-	}
 
 	if ( ! afile->isopen() ) {
 		printf ( "writearrayfile: problem with file %s\n", fname );
@@ -4192,6 +4180,11 @@ array_link selectArrays ( const std::string filename, int ii )
 	}
 	return al;
 }
+
+#endif // FULLPACKAGE, related to arrayfile_t
+
+
+
 
 void  selectArrays ( const arraylist_t &al,   std::vector<int> &idx, arraylist_t &rl )
 {

@@ -71,7 +71,7 @@ arraydata_t* readConfigFile(const char *file)
 
     inFile.open(file);
     if (!inFile) {
-        cout << "readConfigFile: unable to open file " << file << endl;
+        myprintf("readConfigFile: unable to open file %s\n", file);
         //throw -1; // throw error
         return 0;
         //exit(1); // terminate with error
@@ -132,7 +132,11 @@ array_link::array_link(const array_t *array, rowindex_t nrows, colindex_t ncolso
   */
 void show_array(carray_t *array, const int x, const int y)
 {
-    write_array_format(stdout, array, y, x);
+#ifdef FULLPACKAGE
+  write_array_format(stdout, array, y, x);
+#else
+  myprintf("show_array: not implemented...\n"); 
+#endif
 }
 
 /*!
@@ -144,7 +148,11 @@ void show_array(carray_t *array, const int x, const int y)
   */
 void print_array(const array_t *array, const rowindex_t r, const colindex_t c)
 {
-    write_array_format(cout, array, r, c);
+#ifdef FULLPACKAGE
+  write_array_format(cout, array, r, c);
+#else
+  myprintf("print_array: not implemented...\n"); 
+#endif
 }
 
 void print_array(const char *str, const array_t *array, const rowindex_t r, const colindex_t c)
@@ -156,7 +164,11 @@ void print_array(const char *str, const array_t *array, const rowindex_t r, cons
 /*! @brief Print array, overloaded function */
 void print_array(const array_link &A)
 {
+#ifdef FULLPACKAGE
     write_array_format(stdout, A.array, A.n_rows, A.n_columns);
+#else
+  myprintf("print_array: not implemented...\n"); 
+#endif
 }
 
 
@@ -278,35 +290,6 @@ string oafilestring(rowindex_t rows, colindex_t cols, array_t *s)
     return fname;
 }
 
-/*!
-  save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of processors,
-  the number of factors and the number of columns so far. Then the file header contains the number of columns in the design,
-  the number of runs and the number of arrays in the file.
-  \brief Saves the arrays from solutions
-  \param solutions List of arrays
-  \param p Characteristic numbers of OA
-  \param n_arrays Number of arrays found
-  \param n_procs Number of processors in system, for filename
-  */
-int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode)
-{
-    // OPTIMIZE: make this modular, save arrays in blocks
-
-    string fname = resultprefix;
-    fname += "-" + oafilestring(ad);
-
-
-    int nb = arrayfile_t::arrayNbits(*ad);
-    //printf(" save_arrays nb: %d\n", nb);
-    arrayfile_t *afile = new arrayfile_t(fname.c_str(), ad->N, ad->ncols, n_arrays, mode, nb);
-    int	startidx = 1;
-    afile->append_arrays(solutions, startidx);
-    afile->finisharrayfile();
-    delete afile;
-
-    return 0;
-}
-
 
 
 #define X
@@ -391,6 +374,7 @@ void trim( std::string& str, const std::string& trimChars )
 
 #include <map>
 
+#ifdef FULLPACKAGE
 static int **discr_data1 = 0;
 static int **discr_data2 = 0;
 static int snr, snc;
@@ -450,7 +434,7 @@ void analyse_discriminant(int row, int col, lmc_t lmc, int nr, int nc)
         // no not store data
         break;
     default:
-        cout << "problem" << endl;
+        std::cout << "problem" << endl;
         break;
     }
 }
@@ -516,6 +500,8 @@ void analysis_print(const int level, const char *message, ...)
 #endif
 }
 
+#endif // FULLPACKAGE
+
 /* this integer determines to level of logging */
 static int streamloglvl = NORMAL;
 
@@ -542,6 +528,7 @@ void setloglevel(int n)
     log_print(-n, "");	// for log_print
 }
 
+#ifdef FULLPACKAGE
 /** @brief Returns an output stream object
  *
  * Depending on the log level the stream is standard output or a null stream.
@@ -558,7 +545,7 @@ ostream& logstream(int level)
         return staticNullStream;
     }
 }
-
+#endif
 
 /*!
   The function is used to print messages with a different priority. The first time, a threshold is set to
@@ -597,7 +584,6 @@ int result = 0;
     }
     else if(level <= loglevel)	{ //if printing level is high enough, the message is shown
         vprintf(message, va);
-        //cout << "logprint: loglevel " << loglevel << " level: "<< level << endl;
     }
     va_end(va);
 result =(level <= loglevel);

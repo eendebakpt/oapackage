@@ -137,7 +137,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
 
    jstruct_t js ( al, 4 );
    std::vector<int> FF=js.calculateF();
-
+#ifdef FULLPACKAGE
    if ( verbose>=3 ) {
       printf ( "  parseArrayPareto: F (high to low): " );
       display_vector ( FF );
@@ -145,6 +145,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
 	  //std::vector<int> Fval=js.Fval();
       //display_vector ( Fval ); std::cout << std::endl;
    }
+#endif
 
    // long v = F2value ( FF );
    mvalue_t<long> v ( FF, mvalue_t<long>::LOW );

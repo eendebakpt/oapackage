@@ -36,12 +36,14 @@ extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad
 	es->r_index = create_reverse_colcombs_fixed(ncolcombs);
 	es->ncolcombs = ncolcombs;
 
+#ifdef FULLPACKAGE	
 	if (checkloglevel(DEBUG)) {
 		for(int x=0;x<ncolcombs;x++) {
 			std::cout << "colcomb " << x << " ";
 			print_perm(es->colcombs[x], es->adata->strength);
 		}
 	}
+#endif
 
 	// allocate table for frequency count
 	this->freqtable = new_strength_freq_table(es->ncolcombs, es->nvalues, this->freqtablesize);
@@ -297,7 +299,7 @@ void add_element_freqtable(extend_data_t *es, rowindex_t activerow, carray_t *ar
 
 		#ifdef OADEBUG
 		if(freq_pos < 0) {
-			printf("add_element: this code should not be executed\n");
+			myprintf("add_element: this code should not be executed\n");
 		}
 		#endif
 		(freqtable[cur_combi][freq_pos])++;	//add occurence of combination
@@ -319,14 +321,14 @@ void print_frequencies(int **frequencies, const int nelements, const int *lambda
 
 	for(i = 0; i < nelements; i++)
 	{
-		printf("%i:\t", i);
+		myprintf("%i:\t", i);
 		for(j = 0; j < N/lambda[i]; j++)
 		{
-			printf("%2i ", frequencies[i][j]);
+			myprintf("%2i ", frequencies[i][j]);
 		}
-		printf("\n");
+		myprintf("\n");
 	}
-	printf("\n");
+	myprintf("\n");
 }
 
 /**
@@ -381,7 +383,7 @@ void init_frequencies(extend_data_t *es, array_t *array)
  */
 void recount_frequencies(int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart, rowindex_t rowlast, carray_t *array)
 {
-    //printf("recount_frequencies: rowstart %d, rowlast %d, es->ncolcombs %d\n", rowstart, rowlast, es->ncolcombs);
+    //myprintf("recount_frequencies: rowstart %d, rowlast %d, es->ncolcombs %d\n", rowstart, rowlast, es->ncolcombs);
 	//reset old values
 	for(int i = 0; i < es->ncolcombs; i++) {
     	  memset(frequencies[i], 0, es->nvalues[i] * sizeof(int));
@@ -394,6 +396,7 @@ void recount_frequencies(int **frequencies, extend_data_t *es, colindex_t curren
 	}
 }
 
+#ifdef FULLPACKAGE
 
 /**
  * @brief Determine whether an element passes the strength test
@@ -449,6 +452,7 @@ bool valid_element(const extend_data_t *es, const extendpos *p, carray_t *array)
 	#endif
 }
 
+#endif
 
 bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose )
 {
@@ -464,10 +468,10 @@ myassert(ad.ncols>=al.n_columns, "strength_check: array has too many columns");
 
     int fixcol=al.n_columns-1;
     if ( verbose>=2 )
-        printf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
+        myprintf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
     strengthcheck.colcombs = set_colcombs_fixed ( strengthcheck.lambda, strengthcheck.nvalues, strengthcheck.ncolcombs, ad.s, ad.strength, fixcol, ad.N );
 
-    //printf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
+    //myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
     strengthcheck.indices = set_indices ( strengthcheck.colcombs, ad.s, ad.strength, strengthcheck.ncolcombs );	//sets indices for frequencies, does the malloc as well
     strengthcheck.create_reverse_colcombs_fixed();
 
@@ -481,17 +485,17 @@ myassert(ad.ncols>=al.n_columns, "strength_check: array has too many columns");
         strengthcheck.info();
 
     if ( verbose>=2 ) {
-        printf ( "before:\n" );
+        myprintf ( "before:\n" );
         strengthcheck.print_frequencies ( );
     }
-//   printf ( "  table of size %d\n", strengthcheck.freqtablesize );
-//   printf ( "  strength %d: %d\n", ad.strength, val );
+//   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
+//   myprintf ( "  strength %d: %d\n", ad.strength, val );
 
 	array_t **arraycol = new array_t* [ad.strength];
 	int *sss =  new int[ad.strength];
 
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
-        //printf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
+        //myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
 
 
 	/// cache values of levels and column pointers
@@ -510,18 +514,18 @@ myassert(ad.ncols>=al.n_columns, "strength_check: array has too many columns");
                 valindex = valindex*s+val;
             }
             if ( verbose>=2 ) {
-                printf ( "  row %d: ", r );
-                printf ( " value index %d\n", valindex );
+                myprintf ( "  row %d: ", r );
+                myprintf ( " value index %d\n", valindex );
             }
             strengthcheck.freqtable[i][valindex]++;
         }
-// printf ( "columns %d: ...\n ", i );
+// myprintf ( "columns %d: ...\n ", i );
 
         for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
-            //    printf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
+            //    myprintf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
             if ( strengthcheck.freqtable[i][j]!=ad.N/strengthcheck.nvalues[i] ) {
                 if ( verbose>=2 )
-                    printf ( "no good strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], strengthcheck.nvalues[i] );
+                    myprintf ( "no good strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], strengthcheck.nvalues[i] );
                 val=false;
                 break;
             }
@@ -530,9 +534,9 @@ myassert(ad.ncols>=al.n_columns, "strength_check: array has too many columns");
         if ( val==false )
             break;
     }
-    //printf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
+    //myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
     if ( verbose>=2 ) {
-        printf ( "table of counted value pairs\n" );
+        myprintf ( "table of counted value pairs\n" );
         strengthcheck.print_frequencies ( );
     }
 //	print_frequencies(strengthcheck.freqtable, strengthcheck.ncolcombs, nvalues, ad.N);
@@ -631,7 +635,7 @@ colindex_t **set_colcombs_fixed(int*& xlambda, int*& nvalues, int &ncolcombs, co
 
 		prod = 1;
 		for(j = 0; j < strength; j++) {
-		  //printf("i %d j %d: %d\n", i, j, colcombs[i][j]); 
+		  //myprintf("i %d j %d: %d\n", i, j, colcombs[i][j]); 
 		  prod *= s[colcombs[i][j]];
 		}
 		nvalues[i] = prod;

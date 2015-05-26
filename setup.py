@@ -89,7 +89,6 @@ if oadev:
 
   sources = ['oalib.i'] + sources
   swig_opts+=['-modern', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
-
 else:
   if 0:
     sources += ['oalib_wrap.cxx'] 

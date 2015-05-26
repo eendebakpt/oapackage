@@ -136,7 +136,7 @@ int main ( int argc, char* argv[] )
 
    // write arrays to disk
    std::string outfile = outputprefix;
-   printf ( "  writing %zu arrays to %s\n", earrays.size(), outfile.c_str() );
+   printf ( "  writing %ld arrays to %s\n", earrays.size(), outfile.c_str() );
    writearrayfile ( outfile.c_str(), &earrays, arrayfile::ABINARY );
 
    delete ad;

@@ -9,7 +9,7 @@
 #ifndef MATHTOOLS_H
 #define MATHTOOLS_H
 
-#include <stdio.h>
+#include "printfheader.h"
 #include <iostream>
 #include <limits>
 #include <algorithm> /* defines max and min template functions */
@@ -125,20 +125,20 @@ public:
 		if ( ( pool.size() ) ==0 ) { // no reusable object
 			nn++;
 			if ( nn%10000==0 ) {
-				//   printf("object_pool::New(): allocate object # %d\n", nn );
+				//   myprintf("object_pool::New(): allocate object # %d\n", nn );
 			}
 			if ( verbose ) {
-				printf ( "  object_pool::New(): allocate object # %d\n", nn );
+				myprintf ( "  object_pool::New(): allocate object # %d\n", nn );
 			}
 			TYPE *t  = new TYPE();
 			return t;
 		} else {
 			rr++;
 			if ( rr%5000==0 ) {
-				//printf("object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr);
+				//myprintf("object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr);
 			}
 			if ( verbose ) {
-				printf ( "  object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr );
+				myprintf ( "  object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr );
 			}
 			TYPE *t = pool.back();
 			pool.pop_back();
@@ -148,9 +148,9 @@ public:
 	}
 	void Delete ( TYPE *t ) {
 		pool.push_back ( t );
-		//if (pool.size() % 100000==0) printf("object_pool::Delete() stored object %zu\n", pool.size() );
+		//if (pool.size() % 100000==0) myprintf("object_pool::Delete() stored object %zu\n", pool.size() );
 		if ( verbose || 0 ) {
-			printf ( "  object_pool::Delete() stored object %ld\n", (long)pool.size() );
+			myprintf ( "  object_pool::Delete() stored object %ld\n", (long)pool.size() );
 		}
 
 	}
@@ -174,7 +174,7 @@ public:
 	larray ( const numtype *data,int nn ) {
 #ifdef OADEBUG
 		if ( nn<=0 )
-			printf ( "larray: constructor from pointer: nn %d\n", nn );
+			myprintf ( "larray: constructor from pointer: nn %d\n", nn );
 #endif
 		d=0;
 		alloc ( nn );
@@ -184,7 +184,7 @@ public:
 	larray ( int nn ) {
 #ifdef OADEBUG
 		if ( nn<=0 )
-			printf ( "larray: constructor nn %d\n", nn );
+			myprintf ( "larray: constructor nn %d\n", nn );
 #endif
 		d=0;
 		alloc ( nn );
@@ -196,7 +196,7 @@ public:
 
 	larray ( const larray &rhs ) {
 		if ( rhs.n<0 ) {
-			//printf("larray: copy constructor: rhs.n<0! %d\n", rhs.n);
+			//myprintf("larray: copy constructor: rhs.n<0! %d\n", rhs.n);
 			//this->d[-40]=0;
 			this->n=-1;
 			this->d=0;
@@ -208,13 +208,13 @@ public:
 	}
 
 	~larray() {
-		//  printf("larray::~larray n %d d %ld\n", this->n, (long)this->d );
+		//  myprintf("larray::~larray n %d d %ld\n", this->n, (long)this->d );
 		if ( d!=0 ) {
 			delete [] d;
 			n=-3;
 		}
 		this->d=0;
-		//  printf("  --> larray::~larray n %d d %ld\n", this->n, (long)this->d );
+		//  myprintf("  --> larray::~larray n %d d %ld\n", this->n, (long)this->d );
 
 	}
 
@@ -227,14 +227,14 @@ public:
 	}
 	//Copy assignment operator
 	larray &operator= ( const larray &rhs ) {
-		//  printf("larray::operator= n %d %d\n", this->n, rhs.n );
+		//  myprintf("larray::operator= n %d %d\n", this->n, rhs.n );
 		if ( this->n != rhs.n ) {
 			release();
 			alloc ( rhs.n );
 		} else {
-			// printf("larray::operator= n %d %d (no re-allocation)\n", this->n, rhs.n );
+			// myprintf("larray::operator= n %d %d (no re-allocation)\n", this->n, rhs.n );
 		}
-		//printf("larray::operator= after alloc: n %d rhs.n %d\n", this->n, rhs.n );
+		//myprintf("larray::operator= after alloc: n %d rhs.n %d\n", this->n, rhs.n );
 		std::copy ( rhs.d, rhs.d+n, this->d );
 
 		//for(int i=0; i<n; i++) this->d[i]=rhs.d[i];
@@ -244,12 +244,12 @@ public:
 
 	//Copy assignemnt operator
 	larray &operator= ( const std::vector<numtype> &rhs ) {
-		//printf("larray::operator= (from vector) n %d %zu\n", this->n, rhs.size() );
+		//myprintf("larray::operator= (from vector) n %d %zu\n", this->n, rhs.size() );
 		int nn =rhs.size();
 		release();
-		// printf("  nn %d\n", nn);
+		// myprintf("  nn %d\n", nn);
 		this->alloc ( nn );
-		// printf("  alloc done nn %d\n", nn);
+		// myprintf("  alloc done nn %d\n", nn);
 		for ( int i=0; i<nn; i++ ) {
 			this->d[i]=rhs[i];
 		}
@@ -257,8 +257,8 @@ public:
 	}
 
 	numtype operator[] ( int i ) const {
-		//  if(i<0) printf("larray::operator[] i %d\n", i);
-		//   if(i>=n) printf("larray::operator[] i %d (n %d)\n", i, n);
+		//  if(i<0) myprintf("larray::operator[] i %d\n", i);
+		//   if(i>=n) myprintf("larray::operator[] i %d (n %d)\n", i, n);
 		return d[i];
 	}
 
@@ -270,7 +270,7 @@ public:
 		return d[i];
 	}
 	bool operator== ( const larray &rhs ) const {
-		//  printf("larray::operator==\n");
+		//  myprintf("larray::operator==\n");
 		if ( this->n != rhs.n )
 			return false;
 		for ( int i=0; i<n; i++ ) {
@@ -288,19 +288,19 @@ public:
 		for ( int i=0; i<n; i++ ) {
 			l.d[i]=this->d[i];
 		}
-		// printf("addelement: l.n %d\n", l.n);
+		// myprintf("addelement: l.n %d\n", l.n);
 		l.d[l.n-1]=v;
 		return l;
 	}
 private:
 	void alloc ( int nn ) {
 		if ( nn<=0 )
-			printf ( "larray: alloc %d\n", nn );
+			myprintf ( "larray: alloc %d\n", nn );
 		this->n=nn;
 		this->d=new numtype[nn];
 	}
 	void release() {
-		// printf("larray::release %d, d %ld\n", n, (long)d);
+		// myprintf("larray::release %d, d %ld\n", n, (long)d);
 		if ( d!=0 ) {
 			delete [] d;
 			n=-2;
@@ -395,11 +395,11 @@ public:
 			val= better ( rhs );
 		else
 			val = worse ( rhs );
-		// if (dverbose) printf("mvalue_t: operator>: %d\n", val);
+		// if (dverbose) myprintf("mvalue_t: operator>: %d\n", val);
 		return val;
 	}
 	bool operator>= ( const mvalue_t &rhs ) const {
-		//        if (dverbose) printf("mvalue_t: operator<=");
+		//        if (dverbose) myprintf("mvalue_t: operator<=");
 
 		return ! rhs.operator< ( *this );
 	}
@@ -468,6 +468,8 @@ Type vectormin ( const std::vector<Type> &v, Type defaultvalue )
 		return *p;
 	}
 }
+
+
 
 template<class NumType>
 /// create permutation of specified length
@@ -572,6 +574,8 @@ static void print_perm ( std::ostream &out, const std::vector<permutationType> s
 	}
 }
 
+#ifdef FULLPACKAGE
+
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 static void print_perm ( const larray<permutationType> s, const int maxlen = 256, const bool ret = true )
 {
@@ -590,7 +594,26 @@ static void print_perm ( const permutationType *s, const int len, const int maxl
 	print_perm ( std::cout, s, len, maxlen );
 }
 
-#define  print_comb print_perm
+#else
+// dummy values
+template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
+static void print_perm ( const larray<permutationType> s, const int maxlen = 256, const bool ret = true )
+{
+}
+
+template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
+static void print_perm ( const std::vector<permutationType> s, const int maxlen = 256, const bool ret = true )
+{
+}
+
+template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
+static void print_perm ( const permutationType *s, const int len, const int maxlen = 256 )
+{
+}
+#endif
+
+#define print_comb print_perm
+
 
 template <class numtype>
 /**
@@ -606,11 +629,11 @@ int compare_matrix ( const numtype *A, const numtype *B, int r, int c )
 	for ( int x=0; x<r; x++ )
 		for ( int y=0; y<c; y++ ) {
 			if ( A[x+y*r]!=B[x+y*r] ) {
-				std::cout << "arrays unequal: " << x << ", " << y << std::endl;
+				myprintf("arrays unequal: %d, %d\n", x, y);
 				return 0;
 			}
 		}
-	std::cout << "arrays equal" << std::endl;
+	myprintf("arrays equal\n");
 	return 1;
 }
 
@@ -631,7 +654,7 @@ inline Type fact ( const Type f )
 	for ( int i = f; i > 1; i-- ) {
 #ifdef OAOVERFLOW
 		if ( sol>std::numeric_limits<Type>::max() /100 ) {
-			printf ( "fact: f %ld, i %d:  %ld, %ld\n", ( long ) f, i, ( long ) sol, ( long ) std::numeric_limits<Type>::max() );
+			myprintf ( "fact: f %ld, i %d:  %ld, %ld\n", ( long ) f, i, ( long ) sol, ( long ) std::numeric_limits<Type>::max() );
 		}
 #endif
 		sol *= i;
@@ -747,6 +770,32 @@ int fastrandK ( int k );
 void set_srand ( unsigned int s );
 #define myrand rand
 #endif
+
+#ifdef RPACKAGE
+template<typename _RandomAccessIterator>
+    inline void
+    my_random_shuffle(_RandomAccessIterator __first, _RandomAccessIterator __last)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
+	    _RandomAccessIterator>)
+      __glibcxx_requires_valid_range(__first, __last);
+
+      if (__first != __last)
+	for (_RandomAccessIterator __i = __first + 1; __i != __last; ++__i)
+	  {
+	    _RandomAccessIterator __j = __first
+					+ fastrand() % ((__i - __first) + 1);
+	    if (__i != __j)
+	      std::iter_swap(__i, __j);
+	  }
+    }
+
+
+#else
+#define my_random_shuffle std::random_shuffle
+#endif
+
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 /*
@@ -888,7 +937,7 @@ numtype next_combination ( numtype *comb, int k, int n )
 	i = k - 1;
 	comb[i]++;
 	while ( ( comb[i] >= offset + i ) && ( i > 0 ) ) {
-		//printf("next_combination: while 1: i %d, comb[i] %d\n", i, comb[i]);
+		//myprintf("next_combination: while 1: i %d, comb[i] %d\n", i, comb[i]);
 		i--;
 		comb[i]++;
 	}
@@ -1094,7 +1143,7 @@ inline void perform_perm ( const object *const src, object *const target, const 
 template <class object, class numtype>
 inline std::vector<object> perform_perm ( const std::vector<object> src, const std::vector<numtype> perm )
 {
-	//printf("perform_perm: src %d, perm %d\n", src.size(), perm.size() );
+	//myprintf("perform_perm: src %d, perm %d\n", src.size(), perm.size() );
 	std::vector<object> dst ( src.size() );
 	for ( int i=0; i<perm.size(); i++ ) {
 		dst[perm[i]]=src[i];
@@ -1213,12 +1262,12 @@ inline bool issorted ( _ForwardIterator first, const _ForwardIterator last )
 template <class returntype, class basetype, class numtype>
 returntype* new_valueindex ( const basetype *bases, const numtype n )
 {
-	//printf("init_valueindex: n %d\n", n);
+	//myprintf("init_valueindex: n %d\n", n);
 	returntype *valueindex = new returntype [n * sizeof ( returntype )];
 	assert ( valueindex!=0 );
 #ifdef OADEBUG
 	if ( n==0 ) {
-		printf ( "valueindex of size 0\n" );
+		myprintf ( "valueindex of size 0\n" );
 		exit ( 0 );
 	}
 #endif
@@ -1387,17 +1436,17 @@ public:
 	}
 	void show() const {
 		for ( int i=0; i<n; i++ )
-			printf ( "%d ", indices[i] );
+			myprintf ( "%d ", indices[i] );
 	}
 
 	template<class Type>
 	/// return array sorted using the order from the indexsort structure
 	std::vector<Type> sorted ( const std::vector<Type> &vals ) const {
 		std::vector<Type> s ( n );
-		//printf("here\n");
+		//myprintf("here\n");
 		for ( int i=0; i<n; i++ )
 			s[i] = vals[indices[i]];
-		//printf("here 2\n");
+		//myprintf("here 2\n");
 		return s;
 	}
 	template<class ContainerType>
@@ -1470,10 +1519,10 @@ public:
 		for ( int i=0; i<ngroups; i++ ) {
 			int64_t f = factorial<long> ( gsize[i] );
 
-			//printf("i %d: f %ld, s %ld s int %d, max %ld\n", i,f, s, (int)(s), std::numeric_limits< long long>::max() );
+			//myprintf("i %d: f %ld, s %ld s int %d, max %ld\n", i,f, s, (int)(s), std::numeric_limits< long long>::max() );
 			if ( f != 0 && ( std::numeric_limits< int64_t>::max() / f ) < s ) {
 				// multiplication would exceed range of unsigned
-				printf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
+				myprintf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
 				throw;
 				return -1;
 			}
@@ -1509,24 +1558,24 @@ public:
 
 	/// show the symmetry group
 	void show ( int verbose=1 ) const {
-		printf ( "symmetry group: %d elements, %d subgroups: ", n, ngroups );
+		myprintf ( "symmetry group: %d elements, %d subgroups: ", n, ngroups );
 		for ( int i=0; i<ngroups; i++ )
-			printf ( "%d ", gsize[i] );
-		printf ( "\n" );
+			myprintf ( "%d ", gsize[i] );
+		myprintf ( "\n" );
 
 		if ( verbose>=2 ) {
-			printf ( "gidx: " );
+			myprintf ( "gidx: " );
 			for ( int i=0; i<n; i++ )
-				printf ( "%d, ", gidx[i] );
-			printf ( "\n" );
-			printf ( "gstart: " );
+				myprintf ( "%d, ", gidx[i] );
+			myprintf ( "\n" );
+			myprintf ( "gstart: " );
 			for ( int i=0; i<ngroups; i++ )
-				printf ( "%d, ", gstart[i] );
-			printf ( "\n" );
-			printf ( "gsize: " );
+				myprintf ( "%d, ", gstart[i] );
+			myprintf ( "\n" );
+			myprintf ( "gsize: " );
 			for ( int i=0; i<ngroups; i++ )
-				printf ( "%d, ", gsize[i] );
-			printf ( "\n" );
+				myprintf ( "%d, ", gsize[i] );
+			myprintf ( "\n" );
 
 		}
 	}
@@ -1581,7 +1630,7 @@ std::vector<Type> permute ( const std::vector<Type> x, const std::vector<IndexTy
 {
 	std::vector<Type> y ( x.size() );
 	for ( int i=0; i<x.size(); i++ ) {
-		printf ( " permute %d: y[%d]=x[%d]=%f\n", i, i, indices[i], x[indices[i]] );
+		//myprintf ( " permute %d: y[%d]=x[%d]=%f\n", i, i, indices[i], x[indices[i]] );
 		y[i]=x[indices[i]];
 	}
 	return y;
@@ -1631,7 +1680,7 @@ int symm_group_index_plain ( const numtype *vec, const int n, itype *& idx, ityp
 	prev = -1;
 	nsg = 0;
 	for ( i=0; i<n; i++ ) {
-		//printf("symm_group_index: nsg: %d i %d\n", nsg, i);
+		//myprintf("symm_group_index: nsg: %d i %d\n", nsg, i);
 		if ( vec[i]!=prev ) {
 			gstart[nsg]=i;
 			nsg++;
@@ -1697,8 +1746,8 @@ inline Type krawtchouk ( Type j, Type x, Type n, Type s, int verbose=0 )
 		val += powmo ( i ) * ipow ( s-1, j-i ) * ncombs ( x, i ) * ncombs ( n-x, j-i );
 		if ( verbose ) {
 			Type tt= std::pow ( double ( -1 ), ( double ) i ) * std::pow ( ( double ) ( s-1 ), ( double ) ( j-i ) ) * ncombs ( x, i ) * ncombs ( n-x, j-i );
-			printf ( "    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", ( int ) j, ( int ) x, ( int ) n, ( int ) s, ( int ) i, ( int ) tt, ( int ) std::pow ( ( double )-1, ( double ) i ), ( int ) std::pow ( ( double ) s-1, ( double ) ( j-i ) ) , ( int ) ncombs ( x, i ), ( int ) ncombs ( n-x, j-i ) );
-			printf ( "   ncombs(%d, %d) = %d \n", ( int ) ( n-x ), ( int ) ( j-i ), ( int ) ncombs ( n-x, j-i ) );
+			myprintf ( "    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", ( int ) j, ( int ) x, ( int ) n, ( int ) s, ( int ) i, ( int ) tt, ( int ) std::pow ( ( double )-1, ( double ) i ), ( int ) std::pow ( ( double ) s-1, ( double ) ( j-i ) ) , ( int ) ncombs ( x, i ), ( int ) ncombs ( n-x, j-i ) );
+			myprintf ( "   ncombs(%d, %d) = %d \n", ( int ) ( n-x ), ( int ) ( j-i ), ( int ) ncombs ( n-x, j-i ) );
 		}
 	}
 	return val;

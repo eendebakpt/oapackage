@@ -120,6 +120,9 @@ class Pareto
       void show ( int verbose=1 ) {
          if ( verbose==0 )
             return;
+#ifdef RPACKAGE
+	 // not implemented...
+#else
          printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
          if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
@@ -133,6 +136,7 @@ class Pareto
                }
             }
          }
+#endif
       }
 
       /// return all indices of the Pareto optimal elements as a std::deque
