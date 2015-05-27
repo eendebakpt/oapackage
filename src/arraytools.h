@@ -44,16 +44,18 @@ typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
+#ifdef FULLPACKAGE
+#include <iostream>
+#endif
+
 #include "printfheader.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <vector>
 #include <deque>
-#include <iostream>
 #include <ostream>
 #include <iomanip>
-#include <ostream>
 #include <sstream>
 #include <fstream>
 
@@ -315,25 +317,23 @@ public:
 
 	/// @brief Comparison operator
 	inline int operator== ( const arraydata_t &ad2 ) {
-		if ( this->N != ad2.N ) {
-			//	printf("==: N\n");
+		if ( this->N != ad2.N ) {			
 			return 0;
 		}
 
 		if ( this->ncols != ad2.ncols ) {
-			//	printf("==: ncols\n");
 			return 0;
 		}
 		if ( ! std::equal ( this->s, this->s+this->ncols, ad2.s ) ) {
-			//			printf("==: s\n");
+			//			myprintf("==: s\n");
 			return 0;
 		}
 		if ( this->strength != ad2.strength ) {
-			//	printf("==: strength\n");
+			//	myprintf("==: strength\n");
 			return 0;
 		}
 		if ( this->order != ad2.order ) {
-			//	printf("==: order\n");
+			//	myprintf("==: order\n");
 			return 0;
 		}
 
@@ -368,9 +368,9 @@ public:
 	/// set column group equal to that of a symmetry group
 	void set_colgroups ( const symmetry_group &sg );
 	void show_colgroups() const {
-		printf ( "arraydata_t: colgroups: " );
+		myprintf ( "arraydata_t: colgroups: " );
 		print_perm ( this->colgroupindex, this->ncolgroups );
-		printf ( "                  size: " );
+		myprintf ( "                  size: " );
 		print_perm ( this->colgroupsize, this->ncolgroups );
 	}
 
@@ -475,12 +475,12 @@ inline int destroy_array ( array_t *array )
  */
 static inline array_t* create_array ( const int nrows, const int ncols )
 {
-	//printf("  create_array: size %d (%d %d)\n", nrows*ncols, nrows, ncols);
+	//myprintf("  create_array: size %d (%d %d)\n", nrows*ncols, nrows, ncols);
 	array_t *array = ( array_t * ) malloc ( nrows*ncols*sizeof ( array_t ) );
 
 #ifdef OADEBUG
 	if ( array==NULL ) {
-		printf ( "problem with malloc %d %d, exiting!!!\n", nrows, ncols );
+		myprintf ( "problem with malloc %d %d, exiting!!!\n", nrows, ncols );
 		throw;
 	}
 #endif
@@ -738,7 +738,7 @@ public:
 
 	/// print information about array
 	void show() const {
-		printf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, (void *)array );
+		myprintf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, (void *)array );
 	}
 	std::string showstr() const {
 		std::stringstream s;
@@ -757,7 +757,7 @@ public:
 			for ( c=0; c<this->n_columns; c++ ) {
 				if ( this->at ( r, c ) !=A.at ( r,c ) ) {
 					if ( verbose ) {
-						printf ( "first difference of array at %d, %d\n", r, c );
+						myprintf ( "first difference of array at %d, %d\n", r, c );
 					}
 					return true;
 				}
@@ -791,7 +791,7 @@ public:
 		//    this->array[i]=tmp[i];
 		//}
 		if ( n!=this->n_rows*this->n_columns )
-			printf ( "array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n, this->n_rows, this->n_columns );
+			myprintf ( "array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n, this->n_rows, this->n_columns );
 		std::copy ( tmp, tmp+n, this->array );
 	}
 	/// special method for SWIG interface
@@ -860,7 +860,7 @@ public:
 
 #ifdef OADEBUG
 		if ( ( this->n_rows != rhs.n_rows ) || c1<0 || c2<0 || ( c1>this->n_columns-1 ) ) {
-			printf ( "array_link::columnGreater: warning: comparing arrays with different sizes\n" );
+			myprintf ( "array_link::columnGreater: warning: comparing arrays with different sizes\n" );
 			return 0;
 		}
 #endif
@@ -939,7 +939,7 @@ inline  array_link & array_link::operator= ( const array_link& rhs )
 #else
 	return shallowcopy ( rhs );
 #endif
-	//printf("array_link::operator= (index %d)\n", rhs.index);
+	//myprintf("array_link::operator= (index %d)\n", rhs.index);
 	/*	this->n_rows = rhs.n_rows;
 		this->n_columns = rhs.n_columns;
 		this->index = rhs.index;
@@ -959,7 +959,7 @@ inline  array_link & array_link::operator= ( const array_link& rhs )
 
 inline  array_link & array_link::shallowcopy ( const array_link& rhs )
 {
-	//printf("array_link::operator= (index %d)\n", rhs.index);
+	//myprintf("array_link::operator= (index %d)\n", rhs.index);
 	this->n_rows = rhs.n_rows;
 	this->n_columns = rhs.n_columns;
 	this->index = rhs.index;
@@ -975,7 +975,7 @@ inline  array_link & array_link::deepcopy ( const array_link& rhs )
 	this->index = rhs.index;
 	// perform deep copy
 	if ( this->array ) {
-		//  printf("  destroy array %d\n", this->array);
+		//  myprintf("  destroy array %d\n", this->array);
 		destroy_array ( this->array );
 	}
 	if ( rhs.array==0 )
@@ -992,7 +992,7 @@ inline int array_link::operator< ( const array_link& rhs ) const
 {
 #ifdef OADEBUG
 	if ( ( this->n_rows != rhs.n_rows ) || ( this->n_columns != rhs.n_columns ) ) {
-		printf ( "array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns );
+		myprintf ( "array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns );
 		return 0;
 	}
 #endif
@@ -1008,7 +1008,7 @@ inline int array_link::operator> ( const array_link& rhs ) const
 {
 #ifdef OADEBUG
 	if ( ( this->n_rows != rhs.n_rows ) || ( this->n_columns != rhs.n_columns ) ) {
-		printf ( "array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns );
+		myprintf ( "array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns );
 		return 0;
 	}
 #endif
@@ -1030,7 +1030,7 @@ inline int array_link::operator== ( const array_link& b ) const
 {
 	if ( ( this->n_rows != b.n_rows ) || ( this->n_columns != b.n_columns ) ) {
 #ifdef OADEBUG
-		printf ( "array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns );
+		myprintf ( "array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns );
 #endif
 		return 0;
 	}
@@ -1046,7 +1046,7 @@ inline int array_link::operator!= ( const array_link& b ) const
 {
 	if ( ( this->n_rows != b.n_rows ) || ( this->n_columns != b.n_columns ) ) {
 #ifdef OADEBUG
-		printf ( "array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns );
+		myprintf ( "array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n", this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns );
 #endif
 		return 0;
 	}
@@ -1125,7 +1125,7 @@ public:
 	/// composition operator. the transformations are applied from the left
 	array_transformation_t operator* ( const array_transformation_t b ) {
 
-		//  printf("  array_transformation_t operator*: create output object\n");
+		//  myprintf("  array_transformation_t operator*: create output object\n");
 		array_transformation_t c ( this->ad );
 
 		const array_transformation_t &a = *this;
@@ -1135,7 +1135,7 @@ public:
 		//colperm_t tmpc = new_perm<colindex_t>(nc);
 		//rowperm_t tmpr = new_perm<rowindex_t>(nr);
 
-		//  printf("  array_transformation_t operator*: perform perms\n");
+		//  myprintf("  array_transformation_t operator*: perform perms\n");
 
 		// perform the rows permutations
 		perform_inv_perm ( b.rperm, c.rperm, this->ad->N, a.rperm );
@@ -1157,11 +1157,11 @@ public:
 
 			if ( ci==133 ) {
 
-				printf ( "a:\n" );
+				myprintf ( "a:\n" );
 				a.show();
-				printf ( "b:\n" );
+				myprintf ( "b:\n" );
 				b.show();
-				printf ( "permutation of col %d:\n", ci );
+				myprintf ( "permutation of col %d:\n", ci );
 				print_perm ( l1, ad->s[ci] );
 				print_perm ( l2, ad->s[ci] );
 				print_perm ( c.lperms[ci], ad->s[ci] );
@@ -1329,7 +1329,7 @@ public:
 			default
 					:
 				modestr="error";
-				printf ( "arrayfile_t: showstr(): no such mode\n" );
+				myprintf ( "arrayfile_t: showstr(): no such mode\n" );
 				break;
 			}
 
@@ -1393,7 +1393,7 @@ private:
 		break;
 		default
 				:
-			printf ( "error: number of bits undefined\n" );
+			myprintf ( "error: number of bits undefined\n" );
 			break;
 		}
 		return num;
@@ -1634,14 +1634,16 @@ void write_array_format ( const atype *array, const int nrows, const int ncols, 
 		count = j;
 		for ( int k = 0; k < ncols; k++ ) {
 			const char *s = ( k<ncols-1 ) ? " ":"\n";
-			printf ( "%3i%s", static_cast<int> ( array[count] ), s );
+			myprintf ( "%3i%s", static_cast<int> ( array[count] ), s );
 			count += nrows;
 		}
 	}
 #ifdef RPACKAGE	
 #else
+#ifdef FULLPACKAGE
 	fflush ( stdout );
 	setbuf ( stdout, NULL );
+#endif
 #endif	
 }
 /** @brief Write a formatted array
@@ -1694,12 +1696,12 @@ inline bool readbinheader ( FILE *fid, int &nr, int &nc )
 	nr=h[2];
 	nc=h[3];
 
-	//printf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
+	//myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
 	bool valid=false;
 
 	// check 2 numbers of the magic header
 	if ( nn==4 && h[0]==30397995 &&  h[1]==12224883 ) {
-		//printf("h[0] %f, h[1] %f nn %d\n", h[0], h[1], nn);
+		//myprintf("h[0] %f, h[1] %f nn %d\n", h[0], h[1], nn);
 		return true;
 	}
 
@@ -1757,12 +1759,12 @@ inline void vectorvector2binfile ( const std::string fname, const std::vector<st
 	if ( writeheader ) {
 		writebinheader ( fid, vals.size(), na );
 	} else {
-		printf ( "warning: legacy file format\n" );
+		myprintf ( "warning: legacy file format\n" );
 	}
 	for ( unsigned int i=0; i<vals.size(); i++ ) {
 		const std::vector<double> x = vals[i];
 		if ( ( int ) x.size() !=na ) {
-			printf ( "error: writing incorrect number of elements to binary file\n" );
+			myprintf ( "error: writing incorrect number of elements to binary file\n" );
 		}
 		for ( unsigned int j=0; j<x.size(); j++ ) {
 			fwrite ( & ( x[j] ), sizeof ( double ), 1, fid );

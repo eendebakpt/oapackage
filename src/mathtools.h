@@ -10,7 +10,9 @@
 #define MATHTOOLS_H
 
 #include "printfheader.h"
+#ifdef FULLPACKAGE
 #include <iostream>
+#endif
 #include <limits>
 #include <algorithm> /* defines max and min template functions */
 #include <assert.h>
@@ -1477,7 +1479,10 @@ public:
 
 };
 
+#ifdef FULLPACKAGE
 #include "InfInt.h"
+#endif
+
 #include <limits>
 
 /** @brief Class to describe the symmetry group of a list of elements
@@ -1532,7 +1537,7 @@ public:
 		return s;
 	}
 
-
+#ifdef FULLPACKAGE
 	/// return size of the group of all permutations respecting the symmetry
 	InfInt permsize_large() const {
 		InfInt s = 1;
@@ -1543,6 +1548,7 @@ public:
 		}
 		return s;
 	}
+#endif
 
 	/// representation function (for python interface)
 	std::string __repr__() const {

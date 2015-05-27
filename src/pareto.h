@@ -25,7 +25,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PARETO_H
 #define PARETO_H
 
+#ifdef RPACKAGE
+// not implemented...
+#define myprintf Rprintf
+#else
 #include <stdio.h>
+#define myprintf printf
+#endif
+
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
@@ -120,9 +127,6 @@ class Pareto
       void show ( int verbose=1 ) {
          if ( verbose==0 )
             return;
-#ifdef RPACKAGE
-	 // not implemented...
-#else
          printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
          if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
@@ -136,7 +140,6 @@ class Pareto
                }
             }
          }
-#endif
       }
 
       /// return all indices of the Pareto optimal elements as a std::deque

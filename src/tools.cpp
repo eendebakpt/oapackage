@@ -1,11 +1,10 @@
 #include <sys/timeb.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <ostream>
-#include <iostream>
+//#include <iostream>
 #include <iomanip>
 #include <fstream>
 
@@ -22,6 +21,7 @@
 
 using namespace std;
 
+#include "printfheader.h"
 #include "tools.h"
 #include "mathtools.h"
 #include "arraytools.h"
@@ -157,7 +157,7 @@ void print_array(const array_t *array, const rowindex_t r, const colindex_t c)
 
 void print_array(const char *str, const array_t *array, const rowindex_t r, const colindex_t c)
 {
-    printf("%s", str);
+    myprintf("%s", str);
     print_array(array, r, c);
 }
 

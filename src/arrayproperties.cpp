@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-//#include <stdio.h>
 #include <errno.h>
 #include <time.h>
 #include <algorithm>
@@ -16,13 +15,12 @@
 #include <unistd.h>
 #endif
 
-#include "printfheader.h"
+#include "printfheader.h"	// with stdio
 #include "mathtools.h"
 #include "tools.h"
 #include "arraytools.h"
 #include "arrayproperties.h"
 
-#include "pareto.h"
 
 using namespace Eigen;
 
@@ -74,7 +72,6 @@ public:
 		std::string s = "";
 		linear2idx ( i );
 
-
 		for ( int i=0; i<k; i++ ) {
 			s+= printfstring ( "[%d]", tmpidx[i] ) ;
 		}
@@ -106,9 +103,7 @@ public:
 			for ( int i=0; i<k; i++ )
 				nidx[i]=tmpidx[i];
 		}
-
 	}
-
 
 	inline int getlinearidx ( int *idx ) const {
 		int lidx=0;
@@ -190,7 +185,6 @@ inline int dHx ( const int nr, int k, carray_t *data, int c1, int c2 )
 		//printf("  c %d\n", c);
 		dh += d1[c]!=d2[c];
 	}
-//  printf("nr %d, k %d, c1 c2 %d %d: dHx %d\n", nr, k, c1, c2, dh);
 	return dh;
 }
 
@@ -300,7 +294,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 	B.set ( dh, v+N );
 
 	if ( verbose>=3 ) {
-		myprintf ( "distance_distribution_mixed integer: \n" ); 
+		myprintf ( "distance_distribution_mixed integer: \n" );
 		B.show();
 	}
 
@@ -310,7 +304,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 	}
 
 	if ( verbose ) {
-		myprintf ( "distance_distribution_mixed: \n" ); 
+		myprintf ( "distance_distribution_mixed: \n" );
 		B.show();
 	}
 
@@ -497,7 +491,7 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 	int N = al.n_rows;
 
 	if ( verbose )
-		myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, (long)ncomb );
+		myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, ( long ) ncomb );
 
 //#pragma omp parallel for
 	for ( int64_t i=0; i<ncomb; i++ ) {
@@ -894,7 +888,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 			printf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
 
 #ifdef FULLPACKAGE
-			if ( verbose>=4 && FULLPACKAGEX) {
+			if ( verbose>=4  ) {
 				std::cout << "Its singular values are:" << std::endl << S << std::endl;
 			}
 #endif
@@ -908,7 +902,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		vif=0;
 		Eeff=0;
 #ifdef FULLPACKAGE
-		if ( verbose>=3 && FULLPACKAGEX) {
+		if ( verbose>=3  ) {
 			Eigen::MatrixXd Smat ( S );
 			Eigen::ArrayXd Sa=Smat.array();
 			double Deff = exp ( 2*Sa.log().sum() /m ) /N;
@@ -977,7 +971,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		return;
 	}
 #ifdef FULLPACKAGE
-if ( verbose>=3 )
+	if ( verbose>=3 )
 		std::cout << "Its singular values are:" << std::endl << S << std::endl;
 #endif
 //cout << "x:\n"<< x << std::endl;
@@ -1334,7 +1328,9 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 
 }
 
-typedef MatrixFloat DMatrix; typedef VectorFloat DVector; typedef ArrayFloat DArray;
+typedef MatrixFloat DMatrix;
+typedef VectorFloat DVector;
+typedef ArrayFloat DArray;
 
 //typedef Eigen::MatrixXd DMatrix; typedef Eigen::VectorXd DVector; typedef  Eigen::ArrayXd DArray;
 
@@ -1440,6 +1436,8 @@ double CL2discrepancy ( const array_link &al )
 	return w;
 }
 
+#ifdef FULLPACKAGE
+
 Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose )
 {
 	Pareto<mvalue_t<long>,long> pset;
@@ -1447,7 +1445,7 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 
 	for ( size_t i=0; i<arraylist.size(); i++ ) {
 		if ( verbose>=2 || ( ( i%2000==0 ) && verbose>=1 ) ) {
-			myprintf ( "parsePareto: array %ld/%ld\n", (long)i, (long)arraylist.size() );
+			myprintf ( "parsePareto: array %ld/%ld\n", ( long ) i, ( long ) arraylist.size() );
 		}
 		if ( ( ( i%10000==0 ) && verbose>=1 ) ) {
 			pset.show ( 1 );
@@ -1459,5 +1457,6 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 	return pset;
 }
 
+#endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

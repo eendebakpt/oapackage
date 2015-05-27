@@ -98,6 +98,8 @@ array_link array2xf(const array_link &al);
 int arrayrank(const array_link &al);
 
 
+#ifdef FULLPACKAGE
+
 #include "pareto.h"
 
 // Calculate the Pareto optimal desings from a list of arrays
@@ -180,6 +182,8 @@ inline void parseArrayPareto ( const array_link &al, IndexType i, Pareto<mvalue_
    // add the new tuple to the Pareto set
    pset.addvalue ( p, i );
 }
+
+#endif // FULLPACKAGE
 
 /// convert C value to D-efficiency value
 inline double Cvalue2Dvalue ( double C, int ka )
