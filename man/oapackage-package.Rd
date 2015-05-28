@@ -36,5 +36,5 @@ two-factor interactions},
 \seealso{
 The documententation for \code{\link{Doptimize}}. }
 \examples{
-    ### For an example see the file example.R or example_design_usage.R included in the packages.    
+    ### For an example see the file example_Doptimize.R or example_design_usage.R included in the package.    
 }

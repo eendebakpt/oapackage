@@ -95,12 +95,10 @@ inline void printfd_handler ( const char *file, const char* func, int line, cons
 //#pragma DISABLE_WARNINGS
 //#endif
 
-//using namespace std;
-
-
 
 //! Loglevel definitions. The loglevel determines to amount of output to stdout
 enum loglevel_t {LOGERROR, SYSTEM, QUIET, NORMAL, DEBUG, EXTRADEBUG};
+
 
 int log_print ( const int level, const char *message, ... );
 
@@ -130,7 +128,11 @@ inline void mycheck ( int condition, const char *message, ... )
 		va_list		va;
 		va_start ( va, message );
 		myprintf ( "mycheck: " );
+#ifdef RPACKAGE
+		myprintf("(not implemented) %s", message);
+#else
 		vprintf ( message, va );
+#endif
 		va_end ( va );
 //  myprintf ( "mycheck %d: %s", condition, str);
 #ifdef RPACKAGE
@@ -174,7 +176,12 @@ inline int cprintf ( int check, const char *message, ... )
 	if ( check ) {
 		va_list va;
 		va_start ( va, message );
+#ifdef RPACKAGE
+		n = -1;
+		myprintf("cprintf: not implemented\n");
+#else		
 		n = vprintf ( message, va );
+#endif
 		va_end ( va );
 	}
 	return n;
@@ -475,9 +482,6 @@ void free2d_irr ( DataType **data, const int nrows )
 {
 	free2d ( data );
 }
-
-/// Read array configuration from file
-arraydata_t* readConfigFile ( const char *file );
 
 
 //void show_array(carray_t *array, const int x, const int y);

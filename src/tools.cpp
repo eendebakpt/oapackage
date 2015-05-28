@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <fstream>
 
+
 #if defined(_MSC_VER)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4996)
@@ -23,6 +24,8 @@ using namespace std;
 
 #include "printfheader.h"
 #include "tools.h"
+
+
 #include "mathtools.h"
 #include "arraytools.h"
 
@@ -57,69 +60,7 @@ string system_uname()
 
 
 
-/**
- * @brief Read file with design of OA
- * @param file
- * @return
- */
-arraydata_t* readConfigFile(const char *file)
-{
-    //***open config file***
-    colindex_t N, strength, ncols;
-    array_t *s;
-    ifstream inFile;
 
-    inFile.open(file);
-    if (!inFile) {
-        myprintf("readConfigFile: unable to open file %s\n", file);
-        //throw -1; // throw error
-        return 0;
-        //exit(1); // terminate with error
-    }
-
-    /* read design specifications: runs, strength, number of factors */
-    string str;
-    inFile >> str >> N;
-    assert(str.compare("runs "));
-    inFile >> str >> strength;
-    assert(str.compare("strength "));
-    inFile >> str >> ncols;
-    assert(strcmp(str.c_str(), "nfactors "));
-    if (N>10000 || N<1) {
-        printf("readConfigFile: file %s: invalid number of runs %d\n", file, N );
-        return 0;
-    }
-    if (strength>1000 || strength<1) {
-        printf("readConfigFile: file %s: invalid strength %d\n", file, strength);
-        return 0;
-    }
-    if (ncols>1000 || ncols<1) {
-        printf("readConfigFile: file %s: invalid ncols %d\n", file, ncols);
-        return 0;
-    }
-    s = (array_t *)malloc(ncols*sizeof(array_t));
-    for(int j = 0; j < ncols; j++) {
-        inFile >> s[j];
-        if ((s[j]<1) || (s[j]>15)) {
-            printf("warning: number of levels specified is %d\n", s[j]);
-            //exit(1);
-        }
-    }
-    inFile.close();
-
-    arraydata_t *ad = new arraydata_t(s, N, strength, ncols);
-    free(s);
-    return ad;
-}
-
-
-
-//! Create new array link object, clone an array
-array_link::array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index_=-1): n_rows(nrows), n_columns(ncols), index(index_)
-{
-    this->array = create_array(nrows, ncols);
-    memcpy(this->array, array, nrows*ncolsorig * sizeof(array_t)); // FIX: replace by copy_array
-}
 
 
 
@@ -567,9 +508,10 @@ int log_print(const int level, const char *message, ...)
 #else
   static int 	loglevel = (int)QUIET;
 #endif
-  
-    va_list		va;
+
 int result = 0;
+#ifdef FULLPACKAGE  
+    va_list		va;
     //if (level<=2)
     //  printf("log_print: debug: %d %d %d\n", level, loglevel, level <= loglevel );
     va_start(va, message);
@@ -588,6 +530,8 @@ int result = 0;
     va_end(va);
 result =(level <= loglevel);
     }
+#endif // FULLPACKAGE
+
     return result;
 }
 

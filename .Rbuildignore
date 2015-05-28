@@ -44,6 +44,8 @@ setup.py
 setup.cfg
 scripts/.*py
 scripts/.Rdata
+scripts/*
+scripts
 src/bitarray/Makefile
 src/mpitools/*
 src/lmc.*
@@ -52,7 +54,7 @@ src/bit_array.*
 src/nonroot.*
 src/anyoption.*
 
-#src/extend.*
+
 
 
 

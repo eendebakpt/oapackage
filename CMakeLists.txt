@@ -341,6 +341,9 @@ if("$ENV{USER}" STREQUAL "eendebakpt")
   set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/md5.h src/mathtools.h src/oaoptions.h src/tools.h)
   set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/md5.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
 
+  set(headersR src/tools.h)
+  set(srcsR src/tools.cpp)
+  
   add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
   set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE ${COPTS} -Isrc -I/usr/share/R/include")
   #set_target_properties(Rtest PROPERTIES LINK_FLAGS "-lR")

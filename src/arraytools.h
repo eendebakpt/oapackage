@@ -58,6 +58,7 @@ typedef unsigned __int32 uint32_t;
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <stdarg.h>
 
 #include <stdexcept>
 
@@ -425,7 +426,11 @@ public:
 
 };
 
-#include <stdarg.h>
+/// Read array configuration from file
+arraydata_t* readConfigFile ( const char *file );
+
+
+
 
 /**
  * @brief Function similar to printf returning C++ style string
