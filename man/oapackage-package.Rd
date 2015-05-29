@@ -27,7 +27,7 @@ P.T. Eendebak <pieter.eendebak@gmail.com>
     Eendebak, P.T. and Schoen, E.D. (2015) 
     \emph{Two-level designs to estimate all main effects and
 two-factor interactions},
-    to be submitted
+    submitted
     
 }
 \keyword{ array }
@@ -36,5 +36,5 @@ two-factor interactions},
 \seealso{
 The documententation for \code{\link{Doptimize}}. }
 \examples{
-    ### For an example see the file example_Doptimize.R or example_design_usage.R included in the package.    
+For an example see the file example_Doptimize.R or example_design_usage.R included in the package.    
 }

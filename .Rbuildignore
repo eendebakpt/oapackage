@@ -40,6 +40,7 @@ _oalib.cpython-34m.so
 _oalib.so
 __pycache__
 README.Matlab.md
+README.md
 setup.py
 setup.cfg
 scripts/.*py
@@ -53,10 +54,15 @@ src/md5*
 src/extend.*
 src/bit_array.*
 src/nonroot.*
+src/pareto.*
 src/anyoption.*
 src/Eigen
 src/Eigen/*
 src/InfInt.h
+src/InfInt.cpp
+src/msstdint.h
+src/analysis.h
+src/bitarray/*
 
 
 

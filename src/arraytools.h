@@ -101,11 +101,9 @@ Eigen::MatrixXd dummy2();
 #include "mathtools.h"
 #ifdef FULLPACKAGE
 #include "md5.h"
+#include "bitarray/bit_array.h"
 #endif
 
-//extern "C" {
-#include "bitarray/bit_array.h"
-//}
 
 
 #ifdef SWIG

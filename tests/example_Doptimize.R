@@ -1,24 +1,19 @@
 ## Example code for calling Doptimize function from R
-#library(devtools)
-#load_all('oapackage')
+
 library(oapackage)
-#library(oapackage, lib.loc='...')
 
 # set variables
 
-N = 40
-k=7
-N = 8
-k=3
-nrestarts=16
-alpha1=1
+N = 32   # number of runs
+k=7      # number of factors
+nrestarts=16  # number of restarts 
+alpha1=1      # parameters of the optimization function
 alpha2=1
 alpha3=0
-verbose=1
-method=0
-maxtime=100 # max running time in seconds
+verbose=1    # specified the output level of the function
 
-p = Doptimize(N, k, nrestarts, alpha1, alpha2, alpha3, verbose, method, maxtime ) 
+# run the function
+p = Doptimize(N, k, nrestarts, alpha1, alpha2, alpha3, verbose ) 
 
 print('resulting design:')
 print(p)

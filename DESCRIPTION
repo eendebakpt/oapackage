@@ -1,12 +1,12 @@
 Package: oapackage
 Type: Package
 Title: Orthogonal Array Package
-Version: 2.0.3
+Version: 2.0.4
 Date: 2015-05-25
 Author: P. T. Eendebak
 Maintainer: P. T. Eendebak <pieter.eendebak@gmail.com>
 Description: Interface to D-optimal design generation code of the Orthogonal Array package. The package can generate D-optimal designs with specified number of runs and factors. The optimality of the designs is defined in terms of a user specified optimization function based on the D-efficiency and Ds-efficiency.
-License: file LICENSE
+License: BSD_2_clause + file LICENSE
 License_is_FOSS: yes
 URL: http://www.pietereendebak.nl/oapackage
 Depends: 

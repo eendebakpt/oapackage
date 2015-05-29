@@ -3,7 +3,6 @@
 
 
 #include "arraytools.h"
-#include "bitarray/bit_array.h"
 
 #include "tools.h"
 #include "mathtools.h"
@@ -13,6 +12,7 @@
 #ifdef FULLPACKAGE
 #include <iostream>
 #include "lmc.h"
+#include "bitarray/bit_array.h"
 #endif
 
 #include <Eigen/Core>

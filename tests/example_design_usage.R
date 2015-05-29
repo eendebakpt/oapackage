@@ -1,21 +1,19 @@
-# Analysis of data using designs generated with the Orthogonal Array package
+# Analysis of data using a design generated with the Orthogonal Array package
 
 # Alan Vazquez
 # Pieter Eendebak
 # University of Antwerp
 # Department of Engineering Management
-# May 20th 2015
+# May 29th 2015
 #
 # For more information see http://pietereendebak.nl/oapackage/index.html
 #
 
 # This script uses the following R packages:
 # (install with install.packages('packagename'))
-#library(devtools)
 library(oapackage)
 library(ggplot2)
 library(reshape2)
-
 
 #------------------------------------------------------
 # 				Section 1: Introduction
@@ -23,26 +21,23 @@ library(reshape2)
 
 # We perform an experiment with N runs and k factors. Main effects as well as two-factor interactions are expected to be active.
 
-#------------------------------------------------------
-# 				Section 2: Creating data set
-#------------------------------------------------------
-
-# The design used for the analysis was constructed using the Doptimize function with the
-# parameters 
 N <- 28
 k <- 4
 
-#
-# The design used for the analysis is constructed using the Doptimize function with optimizating of D and Ds
+# The design used for the analysis is constructed using the Doptimize function with optimization of D+2*Ds
 
-D = Doptimize(N, k, nrestarts=30, alpha1=1, alpha2=1, alpha3=0, verbose=1) 
+D = Doptimize(N, k, nrestarts=30, alpha1=1, alpha2=2, alpha3=0) 
 
+
+#------------------------------------------------------
+# 				Section 2: Creating data set
+#------------------------------------------------------
 
 # For ilustrative purposes, we assume that the true model includes the following effects:
 #   B, C, D, BC, BD
 #
 # We use these effects and the parameter estimates to create a 'true model' and evaluate 
-# the performance of a 64-run two-level design constructed using the 'Doptim' function. 
+# the performance of a 32-run two-level design constructed using the 'Doptimize' function. 
 
 # The effects of the active factors and two-factor interactions are:
 betaparam <- c(10., 1., -2., 3., -.3, -.2)
@@ -53,7 +48,7 @@ betaparam <- c(10., 1., -2., 3., -.3, -.2)
 # The assumed variance for the model residuals is  
 sigmasq <- 0.04
 
-design <- as.data.frame(D) # trsnforming matrix to data frame
+design <- as.data.frame(D) # transforming matrix to data frame
 print(design) # Print design
 
 # Rename the columns of the design
@@ -108,8 +103,7 @@ hist( data[, 'Y'], main= 'Histogram of Y',xlab = 'Y' )
 
 # Fitting model containing main effects only
 lm.ME <- lm( Y ~ A+B+C+D, data = data )
-# Summary of the results
-print( summary(lm.ME) )
+print( summary(lm.ME) )   # print the resulting model
 
 # Fitting model containing main effects and two-factor interactions
 lm.Full <- lm( Y ~ (A+B+C+D)^2, data = data )
@@ -125,7 +119,6 @@ summary( lm.obj.red )
 Residuals <- residuals( lm.obj.red )
 Predicted <- fitted.values( lm.obj.red )
 plot(x= 1:N, Residuals, xlab = 'Run order', ylab = 'Residuals')
-#plot(x= 1:N, Predicted, col='red', xlab = 'Run order', ylab = 'Residuals')
 abline(h=0)
 
 # Normality
