@@ -99,8 +99,9 @@ Eigen::MatrixXd dummy2();
 
 #include "oaoptions.h"
 #include "mathtools.h"
-//#include "tools.h"
+#ifdef FULLPACKAGE
 #include "md5.h"
+#endif
 
 //extern "C" {
 #include "bitarray/bit_array.h"
@@ -754,7 +755,7 @@ public:
 
 	/// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 	std::string md5() const;
-
+	
 	bool firstDiff ( const array_link &A, int &r, int &c, int verbose=1 ) {
 		r=0;
 		c=0;

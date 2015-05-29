@@ -26,7 +26,7 @@
 // string.h for memcpy.
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
+#include <string>
 #include <algorithm>
 #ifdef WIN32
 #include <msstdint.h>

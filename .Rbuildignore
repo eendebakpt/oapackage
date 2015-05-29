@@ -49,10 +49,14 @@ scripts
 src/bitarray/Makefile
 src/mpitools/*
 src/lmc.*
+src/md5*
 src/extend.*
 src/bit_array.*
 src/nonroot.*
 src/anyoption.*
+src/Eigen
+src/Eigen/*
+src/InfInt.h
 
 
 

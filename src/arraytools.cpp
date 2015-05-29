@@ -710,6 +710,7 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
 /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 std::string array_link::md5() const
 {
+#ifdef FULLPACKAGE
 	if ( sizeof ( array_t ) ==4 ) {
 		// we have int as the representation type
 		return ::md5 ( this->array, this->n_columns*this->n_rows*sizeof ( array_t ) );
@@ -721,6 +722,10 @@ std::string array_link::md5() const
 		delete x;
 		return m;
 	}
+#else
+myprintf("array_link::md5(): not implemented\n");
+return "";
+#endif
 }
 
 #ifdef FULLPACKAGE

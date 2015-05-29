@@ -28,3 +28,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Citation notice: if you use this work or any results of this work, please cite the work (see the file README.md for details).
 For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 
+
+###################################################################################
+
+This package also used code from other works:
+
+Eigen (MPL2 license, see http://eigen.tuxfamily.org/)
+InfInt (by Sercan Tutar, GPL2 license)
+bitarray (by Isaac Turner, MIT license)
+md5.cpp (by RSA Data Security)
