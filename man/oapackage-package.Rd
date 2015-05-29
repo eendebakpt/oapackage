@@ -1,9 +1,8 @@
-\name{OApackage}
-\alias{OApackage}
 \docType{package}
-\title{
-Orthogonal Array package
-}
+\name{oapackage-package}
+\alias{oapackage-package}
+\alias{oapackage}
+\title{Orthogonal Array Package}
 \description{
 This package creates 2-level D-optimal designs with a user specified optimization function.
 }

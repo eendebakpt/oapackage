@@ -7,7 +7,8 @@ dist
 legacy
 mex
 mex/*
-oapackage
+oapackage/*py
+oapackage/__pycache__
 OApackage.egg-info
 performancetest
 performancetest/*
