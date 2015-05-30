@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include <vector>
-#include <stdint.h>
+//#include <stdint.h>
 #include <string.h>
 #include <deque>
 #include <cmath>
@@ -29,7 +29,6 @@
 #include <stdexcept>
 #include <numeric>
 #include <iterator>
-//#include <Eigen3.2.1/src/Core/products/GeneralBlockPanelKernel.h>
 
 
 #if defined(_MSC_VER)
