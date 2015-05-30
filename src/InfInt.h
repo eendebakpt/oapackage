@@ -52,7 +52,13 @@
 
 #include <limits.h>
 #include <stdlib.h>
+
+#if _WIN32
+#include <iostream> // hack to get int64_t
+//typedef signed __int64 int64_t;
+#else
 #include <stdint.h>
+#endif
 
 //#include "Profiler.h"
 

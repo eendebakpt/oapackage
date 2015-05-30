@@ -1517,6 +1517,7 @@ private:
 	void init ( const std::vector<Type> vals, bool ascending = true, int verbose=0 );
 public:
 
+#ifdef FULLPACKAGE
 	/// return size of the group of all permutations respecting the symmetry
 	int64_t permsize() const {
 		int64_t  s = 1;
@@ -1535,6 +1536,7 @@ public:
 		}
 		return s;
 	}
+#endif
 
 #ifdef FULLPACKAGE
 	/// return size of the group of all permutations respecting the symmetry
