@@ -55,9 +55,9 @@
 
 #if _WIN32
 #include <iostream> // hack to get int64_t
-//typedef signed __int64 int64_t;
+typedef signed __int64 int64_t;
 #else
-#include <stdint.h>
+#include <stdint.h>	// we want int64_t
 #endif
 
 //#include "Profiler.h"

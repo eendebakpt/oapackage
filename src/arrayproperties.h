@@ -45,11 +45,13 @@ double Aefficiency(const array_link &al, int verbose=0);
 double Eefficiency(const array_link &al, int verbose=0);
 
 
+#ifdef FULLPACKAGE
 /// Return the D-efficiencies for the projection designs
 std::vector<double> projDeff(const array_link &al, int kp, int verbose);
 
 /// Return the projection estimation capacity sequence of a design
 std::vector<double> PECsequence(const array_link &al, int verbose=0);
+#endif
 
 
 /// Return the distance distribution of a design

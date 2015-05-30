@@ -471,7 +471,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	return A;
 }
 
-
+#ifdef FULLPACKAGE
 /** Calculate D-efficiencies for all projection designs */
 std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
 {
@@ -558,6 +558,7 @@ std::vector<double> PECsequence ( const array_link &al, int verbose )
 
 	return pec;
 }
+#endif
 
 
 

@@ -1879,10 +1879,12 @@ std::vector<int> array_link::Fvalues ( int jj ) const
 	return FF;
 }
 
+#ifdef FULLPACKAGE
 std::vector<double> array_link::PECsequence() const
 {
 	return ::PECsequence ( *this );
 }
+#endif
 
 std::vector<int> array_link::Jcharacteristics ( int jj ) const
 {
