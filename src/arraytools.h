@@ -883,7 +883,7 @@ public:
 //private:
 	std::string showarrayS() const;
 
-#ifdef SWIG
+#ifdef SWIGCODE
 	long data(); /// return pointer to data, needed for swig interface
 #endif
 

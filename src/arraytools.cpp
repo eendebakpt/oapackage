@@ -1233,7 +1233,7 @@ void array_link::showproperties() const
 	return;
 }
 
-#ifdef SWIG
+#ifdef SWIGCODE
 long array_link::data()
 {
 	//return static_cast<long>(array);
