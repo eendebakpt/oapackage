@@ -88,19 +88,6 @@ void dextend_t::DefficiencyFilter ( double Dfinal, int k, int kfinal, double Lma
 
 	double Lmaxmulti = pow ( Lmax, kfinal-kn );
 	
-	/*
-	if ( 0 ) {
-		double Cfinalmulti = Cfinal/Lmaxmulti;
-		if ( Cfinal==0 )
-			Cfinalmulti=0;
-		else {
-			if ( Lmaxmulti==0 ) {
-				Cfinalmulti=std::numeric_limits<double>::infinity();
-			}
-		}
-	}
-	*/
-
 	int nn = dextend.Deff.size();
 	for ( int ii=0; ii< ( int ) nn; ii++ ) {
 

@@ -118,7 +118,7 @@ template <class IndexType>
 inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( const array_link &al, int verbose  )
 {
    int N = al.n_rows;
-   int k = al.n_columns;
+   //int k = al.n_columns;
 
    typename Pareto<mvalue_t<long>,IndexType>::pValue p;
    std::vector<double> gwlp = al.GWLP();
@@ -126,7 +126,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
    if (gwlp.size()>3) w3 = N*N*gwlp[3]; // the maximum value for w3 is N*choose(k, jj)
    long w4 = 0;
    if (gwlp.size()>4) w4 = N*N*gwlp[4]; // the maximum value for w3 is N*choose(k, jj)
-   long xmax=N*ncombs ( k, 4 );
+   //long xmax=N*ncombs ( k, 4 );
    std::vector<long> w;
    w.push_back ( w3 );
    w.push_back ( w4 ); // )); = xmax*w3+w4;
@@ -134,7 +134,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
    mvalue_t<long> wm ( w, mvalue_t<long>::LOW );
 	
    if ( verbose>=3 ) {
-      printf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", w4, gwlp[4] );
+      myprintf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", w4, gwlp[4] );
    }
 
    jstruct_t js ( al, 4 );
@@ -158,7 +158,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
    p.push_back ( v ); // F
 
    	if (verbose>=2) {
-	  printf("  parseArrayPareto: rank %d, verbose %d\n", al.rank(), verbose );
+	  myprintf("  parseArrayPareto: rank %d, verbose %d\n", al.rank(), verbose );
 	}
 
   return p;

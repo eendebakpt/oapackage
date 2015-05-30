@@ -502,6 +502,9 @@ ostream& logstream(int level)
   */
 int log_print(const int level, const char *message, ...)
 {
+int result = 0;
+
+#ifdef FULLPACKAGE  
     // TODO: convert loglevel to more generic streamloglvl...
 #ifdef SWIGPYTHON
   static int 	loglevel = (int)SYSTEM;
@@ -509,9 +512,7 @@ int log_print(const int level, const char *message, ...)
   static int 	loglevel = (int)QUIET;
 #endif
 
-int result = 0;
-#ifdef FULLPACKAGE  
-    va_list		va;
+  va_list		va;
     //if (level<=2)
     //  printf("log_print: debug: %d %d %d\n", level, loglevel, level <= loglevel );
     va_start(va, message);

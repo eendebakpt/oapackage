@@ -462,7 +462,7 @@ myassert(ad.ncols>=al.n_columns, "strength_check: array has too many columns");
     
     strength_check_t strengthcheck ( ad.strength );
 
-    int oaindextmin = get_oaindex ( ad.s, ad.strength-1, ad.N );
+    //int oaindextmin = get_oaindex ( ad.s, ad.strength-1, ad.N );
 
     /* set column combinations with extending column fixed */
 

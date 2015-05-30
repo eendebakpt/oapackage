@@ -95,7 +95,7 @@ int oaunittest(int verbose, int writetests=0)
 				arraydata_t arrayclassmixed ( ss, 36, t, 5 );
 		 rr =  Doptimize(arrayclassmixed, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
 
-		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t0 );
+		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t00 );
 	}
 	
 	{
@@ -225,7 +225,6 @@ assert( fabs(D-0.335063) < 1e-3 );
 	{
 		cprintf ( verbose,"%s: calculate symmetry group\n", bstr );
 
-		int k = 5;
 		const arraylist_t &arraylist = aa[5];
 
 		array_link al=arraylist.at ( 0 );

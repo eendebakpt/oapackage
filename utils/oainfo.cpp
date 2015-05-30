@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         exit(0);
     }
 
-    arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
+    //arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
 
     /* read in the arrays */
     if (verbose>=2)

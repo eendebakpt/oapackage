@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
             FILE *fid = fopen(fname, "rb");
             if (fid>0) {
                 //printf("fid %d\n", fid);
-                bool valid= readbinheader(fid, nr, nc);
+                valid= readbinheader(fid, nr, nc);
                 if (valid) {
 		if (verbose) {
                     printf( "data file %s: %d %d\n", fname, nr, nc);

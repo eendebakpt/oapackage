@@ -666,7 +666,6 @@ template <class itemType, class indexType>
 static inline void flipSort ( itemType a[], indexType l, indexType r )
 {
 	static indexType i, j;
-	indexType nr;
 
 	i = r;
 	while ( i>l ) {

@@ -1233,11 +1233,14 @@ void array_link::showproperties() const
 	return;
 }
 
+#ifdef SWIG
 long array_link::data()
 {
 	//return static_cast<long>(array);
-	return ( ( long ) array );
+	return ( static_cast<long>( (void *) array ) );
 }
+#endif
+
 /*
 void array_link::initswig()
 {
@@ -1429,7 +1432,7 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 {
 	int k = al.n_columns;
 	int n = al.n_rows;
-	int m = 1 + k + k* ( k-1 ) /2;
+	//int m = 1 + k + k* ( k-1 ) /2;
 
 	MatrixFloat mymatrix = MatrixFloat::Zero ( n,k* ( k-1 ) /2 );
 
@@ -1484,7 +1487,7 @@ void eigen2numpyHelper ( double* pymat1, int n, const Eigen::MatrixXd &m )
 	//    pymat[i]=this->array[i];
 	//}
 	//eigenInfo ( m );
-	myprintf ( "pymat1 %ld\n", ( long ) pymat1 );
+	myprintf ( "pymat1 %p\n", ( void * ) pymat1 );
 	std::copy ( m.data(),m.data() +m.size(), pymat1 );
 }
 
@@ -1798,11 +1801,11 @@ double array_link::DsEfficiency ( int verbose ) const
 	}
 
 	const array_link &al = *this;
-	int k = al.n_columns;
+	//int k = al.n_columns;
 	int k1 = al.n_columns+1;
 	int n = al.n_rows;
-	int m = 1 + k + k* ( k-1 ) /2;
-	int N = n;
+	//int m = 1 + k + k* ( k-1 ) /2;
+	//int N = n;
 
 	//Eigen::MatrixXd X1 = array2eigenX1(al);
 	MatrixFloat X2 = array2eigenX2 ( al );
@@ -2653,11 +2656,10 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
 	for ( unsigned int ii=0; ii<arraylist.size(); ii++ ) {
 
 		const array_link ll = arraylist.at ( ii );
-		const int k=ll.n_columns;
+		//const int k=ll.n_columns;
 
-		//const int N = ll.n_rows;
 		int *pp = new_perm_init<int> ( jj );
-		int ncolcombs = ncombs ( k, jj );
+		//int ncolcombs = ncombs ( k, jj );
 
 		js = new jstruct_t ( ll, jj );
 
@@ -3283,22 +3285,22 @@ arraydata_t* readConfigFile(const char *file)
     inFile >> str >> ncols;
     assert(strcmp(str.c_str(), "nfactors "));
     if (N>10000 || N<1) {
-        printf("readConfigFile: file %s: invalid number of runs %d\n", file, N );
+        myprintf("readConfigFile: file %s: invalid number of runs %d\n", file, N );
         return 0;
     }
     if (strength>1000 || strength<1) {
-        printf("readConfigFile: file %s: invalid strength %d\n", file, strength);
+        myprintf("readConfigFile: file %s: invalid strength %d\n", file, strength);
         return 0;
     }
     if (ncols>1000 || ncols<1) {
-        printf("readConfigFile: file %s: invalid ncols %d\n", file, ncols);
+        myprintf("readConfigFile: file %s: invalid ncols %d\n", file, ncols);
         return 0;
     }
     s = (array_t *)malloc(ncols*sizeof(array_t));
     for(int j = 0; j < ncols; j++) {
         inFile >> s[j];
         if ((s[j]<1) || (s[j]>15)) {
-            printf("warning: number of levels specified is %d\n", s[j]);
+            myprintf("warning: number of levels specified is %d\n", s[j]);
             //exit(1);
         }
     }

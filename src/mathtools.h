@@ -478,7 +478,7 @@ template<class NumType>
 std::vector<NumType> permutation ( int n )
 {
 	std::vector<NumType> p ( n );
-	for ( size_t i=0; i<n; i++ )
+	for ( int i=0; i<n; i++ )
 		p[i]=i;
 	return p;
 }
@@ -726,7 +726,7 @@ bool next_perm ( std::vector<permutationType> &s )
 {
 	int len=s.size();
 	int	i = len - 1, j = len;
-	permutationType	tmp;
+	//permutationType	tmp;
 
 	while ( i>0 && ( s[i-1] >= s[i] ) )
 		i--;

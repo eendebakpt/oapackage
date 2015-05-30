@@ -21,13 +21,17 @@
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4244)
+#ifdef FULLPACKAGE
 #include "msstdint.h"
+#endif
 
+#ifdef FULLPACKAGE
 #ifndef int32_t
 
 //extern std::pair< C::iterator, C::iterator > r;
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
+#endif
 #endif
 
 #else
@@ -429,8 +433,6 @@ public:
 arraydata_t* readConfigFile ( const char *file );
 
 
-
-
 /**
  * @brief Function similar to printf returning C++ style string
  * @param message
@@ -442,7 +444,11 @@ inline std::string printfstring ( const char *message, ... )
 
 	va_list va;
 	va_start ( va, message );
+#ifdef RPACKAGE
+	myprintf("printfstring: not implemented in R\n");
+#else
 	vsprintf ( buf, message, va );
+#endif
 	va_end ( va );
 
 	std::string str ( buf );
@@ -877,9 +883,9 @@ public:
 //private:
 	std::string showarrayS() const;
 
-
+#ifdef SWIG
 	long data(); /// return pointer to data, needed for swig interface
-
+#endif
 
 	//void initswig(); /// provide hook for Python __array_interface__ initialization
 };
@@ -1135,7 +1141,7 @@ public:
 		const array_transformation_t &a = *this;
 
 		const int nc = this->ad->ncols;
-		const int nr = this->ad->N;
+		//const int nr = this->ad->N;
 		//colperm_t tmpc = new_perm<colindex_t>(nc);
 		//rowperm_t tmpr = new_perm<rowindex_t>(nr);
 

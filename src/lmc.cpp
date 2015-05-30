@@ -879,7 +879,7 @@ inline void cperm_lperms_to_rowsort ( const rowperm_t tmprperm, levelperm_t *lpe
 
 	// loop over all rows
 	for ( rowindex_t k=0; k<ad->N; k++ ) {
-		int mult = 1;
+		//int mult = 1;
 		rowindex_t v = k;
 
 		/* calculate the value of the permutation, modulo blocks of oaindex */
@@ -1161,7 +1161,7 @@ void LMC_static_struct_t::init_root_stage ( levelperm_t * &lperm_p, colperm_t * 
 */
 void LMC_static_struct_t::freeall ( )
 {
-	arraydata_t *adp = this->ad;
+	//arraydata_t *adp = this->ad;
 	// log_print ( DEBUG, "LMC_static_struct_t::free: adp->ncols %d, adp->strength %d\n", adp->ncols, adp->strength );
 
 
@@ -3040,7 +3040,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 		copy_array ( array, reduction.array, ad.N, ad.ncols );
 		// reduction.sd = symmdataPointer(new symmdata(al, 1) );
 
-		double t0 = get_time_ms();
+		//double t0 = get_time_ms();
 
 		if ( 1 ) {
 			lmc = LMCcheckj5 ( al, ad, reduction, oaextend );
@@ -3064,7 +3064,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 		copy_array ( array, reduction.array, ad.N, ad.ncols );
 		// reduction.sd = symmdataPointer(new symmdata(al, 1) );
 
-		double t0 = get_time_ms();
+		//double t0 = get_time_ms();
 
 		// arraydata_t ad2(ad);
 		// ad2. (MODE_LMC_2LEVEL);
@@ -3072,9 +3072,8 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 		oaextend2.setAlgorithm ( MODE_LMC_2LEVEL );
 		reduction.updateSDpointer ( al, false );
 
-		//printf("LMCcheck: MODE_J5ORDERXFAST call LMCcheckj5\n");
 		lmc = LMCcheckj5 ( al, ad, reduction, oaextend2 );
-		//printf("%s: LMCcheckj5: time %.4f [ms] (ncols %d, lmc %d)\n", __FUNCTION__, 1e3*(get_time_ms()-t0), al.n_columns, lmc );
+		//myprintf("%s: LMCcheckj5: time %.4f [ms] (ncols %d, lmc %d)\n", __FUNCTION__, 1e3*(get_time_ms()-t0), al.n_columns, lmc );
 
 	}
 	break;

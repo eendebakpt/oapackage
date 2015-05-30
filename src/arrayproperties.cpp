@@ -410,8 +410,6 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	int jprod = B.n; // std::accumulate(sg.gsize.begin(), sg.gsize.begin()+sg.ngroups, 1, multiplies<int>());
 	//myprintf("jprod: %d/%d\n", jprod, B.n);
 
-	int jtotal = 0;
-
 	int *bi = new int[sg.ngroups];
 	int *iout = new int[sg.ngroups];
 
@@ -952,10 +950,10 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		vif=0;
 		Eeff=0;
 
-		int rankold=rank2;
 		//Eigen::FullPivLU<MatrixXd> lu(x);
 		//rank=lu.rank();
 #ifdef FULLPACKAGE
+		int rankold=rank2;
 		if ( verbose>=3 ) {
 			Eigen::MatrixXd Smat ( S );
 			Eigen::ArrayXd Sa=Smat.array();
@@ -1073,9 +1071,9 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 {
 	double dd=-1;
 	double dd2=-1;
-	int n = mymatrix.rows();
+	//int n = mymatrix.rows();
 	int m = mymatrix.cols();
-	int N = n;
+	//int N = n;
 
 	//    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
 	//  int rank = lu_decomp.rank();
@@ -1128,10 +1126,10 @@ typedef Eigen::VectorXf MyVectorf;
 double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 {
 	double dd=-1;
-	double dd2=-1;
-	int n = mymatrix.rows();
+	//double dd2=-1;
+	//int n = mymatrix.rows();
 	int m = mymatrix.cols();
-	int N = n;
+	//int N = n;
 
 	//    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
 	//  int rank = lu_decomp.rank();
@@ -1249,6 +1247,7 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		Eigen::MatrixXf dummy = matXtX.cast<float>();
 		double dum1 = matXtX.determinant();
 		double dum2 = dummy.determinant();
+		myprintf("%f %f\n", dum1, dum2);
 	}
 	double f1 = matXtX.determinant();
 	//double f2 = ( matXtX.block(1+nme, 1+nme, n2fi, n2fi) ).determinant();
