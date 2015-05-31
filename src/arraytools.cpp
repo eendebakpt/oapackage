@@ -1237,7 +1237,8 @@ void array_link::showproperties() const
 long array_link::data()
 {
 	//return static_cast<long>(array);
-	return ( static_cast<long>( (void *) array ) );
+	//return ( static_cast<long>( (void *) array ) );
+	return ( long( size_t( (void *) array ) ) );
 }
 #endif
 

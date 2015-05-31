@@ -166,9 +166,12 @@ if (MSVC)
  #  SET( CMAKE_STATIC_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
 endif()
 
+set(COPTS "${COPTS} -DFULLPACKAGE")
+
 if (VERBOSE)
 	message(STATUS "copts ${COPTS}")
 endif()
+
 
 if(Boost_FOUND)
   INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
@@ -345,7 +348,7 @@ if("$ENV{USER}" STREQUAL "eendebakpt")
   #set(srcsR src/tools.cpp)
   
   add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
-  set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE ${COPTS} -Isrc -I/usr/share/R/include")
+  set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE  -Isrc -I/usr/share/R/include") # ${COPTS}
   #set_target_properties(Rtest PROPERTIES LINK_FLAGS "-lR")
   TARGET_LINK_LIBRARIES(Rtest R)
 endif()
