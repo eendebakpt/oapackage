@@ -1304,7 +1304,7 @@ public:
 	void append_array ( const array_link &a, int specialindex=-1 );
 
 	int swigcheck() const {
-#ifdef SWIG
+#ifdef SWIGCODE
 		if ( sizeof ( int ) !=4 )
 			fprintf ( stderr, "arrayfile_t: error int is not 32-bit?!\n" );
 		return 1;
@@ -1413,7 +1413,7 @@ private:
 	/// wrapper function for fwrite or gzwrite
 	size_t afwrite ( void * ptr, size_t t, size_t n ) {
 		if ( this->nfid==0 ) {
-			printf ( "afwrite: not implemented, we cannot write compressed files\n" );
+			myprintf ( "afwrite: not implemented, we cannot write compressed files\n" );
 			return 0;
 		}
 		return fwrite ( ptr, t, n, nfid );
@@ -1474,11 +1474,11 @@ public:
 	static int arrayNbits ( const arraydata_t &ad ) {
 		int m=0;
 		for ( int i=0; i<ad.ncols; ++i ) {
-			//printf("s[i]: %d\n", ad.s[i]);
+			//myprintf("s[i]: %d\n", ad.s[i]);
 			if ( ad.s[i]>m )
 				m =ad.s[i];
 		}
-		//printf("m %d\n", m);
+		//myprintf("m %d\n", m);
 		if ( m==2 )
 			return 1;	// bit
 		else
@@ -1585,7 +1585,7 @@ template <class Container, class IntType>
 void keepElements ( Container &al,  std::vector<IntType> &idx )
 {
 	for ( int jj=idx.size()-1; jj>=0; jj-- ) {
-		//printf("keepElements: %d\n", jj);
+		//myprintf("keepElements: %d\n", jj);
 		if ( ! idx[jj] )
 			al.erase ( al.begin() +jj );
 	}
@@ -1606,10 +1606,10 @@ template <class MType>
 void  selectArraysMask ( const arraylist_t &al,   std::vector<MType> &mask, arraylist_t &rl )
 {
 	assert ( al.size() ==mask.size() );
-	//printf("selectArraysMask: al.size() %d mask.size() %d\n", al.size(), mask.size());
+	//myprintf("selectArraysMask: al.size() %d mask.size() %d\n", al.size(), mask.size());
 	for ( int idx=0; idx<al.size(); idx++ ) {
 		if ( mask[idx] ) {
-			//printf("selectArraysMask: idx %d %d\n", idx, mask[idx]);
+			//myprintf("selectArraysMask: idx %d %d\n", idx, mask[idx]);
 			rl.push_back ( al.at ( idx ) );
 		}
 	}

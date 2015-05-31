@@ -2242,7 +2242,7 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
 	array_link al ( this->N, this->ncols, -1 );
 	al.setconstant ( 0 );
 
-	//al.show(); printf("----\n"); al.showarray();
+	//al.show(); myprintf("----\n"); al.showarray();
 	for ( int i=0; i<this->ncols; i++ ) {
 		int coloffset = this->N*i;
 		array_t s = this->getfactorlevel ( i );
@@ -2543,7 +2543,7 @@ void jstruct_t::init ( int N_, int k_, int jj_ )
 
 	this->nc = ncombs ( k_, jj_ );
 	vals = std::vector<int> ( nc );
-//  printf("jstruct_t(N,k,jj): vals %d\n", this->vals);
+//  myprintf("jstruct_t(N,k,jj): vals %d\n", this->vals);
 	this->A=-1;
 }
 
@@ -2792,14 +2792,9 @@ template <class TypeIn, class TypeOut>
 void writeblob ( const TypeIn *src, int n, FILE *fid )
 {
 	TypeOut *dst = new TypeOut [n];
-//		printf(" src %ld, dst %ld, n %d\n", long(src), long(dst), n);
-	//printf("dst[0] %d, sizeof %d\n", dst[0], (int)sizeof(dst[0]));
-
 
 	for ( int i=0; i<n; i++ ) {
-		//printf("src[%d] %d, \n", i, src[i]);
-
-		//printf("dst[%d] %d, \n", i, dst[i]);
+		//myprintf("src[%d] %d, \n", i, src[i]);
 		dst[i] = src[i];
 	}
 	fwrite ( ( const void * ) dst, sizeof ( TypeOut ), n, fid );
@@ -4249,8 +4244,6 @@ array_link selectArrays ( const std::string filename, int ii )
 }
 
 #endif // FULLPACKAGE, related to arrayfile_t
-
-
 
 
 void  selectArrays ( const arraylist_t &al,   std::vector<int> &idx, arraylist_t &rl )
