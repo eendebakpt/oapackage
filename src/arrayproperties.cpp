@@ -884,7 +884,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 	int rank2 = svd.nonzeroSingularValues();
 	if ( rank2!=rank ) {
 		if ( verbose>=3 ) {
-			printf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
+			myprintf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
 
 #ifdef FULLPACKAGE
 			if ( verbose>=4  ) {

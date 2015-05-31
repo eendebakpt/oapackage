@@ -594,7 +594,7 @@ array_t array_link::at ( const rowindex_t r, const colindex_t c ) const
 {
 //#ifdef OADEBUG
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-printf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+myprintf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 return 0;
 	}
 //#endif
@@ -609,7 +609,7 @@ array_t & array_link::at ( const rowindex_t r, const colindex_t c )
 {
 #ifdef OADEBUG
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
-		printf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+		myprintf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 		return this->array[0];
 	}
 #endif

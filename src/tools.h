@@ -144,10 +144,13 @@ inline void mycheck ( int condition, const char *message, ... )
 
 }
 
-inline void myassert ( int condition, const char *str )
+inline void myassert ( int condition, const char *str = 0 )
 {
 	if ( condition==0 ) {
-		myprintf ( "myassert: %s", str );
+		if (str==0) 
+			myprintf ( "myassert: error\n" );
+		else
+			myprintf ( "myassert: %s", str );
 #ifdef RPACKAGE
 		throw;
 #else
