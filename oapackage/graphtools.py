@@ -24,7 +24,7 @@ def oa2graph(al, adata, verbose=1):
 
     """
     #A = np.array(al)
-    A=al.getarray(verbose=2)    
+    A=al.getarray(verbose=0)    
     #print('type A: %s' % type(A) )
     nrows = adata.N
     ncols = A.shape[1]
@@ -175,10 +175,23 @@ def reduceBliss(al, arrayclass, verbose=1):
 
     return pp, tt
 
+def designReduceBliss(al, arrayclass, verbose=1):
+
+    al = oapackage.makearraylink(al)
+    if arrayclass.ismixed():
+        print('reduction of mixed classes not implemented?')
+        pass
+        # raise Exception('reduction of mixed classes not implemented')
+
+    pp,tt = reduceBliss(al, arrayclass, verbose=1)
+    alx = tt.apply(al)
+    return alx, tt
+    
 #%%
 
 
 def makearraylink(al):
+    """ Convert array to array_link object """
     if isinstance(al, np.ndarray):
         tmp = oalib.array_link()
         tmp.setarray(al)

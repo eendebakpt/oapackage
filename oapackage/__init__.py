@@ -14,7 +14,6 @@ from . import scanf
 
 #%%
 
-
 def autodoctest():
     """ Test the module using autodoc
     Example:
@@ -34,6 +33,13 @@ def unittest(verbose=1):
     al = oalib.array_link()
     ii = 0
     al = oalib.exampleArray(ii, 0)
+    
+    if not isinstance(al.getarray(), np.ndarray):
+        print('oapackage: unittest: error: array interface not working properly')
+    else:
+        if not al[2,0]==al.getarray()[2,0]:
+            print('oapackage: unittest: error: array interface not working properly')
+            
     arrayclass = oalib.arraylink2arraydata(al)
     Deff = al.Defficiency()
     if verbose >= 2:

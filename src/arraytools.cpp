@@ -1240,6 +1240,7 @@ long array_link::data()
 	//return ( static_cast<long>( (void *) array ) );
 	return ( long( size_t( (void *) array ) ) );
 }
+#else
 #endif
 
 /*

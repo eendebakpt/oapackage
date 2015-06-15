@@ -884,7 +884,7 @@ public:
 		return std::lexicographical_compare ( rhs.array+c2*n_rows, rhs.array +c2*n_rows + n_rows, array+c1*n_rows, array + c1*n_rows + n_rows ) ;
 
 	}
-
+	
 //private:
 	std::string showarrayS() const;
 

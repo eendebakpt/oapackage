@@ -88,13 +88,13 @@ if oadev:
   #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
 
   sources = ['oalib.i'] + sources
-  swig_opts+=['-modern', '-DFULLPACKAGE', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
+  swig_opts+=['-modern', '-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
 else:
   if 0:
     sources += ['oalib_wrap.cxx'] 
   else:
     sources = ['oalib.i'] + sorted(sources)
-    swig_opts+=['-modern', '-DFULLPACKAGE',  '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
+    swig_opts+=['-modern', '-DSWIGCODE', '-DFULLPACKAGE',  '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
 
 if platform.system()=='Windows':
     swig_opts+=['-DWIN32', '-D_WIN32']
@@ -200,7 +200,7 @@ except(IOError, ImportError):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '2.0.0',
+       version = '2.0.1',
        author      = "Pieter Eendebak",
        description = "Package to generate and analyse orthogonal arrays and optimal designs",
        long_description=long_description,
