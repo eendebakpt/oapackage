@@ -23,12 +23,10 @@ def oa2graph(al, adata, verbose=1):
     %    im, colors, r = oa2graph( A, oadata );
 
     """
-    print(al)
-    A = np.array(al)
-    print('type A: %s' % type(A) )
+    #A = np.array(al)
+    A=al.getarray(verbose=2)    
+    #print('type A: %s' % type(A) )
     nrows = adata.N
-    print(A.shape)
-    print(A.getarray())
     ncols = A.shape[1]
     nRowVertices = A.shape[0]
     nColumnLevelVertices = sum(adata.getS())

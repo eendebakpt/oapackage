@@ -131,7 +131,7 @@ else:
       pm.append(prog_module)
     
 
-oalib_module.extra_compile_args = ['-DNEWINTERFACE','-DNOOMP', '-DSWIGCODE'] # '-DHAVE_BOOST'
+oalib_module.extra_compile_args = ['-DNEWINTERFACE','-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
 
 if platform.system()=='Windows':
 	oalib_module.extra_compile_args.append('-DWIN32')
