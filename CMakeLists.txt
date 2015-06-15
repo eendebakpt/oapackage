@@ -340,7 +340,10 @@ endif()
 #add_precompiled_header(oapareto src/mathtools.h)
 
 ##### R test
-if("$ENV{USER}" STREQUAL "eendebakpt")
+site_name(HOSTNAME)
+#message(STATUS "Hostname ${HOSTNAME}")
+
+if("$ENV{USER}" STREQUAL "eendebakpt" AND "${HOSTNAME}" STREQUAL "marmot")
   set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/mathtools.h src/oaoptions.h src/tools.h)
   set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
 
