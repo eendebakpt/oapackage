@@ -21,22 +21,27 @@
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4244)
+#endif
+
+
+
+
+
+#ifdef WIN32
 #ifdef FULLPACKAGE
 #include "msstdint.h"
 #endif
+#else
+#ifdef _WIN32 // || __CYGWIN__
+// No visual studio!
 
 #ifdef FULLPACKAGE
 #ifndef int32_t
-
-//extern std::pair< C::iterator, C::iterator > r;
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
-#else
-#ifdef _WIN32 // || __CYGWIN__
-// No visual studio!
 #else
 // assume zlib is present on unix
 #ifdef NOZLIB

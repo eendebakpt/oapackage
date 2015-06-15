@@ -5,15 +5,15 @@
 """
 
 #%% Load packages
-import sys
-import os
+#import sys
+#import os
 import numpy as np
 import oalib
 
 #%%
 
 
-def oa2graph(A, adata, verbose=1):
+def oa2graph(al, adata, verbose=1):
     """
     %OA2GRAPH Convert orthogonal array to graph representation
     %
@@ -23,8 +23,12 @@ def oa2graph(A, adata, verbose=1):
     %    im, colors, r = oa2graph( A, oadata );
 
     """
-    A = np.array(A)
+    print(al)
+    A = np.array(al)
+    print('type A: %s' % type(A) )
     nrows = adata.N
+    print(A.shape)
+    print(A.getarray())
     ncols = A.shape[1]
     nRowVertices = A.shape[0]
     nColumnLevelVertices = sum(adata.getS())
