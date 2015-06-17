@@ -9,20 +9,20 @@ This package creates 2-level D-optimal designs with a user specified optimizatio
 \details{
 The main function in the package is \code{\link{Doptimize}}. This function generates a single D-optimal design.
 The optimization function is specified using three parameters
-\eqn{latex}{\alpha_1, \alpha_2, \alpha_3}. The following
+\eqn{\alpha_1, \alpha_2, \alpha_3}{\alpha_1, \alpha_2, \alpha_3}. The following
 function is then optimized:
 
-\deqn{latex}{\alpha_1 D + \alpha_2 D_s + \alpha_3 D_1}
+\deqn{\alpha_1 D + \alpha_2 D_s + \alpha_3 D_1}{\alpha_1 D + \alpha_2 D_s + \alpha_3 D_1}
 
-Here \eqn{latex}{D} is the \eqn{latex}{D}-efficiency of the design.
+Here \eqn{D} is the \eqn{D}-efficiency of the design.
 
-The \eqn{latex}{D_s}- and \eqn{latex}{D_1}-efficiency are defined as follows.
-For a design \eqn{latex}{D} the model matrix
-\eqn{latex}{X} can be split into \eqn{latex}{[I X_1 X_{2}]}
-with \eqn{latex}{I} the intercept, \eqn{latex}{X_1} the main effects and \eqn{latex}{X_2} the second order effects.
-We let \eqn{latex}{X_{02}=[I X_2]} and define
-\eqn{latex}{D_1=(|X_1^T X_1|)^{1/(k+1)}}, 
-\eqn{latex}{D_s=(|X^T X|/|X_{02}^T X_{02} |)^{1/k}} with \eqn{latex}{k} the number of factors of the design. The \eqn{latex}{D_s} and \eqn{latex}{D_1} efficiencies are described in detail in the paper Eendebak (2015).
+The \eqn{D_s}{D_s}- and \eqn{D_1}{D_1}-efficiency are defined as follows.
+For a design \eqn{D} the model matrix
+\eqn{X}{X} can be split into \eqn{[I X_1 X_{2}]}{[I X_1 X_{2}]}
+with \eqn{I} the intercept, \eqn{X_1}{X_1} the main effects and \eqn{X_2}{X_2} the second order effects.
+We let \eqn{X_{02}=[I X_2]} and define
+\eqn{D_1=(|X_1^T X_1|)^{1/(k+1)}}, 
+\eqn{D_s=(|X^T X|/|X_{02}^T X_{02} |)^{1/k}} with \eqn{k} the number of factors of the design. The \eqn{D_s} and \eqn{D_1} efficiencies are described in detail in the paper Eendebak (2015).
 
 }
 \author{
