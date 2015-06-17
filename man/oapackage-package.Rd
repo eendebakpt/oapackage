@@ -27,6 +27,8 @@ We let \eqn{X_{02}=[I X_2]} and define
 }
 \author{
 P.T. Eendebak <pieter.eendebak@gmail.com>
+
+Alan Vazquez
 }
 \references{
     Eendebak, P.T. and Schoen, E.D. (2015) 
