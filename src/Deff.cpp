@@ -218,10 +218,10 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 		const array_link &al = sols[i];
 		double score0 = scoreD ( al.Defficiencies(), alpha );
 
-		array_link  alu = optimDeff ( al,  arrayclass, alpha, verbose>=3, method1 , niter,  nabort=nabort );
+		array_link  alu = optimDeff ( al,  arrayclass, alpha, verbose>=3, method1 , niter,  nabort );
 		double score1 = scoreD ( alu.Defficiencies(), alpha );
 
-		array_link  alu2 = optimDeff ( alu,  arrayclass, alpha, verbose>=3, method2 , niter,  nabort=0 );
+		array_link  alu2 = optimDeff ( alu,  arrayclass, alpha, verbose>=3, method2 , niter,  0 );
 		double score2 = scoreD ( alu2.Defficiencies(), alpha );
 
 
@@ -557,13 +557,26 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 
 extern "C" {
 
-	double DoptimizeR ( int *_N, int *_k, int *nrestarts, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *_method, int *_niter, double *maxtime , int *nabort, double *output )
+	void DefficienciesR(int *N, int *k, double *input,  double *D, double *Ds, double *D1 ) {
+		array_link al(*N, *k, al.INDEX_DEFAULT);
+		
+		std::copy ( input, input+(*N)*(*k), al.array );
+		
+		std::vector<double> dd = al.Defficiencies();
+		
+		*D = dd[0];
+		*Ds=dd[1];
+		*D1=dd[2];
+		return;
+	}
+	
+	double DoptimizeR ( int *pN, int *pk, int *nrestarts, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *pointer_method, int *_niter, double *maxtime , int *nabort, double *output )
 	{
 
 		int niter=*_niter;
-		int method=*_method;
-		int N = *_N;
-		int k = *_k;
+		int method=*pointer_method;
+		int N = *pN;
+		int k = *pk;
 		int verbose = *_verbose;
 
 		output[0]=1;

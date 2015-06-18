@@ -22,7 +22,7 @@
 #' @param method Integer, default: 0
 #' @param niter Integer (maximum number if iteration steps in the optimization)
 #' @param maxtime Float (maximum running time before aborting the optimization)
-#' @return A matrixs containing the generated design
+#' @return A matrix containing the generated design
 Doptimize=function(N, k, nrestarts, alpha1=1, alpha2=0, alpha3=0, verbose=1, method=0, niter=100000, maxtime=500) {
 
 nabort <- -1
@@ -37,6 +37,27 @@ A <- array(p, dim=c(N,k) )
 
  }
 
+ #' Wrapper function for OApackage Defficiencies function.
+#'
+#' This function calculates the D, Ds- and D1-efficiency of a design.
+#' 
+#' @param N Number of runs
+#' @param k Number of factors
+#' @param A Array containing the design (in 0, 1 format)
+#' @return A list containing the calculated efficiencies
+Defficiencies=function(N, k, A) {
+
+if ( prod(dim(A))!=N*k ) {
+print('Defficiencies: array size not equal to specification')
+return
+}
+
+print('call')
+tmp <- .C('DefficienciesR', as.integer(N), as.integer(k), as.double(A), D=double(1), Ds=double(1), D1=double(1) ) 
+print('done')
+
+dd=c( tmp['D'], tmp['Ds'], tmp['D1'])
+}
 
 # To compile documentation from the source code:
 #

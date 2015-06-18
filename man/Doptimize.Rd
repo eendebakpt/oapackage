@@ -29,7 +29,7 @@ Doptimize(N, k, nrestarts, alpha1 = 1, alpha2 = 0, alpha3 = 0,
 \item{maxtime}{Float (maximum running time before aborting the optimization)}
 }
 \value{
-A matrixs containing the generated design
+A matrix containing the generated design
 }
 \description{
 This function generates

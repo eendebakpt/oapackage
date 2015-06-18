@@ -773,9 +773,9 @@ void set_srand ( unsigned int s );
 #endif
 
 #ifdef RPACKAGE
-template<typename _RandomAccessIterator>
+template<typename myRandomAccessIterator>
     inline void
-    my_random_shuffle(_RandomAccessIterator __first, _RandomAccessIterator __last)
+    my_random_shuffle(myRandomAccessIterator __first, myRandomAccessIterator __last)
     {
       // concept requirements
       __glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
@@ -783,9 +783,9 @@ template<typename _RandomAccessIterator>
       __glibcxx_requires_valid_range(__first, __last);
 
       if (__first != __last)
-	for (_RandomAccessIterator __i = __first + 1; __i != __last; ++__i)
+	for (myRandomAccessIterator __i = __first + 1; __i != __last; ++__i)
 	  {
-	    _RandomAccessIterator __j = __first
+	    myRandomAccessIterator __j = __first
 					+ fastrand() % ((__i - __first) + 1);
 	    if (__i != __j)
 	      std::iter_swap(__i, __j);

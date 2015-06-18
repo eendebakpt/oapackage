@@ -926,8 +926,8 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 				Eigen::MatrixXd mm = mymatrix.transpose() * mymatrix;
 				SelfAdjointEigenSolver<Eigen::MatrixXd> es;
 				es.compute ( mm );
-				const Eigen::VectorXd SS =  es.eigenvalues();
-				Eigen::VectorXd S = SS; //sqrt(S);
+				const Eigen::VectorXd evs =  es.eigenvalues();
+				Eigen::VectorXd S = evs; //sqrt(S);
 				for ( int j=0; j<m; j++ ) {
 					if ( S[j]<1e-14 ) {
 						if ( verbose>=3 )
@@ -1082,8 +1082,8 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 	Eigen::MatrixXd mm = mymatrix.transpose() * mymatrix;
 	SelfAdjointEigenSolver<Eigen::MatrixXd> es;
 	es.compute ( mm );
-	const Eigen::VectorXd SS =  es.eigenvalues();
-	Eigen::VectorXd S = SS; //sqrt(S);
+	const Eigen::VectorXd evs =  es.eigenvalues();
+	Eigen::VectorXd S = evs; //sqrt(S);
 
 	if ( S[m-1]<1e-15 ) {
 		if ( verbose>=2 ) {
@@ -1138,8 +1138,8 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 	MyMatrixf mm = mymatrix.transpose() * mymatrix;
 	SelfAdjointEigenSolver<MyMatrixf> es;
 	es.compute ( mm );
-	const MyVectorf SS =  es.eigenvalues();
-	MyVectorf S = SS; //sqrt(S);
+	const MyVectorf evs =  es.eigenvalues();
+	MyVectorf S = evs; //sqrt(S);
 
 	if ( S[m-1]<1e-15 ) {
 		if ( verbose>=2 ) {
@@ -1351,8 +1351,8 @@ double Defficiency ( const array_link &al, int verbose )
 	DMatrix mm = mymatrix.transpose() * mymatrix;
 	SelfAdjointEigenSolver<DMatrix> es;
 	es.compute ( mm );
-	const DVector SS =  es.eigenvalues();
-	DVector S = SS; //sqrt(S);
+	const DVector evs =  es.eigenvalues();
+	DVector S = evs; //sqrt(S);
 
 	if ( S[m-1]<1e-15 || rank < m ) {
 		if ( verbose>=2 ) {
@@ -1383,10 +1383,10 @@ double Defficiency ( const array_link &al, int verbose )
 
 		if ( ! ( S2[m-1]<1e-15 ) ) {
 			for ( int ii=0; ii<m-3; ii++ ) {
-				myprintf ( "ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver svd %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
+				myprintf ( "ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver svd %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) evs[m-ii-1], ( double ) S2[ii] );
 			}
 			for ( int ii=m-3; ii<m-1; ii++ ) {
-				myprintf ( "ii %d: %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) SS[m-ii-1], ( double ) S2[ii] );
+				myprintf ( "ii %d: %f %f %f\n", ii, ( double ) S[m-ii-1], ( double ) evs[m-ii-1], ( double ) S2[ii] );
 			}
 
 			DMatrix Smat ( S );
@@ -1395,8 +1395,6 @@ double Defficiency ( const array_link &al, int verbose )
 			myprintf ( "  Aold: %.6f\n", Deff );
 		}
 	}
-//	cout << "----" << S << std::endl;
-//	cout << SS << std::endl;
 
 	//   int rank = svd.nonzeroSingularValues();
 
