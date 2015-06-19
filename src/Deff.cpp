@@ -558,7 +558,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 extern "C" {
 
 	void DefficienciesR(int *N, int *k, double *input,  double *D, double *Ds, double *D1 ) {
-		array_link al(*N, *k, al.INDEX_DEFAULT);
+		array_link al(*N, *k, array_link::INDEX_DEFAULT);
 		
 		std::copy ( input, input+(*N)*(*k), al.array );
 		
