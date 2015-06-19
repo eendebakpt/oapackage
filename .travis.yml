@@ -10,8 +10,9 @@ before_script:
     - cd build
     - cmake ..
 
-script: make  
-
+script:
+  - make  
+  - ./oaunittest
 
 # Python build
 #language: python
