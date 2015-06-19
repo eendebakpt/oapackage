@@ -20,8 +20,8 @@ python:
   - "3.4"
 
 before_install:
-	- sudo apt-get update -qq
-	- sudo apt-get install swig
+  - sudo apt-get update -qq
+  - sudo apt-get install swig
 install:
   - python setup.py build
 #  - "pip install ."
