@@ -151,7 +151,7 @@ public:
 		pool.push_back ( t );
 		//if (pool.size() % 100000==0) myprintf("object_pool::Delete() stored object %zu\n", pool.size() );
 		if ( verbose || 0 ) {
-			myprintf ( "  object_pool::Delete() stored object %ld\n", (long)pool.size() );
+			myprintf ( "  object_pool::Delete() stored object %ld\n", ( long ) pool.size() );
 		}
 
 	}
@@ -630,11 +630,11 @@ int compare_matrix ( const numtype *A, const numtype *B, int r, int c )
 	for ( int x=0; x<r; x++ )
 		for ( int y=0; y<c; y++ ) {
 			if ( A[x+y*r]!=B[x+y*r] ) {
-				myprintf("arrays unequal: %d, %d\n", x, y);
+				myprintf ( "arrays unequal: %d, %d\n", x, y );
 				return 0;
 			}
 		}
-	myprintf("arrays equal\n");
+	myprintf ( "arrays equal\n" );
 	return 1;
 }
 
@@ -774,29 +774,24 @@ void set_srand ( unsigned int s );
 
 #ifdef RPACKAGE
 template<typename myRandomAccessIterator>
-    inline void
-    my_random_shuffle(myRandomAccessIterator __first, myRandomAccessIterator __last)
-    {
-      // concept requirements
-      __glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
-	    _RandomAccessIterator>)
-      __glibcxx_requires_valid_range(__first, __last);
+inline void
+my_random_shuffle ( myRandomAccessIterator myfirst, myRandomAccessIterator mylast )
+{
+	// concept requirements
+	//__glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
+	//  _RandomAccessIterator>)
+	//__glibcxx_requires_valid_range(__first, __last);
 
-      if (__first != __last)
-	for (myRandomAccessIterator __i = __first + 1; __i != __last; ++__i)
-	  {
-	    myRandomAccessIterator __j = __first
-					+ fastrand() % ((__i - __first) + 1);
-	    if (__i != __j)
-	      std::iter_swap(__i, __j);
-	  }
-    }
-
-
+	if ( myfirst != mylast )
+		for ( myRandomAccessIterator __i = myfirst + 1; __i != mylast; ++__i ) {
+			myRandomAccessIterator __j = myfirst + fastrand() % ( ( __i - myfirst ) + 1 );
+			if ( __i != __j )
+				std::iter_swap ( __i, __j );
+		}
+}
 #else
 #define my_random_shuffle std::random_shuffle
 #endif
-
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 /*
