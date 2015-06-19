@@ -6,7 +6,7 @@ compiler:
 #before_install:
 #  - sudo apt-get install cmake
 before_script:  
-    - mkdir build
+    - mkdir -p build
     - cd build
     - cmake ..
 
@@ -14,15 +14,14 @@ script: make
 
 
 # Python build
-language: python
-python:
-  - "2.7"
-  - "3.4"
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install swig
-install:
-  - python setup.py build
-#  - "pip install ."
+#language: python
+#python:
+#  - "2.7"
+#  - "3.4"
+#
+#before_install:
+#  - sudo apt-get update -qq
+#  - sudo apt-get install swig
+#install:
+#  - python setup.py build
 
