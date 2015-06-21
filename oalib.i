@@ -58,7 +58,7 @@ import_array();
 //#include <Python.h>
 #include <numpy/arrayobject.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #else
 #include <stdint.h>
 #endif

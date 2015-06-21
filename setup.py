@@ -109,19 +109,16 @@ if 'VSC_SCRATCH' in os.environ.keys():
   include_dirs=['.', 'src', np.get_include(), zlibdir + '/include' ]
   oalib_module = Extension('_oalib',
                            sources=sources,
-                           include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries
+                           include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
                            )
 else:
   libraries=[]
   library_dirs=[]
   include_dirs=['.', 'src', np.get_include() ]
 
-
   oalib_module = Extension('_oalib', sources=sources,
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
                            )
-
-
   progs=['oainfo', 'oasplit', 'oacat']
   progs=[]
   pm=[]
@@ -131,7 +128,7 @@ else:
       pm.append(prog_module)
     
 
-oalib_module.extra_compile_args = ['-DNEWINTERFACE','-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
+oalib_module.extra_compile_args = ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
 
 if platform.system()=='Windows':
 	oalib_module.extra_compile_args.append('-DWIN32')
@@ -154,6 +151,7 @@ if oadev:
   oalib_module.extra_compile_args.append('-DOADEV')
 
 print('find_packages: %s' % find_packages() )
+#print('swig_opts: %s' % str(swig_opts) )
 
 data_files=[]
 #data_files+=[('', ['oalib/oahelper.py'])]

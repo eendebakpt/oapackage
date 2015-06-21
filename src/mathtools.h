@@ -18,7 +18,12 @@
 #include <assert.h>
 #include <cstdlib>
 #include <vector>
+//#ifdef _WIN32
+//#include <msstdint.h>
+//#else
 //#include <stdint.h>
+//#endif
+
 #include <string.h>
 #include <deque>
 #include <cmath>
@@ -1513,14 +1518,17 @@ private:
 public:
 
 #ifdef FULLPACKAGE
+	
+	typedef long perm_return_type;
+//#define perm_return_type long
 	/// return size of the group of all permutations respecting the symmetry
-	int64_t permsize() const {
-		int64_t  s = 1;
+	perm_return_type permsize() const {
+		perm_return_type  s = 1;
 		for ( int i=0; i<ngroups; i++ ) {
-			int64_t f = factorial<long> ( gsize[i] );
+			perm_return_type f = factorial<long> ( gsize[i] );
 
 			//myprintf("i %d: f %ld, s %ld s int %d, max %ld\n", i,f, s, (int)(s), std::numeric_limits< long long>::max() );
-			if ( f != 0 && ( std::numeric_limits< int64_t>::max() / f ) < s ) {
+			if ( f != 0 && ( std::numeric_limits< perm_return_type>::max() / f ) < s ) {
 				// multiplication would exceed range of unsigned
 				myprintf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
 				throw;
