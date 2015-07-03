@@ -27,7 +27,7 @@ double detXtXfloat(const Eigen::MatrixXf &mymatrix, int verbose=1);
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
 void DAEefficiecyWithSVD(const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
 
-/// Calculate the rank of the second order interaction matrix of an orthogonal array, the rank, D-efficiency and VIF-efficiency are appended to the second argument
+/// Calculate the rank of the second order interaction matrix of an orthogonal array, the rank, D-efficiency, VIF-efficiency and E-efficiency are appended to the second argument
 int array_rank_D_B(const array_link &al, std::vector<double> *ret = 0, int verbose=0);
 
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition

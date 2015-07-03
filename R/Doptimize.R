@@ -7,7 +7,7 @@
 #' design is optimized for the specified criterium. 
 #'
 #' The criterium that is optimized is:
-#'	alpha1*D + alpha2*Ds + alpha3 * D1
+#'	\eqn{\alpha_1 D + \alpha_2 D_s + \alpha_3  D_1}{alpha1*D + alpha2*Ds + alpha3 * D1}
 #'
 #' Here D is the D-efficiency of the design and Ds and D1 other efficiency measures.
 #' For more details see http://pietereendebak.nl/oapackage/Doptim.html
@@ -15,11 +15,11 @@
 #' @param N Number of runs
 #' @param k Number of factors
 #' @param nrestarts Number of restarts to generated an optimal design
-#' @param alpha1 Parameter
-#' @param alpha2 Parameter
-#' @param alpha3 Parameter
+#' @param alpha1 Parameter of the optimization function
+#' @param alpha2 Parameter of the optimization function
+#' @param alpha3 Parameter of the optimization function
 #' @param verbose Integer that determines the amount of debug output
-#' @param method Integer, default: 0
+#' @param method Integer, default: 0. The method 0 uses updates of single elements of the design matrix. The method 1 uses swaps of 2 elements of the matrix.
 #' @param niter Integer (maximum number if iteration steps in the optimization)
 #' @param maxtime Float (maximum running time before aborting the optimization)
 #' @return A matrix containing the generated design

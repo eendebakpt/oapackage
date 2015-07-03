@@ -481,7 +481,15 @@ def checkArrayFile(afile, cache=1):
         else:
             return False
 
-
+try:
+    basestring  # attempt to evaluate basestring
+    def isstr(s):
+        return isinstance(s, basestring)
+except NameError:
+    # probably Python 3.x
+    def isstr(s):
+        return isinstance(s, str)
+        
 def checkFiles(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
         cache: 0 (no), 1 (check), -1 (always)
@@ -493,7 +501,7 @@ def checkFiles(lst, cache=1, verbose=0):
     if cache == 0:
         return False
 
-    if isinstance(lst, basestring):
+    if isstr(lst):
         lst = [lst]
     c = True
     for f in lst:
