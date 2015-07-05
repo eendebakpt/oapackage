@@ -11,7 +11,7 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 from __future__ import print_function
 
 import oalib
-import sys
+#import sys
 import os
 import numpy as np
 import time
@@ -65,7 +65,7 @@ except:
     pass
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20, scatterarea=80):
+def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -76,8 +76,8 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, nofig=False, fig=20, scatterare
     area[np.array(pp.allindices())] = scatterarea
     alpha = 1.0
 
-    if dds.shape[1] > 3:
-        colors = dds[:, 3]
+    if dds.shape[1] > ndata:
+        colors = dds[:, ndata]
     else:
         colors = np.zeros((nn, 1))
 
@@ -177,22 +177,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     if verbose:
         print('generateDpage: selectParetoArrays ')
-        if 0:
-            print('debuggg')
-            print(len(allarrays))
-            print(allarrays)
-            allarrays = tuple(allarrays)
-            print(pp)
-
-            def selectParetoArrays(allarrays, pp):
-                paretoarrays = oalib.arraylist_t()
-                paretoidx = np.array(pp.allindices())
-                ww = oalib.longVector(tuple(paretoidx.tolist()))
-                oalib.selectArrays(allarrays, ww, paretoarrays)
-                return paretoarrays
-            paretoarrays = oahelper.selectParetoArrays(allarrays, pp)
-            print('done')
-
     paretoarrays = oahelper.selectParetoArrays(allarrays, pp)
     at = array2Dtable(paretoarrays, verbose=1)
 
@@ -217,10 +201,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
         print('generateDpage: writen scatterplot to %s' % scatterfile)
     plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
 
-# xSize = 3 #inches
-# ySize = xSize/xPix*yPix
-# gcf().set_inches_size(xSize,ySize)
-# gcf().savefig('test.png',dpi=xSize/xPix)
 
     #%% Create page
 
@@ -621,12 +601,4 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     return scores, dds, sols, nrestarts
 
 
-#%%
-if 0:
-    lbls = ['Optimization of $D+.5 D_s$', 'Optimization of $D+  0.5 D_s$',
-            'Optimization of $D+3*Ds$', 'Optimization of $D+3*D_s$']
 
-    x = generateDscatter(dds, si=0, fi=0, lbls=lbls, fig=20)
-
-    import pmatlab
-    pmatlab.setWindowRectangle(1500, 10, w=800, h=600)
