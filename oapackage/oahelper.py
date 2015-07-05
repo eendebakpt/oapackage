@@ -17,7 +17,6 @@ import numpy as np
 import functools
 from collections import Counter
 import operator
-# import types
 import fileinput
 import re
 from time import gmtime, strftime
@@ -746,11 +745,9 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     sols0 = oalib.arraylist_t()
     solsx = oalib.arraylist_t()
     sols0.push_back(A)
-    N = A.n_rows
+    #N = A.n_rows
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
-    if verbose >= 2:
-        print(' extend to %d: %d solutions' % (ii, solsx.size()))
     sys.stdout.flush()
     return solsx
 
@@ -851,9 +848,6 @@ if 0:
         xx = np.frombuffer(buffer, np.int32, count=nrows * ncols)
         xx = xx.reshape((ncols, nrows)).transpose()
         return xx
-
-from collections import Counter
-
 
 def getposjvals(A, t, verbose=1):
     N = A.shape[0]
@@ -991,7 +985,6 @@ def designStandardError(al):
     # scalefac=np.sqrt(al.n_rows)
     scalefac = 1
     M = (X.transpose() * X / scalefac).I
-    # M=(X.transpose()*X)
 
     mm = np.array(M.diagonal()).flatten()
 
@@ -1016,10 +1009,8 @@ def DefficiencyBound(D, k, k2):
 
 try:
     import matplotlib
-    import matplotlib.pyplot as plt
 except:
-    print(
-        'oahelper: matplotlib cannot be found, not all functionality is available')
+    print('oahelper: matplotlib cannot be found, not all functionality is available')
     pass
 
 

@@ -5,8 +5,6 @@
 """
 
 #%% Load packages
-#import sys
-#import os
 import numpy as np
 import oalib
 
@@ -15,12 +13,15 @@ import oalib
 
 def oa2graph(al, adata, verbose=1):
     """
-    %OA2GRAPH Convert orthogonal array to graph representation
-    %
-    % The conversion method is as in Ryan and Bulutoglu.
-    % The resulting graph is bi-partite.
-    % The graph representation can be used for isomorphism testing.
-    %    im, colors, r = oa2graph( A, oadata );
+    Convert orthogonal array to graph representation
+    
+    The conversion method is as in Ryan and Bulutoglu.
+    The resulting graph is bi-partite.
+    The graph representation can be used for isomorphism testing.
+ 
+    Example
+    -------
+    >     im, colors, r = oa2graph( A, oadata );
 
     """
     #A = np.array(al)
@@ -98,9 +99,6 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
     ttr = ttr.inverse()
     ttc = oapackage.array_transformation_t(arrayclass)
     ttc.setcolperm(colperm)
-    # ttc=ttc.inverse()
-    # tt=ttc
-    # tt=ttc*ttr
 
     ttl = oapackage.array_transformation_t(arrayclass)
 
@@ -113,7 +111,6 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
         ww = np.argsort(ww)
         lp.append(ww)
         ttl.setlevelperm(ii, ww)
-        # ttl.setlevelperm ( colperm[ii], ww)
 
     ttl = ttl.inverse()
 
@@ -189,7 +186,6 @@ def designReduceBliss(al, arrayclass, verbose=1):
     
 #%%
 
-
 def makearraylink(al):
     """ Convert array to array_link object """
     if isinstance(al, np.ndarray):
@@ -227,7 +223,6 @@ def selectIsomorphismClasses(sols, arrayclass, verbose=1):
     qqq = np.array(qq, dtype=dt)
 
     a, b = np.unique(qqq, return_inverse=True)
-    # a,b=np.unique(qqq, return_index=True)
 
     if verbose >= 1:
         print('selectIsomorphismClasses: reduce %d to %d' %
