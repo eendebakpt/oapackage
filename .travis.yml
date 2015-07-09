@@ -15,8 +15,8 @@ script:
   - make package
   - ./oaunittest
 
-addons:
-  artifacts: true
+#addons:
+#  artifacts: true
   
 # Python build
 #language: python
