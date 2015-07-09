@@ -198,7 +198,7 @@ except(IOError, ImportError):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '2.0.22',
+       version = '2.0.23',
        author      = "Pieter Eendebak",
        description = "Package to generate and analyse orthogonal arrays and optimal designs",
        long_description=long_description,
