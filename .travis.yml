@@ -12,8 +12,12 @@ before_script:
 
 script:
   - make  
+  - make package
   - ./oaunittest
 
+addons:
+  artifacts: true
+  
 # Python build
 #language: python
 #python:
