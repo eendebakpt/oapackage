@@ -24,9 +24,6 @@
 #endif
 
 
-
-
-
 #ifdef WIN32
 #ifdef FULLPACKAGE
 #include "msstdint.h"
