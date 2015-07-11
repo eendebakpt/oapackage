@@ -4,7 +4,7 @@
 # Pieter Eendebak
 # University of Antwerp
 # Department of Engineering Management
-# May 29th 2015
+# July 2015
 #
 # For more information see http://pietereendebak.nl/oapackage/index.html
 #
@@ -12,8 +12,8 @@
 # This script uses the following R packages:
 # (install with install.packages('packagename'))
 library(oapackage)
-library(ggplot2)
 library(reshape2)
+
 
 #------------------------------------------------------
 # 				Section 1: Introduction
@@ -27,7 +27,6 @@ k <- 4
 # The design used for the analysis is constructed using the Doptimize function with optimization of D+2*Ds
 
 D = Doptimize(N, k, nrestarts=30, alpha1=1, alpha2=2, alpha3=0) 
-
 
 #------------------------------------------------------
 # 				Section 2: Creating data set
@@ -79,20 +78,19 @@ TwoFatInt <- FullModelMat[,(2+k):m]
 METFIalias <- abs(t(D)%*%TwoFatInt)/N # Correlation between ME and TWOFI
 rownames(METFIalias) <- c('A', 'B', 'C', 'D')
 
-# Correlation between main effects
+# Correlation between main effects (neends reshape2 and ggplot2)
+library(ggplot2)
 print(MEAlias)
 cordata <- melt(MEAlias)
 colnames(cordata) <- c('X', 'Y', 'Correlation')
+# qplot needs ggplot2
 q <- qplot(x=X, y=Y, data=cordata, fill=Correlation, geom="tile") +xlab(' ') + ylab(' ')
-#q + plot.theme # Heatmap on correlations plot
 
 # Correlation between main effects and two-factor interactions
 print(METFIalias)
 cordata <- melt(METFIalias)
 colnames(cordata) <- c('X', 'Y', 'Correlation')
 q <- qplot(x=X, y=Y, data=cordata, fill=Correlation, geom="tile") +xlab(' ') + ylab(' ')
-#q + plot.theme # Heatmap on correlations plot
-
 
 #------------------------------------------------------
 # 				Section 4: Analysis of data

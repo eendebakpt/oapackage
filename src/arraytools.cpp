@@ -9,6 +9,10 @@
 #include "arrayproperties.h"
 #include "strength.h"
 
+#ifdef RPACKAGE
+#define printf notallowed
+#endif
+
 #ifdef FULLPACKAGE
 #include <iostream>
 #include "lmc.h"
@@ -977,8 +981,10 @@ array_link exampleArray ( int idx, int verbose )
 	}
 
 	case 9: {
+				dstr="array in OA(40, 2^7), D-optimal";
 		if ( verbose )
-			printf ( "exampleArray: array in OA(40, 2^7), D-optimal\n" );
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+
 
 		//
 		array_link al ( 40,7, 0 );
@@ -1093,8 +1099,10 @@ array_link exampleArray ( int idx, int verbose )
 	}
 
 	case 13: {
+						dstr="array in OA(25, 2^5)";
 		if ( verbose )
-			myprintf ( "exampleArray: array in OA(25, 2^5)\n" );
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+
 
 		//
 		array_link al ( 24,5, 0 );

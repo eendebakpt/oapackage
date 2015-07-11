@@ -18,7 +18,7 @@ p = Doptimize(N, k, nrestarts, alpha1, alpha2, alpha3, verbose )
 print('resulting design:')
 print(p)
 
-dd = Defficiencies(N, k, p)
+dd = Defficiencies(p)
 print('efficiencies:')
 print(dd)
 

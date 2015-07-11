@@ -4,19 +4,16 @@
 \alias{Defficiencies}
 \title{Wrapper function for OApackage Defficiencies function.}
 \usage{
-Defficiencies(N, k, A)
+Defficiencies(A)
 }
 \arguments{
-\item{N}{Number of runs}
-
-\item{k}{Number of factors}
-
-\item{A}{Array containing the design (in 0, 1 format)}
+\item{A}{An array containing the design (in 0, 1 format)}
 }
 \value{
 A list containing the calculated efficiencies
 }
 \description{
-This function calculates the D, Ds- and D1-efficiency of a design.
+This function calculates the D, Ds- and D1-efficiency of a design. The definitions
+of these efficiencies can be found on the main page of the package \link{oapackage}.
 }
 

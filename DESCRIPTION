@@ -1,8 +1,8 @@
 Package: oapackage
 Type: Package
 Title: Orthogonal Array Package
-Version: 2.0.22
-Date: 2015-05-25
+Version: 2.0.23
+Date: 2015-07-11
 Author: Pieter Thijs Eendebak
 Maintainer: Pieter Thijs Eendebak <pieter.eendebak@gmail.com>
 Description: Interface to D-optimal design generation code of the Orthogonal Array package. Can generate D-optimal designs with specified number of runs and factors. The optimality of the designs is defined in terms of a user specified optimization function based on the D-efficiency and Ds-efficiency.
@@ -11,4 +11,4 @@ License_is_FOSS: yes
 URL: http://www.pietereendebak.nl/oapackage
 Depends: 
 LinkingTo: RcppEigen
-Suggests: ggplot2, reshape2
+Suggests: reshape2, ggplot2
