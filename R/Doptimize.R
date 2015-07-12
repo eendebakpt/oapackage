@@ -11,8 +11,9 @@
 #'	\eqn{F = \alpha_1 D + \alpha_2 D_s + \alpha_3  D_1}{F = alpha1*D + alpha2*Ds + alpha3 * D1}
 #'
 #' Here D is the D-efficiency of the design and Ds and D1 other efficiency measures.
+#' For the details on these efficiency measures see the \link{oapackage-package}.
 #' The values \eqn{\alpha_i}{alpha_i} are scalar parameters.
-#' For more details see http://pietereendebak.nl/oapackage/Doptim.html
+#' 
 #' 
 #' @param N Number of runs
 #' @param k Number of factors

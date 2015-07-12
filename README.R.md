@@ -1,10 +1,14 @@
 Orthogonal Array Package
 ========================
 
-An example file for using the Orthogonal Array packages is contained in scripts/example.R
+An example file for using the Orthogonal Array packages is contained in tests/example_Doptimize.R
 
 Installation
 ------------
+
+To install the package from CRAN use (from within R):
+
+>  install.packages('oapackage')
 
 To build the package from the source code use:
 
