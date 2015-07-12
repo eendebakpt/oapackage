@@ -554,13 +554,20 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 }
 
 #include <algorithm>
+#include <cmath>
+
+const double NaN = std::numeric_limits<double>::quiet_NaN();
 
 extern "C" {
 
 	void DefficienciesR(int *N, int *k, double *input,  double *D, double *Ds, double *D1 ) {
 		array_link al(*N, *k, array_link::INDEX_DEFAULT);
-		
 		std::copy ( input, input+(*N)*(*k), al.array );
+		
+		if (al.min()<0) {
+ 		*D = NaN; *Ds = NaN; *D1=NaN;
+		myprintf("DefficienciesR: error: design should have input elements from 0 to s-1\n");
+		}
 		
 		std::vector<double> dd = al.Defficiencies();
 		

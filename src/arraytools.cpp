@@ -1479,6 +1479,17 @@ double array_link::CL2discrepancy() const
 
 }
 
+array_t array_link::max() const
+{
+	if (this->n_rows*this->n_columns==0) return 0;
+	return *std::max_element(this->array, this->array+this->n_rows*this->n_columns);
+}
+array_t array_link::min() const
+{
+	if (this->n_rows*this->n_columns==0) return 0;
+	return *std::min_element(this->array, this->array+this->n_rows*this->n_columns);
+}
+
 bool  array_link::foldover() const
 {
 	std::vector< double > g = this->GWLP();

@@ -694,6 +694,12 @@ public:
 	/// return true if the array is a foldover array
 	bool foldover() const;
 
+	// return value of minimum element in array
+	array_t min() const;
+	// return value of maximum element in array
+	array_t max() const;
+
+	
 	/** calculate centered L2 discrepancy
 	 *
 	 * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000

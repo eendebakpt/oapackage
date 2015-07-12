@@ -1184,6 +1184,12 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		myprintf ( "Defficiencies: array size not supported\n" );
 		return std::vector<double> ( 3 );
 	}
+
+	//if ( al.min()<0 ) {
+	//	myprintf ( "Defficiencies: array elements should range from 0 to s-1\n" );
+	//	return std::vector<double> ( 3 );
+	//}
+
 	int k = al.n_columns;
 	int k1 = al.n_columns+1;
 	int n = al.n_rows;
