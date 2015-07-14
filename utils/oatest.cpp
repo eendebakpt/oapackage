@@ -434,6 +434,20 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
+	
+	if (1) {
+				array_link A(0,8,0);
+		printf("should return an error\n  ");
+		A.Defficiencies();
+		
+		A = array_link(1,8,0);
+		printf("should return an error\n  ");
+		A.at(0,0)=-2;
+		A.Defficiencies();
+		return 0;
+	}
+	
+	
 	if (0) {
 		double dt, mean;
 		arraydata_t arrayclass ( 2, rr, 0, cc );

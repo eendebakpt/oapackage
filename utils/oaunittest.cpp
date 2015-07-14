@@ -289,9 +289,22 @@ assert( fabs(D-0.335063) < 1e-3 );
 		}
 		
 	}
+{
+		cprintf ( verbose,"%s: test robustness\n", bstr );
+
+				array_link A(0,8,0);
+		printf("should return an error\n  ");
+		A.Defficiencies();
+		
+		A = array_link(1,8,0);
+		printf("should return an error\n  ");
+		A.at(0,0)=-2;
+		A.Defficiencies();
+}
+
 #ifdef HAVE_BOOST
 
-	
+
 	if(writetests)
 	{
 		cprintf ( verbose,"OA unittest: reading and writing of files\n" );

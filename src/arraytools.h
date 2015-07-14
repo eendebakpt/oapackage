@@ -385,7 +385,11 @@ public:
 		for ( int i=0; i<this->strength; i++ )
 			combs *= this->s[i];
 
+			if (combs==0) {
+				this->oaindex = 0;
+			} else {
 		this->oaindex = this->N/combs;
+			}
 	}
 
 	/// return the root array for the class

@@ -370,15 +370,28 @@ arraydata_t arraylink2arraydata ( const array_link &al, int extracols, int stren
 	int N=al.n_rows;
 	int ncols = ncols0+extracols;
 	std::vector<int> s ( ncols );
+	std::vector<int> smin ( ncols );
+	if (N>0) {
 	int ss=-1;
 	for ( int ik=0; ik<ncols0; ik++ ) {
 		array_t *xx=std::max_element ( al.array+N*ik, al.array+N* ( ik+1 ) );
 		ss=*xx+1;
 		s[ik]=ss;
+		array_t minval=*(std::min_element ( al.array+N*ik, al.array+N* ( ik+1 ) ) );
+		smin[ik]=0;
+		
+		if (s[ik]<0) {
+				myprintf("arraylink2arraydata: input array should have elements ranging from 0 to s-1\n");
+				s[ik]=1;
+		}
+		if (smin[ik]<0) {
+				myprintf("arraylink2arraydata: input array should have elements ranging from 0 to s-1\n");
+		}
 	}
 	for ( int ik=ncols0; ik<ncols; ik++ )
 		s[ik]=ss; // repeat last factor value
-
+	}
+	
 	if ( strength<0 )
 		strength = al.strength();
 	arraydata_t ad ( s, al.n_rows, strength, ncols );
@@ -1916,11 +1929,23 @@ double array_link::DsEfficiency ( int verbose ) const
 	return Ds;
 }
 
+const double NaN = std::numeric_limits<double>::quiet_NaN();
 
 std::vector<double> array_link::Defficiencies ( int verbose, int addDs0 ) const
 {
 	const array_link &al = *this;
 
+	if (this->min() < 0) {
+		myprintf("Defficiencies: error: input array should have elements ranging from 0 to s-1\n");
+		std::vector<double> x(3+addDs0); x[0] = NaN; x[1] = NaN;
+	 return x;
+	}
+	if( this->n_rows<1 ) {
+		myprintf("Defficiencies: error: input array should have more than zero rows\n");
+		std::vector<double> x(3+addDs0); x[0] = NaN; x[1] = NaN;
+	 return x;
+		
+	}
 	arraydata_t arrayclass = arraylink2arraydata ( al );
 
 	return ::Defficiencies ( al, arrayclass, verbose,  addDs0 );
@@ -2262,6 +2287,7 @@ void arraydata_t::complete_arraydata()
 	const int verbose=0;
 
 	if ( verbose ) {
+		myprintf("complete_arraydata: strength %d\n", this->strength);
 		for ( int i=0; i<this->ncols; i++ )
 			myprintf ( "complete_arraydata: k %d, s %d\n", i, s[i] );
 	}
@@ -2297,6 +2323,7 @@ void arraydata_t::complete_arraydata()
 	int nbits = 8*sizeof ( rowsort_value_t );
 	rowsort_value_t val=1;
 	for ( int i=0; i<ad->ncols; i++ ) {
+		if (ad->s[i]==0) continue;
 		if ( val != 0 && ( std::numeric_limits<rowsort_value_t>::max() / ( rowsort_value_t ) ad->s[i] ) < val ) {
 			// multiplication would exceed range of unsigned
 			myprintf ( "error: LMC checks for %d columns would lead to integer overflow\n", i );
