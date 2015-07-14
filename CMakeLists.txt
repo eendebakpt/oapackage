@@ -8,6 +8,12 @@ PROJECT(OApackage)
 #   External packages
 # ----------------------------------------------------------------------------
 
+if(WIN32)
+	#message(STATUS "Set build type...")
+	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
+	set(CMAKE_BUILD_TYPE Release CACHE STRING)
+endif()
+
 if (0)
   find_package(Boost QUIET COMPONENTS  )
   message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
