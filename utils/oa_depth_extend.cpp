@@ -230,7 +230,7 @@ dextend.loglevelcol=7;
 		//exit(0);
 	}
 	// loop over all arrays
-
+	
 	//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
@@ -299,6 +299,7 @@ printfd("## array %zu: group size %d\n", kk, ps);
 
 //printf("## oa_depth_extend: ds->goodarrayslist[ai][0].n_columns %d, extensioncol %d\n", ds->goodarrayslist[ai][0].n_columns, extensioncol );
 
+ds->depthalglist[ai]=DEPTH_DIRECT; // HACK
 	processDepth ( ds->goodarrayslist[ai], ds->depthalglist[ai], dextendloop, ds->dextendsubList[ai], extensioncol, verbose );
 
 //		dextendloop.showprogress(1, extensioncol, 1);

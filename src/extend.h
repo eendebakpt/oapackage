@@ -50,7 +50,7 @@ public:
     enum {APPENDEXTENSION, APPENDFULL, STOREARRAY};
     /// determined how the arrays are stored
     int extendarraymode;
-    arrayfile_t storefile;	// NOTE: we should make a copy constructor and assignment operator
+    arrayfile_t storefile;	 //NOTE: we should make a copy constructor and assignment operator
 
     // special cases
     j5structure_t j5structure;
@@ -65,7 +65,21 @@ public:
         algmode = MODE_AUTOSELECT;
 #endif
     };
+    OAextend( const OAextend &o)  {
+      this->singleExtendTime = o.singleExtendTime;
+      this->nLMC = o.nLMC;
+      this->checkarrays = o.checkarrays;
+      this->use_row_symmetry = o.use_row_symmetry;
+      this->init_column_previous = o.init_column_previous;
+      this->extendarraymode = o.extendarraymode;
+      this->j5structure = o.j5structure;
+      
+      this->algmode=o.algmode;
+      // we do NOT copy the storefile: this->storefile = o.storefile;
+
+    };
     OAextend( arraydata_t &ad) : singleExtendTime(10.0), nLMC(40000), checkarrays(1), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL) {
+
 #ifdef OADEV
         algmode = MODE_AUTOSELECT;
 #endif

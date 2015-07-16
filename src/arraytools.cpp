@@ -381,11 +381,11 @@ arraydata_t arraylink2arraydata ( const array_link &al, int extracols, int stren
 		smin[ik]=0;
 		
 		if (s[ik]<0) {
-				myprintf("arraylink2arraydata: input array should have elements ranging from 0 to s-1\n");
+				myprintf("arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik);
 				s[ik]=1;
 		}
 		if (smin[ik]<0) {
-				myprintf("arraylink2arraydata: input array should have elements ranging from 0 to s-1\n");
+				myprintf("arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik);
 		}
 	}
 	for ( int ik=ncols0; ik<ncols; ik++ )
