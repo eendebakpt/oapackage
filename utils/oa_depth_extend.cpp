@@ -57,6 +57,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "method", 'm' );
 	opt.setOption ( "writearrays", 'w' );
 	opt.setOption ( "maxarrays" );
+	opt.setOption("maxk", 'K');
 	opt.setOption ( "Avalue", 'A' );
 	opt.setFlag ( "coptions" );	/* print compile time options */
 	opt.setOption ( "logtime", 'Q' );
@@ -134,6 +135,7 @@ int main ( int argc, char* argv[] )
 	double Afinal = opt.getDoubleValue ( 'A', 0 );
 	int kfinal = opt.getIntValue ( 'k', 7 );
 	int splitcalc = opt.getFlag ( "split" );
+	int maxk = opt.getIntValue ( "maxk", 1000 );
 	int writedeptharrays = opt.getIntValue ( 'w', 1 );
 	long maxarrays = opt.getIntValue ( "maxarrays", 2047483000 );
 
@@ -159,6 +161,15 @@ int main ( int argc, char* argv[] )
 	if ( adfull==0 ) {
 		fprintf ( stderr, "oa_depth_extend: could not read config file" );
 		exit ( 1 );
+	}
+	if (maxk<adfull->ncols) {
+		if (maxk<=5){
+			printf("oa_depth_extend: maxk should be >= 5\n");
+		return 1;	
+		}
+		arraydata_t *adfullr = new arraydata_t(adfull, maxk);
+		delete adfull;
+		adfull = adfullr;
 	}
 	arraylist_t *arraylist = new arraylist_t;
 	if ( opt.getArgc() ==0 ) {
