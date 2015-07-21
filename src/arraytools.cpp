@@ -2106,7 +2106,7 @@ arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols )
 	colgroupsize=0;
 
 	if ( ncols>adp->ncols ) {
-		myprintf ( "arraydata_t: error: number of columns %d is too large (object %d cols)\n", ncols, adp->ncols );
+		myprintf ( "arraydata_t: warning: number of columns %d is too large (object %d cols)\n", ncols, adp->ncols );
 		s = new array_t[ncols];
 		for ( size_t i=0; i< ( size_t ) ncols; i++ )
 			s[i]=2;

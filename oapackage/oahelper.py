@@ -426,13 +426,14 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
     else:
         if verbose >= 2 or (verbose and logfile == None):
             print('### dryrun\n%s\n###\n' % cmd)
-    if not logfile == None:
+    if logfile is not None:
         fid = open(logfile, 'a')
         fid.write('\n###\n')
         fid.write(cmd)
         fid.close()
     else:
-        raise 'no logfile'
+        print('no logfile')
+        #raise Exception('no logfile')
 
 
 def getArrayFile(afile):
@@ -494,6 +495,7 @@ def checkFiles(lst, cache=1, verbose=0):
         cache: 0 (no), 1 (check), -1 (always)
 
         Returns False if one or more of the files do not exist
+        Returns True if all files exist
     """
     if cache == -1:
         return True
