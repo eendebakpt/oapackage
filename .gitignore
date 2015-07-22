@@ -64,3 +64,4 @@ src/oapackage.so
 src/stest
 src/oadevelop.o
 dev/
+oalib_wrap.cpp
