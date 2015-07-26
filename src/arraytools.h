@@ -259,6 +259,17 @@ public:
 	}
 };
 
+/// return true if the specified file exists
+bool file_exists ( const std::string filename );
+/// return true if the specified file exists
+bool file_exists ( const char *filename );
+
+/// return true if the specified oa file exists
+bool oa_file_exists ( const char *filename );
+
+/// return true if the specified oa file exists
+bool oa_file_exists ( const std::string filename );
+
 
 
 enum ordering_t {ORDER_LEX, ORDER_J5};

@@ -513,6 +513,34 @@ def checkFiles(lst, cache=1, verbose=0):
             break
     return c
 
+#%%
+def checkFilesOA(lst, cache=1, verbose=0):
+    """ Check whether a file or list of files exists
+        cache: 0 (no), 1 (check), -1 (always)
+        For array files also the .gz extension is checked
+
+        Returns False if one or more of the files do not exist
+        Returns True if all files exist
+    """
+    if cache == -1:
+        return True
+    if cache == 0:
+        return False
+
+    if isstr(lst):
+        lst = [lst]
+    c = True
+    for f in lst:
+        r = checkArrayFile(f, cache=True)
+        if not r:
+            if verbose:
+                print('checkFiles: file %s does not exist' % f)
+            c = False
+            break
+    return c
+
+#%%
+
 # import gc
 
 

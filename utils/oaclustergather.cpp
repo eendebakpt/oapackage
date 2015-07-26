@@ -43,6 +43,10 @@ std::string splitFile ( std::vector<int> ii )
 std::string splitTag ( std::vector<int> ii )
 {
 	std::string s ;
+	if (ii.size()==0){
+			s+= "base";
+			return s;
+	}
 	for ( size_t i=0; i<ii.size(); i++ ) {
 		s+= printfstring ( "%d", ii[i] );
 		if ( i<ii.size()-1 )
@@ -79,37 +83,53 @@ inline std::vector<int> tovec ( int i, int j, int k )
 	return ii;
 }
 
-bool readNumbersFile(const char *numbersfile, std::vector<long> na, std::vector<long> npareto, int kmin=-1, int kmax= -1) {
-		FILE *fid = fopen ( numbersfile, "rt" );
-		if (fid==0)
-			return 0;
-		long np, n, k;
-		
-		for ( int k=kmin; k<=kmax; k++ ) {
-				fscanf ( fid, "k %d: %ld %ld\n", &k, &n, &np );
-				na[k]=n;
-				npareto[k]=n;
-		}
+bool readNumbersFile ( const char *numbersfile, std::vector<long> &na, std::vector<long> &npareto, int kmin=-1, int kmax= -1 )
+{
+	FILE *fid = fopen ( numbersfile, "rt" );
+	//printf("read numbers file %s\n", numbersfile);
+	if ( fid==0 ) {
+		printf ( "read numbers file %s: error\n", numbersfile );
+		return 0;
+	}
+	long np, n, k;
+	//int k;
 
-		fclose ( fid );
-		
-		return 1;
+	while ( 1 ) {
+//		for ( int k=kmin; k<=kmax; k++ ) {
+		int r = fscanf ( fid, "k %ld: %ld %ld\n", &k, &n, &np );
+		//printf("read numbers file: %s: r %d: %ld %ld %ld\n", numbersfile, r, k, n, np);
+		if ( r<3 )
+			break;
+		if ( k>= ( int ) na.size() )
+			na.resize ( k+1 );
+		if ( k>= ( int ) npareto.size() )
+			npareto.resize ( k+1 );
+		na[k]=n;
+		npareto[k]=np;
+	}
+
+	fclose ( fid );
+
+	return 1;
 }
 
-void writeNumbersFile(const char *numbersfile, std::vector<long> na, std::vector<long> npareto, int kmin=-1, int kmax= -1) {
-	
-	if (kmin<0)
+void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vector<long> npareto, int kmin=-1, int kmax= -1 )
+{
+
+	if ( kmin<0 )
 		kmin=0;
-	if (kmax<0)
-		kmax=na.size()+1;
-	
-			FILE *fid = fopen ( numbersfile, "wt" );
-		for ( int k=kmin; k<=kmax; k++ ) {
-				fprintf ( fid, "k %d: %ld %ld\n", k, na[k], npareto[k] );
-		}
+	if ( kmax<0 )
+		kmax=na.size() +1;
 
-		fclose ( fid );
+	FILE *fid = fopen ( numbersfile, "wt" );
+	for ( int k=kmin; k<=kmax; k++ ) {
+		fprintf ( fid, "k %d: %ld %ld\n", k, na[k], npareto[k] );
+	}
+
+	fclose ( fid );
 }
+
+const std::string filesep = "/";
 
 /**
  * @brief Analyse arrays using Pareto optimality
@@ -139,7 +159,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "kmax" );
 
 	opt.addUsage ( "Orthonal Array Cluster Gather: special tool" );
-	opt.addUsage ( "Usage: oaclustergather [OPTIONS] [FILE]" );
+	opt.addUsage ( "Usage: oaclustergather [OPTIONS] " );
 	opt.addUsage ( "" );
 	opt.addUsage ( " -h --help  			Prints this help " );
 	opt.addUsage ( " -v --verbose  			Verbose level (default: 1) " );
@@ -151,7 +171,7 @@ int main ( int argc, char* argv[] )
 	print_copyright();
 
 	/* parse options */
-	if ( opt.getFlag ( "help" ) || opt.getFlag ( 'h' ) || opt.getArgc() ==0 || ( opt.getValue ( "coptions" ) != 0 ) ) {
+	if ( opt.getFlag ( "help" ) || opt.getFlag ( 'h' ) || opt.getArgc() <0 || ( opt.getValue ( "coptions" ) != 0 ) ) {
 		opt.printUsage();
 		if ( opt.getValue ( "coptions" ) != 0 ) {
 			print_options ( cout );
@@ -195,9 +215,9 @@ int main ( int argc, char* argv[] )
 
 
 	std::vector<int> nsplit;
-	nsplit.push_back(nsplit0);
-	nsplit.push_back(nsplit1);
-	nsplit.push_back(nsplit2);
+	nsplit.push_back ( nsplit0 );
+	nsplit.push_back ( nsplit1 );
+	nsplit.push_back ( nsplit2 );
 
 	std::vector<int> lvls;
 	if ( split0>=0 ) {
@@ -207,45 +227,83 @@ int main ( int argc, char* argv[] )
 		}
 	}
 	if ( verbose ) {
-		std::cout << "oaclustergather: levels "<< splitTag(lvls) << std::endl;
+		std::cout << "oaclustergather: levels "<< splitTag ( lvls ) << std::endl;
 	}
 
 	//printf("xxx nsplit0 %d\n", nsplit0 );
-	
+
 	// loop over all columns
 	for ( int k=kmin; k<=kmax; k++ ) {
 
 		if ( verbose>=2 )
-			printf ( "oaclustergather: %d columns (time %.1f [s])\n", k, get_time_ms()-time0 );
+			printf ( "## oaclustergather: %d columns (time %.1f [s])\n", k, get_time_ms()-time0 );
 		Pareto<mvalue_t<long>,array_link> pset;
 
 		arraydata_t adata0 ( adata, k );
 
-		if ( nsplit0==-1 ) {
+		if ( nsplit0==-1 || 1 ) {
 			int level = lvls.size();
 
+			//printf("------------------- nsplit[level] %d\n", nsplit[level]);
 			std::string splittag = splitTag ( lvls );
 
 			if ( verbose )
-				printf ( "oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
+				printf ( "\n## oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
 			for ( int jj=0; jj<nsplit[level]; jj++ ) {
 				std::string subdir = splitDir ( tovec ( lvls, jj ) );
 
-				std::string subfile = splitFile ( tovec ( lvls, jj ) ) + printfstring ( "-extend-%s.oa", adata0.idstr().c_str() );
-				std::string afile = basedir + "/" + subdir + subfile;
+				std::string  nfilesub0= "numbers-" + splitTag ( tovec ( lvls, jj ) ) + ".txt";
+				std::string  nfilesub= basedir + filesep + subdir + filesep + nfilesub0;
+				std::vector<long> nasub ( kmax+1 );
+				std::vector<long> nparetosub ( kmax+1 );
+				readNumbersFile ( nfilesub.c_str(), nasub, nparetosub, kmin, kmax );
+
+				if (verbose>=2)
+				{
+					printf("   --> read numbers file %s\n", nfilesub.c_str() );
+				}
+				if ( jj==0 ) {
+					//printf("numbers: nasub[%d]=%d\n", k, nasub[k]);
+				}
+
+				std::string subfile0 = splitFile ( tovec ( lvls, jj ) ) + printfstring ( "-extend-%s.oa", adata0.idstr().c_str() );
+				std::string subfilepareto0 = splitFile ( tovec ( lvls, jj ) ) + printfstring ( "-pareto-%s.oa", adata0.idstr().c_str() );
+
+				std::string afile = basedir + filesep + subdir + filesep + subfile0;
+
+				bool paretofile = 0;
+				printf ( "  check %s\n", subfilepareto0.c_str() );
+				if ( oa_file_exists ( basedir + filesep + subdir + subfilepareto0 ) ) {
+					printf ( "  switching to Pareto file %s->%s!\n", subfile0.c_str(), subfilepareto0.c_str() );
+					afile =  basedir + filesep + subdir + subfilepareto0;
+					paretofile = 1;
+				}
 				int nn = nArrays ( afile.c_str() );
 				// printf ( "file %s: %d arrays\n", afile.c_str(), nn );
 
 				if ( verbose>=2 )
-					printf ( "### file %s: %d arrays\n", subfile.c_str(), nn );
+					printf ( "### file %s: %d arrays\n", base_name ( afile ).c_str(), nn );
+
 				if ( nn>=0 )
-					na[k] += nn;
+					if ( paretofile ) {
+						if ( verbose>=2 ) {
+							printf ( "  k %d: adding %ld arrays\n", k, nasub[k] );
+						}
+						na[k]+=nasub[k];
+						// check
+						if ( nparetosub[k]!=nn )  {
+							printfd ( "error???	\n" );
+						}
+					} else {
+						na[k] += nn;
+					}
 				else {
-					if ( cleanrun ) {	// only report error if we are in a clean run
-						fprintf ( stderr, "file %s: error (nn %d)\n", subfile.c_str(), nn );
-						fprintf( stderr, "   error: full %s\n", afile.c_str() );
+					if ( cleanrun || verbose>=2 ) {	// only report error if we are in a clean run
+						fprintf ( stderr, "file %s: error (nn %d)\n", subfile0.c_str(), nn );
+						fprintf ( stderr, "   error: file %s\n", afile.c_str() );
 					}
 					cleanrun=0;
+					exit ( 0 );
 				}
 
 				const arraylist_t arraylist = readarrayfile ( afile.c_str(), 0 );
@@ -281,6 +339,9 @@ int main ( int argc, char* argv[] )
 				}
 			}
 		} else {
+			printf("ERROR: code should not be used any more...\n");
+			exit(1);
+			
 			//   verbose=2; // @pte
 			if ( verbose )
 				printf ( "oaclustergather: gathering results for first stage\n" );
@@ -327,25 +388,20 @@ int main ( int argc, char* argv[] )
 		npareto[k] =  pset.number();
 
 		if ( cleanrun ) {
-			if ( nsplit0==-1 ) {
-				std::string cdir =  splitDir(lvls); //printfstring ( "sp0-split-%d/", split0 );
-				std::string xxx =  splitFile(lvls); //printfstring ( "sp0-split-%d/", split0 );
-				std::string pfile = printfstring ( "%s-pareto-%s.oa", xxx.c_str(), adata0.idstr().c_str() );
-				std::string afile = basedir + "/" + cdir + pfile;
-
-				if ( verbose )
-					printf ( "  writing pareto file %s\n", pfile.c_str() );
-				writearrayfile ( afile.c_str(), &pp, ABINARY, adata->N, k );
+			std::string cdir =  splitDir ( lvls ); //printfstring ( "sp0-split-%d/", split0 );
+			std::string xxx =  splitFile ( lvls );
+			if ( lvls.size() >0 ) {
 			} else {
-				std::string cdir =  printfstring ( "" );
-				std::string pfile = printfstring ( "results-j5evenodd-pareto-%s.oa", adata0.idstr().c_str() );
-				std::string afile = basedir + "/" + cdir + pfile;
-
-				if ( verbose )
-					printf ( "  writing pareto file %s\n", pfile.c_str() );
-				writearrayfile ( afile.c_str(), &pp, ABINARY, adata->N, k );
+				xxx =  "results-j5evenodd";
 
 			}
+			std::string pfile = printfstring ( "%s-pareto-%s.oa", xxx.c_str(), adata0.idstr().c_str() );
+			std::string afile = basedir + "/" + cdir + pfile;
+
+			if ( verbose )
+				printf ( "  writing pareto file %s\n", pfile.c_str() );
+			writearrayfile ( afile.c_str(), &pp, ABINARY, adata->N, k );
+
 		}
 	}
 
@@ -359,9 +415,9 @@ int main ( int argc, char* argv[] )
 
 
 	if ( numbersfile && cleanrun ) {
-		if (verbose)
-			printf("writing numbers file %s\n", numbersfile);
-		writeNumbersFile(numbersfile, na, npareto, kmin, kmax);	
+		if ( verbose )
+			printf ( "writing numbers file %s\n", numbersfile );
+		writeNumbersFile ( numbersfile, na, npareto, kmin, kmax );
 	}
 
 

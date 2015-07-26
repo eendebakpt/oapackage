@@ -2968,6 +2968,26 @@ void read_array ( FILE *fid, array_t *array, const int nrows, const int ncols )
 #include "boost/filesystem.hpp"
 #endif
 
+bool file_exists ( const std::string filename ) {
+return 	file_exists(filename.c_str() );
+}
+
+bool oa_file_exists ( const char * filename ) {
+	std::string s = filename;
+return 	oa_file_exists(s );
+}
+
+bool oa_file_exists ( const std::string filename ) {
+ if (file_exists(filename.c_str()) ) {
+	 return true;
+ }
+ std::string gzfile = filename + ".gz";
+ if (file_exists(gzfile.c_str() ) ) {
+	return true;
+ }
+ return false;
+}
+
 /// return true if the specified file exists
 bool file_exists ( const char *filename )
 {
