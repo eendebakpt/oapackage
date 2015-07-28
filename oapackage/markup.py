@@ -2,12 +2,13 @@
 # with absolutely no warranty and you can do
 # absolutely whatever you want with it.
 
-__date__ = '29 February 2012'
-__version__ = '1.8'
+__date__ = '16 March 2015'
+__version__ = '1.10'
 __doc__= """
 This is markup.py - a Python module that attempts to
 make it easier to generate HTML/XML from a Python program
 in an intuitive, lightweight, customizable and pythonic way.
+It works with both python 2 and 3.
 
 The code is in the public domain.
 
@@ -28,6 +29,11 @@ except:
     # python 3
     basestring = str
     string = str
+    long = int
+
+# tags which are reserved python keywords will be referred 
+# to by a leading underscore otherwise we end up with a syntax error
+import keyword
 
 class element:
     """This class handles the addition of a new element."""
@@ -193,8 +199,16 @@ class page:
             raise ModeError( mode )
 
     def __getattr__( self, attr ):
+
+        # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError( attr )
+        # tag with single underscore should be a reserved keyword
+        if attr.startswith( '_' ):
+            attr = attr.lstrip( '_' ) 
+            if attr not in keyword.kwlist:
+                raise AttributeError( attr )
+
         return element( attr, case=self.case, parent=self )
 
     def __str__( self ):
@@ -236,7 +250,7 @@ class page:
 
 
     def init( self, lang='en', css=None, metainfo=None, title=None, header=None, htmlheader=None,
-              footer=None, charset=None, encoding=None, doctype=None, bodyattrs=None, htmlattrs=None, script=None ):
+              footer=None, charset=None, encoding=None, doctype=None, bodyattrs=None, htmlattrs=None, script=None, base=None ):
         """This method is used for complete documents with appropriate
         doctype, encoding, title, etc information. For an HTML/XML snippet
         omit this method.
@@ -250,12 +264,15 @@ class page:
         metainfo -- a dictionary in the form { 'name':'content' } to be inserted
                     into meta element(s) as <meta name='name' content='content'>
                     (ignored in xml mode)
-
+        
+        base     -- set the <base href="..."> tag in <head>
+        
         bodyattrs --a dictionary in the form { 'key':'value', ... } which will be added
                     as attributes of the <body> element as <body key='value' ... >
                     (ignored in xml mode)
 
         script --   dictionary containing src:type pairs, <script type='text/type' src=src></script>
+                    or a list of [ 'src1', 'src2', ... ] in which case 'javascript' is assumed for all
 
         title --    the title of the document as a string to be inserted into
                     a title element as <title>my title</title> (ignored in xml mode)
@@ -301,6 +318,8 @@ class page:
                 self.scripts( script )
             if htmlheader is not None:
                 self.content.append( htmlheader )
+            if base is not None:
+                self.base( href='%s' % base )
             self.head.close()
             if bodyattrs is not None:
                 self.body( **bodyattrs )
@@ -341,14 +360,19 @@ class page:
             raise TypeError( "Metainfo should be called with a dictionary argument of name:content pairs." )
 
     def scripts( self, mydict ):
-        """Only useful in html, mydict is dictionary of src:type pairs will
-        be rendered as <script type='text/type' src=src></script>"""
+        """Only useful in html, mydict is dictionary of src:type pairs or a list
+        of script sources [ 'src1', 'src2', ... ] in which case 'javascript' is assumed for type.
+        Will be rendered as <script type='text/type' src=src></script>"""
 
         if isinstance( mydict, dict ):
             for src, type in list( mydict.items( ) ):
                 self.script( '', src=src, type='text/%s' % type )
         else:
-            raise TypeError( "Script should be given a dictionary of src:type pairs." )
+            try:
+                for src in mydict:
+                    self.script( '', src=src, type='text/javascript' )
+            except:
+                raise TypeError( "Script should be given a dictionary of src:type pairs or a list of javascript src's." )
 
 
 class _oneliner:
@@ -360,8 +384,16 @@ class _oneliner:
         self.case = case
     
     def __getattr__( self, attr ):
+        
+        # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError( attr )
+        # tag with single underscore should be a reserved keyword
+        if attr.startswith( '_' ):
+            attr = attr.lstrip( '_' ) 
+            if attr not in keyword.kwlist:
+                raise AttributeError( attr )
+        
         return element( attr, case=self.case, parent=None )
 
 oneliner = _oneliner( case='lower' )
@@ -398,11 +430,11 @@ def _argsdicts( args, mydict ):
         yield thisarg, thisdict
 
 def _totuple( x ):
-    """Utility stuff to convert string, int, float, None or anything to a usable tuple."""
+    """Utility stuff to convert string, int, long, float, None or anything to a usable tuple."""
 
     if isinstance( x, basestring ):
         out = x,
-    elif isinstance( x, ( int, float ) ):
+    elif isinstance( x, ( int, long, float ) ):
         out = str( x ),
     elif x is None:
         out = None,
@@ -491,7 +523,7 @@ class DeprecationError( MarkupError ):
 
 class ModeError( MarkupError ):
     def __init__( self, mode ):
-        self.message = "Mode '%s' is invalid, possible values: strict_html, loose_html, xml." % mode
+        self.message = "Mode '%s' is invalid, possible values: strict_html, html (alias for strict_html), loose_html, xml." % mode
 
 class CustomizationError( MarkupError ):
     def __init__( self ):
