@@ -74,6 +74,8 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -v [verbose level] " );
 	opt.addUsage ( " --split 				Split calculation " );
 	opt.addUsage ( " -p prune, -e extend " );
+	opt.addUsage ( " -K --maxK [n] " );
+
 	opt.addUsage ( " -Q [time] 			Logging time (in seconds)" );
 	opt.addUsage ( " --j5structure [VALUE] 			..." );
 	std::string ss = printfstring ( " -m [MODE]			Algorithm (" ) + algorithm_t_list() + ")\n" ;

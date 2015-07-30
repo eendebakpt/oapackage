@@ -292,7 +292,8 @@ int main ( int argc, char* argv[] )
 						na[k]+=nasub[k];
 						// check
 						if ( nparetosub[k]!=nn )  {
-							printfd ( "error???	\n" );
+							printfd ( "\n### error jj %d: nparetosub[%d] %d, nn %d\n\n", jj, k, nparetosub[k], nn );
+							cleanrun=0;
 						}
 					} else {
 						na[k] += nn;
@@ -385,7 +386,7 @@ int main ( int argc, char* argv[] )
 		// write pareto set to disk
 
 		arraylist_t pp = pset.allindicesdeque();
-		npareto[k] =  pset.number();
+		npareto[k] =  pset.numberindices();
 
 		if ( cleanrun ) {
 			std::string cdir =  splitDir ( lvls ); //printfstring ( "sp0-split-%d/", split0 );
