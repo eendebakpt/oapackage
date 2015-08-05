@@ -21,11 +21,16 @@ import fileinput
 import re
 from time import gmtime, strftime
 import time
+import warnings
+
 
 try:
+    import matplotlib
     import matplotlib.pyplot as plt
 except:
+    warnings.warn('oahelper: matplotlib cannot be found, not all functionality is available')
     pass
+
 
 #%%
 
@@ -623,8 +628,9 @@ import traceback
 
 try:
     import dateutil
+    import dateutil.parser
 except:
-    # print('oahelper: could not load datautil package...')
+    warnings.warn('oahelper: could not load datautil package...')
     pass
 
 
@@ -658,7 +664,7 @@ def parseProcessingTime(logfile, verbose=0):
                     print('parseProcessingTime: total: %s' % dtr)
             # else:
             #    print('invalid line? %s' % line)
-        if tstart != None and tend != None:
+        if tstart is not None and tend is not None:
             dt = tend - tstart
             dtt = dt.total_seconds()
         else:
@@ -1036,12 +1042,6 @@ def DefficiencyBound(D, k, k2):
     return D2
 
 #%% Misc
-
-try:
-    import matplotlib
-except:
-    print('oahelper: matplotlib cannot be found, not all functionality is available')
-    pass
 
 
 def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):

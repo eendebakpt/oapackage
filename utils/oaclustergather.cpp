@@ -88,7 +88,7 @@ bool readNumbersFile ( const char *numbersfile, std::vector<long> &na, std::vect
 	FILE *fid = fopen ( numbersfile, "rt" );
 	//printf("read numbers file %s\n", numbersfile);
 	if ( fid==0 ) {
-		printf ( "read numbers file %s: error\n", numbersfile );
+		//printf ( "error: read numbers file %s: error\n" );
 		return 0;
 	}
 	long np, n, k;
@@ -256,7 +256,7 @@ int main ( int argc, char* argv[] )
 				std::string  nfilesub= basedir + filesep + subdir + filesep + nfilesub0;
 				std::vector<long> nasub ( kmax+1 );
 				std::vector<long> nparetosub ( kmax+1 );
-				readNumbersFile ( nfilesub.c_str(), nasub, nparetosub, kmin, kmax );
+				bool b = readNumbersFile ( nfilesub.c_str(), nasub, nparetosub, kmin, kmax );
 
 				if (verbose>=2)
 				{
@@ -272,7 +272,8 @@ int main ( int argc, char* argv[] )
 				std::string afile = basedir + filesep + subdir + filesep + subfile0;
 
 				bool paretofile = 0;
-				printf ( "  check %s\n", subfilepareto0.c_str() );
+				if (verbose>=2)
+					printf ( "  check %s\n", subfilepareto0.c_str() );
 				if ( oa_file_exists ( basedir + filesep + subdir + subfilepareto0 ) ) {
 					printf ( "  switching to Pareto file %s->%s!\n", subfile0.c_str(), subfilepareto0.c_str() );
 					afile =  basedir + filesep + subdir + subfilepareto0;
