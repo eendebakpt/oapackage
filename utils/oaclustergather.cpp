@@ -155,6 +155,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "nsplit0" );
 	opt.setOption ( "nsplit1" );
 	opt.setOption ( "nsplit2" );
+	opt.setOption ( "nparetodiff" );	// allow difference in pareto files for .oa files and numbers file
 	opt.setOption ( "kmin" );
 	opt.setOption ( "kmax" );
 
@@ -165,6 +166,10 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -v --verbose  			Verbose level (default: 1) " );
 	opt.addUsage ( " -b --basedir  			Base calculation dir " );
 	opt.addUsage ( " --numbersfile [FILENAME]  Output name of number of arrays " );
+	opt.addUsage ( " --nsplit0 [NUMBER]		Number of split files at level 0" );
+	opt.addUsage ( " --nsplit1 [NUMBER]		Number of split files at level 1" );
+	opt.addUsage ( " --nsplit2 [NUMBER]		Number of split files at level 2" );
+	opt.addUsage ( " --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process" );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) " );
 	opt.processCommandArgs ( argc, argv );
 
@@ -190,6 +195,7 @@ int main ( int argc, char* argv[] )
 	int split1 = opt.getIntValue ( "split1", -1 );
 	int nsplit0 = opt.getIntValue ( "nsplit0", -1 );
 	int nsplit1 = opt.getIntValue ( "nsplit1", -1 );
+	int allowparetodiff = opt.getIntValue ( "nparetodiff", 0 );
 	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
 	int kmin = opt.getIntValue ( "kmin", 9 );
 	int kmax = opt.getIntValue ( "kmax", 24 );
@@ -275,7 +281,9 @@ int main ( int argc, char* argv[] )
 				if (verbose>=2)
 					printf ( "  check %s\n", subfilepareto0.c_str() );
 				if ( oa_file_exists ( basedir + filesep + subdir + subfilepareto0 ) ) {
+					if (verbose>=2) {
 					printf ( "  switching to Pareto file %s->%s!\n", subfile0.c_str(), subfilepareto0.c_str() );
+					}
 					afile =  basedir + filesep + subdir + subfilepareto0;
 					paretofile = 1;
 				}
@@ -293,8 +301,10 @@ int main ( int argc, char* argv[] )
 						na[k]+=nasub[k];
 						// check
 						if ( nparetosub[k]!=nn )  {
-							printfd ( "\n### error jj %d: nparetosub[%d] %d, nn %d\n\n", jj, k, nparetosub[k], nn );
+							printfd ( "\n### warning: column %d: nparetosub[%d] %d, nn %d (number of arrays in .oa file)\n\n", jj, k, nparetosub[k], nn );
+							if (! allowparetodiff ) {
 							cleanrun=0;
+							}
 						}
 					} else {
 						na[k] += nn;
@@ -342,47 +352,13 @@ int main ( int argc, char* argv[] )
 			}
 		} else {
 			printf("ERROR: code should not be used any more...\n");
-			exit(1);
-			
-			//   verbose=2; // @pte
-			if ( verbose )
-				printf ( "oaclustergather: gathering results for first stage\n" );
-
-
-			for ( int jj=0; jj<nsplit0; jj++ ) {
-				std::string subdir =  printfstring ( "sp0-split-%d/", jj );
-				std::string subfile = printfstring ( "sp0-split-%d-extend-%s.oa", jj, adata0.idstr().c_str() );
-				std::string afile = basedir + "/" + subdir + subfile;
-				int nn = nArrays ( afile.c_str() );
-				// printf ( "file %s: %d arrays\n", afile.c_str(), nn );
-
-				if ( verbose>=2 )
-					printf ( "file %s: %d arrays\n", subfile.c_str(), nn );
-				if ( nn>=0 ) {
-					na[k] += nn;
-					arraylist_t arraylist = readarrayfile ( afile.c_str(), 0 );
-					for ( size_t i=0; i<arraylist.size(); i++ ) {
-						if ( verbose>=2 || ( ( i%10000==0 ) && verbose>=1 ) ) {
-							printf ( "oaclustergather: file %d/%d %s, array %ld/%ld: %d Pareto values, %d Pareto elements\n", jj, nsplit0, subfile.c_str(), i, arraylist.size(), pset.number(), pset.numberindices() );
-							//printf ( "  " ); pset.show ( 1 );
-						}
-
-						const array_link &al = arraylist.at ( i );
-						parseArrayPareto ( al, al, pset, verbose );
-					}
-				} else {
-					fprintf ( stderr, "file %s: error\n", subfile.c_str() );
-					cleanrun=0;
-				}
-			}
+			exit(1);			
 		}
 
 		if ( verbose ) {
 			printf ( "final pareto set %d cols: ", k );
 			pset.show ( 2 );
 		}
-
-		//           verbose=2; // @pte
 
 		// write pareto set to disk
 
@@ -395,7 +371,6 @@ int main ( int argc, char* argv[] )
 			if ( lvls.size() >0 ) {
 			} else {
 				xxx =  "results-j5evenodd";
-
 			}
 			std::string pfile = printfstring ( "%s-pareto-%s.oa", xxx.c_str(), adata0.idstr().c_str() );
 			std::string afile = basedir + "/" + cdir + pfile;
@@ -403,7 +378,6 @@ int main ( int argc, char* argv[] )
 			if ( verbose )
 				printf ( "  writing pareto file %s\n", pfile.c_str() );
 			writearrayfile ( afile.c_str(), &pp, ABINARY, adata->N, k );
-
 		}
 	}
 
@@ -421,7 +395,6 @@ int main ( int argc, char* argv[] )
 			printf ( "writing numbers file %s\n", numbersfile );
 		writeNumbersFile ( numbersfile, na, npareto, kmin, kmax );
 	}
-
 
 	/* free allocated structures */
 	delete adata;

@@ -104,7 +104,7 @@ int arrayrank(const array_link &al);
 
 #include "pareto.h"
 
-// Calculate the Pareto optimal desings from a list of arrays
+// Calculate the Pareto optimal desings from a list of arrays (rank; A3,A4; F4)
 Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose);
 
 template <class IndexType>

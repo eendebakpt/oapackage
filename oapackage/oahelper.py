@@ -8,6 +8,7 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 @author: eendebakpt
 """
 
+#%% Load packages
 from __future__ import print_function
 
 import oalib
@@ -32,7 +33,7 @@ except:
     pass
 
 
-#%%
+#%% Load Qt support
 
 try:
     try:
