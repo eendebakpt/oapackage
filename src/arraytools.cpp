@@ -3232,7 +3232,7 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 
 	array_link arrayfile_t::readnext()
 	{
-		array_link al(this->nrows, this->ncols, al.INDEX_DEFAULT);
+		array_link al(this->nrows, this->ncols, array_link::INDEX_DEFAULT);
 		this->read_array(al);
 		return al;
 	}
