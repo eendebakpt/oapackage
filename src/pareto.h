@@ -160,6 +160,16 @@ class Pareto
          return lst;
       }
 
+            /// return all Paretop optimal elements
+      std::vector<pValue> allvalues() const {
+         std::vector<pValue> lst;
+         for ( size_t i=0; i<this->elements.size(); i++ ) {
+            lst.push_back(this->elements[i].value);
+         }
+         return lst;
+      }
+
+      
       /// add a new element
       bool addvalue ( pValue val, IndexType idx ) {
          size_t ii=0;

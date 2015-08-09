@@ -887,7 +887,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 			myprintf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
 
 #ifdef FULLPACKAGE
-			if ( verbose>=4  ) {
+			if ( verbose>=4 ) {
 				std::cout << "Its singular values are:" << std::endl << S << std::endl;
 			}
 #endif
@@ -901,7 +901,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 		vif=0;
 		Eeff=0;
 #ifdef FULLPACKAGE
-		if ( verbose>=3  ) {
+		if ( verbose>=3 ) {
 			Eigen::MatrixXd Smat ( S );
 			Eigen::ArrayXd Sa=Smat.array();
 			double Deff = exp ( 2*Sa.log().sum() /m ) /N;
@@ -1254,7 +1254,7 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		Eigen::MatrixXf dummy = matXtX.cast<float>();
 		double dum1 = matXtX.determinant();
 		double dum2 = dummy.determinant();
-		myprintf("%f %f\n", dum1, dum2);
+		myprintf ( "%f %f\n", dum1, dum2 );
 	}
 	double f1 = matXtX.determinant();
 	//double f2 = ( matXtX.block(1+nme, 1+nme, n2fi, n2fi) ).determinant();
@@ -1442,11 +1442,73 @@ double CL2discrepancy ( const array_link &al )
 
 #ifdef FULLPACKAGE
 
+/** Calculate the Pareto optimal arrays from a list of array files
+
+    Pareto optimality is calculated according to (rank; A3,A4; F4)
+*/
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols )
+{
+	Pareto<mvalue_t<long>,array_link> pset;
+
+	long ntotal=0;
+	for ( size_t i=0; i<infiles.size(); i++ ) {
+		// open arrayfile
+		arrayfile_t af ( infiles[i].c_str() );
+
+		if ( verbose ) {
+			myprintf ( "calculateParetoEvenOdd: read file %s (%d arrays)\n", af.filename.c_str(), af.narrays );
+		}
+		int narrays = af.narrays;
+		//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
+		#pragma omp parallel for
+		for ( int k=0; k<narrays; k++ ) {
+			array_link al;
+			#pragma omp critical
+			{
+				al= af.readnext();
+				ntotal++;
+			}
+			Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
+
+			#pragma omp critical
+			{
+				// add the new tuple to the Pareto set
+				pset.addvalue ( p, al );
+			}
+
+			#pragma omp critical
+			{
+				if ( verbose>=2 || ( k%100000==0 && k>0 ) ) {
+					printf ( "calculateParetoEvenOdd: file %d/%d, array %d/%d\n", ( int ) i, ( int ) infiles.size(), k, narrays );
+				}
+			}
+		}
+	}
+
+	if ( verbose )
+		printf ( "calculateParetoEvenOdd: %ld arrays -> %d pareto values, %d pareto arrays \n", ntotal, pset.number(),pset.numberindices() );
+
+	if ( verbose ) {
+		pset.show ( verbose );
+	}
+
+	arraylist_t lst = pset.allindicesdeque();
+
+	// write files to disk
+	if ( verbose )
+		printf ( "calculateParetoEvenOdd: writing arrays to file %s\n", outfile );
+
+	writearrayfile ( outfile, &lst, afmode, nrows, ncols );
+	return;
+}
+
+
 Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose )
 {
 	Pareto<mvalue_t<long>,long> pset;
 	pset.verbose=verbose;
 
+	#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 	for ( size_t i=0; i<arraylist.size(); i++ ) {
 		if ( verbose>=2 || ( ( i%2000==0 ) && verbose>=1 ) ) {
 			myprintf ( "parsePareto: array %ld/%ld\n", ( long ) i, ( long ) arraylist.size() );
@@ -1455,7 +1517,15 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 			pset.show ( 1 );
 		}
 		const array_link &al = arraylist.at ( i );
-		parseArrayPareto ( al, ( long ) i, pset, verbose );
+
+		Pareto<mvalue_t<long>, long>::pValue p = calculateArrayPareto<long> ( al, verbose );
+		#pragma omp critical
+		{
+			// add the new tuple to the Pareto set
+			pset.addvalue ( p, i );
+		}
+
+		//parseArrayPareto ( al, ( long ) i, pset, verbose );
 
 	}
 	return pset;

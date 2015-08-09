@@ -3230,6 +3230,13 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 	return index;
 }
 
+	array_link arrayfile_t::readnext()
+	{
+		array_link al(this->nrows, this->ncols, al.INDEX_DEFAULT);
+		this->read_array(al);
+		return al;
+	}
+
 int arrayfile_t::read_array ( array_link &a )
 {
 	int32_t index;

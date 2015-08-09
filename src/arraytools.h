@@ -1317,6 +1317,9 @@ public:
 	/// read array and return index
 	int read_array ( array_link &a );
 
+	/// read next array from the file
+	array_link readnext();
+		
 	/// return true if the file has binary format
 	bool isbinary() const;
 
@@ -1556,8 +1559,9 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose=1, i
 /// read list of arrays from file
 arraylist_t readarrayfile ( const char *fname, int verbose=1, int *setcols = 0 );
 
+const int NRAUTO = 0;
 /// write a list of arrays to file on disk
-int writearrayfile ( const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows=0, int ncols=0 );
+int writearrayfile ( const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows=NRAUTO, int ncols=NRAUTO );
 
 /// write a single array to file
 int writearrayfile ( const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );

@@ -104,6 +104,13 @@ int arrayrank(const array_link &al);
 
 #include "pareto.h"
 
+/** Calculate the Pareto optimal arrays from a list of array files
+
+    Pareto optimality is calculated according to (rank; A3,A4; F4)
+*/
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose=1, arrayfilemode_t afmode=ABINARY, int nrows=-1, int ncols=-1 );
+
+
 // Calculate the Pareto optimal desings from a list of arrays (rank; A3,A4; F4)
 Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose);
 

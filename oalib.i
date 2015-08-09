@@ -271,10 +271,11 @@ def __setitem__(self,index, value):
 namespace std {
    %template(arraylist_t) deque<array_link>; // arraylist_t
    %template(jstructArray) vector<jstruct_t>; // results list
-   %template(intVector) vector<int>;
-   %template(longVector) vector<long>;
+   %template(intVector) std::vector<int>;
+   %template(longVector) std::vector<long>;
    %template(longDeque) deque<long>;
-   %template(doubleVector) vector<double>;
+   %template(doubleVector) std::vector<double>;
+   %template(stringVector) std::vector<std::string>;
 };
 
 

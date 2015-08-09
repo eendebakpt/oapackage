@@ -148,7 +148,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 		setloglevel ( QUIET );
 	}
 
-	{ /** Test different methods **/
+	{ /** Test dof **/
 		cprintf ( verbose, "%s: test delete-one-factor reduction\n", bstr );
 
 		array_link al = exampleArray ( 4 );
@@ -158,6 +158,8 @@ assert( fabs(D-0.335063) < 1e-3 );
 		al.reduceDOP();
 	}
 
+	arraylist_t lst;
+	
 	{ /** Test different methods **/
 		cprintf ( verbose, "%s: test 2 different methods\n", bstr );
 
@@ -189,9 +191,24 @@ assert( fabs(D-0.335063) < 1e-3 );
 		}
 		setloglevel ( QUIET );
 
-
+		lst = aa[8];
 	}
 
+	{
+		cprintf ( verbose, "%s: test Pareto calculation\n", bstr );
+		double t0x=get_time_ms();
+
+		int nn=lst.size();
+		for ( int k=0; k<5; k++ ) {
+			for ( int i=0; i<nn; i++ ) {
+				lst.push_back ( lst[i] );
+			}
+		}
+		Pareto<mvalue_t<long>,long> r = parsePareto ( lst, 1 );
+		cprintf ( verbose,"%s: test Pareto %d/%d: %.3f [s]\n", bstr, r.number(), r.numberindices(),  ( get_time_ms() - t0x ) );
+
+	}
+		
 	{
 		cprintf ( verbose,"%s: reduce randomized array\n", bstr );
 		array_link al = exampleArray ( 3 );
