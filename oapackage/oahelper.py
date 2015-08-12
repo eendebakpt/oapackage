@@ -78,7 +78,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
     """ Tile figure windows on a specified area """
     mngr = plt.get_current_fig_manager()
     be = matplotlib.get_backend()
-    if ww == None:
+    if ww is None:
         ww = monitorSizes()[-1]
 
     w = ww[2] / geometry[0]
@@ -288,7 +288,7 @@ def tprint(string, dt=1, output=False):
 
 def timeString(tt=None):
     """ Return a string with the current time or specified time """
-    if tt == None:
+    if tt is None:
         tt = gmtime()
     ts = strftime("%Y-%m-%d %H:%M:%S", tt)
     return ts
@@ -309,7 +309,7 @@ def findfilesR(p, patt):
 def findfiles(p, patt=None):
     """ Get a list of files """
     lst = os.listdir(p)
-    if not patt == None:
+    if not patt is None:
         rr = re.compile(patt)
         lst = [l for l in lst if re.match(rr, l)]
     return lst
@@ -318,7 +318,7 @@ def findfiles(p, patt=None):
 def finddirectories(p, patt=None):
     """ Get a list of directories """
     lst = os.listdir(p)
-    if not patt == None:
+    if not patt is None:
         rr = re.compile(patt)
         lst = [l for l in lst if re.match(rr, l)]
     lst = [l for l in lst if os.path.isdir(os.path.join(p, l))]
@@ -406,7 +406,7 @@ def array2latex_old(ltable, htable=None):
     ss = ''
     ccc = 'c' * ltable.shape[1]
     ss += '\\begin{tabular}{%s}\n' % ccc
-    if not htable == None:
+    if not htable is None:
         ss += " \\\\\n".join(
             [" & ".join(['\\textbf{%s}' % val for val in htable])])
         ss += ' \\\\ \n'
@@ -420,7 +420,7 @@ def array2latex_old(ltable, htable=None):
 
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
-    if not idstr == None:
+    if not idstr is None:
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
@@ -430,7 +430,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
             print('runcommand: cmd returned error!')
             print(cmd)
     else:
-        if verbose >= 2 or (verbose and logfile == None):
+        if verbose >= 2 or (verbose and logfile is None):
             print('### dryrun\n%s\n###\n' % cmd)
     if logfile is not None:
         fid = open(logfile, 'a')
@@ -675,7 +675,7 @@ def parseProcessingTime(logfile, verbose=0):
             print('error processing log %s' % logfile)
             traceback.print_exc(file=sys.stdout)
         dtt = -1
-    if not dtr == None:
+    if not dtr is None:
         if abs(dtr - dtt) > 10:
             print(
                 'parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]' % (dtt, dtr))
@@ -729,7 +729,7 @@ def series2htmlstr(ad, html=1, case=0):
 
 def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
     """ Convert GWLP value to string format """
-    if gmadata == None:
+    if gmadata is None:
         return '-'
     if isinstance(gmadata, tuple):
         # do nothing
@@ -745,9 +745,9 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
             return ''
             # pdb.set_trace()
     bgma = np.around(gmadata, decimals=12)
-    if not t == None:
+    if not t is None:
         bgma = bgma[(t + 1):]
-    if sformat == None:
+    if sformat is None:
         gstr = jstr.join([floatformat(v, mind=2, maxd=4) for v in bgma])
     else:
         gstr = jstr.join([sformat % v for v in bgma])
@@ -756,7 +756,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
 
 def selectJ(sols0, jj=5, jresults=None, verbose=1):
     """ Select only arrays with J-characteristics non-zero """
-    if jresults == None:
+    if jresults is None:
         jresults = oalib.analyseArrays(sols0, verbose, jj)
 
     solseo = oalib.arraylist_t()
@@ -790,7 +790,10 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 
 
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
-    """ Run extension algorithm and return arrays """
+    """ Run extension algorithm and return arrays
+
+    >>> r = runExtend(16, 5, 3, verbose=0)    
+    """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))
     if isinstance(l, list):  # types.ListType):
@@ -802,7 +805,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     adata = oalib.arraydata_t(s, N, t, k)
     al = oalib.array_link(adata.N, adata.strength, 1)
     al.create_root(adata)
-    if initsols == None:
+    if initsols is None:
         sols0 = oalib.arraylist_t()
         sols0.append(al)
         tstart = t
@@ -811,7 +814,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
         tstart = sols0[0].n_columns
 
     oaoptions = oalib.OAextend()
-    if algorithm == None:
+    if algorithm is None:
         oaoptions.setAlgorithmAuto(adata)
     else:
         oaoptions.setAlgorithm(algorithm, adata)
@@ -953,6 +956,7 @@ def sortrows(x):
 
 
 def sortcols(X):
+    """ Sort columns of an array, return indices"""
     sind = sortrows(X.transpose())
     return sind
 
@@ -1036,7 +1040,20 @@ def designStandardError(al):
 
 #%%
 def DefficiencyBound(D, k, k2):
-    """ Calculate the D-efficiency bound of an arrays extensions """
+    """ Calculate the D-efficiency bound of an array extension
+
+    Input
+    -----
+    D : float
+        D-efficiency of the design
+    k, k2: integers
+        numbers of columns 
+    Output
+    ------
+    D2 : float
+        bound on the D-efficiency of extensions of a design with k columns to k2 columns    
+    
+    """
     m = 1. + k + k * (k - 1) / 2
     m2 = 1. + k2 + k2 * (k2 - 1) / 2
     D2 = D**(m / m2)

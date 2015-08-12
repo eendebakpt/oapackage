@@ -1478,7 +1478,7 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 
 			#pragma omp critical
 			{
-				if ( verbose>=2 || ( k%100000==0 && k>0 ) ) {
+				if ( verbose>=2 || ( k%500000==0 && k>0 ) ) {
 					printf ( "calculateParetoEvenOdd: file %d/%d, array %d/%d\n", ( int ) i, ( int ) infiles.size(), k, narrays );
 				}
 			}
@@ -1498,7 +1498,9 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 	if ( verbose )
 		printf ( "calculateParetoEvenOdd: writing arrays to file %s\n", outfile );
 
-	writearrayfile ( outfile, &lst, afmode, nrows, ncols );
+	if ( outfile!=0 ) {
+		writearrayfile ( outfile, &lst, afmode, nrows, ncols );
+	}
 	return;
 }
 
