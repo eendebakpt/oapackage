@@ -78,6 +78,9 @@ if(OADEV)
   # if development code, try to use openmp
 find_package(OpenMP )
 
+set(OPENMP_FOUND False)
+message(STATUS "Setting OpenMP to False!")
+
 if(OPENMP_FOUND AND OADEV)
    message(STATUS "OpenMP found: OpenMP_C_FLAGS ${OpenMP_C_FLAGS}, OpenMP_EXE_LINKER_FLAGS ${OpenMP_EXE_LINKER_FLAGS}")
      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -98,7 +101,21 @@ if(NOT WIN32 AND 0)
 endif()
 
 # used for HPC at Antwerpen
-option(INTEL_CC "Use the Intel compiler." OFF) 
+#option(INTEL_CC "Use the Intel compiler." OFF) 
+
+site_name(HOSTNAME)
+string(FIND ${HOSTNAME} hopper VSC)
+if(VSC GREATER 0) 
+  set(VSC TRUE)
+else()
+  set(VSC FALSE)
+endif()
+message(STATUS "Hostname ${HOSTNAME}, VSC ${VSC}")
+
+if (VSC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -axSSE4.2,SSE4.1")
+endif()
 
 if (INTEL_CC) 
   find_program(CMAKE_C_COMPILER NAMES icc) 
@@ -113,8 +130,8 @@ if (INTEL_CC)
     message(FATAL_ERROR "Cannot find Intel compiler.  You may need to run `.  /opt/intel/bin/compilervars.sh intel64'") 
   endif () 
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1 -O3")
-
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1 -O3")
+  message(STATUS "At HPC cluster")
 endif (INTEL_CC) 
 
 set(LINKOPTS "")

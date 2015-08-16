@@ -422,6 +422,22 @@ int main ( int argc, char* argv[] )
 		opt.printUsage();
 		exit ( 0 );
 	}
+	
+	if (0)
+	{
+	const int maxval=5;
+	int nelements = 8;
+	array_t array[8]; array[0]=maxval-1; array[1]=2; array[3]=2; array[4]=0; array[5]=4; array[6]=1;
+	
+	int elements[maxval];
+	for(int i=0; i<10000; i++) { 
+		std::fill(elements, elements+maxval, 0);
+		for(int j=0; j<30000; j++) {
+	countelements(array, nelements, maxval, elements);
+		}
+	}
+exit(0);
+	}
 
 	int r = opt.getIntValue ( 'r', 0 );
 	int dverbose = opt.getIntValue ( 'd', 1 );

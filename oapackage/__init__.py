@@ -7,9 +7,9 @@ import oalib
 oalib.setloglevel(oalib.SYSTEM)
 oalib.log_print(-oalib.SYSTEM, '')
 from oalib import *
-import .oahelper
+#import .oahelper
 from . oahelper import *
-import .Doptim
+#import .Doptim
 from . Doptim import *
 # import scanf
 from . import scanf

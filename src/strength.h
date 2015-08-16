@@ -20,10 +20,18 @@
 struct rev_index;
 
 typedef int freq_t;		/* used for counting t-tuples in strength check */
+
+/** Create a table with frequencies for t-tuples for a set of column combinations */
 typedef freq_t** strength_freq_table;
 
+/** Create a table with strength frequencies
+ * @brief Constructor
+ * @param ncolcombs Number of column combinations to store
+ * @param nvalues Number of tuples that can occur for each column combination
+ * @param nelements Return variable with the size of the allocated array
+ * @return 
+ */
 strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements );
-//strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues );
 
 
 rev_index *create_reverse_colcombs_fixed ( const int ncolcombs );
@@ -170,6 +178,8 @@ struct  extend_data_t {
 
 	//! index of each column
 	int *lambda;
+	int lambda2lvl; 	// specialized version for 2level arrays
+	
 
 	//!
 	int *nvalues;
@@ -181,20 +191,26 @@ struct  extend_data_t {
 
 	/* dynamic data: can be changed during extension */
 
+#ifdef COUNTELEMENTCHECK	
 	//! elements count, for strength 1 check
 	int *elements;
-
+#endif
+	
 	int freqtablesize;
-	//! frequency table for strength check
+	//! frequency table for strength check. For each column combination this table contains the frequencies of tuples found so far
 	strength_freq_table freqtable;
 
 	//! strength check, cache
 	strength_freq_table *freqtable_cache;
 
-	//! strength check, cache for each element
+	//! used strength check, cache for each element
 	int **freqtable_elem;
 
-	//! used for settings the range
+		//! used strength check, for each row+element combination and column combination give a pointer to the position in the tuple frequence table
+	int **element2freqtable;
+	//freq_t* **element2freqtable;
+
+	//! used for setting the range, range_high is inclusive
 	array_t range_low, range_high;
 	// the range is are the values that can be taken at a certain position in the array
 	// rangemax is equal max(values in current col)+1
@@ -222,10 +238,24 @@ bool check_divisibility ( const arraydata_t * );
 
 void print_frequencies ( int **frequencies, const int nelements, const int *lambda, const int N );
 
+/**
+ * Return all column combinations including a fixed column.
+ * At the same time allocate space for the number of values these columns have
+ * @param xlambda 
+ * @param nvalues 
+ * @param ncolcombs 
+ * @param s 
+ * @param strength 
+ * @param fixedcol 
+ * @param N 
+ * @return 
+ */
 colindex_t **set_colcombs_fixed ( int *& xlambda, int *& nvalues, int &ncolcombs, const array_t *s, const int strength, const int fixedcol, const int N );
 
 /// Add row to frequency table using cache system
 void add_element_freqtable ( extend_data_t *es, rowindex_t activerow, carray_t *array, strength_freq_table freqtable );
+/// fast version of add_element_freqtable
+void add_element_freqtable_col(extend_data_t *es, rowindex_t activerow, carray_t *arraycol, strength_freq_table freqtable);
 
 /// Initialize the table of t-tuple frequencies
 void init_frequencies ( extend_data_t *es, array_t *array );
@@ -333,7 +363,18 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 }
 
 #ifdef FULLPACKAGE
+/**
+ * @brief Determine whether an element passes the strength test
+ * @param es 
+ * @param p 
+ * @param array 
+ * @return 
+ */
 bool valid_element ( const extend_data_t *es, const extendpos *p, carray_t *array );
+
+/** Determine whether an element passes the strength test, specialized for 2-level array */
+bool valid_element_2level ( const extend_data_t *es, const extendpos *p );
+
 #endif
 
 #endif

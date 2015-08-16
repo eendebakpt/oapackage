@@ -123,13 +123,12 @@ void print_array(const array_link &A)
  */
 void countelements(carray_t* array, const int nelements, const int maxval, int* elements)
 {
+  //NOTE: use ideas from http://codereview.stackexchange.com/questions/47566/optimization-for-histogram-computation-algorithm-in-c
+  
     memset(elements, 0, maxval * sizeof(int));
 
-    for(int i=0; i<nelements; i++) {
-        //printf("countelements: i %d/%d\n", i, nelements);
-        //printf("countelements: i %d/%d, array[i] %d, pointer elements %ld\n", i, nelements, array[i], elements);
-        elements[array[i]]++;
-    }
+    //const array_t *last = array+nelements; for ( ; array != last; ++array) ++elements[*array];
+    for(int i=0; i<nelements; i++) elements[array[i]]++;
 //	  printf("countelements: done\n");
 }
 

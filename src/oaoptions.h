@@ -44,6 +44,9 @@ const int HACK = 0;
 /* safe level permutations (needed for intermediate lmc test) */
 //#define SAFELPERM 1
 
+/* apply strength 1 check to speed up calculations */
+//#define 
+
 /* frequency element cache using row, value pairs */
 #define FREQELEM 1	
 

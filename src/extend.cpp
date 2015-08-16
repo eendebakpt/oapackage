@@ -357,10 +357,15 @@ int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stac
 	//printf("range: %d %d\n", esdyn->range, esdyn->range_high);
 	/* loop over all positions specified by range */
 	for ( int i = vmin; i <= vmax; i++ ) {
+#ifdef COUNTELEMENTCHECK		
 		/* strength 1 check */
 		if ( es->elements[i] < posmax ) {
+#else
+		if(1) {
+#endif			
 			p->value = i; // TODO: eliminate value from pos structure?
 			/* strength t check */
+			// TODO: use _2level version of this function
 			if ( valid_element ( es, p, array ) ) {
 				stack->valid[stack->count][npos]=p->value;
 				npos++;
@@ -386,19 +391,80 @@ int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stac
 	return npos;
 }
 
-
-
 /**
+ * We check for all possible extensions. There are several criteria that can be used to check whether an element is valid or not.
+ * These are: strength check, strength 1 check (i.e. the number of elements), range check (due to LMC test)
+ *
+ * @param es
+ * @param array
+ * @param p
+ * @param frequencies
+ * @param esdyn
+ * @param stack
+ * @return
+ */
+int check_branch_2level ( extend_data_t *es, carray_t* array_colstart, extendpos* p, split *stack, array_t &first, int use_row_symmetry )
+{
+	//number of options left according to number of elements
+	int		npos = 0;
+
+	array_t vmin;
+	if ( use_row_symmetry ) {
+		vmin = array_colstart[p->row] >= es->range_low? array_colstart[p->row]:es->range_low;
+	} else {
+		vmin = ( array_colstart[ p->row] >= 0 ) ? array_colstart[ p->row]:0;
+	}
+
+	const array_t vmax = 1;
+
+	//printf("range: %d %d %d %d\n", es->range_low, es->range_high, vmin, vmax);
+	/* loop over all positions specified by range */
+	for ( int i = vmin; i <= vmax; i++ ) {
+#ifdef COUNTELEMENTCHECK		
+		/* strength 1 check */
+		if ( es->elements[i] < posmax ) {
+#else
+		if(1) {
+#endif
+			p->value = i; // TODO: eliminate value from pos structure?
+			/* strength t check */
+			// TODO: use _2level version of this function
+			if ( valid_element_2level ( es, p ) ) {
+				stack->valid[stack->count][npos]=p->value;
+				npos++;
+			} else {
+				//printf("reject on strength: %d value %d (row %d col %d)\n", range, p->value, p-> row, p->col);
+			}
+		} else {
+			//printf("reject on strength 1 check: value %d (row %d col %d)\n", p->value, p-> row, p->col);
+		}
+	}
+
+	/* assign first valid element to variable */
+	first = stack->valid[stack->count][0];
+
+	/* if multiple positions then create a branch */
+	if ( npos>1 ) {
+		stack->st[stack->count] = p->row;
+		stack->nvalid[stack->count] = npos;
+		stack->cvalidpos[stack->count] = 0;
+		stack->count++;
+	}
+
+	return npos;
+}
+
+
+/** @brief Find the range of the elements that are allowed
  * A lower bound is given by the symmetry structure of the array, an upper bound is given by the fact
  * that the elements cannot increase by more than 1 with respect to the current maximum
- * @brief Find the range of the elements that are allowed
+ * 
  * @param array
  * @param p
  * @param esdyn
  */
 void get_range ( array_t *array, extendpos *p, extend_data_t* es, int use_row_symmetry )
 {
-	int maxval = -1;
 
 	array_t *array_col = array+p->ad->N*p->col;
 
@@ -414,15 +480,19 @@ void get_range ( array_t *array, extendpos *p, extend_data_t* es, int use_row_sy
 	}
 
 	/* determine maximum value */
+	int maxval = -1;
 	if ( p->row<	es->oaindextmin ) {
 		for ( int j=0; j<p->row; j++ ) {
 			array_t v = array_col[j];
 			maxval = ( maxval<v ) ? v : maxval;
+			//printf("   v %d, maxval %d\n", v, maxval);
 		}
-	} else
-		maxval = es->adata->s[es->extcolumn];
-
-	es->range_high = maxval+1;
+	} else {
+		maxval = es->adata->s[es->extcolumn]-1;
+		//printf("  es->extcolumn %d, maxval %d\n", es->extcolumn, maxval);
+	}
+	es->range_high = maxval+1; 
+	//printf("get_range: low %d, high %d\n", es->range_low, es->range_high);
 }
 
 /*!
@@ -443,9 +513,14 @@ int *init_column ( array_t *array, extendpos *p, int *col_offset, split * &stack
 	int		*elements;
 
 	*col_offset = p->ad->N * p->col;				//faster position calculation
+#ifdef COUNTELEMENTCHECK
+
 	elements = ( int* ) calloc ( p->ad->s[p->col], sizeof ( int ) );
 
 	elements[0] = 1;						//first element in column is always 0
+#else
+	elements = 0;
+#endif
 	array[*col_offset] = 0;						//count it and set the value
 	memset ( &array[*col_offset + 1], -1, ( p->ad->N - 1 ) * sizeof ( array_t ) );	//set remainder of row to -1: unused
 	p->row = 1;							//continue with next element
@@ -467,8 +542,12 @@ int *init_column ( array_t *array, extendpos *p, int *col_offset, split * &stack
  */
 void init_column_full ( array_t *array, extendpos *p, int &col_offset, split *&stack, extend_data_t *es )
 {
+#ifdef COUNTELEMENTCHECK
 	es->elements = init_column ( array, p, &col_offset, stack );
-
+#else
+	init_column ( array, p, &col_offset, stack );
+#endif
+	
 	/* set cache structures */
 	recount_frequencies ( es->freqtable, es, p->col, 0, -1, array );
 
@@ -495,8 +574,9 @@ void init_column_previous ( array_t *array, extendpos *p, int &col_offset, split
 
 
 	col_offset = N * p->col;				//faster position calculation
+#ifdef COUNTELEMENTCHECK
 	es->elements = ( int* ) calloc ( p->ad->s[p->col], sizeof ( int ) );
-
+#endif
 	/* copy previous column */
 	memcpy ( &array[col_offset], &array[N* ( p->col-1 )], N*sizeof ( array_t ) );
 
@@ -511,12 +591,15 @@ void init_column_previous ( array_t *array, extendpos *p, int &col_offset, split
 		p->row=j;
 		get_range ( array, p, es, oaextend.use_row_symmetry );
 		//printf("init_column_previous: countelements: p->row %d, maxval %d\n", p->row, p->ad->s[p->col]);
+#ifdef COUNTELEMENTCHECK		
 		countelements ( &array[col_offset], p->row, p->ad->s[p->col], es->elements );
-
+#endif
 		add_element_freqtable ( es, p->row-1, array, es->freqtable );
 
 		array_t firstpos;
 		int npos = check_branch ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
+		//int npos = check_branch_2level ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
+		
 		//log_print(NOFINAL, "init_column_previous: row %d: nr branches %d, firstpos: %d\n", j, npos, firstpos);
 		//stack->print();
 
@@ -857,7 +940,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 	}
 
 	/* set the frequencies table */
-	recount_frequencies ( es->freqtable, es, p->col, 0, p->row-2, array ); // @@@: is this not also done in init_column_xxx?
+	recount_frequencies ( es->freqtable, es, p->col, 0, p->row-2, array ); // NOTE: is this not also done in init_column_xxx?
 
 	log_print ( DEBUG, "Starting extension\n" );
 
@@ -867,9 +950,9 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 	double extendTime = get_time_ms();
 	unsigned long	narrays = 0, nlmcarrays=0;
 
-
+#ifdef COUNTELEMENTCHECK
 	countelements ( array_colstart, 0, p->ad->s[p->col], es->elements );
-
+#endif
 	//printf("  at start of extension: stack and array: p->row: %d\n", p->row); stack->print(); print_array(array, ad->N, ad->ncols);
 
 	const rowindex_t N = p->ad->N;
@@ -966,16 +1049,19 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
 			if ( array_colstart[p->row] == -1 ) {	//current entry is empty
 				// frequencies table from previous loop is clean, only add a single element
-				add_element_freqtable ( es, p->row-1, array, es->freqtable );
+				add_element_freqtable_col ( es, p->row-1, array_colstart, es->freqtable );
+				//add_element_freqtable ( es, p->row-1, array, es->freqtable );
 
 				// OPTIMIZE: countelements: make cache system
 				// OPTIMIZE: get_range: can be done more efficient
 				get_range ( array, p, es, oaextend.use_row_symmetry );
+#ifdef COUNTELEMENTCHECK
 				addelement ( array_colstart[p->row-1], es->elements );
-
+#endif
 
 				array_t firstpos;
 				int npos = check_branch ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
+				//int npos = check_branch_2level ( es, array_colstart, p, stack, firstpos, oaextend.use_row_symmetry );
 
 				//cout << "Current array" << endl; print_array(array, ad->N, ad->ncols); cout << printfstring("Branches: %d\n", npos);
 
@@ -992,9 +1078,11 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 			} else { /* came back from branche */
 				/* copy frequencies from cache */
 				copy_freq_table ( es->freqtable_cache[p->row], es->freqtable, es->freqtablesize );
+#ifdef COUNTELEMENTCHECK				
 				/* range and elements do not need to be copied, they are recalculated */
 				countelements ( array_colstart, p->row, p->ad->s[p->col], es->elements );
-
+#endif
+				
 				//printf("  returned from branch: current stack p->row %d\n", p->row);
 				//stack->print();
 

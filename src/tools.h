@@ -360,6 +360,7 @@ void swap_object ( Object &a, Object &b )
 }
 
 template <class rtype>
+/** Calculate the number of elements in a 2D table with rows with different sizes */
 inline int malloc2d_nelements ( const int nrows, const rtype *rowsizes )
 {
 	int nelements = 0;
@@ -372,8 +373,8 @@ inline int malloc2d_nelements ( const int nrows, const rtype *rowsizes )
 template <class DataType, class rtype>
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows
- * @param nrows
- * @param rowsizes
+ * @param nrows Number of rows in the table
+ * @param rowsizes Size of each row
  * @return
  */
 DataType **malloc2d_irr ( const int nrows, const rtype *rowsizes )
@@ -400,8 +401,9 @@ DataType **malloc2d_irr ( const int nrows, const rtype *rowsizes )
 template <class DataType, class rtype>
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows, return size of allocated space
- * @param nrows
- * @param rowsizes
+ * @param nrows Number of rows in the table
+ * @param rowsizes Size of each row
+ * @param nelements This parameter is initialized with the size of the array allocated
  * @return
  */
 DataType **malloc2d_irr ( const int nrows, const rtype *rowsizes, int &nelements )
@@ -530,7 +532,7 @@ void show_array_dyn ( const atype *array, const int x, const int y )
 #endif
 
 /// Counts the number of occurences of each value in an array
-void countelements ( carray_t* array, const int nelemenets, const int maxval, int* elements );
+void countelements ( carray_t* array, const int nelements, const int maxval, int* elements );
 
 /**
  * @brief Add element to element counter

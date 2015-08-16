@@ -17,11 +17,12 @@
 
 /**
  * @brief Constructor fuction
- * @param ad 
- * @param extcol 
  */
-extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad), extcolumn(extcol), N(ad->N),  gidx(0), gstart(0), gsize(0), elements(0), freqtable(0), freqtable_cache(0), range_low(-1), range_high(-1)
+extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad), extcolumn(extcol), N(ad->N),  gidx(0), gstart(0), gsize(0), freqtable(0), freqtable_cache(0), range_low(-1), range_high(-1)
 {
+#ifdef COUNTELEMENTCHECK
+  this->elements=0;
+#endif
 	//OPTIMIZE: make some variables constant
 	log_print(DEBUG, "extend_data_t constructor: strength %d\n", adata->strength);
 
@@ -32,6 +33,8 @@ extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad
 	/* set column combinations with extending column fixed */
 	int ncolcombs;
 	es->colcombs = set_colcombs_fixed(es->lambda, es->nvalues, ncolcombs, ad->s, ad->strength, extcol, ad->N);
+	es->lambda2lvl = es->adata->N/pow(2, ad->strength);
+	//printf("lambda2lvl: %d %d\n", es->lambda[0], es->lambda2lvl);
 	es->indices = set_indices(es->colcombs, ad->s, ad->strength, ncolcombs);	//sets indices for frequencies, does the malloc as well
 	es->r_index = create_reverse_colcombs_fixed(ncolcombs);
 	es->ncolcombs = ncolcombs;
@@ -61,6 +64,7 @@ extend_data_t::extend_data_t(const arraydata_t *ad, colindex_t extcol): adata(ad
 	int x = this->N*ad->s[extcol];
 
 	this->freqtable_elem = malloc2d<int>(x, this->ncolcombs);
+	this->element2freqtable = malloc2d<int>(x, this->ncolcombs);
 	#endif
 		
 }
@@ -78,9 +82,11 @@ extend_data_t::~extend_data_t()
 
 	free2d(es->indices); //, es->ncolcombs);
 
+#ifdef COUNTELEMENTCHECK
 	// OPTIMIZE: better to check these pointers are non-zero
  	free(this->elements);
-
+#endif
+	
 	free2d_irr(this->freqtable);
 
 	// clear frequencies cache
@@ -96,23 +102,17 @@ extend_data_t::~extend_data_t()
 
 	#ifdef FREQELEM
 	free2d(this->freqtable_elem);
+	free2d(this->element2freqtable);
 	#endif
 
 }
 
-/**
- * @brief Constructor
- * @param ncolcombs 
- * @param nvalues 
- * @param nelements 
- * @return 
- */
+
 strength_freq_table new_strength_freq_table(int ncolcombs, int *nvalues, int &nelements)
 {
 	strength_freq_table frequencies = malloc2d_irr<int>(ncolcombs, nvalues, nelements);
 	return frequencies;
 }
-
 
 
 /**
@@ -253,14 +253,37 @@ void add_element_freqtable(extend_data_t *es, rowindex_t activerow, carray_t *ar
 	const array_t elem = array[es->extcolumn*es->N + activerow];
 	int idx = es->adata->s[es->extcolumn]*activerow+elem;
    
-	int *postable = es->freqtable_elem[idx];
+	//int *postable = es->freqtable_elem[idx];
+	int *postable3 = es->element2freqtable[idx];
+	freq_t* freqtable0 = &(freqtable[0][0]);
 	for(int z=0;z<es->ncolcombs;z++) {
-		int freqpos = postable[z];
-		freqtable[z][freqpos]++;
+		//int freqpos = postable[z]; freqtable[z][freqpos]++;
+		
+		//printf("%ld -> %ld\n", freqtable[z]+freqpos, postable2[z] );
+		freqtable0[postable3[z]]++;
+	    //printf("row %d elem %d, z %d, freqpos %d\n", activerow, elem, z, freqpos);
 	}
 }
 
-void add_element_freqtable(rowindex_t N, extend_data_t *es, rowindex_t activerow, carray_t *array, strength_freq_table freqtable)
+void add_element_freqtable_col(extend_data_t *es, rowindex_t activerow, carray_t *arraycol, strength_freq_table freqtable)
+{
+	const array_t elem = arraycol[activerow];
+	int idx = es->adata->s[es->extcolumn]*activerow+elem;
+   
+	//int *postable = es->freqtable_elem[idx];
+	int *postable3 = es->element2freqtable[idx];
+	freq_t* freqtable0 = &(freqtable[0][0]);
+	for(int z=0;z<es->ncolcombs;++z) {
+		//int freqpos = postable[z]; freqtable[z][freqpos]++;
+		
+		//printf("%ld -> %ld\n", freqtable[z]+freqpos, postable2[z] );
+		freqtable0[postable3[z]]++;
+	    //printf("row %d elem %d, z %d, freqpos %d\n", activerow, elem, z, freqpos);
+	}
+}
+
+/*
+void add_element_freqtable_legacy(rowindex_t N, extend_data_t *es, rowindex_t activerow, carray_t *array, strength_freq_table freqtable)
 {
 	const array_t elem = array[es->extcolumn*es->N + activerow];
 	int idx = es->adata->s[es->extcolumn]*activerow+elem;
@@ -271,6 +294,7 @@ void add_element_freqtable(rowindex_t N, extend_data_t *es, rowindex_t activerow
 		freqtable[z][freqpos]++;
 	}
 }
+*/
 #else
 
 /* *
@@ -350,20 +374,21 @@ void init_frequencies(extend_data_t *es, array_t *array)
 			//log_print(NORMAL-1, "init_frequencies: setting idx %d\n", idx);
 			/* clear data */
 			memset(es->freqtable_elem[idx], 0, es->ncolcombs * sizeof(int));
+			memset(es->element2freqtable[idx], 0, es->ncolcombs * sizeof(int ));
 			/* count */
 			int cur_combi = 0;		//is position in OA
 
 			colindex_t strength = es->adata->strength;
 			rowindex_t N = es->adata->N;
 
-
-			for(int i = 0; i < es->ncolcombs; i++)//find all columns column p->col is involved with
+			for(int i = 0; i < es->ncolcombs; i++) // find all columns column p->col is involved with
 			{
 				cur_combi = es->r_index->index[i];	/* select a combination of t columns */
 				array_t tmp = array[es->adata->N*es->extcolumn+row];
 				array[es->adata->N*es->extcolumn+row]=v;
 				int freq_pos = freq_position(N, row, strength, es->colcombs[cur_combi],  es->indices[cur_combi], array);			
 				es->freqtable_elem[idx][i] = freq_pos;
+				es->element2freqtable[idx][i] = &(es->freqtable[i][freq_pos])-&(es->freqtable[0][0]);
 				array[es->adata->N*es->extcolumn+row] = tmp;
 			}
 
@@ -381,31 +406,22 @@ void init_frequencies(extend_data_t *es, array_t *array)
  * @param rowlast 
  * @param array 
  */
-void recount_frequencies(int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart, rowindex_t rowlast, carray_t *array)
+void recount_frequencies ( int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart, rowindex_t rowlast, carray_t *array )
 {
-    //myprintf("recount_frequencies: rowstart %d, rowlast %d, es->ncolcombs %d\n", rowstart, rowlast, es->ncolcombs);
+	//myprintf("recount_frequencies: rowstart %d, rowlast %d, es->ncolcombs %d\n", rowstart, rowlast, es->ncolcombs);
 	//reset old values
-	for(int i = 0; i < es->ncolcombs; i++) {
-    	  memset(frequencies[i], 0, es->nvalues[i] * sizeof(int));
+	for ( int i = 0; i < es->ncolcombs; i++ ) {
+		memset ( frequencies[i], 0, es->nvalues[i] * sizeof ( int ) );
 	}
-	
+
 	//recount new values
-	for(int i = rowstart; i <= rowlast; i++)
-	{
-		add_element_freqtable(es, i, array, es->freqtable);
+	for ( int i = rowstart; i <= rowlast; i++ ) {
+		add_element_freqtable ( es, i, array, es->freqtable );
 	}
 }
 
 #ifdef FULLPACKAGE
 
-/**
- * @brief Determine whether an element passes the strength test
- * @param es 
- * @param p 
- * @param array 
- * @param esdyn 
- * @return 
- */
 bool valid_element(const extend_data_t *es, const extendpos *p, carray_t *array)
 /*Put the possibliy correct value in p->value and it will be tested, given the frequency table, lambdas etc*/
 {
@@ -413,17 +429,21 @@ bool valid_element(const extend_data_t *es, const extendpos *p, carray_t *array)
 	#ifdef FREQELEM
 	/* perform strength check using frequency element cache */
 	const int idx =p->row*es->adata->s[es->extcolumn] + p->value;
-	int *freqpositions = es->freqtable_elem[idx];
+	//int *freqpositions = es->freqtable_elem[idx];
+	int *freqpositions2 = es->element2freqtable[idx];
+	  freq_t* freqtable0 = &(es->freqtable[0][0]);
 
+	// OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a difference for cases with high strength and high number of columns
 	for(int z=0;z<es->ncolcombs;z++) {
-		int freq_pos = freqpositions[z];
-		//cout << " ccount ";
-
-		// OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a difference for cases with high strength and high number of columns
-		if(es->freqtable[z][freq_pos] + 1 > es->lambda[z])
-		{
-			//cout << "colcomb:" << z << endl;
+		if (0) {
+		//int freq_pos = freqpositions[z];
+		//if(es->freqtable[z][freq_pos] + 1 > es->lambda[z])
+		//	return false;
+		} else {
+		  ;
+		if(freqtable0[freqpositions2[z]] + 1 > es->lambda[z])
 			return false;
+		  
 		}
 	}	
 	return true;
@@ -441,7 +461,7 @@ bool valid_element(const extend_data_t *es, const extendpos *p, carray_t *array)
 		// freq_pos is the value for this column combination
 		freq_pos = freq_position(p->ad->N, p->row, p->ad->strength, es->colcombs[cur_combi],  es->indices[cur_combi], array);
 
-		if(es->freqtable[cur_combi][freq_pos] + 1 > es->lambda[cur_combi])
+		if(es->freqtable[cur_combi][freq_pos]  >= es->lambda[cur_combi])
 		{
 			acolp[p->row] = tmp_oa;
 			return false;
@@ -449,6 +469,37 @@ bool valid_element(const extend_data_t *es, const extendpos *p, carray_t *array)
 	}
 	acolp[p->row] = tmp_oa;
 	return true;
+	#endif
+}
+
+bool valid_element_2level(const extend_data_t *es, const extendpos *p)
+/*Put the possibliy correct value in p->value and it will be tested, given the frequency table, lambdas etc*/
+{
+
+	#ifdef FREQELEM
+	/* perform strength check using frequency element cache */
+	const int idx =p->row*es->adata->s[es->extcolumn] + p->value;
+	//int *freqpositions = es->freqtable_elem[idx];
+	int *freqpositions2 = es->element2freqtable[idx];
+	freq_t* freqtable0 = &(es->freqtable[0][0]);
+
+	// OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a difference for cases with high strength and high number of columns
+	for(int z=0;z<es->ncolcombs;z++) {
+		//int freq_pos = freqpositions[z];
+
+		//OPTIMIZE: create a lambda minus one table
+		//FIXME2: use structure of freqtable to make better indexing
+		
+		if (freqtable0[freqpositions2[z]] >= es->lambda2lvl) // (es->freqtable[z][freq_pos]  >= es->lambda2lvl)
+		{
+			//cout << "colcomb:" << z << endl;
+			return false;
+		}
+	}	
+	return true;
+	#else
+	// not implemented
+	printf("valid_element_2level: not implemented\n");
 	#endif
 }
 
@@ -591,18 +642,7 @@ bool check_divisibility(const arraydata_t *ad)
 	return ret;
 }
 
-/**
- * Return all column combinations including a fixed column.
- * At the same time allocated space for the number of values these columns have
- * @param xlambda 
- * @param nvalues 
- * @param ncolcombs 
- * @param s 
- * @param strength 
- * @param fixedcol 
- * @param N 
- * @return 
- */
+
 colindex_t **set_colcombs_fixed(int*& xlambda, int*& nvalues, int &ncolcombs, const array_t *s, const int strength, const int fixedcol, const int N)
 {
 	log_print(DEBUG+1, "set_colcombs_fixed: strength %d, fixedcol %d, N%d\n", strength, fixedcol, N);
