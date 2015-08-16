@@ -274,7 +274,10 @@ dextend.loglevelcol=7;
 	}
 
 	if ( ds!=0 ) {
+		if ( verbose ) {
 		printf ( "oa_depth_extend: calling processDepth\n" );
+			std::cout << "#time step: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
+		}
 
 		for ( size_t ai=0; ai<arraylist->size(); ai++ ) {
 			printf ( "ai %ld: %ld arrays for extension\n", ai, ds->goodarrayslist[ai].size() );
