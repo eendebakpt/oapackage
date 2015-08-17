@@ -16,6 +16,11 @@
 //#define CLASSICCODE
 #endif
 
+
+/* max number of columns is algorithms */
+#define MAXCOLS 60
+
+
 /* clean memory management */
 #define CLEAN_ARRAY_LINK 1
 

@@ -1660,12 +1660,16 @@ int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 	//carray_t *x = ar.array;
 	int jval=0;
 
-	const array_t **cp = new const array_t* [J];
+	//const array_t **cp = new const array_t* [J];
+	const array_t* cp[MAXCOLS];
+	
 	for ( int i=0; i<J; i++ )
 		cp[i]=array+N*pp[i];
 
 	//colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
 
+	//FIXME2: implement cache system 
+	// OPTIMIZE: change order of loops (with cache for tmp variable)
 	for ( rowindex_t r=0; r<N; r++ ) {
 		array_t tmp=0;
 		for ( int i=0; i<J; i++ ) {
@@ -1679,7 +1683,7 @@ int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 		jval += tmp;
 	}
 	jval = 2*jval-N;
-	delete [] cp;
+	//delete [] cp;
 	return ( jval );
 }
 
@@ -1705,11 +1709,7 @@ int fastj3 ( carray_t *array, rowindex_t N, const int J, const colindex_t *pp )
 	jval = 2*jval-N;
 	return ( jval );
 }
-
-/** @brief Calculate J-characteristic for a column combination
-*
-* We assume the array has values 0 and 1
-*/
+/*
 int fastj2 ( carray_t *array, rowindex_t N, const int J, const colindex_t *pp )
 {
 	//carray_t *x = ar.array;
@@ -1726,6 +1726,7 @@ int fastj2 ( carray_t *array, rowindex_t N, const int J, const colindex_t *pp )
 	jval = 2*jval-N;
 	return ( jval );
 }
+*/
 
 lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend, int jj )
 {
@@ -1998,8 +1999,9 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 		print_perm ( comb, 5 );
 	}
 	/* calculate the J4 values */
-	colperm_t lc = new_comb_init<colindex_t> ( 4 );
-	colperm_t lc2 = new_comb_init<colindex_t> ( 4 );
+	//colperm_t lc = new_comb_init<colindex_t> ( 4 );	colperm_t lc2 = new_comb_init<colindex_t> ( 4 );
+	colindex_t lc[4]; init_perm(lc, 4);
+	colindex_t lc2[4]; init_perm(lc2, 4);
 	for ( size_t i=0; i<5; i++ ) {
 		//printf("  comb %d: ", i); print_perm(lc, 4);
 		perform_inv_perm ( comb, lc2, 4, lc );
@@ -2147,8 +2149,8 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 			//reduction.transformation->show();
 		}
 	}
-	delete_comb ( lc );
-	delete_comb ( lc2 );
+	//delete_comb ( lc );
+	//delete_comb ( lc2 );
 
 	double val=ret1;
 	return val;
@@ -2176,8 +2178,8 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 	else
 		ww[0]=j5val;
 
-	colperm_t lc = new_comb_init<colindex_t> ( 4 );
-	colperm_t lc2 = new_comb_init<colindex_t> ( 4 );
+	colindex_t lc[4]; init_perm(lc, 4);
+	colindex_t lc2[4]; init_perm(lc2, 4);
 	for ( size_t i=0; i<5; i++ ) {
 		//printf("  comb %d: ", i); print_perm(lc, 4);
 		perform_inv_perm ( comb, lc2, 4, lc );
@@ -2197,9 +2199,6 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 	//printf("jj45val (dosort %d): j5 %d, j4 seq ", dosort, (int) ww[0]); print_perm(ww+1, 5);
 
 	double val = jj452double ( ww );
-
-	delete_comb ( lc );
-	delete_comb ( lc2 );
 
 	return val;
 }

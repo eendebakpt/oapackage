@@ -244,6 +244,7 @@ dextend.loglevelcol=7;
 	}
 	// loop over all arrays
 	
+	//FIXME2: enable this parallel loop?
 	//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
