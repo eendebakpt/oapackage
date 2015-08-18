@@ -262,8 +262,6 @@ void init_frequencies ( extend_data_t *es, array_t *array );
 
 void recount_frequencies ( int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart, rowindex_t rowlast, carray_t *array );
 
-/// perform strength check on an array
-bool strength_check ( const arraydata_t &ad, const array_link &al, int verbose=1 );
 
 template <class basetype>
 /// Helper function
@@ -284,6 +282,13 @@ vindex_t **set_indices ( colindex_t **colcombs, basetype *bases, const int k, co
 	}
 	return indices;
 }
+
+/** perform strength check on an array
+ * 
+ * Special case for extension of an array with proper strength
+ * 
+ */
+bool strength_check ( const arraydata_t &ad, const array_link &al, int verbose=1 );
 
 /// perform strength check on an array
 inline bool strength_check ( const array_link &al, int strength,  int verbose = 0 )
@@ -321,7 +326,6 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 //   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
 //   myprintf ( "  strength %d: %d\n", ad.strength, val );
 
-	// FIXME: make this faster by changing loop order
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
 		//myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
 

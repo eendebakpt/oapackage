@@ -425,19 +425,24 @@ int main ( int argc, char* argv[] )
 	}
 
 	{
-			int r = opt.getIntValue ( 'r', 3 );
+		int r = opt.getIntValue ( 'r', 3 );
 
 		array_link al = exampleArray ( 12 );
-		int N = al.n_rows;
 		int strength  = 3;
-		for ( int ij=0; ij<20; ij++ ) {
-			for (strength=0; strength<5; strength++) {
-							int s = strength_check ( al,  strength );
-			printf ( "iter loop %d: strength %d: %d\n", ij, strength, s );
+		arraydata_t ad = arraylink2arraydata ( al, 0, strength );
+		int N = al.n_rows;
+		for ( int ij=0; ij<2; ij++ ) {
+			for ( strength=1; strength<5; strength++ ) {
+//int s = strength_check ( al,  strength );
+				ad = arraylink2arraydata ( al, 0, strength );
+				int s = strength_check ( ad, al, 1);
+				printf ( "iter loop %d: strength %d: %d\n", ij, strength, s );
 			}
 			strength=r;
-			for ( int j=0; j<1000; j++ ) {
-				strength_check ( al,  strength );
+			ad = arraylink2arraydata ( al, 0, strength );
+			for ( int j=0; j<12000; j++ ) {
+				//strength_check ( al,  strength );
+				strength_check ( ad, al );
 			}
 		}
 		exit ( 0 );
