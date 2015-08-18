@@ -424,6 +424,58 @@ int main ( int argc, char* argv[] )
 		exit ( 0 );
 	}
 
+	        setloglevel(SYSTEM);
+
+	{
+		int r = opt.getIntValue ( 'r', 8 );
+		int niter = opt.getIntValue ( 'i', 100 );
+
+		OAextend oaextend;
+		#pragma omp parallel for  schedule(dynamic,1)
+		for ( int i=0; i<r; i++ ) {
+			array_link al = exampleArray ( 12 );
+		 //al = exampleArray ( 1 );
+		 al = exampleArray ( 2 );
+		 //al = exampleArray ( 12 );
+			//al = al.selectFirstColumns(9);
+//		int strength  = 3;
+			arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
+			int N = al.n_rows;
+			printf ( "iter loop %d:\n", i ) ;
+			for ( int ij=0; ij<1; ij++ ) {
+				for ( int j=0; j<niter; j++ ) {
+					arraydata_t adlocal ( &ad, al.n_columns );
+					LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
+					// make sure code is thread safe
+				reduction.initStatic();
+
+				{
+oaextend.setAlgorithm(MODE_J5ORDERXFAST, &adlocal);
+oaextend.setAlgorithm(MODE_ORIGINAL, &adlocal);
+					OAextend oaextendx=oaextend;
+				oaextendx.extendarraymode=OAextend::NONE;
+reduction.init_state=COPY;
+
+int extensioncol = al.n_columns-1;
+arraylist_t extensions0;
+
+//printf("here\n");
+//	        setloglevel(NORMAL);
+					extend_array ( al.array,  &adlocal, extensioncol, extensions0, oaextendx );
+//printf("here 2\n");
+				}
+				
+				//lmc_t lmc =  LMCcheck ( al, ( adlocal ), oaextend, reduction ); // omp good
+				}
+
+
+
+			}
+
+		}
+			exit ( 0 );
+	}
+
 	{
 		int r = opt.getIntValue ( 'r', 3 );
 
@@ -435,7 +487,7 @@ int main ( int argc, char* argv[] )
 			for ( strength=1; strength<5; strength++ ) {
 //int s = strength_check ( al,  strength );
 				ad = arraylink2arraydata ( al, 0, strength );
-				int s = strength_check ( ad, al, 1);
+				int s = strength_check ( ad, al, 1 );
 				printf ( "iter loop %d: strength %d: %d\n", ij, strength, s );
 			}
 			strength=r;

@@ -900,6 +900,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 	}
 #endif
 
+
 	/* array data */
 	arraydata_t *ad = new arraydata_t ( fullad, ncolsextension );
 	oaextend.updateArraydata ( ad );
@@ -908,9 +909,11 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
 	/* extension data */
 	extend_data_t *es = new extend_data_t ( ad, p->col );
+	//	return 0; // HACK
 
 	rowindex_t nsg = find_row_symm ( array, ad, ncolsextension-1, es->gidx, es->gstart, es->gsize );
 	log_print ( DEBUG, "  number of row symmetry groups: %d\n", nsg ); //print_perm(esdyn->gidx, p->N);
+
 
 	/* the stack contains data about the branches found during the extension */
 	split		*stack = 0;
@@ -1170,6 +1173,11 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 					*
 					*/
 					storefile->append_array ( tmp_extension );
+				}
+				break;
+				case OAextend::NONE: {
+					
+					// do nothing
 				}
 				break;
 				default

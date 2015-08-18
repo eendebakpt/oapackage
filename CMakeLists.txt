@@ -78,8 +78,8 @@ if(OADEV)
   # if development code, try to use openmp
 find_package(OpenMP )
 
-#set(OPENMP_FOUND False)
-#message(STATUS "Setting OpenMP to False!")
+set(OPENMP_FOUND False)
+message(STATUS "Setting OpenMP to False!")
 
 if(OPENMP_FOUND AND OADEV)
    message(STATUS "OpenMP found: OpenMP_C_FLAGS ${OpenMP_C_FLAGS}, OpenMP_EXE_LINKER_FLAGS ${OpenMP_EXE_LINKER_FLAGS}")

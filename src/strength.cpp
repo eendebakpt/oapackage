@@ -197,11 +197,13 @@ rev_index *create_reverse_colcombs ( colindex_t **colcombs, const int ncols, con
 	delete [] tmp;
 
 	// print the resulting reverse index
+	if ( log_print ( DEBUG,"" ) ) {
 	for ( int i = 0; i < ncols; i++ ) {
 		log_print ( DEBUG, "%i:\t", i );
 		for ( int j = 0; j < rev_colcombs[i].nr_elements; j++ )
 			log_print ( DEBUG, "%i, ", rev_colcombs[i].index[j] );
 		log_print ( DEBUG, "\n" );
+	}
 	}
 	return rev_colcombs;
 }

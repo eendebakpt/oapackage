@@ -499,40 +499,43 @@ ostream& logstream(int level)
   \param message Format string for the message, see printf
   \return
   */
-int log_print(const int level, const char *message, ...)
+int log_print ( const int level, const char *message, ... )
 {
-int result = 0;
+	int result = 0;
 
-#ifdef FULLPACKAGE  
-    // TODO: convert loglevel to more generic streamloglvl...
+#ifdef FULLPACKAGE
+	// TODO: convert loglevel to more generic streamloglvl...
 #ifdef SWIGPYTHON
-  static int 	loglevel = (int)SYSTEM;
+	static int 	_loglevel = ( int ) SYSTEM;
 #else
-  static int 	loglevel = (int)QUIET;
+	static int 	_loglevel = ( int ) QUIET;
 #endif
 
-  va_list		va;
-    //if (level<=2)
-    //  printf("log_print: debug: %d %d %d\n", level, loglevel, level <= loglevel );
-    va_start(va, message);
-#pragma omp critical 
-    {    
-    if(level < 0)			//level < 0 means set level, any message appended is printed as well
-    {
-      int mlevel=-level;
-//#pragma omp critical
-        loglevel = mlevel;
-        vprintf(message, va);
-    }
-    else if(level <= loglevel)	{ //if printing level is high enough, the message is shown
-        vprintf(message, va);
-    }
-    va_end(va);
-result =(level <= loglevel);
-    }
+	if ( level < 0 ) {		//level < 0 means set level, any message appended is printed as well
+		#pragma omp critical
+		{
+			va_list		va;
+			va_start ( va, message );
+			int mlevel=-level;
+			_loglevel = mlevel;
+			vprintf ( message, va );
+			va_end ( va );
+		}
+	} else {
+		if ( level <= _loglevel )	{ //if printing level is high enough, the message is shown
+			#pragma omp critical
+			{
+				va_list		va;
+				va_start ( va, message );
+				vprintf ( message, va );
+				va_end ( va );
+			}
+		}
+	}
+	result = ( level <= _loglevel );
 #endif // FULLPACKAGE
 
-    return result;
+	return result;
 }
 
 

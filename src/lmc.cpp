@@ -1316,10 +1316,7 @@ inline void LMC_root_sort ( const carray_t *array, const arraydata_t *ad, const 
 	rowsort_t *rowsort = dyndata->rowsort;
 	/* perform initial sort, after the initial sort we can sort using pre-calculated structures */
 	for ( rowindex_t j = 0; j < ad->N; j++ ) {
-		//static inline array_t row_rank_partial(carray_t *array, const rowindex_t n_rows, const vindex_t *index, const colindex_t start_idx, const colindex_t end_idx, colperm_t &colperm, rowindex_t row = 0)
 		rowsort[j].val = row_rank_partial ( array,	 ad->N, valueindex, ( colindex_t ) 0, ad->strength, dyndata->colperm, j );
-		//		        rowsort[j].val = row_rank_partial ( array+rowsort[j].r, 0, ad->strength, ad->N, valueindex );
-		// printf("  j %d: rowsort[j].r %d rowsort[j].val %d\n", j, rowsort[j].r, rowsort[j].val );
 	}
 	delete [] valueindex;
 
@@ -2350,7 +2347,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	bool rootform = check_root_form ( reduction.array, adin );
 
 	if ( ! rootform ) {
-		log_print ( NORMAL, "error: LMC test or LMC reduction for arrays not in root form needs special initialization !\n" );
+		log_print ( SYSTEM, "error: LMC test or LMC reduction for arrays not in root form needs special initialization !\n" );
 		print_array ( reduction.array, adin.N, adin.ncols );
 	}
 

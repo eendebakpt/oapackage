@@ -18,6 +18,7 @@
 #include "arrayproperties.h"
 #include "anyoption.h"
 #include "tools.h"
+#include "strength.h"
 #include "extend.h"
 
 #include "oadevelop.h"
@@ -244,8 +245,11 @@ dextend.loglevelcol=7;
 	}
 	// loop over all arrays
 	
-	//FIXME2: enable this parallel loop?
-	//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
+	//printf("loop start\n"); double t0x=get_time_ms(); // HACK
+	//dextend.oaextend.extendarraymode=OAextend::NONE; // HACK
+	
+	//FIXME2: enable this parallel loop?, num_threads(4)
+	#pragma omp parallel for  schedule(dynamic,1)
 	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
 //printfd("dextend.setposition ( al.n_columns=%d, ai=%d, arraylist->size(), 0, 0 )\n", al.n_columns, ai );
@@ -261,6 +265,29 @@ dextend.loglevelcol=7;
 
 		depth_extend_t dextendloop ( dextend );
 		dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
+
+if (0) {		
+		double s=0;
+		//for(int ix=0; ix<2000; ix++) s+=al.strength(); printf("s %d\n", s);
+		for(int jx=0; jx<1000; jx++) {
+			for(int ix=0; ix<20000; ix++) s+=sqrt(ix);
+		}
+		printf("s %f\n", s);
+			continue; // HACK
+}
+		if ( 0 ) {
+			// HACK
+			int extensioncol = al.n_columns;
+			arraylist_t extensions0;
+			OAextend oaextendx = dextend.oaextend;
+			for ( int ni=0; ni<3000; ni++ ) {
+
+				extend_data_t *es = new extend_data_t ( adfull, 10 );
+				delete es;
+//	extend_array ( al.array,  adfull, extensioncol, extensions0, oaextendx );
+			}
+			continue;
+		}
 		depth_extend_array ( al, dextendloop, *adfull, verbose, ds, ai );
 
 		//ds->columnextensionsList[i];
@@ -274,6 +301,8 @@ dextend.loglevelcol=7;
 		}
 	}
 
+	//printf("time loop %.3f [s]\n", get_time_ms()-t0x);	exit(0); // HACK
+	
 	if ( ds!=0 ) {
 		if ( verbose ) {
 		printf ( "oa_depth_extend: calling processDepth\n" );

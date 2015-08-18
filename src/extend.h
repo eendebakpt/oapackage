@@ -46,8 +46,8 @@ public:
     /// init column with previous column in extension (if in the same column group)
     int init_column_previous;
 
-    /// append full array, append only extension column, or store array to disk
-    enum {APPENDEXTENSION, APPENDFULL, STOREARRAY};
+    /// append full array, append only extension column, store array to disk, or do nothing
+    enum {APPENDEXTENSION, APPENDFULL, STOREARRAY, NONE};
     /// determined how the arrays are stored
     int extendarraymode;
     arrayfile_t storefile;	 //NOTE: we should make a copy constructor and assignment operator
