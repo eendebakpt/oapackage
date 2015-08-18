@@ -1651,11 +1651,37 @@ void clear_fracs()
 	nfrac2=0;
 }
 
+inline int fastJupdateValue(rowindex_t N, carray_t *tmpval)
+{	
+	int jval=0;
+	for ( rowindex_t r=0; r<N; r++ ) {
+		//tmpval[r] %= 2; jval += tmpval[r];
+		jval += tmpval[r] % 2;
+	}
+	jval = 2*jval-N;
+	return ( jval );
+}
+
+/// helper function
+inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp )
+{
+	//int jval=0;
+
+	for ( int i=0; i<J; i++ ) {
+		carray_t *cp = array+N*pp[i];
+		for ( rowindex_t r=0; r<N; r++ ) {
+			tmp[r]+=cp[r]; //+ ppN[i]];
+		}
+	}
+
+	return;
+}
+
 /** @brief Calculate J-characteristic for a column combination
 *
 * We assume the array has values 0 and 1
 */
-int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
+int fastjX( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
 {
 	//carray_t *x = ar.array;
 	int jval=0;
@@ -1686,6 +1712,32 @@ int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 	//delete [] cp;
 	return ( jval );
 }
+
+/** @brief Calculate J-characteristic for a column combination
+*
+* We assume the array has values 0 and 1
+*/
+int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
+{
+	static array_t tmpval[MAXROWS];
+
+	#ifdef OADEBUG
+		assert(N<=ROWSMAX);
+	#endif
+
+	std::fill_n(tmpval, N, 0);
+	//	memset(tmpval, 0, N*sizeof(array_t));
+	fastJupdate (array, N, J, pp, tmpval);
+	int jval=0;
+	for ( rowindex_t r=0; r<N; r++ ) {
+		//tmpval[r] %= 2; jval += tmpval[r];
+		jval += tmpval[r] % 2;
+	}
+	jval = 2*jval-N;
+	return ( jval );
+}
+
+
 
 /** @brief Calculate J-characteristic for a column combination
 *
@@ -1998,6 +2050,9 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 		printf ( "jj45split: init comb " );
 		print_perm ( comb, 5 );
 	}
+	
+	// FIXME: replace this block with functions 
+	
 	/* calculate the J4 values */
 	//colperm_t lc = new_comb_init<colindex_t> ( 4 );	colperm_t lc2 = new_comb_init<colindex_t> ( 4 );
 	colindex_t lc[4]; init_perm(lc, 4);
@@ -2166,10 +2221,45 @@ inline double jj452double ( const double *ww )
 	return val;
 
 }
-typedef double jj45_t ;
 
 /// return value based on J4-J5 ordering
-jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val=-1, int dosort=1 )
+jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val, int dosort )
+{
+
+	double ww[6];
+	
+#ifdef OADEBUG
+		assert(N<=ROWSMAX);
+#endif
+	array_t tmpval[MAXROWS];
+	
+	std::fill(tmpval, tmpval+N, 0);	
+	fastJupdate (array, N, jj, comb, tmpval);
+	ww[0]=abs( fastJupdateValue(N, tmpval) );	
+	
+//	colindex_t comb[5];
+	for ( size_t i=0; i<5; i++ ) {
+//		comb[0]=i;
+		int ii = 5-i-1;
+	fastJupdate (array, N, 1, comb+ii, tmpval);
+	ww[i+1]=abs( fastJupdateValue(N, tmpval) );
+	fastJupdate (array, N, 1, comb+ii, tmpval); // OPTIMIZE: eliminate swap back here
+	}
+
+	if ( dosort ) {
+		std::sort ( ww+1, ww+6,std::greater<int>() );
+
+	}
+	//std::reverse ( ww+1, ww+6 );
+	//printf("jj45val (dosort %d): j5 %d, j4 seq ", dosort, (int) ww[0]); print_perm(ww+1, 5);
+
+	double val = jj452double ( ww );
+
+	return val;
+}
+
+/// return value based on J4-J5 ordering
+jj45_t jj45val_orig ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val=-1, int dosort=1 )
 {
 
 	double ww[6];

@@ -29,7 +29,7 @@ typedef freq_t** strength_freq_table;
  * @param ncolcombs Number of column combinations to store
  * @param nvalues Number of tuples that can occur for each column combination
  * @param nelements Return variable with the size of the allocated array
- * @return 
+ * @return
  */
 strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements );
 
@@ -179,7 +179,7 @@ struct  extend_data_t {
 	//! index of each column
 	int *lambda;
 	int lambda2lvl; 	// specialized version for 2level arrays
-	
+
 
 	//!
 	int *nvalues;
@@ -191,11 +191,11 @@ struct  extend_data_t {
 
 	/* dynamic data: can be changed during extension */
 
-#ifdef COUNTELEMENTCHECK	
+#ifdef COUNTELEMENTCHECK
 	//! elements count, for strength 1 check
 	int *elements;
 #endif
-	
+
 	int freqtablesize;
 	//! frequency table for strength check. For each column combination this table contains the frequencies of tuples found so far
 	strength_freq_table freqtable;
@@ -206,7 +206,7 @@ struct  extend_data_t {
 	//! used strength check, cache for each element
 	int **freqtable_elem;
 
-		//! used strength check, for each row+element combination and column combination give a pointer to the position in the tuple frequence table
+	//! used strength check, for each row+element combination and column combination give a pointer to the position in the tuple frequence table
 	int **element2freqtable;
 	//freq_t* **element2freqtable;
 
@@ -241,21 +241,21 @@ void print_frequencies ( int **frequencies, const int nelements, const int *lamb
 /**
  * Return all column combinations including a fixed column.
  * At the same time allocate space for the number of values these columns have
- * @param xlambda 
- * @param nvalues 
- * @param ncolcombs 
- * @param s 
- * @param strength 
- * @param fixedcol 
- * @param N 
- * @return 
+ * @param xlambda
+ * @param nvalues
+ * @param ncolcombs
+ * @param s
+ * @param strength
+ * @param fixedcol
+ * @param N
+ * @return
  */
 colindex_t **set_colcombs_fixed ( int *& xlambda, int *& nvalues, int &ncolcombs, const array_t *s, const int strength, const int fixedcol, const int N );
 
 /// Add row to frequency table using cache system
 void add_element_freqtable ( extend_data_t *es, rowindex_t activerow, carray_t *array, strength_freq_table freqtable );
 /// fast version of add_element_freqtable
-void add_element_freqtable_col(extend_data_t *es, rowindex_t activerow, carray_t *arraycol, strength_freq_table freqtable);
+void add_element_freqtable_col ( extend_data_t *es, rowindex_t activerow, carray_t *arraycol, strength_freq_table freqtable );
 
 /// Initialize the table of t-tuple frequencies
 void init_frequencies ( extend_data_t *es, array_t *array );
@@ -278,7 +278,7 @@ vindex_t **set_indices ( colindex_t **colcombs, basetype *bases, const int k, co
 		prod = 1;
 		for ( int i = 0; i < k; i++ ) {
 			indices[j][i] = prod;
-			log_print ( DEBUG,  "indices[%i][%i] = %i\n", j, i, prod );
+			//log_print ( DEBUG,  "indices[%i][%i] = %i\n", j, i, prod );
 			prod *= bases[colcombs[j][i]];
 		}
 	}
@@ -321,23 +321,44 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 //   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
 //   myprintf ( "  strength %d: %d\n", ad.strength, val );
 
+	// FIXME: make this faster by changing loop order
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
 		//myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
 
-		for ( int r=0; r<ad.N; r++ ) {
-
-			int valindex=0;
+		if ( 0 ) {
+			// old code path
+			for ( int r=0; r<ad.N; r++ ) {
+				int valindex=0;
+				array_t *array_rowoffset = al.array+r;
+				for ( int t=0; t<ad.strength; t++ ) {
+					colindex_t cc = strengthcheck.colcombs[i][t];
+					int s = ad.s[cc];
+					array_t val = array_rowoffset[cc*ad.N];
+					valindex = valindex*s+val;
+				}
+				if ( verbose>=2 ) {
+					myprintf ( "  row %d: ", r );
+					myprintf ( " value index %d\n", valindex );
+				}
+				strengthcheck.freqtable[i][valindex]++;
+			}
+		} else {
+			assert ( ad.N<=MAXROWS );
+			int valindex[MAXROWS];
+			std::fill_n(valindex, ad.N, 0);
 			for ( int t=0; t<ad.strength; t++ ) {
 				colindex_t cc = strengthcheck.colcombs[i][t];
 				int s = ad.s[cc];
-				array_t val = al.array[cc*ad.N+r];
-				valindex = valindex*s+val;
+				array_t *array_coloffset=al.array+cc*ad.N;
+				for ( int r=0; r<ad.N; r++ ) {
+					array_t val = array_coloffset[r];
+					valindex[r] = valindex[r]*s+val;
+				}
 			}
-			if ( verbose>=2 ) {
-				myprintf ( "  row %d: ", r );
-				myprintf ( " value index %d\n", valindex );
+			for ( int r=0; r<ad.N; r++ ) {
+				int vi = valindex[r];
+				strengthcheck.freqtable[i][vi]++;
 			}
-			strengthcheck.freqtable[i][valindex]++;
 		}
 
 		for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
@@ -365,10 +386,10 @@ inline bool strength_check ( const array_link &al, int strength,  int verbose = 
 #ifdef FULLPACKAGE
 /**
  * @brief Determine whether an element passes the strength test
- * @param es 
- * @param p 
- * @param array 
- * @return 
+ * @param es
+ * @param p
+ * @param array
+ * @return
  */
 bool valid_element ( const extend_data_t *es, const extendpos *p, carray_t *array );
 

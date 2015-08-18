@@ -851,6 +851,11 @@ inline int check_root_update ( carray_t *original, const arraydata_t &ad, array_
 /// helper function
 int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp );
 
+typedef double jj45_t ;
+
+/// return value based on J4-J5 ordering
+jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val=-1, int dosort=1 );
+
 
 /** Apply a random transformation to an array **/
 void random_transformation ( array_t *array, const arraydata_t *adp );

@@ -19,6 +19,7 @@
 
 /* max number of columns is algorithms */
 #define MAXCOLS 60
+#define MAXROWS 2048
 
 
 /* clean memory management */

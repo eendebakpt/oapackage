@@ -357,6 +357,7 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 
 #include "Deff.h"
 #include "arraytools.h"
+#include "strength.h"
 
 using namespace Eigen;
 
@@ -422,21 +423,62 @@ int main ( int argc, char* argv[] )
 		opt.printUsage();
 		exit ( 0 );
 	}
-	
-	if (0)
+
 	{
-	const int maxval=5;
-	int nelements = 8;
-	array_t array[8]; array[0]=maxval-1; array[1]=2; array[3]=2; array[4]=0; array[5]=4; array[6]=1;
-	
-	int elements[maxval];
-	for(int i=0; i<10000; i++) { 
-		std::fill(elements, elements+maxval, 0);
-		for(int j=0; j<30000; j++) {
-	countelements(array, nelements, maxval, elements);
+			int r = opt.getIntValue ( 'r', 3 );
+
+		array_link al = exampleArray ( 12 );
+		int N = al.n_rows;
+		int strength  = 3;
+		for ( int ij=0; ij<20; ij++ ) {
+			for (strength=0; strength<5; strength++) {
+							int s = strength_check ( al,  strength );
+			printf ( "iter loop %d: strength %d: %d\n", ij, strength, s );
+			}
+			strength=r;
+			for ( int j=0; j<1000; j++ ) {
+				strength_check ( al,  strength );
+			}
 		}
+		exit ( 0 );
+
 	}
-exit(0);
+	{
+
+		array_link al = exampleArray ( 12 );
+		int N = al.n_rows;
+		colindex_t firstcolcomb[5];
+		init_perm ( firstcolcomb, 5 );
+		firstcolcomb[4]=8;
+		//retx= jj45split ( al.array, N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction );
+		for ( int ij=0; ij<20; ij++ ) {
+			printf ( "iter loop %d\n", ij );
+			for ( int j=0; j<200000; j++ ) {
+				jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
+			}
+		}
+		exit ( 0 );
+	}
+
+	if ( 0 ) {
+		const int maxval=5;
+		int nelements = 8;
+		array_t array[8];
+		array[0]=maxval-1;
+		array[1]=2;
+		array[3]=2;
+		array[4]=0;
+		array[5]=4;
+		array[6]=1;
+
+		int elements[maxval];
+		for ( int i=0; i<10000; i++ ) {
+			std::fill ( elements, elements+maxval, 0 );
+			for ( int j=0; j<30000; j++ ) {
+				countelements ( array, nelements, maxval, elements );
+			}
+		}
+		exit ( 0 );
 	}
 
 	int r = opt.getIntValue ( 'r', 0 );
@@ -450,71 +492,73 @@ exit(0);
 	int verbose = opt.getIntValue ( 'v', 1 );
 	setloglevel ( verbose );
 
-	
-	if (1) {
-				array_link A(0,8,0);
-		printf("should return an error\n  ");
+
+	if ( 1 ) {
+		array_link A ( 0,8,0 );
+		printf ( "should return an error\n  " );
 		A.Defficiencies();
-		
-		A = array_link(1,8,0);
-		printf("should return an error\n  ");
-		A.at(0,0)=-2;
+
+		A = array_link ( 1,8,0 );
+		printf ( "should return an error\n  " );
+		A.at ( 0,0 ) =-2;
 		A.Defficiencies();
 		return 0;
 	}
-	
-	
-	if (0) {
+
+
+	if ( 0 ) {
 		double dt, mean;
 		arraydata_t arrayclass ( 2, rr, 0, cc );
 		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
 		int niter=opt.getIntValue ( "niter", 160000 );
-		std::vector<double> alpha ( 3 ); alpha[0]=1; alpha[1]=0.5; alpha[2]=0;
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=0.5;
+		alpha[2]=0;
 		array_link al = arrayclass.randomarray();
 		int ro = aidx;
 
 		double t0=get_time_ms();
 		for ( int j=0; j<nrestarts; j++ ) {
-				seedfastrand ( ro+100*j);
-				srand ( ro+100*j );
-				array_link  al2 = optimDeff ( al, arrayclass, alpha, 0,  DOPTIM_UPDATE,  niter, 0 );
-			}
-			printf("dt %.1f [ms]\n", 1e3*get_time_ms(t0) );
-return 0;
+			seedfastrand ( ro+100*j );
+			srand ( ro+100*j );
+			array_link  al2 = optimDeff ( al, arrayclass, alpha, 0,  DOPTIM_UPDATE,  niter, 0 );
+		}
+		printf ( "dt %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
+		return 0;
 	}
-	
-	if (1)
-	{
-	//arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
-	arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero2.oa");
-	array_link al = sols[0];
-	arraydata_t arrayclass = arraylink2arraydata(al);
-	arrayclass=arraydata_t(2, 70, 0, 7);
-	
-	if (aidx>10)
-		al=arrayclass.randomarray(1);
-	double D = Defficiency(al,2);
-	
-	printf("---------\n");
-	std::vector<double> dd = Defficiencies ( al,  arrayclass, 2, 0);
+
+	if ( 1 ) {
+		//arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
+		arraylist_t sols = readarrayfile ( "/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero2.oa" );
+		array_link al = sols[0];
+		arraydata_t arrayclass = arraylink2arraydata ( al );
+		arrayclass=arraydata_t ( 2, 70, 0, 7 );
+
+		if ( aidx>10 )
+			al=arrayclass.randomarray ( 1 );
+		double D = Defficiency ( al,2 );
+
+		printf ( "---------\n" );
+		std::vector<double> dd = Defficiencies ( al,  arrayclass, 2, 0 );
 
 
-	double t0=get_time_ms();
-	for(int i=0; i<1000; i++) {
-		double D = Defficiency(al,0);
-	}
-	printf("time %.1f [ms]\n", 1e3*get_time_ms(t0));	
-	t0=get_time_ms();
-	for(int i=0; i<1000; i++) {
-		Defficiencies(al,arrayclass,0,0);
-	}
-	printf("time %.1f [ms]\n", 1e3*get_time_ms(t0));	
+		double t0=get_time_ms();
+		for ( int i=0; i<1000; i++ ) {
+			double D = Defficiency ( al,0 );
+		}
+		printf ( "time %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
+		t0=get_time_ms();
+		for ( int i=0; i<1000; i++ ) {
+			Defficiencies ( al,arrayclass,0,0 );
+		}
+		printf ( "time %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
 
 		//throw; printf("throw done!\n");
-	return 0;
+		return 0;
 	}
-	
-	
+
+
 	if ( 0 ) {
 		int N = 10;
 		int k =3;
@@ -564,11 +608,11 @@ return 0;
 
 		double t0=get_time_ms();
 		for ( int j=0; j<ni; j++ ) {
-				seedfastrand ( ro+100*j);
-				srand ( ro+100*j );
-		al = arrayclass.randomarray();
+			seedfastrand ( ro+100*j );
+			srand ( ro+100*j );
+			al = arrayclass.randomarray();
 			for ( int i=0; i<nrestarts; i++ ) {
-				seedfastrand ( i+ro +100*j);
+				seedfastrand ( i+ro +100*j );
 				srand ( i+ro+100*j );
 				array_link  al2 = optimDeff ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
 				//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
@@ -579,20 +623,20 @@ return 0;
 				m[i]=d;
 
 				if ( 1 ) {
-				srand ( i+ro+200*j );
+					srand ( i+ro+200*j );
 					//al2 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, 3000 );
 					al3 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_SWAP,  niter, 6300 );
 					dd = al3.Defficiencies();
 					d = scoreD ( dd, alpha );
-					if (d> m[i]+1e-8 ) {
+					if ( d> m[i]+1e-8 ) {
 						printf ( "check! %.8f (%.6f %.6f) -> %.8f (%.6f %.6f)\n", m[i], al2.Defficiency(), al2.DsEfficiency() , d, al3.Defficiency(), al3.DsEfficiency() );
 					}
-				//m[i]=d;
+					//m[i]=d;
 
 				}
 			}
 			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
-						printf("  mm[%d] %.4f\n", j, mm[j]);
+			printf ( "  mm[%d] %.4f\n", j, mm[j] );
 
 		}
 		dt=get_time_ms()-t0;
@@ -602,27 +646,27 @@ return 0;
 
 
 		t0=get_time_ms();
-				for ( int j=0; j<ni; j++ ) {
-				seedfastrand (ro+ 100*j);
-				srand (ro+ 100*j );
-		al = arrayclass.randomarray();
+		for ( int j=0; j<ni; j++ ) {
+			seedfastrand ( ro+ 100*j );
+			srand ( ro+ 100*j );
+			al = arrayclass.randomarray();
 
-		for ( int i=0; i<nrestarts; i++ ) {
+			for ( int i=0; i<nrestarts; i++ ) {
 // al = arrayclass.randomarray();
-				seedfastrand ( i+ro +100*j);
+				seedfastrand ( i+ro +100*j );
 				srand ( i+ro+100*j );
 
-			nabort=al.n_columns*al.n_rows+1;
-			array_link  al2 = optimDeff2level ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
-			//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
-			std::vector<double> dd = al2.Defficiencies();
-			double d = scoreD ( dd, alpha );
+				nabort=al.n_columns*al.n_rows+1;
+				array_link  al2 = optimDeff2level ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
+				//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
+				std::vector<double> dd = al2.Defficiencies();
+				double d = scoreD ( dd, alpha );
 
-			m[i]=d;
-		}
+				m[i]=d;
+			}
 			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
-			printf("  mm[%d] %.4f\n", j, mm[j]);
-			
+			printf ( "  mm[%d] %.4f\n", j, mm[j] );
+
 		}
 		dt=get_time_ms()-t0;
 		mean = accumulate ( mm.begin(), mm.end(), 0.0 ) / mm.size();
@@ -642,7 +686,7 @@ return 0;
 
 	// ################################
 
-	
+
 	if ( 1 ) {
 		arraydata_t adata ( 2, rr, 0, cc );
 		int niter=10000;
@@ -653,16 +697,16 @@ return 0;
 		arraylist_t sols;
 		for ( int i=0; i<20; i++ ) {
 			array_link al = adata.randomarray ( 0 );
-	sols.push_back(al);
+			sols.push_back ( al );
 		}
-	DoptimReturn a = DoptimizeMixed(sols, adata, alpha, verbose);
-	DoptimReturn a2 = DoptimizeMixed(a.designs, adata, alpha, verbose);
-	DoptimReturn a3 = DoptimizeMixed(a2.designs, adata, alpha, verbose);
-		
-	// TODO: incorporate into python code, C++ solution for sorting designs
-	// balance iteration with niter
-return 0;
-}
+		DoptimReturn a = DoptimizeMixed ( sols, adata, alpha, verbose );
+		DoptimReturn a2 = DoptimizeMixed ( a.designs, adata, alpha, verbose );
+		DoptimReturn a3 = DoptimizeMixed ( a2.designs, adata, alpha, verbose );
+
+		// TODO: incorporate into python code, C++ solution for sorting designs
+		// balance iteration with niter
+		return 0;
+	}
 
 	if ( 0 ) {
 		arraydata_t adata ( 2, 64, 0, 7 );
