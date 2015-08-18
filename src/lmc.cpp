@@ -1719,7 +1719,7 @@ int fastjX( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 */
 int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
 {
-	static array_t tmpval[MAXROWS];
+	array_t tmpval[MAXROWS];
 
 	#ifdef OADEBUG
 		assert(N<=ROWSMAX);
