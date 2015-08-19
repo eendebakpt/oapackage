@@ -276,7 +276,8 @@ def main(argv=None):
         print('%s: time %.2f [s]' % (cases[ii], t))
     print('Total time: %.3f [s], %.3f [s], %.3f [s]' % (dt, dt2, dtx))
     print('   should be of order 4.4 [s], 4.6 [s], 5.9 [s] (woelmuis)')
-    print('   should be of order 3.2 [s], 3.3 [s], 4.7 [s] (marmot)')
+    print('   should be of order 3.2 [s], 3.3 [s], 4.7 [s] (marmot) [v 2.0.0]')
+    print('   should be of order 2.96 [s], 3.0 [s], 4.6 [s] (marmot) [v 2.0.24]')
     
 if __name__ == "__main__":
     main()    

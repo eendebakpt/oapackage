@@ -426,6 +426,7 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	if (0)
 	{
 		int r = opt.getIntValue ( 'r', 8 );
 		int niter = opt.getIntValue ( 'i', 100 );
@@ -488,6 +489,7 @@ int main ( int argc, char* argv[] )
 		exit ( 0 );
 	}
 
+	if (0)
 	{
 		int r = opt.getIntValue ( 'r', 3 );
 
@@ -523,7 +525,8 @@ int main ( int argc, char* argv[] )
 		for ( int ij=0; ij<20; ij++ ) {
 			printf ( "iter loop %d\n", ij );
 			for ( int j=0; j<200000; j++ ) {
-				jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
+				//jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
+				fastj(al.array, N, 5, firstcolcomb );
 			}
 		}
 		exit ( 0 );

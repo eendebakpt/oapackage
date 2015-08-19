@@ -294,7 +294,6 @@ static inline int row_rank_partial ( const carray_t *array, rowindex_t n_rows, c
 	int	sum = 0;
 	const array_t *ar = array+row;
 	for ( colindex_t i = start_idx; i < end_idx; i++ ) {
-		//sum += index[i] * array[row+n_rows*colperm[i]];
 		sum += index[i] * ar[n_rows*colperm[i]];
 	}
 	return sum;
@@ -338,7 +337,6 @@ static inline array_t row_rank_partial ( carray_t *array, const colindex_t start
 	for ( i = start_idx; i < end_idx; i++ ) {
 		sum += index[i] * array[j];
 		j += n_rows;
-		//printf("row_rank_partial: rowcol %d: %d \n", i, sum);
 	}
 	return sum;
 }

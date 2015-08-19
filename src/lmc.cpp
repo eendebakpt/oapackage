@@ -1701,7 +1701,8 @@ inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const
 	for ( int i=0; i<J; i++ ) {
 		carray_t *cp = array+N*pp[i];
 		for ( rowindex_t r=0; r<N; r++ ) {
-			tmp[r]+=cp[r]; //+ ppN[i]];
+			tmp[r]+=cp[r];
+			//tmp[r] ^= cp[r]; 
 		}
 	}
 
@@ -2341,9 +2342,10 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	//tmpStatic.setRef("LMCcheckj5");
 
 	const int jj=5;
+#ifdef OACHECK
 	const int maxjj = 10;
 	assert ( jj<maxjj );
-
+#endif
 	// perform basic integrity checks
 	if ( !hack )
 		assert ( adin.ncolgroups==1 );
