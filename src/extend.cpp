@@ -825,39 +825,29 @@ void quicktransformtest ( array_t *array, array_t *tmparray, LMCreduction_t *red
 
 }
 
-/*
-/// Debugging function
-void testreduction(const arraydata_t *ad, array_t *array, dyndata_t &dynd) {
-    // OPTIMIZE: introduce LMC_CHECK_TRANS to find out first transformation that makes an array smaller
-    // this can be used to introduce a quick lmc test
-    if ( 0 ) {
-        LMCreduction_t *reduction = new LMCreduction_t ( ad );
-        reduction->mode = LMC_REDUCE;
-        lmc_t r = LMCreduce ( array, array, ad, &dynd, reduction, oaextend);
-        cout << "This array: " << r << endl;
-        reduction->transformation->show ( cout );
-
-        rowindex_t rpos;
-        colindex_t cpos;
-        int cr = array_diff ( array, reduction->array, ad->N, ad->ncols, rpos, cpos );
-        if ( 1 ) {
-            cout << printfstring ( "val %d, position: %d %d", cr, rpos, cpos ) << endl;
-        }
-    }
-}
-*/
 
 inline void showLoopProgress ( array_t *array, const int col_offset, const rowindex_t N, const int node_rank=0, int nlmcarrays=-1 )
 {
+#ifdef _OPENMPX
+#define SAFEOMP	
+#ifdef SAFEOMP	
+	static long _nloops[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+	int tid = omp_get_thread_num();
+	_nloops[tid%16]++;
+	long nloops=_nloops[tid%16]; //printf("here");
+#else	
 	static long nloops = 0;
-	//printf("nloops %d\n", nloops);
-	#pragma omp atomic
 	nloops++;
+#endif
+#else
+	static long nloops = 0;
+	nloops++;
+#endif
 	if ( nloops%10000==0 ) {
 		fflush ( stdout );
 
 		if ( nloops% ( 500*1000*1000 ) ==0 ) {
-			cout << "node [" << node_rank << "]: extend loop "<< nloops/ ( 1000*1000 );
+			std::cout << "node [" << node_rank << "]: extend loop "<< nloops/ ( 1000*1000 );
 			//cout << ", row " << p->row << "";
 			//printf ( "  OA extension: current row: " );
 			cout << "m, ";
@@ -977,8 +967,14 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
 	LMCreduction_t reduction ( ad );
 	reduction.init_state=COPY;
+	// FIXME2: move this out of the loop
 	reduction.initStatic();	// needed to make the extend code thread safe
 
+#ifdef OADEBUG
+	//int gid = getGlobalStaticNumber(reduction.staticdata);
+	//printf("extend_array: initialized static to id %d (%ld)\n", gid, (long) reduction.staticdata);
+#endif
+	
 	do {
 		showLoopProgress ( array, col_offset, N, node_rank, nlmcarrays );
 
@@ -1137,7 +1133,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 				//  reduction->mode=LMC_REDUCE_PARTIAL;
 				lmc =  LMCcheck ( array, *ad, oaextend, reduction );
 
-				logstream ( DEBUG ) << printfstring ( "   array %d: lmc %d\n", narrays-1, lmc );
+				//logstream ( DEBUG ) << printfstring ( "   array %d: lmc %d\n", narrays-1, lmc );
 
 			}
 

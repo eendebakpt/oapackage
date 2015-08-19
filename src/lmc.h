@@ -195,6 +195,7 @@ public:
         ref=s;
         printf("LMC_static_struct_t: set ref %s\n", ref.c_str() );
     }
+    int id;
 #endif
 
     /* methods */
@@ -250,6 +251,7 @@ void cleanGlobalStaticIndexed();
 LMC_static_struct_t * getGlobalStatic();
 void releaseGlobalStatic(LMC_static_struct_t *p);
 void cleanGlobalStatic();
+int getGlobalStaticNumber(LMC_static_struct_t * p);
 
 LMC_static_struct_t &getGlobalStaticOne();
 

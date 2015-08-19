@@ -975,6 +975,16 @@ inline lmc_t LMC_check_col ( const array_t *originalcol, const array_t *arraycol
     prefetch ( rowsort );
 #endif
 
+#ifdef OADEBUG
+for(int xx=0; xx<nrows; xx++) {
+    int rowp = rowsort[xx].r;
+   if (rowp>=nrows) {
+    printfd("error: rowp %d >= nrows %d\n", rowp, nrows);
+    exit(0);
+   }
+}
+#endif
+    
     const rowsort_value_t sval = ad->s[dd->col];
 
     /* we check in blocks of oaindex */
@@ -1001,6 +1011,16 @@ inline lmc_t LMC_check_col ( const array_t *originalcol, const array_t *arraycol
             // other sort functions: insertionSort, bubbleSort2, quickSort, shellSort, std::sort, std::__insertion_sort
             oacolSort ( rowsort+ ( j*oaindex ), 0, oaindex-1 );
         }
+
+        #ifdef OADEBUG
+for(int xx=0; xx<nrows; xx++) {
+    int rowp = rowsort[xx].r;
+   if (rowp>=nrows) {
+    printfd("error: row %d: rowp %d >= nrows %d\n", xx, rowp, nrows);
+    exit(0);
+   }
+}
+#endif
 
         for ( int k = 0; k < oaindex; k++ ) {
             cur_row = j*oaindex+k;

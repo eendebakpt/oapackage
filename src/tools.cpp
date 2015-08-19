@@ -4,7 +4,6 @@
 #include <string.h>
 #include <errno.h>
 #include <ostream>
-//#include <iostream>
 #include <iomanip>
 #include <fstream>
 
@@ -230,18 +229,16 @@ string oafilestring(rowindex_t rows, colindex_t cols, array_t *s)
     return fname;
 }
 
-
-
-#define X
-#ifndef X // printfstring
+#define XPFS
+#ifndef XPFS
 /**
  * @brief Function similar to printf returning C++ style string
  * @param message
  * @return
  */
-inline std::string printfstring(const char *message, ...)
+std::string printfstring(const char *message, ...)
 {
-    static char buf[8*1024];
+    char buf[8*1024];
 
     va_list va;
     va_start(va, message);
@@ -300,10 +297,6 @@ void trim( std::string& str, const std::string& trimChars )
     }
 }
 
-
-
-
-//const int STRBUFSIZE = 2048;
 
 #ifdef OAANALYZE_DISCR
 /*

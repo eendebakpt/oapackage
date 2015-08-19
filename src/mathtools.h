@@ -67,9 +67,9 @@ class object_pool
 {
 	std::vector< TYPE *> pool;
 	//std::queue<size_t> avail;
-	int maxpoolsize;
-	int nn;
-	int rr;
+	int maxpoolsize; /// maximum size of the pool
+	int nn;		/// number newly created objects
+	int rr;		/// re-used object count
 
 public:
 	int verbose;	// for debugging

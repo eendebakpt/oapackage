@@ -639,7 +639,7 @@ template <class Object>
  * @param x[]
  * @param length
  */
-static inline void insertionSort ( Object x[],int length )
+inline void insertionSort ( Object x[],int length )
 {
 	Object key;
 	int i;
@@ -656,9 +656,9 @@ static inline void insertionSort ( Object x[],int length )
 
 template <class itemType, class indexType>
 /// sort arrays using bubbleSort
-static inline void bubbleSort ( itemType a[], indexType l, indexType r )
+inline void bubbleSort ( itemType a[], indexType l, indexType r )
 {
-	static indexType i, j;
+	indexType i, j;
 
 	for ( i=r; i>l; --i )
 		for ( j=l; j<i; ++j )
@@ -668,9 +668,9 @@ static inline void bubbleSort ( itemType a[], indexType l, indexType r )
 
 template <class itemType, class indexType>
 /// sorting similar to bubblesort but fast for sorted arrays
-static inline void flipSort ( itemType a[], indexType l, indexType r )
+inline void flipSort ( itemType a[], indexType l, indexType r )
 {
-	static indexType i, j;
+	indexType i, j;
 
 	i = r;
 	while ( i>l ) {

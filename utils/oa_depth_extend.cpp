@@ -252,6 +252,9 @@ dextend.loglevelcol=7;
 	#pragma omp parallel for  schedule(dynamic,1)
 	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
+		
+		if (al.n_columns>=maxk) 
+			continue;
 //printfd("dextend.setposition ( al.n_columns=%d, ai=%d, arraylist->size(), 0, 0 )\n", al.n_columns, ai );
 
 		//printfd ( "  openmp: num threads %d, omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_max_threads(), omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );

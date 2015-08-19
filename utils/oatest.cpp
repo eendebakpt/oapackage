@@ -424,48 +424,60 @@ int main ( int argc, char* argv[] )
 		exit ( 0 );
 	}
 
-	        setloglevel(SYSTEM);
+	setloglevel ( SYSTEM );
 
 	{
 		int r = opt.getIntValue ( 'r', 8 );
 		int niter = opt.getIntValue ( 'i', 100 );
 
-		OAextend oaextend;
-		#pragma omp parallel for  schedule(dynamic,1)
+		int race=0;
+		
+		#pragma omp parallel for // num_threads(8) // schedule(dynamic,1)
 		for ( int i=0; i<r; i++ ) {
 			array_link al = exampleArray ( 12 );
-		 //al = exampleArray ( 1 );
-		 al = exampleArray ( 2 );
-		 //al = exampleArray ( 12 );
+			//al = exampleArray ( 1 );
+			al = exampleArray ( 2 );
+			//al = exampleArray ( 12 );
 			//al = al.selectFirstColumns(9);
 //		int strength  = 3;
-			arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
+			
+			int r=race;
+			race++;
+			if( r+1!=race )  {
+				printf("race condition\n");
+			}
+			
 			int N = al.n_rows;
+			//printf ( "iter loop %d: strength %d\n", i, ad.strength ) ;
 			printf ( "iter loop %d:\n", i ) ;
 			for ( int ij=0; ij<1; ij++ ) {
 				for ( int j=0; j<niter; j++ ) {
+					printf(" loop %d: tid %d\n", j, omp_get_thread_num() );
+					OAextend oaextend;
+			arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
+
 					arraydata_t adlocal ( &ad, al.n_columns );
 					LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
 					// make sure code is thread safe
-				reduction.initStatic();
+					reduction.initStatic();
 
-				{
-oaextend.setAlgorithm(MODE_J5ORDERXFAST, &adlocal);
-oaextend.setAlgorithm(MODE_ORIGINAL, &adlocal);
-					OAextend oaextendx=oaextend;
-				oaextendx.extendarraymode=OAextend::NONE;
-reduction.init_state=COPY;
+					{
+						OAextend oaextendx=oaextend;
+						//oaextendx.setAlgorithm ( MODE_J5ORDERXFAST, &adlocal );
+						oaextendx.setAlgorithm ( MODE_ORIGINAL, &adlocal );
+						oaextendx.extendarraymode=OAextend::NONE;
+						reduction.init_state=COPY;
 
-int extensioncol = al.n_columns-1;
-arraylist_t extensions0;
+						int extensioncol = al.n_columns-1;
+						arraylist_t extensions0;
 
 //printf("here\n");
 //	        setloglevel(NORMAL);
-					extend_array ( al.array,  &adlocal, extensioncol, extensions0, oaextendx );
+						extend_array ( al.array,  &adlocal, extensioncol, extensions0, oaextendx );
 //printf("here 2\n");
-				}
-				
-				//lmc_t lmc =  LMCcheck ( al, ( adlocal ), oaextend, reduction ); // omp good
+					}
+
+					//lmc_t lmc =  LMCcheck ( al, ( adlocal ), oaextend, reduction ); // omp good
 				}
 
 
@@ -473,7 +485,7 @@ arraylist_t extensions0;
 			}
 
 		}
-			exit ( 0 );
+		exit ( 0 );
 	}
 
 	{

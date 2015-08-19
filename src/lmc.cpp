@@ -1,6 +1,7 @@
 #include <math.h>
 #include <algorithm>
 
+#include "oaoptions.h"
 #include "arraytools.h"
 #include "lmc.h"
 #include "tools.h"
@@ -27,9 +28,7 @@
 #endif
 
 
-
 using namespace std;
-
 
 // legacy global static object
 LMC_static_struct_t _globalStaticX;
@@ -55,8 +54,24 @@ LMC_static_struct_t * getGlobalStaticOnePointer()
 static object_pool< LMC_static_struct_t > staticDataPool;
 
 
+#ifdef OADEBUG
+int getGlobalStaticNumber(LMC_static_struct_t * p) {
+	return p->id; //staticDataPool.id(p);
+}
+#endif
+
 LMC_static_struct_t * getGlobalStatic()
 {
+#ifdef NOREUSE
+	LMC_static_struct_t *pp = new LMC_static_struct_t();
+	pp->id = 100*omp_get_thread_num() + int( random()% 40 );
+return pp;
+	#endif
+	
+	#ifdef OADEBUGMORE
+	staticDataPool.verbose=1; 
+#endif
+	
 	LMC_static_struct_t *p = 0;
 // printfd("enter critical: %d\n", omp_get_thread_num() );
 	#pragma omp critical
@@ -71,7 +86,12 @@ LMC_static_struct_t * getGlobalStatic()
 }
 void releaseGlobalStatic ( LMC_static_struct_t *p )
 {
-	//printfd("releaseGlobalStatic: enter critical: %d\n", omp_get_thread_num() );
+#ifdef NOREUSE
+	delete p;
+return;
+#endif
+
+//printfd("releaseGlobalStatic: enter critical: %d\n", omp_get_thread_num() );
 	#pragma omp critical
 	{
 		staticDataPool.Delete ( p );
@@ -149,10 +169,17 @@ LMC_static_struct_t::~LMC_static_struct_t()
 	this->freeall();
 }
 
+#ifdef OADEBUG
+static int LMC_static_count = 0;
+#endif
+
 LMC_static_struct_t::LMC_static_struct_t()
 {
 #ifdef OADEBUG
 	//printf("LMC_static_struct_t::LMC_static_struct_t()\n");
+//#pragma omp atomic
+	//id = LMC_static_count;
+	//LMC_static_count++;
 #endif
 	/* initialize static structure values to zero */
 	this->LMC_non_root_init = 0;
@@ -1514,6 +1541,13 @@ lmc_t LMCreduce_root_level_perm ( array_t const *original, const arraydata_t* ad
 			// TODO: is this valid if the root is not properly sorted?
 			// 	this assumes that after the LMC_root_sort the root is already in blocks
 			dyndatatmp.rowsort[rootrowperms[l][k]].r=rowsort[k].r;
+			
+#ifdef OADEBUG
+			if (dyndatatmp.rowsort[rootrowperms[l][k]].r >= ad->N) {
+				printfd("error with rowsort values");
+			exit(0);	
+			}
+#endif
 		}
 		// update level permutations structure
 		if ( reduction->mode>=OA_REDUCE ) {
@@ -1719,7 +1753,7 @@ int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 	array_t tmpval[MAXROWS];
 
 	#ifdef OADEBUG
-		assert(N<=ROWSMAX);
+		assert(N<=MAXROWS);
 	#endif
 
 	std::fill_n(tmpval, N, 0);
@@ -2226,7 +2260,7 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 	double ww[6];
 	
 #ifdef OADEBUG
-		assert(N<=ROWSMAX);
+		assert(N<=MAXROWS);
 #endif
 	array_t tmpval[MAXROWS];
 	
@@ -3402,8 +3436,12 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 //  printf("LMCreduce: ...\n");
 
 	LMC_static_struct_t *tpp=0;
-	if ( reduction->staticdata==0 )
+	if ( reduction->staticdata==0 ) {
 		tpp = getGlobalStaticOnePointer();
+#ifdef OADEBUG
+		printfd("LMCreduce: acquired LMC_static_struct_t from single global object\n");
+#endif
+	}
 	else {
 		// printf("LMCreduce: using LMC_static_struct_t from reduction!\n");
 		tpp = ( reduction->staticdata );

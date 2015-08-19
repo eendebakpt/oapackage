@@ -457,7 +457,7 @@ arraydata_t* readConfigFile ( const char *file );
  */
 inline std::string printfstring ( const char *message, ... )
 {
-	static char buf[8*1024];
+	char buf[8*1024];
 
 	va_list va;
 	va_start ( va, message );
