@@ -453,7 +453,9 @@ int main ( int argc, char* argv[] )
 			printf ( "iter loop %d:\n", i ) ;
 			for ( int ij=0; ij<1; ij++ ) {
 				for ( int j=0; j<niter; j++ ) {
+#ifdef _OPENMP
 					printf(" loop %d: tid %d\n", j, omp_get_thread_num() );
+#endif
 					OAextend oaextend;
 			arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
 

@@ -3738,6 +3738,7 @@ array_link reduceDOPform ( const array_link &al, int verbose )
 {
 	int dopruning=0;
 	int dolmc=1;
+	//assert(strength>=2);
 	int strength=2;
 	arraylist_t lst;
 	lst.push_back ( al );
