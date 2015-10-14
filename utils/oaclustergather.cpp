@@ -142,30 +142,32 @@ void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vect
 	fclose ( fid );
 }
 
-			void addArraysToPareto(Pareto<mvalue_t<long>,array_link> &pset, const arraylist_t & arraylist, int jj, int verbose) {
-			#pragma omp parallel for
-			for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
-				if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
-					printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
-					printf ( "  " );
-					pset.show ( 1 );
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, const arraylist_t & arraylist, int jj, int verbose )
+{
+	//#pragma omp parallel for
+	#pragma omp parallel for num_threads(8)
+	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
+		if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
+			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+			printf ( "  " );
+			pset.show ( 1 );
 //#ifdef OPENMP
-					//printf(" openmp: %d\n",  omp_get_num_threads() );
+			//printf(" openmp: %d\n",  omp_get_num_threads() );
 //#endif
-				}
+		}
 
-				const array_link &al = arraylist.at ( i );
+		const array_link &al = arraylist.at ( i );
 
-				//parseArrayPareto ( al, al, pset, verbose );
-				Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
+		//parseArrayPareto ( al, al, pset, verbose );
+		Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
 
-				#pragma omp critical
-				{
-					// add the new tuple to the Pareto set
-					pset.addvalue ( p, al );
-				}
-			}
-			}
+		#pragma omp critical
+		{
+			// add the new tuple to the Pareto set
+			pset.addvalue ( p, al );
+		}
+	}
+}
 
 const std::string filesep = "/";
 
@@ -307,10 +309,10 @@ int main ( int argc, char* argv[] )
 			bool b = readNumbersFile ( nfilesub.c_str(), nasub, nparetosub, kmin, kmax );
 
 			if ( verbose>=2 ) {
-				if (b) {
-				printf ( "   --> read numbers file %s\n", nfilesub.c_str() );
+				if ( b ) {
+					printf ( "   --> read numbers file %s\n", nfilesub.c_str() );
 				} else {
-					printf ( "   --> could not read read numbers file %s\n", nfilesub.c_str() );					
+					printf ( "   --> could not read read numbers file %s\n", nfilesub.c_str() );
 				}
 			}
 
@@ -321,14 +323,11 @@ int main ( int argc, char* argv[] )
 			const std::string parfile = basedir + filesep + subdir + filesep + subfilepareto0;
 
 
-//FIXME: check code paths
-//FIXME: test on partial data
-
 			if ( b ) {
 				// get number of arrays from numbers file
 				na[k]+=nasub[k];
 
-				assert(nasub[k]>=0);
+				assert ( nasub[k]>=0 );
 			} else {
 				// get number of arrays from array file
 				int nnarrays = nArrays ( afile.c_str() );
@@ -345,7 +344,7 @@ int main ( int argc, char* argv[] )
 				}
 				na[k] += nnarrays;
 			}
-			
+
 			if ( verbose>=2 )
 				printf ( "  --> check pareto file %s\n", subfilepareto0.c_str() );
 			bool paretofile = 0;
@@ -362,7 +361,7 @@ int main ( int argc, char* argv[] )
 				printf ( "   ### file %s: %d arrays\n", base_name ( afile ).c_str(), nn );
 
 			if ( nn>=0 )
-				if ( paretofile && b) {					
+				if ( paretofile && b ) {
 					if ( verbose>=3 ) {
 						printf ( "  --> both numbers file and pareto file, checking whether numbers are equal\n" );
 					}
@@ -386,15 +385,15 @@ int main ( int argc, char* argv[] )
 				if ( needcleanrun )
 					exit ( 0 );
 				else {
-				continue;	
+					continue;
 				}
 			}
 
 			const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
-			addArraysToPareto(pset, arraylist, jj, verbose);
-			
-			if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit1-1 ) ) && verbose>=1 ) ) {
-				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit1, arraylist.size(), pset.number(), pset.numberindices() );
+			addArraysToPareto ( pset, arraylist, jj, verbose );
+
+			if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit[level]-1 ) ) && verbose>=1 ) ) {
+				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
 				//printf ( "  " ); pset.show ( 1 );
 			}
 		}
