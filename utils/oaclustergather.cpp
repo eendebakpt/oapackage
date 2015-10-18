@@ -198,6 +198,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "nparetodiff" );	// allow difference in pareto files for .oa files and numbers file
 	opt.setOption ( "kmin" );
 	opt.setOption ( "kmax" );
+	opt.setOption ( "format", 'f' );
 
 	opt.addUsage ( "Orthonal Array Cluster Gather: special tool" );
 	opt.addUsage ( "Usage: oaclustergather [OPTIONS] " );
@@ -206,6 +207,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -v --verbose  			Verbose level (default: 1) " );
 	opt.addUsage ( " -b --basedir [DIR]  			Base calculation dir " );
 	opt.addUsage ( " -c --config [CONFIGFILE]  		Config file to use " );
+	opt.addUsage ( " -f [FORMAT]					Output format (TEXT, or default:BINARY) " );
 	opt.addUsage ( " --numbersfile [FILENAME] 	Output name of number of arrays " );
 	opt.addUsage ( " --cleanrun [INTEGER]		If set to 1 abort when not all files are found. If set to zero generate partial results (default: 1)" );
 	opt.addUsage ( " --nsplit0 [NUMBER]		Number of split files at level 0" );
@@ -244,6 +246,8 @@ int main ( int argc, char* argv[] )
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
+    arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString(opt.getStringValue('f', "BINARY"));
+	
 	arraydata_t *adata = readConfigFile ( configfile );
 	assert ( adata!=0 );
 
@@ -424,7 +428,7 @@ int main ( int argc, char* argv[] )
 
 			if ( verbose )
 				printf ( "  writing pareto file %s\n", pfile0.c_str() );
-			writearrayfile ( pfile.c_str(), &pp, arrayfile::ABINARY, adata->N, k );
+			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 		}
 	}
 

@@ -3237,6 +3237,16 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 		return al;
 	}
 
+	void arrayfile_t::flush() 
+	{
+	if (this->nfid !=0 )
+		fflush(nfid);
+	#ifdef USEZLIB
+	if (this->gzfid !=0 ) {
+		//gzflush(gzfid, Z_SYNC_FLUSH);
+	}
+#endif
+	}
 int arrayfile_t::read_array ( array_link &a )
 {
 	int32_t index;
@@ -3878,6 +3888,10 @@ void arrayfile_t::closefile()
 		myprintf ( "arrayfile_t::closefile: rwmode: %d\n", rwmode );
 	}
 
+	// for a binary file update the number of arrays stored
+	updatenumbers();
+
+	/*
 	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
 		if ( verbose>=2 )
 			myprintf ( "arrayfile_t: closing binary file, updating numbers %d->%d\n", narrays, narraycounter );
@@ -3895,7 +3909,7 @@ void arrayfile_t::closefile()
 		}
 
 	}
-
+*/
 
 	// close file handles
 	if ( this->nfid!=0 ) {
@@ -3909,6 +3923,27 @@ void arrayfile_t::closefile()
 	}
 #endif
 //delete afile;
+}
+
+void arrayfile_t::updatenumbers() {
+	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
+		if ( verbose>=2 )
+			myprintf ( "arrayfile_t: updating numbers %d->%d\n", narrays, narraycounter );
+		if ( verbose>=3 )
+			myprintf ( "arrayfile_t: nfid %ld\n", long ( nfid ) );
+		if ( nfid != 0 ) {
+			long pos = ftell ( nfid );
+			//myprintfd("seek to from %ld to 4\n", pos);
+			int r = fseek ( nfid, 4*sizeof ( int32_t ), SEEK_SET );
+			//printfd("seek result %d\n", r);
+			r = this->afwrite ( &narraycounter, sizeof ( int32_t ), 1 );
+			if ( verbose>=2 )
+				myprintf ( "   arrayfile_t::updatenumbers: result of write: %d\n", ( int ) r );
+			fseek ( nfid, pos, SEEK_SET ); // place back pointer
+		}
+
+	}
+
 }
 
 arrayfile_t::~arrayfile_t()

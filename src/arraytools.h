@@ -1319,7 +1319,10 @@ public:
 
 	/// read next array from the file
 	array_link readnext();
-		
+	
+	/// flush any open file pointer
+	void flush();
+	
 	/// return true if the file has binary format
 	bool isbinary() const;
 
@@ -1448,7 +1451,10 @@ private:
 	/// wrapper function for fread or gzread
 	size_t afread ( void * ptr, size_t sz, size_t cnt );
 
+	
 public:
+	// update numbers count for a file structure
+	void updatenumbers();
 
 
 	/// read array and return index
