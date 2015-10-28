@@ -1081,6 +1081,11 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
             # mngr.canvas.manager.window.setGeometry(x,y,w,h)
         mngr.canvas.manager.window.SetPosition((x, y))
         mngr.canvas.manager.window.resize(w, h)
+    elif be == 'module://IPython.kernel.zmq.pylab.backend_inline':
+        pass
+         # mngr.canvas.manager.window.setGeometry(x,y,w,h)
+        #mngr.canvas.manager.window.SetPosition((x, y))
+        #mngr.canvas.manager.window.resize(w, h)
     else:
         # assume Qt canvas
         mngr.canvas.manager.window.move(x, y)

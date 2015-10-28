@@ -810,7 +810,7 @@ void ABold(const Eigen::MatrixXd &mymatrix, double &A, double &B, int &rank, int
 }
 */
 
-/// convett 2-level design to second order interaction matrix
+/// convert 2-level design to second order interaction matrix
 inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 {
 	int k = al.n_columns;
@@ -1037,6 +1037,53 @@ int array_rank_D_B ( const array_link &al, std::vector<double> *ret  , int verbo
 	//cout << "The rank of A is " << lu_decomp.rank() << endl;
 }
 
+std::vector<double> Aefficiencies(const array_link &al, int verbose)
+{
+	myassert(al.is2level() );
+	int N = al.n_rows;
+	int k = al.n_columns; int m = 1 + k + (k*(k-1))/2;
+	if (verbose) printf("Aefficiencies: array %d, %d\n", N, k );
+	MatrixFloat X = array2eigenModelMatrix ( al );
+	
+	Eigen::FullPivLU<MatrixXd> lu_decomp ( X );
+	int rank = lu_decomp.rank();
+	if (rank<m) {
+		if (verbose)
+			printf("Aefficiencies: rank %d/%d\n", rank, m );
+	std::vector<double> aa(3);
+	aa[0] = 0;
+	aa[1] = 0;
+	aa[2] = 0;
+	return aa;
+	}
+	
+	if (verbose) printf("Aefficiencies: calculate information matrix\n" );
+	
+	MatrixFloat matXtX = ( X.transpose() * ( X ) ) /N;
+	
+	if (verbose) printf("Aefficiencies: invert information matrix\n" );
+	MatrixFloat M = matXtX.inverse();
+	
+	std::vector<double> aa(3);
+	double Ax=0;
+	for(int i=0; i<m; i++) {
+			Ax += M(i,i);
+	}
+	aa[0] = 1./(Ax/m);
+	Ax=0;
+	for(int i=1; i<k+1; i++) {
+			Ax += M(i,i);
+	}
+
+	aa[1] = 1./(Ax/k);
+	Ax=0;
+	for(int i=k+1; i<m; i++) {
+			Ax += M(i,i);
+	}
+	aa[2] = 1./(Ax/( k*(k-1)/2));
+	return aa;
+}
+
 double VIFefficiency ( const array_link &al, int verbose )
 {
 	std::vector<double> ret;
@@ -1206,6 +1253,8 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		//matXtX = ( Xint.transpose() *(Xint) ).cast<eigenFloat>() /n;
 
 		X = array2eigenModelMatrix ( al );
+		
+		
 
 		//X1i = array2eigenX1 ( al, 1 );
 		//	X2 = array2eigenX2 ( al );
@@ -1234,6 +1283,7 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 
 	}
 	MyMatrix matXtX = ( X.transpose() * ( X ) ) /n;
+	
 	//Matrix X1i =  X.block(0,0,N, 1+nme);
 
 	/*

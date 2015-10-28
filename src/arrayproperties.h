@@ -44,6 +44,9 @@ double Aefficiency(const array_link &al, int verbose=0);
 /// Calculate E-efficiency of matrix (1 over the VIF-efficiency)
 double Eefficiency(const array_link &al, int verbose=0);
 
+/// calculate various A-efficiencies
+std::vector<double> Aefficiencies(const array_link &al, int verbose=1);
+
 
 #ifdef FULLPACKAGE
 /// Return the D-efficiencies for the projection designs

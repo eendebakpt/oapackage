@@ -426,6 +426,21 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	
+	if (1) {
+		int ii = opt.getIntValue ( 'i', 1 );
+		array_link al = exampleArray(ii, 1);
+		
+		double A= al.Aefficiency();
+		std::vector<double> aa = Aefficiencies(al, 1);
+		
+		printf(" A : %f -> %f\n" , A, aa[0] );
+		printf(" A A1 A2: %f, %f, %f\n" , aa[0], aa[1], aa[2] );
+		
+		al.showarray();
+		
+	return 0;	
+	}
 	if (0)
 	{
 		int r = opt.getIntValue ( 'r', 8 );
