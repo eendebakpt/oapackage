@@ -123,6 +123,10 @@ class Pareto
 	return ss;
       }
       
+      static void showvalue(pValue p) {
+               detail::display_vector ( p, "; " );
+	
+      }
       /// show the current set of Pareto optimal elements
       void show ( int verbose=1 ) {
          if ( verbose==0 )

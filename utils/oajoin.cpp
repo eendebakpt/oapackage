@@ -65,7 +65,6 @@ int main(int argc, char* argv[])
     bool sortarrays = opt.getFlag('s');
     int verbose =  opt.getIntValue("verbose", 2);
     std::string format = opt.getStringValue('f', "BINARY");
-
     arrayfile::arrayfilemode_t mode = arrayfile_t::parseModeString(format);
 
     /* read in the arrays */

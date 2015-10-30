@@ -165,7 +165,8 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
    mvalue_t<long> v ( FF, mvalue_t<long>::LOW );
 
    // add the 3 values to the combined value
-   p.push_back ( al.rank() ); // rank
+   int r = array2xf(al).rank();
+   p.push_back ( r ); // rank of second order interaction matrix
    p.push_back ( wm ); // A4
    p.push_back ( v ); // F
 

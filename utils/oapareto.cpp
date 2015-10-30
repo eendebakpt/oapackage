@@ -36,14 +36,17 @@ int main ( int argc, char* argv[] )
 	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
 	opt.setOption ( "output", 'o' );
 	opt.setOption ( "verbose", 'v' );
+	opt.setOption ( "format", 'f' );
 	opt.setFlag ( "test", 't' );
 
-	opt.addUsage ( "Orthonal Array Analyse: analyse arrays" );
+	opt.addUsage ( "Orthonal Array Analyse: convert set of arrays to set of Pareto optimal designs" );
 	opt.addUsage ( "Usage: oapareto [OPTIONS] [FILE]" );
 	opt.addUsage ( "" );
 	opt.addUsage ( " -h --help  			Prints this help " );
 	opt.addUsage ( " -v --verbose  			Verbose level (default: 1) " );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output file for filtered arrays (default: no output) " );
+	opt.addUsage( " -f [FORMAT]					Output format (TEXT, BINARY (default), D (binary difference) ) " );
+
 	opt.processCommandArgs ( argc, argv );
 
 	print_copyright();
@@ -59,7 +62,10 @@ int main ( int argc, char* argv[] )
 		outputprefix = opt.getValue ( 'o' );
 
 	int verbose = opt.getIntValue ( 'v', 1 );
-arrayfilemode_t afmode = ABINARY;
+
+    std::string format = opt.getStringValue('f', "BINARY");
+    arrayfile::arrayfilemode_t afmode = arrayfile_t::parseModeString(format);
+
 
 	/* read in the arrays */
 	if ( verbose )
@@ -85,6 +91,7 @@ arrayfilemode_t afmode = ABINARY;
 
 	return 0;
 	
+	/*
 	arraylist_t *arraylist = new arraylist_t;
 	
 		for ( int i = 0 ; i < opt.getArgc() ; i++ ) {
@@ -128,9 +135,8 @@ arrayfilemode_t afmode = ABINARY;
 		writearrayfile ( outputprefix, &pp, ABINARY );
 	}
 
-	/* free allocated structures */
 	delete arraylist;
-
+*/
 	return 0;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

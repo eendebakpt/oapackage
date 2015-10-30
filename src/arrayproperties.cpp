@@ -1520,6 +1520,11 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 			}
 			Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
 
+			if (verbose>=2) {
+			printf("values: ");
+			Pareto<mvalue_t<long>, array_link >::showvalue(p);
+			
+			}
 			#pragma omp critical
 			{
 				// add the new tuple to the Pareto set
@@ -1547,6 +1552,11 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 	// write files to disk
 	if ( verbose )
 		printf ( "calculateParetoEvenOdd: writing arrays to file %s\n", outfile );
+	if (verbose>=3)
+	{
+		printf ( "calculateParetoEvenOdd: afmode % (TEXT %d)\n", afmode, ATEXT );
+		
+	}
 
 	if ( outfile!=0 ) {
 		writearrayfile ( outfile, &lst, afmode, nrows, ncols );
