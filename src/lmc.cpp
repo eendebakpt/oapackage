@@ -3892,7 +3892,10 @@ array_transformation_t reductionDOP ( const array_link &al, int verbose )
 	reduction.mode=OA_REDUCE;
 	reduction.init_state=COPY;
 	{
+	reduction.init_state=INIT;
 		reduction.setArray ( alf );
+					int changed = check_root_update ( alf.array, ad, reduction.array );
+
 	}
 
 	lmc_t ret = LMCcheck ( alf, ad, oaextend, reduction );

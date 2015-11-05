@@ -434,6 +434,8 @@ int main ( int argc, char* argv[] )
 		if (1) {
 		int ii = opt.getIntValue ( 'i', 1 );
 		array_link al = exampleArray(ii, 1);
+		
+		al.reduceDOP();
 		//al=al.randomperm();
 		al=al.randomcolperm();
 		
