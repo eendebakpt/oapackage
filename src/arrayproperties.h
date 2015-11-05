@@ -45,7 +45,7 @@ double Aefficiency(const array_link &al, int verbose=0);
 double Eefficiency(const array_link &al, int verbose=0);
 
 /// calculate various A-efficiencies
-std::vector<double> Aefficiencies(const array_link &al, int verbose=1);
+std::vector<double> Aefficiencies(const array_link &al, int verbose=0);
 
 
 #ifdef FULLPACKAGE

@@ -414,6 +414,11 @@ int main ( int argc, char* argv[] )
 	opt.processCommandArgs ( argc, argv );
 
 
+			int randvalseed = opt.getIntValue ( 'r', 1 );
+
+				srand ( randvalseed );
+
+				
 	print_copyright();
 	//cout << system_uname();
 	setloglevel ( NORMAL );
@@ -426,6 +431,41 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+		if (1) {
+		int ii = opt.getIntValue ( 'i', 1 );
+		array_link al = exampleArray(ii, 1);
+		//al=al.randomperm();
+		al=al.randomcolperm();
+		
+		arraydata_t arrayclass = arraylink2arraydata(al);
+		array_transformation_t trans ( &arrayclass );
+		trans.randomizecolperm();
+		trans.randomizerowperm();
+		trans.randomize();
+		al=trans.apply(al);
+
+	
+		
+		array_link alr = al.reduceDOP();
+		
+		
+		array_transformation_t at = reductionDOP(al, 1);
+		array_link alr2 = at.apply(al);
+		
+//alr2 = at.inverse().apply(al);
+
+		al.showarraycompact();
+		printf("----\n");
+		alr.showarraycompact();
+		printf("----\n");
+		alr2.showarraycompact();
+		
+		if (alr==alr2)
+			printf("arrays equal!\n");
+		else
+			printf("arrays unequal!\n");
+	return 0;	
+	}
 	
 	if (1) {
 		int ii = opt.getIntValue ( 'i', 1 );

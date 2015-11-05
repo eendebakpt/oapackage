@@ -238,14 +238,14 @@ endmacro()
 ############### Programs ################################
   
   
-set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter pareto_example )
+set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example )
 set(progsextend )
 
 if(OAEXTEND)
   list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oa_depth_extend oaextendA oareduceDOP oaclustergather)
+  list(APPEND progs oatest oa_depth_extend oaextendA oaconference  oaclustergather)
 endif()
    
 if (WIN32)

@@ -1554,7 +1554,7 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 		printf ( "calculateParetoEvenOdd: writing arrays to file %s\n", outfile );
 	if (verbose>=3)
 	{
-		printf ( "calculateParetoEvenOdd: afmode % (TEXT %d)\n", afmode, ATEXT );
+		printf ( "calculateParetoEvenOdd: afmode %d (TEXT %d)\n", afmode, ATEXT );
 		
 	}
 

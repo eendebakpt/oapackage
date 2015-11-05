@@ -829,6 +829,14 @@ array_link array_link::randomperm() const
 	return trans.apply ( *this );
 }
 
+array_link array_link::randomcolperm() const
+{
+	arraydata_t arrayclass = arraylink2arraydata ( *this );
+	array_transformation_t trans ( &arrayclass );
+	trans.randomizecolperm();
+	return trans.apply ( *this );
+}
+
 
 /** Return example array */
 array_link exampleArray ( int idx, int verbose )

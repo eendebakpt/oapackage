@@ -55,7 +55,8 @@ static object_pool< LMC_static_struct_t > staticDataPool;
 
 
 #ifdef OADEBUG
-int getGlobalStaticNumber(LMC_static_struct_t * p) {
+int getGlobalStaticNumber ( LMC_static_struct_t * p )
+{
 	return p->id; //staticDataPool.id(p);
 }
 #endif
@@ -64,14 +65,14 @@ LMC_static_struct_t * getGlobalStatic()
 {
 #ifdef NOREUSE
 	LMC_static_struct_t *pp = new LMC_static_struct_t();
-	pp->id = 100*omp_get_thread_num() + int( random()% 40 );
-return pp;
-	#endif
-	
-	#ifdef OADEBUGMORE
-	staticDataPool.verbose=1; 
+	pp->id = 100*omp_get_thread_num() + int ( random() % 40 );
+	return pp;
 #endif
-	
+
+#ifdef OADEBUGMORE
+	staticDataPool.verbose=1;
+#endif
+
 	LMC_static_struct_t *p = 0;
 // printfd("enter critical: %d\n", omp_get_thread_num() );
 	#pragma omp critical
@@ -88,7 +89,7 @@ void releaseGlobalStatic ( LMC_static_struct_t *p )
 {
 #ifdef NOREUSE
 	delete p;
-return;
+	return;
 #endif
 
 //printfd("releaseGlobalStatic: enter critical: %d\n", omp_get_thread_num() );
@@ -122,9 +123,9 @@ LMC_static_struct_t * getGlobalStaticIndexed ( int n )
 	//return &globalStatic;
 
 	if ( verbose )
-		printf ( "getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size() );
+		printf ( "getGlobalStatic: n %d, pool size %ld\n", n, ( long ) globalStaticPool.size() );
 	if ( n>= ( int ( globalStaticPool.size() ) ) ) {
-		printf ( "  allocating new element in globalStaticPool: n %d, pool size %ld\n", n, (long) globalStaticPool.size() );
+		printf ( "  allocating new element in globalStaticPool: n %d, pool size %ld\n", n, ( long ) globalStaticPool.size() );
 		size_t psize = globalStaticPool.size();
 		//globalStaticPool.resize(n+1);
 		for ( int jj=psize; jj<=n; jj++ ) {
@@ -465,7 +466,7 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation ( const dyndata_t *dyndata
 	if ( symmetries[n].size() % 500000 == 0 ) {
 		int nrows=symmetries[n][0].rowperm->size();
 
-		printf ( "LMCreduction_t::storeSymmetryPermutation: stored permutation %ld for %d cols\n", (long)symmetries[n].size(), n );
+		printf ( "LMCreduction_t::storeSymmetryPermutation: stored permutation %ld for %d cols\n", ( long ) symmetries[n].size(), n );
 		long es=0;
 		for ( int i=0; i< ( int ) symmetries.size(); i++ ) {
 			es+= nrows*sizeof ( rowindex_t ) *symmetries[i].size()  + symmetries[i].size() *sizeof ( colindex_t ) *n;
@@ -1541,11 +1542,11 @@ lmc_t LMCreduce_root_level_perm ( array_t const *original, const arraydata_t* ad
 			// TODO: is this valid if the root is not properly sorted?
 			// 	this assumes that after the LMC_root_sort the root is already in blocks
 			dyndatatmp.rowsort[rootrowperms[l][k]].r=rowsort[k].r;
-			
+
 #ifdef OADEBUG
-			if (dyndatatmp.rowsort[rootrowperms[l][k]].r >= ad->N) {
-				printfd("error with rowsort values");
-			exit(0);	
+			if ( dyndatatmp.rowsort[rootrowperms[l][k]].r >= ad->N ) {
+				printfd ( "error with rowsort values" );
+				exit ( 0 );
 			}
 #endif
 		}
@@ -1682,8 +1683,8 @@ void clear_fracs()
 	nfrac2=0;
 }
 
-inline int fastJupdateValue(rowindex_t N, carray_t *tmpval)
-{	
+inline int fastJupdateValue ( rowindex_t N, carray_t *tmpval )
+{
 	int jval=0;
 	for ( rowindex_t r=0; r<N; r++ ) {
 		//tmpval[r] %= 2; jval += tmpval[r];
@@ -1702,7 +1703,7 @@ inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const
 		carray_t *cp = array+N*pp[i];
 		for ( rowindex_t r=0; r<N; r++ ) {
 			tmp[r]+=cp[r];
-			//tmp[r] ^= cp[r]; 
+			//tmp[r] ^= cp[r];
 		}
 	}
 
@@ -1713,20 +1714,20 @@ inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const
 *
 * We assume the array has values 0 and 1
 */
-int fastjX( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
+int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
 {
 	//carray_t *x = ar.array;
 	int jval=0;
 
 	//const array_t **cp = new const array_t* [J];
 	const array_t* cp[MAXCOLS];
-	
+
 	for ( int i=0; i<J; i++ )
 		cp[i]=array+N*pp[i];
 
 	//colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
 
-	//FIXME2: implement cache system 
+	//FIXME2: implement cache system
 	// OPTIMIZE: change order of loops (with cache for tmp variable)
 	for ( rowindex_t r=0; r<N; r++ ) {
 		array_t tmp=0;
@@ -1753,13 +1754,13 @@ int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *p
 {
 	array_t tmpval[MAXROWS];
 
-	#ifdef OADEBUG
-		assert(N<=MAXROWS);
-	#endif
+#ifdef OADEBUG
+	assert ( N<=MAXROWS );
+#endif
 
-	std::fill_n(tmpval, N, 0);
+	std::fill_n ( tmpval, N, 0 );
 	//	memset(tmpval, 0, N*sizeof(array_t));
-	fastJupdate (array, N, J, pp, tmpval);
+	fastJupdate ( array, N, J, pp, tmpval );
 	int jval=0;
 	for ( rowindex_t r=0; r<N; r++ ) {
 		//tmpval[r] %= 2; jval += tmpval[r];
@@ -2082,13 +2083,15 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 		printf ( "jj45split: init comb " );
 		print_perm ( comb, 5 );
 	}
-	
-	// FIXME: replace this block with functions 
-	
+
+	// FIXME: replace this block with functions
+
 	/* calculate the J4 values */
 	//colperm_t lc = new_comb_init<colindex_t> ( 4 );	colperm_t lc2 = new_comb_init<colindex_t> ( 4 );
-	colindex_t lc[4]; init_perm(lc, 4);
-	colindex_t lc2[4]; init_perm(lc2, 4);
+	colindex_t lc[4];
+	init_perm ( lc, 4 );
+	colindex_t lc2[4];
+	init_perm ( lc2, 4 );
 	for ( size_t i=0; i<5; i++ ) {
 		//printf("  comb %d: ", i); print_perm(lc, 4);
 		perform_inv_perm ( comb, lc2, 4, lc );
@@ -2187,7 +2190,7 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 	//ret = LMCreduce_root_level_perm_full ( array, &ad, &dyndata,&reduction, tmpStatic );
 
 
-	//   adfix.complete_arraydata_splitn(5); 
+	//   adfix.complete_arraydata_splitn(5);
 
 	std::vector<int> splits = symmetrygroup2splits ( sg, ad.ncols, verbose );
 
@@ -2259,23 +2262,23 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 {
 
 	double ww[6];
-	
+
 #ifdef OADEBUG
-		assert(N<=MAXROWS);
+	assert ( N<=MAXROWS );
 #endif
 	array_t tmpval[MAXROWS];
-	
-	std::fill(tmpval, tmpval+N, 0);	
-	fastJupdate (array, N, jj, comb, tmpval);
-	ww[0]=abs( fastJupdateValue(N, tmpval) );	
-	
+
+	std::fill ( tmpval, tmpval+N, 0 );
+	fastJupdate ( array, N, jj, comb, tmpval );
+	ww[0]=abs ( fastJupdateValue ( N, tmpval ) );
+
 //	colindex_t comb[5];
 	for ( size_t i=0; i<5; i++ ) {
 //		comb[0]=i;
 		int ii = 5-i-1;
-	fastJupdate (array, N, 1, comb+ii, tmpval);
-	ww[i+1]=abs( fastJupdateValue(N, tmpval) );
-	fastJupdate (array, N, 1, comb+ii, tmpval); // OPTIMIZE: eliminate swap back here
+		fastJupdate ( array, N, 1, comb+ii, tmpval );
+		ww[i+1]=abs ( fastJupdateValue ( N, tmpval ) );
+		fastJupdate ( array, N, 1, comb+ii, tmpval ); // OPTIMIZE: eliminate swap back here
 	}
 
 	if ( dosort ) {
@@ -2300,8 +2303,10 @@ jj45_t jj45val_orig ( carray_t *array, rowindex_t N, int jj, const colperm_t com
 	else
 		ww[0]=j5val;
 
-	colindex_t lc[4]; init_perm(lc, 4);
-	colindex_t lc2[4]; init_perm(lc2, 4);
+	colindex_t lc[4];
+	init_perm ( lc, 4 );
+	colindex_t lc2[4];
+	init_perm ( lc2, 4 );
 	for ( size_t i=0; i<5; i++ ) {
 		//printf("  comb %d: ", i); print_perm(lc, 4);
 		perform_inv_perm ( comb, lc2, 4, lc );
@@ -2445,7 +2450,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 			printf ( "--\n" );
 			print_array ( "al.array:\n", array,  al.n_rows,5 );
 		}
-//        nc=1; // 
+//        nc=1; //
 	}
 
 	// loop over all possible combinations for the first jj columns
@@ -2551,7 +2556,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 			retx= jj45split ( array, ad.N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction );
 
 			if ( retx==LMC_LESS ) {
-				// NOTE: is this needed? 
+				// NOTE: is this needed?
 				//reduction.updateLastCol(4);
 			}
 
@@ -2656,7 +2661,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 		// continue;
 		if ( dverbose ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: symmetryset i %d: %ld, dt %.3f [ms]\n", i, (long)reductionsub.symms.symmetries[i].size(), 1e3*dt );
+			printf ( "LMCcheckSymmetryMethod: symmetryset i %d: %ld, dt %.3f [ms]\n", i, ( long ) reductionsub.symms.symmetries[i].size(), 1e3*dt );
 		}
 		// split column groups
 		std::vector<int> splits; // = symmetrygroup2splits(sg, ad.ncols, verbose);
@@ -2750,7 +2755,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 		// break;
 		if ( dverbose ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: colcombs i %d: %ld, dt %.1f [ms]\n", i, (long)reductionsub.symms.colcombs[i].size(), 1e3* dt );
+			printf ( "LMCcheckSymmetryMethod: colcombs i %d: %ld, dt %.1f [ms]\n", i, ( long ) reductionsub.symms.colcombs[i].size(), 1e3* dt );
 //    printf("original check: %d, time: %.3f [ms]\n", (int)r, 1e3*dt);
 
 		}
@@ -2824,7 +2829,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 	for ( int i=ad.strength; i<ad.ncols+1-1; i++ ) {
 		if ( dverbose>=2 ) {
 			dt =get_time_ms()-t0;
-			printf ( "LMCcheckSymmetryMethod: colperms i %d: %ld, dt %.1f [ms]\n", i, (long)reductionsub.symms.colperms[i].size(), 1e3*dt );
+			printf ( "LMCcheckSymmetryMethod: colperms i %d: %ld, dt %.1f [ms]\n", i, ( long ) reductionsub.symms.colperms[i].size(), 1e3*dt );
 //    printf("original check: %d, time: %.3f [ms]\n", (int)r, 1e3*dt);
 
 		}
@@ -3441,10 +3446,9 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 	if ( reduction->staticdata==0 ) {
 		tpp = getGlobalStaticOnePointer();
 #ifdef OADEBUG
-		printfd("LMCreduce: acquired LMC_static_struct_t from single global object\n");
+		printfd ( "LMCreduce: acquired LMC_static_struct_t from single global object\n" );
 #endif
-	}
-	else {
+	} else {
 		// printf("LMCreduce: using LMC_static_struct_t from reduction!\n");
 		tpp = ( reduction->staticdata );
 		//printf("here...\n");
@@ -3573,8 +3577,8 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 			//newdyndata.col=col+k;
 			//dyndata_t newdyndata = dyndata_t ( dyndata );
 			//newdyndata = *dyndata;
-			newdyndata.copydata(*dyndata);
-			
+			newdyndata.copydata ( *dyndata );
+
 			newdyndata.col=newdyndata.col+k;
 
 			perform_inv_perm ( dyndata->colperm, colperm_p[col], ad->ncols, localcolperm );
@@ -3801,6 +3805,99 @@ lmc_t reduceCanonicalGWLP2 ( const array_link &al, const arraydata_t &ad, const 
 }
 
 
+
+
+/// add mixed values
+std::vector< GWLPvalue > mixedProjGWLP ( const std::vector< GWLPvalue > dopgwp, const arraydata_t &ad, int verbose = 0 )
+{
+	std::vector< GWLPvalue > xx;
+	int nc = dopgwp.size();
+	for ( int i=0; i<nc; i++ ) {
+		GWLPvalue w = dopgwp[i];
+		std::vector<double> t;
+		t.push_back ( -ad.s[i] );
+		t.insert ( t.end(), w.v.begin(), w.v.end() );
+
+		if ( verbose>=2 ) {
+			printf ( "reduceArraysGWLP: mixed array: column %d\n   ", i );
+			display_vector<double> ( t );
+			printf ( "\n" );
+		}
+		xx.push_back ( t );
+	}
+
+
+	if ( verbose>=3 ) {
+		printf ( "old indexsort:\n" );
+		//is.show();
+	}
+
+	return xx;
+}
+
+array_transformation_t reductionDOP ( const array_link &al, int verbose )
+{
+	int strength=al.strength();
+
+
+	arraydata_t ad =arraylink2arraydata ( al );
+
+	std::vector< GWLPvalue > dopgwp = projectionGWLPs ( al );
+	indexsort is ( dopgwp );
+
+
+	std::vector< GWLPvalue > dofvalues = dopgwp;
+	if ( ad.ismixed() ) {
+		dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
+
+	}
+
+	std::vector<DOFvalue> sdofvalues = is.sorted ( dofvalues );
+
+	if ( verbose>=2 ) {
+		printf ( "  delete-1-factor values sorted: " );
+		display_vector< DOFvalue > ( sdofvalues );
+		std::cout << endl;
+	}
+
+	symmetry_group sg ( sdofvalues, 0 );
+	if ( verbose>=2 )
+		sg.show();
+
+	array_transformation_t at ( &ad );
+	at.setcolperm ( is.indices );
+
+	array_link alf ( al, is.indices );
+
+	if ( verbose ) {
+		printf ( "is sorting: " );
+		display_vector< int > ( is.indices );
+		printf ( "\n" );
+
+	}
+	// NOTE: since the array was re-ordered, the symmetry group has to be re-ordered
+	ad.set_colgroups ( sg );
+
+	OAextend oaextend;
+	oaextend.setAlgorithm ( OAextend::getPreferredAlgorithm ( ad ) );
+	oaextend.setAlgorithm ( MODE_ORIGINAL );
+
+	LMCreduction_t reduction ( &ad );
+
+	array_link lm ( al );
+
+	if ( verbose>=3 )
+		ad.show ( 2 );
+
+	reduction.mode=OA_REDUCE;
+	reduction.init_state=COPY;
+	{
+		reduction.setArray ( alf );
+	}
+
+	lmc_t ret = LMCcheck ( alf, ad, oaextend, reduction );
+	return ( * ( reduction.transformation ) ) * at ;
+}
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int verbose, int dopruning, int strength, int dolmc )
 {
@@ -3814,20 +3911,21 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 	for ( size_t i=0; i< ( size_t ) arraylist->size(); i++ ) {
 		if ( verbose>=2 )
 			printf ( "reduceArrays: array %d/%d\n", ( int ) i, ( int ) arraylist->size() );
-		array_link al = arraylist->at ( i );
+		const array_link al = arraylist->at ( i );
 		// create arraydatya
 		int ncols=al.n_columns;
 		//std::vector<int> s(ncols); for(int ik=0; ik<ncols; i++) s[ik]=2;
 
 		arraydata_t ad = arraylink2arraydata ( al, 0, strength );
 
+
 		if ( verbose>=4 ) {
-			std::vector<double> gwp = GWLP ( arraylist->at ( i ) );
+			std::vector<double> gwp = GWLP ( al );
 			cout << "GMA: ";
 			printf_vector<double> ( gwp, "%.3f " );
 			cout << endl;
 		}
-		std::vector< GWLPvalue > dopgwp = projectionGWLPs ( arraylist->at ( i ) );
+		std::vector< GWLPvalue > dopgwp = projectionGWLPs ( al );
 
 		if ( verbose>=3 ) {
 			printf ( "  delete-1 GWP sequence:        " );
@@ -3864,23 +3962,8 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 		if ( ad.ismixed() ) {
 			printf ( "reduceArraysGWLP: warning array is mixed!\n" );
 
-			std::vector< GWLPvalue > xx;
-			for ( int i=0; i<al.n_columns; i++ ) {
-				GWLPvalue w = dopgwp[i];
-				std::vector<double> t;
-				t.push_back ( -ad.s[i] );
-				t.insert ( t.end(), w.v.begin(), w.v.end() );
-
-				if ( verbose>=2 ) {
-					printf ( "reduceArraysGWLP: mixed array: column %d\n   ", i );
-					display_vector<double> ( t );
-					printf ( "\n" );
-				}
-				xx.push_back ( t );
-			}
-
-			dofvalues=xx;
-
+			dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
+			
 			if ( verbose>=3 ) {
 				printf ( "old indexsort:\n" );
 				is.show();
@@ -3948,9 +4031,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 		if ( verbose>=3 )
 			ad.show ( 2 );
 
-		//lmc_t rx = LMCcheck(alf, ad, oaextend, reduction, lm, verbose);
-		//lmc_t rx = reduceCanonicalGWLP ( alf, ad, oaextend, reduction, lm, verbose );
-
+		
 		reduction.mode=OA_REDUCE;
 		reduction.init_state=COPY;
 		{

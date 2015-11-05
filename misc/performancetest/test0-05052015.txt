@@ -1,0 +1,58 @@
+OA performance testing
+OAlib: version 2.0.0
+Orthogonal Array Package 2.0.0
+Compile date: May  5 2015 09:49:07
+array_t type: sizeof(array_t) 2
+Eigen version: 3.2.1
+eigen: JacobiSVD threshold 2.22045e-16
+Compiler: __VERSION__ 4.8.2
+Compiler: __GNUC_VERSION__ 40802
+Compiler: __INTEL_COMPILER none
+Optimization: __OPTIMIZE__
+Compile time options: OACHECK, FREQELEM, USE_SMALLSTEP, USE_TPLUSCOLUMN, SYMMBLOCKS, 
+columns sorting method: flipSort
+
+System:
+  Python: 2.7.6 (default, Mar 22 2014, 22:59:56)  [GCC 4.8.2]
+  Machine: Linux marmot 3.13.0-41-generic #70-Ubuntu SMP Tue Nov 25 14:40:34 UTC 2014 x86_64 x86_64
+
+Running tests:
+
+runExtend: N=48, k=6, t=3
+runExtend: N=32, k=6, t=3
+runExtend: N=16, k=16, t=2
+runExtend: N=96, k=8, t=4
+total time 3.275 [s]
+extra testing cases
+runExtend: N=24, k=5, t=2
+runExtend: N=18, k=9, t=2
+runExtend: N=16, k=6, t=2
+Orthogonal Arrays 2.0.0
+For more details see the files README.txt and LICENSE.txt
+oaanalyse: reading 1 file(s)
+oaanalyse: openmp 1
+file /home/eendebakpt/misc/oa/oacode/testdata/test64.oa
+  arrayfile_t::arrayfile_t: legacy file format, file /home/eendebakpt/misc/oa/oacode/testdata/test64.oa!
+readarrayfile: loading arrays: 0/1937
+   read 1937 array(s) (size 64 15)
+analyseArrays (j-values): 1937 arrays, jj 4
+  calculation (j-filter) for array 0/1937
+  calculation (rank, Defficiency) for array 0/1937
+  statistics calculation (GWLP) for array 0/1937
+pytest5: running oaanalyse
+runExtend: N=32, k=10, t=3
+runExtend: N=32, k=10, t=3
+case 32.2-2-2-2-2-2-2-2-2-2: 2-level method 1.47 [s] -> 0.98 [s]
+-----
+
+Results:
+
+runExtend(N=48, k=6, t=3, l=2): time 0.10 [s]
+runExtend(N=32, k=6, t=3, l=2): time 0.13 [s]
+runExtend(N=16, k=16, t=2, l=2): time 2.73 [s]
+runExtend(N=96, k=8, t=4, l=2): time 3.27 [s]
+runExtend(N=24, k=5, t=2, l=[3, 2]): time 3.34 [s]
+runExtend(N=18, k=9, t=2, l=[2, 3]): time 3.36 [s]
+Total time: 3.275 [s], 3.358 [s], 4.790 [s]
+   should be of order 4.4 [s], 4.6 [s], 5.9 [s] (woelmuis)
+   should be of order 3.2 [s], 3.3 [s], 4.7 [s] (marmot)
