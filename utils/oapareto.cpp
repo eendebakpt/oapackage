@@ -37,6 +37,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "output", 'o' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "format", 'f' );
+	opt.setOption ( "paretomethod" );
 	opt.setFlag ( "test", 't' );
 
 	opt.addUsage ( "Orthonal Array Analyse: convert set of arrays to set of Pareto optimal designs" );
@@ -62,7 +63,7 @@ int main ( int argc, char* argv[] )
 		outputprefix = opt.getValue ( 'o' );
 
 	int verbose = opt.getIntValue ( 'v', 1 );
-
+int paretoj5 = opt.getIntValue ( "paretomethod", 0 );
     std::string format = opt.getStringValue('f', "BINARY");
     arrayfile::arrayfilemode_t afmode = arrayfile_t::parseModeString(format);
 
@@ -86,57 +87,11 @@ int main ( int argc, char* argv[] )
 			std::cout << "   has " << nn << printfstring ( " array(s) (size %d %d)", nr, nc ) << std::endl;
 
 		}
-	calculateParetoEvenOdd ( infiles, outputprefix, verbose, afmode, nr, nc);
+	calculateParetoEvenOdd ( infiles, outputprefix, verbose, afmode, nr, nc, paretoj5);
 	
 
 	return 0;
 	
-	/*
-	arraylist_t *arraylist = new arraylist_t;
-	
-		for ( int i = 0 ; i < opt.getArgc() ; i++ ) {
-		if ( verbose )
-			std::cout << "file " <<  opt.getArgv ( i ) << std::endl ;
-		int n = readarrayfile ( opt.getArgv ( i ), arraylist );
-
-		arrayfileinfo ( opt.getArgv ( i ), nn, nr, nc );
-		if ( verbose )
-			std::cout << "   read " << n << printfstring ( " array(s) (size %d %d)", nr, nc ) << std::endl;
-	}
-	
-	Pareto<mvalue_t<long>,long> pset;
-	pset.verbose=verbose;
-
-	for ( size_t i=0; i<arraylist->size(); i++ ) {
-		if ( verbose>=2 || ( ( i%1000==0 ) && verbose>=1 ) ) {
-			printf ( "oapareto: array %ld/%ld\n", i, arraylist->size() );
-		}
-		if ( ( ( i%2000==0 ) && verbose>=1 ) ) {
-			pset.show ( 1 );
-		}
-		const array_link &al = arraylist->at ( i );
-		parseArrayPareto ( al, ( long ) i, pset, verbose );
-
-	}
-
-	if ( verbose )
-		printf ( " %ld arrays -> %d pareto values, %d pareto arrays \n", arraylist->size(), pset.number(),pset.numberindices() );
-	pset.show ( verbose );
-
-	std::vector<long> idx = pset.allindices();
-
-	arraylist_t pp = selectArrays ( *arraylist, idx );
-	//  printf(" %zu arrays -> %zu pareto \n", arraylist->size(), pp.size() );
-
-	// write to disk
-	if ( outputprefix!=0 ) {
-		if ( verbose )
-			printf ( "oapareto: writing arrays to file %s\n", outputprefix );
-		writearrayfile ( outputprefix, &pp, ABINARY );
-	}
-
-	delete arraylist;
-*/
 	return 0;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

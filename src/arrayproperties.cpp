@@ -1492,12 +1492,18 @@ double CL2discrepancy ( const array_link &al )
 
 #ifdef FULLPACKAGE
 
+typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_link &, int ) ;
+
 /** Calculate the Pareto optimal arrays from a list of array files
 
     Pareto optimality is calculated according to (rank; A3,A4; F4)
 */
-void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols )
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, int paretoj5)
 {
+	pareto_cb paretofunction = calculateArrayPareto<array_link>;
+	if (paretoj5)
+		paretofunction = calculateArrayParetoJ5<array_link>;
+
 	Pareto<mvalue_t<long>,array_link> pset;
 
 	long ntotal=0;
@@ -1518,7 +1524,7 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 				al= af.readnext();
 				ntotal++;
 			}
-			Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
+			Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3 );
 
 			if (verbose>=2) {
 			printf("values: ");

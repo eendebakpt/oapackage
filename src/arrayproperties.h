@@ -111,11 +111,13 @@ int arrayrank(const array_link &al);
 
     Pareto optimality is calculated according to (rank; A3,A4; F4)
 */
-void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose=1, arrayfilemode_t afmode=ABINARY, int nrows=-1, int ncols=-1 );
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose=1, arrayfilemode_t afmode=ABINARY, int nrows=-1, int ncols=-1, int paretoj5 = 0 );
 
 
 // Calculate the Pareto optimal desings from a list of arrays (rank; A3,A4; F4)
 Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose);
+
+
 
 template <class IndexType>
 /** Add array to list of Pareto optimal arrays
@@ -176,6 +178,28 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
 
   return p;
   
+}
+
+
+template <class IndexType>
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5 ( const array_link &al, int verbose  )
+{
+  typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayPareto<IndexType> ( al, verbose);
+  std::vector<int> j5 = al.Jcharacteristics(5);
+  
+  int j5max = vectormax ( j5, 0 );
+  
+  int v1 = (j5max==al.n_rows);
+  int v2 = 1-v1;
+  
+  if (verbose>=3) {
+    printf("calculateArrayParetoJ5: j5max %d: %d %d\n", j5max, v1, v2);
+  }
+  
+  p.push_back(v1);
+  p.push_back(v2);
+  
+  return p;
 }
 
 template <class IndexType>

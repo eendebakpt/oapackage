@@ -142,8 +142,12 @@ void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vect
 	fclose ( fid );
 }
 
-void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, const arraylist_t & arraylist, int jj, int verbose )
+
+typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_link &, int ) ;
+
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose )
 {
+	
 	//#pragma omp parallel for
 	#pragma omp parallel for num_threads(8)
 	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
@@ -159,7 +163,7 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, const arraylis
 		const array_link &al = arraylist.at ( i );
 
 		//parseArrayPareto ( al, al, pset, verbose );
-		Pareto<mvalue_t<long>, array_link >::pValue p = calculateArrayPareto<array_link> ( al, verbose>=3 );
+		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3 );
 
 		#pragma omp critical
 		{
@@ -193,6 +197,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "cleanrun" );
 	opt.setOption ( "config", 'c' );
 	opt.setOption ( "nsplit0" );
+	opt.setOption ( "paretomethod" );
 	opt.setOption ( "nsplit1" );
 	opt.setOption ( "nsplit2" );
 	opt.setOption ( "nparetodiff" );	// allow difference in pareto files for .oa files and numbers file
@@ -214,6 +219,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " --nsplit1 [NUMBER]		Number of split files at level 1" );
 	opt.addUsage ( " --nsplit2 [NUMBER]		Number of split files at level 2" );
 	opt.addUsage ( " --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process" );
+	opt.addUsage ( " --paretomethod [0, 1]		If 1 add J5 to Pareto criterium" );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) " );
 	opt.processCommandArgs ( argc, argv );
 
@@ -240,12 +246,18 @@ int main ( int argc, char* argv[] )
 	int split1 = opt.getIntValue ( "split1", -1 );
 	int nsplit0 = opt.getIntValue ( "nsplit0", -1 );
 	int nsplit1 = opt.getIntValue ( "nsplit1", -1 );
+	int paretomethod = opt.getIntValue ( "paretomethod", 0 );
 	int allowparetodiff = opt.getIntValue ( "nparetodiff", 0 );
 	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
 	int kmin = opt.getIntValue ( "kmin", 9 );
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
+	pareto_cb paretofunction = calculateArrayPareto<array_link>;
+	
+	if (paretomethod)
+		paretofunction = calculateArrayParetoJ5<array_link>;
+	
     arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString(opt.getStringValue('f', "BINARY"));
 	
 	arraydata_t *adata = readConfigFile ( configfile );
@@ -394,7 +406,7 @@ int main ( int argc, char* argv[] )
 			}
 
 			const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
-			addArraysToPareto ( pset, arraylist, jj, verbose );
+			addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
 
 			if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit[level]-1 ) ) && verbose>=1 ) ) {
 				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
