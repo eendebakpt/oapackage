@@ -253,7 +253,7 @@ int main ( int argc, char* argv[] )
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
-	pareto_cb paretofunction = calculateArrayPareto<array_link>;
+	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
 	
 	if (paretomethod)
 		paretofunction = calculateArrayParetoJ5<array_link>;

@@ -115,7 +115,7 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 
 
 // Calculate the Pareto optimal desings from a list of arrays (rank; A3,A4; F4)
-Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose);
+Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose, int paretomethod = 0);
 
 
 
@@ -129,7 +129,7 @@ template <class IndexType>
  * 3) F4 (?? is better, sum of elements is constant)
  * 
  * */
-inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( const array_link &al, int verbose  )
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRankFA ( const array_link &al, int verbose  )
 {
    int N = al.n_rows;
    //int k = al.n_columns;
@@ -184,7 +184,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto ( 
 template <class IndexType>
 inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5 ( const array_link &al, int verbose  )
 {
-  typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayPareto<IndexType> ( al, verbose);
+  typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayParetoRankFA<IndexType> ( al, verbose);
   std::vector<int> j5 = al.Jcharacteristics(5);
   
   int j5max = vectormax ( j5, 0 );
@@ -214,7 +214,7 @@ template <class IndexType>
  * */
 inline void parseArrayPareto ( const array_link &al, IndexType i, Pareto<mvalue_t<long>,IndexType> & pset, int verbose )
 {
-   typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayPareto<IndexType>(al, verbose);
+   typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayParetoRankFA<IndexType>(al, verbose);
 
    // add the new tuple to the Pareto set
    pset.addvalue ( p, i );

@@ -1498,10 +1498,10 @@ typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_lin
 
     Pareto optimality is calculated according to (rank; A3,A4; F4)
 */
-void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, int paretoj5)
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, int paretomethod)
 {
-	pareto_cb paretofunction = calculateArrayPareto<array_link>;
-	if (paretoj5)
+	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
+	if (paretomethod)
 		paretofunction = calculateArrayParetoJ5<array_link>;
 
 	Pareto<mvalue_t<long>,array_link> pset;
@@ -1571,8 +1571,12 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 }
 
 
-Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose )
+Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose, int paretomethod )
 {
+	pareto_cb paretofunction = calculateArrayParetoRankFA<long>;
+	if (paretomethod)
+		paretofunction = calculateArrayParetoJ5<long>;
+
 	Pareto<mvalue_t<long>,long> pset;
 	pset.verbose=verbose;
 
@@ -1586,15 +1590,12 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
 		}
 		const array_link &al = arraylist.at ( i );
 
-		Pareto<mvalue_t<long>, long>::pValue p = calculateArrayPareto<long> ( al, verbose );
+		Pareto<mvalue_t<long>, long>::pValue p = paretofunction ( al, verbose );
 		#pragma omp critical
 		{
 			// add the new tuple to the Pareto set
 			pset.addvalue ( p, i );
 		}
-
-		//parseArrayPareto ( al, ( long ) i, pset, verbose );
-
 	}
 	return pset;
 }

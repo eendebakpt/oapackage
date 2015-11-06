@@ -438,7 +438,8 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
         fid.write(cmd)
         fid.close()
     else:
-        print('no logfile')
+        pass
+        #print('no logfile')
         #raise Exception('no logfile')
 
 
