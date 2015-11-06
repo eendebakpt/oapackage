@@ -14,6 +14,8 @@ from . Doptim import *
 # import scanf
 from . import scanf
 
+import numpy as np
+
 #%%
 
 def autodoctest():
@@ -43,15 +45,36 @@ def unittest(verbose=1):
             print('oapackage: unittest: error: array interface not working properly')
             
     arrayclass = oalib.arraylink2arraydata(al)
+
+    if verbose>=2:
+        print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
+    aa=oalib.Aefficiencies(al)
     if verbose >= 2:
         print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 
+    # DOP reduction
+    if verbose>=2:
+        print('unittest: test delete-one-factor GWLP reduction')
+    al = oalib.exampleArray(11, 1)
+    al2 = al.randomperm()
+        
+    alr=al.reduceDOP()    
+    al2r=al2.reduceDOP()    
+    if not al==al2:
+        print('error: DOP reduced arrays unequal!: %d'  % (al==al2) )
+
+    at = oalib.reductionDOP(al)
+    check=at.apply(al)==al.reduceDOP()  
+    if not check:
+        print('error: DOP reduction transformation is invalid')
+
     # test graphtools
     from . graphtools import oa2graph
-    tmp = oa2graph(al, arrayclass)
+    _ = oa2graph(al, arrayclass)
     return True
 
+#%%
 if __name__ == "__main__":
     """ Dummy main for oapackage """
     import doctest

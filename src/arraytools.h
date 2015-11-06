@@ -697,7 +697,7 @@ public:
 	/// Calculate F-values of a matrix
 	std::vector<int> Fvalues ( int jj ) const;
 
-	/// Calculate J-characteristics of matrix
+	/// Calculate J-characteristics of matrix (the values are signed)
 	std::vector<int> Jcharacteristics ( int jj=4 ) const;
 
 	/// Calculate the projective estimation capacity sequence

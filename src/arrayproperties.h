@@ -60,7 +60,7 @@ std::vector<double> PECsequence(const array_link &al, int verbose=0);
 /// Return the distance distribution of a design
 std::vector<double> distance_distribution(const array_link &al);
 
-/// Calculate J-characteristics of matrix
+/// Calculate J-characteristics of matrix (the values are signed)
 std::vector<int> Jcharacteristics(const array_link &al, int jj=4, int verbose=0);
 
 /** @brief calculate GWLP (generalized wordlength pattern)
