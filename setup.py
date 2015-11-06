@@ -18,6 +18,69 @@ import platform
 here = path.abspath(path.dirname(__file__))
 
 
+#%% 
+
+def checkZlib(verbose=0):
+    """ Check whether zlib is available 
+    
+    Code adapted from http://stackoverflow.com/questions/28843765/setup-py-check-if-non-python-library-dependency-exists    
+    """
+    ret_val=True
+    try:
+        import os
+        import distutils.ccompiler
+        import distutils.sysconfig
+        import tempfile
+        from distutils.errors import CompileError, LinkError
+    
+        # create test file...    
+        c_code = """
+            #include <zlib.h>
+            #include <stdio.h>
+        
+            int main(int argc, char* argv[])
+            {
+                printf("Hello zlib test...\\n");
+        
+                return 0;
+            }
+            """
+        tmp_dir = tempfile.mkdtemp(prefix = 'helloztest_')
+        bin_file_name = os.path.join(tmp_dir, 'helloz')
+        file_name = bin_file_name + '.c'
+        with open(file_name, 'w') as fp:
+            fp.write(c_code)
+                
+        # compile and link code
+        compiler = distutils.ccompiler.new_compiler()
+        assert isinstance(compiler, distutils.ccompiler.CCompiler)
+        distutils.sysconfig.customize_compiler(compiler)
+        
+        libraries=['z']
+        ret_val=True
+        try:
+              if verbose:
+                     print('checkZlib: compile and link')
+              compiler.link_executable(
+                    compiler.compile([file_name]), bin_file_name,   libraries=libraries, )
+        except CompileError as e:
+              if verbose:
+                     print('helloz compile error')
+              ret_val = False
+        except LinkError as e:
+              if verbose:
+                     print('helloz link error')
+              ret_val = False
+        except Exception as e:
+              if verbose:
+                     print('helloz  error')
+                     print(e)
+              ret_val = False
+    except Exception as e:
+        ret_val = False
+    
+    return ret_val
+
 #%% Hack to remove option for c++ code
 try:
 	# see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
@@ -126,9 +189,18 @@ else:
       prog_module = Extension(p, sources=sources+['utils/%s.cpp' % p],
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries )
       pm.append(prog_module)
-    
 
 oalib_module.extra_compile_args = ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
+    
+if checkZlib(verbose=0):
+  if platform.system()=='Windows':
+    pass
+  else:
+    oalib_module.extra_compile_args += ['-DUSEZLIB'] 
+    oalib_module.extra_link_args+=['-lz']
+else:
+  oalib_module.extra_compile_args = ['-DNOZLIB'] 
+    
 
 if platform.system()=='Windows':
 	oalib_module.extra_compile_args.append('-DWIN32')
@@ -154,8 +226,6 @@ print('find_packages: %s' % find_packages() )
 #print('swig_opts: %s' % str(swig_opts) )
 
 data_files=[]
-#data_files+=[('', ['oalib/oahelper.py'])]
-#data_files+=[('oalib', ['oalib/test.oa'])]
 #data_files+=[ ('', ['scripts/example_python_testing.py'])]
 
 scripts=['scripts/example_python_testing.py']

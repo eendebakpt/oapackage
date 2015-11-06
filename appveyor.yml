@@ -15,8 +15,8 @@ environment:
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
 
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.0"
+    - PYTHON: "C:\\Python33-x64"
+      PYTHON_VERSION: "3.3.5"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.1"
 
@@ -24,6 +24,10 @@ environment:
       PYTHON_VERSION: "3.4.3"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.1"
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.0"
+      PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.9"
