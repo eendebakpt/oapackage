@@ -100,7 +100,9 @@ after_test:
 
 artifacts:
   - path: dist\*
-
+  - path: **\oalib_wrap.cpp
+    name: swigwrapper
+  
 #on_success:
 #  - TODO: upload the content of dist/*.whl to a public wheelhouse
 

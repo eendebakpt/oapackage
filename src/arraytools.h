@@ -1742,8 +1742,8 @@ inline bool readbinheader ( FILE *fid, int &nr, int &nc )
 
 	double h[4];
 	int nn = fread ( h, sizeof ( double ), 4, fid );
-	nr=h[2];
-	nc=h[3];
+	nr=(int)h[2];
+	nc=(int)h[3];
 
 	//myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
 	bool valid=false;
