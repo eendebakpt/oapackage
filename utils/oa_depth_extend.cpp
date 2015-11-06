@@ -4,7 +4,7 @@
 
  oa_depth_extend: tool for testing new algorithms
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2015
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -58,7 +58,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "method", 'm' );
 	opt.setOption ( "writearrays", 'w' );
 	opt.setOption ( "maxarrays" );
-	opt.setOption("maxk", 'K');
+	opt.setOption ( "discardJ5" );
+	opt.setOption ( "maxk", 'K' );
 	opt.setOption ( "Avalue", 'A' );
 	opt.setFlag ( "coptions" );	/* print compile time options */
 	opt.setOption ( "logtime", 'Q' );
@@ -102,7 +103,6 @@ int main ( int argc, char* argv[] )
 	double time0=get_time_ms();
 
 	const char *oaconfigfile = "oaconfig.txt";
-	//const char *resultprefix;
 
 	if ( opt.getValue ( "oaconfig" ) !=NULL )
 		oaconfigfile = opt.getValue ( 'c' );
@@ -138,23 +138,24 @@ int main ( int argc, char* argv[] )
 	double Afinal = opt.getDoubleValue ( 'A', 0 );
 	int kfinal = opt.getIntValue ( 'k', 7 );
 	int splitcalc = opt.getFlag ( "split" );
+	int discardJ5 = opt.getIntValue ( "discardJ5", -1 ); // discard arrays with J5==N with size larger then specfied number of columns
+
 	int maxk = opt.getIntValue ( "maxk", 1000 );
 	int writedeptharrays = opt.getIntValue ( 'w', 1 );
 	long maxarrays = opt.getIntValue ( "maxarrays", 2047483000 );
 
-		int hack = opt.getIntValue ( 'H', 0 );
+	int hack = opt.getIntValue ( 'H', 0 );
 
 #ifdef OADEBUG
 	if ( hack ) {
-	printfd("setting hack to on\n");
-	globalHackOption(0, 1);
+		printfd ( "setting hack to on\n" );
+		globalHackOption ( 0, 1 );
+	} else {
+		globalHackOption ( 0, 0 );
 	}
-	else {
-	globalHackOption(0, 0);
-	}
-	printfd("###### hack: %d\n", globalHackOption(0) );
+	printfd ( "###### hack: %d\n", globalHackOption ( 0 ) );
 #endif
-	
+
 	int doextend = opt.getFlag ( 'e' );
 	int dopruning = opt.getFlag ( 'p' );
 	j5structure_t j5structure = ( j5structure_t ) opt.getIntValue ( 'j', J5_45 );
@@ -165,12 +166,12 @@ int main ( int argc, char* argv[] )
 		fprintf ( stderr, "oa_depth_extend: could not read config file" );
 		exit ( 1 );
 	}
-	if (maxk<adfull->ncols) {
-		if (maxk<=5){
-			printf("oa_depth_extend: maxk should be >= 5\n");
-		return 1;	
+	if ( maxk<adfull->ncols ) {
+		if ( maxk<=5 ) {
+			printf ( "oa_depth_extend: maxk should be >= 5\n" );
+			return 1;
 		}
-		arraydata_t *adfullr = new arraydata_t(adfull, maxk);
+		arraydata_t *adfullr = new arraydata_t ( adfull, maxk );
 		delete adfull;
 		adfull = adfullr;
 	}
@@ -206,15 +207,10 @@ int main ( int argc, char* argv[] )
 
 	if ( verbose )
 		printf ( "oa_depth_extend: initialization phase (splitcalc %d)\n", splitcalc );
-	depth_extend_t dextend ( adfull );
+	depth_extend_t dextend ( adfull, 10, discardJ5 );
 	dextend.oaextend = oaextendx;
 	dextend.logtime= opt.getDoubleValue ( "logtime", 240 );
 	dextend.setNarraysMax ( maxarrays );
-
-
-	//((arraydata_t *)(dextend.ad))->ncols = 11;	// HACK
-
-//printf("logtime %f\n", dextend.logtime);
 
 	int initcolumn=adfull->strength+1;
 	if ( arraylist->size() >0 )
@@ -224,7 +220,7 @@ int main ( int argc, char* argv[] )
 	dextend.arraywriter->initArrayFiles ( *dextend.ad, initcolumn+1, outputprefix, mode );
 	dextend.arraywriter->writearrays=writedeptharrays;
 	dextend.counter = new counter_t ( adfull->N );
-dextend.loglevelcol=7;
+	dextend.loglevelcol=7;
 
 	setloglevel ( SYSTEM );
 	//setloglevel (QUIET );
@@ -244,16 +240,16 @@ dextend.loglevelcol=7;
 		//exit(0);
 	}
 	// loop over all arrays
-	
+
 	//printf("loop start\n"); double t0x=get_time_ms(); // HACK
 	//dextend.oaextend.extendarraymode=OAextend::NONE; // HACK
-	
+
 	//FIXME2: enable this parallel loop?, num_threads(4)
 	#pragma omp parallel for  schedule(dynamic,1)
-	for ( int ai=0; ai<(int)arraylist->size(); ai++ ) {
+	for ( int ai=0; ai< ( int ) arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
-		
-		if (al.n_columns>=maxk) 
+
+		if ( al.n_columns>=maxk )
 			continue;
 //printfd("dextend.setposition ( al.n_columns=%d, ai=%d, arraylist->size(), 0, 0 )\n", al.n_columns, ai );
 
@@ -269,15 +265,16 @@ dextend.loglevelcol=7;
 		depth_extend_t dextendloop ( dextend );
 		dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
 
-if (0) {		
-		double s=0;
-		//for(int ix=0; ix<2000; ix++) s+=al.strength(); printf("s %d\n", s);
-		for(int jx=0; jx<1000; jx++) {
-			for(int ix=0; ix<20000; ix++) s+=sqrt(ix);
-		}
-		printf("s %f\n", s);
+		if ( 0 ) {
+			double s=0;
+			//for(int ix=0; ix<2000; ix++) s+=al.strength(); printf("s %d\n", s);
+			for ( int jx=0; jx<1000; jx++ ) {
+				for ( int ix=0; ix<20000; ix++ )
+					s+=sqrt ( ix );
+			}
+			printf ( "s %f\n", s );
 			continue; // HACK
-}
+		}
 		if ( 0 ) {
 			// HACK
 			int extensioncol = al.n_columns;
@@ -300,15 +297,16 @@ if (0) {
 
 
 		if ( ai%800==0 ) {
-			printf ( "array %d: ", ai ); dextend.counter->showcountscompact();
+			printf ( "array %d: ", ai );
+			dextend.counter->showcountscompact();
 		}
 	}
 
 	//printf("time loop %.3f [s]\n", get_time_ms()-t0x);	exit(0); // HACK
-	
+
 	if ( ds!=0 ) {
 		if ( verbose ) {
-		printf ( "oa_depth_extend: calling processDepth\n" );
+			printf ( "oa_depth_extend: calling processDepth\n" );
 			std::cout << "#time step: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
 		}
 
@@ -331,7 +329,7 @@ if (0) {
 			depth_extend_t dextendloop ( dextend );
 			dextendloop.extension_column_list=ds->columnextensionsList[ai];
 			dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
-dextendloop.loglevelcol=al.n_columns;
+			dextendloop.loglevelcol=al.n_columns;
 
 //printf("ai %zu: dextendloop.extension_column_list.size(), =dextendsub.valididx.size(): %zu %zu\n", ai, dextendloop.extension_column_list.size(), ds->dextendsubList[ai].valididx.size() );
 //printf("ai %zu: ->ad: %ld\n", ai , (long) dextendloop.ad );
@@ -339,17 +337,17 @@ dextendloop.loglevelcol=al.n_columns;
 //adfull->show();
 //dextendloop.ad->show();
 
-/*
-for (int kk=0; kk<ds->goodarrayslist[ai].size(); kk++) {
-					int ps = ds->goodarrayslist[ai][kk].row_symmetry_group().permsize();
-printfd("## array %zu: group size %d\n", kk, ps);
-}
-*/
+			/*
+			for (int kk=0; kk<ds->goodarrayslist[ai].size(); kk++) {
+								int ps = ds->goodarrayslist[ai][kk].row_symmetry_group().permsize();
+			printfd("## array %zu: group size %d\n", kk, ps);
+			}
+			*/
 
 //printf("## oa_depth_extend: ds->goodarrayslist[ai][0].n_columns %d, extensioncol %d\n", ds->goodarrayslist[ai][0].n_columns, extensioncol );
 
 //ds->depthalglist[ai]=DEPTH_DIRECT; // HACK
-	processDepth ( ds->goodarrayslist[ai], ds->depthalglist[ai], dextendloop, ds->dextendsubList[ai], extensioncol, verbose );
+			processDepth ( ds->goodarrayslist[ai], ds->depthalglist[ai], dextendloop, ds->dextendsubList[ai], extensioncol, verbose );
 
 //		dextendloop.showprogress(1, extensioncol, 1);
 

@@ -70,7 +70,8 @@ typedef unsigned __int32 uint32_t;
 
 #include <Eigen/Core>
 
-namespace Eigen {
+namespace Eigen
+{
 typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixXld;
 }
 
@@ -79,7 +80,10 @@ typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixXld;
 
 
 // use double
-typedef Eigen::MatrixXd MatrixFloat; typedef Eigen::ArrayXd ArrayFloat; typedef Eigen::VectorXd VectorFloat; typedef double eigenFloat;
+typedef Eigen::MatrixXd MatrixFloat;
+typedef Eigen::ArrayXd ArrayFloat;
+typedef Eigen::VectorXd VectorFloat;
+typedef double eigenFloat;
 
 // use long double
 //typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixFloat; typedef Eigen::Array<long double, Eigen::Dynamic, Eigen::Dynamic> ArrayFloat; typedef Eigen::Matrix<long double, Eigen::Dynamic, 1> VectorFloat; typedef long double eigenFloat;
@@ -334,7 +338,7 @@ public:
 
 	/// @brief Comparison operator
 	inline int operator== ( const arraydata_t &ad2 ) {
-		if ( this->N != ad2.N ) {			
+		if ( this->N != ad2.N ) {
 			return 0;
 		}
 
@@ -396,11 +400,11 @@ public:
 		for ( int i=0; i<this->strength; i++ )
 			combs *= this->s[i];
 
-			if (combs==0) {
-				this->oaindex = 0;
-			} else {
-		this->oaindex = this->N/combs;
-			}
+		if ( combs==0 ) {
+			this->oaindex = 0;
+		} else {
+			this->oaindex = this->N/combs;
+		}
 	}
 
 	/// return the root array for the class
@@ -462,7 +466,7 @@ inline std::string printfstring ( const char *message, ... )
 	va_list va;
 	va_start ( va, message );
 #ifdef RPACKAGE
-	myprintf("printfstring: not implemented in R\n");
+	myprintf ( "printfstring: not implemented in R\n" );
 #else
 	vsprintf ( buf, message, va );
 #endif
@@ -714,7 +718,7 @@ public:
 	// return value of maximum element in array
 	array_t max() const;
 
-	
+
 	/** calculate centered L2 discrepancy
 	 *
 	 * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000
@@ -773,7 +777,7 @@ public:
 
 	/// print information about array
 	void show() const {
-		myprintf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, (void *)array );
+		myprintf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, ( void * ) array );
 	}
 	std::string showstr() const {
 		std::stringstream s;
@@ -784,7 +788,7 @@ public:
 
 	/// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 	std::string md5() const;
-	
+
 	bool firstDiff ( const array_link &A, int &r, int &c, int verbose=1 ) {
 		r=0;
 		c=0;
@@ -867,7 +871,7 @@ public:
 	/// return the row_symmetry group of an array
 	symmetry_group row_symmetry_group() const;
 
-#ifdef FULLPACKAGE	
+#ifdef FULLPACKAGE
 	/// return the LMC form of the array
 	array_link reduceLMC() const;
 	/// return the delete-one-factor-projection form of the array
@@ -904,7 +908,7 @@ public:
 		return std::lexicographical_compare ( rhs.array+c2*n_rows, rhs.array +c2*n_rows + n_rows, array+c1*n_rows, array + c1*n_rows + n_rows ) ;
 
 	}
-	
+
 //private:
 	std::string showarrayS() const;
 
@@ -1321,10 +1325,10 @@ public:
 
 	/// read next array from the file
 	array_link readnext();
-	
+
 	/// flush any open file pointer
 	void flush();
-	
+
 	/// return true if the file has binary format
 	bool isbinary() const;
 
@@ -1453,7 +1457,7 @@ private:
 	/// wrapper function for fread or gzread
 	size_t afread ( void * ptr, size_t sz, size_t cnt );
 
-	
+
 public:
 	// update numbers count for a file structure
 	void updatenumbers();
@@ -1479,7 +1483,7 @@ private:
 	void write_array_binary ( const array_link &A );
 	void write_array_binary_diff ( const array_link &A );
 	void write_array_binary_diffzero ( const array_link &A );
-	
+
 public:
 	int getnbits() {
 		return nbits;
@@ -1585,7 +1589,7 @@ array_link selectArrays ( std::string filename, int ii );
 
 arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits=8 );
 
-int save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode = ATEXT);
+int save_arrays ( arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs, const char *resultprefix, arrayfile::arrayfilemode_t mode = ATEXT );
 
 #endif // FULLPACKAGE
 
@@ -1683,13 +1687,13 @@ void write_array_format ( const atype *array, const int nrows, const int ncols, 
 			count += nrows;
 		}
 	}
-#ifdef RPACKAGE	
+#ifdef RPACKAGE
 #else
 #ifdef FULLPACKAGE
 	fflush ( stdout );
 	setbuf ( stdout, NULL );
 #endif
-#endif	
+#endif
 }
 /** @brief Write a formatted array
  */

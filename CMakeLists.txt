@@ -22,6 +22,11 @@ if (0)
   endif()
 endif()
 
+find_package(ZLIB)	# Needed for Python modules
+message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
+message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
+message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+
 find_package(SWIG)	# Needed for Python modules
 find_package(NumPy QUIET)	# Needed for Python modules
 if (NumPy_FOUND)
@@ -152,9 +157,7 @@ endif ()
 
 # for debugging
 if("$ENV{USER}" STREQUAL "eendebakpt" )
-#set(COPTS "-g -Os" ) # -std=c++0x ")
-#set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
-#set(COPTS "-g -O3 -msse2" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
+  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
   #set(COPTS "-g -O0" ) # -std=c++0x ")
 endif()
 
@@ -171,14 +174,6 @@ else()
   endif()
 endif()
 
-#message(STATUS "Setting debug compilation on!")
-#set(COPTS "-g -O0 ") # -std=c++0x
-#set(COPTS "-g  ") # -std=c++0x
-
-#set(COPTS "-g  -O2") # -std=c++0x
-#-pedantic0
-#set(COPTS "-g  -O2  -std=c++98 -ansi -pedantic") #
-
 if(WIN32)
   set(COPTS "/MT /wd4018 /wd4996")  
 endif()
@@ -193,6 +188,13 @@ if (MSVC)
 endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
+
+if(ZLIB_FOUND)
+  set(COPTS "${COPTS} -DUSEZLIB")
+  include_directories(ZLIB_INCLUDE_DIRS)
+else()
+  set(COPTS "${COPTS} -DNOZLIB")
+endif()
 
 if (VERBOSE)
 	message(STATUS "copts ${COPTS}")
@@ -258,8 +260,8 @@ else()
   add_compile_flags(oalib)
   add_library(oalibshared SHARED ${srcsextend} ${headersextend})
   add_compile_flags(oalib)
-    TARGET_LINK_LIBRARIES(oalib m z)
-    TARGET_LINK_LIBRARIES(oalibshared m z)
+    TARGET_LINK_LIBRARIES(oalib m ${ZLIB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(oalibshared m ${ZLIB_LIBRARIES})
 
 endif()
 
@@ -300,9 +302,9 @@ if (OAEXTEND)
 
 #  list(APPEND extendprogs oaextendmpi) 
    if (WIN32) 
-	  else()
-	TARGET_LINK_LIBRARIES(oaextendmpi m z)
-  endif()
+   else()
+      TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
+   endif()
   
 endif(MPI_FOUND AND NOT WIN32 AND 1)
 
@@ -311,13 +313,6 @@ endif()
 
 message(STATUS "Progs: ${progs}")
 
-if (0)
-  # testing
-ADD_EXECUTABLE(oacat2 "oacat.cpp" ${headers} ${srcs} ) # ${srcs}
-add_compile_flags(oacat2)
-TARGET_LINK_LIBRARIES(oacat2 m z)
-  target_link_libraries(oacat2 ${Boost_LIBRARIES})
-endif()
 
 foreach(item ${progs})
   ADD_EXECUTABLE(${item} "utils/${item}.cpp" ${headers}  ) # ${srcs}
@@ -327,18 +322,17 @@ foreach(item ${progs})
   if (WIN32) 
    #	message(STATUS "Win32 build: ${item}")
   else()
-	TARGET_LINK_LIBRARIES(${item} m z)
+	TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES})
   endif()
 endforeach()
 
 foreach(item ${extendprogs})
   if (WIN32) 
-#	message(STATUS "Win32 build: ${item}")
-	  else()
-	    set_target_properties(${item} PROPERTIES COMPILE_FLAGS "${COPTS}" )
-	TARGET_LINK_LIBRARIES(${item} m z)
+  else()
+    set_target_properties(${item} PROPERTIES COMPILE_FLAGS "${COPTS}" )
+    TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES})
   endif()
-	    set_target_properties(${item} PROPERTIES LINK_FLAGS "${LINKOPTS}" )
+  set_target_properties(${item} PROPERTIES LINK_FLAGS "${LINKOPTS}" )
 endforeach()
 
 if(Boost_FOUND)
@@ -408,7 +402,7 @@ if(MATLAB_FOUND)
 	    foreach(item  ${Ditems})
 message(STATUS "adding ${item}")
 	    if(WIN32)
-	    TARGET_LINK_LIBRARIES(${item} m z )
+	      TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES} )
 	    endif()
 	    TARGET_LINK_LIBRARIES(${item} ${MATLAB_LIBRARIES})
 	    TARGET_LINK_LIBRARIES(${item} oalib)
@@ -439,10 +433,10 @@ message(STATUS "adding ${item}")
 
 	    #message(STATUS "${item} TYPE ${itemtype}: mex suffix")
 	    if(WIN32)
-SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexw${BITNESS}")
-else()
-SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexa${BITNESS}")
-endif()
+	      SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexw${BITNESS}")
+	    else()
+	      SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexa${BITNESS}")
+	    endif()
 	  endif()
 	  set_target_properties(${item} PROPERTIES PREFIX "")
 	endforeach()
@@ -498,36 +492,25 @@ add_custom_command(
   DEPENDS 
 )
 
-#export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR -DOADEV"
-#rm -f oalibR.so; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp build/liboalibshared.so -d
-
-
-#rm -f oalibR.so; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
-#nm -C oalibR.so
-
-#build/lib.linux-x86_64-2.7/_oalib.so
 
 #R CMD SHLIB  -o example.so oalib_wrapR.cpp liboalib.a-d
 #Rscript example.r
 
-
-
-
 if (DOPYTHON) 
-	  message(STATUS "Creating python interface")
+   message(STATUS "Creating python interface")
 	  
-add_custom_target( python )
-add_custom_target( python3 )	# target for python 3 installation
-add_custom_target( pythonswig )
-if(OADEV)
-  message(STATUS "Building python module with development code")
-# --inplace
-add_custom_command(
-  TARGET python POST_BUILD
-  COMMAND swig -c++ -w503,401,362 -python -Isrc/ oalib.i\; swig -c++ -DOADEV  -w503,401,362 -python -o oalib_wrap_dev.cxx -Isrc/ oalib.i\; python setup.py build_ext 
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  DEPENDS pythonswig
-)
+  add_custom_target( python )
+  add_custom_target( python3 )	# target for python 3 installation
+  add_custom_target( pythonswig )
+  if(OADEV)
+     message(STATUS "Building python module with development code")
+     # --inplace
+      add_custom_command(
+	TARGET python POST_BUILD
+	COMMAND swig -c++ -w503,401,362 -python -Isrc/ oalib.i\; swig -c++ -DOADEV  -w503,401,362 -python -o oalib_wrap_dev.cxx -Isrc/ oalib.i\; python setup.py build_ext 
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	DEPENDS pythonswig
+      )
 
 add_custom_command(
   TARGET python3 POST_BUILD
@@ -548,31 +531,6 @@ add_custom_command(
 )
 endif()
 
-#set(OPTS -fPIC -DNEWINTERFACE -Wno-return-type -Wno-unused-variable -Wno-unused-result)
-if (0)
-set(PSRC src/tools.cpp src/arrayproperties.cpp src/mathtools.cpp src/arraytools.cpp src/strength.cpp src/lmc.cpp src/bitarray/bit_array.cpp)
-set(PSRC ${srcs})
-set(POBJ tools.o arrayproperties.o oaoptions.o bit_array.o mathtools.o arraytools.o extend.o strength.o lmc.o)
-
-add_custom_target( python2 )
-add_custom_command(
-  TARGET python2 POST_BUILD
-  COMMAND swig -c++ -w503,401,362 -python -I./ -Isrc/ oalib.i\; g++ -I./ -Isrc/ -c ${OPTS} ${PSRC} oalib_wrap.cxx -I/usr/include/python2.7\; g++ -shared ${OPTS} ${POBJ} oalib_wrap.o -o _oalib.so
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
-
-add_custom_target( python2i )
-add_custom_command(
-  TARGET python2i POST_BUILD
-  COMMAND 	sudo cp _oalib.so /usr/local/lib/python2.7/dist-packages/
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
-endif()
-
-
-#	swig2.0 -c++ -python oalib.i
-#	g++ -c $(OPTS) $(PSRC) oalib_wrap.cxx -I/usr/include/python2.7
-#	g++ -shared $(OPTS) $(POBJ) oalib_wrap.o -o _oalib.so 
 
 if (0)
 add_custom_target( pythoncheck )
@@ -685,7 +643,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "0")
-SET(CPACK_PACKAGE_VERSION_PATCH "24")
+SET(CPACK_PACKAGE_VERSION_PATCH "30")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 
