@@ -166,8 +166,6 @@ if platform.system()=='Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
     swig_opts+=['-DWIN32', '-D_WIN32']
     
-compile_options += ['-DNOOMP']
-swig_opts+=['-DNOOMP']
   
   
 if 'VSC_SCRATCH' in os.environ.keys():
@@ -197,6 +195,9 @@ else:
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries )
       pm.append(prog_module)
 
+compile_options += ['-DNOOMP']
+swig_opts+=['-DNOOMP']
+
 oalib_module.extra_compile_args = compile_options # ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
     
 if checkZlib(verbose=0):
@@ -210,7 +211,7 @@ if checkZlib(verbose=0):
     oalib_module.extra_link_args+=['-lz']
 else:
   zlibflag='-DNOZLIB'
-  oalib_module.extra_compile_args = [zlibflag] 
+  oalib_module.extra_compile_args += [zlibflag] 
   swig_opts +=  [zlibflag]  
 
 #if platform.system()=='Windows':
@@ -223,6 +224,7 @@ if os.name=='nt':
   #oalib_module.extra_compile_args += ['-fpermissive', '-std=gnu++11' ];  
 else:
   oalib_module.extra_compile_args += ['-O2', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
+
 
 
 if platform.node()=='marmot' or  platform.node()=='goffer' or platform.node()=='pte':
@@ -303,6 +305,7 @@ setup (name = 'OApackage',
 	      'Programming Language :: Python :: 3',
 	      'Programming Language :: Python :: 3.3',
 	      'Programming Language :: Python :: 3.4', 
+	      'Programming Language :: Python :: 3.5', 
 	      ]
        )
 

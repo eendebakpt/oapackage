@@ -44,7 +44,9 @@ typedef unsigned __int32 uint32_t;
 #ifdef NOZLIB
 #else
 #ifdef FULLPACKAGE
-#define USEZLIB 1
+	#ifndef USEZLIB
+		#define USEZLIB 1
+	#endif
 #endif
 #endif
 #endif
