@@ -5,18 +5,18 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
-    #CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
 
   matrix:
 #    fast_finish: true
     
     - PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.9"
+      PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
 
     - PYTHON: "C:\\Python33-x64"
-      PYTHON_VERSION: "3.3.5"
+      PYTHON_VERSION: "3.3.x"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.1"
 
@@ -26,7 +26,7 @@ environment:
       WINDOWS_SDK_VERSION: "v7.1"
 
     - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.0"
+      PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python27"
@@ -57,7 +57,10 @@ install:
   - ECHO "Installed SDKs:"
   - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
-  - "powershell appveyor\\install.ps1"
+  # Install Python (from the official .msi of http://python.org) and pip when
+  # not already installed.
+  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+
   
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
@@ -68,11 +71,15 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   
+  # Upgrade to the latest version of pip to avoid it displaying warnings
+  # about it being out of date.
+  - "pip install --disable-pip-version-check --user --upgrade pip"
+  
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
-  - "%WITH_COMPILER% pip install wheel"
+  - "%CMD_IN_ENV% pip install wheel"
   #- "%WITH_COMPILER% pip install twine"
   
   # Now that wheel has been installed, check to see if a numpy wheel has been
@@ -91,17 +98,22 @@ install:
 
 build: off
 
+build_script:
+  # Build the compiled extension
+  - "%CMD_IN_ENV% python setup.py build"
+  
 test_script:
-  - "%WITH_COMPILER% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
 
 after_test:
-  - "%WITH_COMPILER% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
+  - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
   - ps: "ls dist"
 
 artifacts:
   - path: dist\*
-  - path: '**\oalib_wrap.cpp'
-    name: swigwrapper
+    name: binaries
+#  - path: '**\oalib_wrap.cpp'
+#    name: swigwrapper
   
 #on_success:
 #  - TODO: upload the content of dist/*.whl to a public wheelhouse
