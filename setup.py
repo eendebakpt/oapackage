@@ -147,21 +147,28 @@ if os.path.exists('dev/oadevelop.cpp') and 0:
 sources =   srcs + ['src/bitarray/bit_array.cpp']
 swig_opts=[]
 
+compile_options=[]
+
 if oadev:
   #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
 
   sources = ['oalib.i'] + sources
-  swig_opts+=['-modern', '-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
+  swig_opts+=['-modern', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
+  compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
+  swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
 else:
-  if 0:
-    sources += ['oalib_wrap.cxx'] 
-  else:
     sources = ['oalib.i'] + sorted(sources)
-    swig_opts+=['-modern', '-DSWIGCODE', '-DFULLPACKAGE',  '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
+    swig_opts+=['-modern', '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
+    compile_options += ['-DSWIGCODE', '-DFULLPACKAGE']
+    swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE']
 
 if platform.system()=='Windows':
+    compile_options += ['-DWIN32', '-D_WIN32']
     swig_opts+=['-DWIN32', '-D_WIN32']
     
+compile_options += ['-DNOOMP']
+swig_opts+=['-DNOOMP']
+  
   
 if 'VSC_SCRATCH' in os.environ.keys():
   # we are running on the VSC cluster
@@ -190,20 +197,24 @@ else:
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries )
       pm.append(prog_module)
 
-oalib_module.extra_compile_args = ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
+oalib_module.extra_compile_args = compile_options # ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
     
 if checkZlib(verbose=0):
   if platform.system()=='Windows':
     pass
   else:
-    oalib_module.extra_compile_args += ['-DUSEZLIB'] 
+    zlibflag='-DUSEZLIB'
+    #zlibflag='-DNOZLIB'
+    oalib_module.extra_compile_args += [zlibflag] 
+    swig_opts +=  [zlibflag]  
     oalib_module.extra_link_args+=['-lz']
 else:
-  oalib_module.extra_compile_args = ['-DNOZLIB'] 
-    
+  zlibflag='-DNOZLIB'
+  oalib_module.extra_compile_args = [zlibflag] 
+  swig_opts +=  [zlibflag]  
 
-if platform.system()=='Windows':
-	oalib_module.extra_compile_args.append('-DWIN32')
+#if platform.system()=='Windows':
+#	oalib_module.extra_compile_args.append('-DWIN32')
 	
 if os.name=='nt':
   oalib_module.extra_compile_args += [];  
@@ -219,9 +230,6 @@ if platform.node()=='marmot' or  platform.node()=='goffer' or platform.node()=='
   oalib_module.extra_compile_args+=['-fopenmp', '-DDOOPENMP']
   oalib_module.extra_link_args+=['-fopenmp']
       
-if oadev:
-  oalib_module.extra_compile_args.append('-DOADEV')
-
 print('find_packages: %s' % find_packages() )
 #print('swig_opts: %s' % str(swig_opts) )
 

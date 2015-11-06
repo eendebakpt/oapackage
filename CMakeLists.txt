@@ -23,9 +23,9 @@ if (0)
 endif()
 
 find_package(ZLIB)	# Needed for Python modules
-message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
-message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
-message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+#message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
+#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
+#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
 
 find_package(SWIG)	# Needed for Python modules
 find_package(NumPy QUIET)	# Needed for Python modules
@@ -189,7 +189,7 @@ endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
 
-if(ZLIB_FOUND)
+if(ZLIB_FOUND AND 1)
   set(COPTS "${COPTS} -DUSEZLIB")
   include_directories(ZLIB_INCLUDE_DIRS)
 else()
