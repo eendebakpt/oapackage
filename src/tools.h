@@ -256,6 +256,7 @@ int next_comb ( std::vector<Type> &comb, int k, int n )
 	return 1;
 }
 
+
 /** Go to next combination in sequence */
 int next_comb ( int *comb, int k, int n );
 /** Go to next combination in sequence */

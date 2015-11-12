@@ -4518,6 +4518,29 @@ array_link array_link::operator- ( const array_link &b ) const
 	return tmp;
 }
 
+/// stack to arrays together
+array_link vstack ( const array_link &al, const array_link &b )
+{
+	assert ( al.n_columns==b.n_columns );
+	array_link v ( al.n_rows+b.n_rows, al.n_columns, array_link::INDEX_NONE );
+	int N1=al.n_rows; int N2=b.n_rows;
+	int N=N1+N2;
+	for(int c=0; c<al.n_columns; c++ ) {
+	std::copy ( al.array+c*N1, al.array+(c+1)*N1, v.array+c*N );
+	std::copy ( b.array+c*N2, al.array+(c+1)*N2, v.array+c*N+N1 );
+	}
+	return v;
+}
+
+/// stack to arrays together
+array_link hstack ( const array_link &al, const cperm &b )
+{
+	assert ( al.n_rows==(int)b.size() );
+	array_link v ( al.n_rows, al.n_columns+1, array_link::INDEX_NONE );
+	std::copy ( al.array, al.array+al.n_columns*al.n_rows, v.array );
+	std::copy ( b.begin(), b.end(), v.array+v.n_rows*al.n_columns );
+	return v;
+}
 
 /// stack to arrays together
 array_link hstack ( const array_link &al, const array_link &b )

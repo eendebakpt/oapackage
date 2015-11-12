@@ -668,6 +668,17 @@ public:
 	/// select columns from an array
 	array_link selectColumns ( const std::vector<int> c ) const;
 
+	//template <class numtype>
+	//void setColumnX(int c, const std::vector<numtype> v) {
+	//		std::copy(this->array+c*this->n_rows, this->array+(c+1)*this->n_rows, v.begin() );
+	//}
+	void setColumn(int c, const std::vector<int> v) {
+			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
+	}
+	//void setColumn2(int c, const cperm v) {
+	//		std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
+	//}
+	
 	/// return transposed array
 	array_link transposed() const;
 
@@ -921,11 +932,29 @@ public:
 	//void initswig(); /// provide hook for Python __array_interface__ initialization
 };
 
+// simple permutation type
+typedef std::vector<int> cperm;
+//typedef array_link cperm;
+
+// concatenate 2 arrays in vertical direction
+array_link hstack ( const array_link &al, const array_link &b );
+
+// concatenate 2 arrays in vertical direction
+array_link hstack ( const array_link &al, const cperm &b );
+
 // concatenate 2 arrays in horizontal direction
 array_link hstack ( const array_link &al, const array_link &b );
 // concatenate the last column of array B to array A
 array_link hstacklastcol ( const array_link &A, const array_link &B );
 
+
+inline cperm vstack(const cperm A, const cperm B) {
+		cperm c(A.size()+B.size());
+		
+		std::copy(A.begin(), A.end(), c.begin() );
+		std::copy(B.begin(), B.end(), c.begin()+A.size() );
+		return c;
+}
 
 /// create arraydata_t structure from array
 arraydata_t arraylink2arraydata ( const array_link &al, int extracols = 0, int strength = 2 );

@@ -11,7 +11,6 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 from __future__ import print_function
 
 import oalib
-#import sys
 import os
 import numpy as np
 import time

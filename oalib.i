@@ -74,6 +74,7 @@ import_array();
 #include "Deff.h"
 #ifdef OADEV
 #include "oadevelop.h"
+#include "conference.h"
 #endif
 %}
 
@@ -271,6 +272,7 @@ def __setitem__(self,index, value):
 namespace std {
    %template(arraylist_t) deque<array_link>; // arraylist_t
    %template(jstructArray) vector<jstruct_t>; // results list
+   %template(uint8Vector) std::vector<unsigned char>;
    %template(intVector) std::vector<int>;
    %template(longVector) std::vector<long>;
    %template(longDeque) deque<long>;
@@ -310,6 +312,7 @@ import numpy
 
 #ifdef OADEV
 %include "oadevelop.h"
+%include "conference.h"
 #endif
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
@@ -326,6 +329,8 @@ import numpy
 //%template(DequeParetoLong) std::deque< Pareto< mvalue_t< long >,long >;
 //%template(GWLPvalueVector2) std::vector<GWLPvalue>; 
 %template(GWLPvalueVector) std::vector< mvalue_t<double> >;
+
+%template(cpermVector) std::vector< cperm >;
 
 %template(vector_vector_double) std::vector< std::vector<double> >;
 
