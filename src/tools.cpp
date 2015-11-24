@@ -457,8 +457,10 @@ int getloglevel()
 void setloglevel(int n)
 {
 #pragma omp critical
+{
     streamloglvl = n;
-    log_print(-n, "");	// for log_print
+}
+  log_print(-n, "");	// for log_print
 }
 
 #ifdef FULLPACKAGE

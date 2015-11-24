@@ -335,6 +335,8 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         s = arrayclass.getS()
         arrayclass
     sx = tuple(s.astype(np.int64))
+    sx=tuple( [int(v) for v in sx] )
+
     sg = oalib.symmetry_group(sx)
     gidx = tuple(sg.gidx)
     gsize = tuple(sg.gsize)

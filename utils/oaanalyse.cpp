@@ -106,6 +106,7 @@ int main ( int argc, char* argv[] )
     opt.setOption ( "jj", 'j' );
     opt.setFlag ( "rank", 'r' );
     opt.setFlag ( "gwp" );
+    opt.setFlag ( "mixedlevel" );
     opt.setFlag ( "gma" );
     opt.setFlag ( "jtype" );
     opt.setFlag ( "cl2d" );
@@ -149,6 +150,7 @@ int main ( int argc, char* argv[] )
     int dojtype = opt.getFlag ( "jtype" );
     int doDefficiency = opt.getFlag ( 'A' );
     int dogma = opt.getFlag ( "gwp" );
+    int mixedlevel = opt.getFlag ( "mixedlevel" );
     if ( !dogma ) {
         dogma = opt.getFlag ( "gma" );
     }
@@ -271,8 +273,14 @@ int main ( int argc, char* argv[] )
         }
 
         if ( doDefficiency ) {
+	    
+	   if (mixedlevel) {
+            std::vector<double> dd = arraylist->at ( ii ).Defficiencies(0);
+ AA[ii]=dd[0];
+	   }
+else {
             AA[ii]=Defficiency ( arraylist->at ( ii ), 0 );
-
+}
 	    if (0) {
             arraylist->at ( ii ).DsEfficiency(1);
             std::vector<double> dd = arraylist->at ( ii ).Defficiencies(1);

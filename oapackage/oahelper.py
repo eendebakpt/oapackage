@@ -793,6 +793,15 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
     """ Run extension algorithm and return arrays
 
+    Arguments
+    ---------
+    N : integer
+        number of rows
+    k: integer
+        number of columns
+    t: integer
+        strength of the arrays
+        
     >>> r = runExtend(16, 5, 3, verbose=0)    
     """
     if verbose:

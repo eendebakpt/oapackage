@@ -3062,9 +3062,20 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 		oaextend.info();
 	}
 
+	//printfd("oaextend.getAlgorithm() %d, MODE_ORIGINAL %d\n", oaextend.getAlgorithm(),MODE_ORIGINAL );
 	switch ( oaextend.getAlgorithm() ) {
 	case MODE_ORIGINAL: {
+		if (0)
+		{
+		printfd("FIXME: does not work for oaextendA !?!\n");
 		//ad->order=ORDER_J5;
+#pragma omp critical	
+			setloglevel(EXTRADEBUG); 
+		 //return LMC_MORE;
+		 printfd("extra logging\n"); fflush(stdout);
+		//setloglevel(EXTRADEBUG); printfd("extra logging\n"); fflush(stdout);
+		 //return LMC_MORE;
+		}		 
 		lmc = LMCreduce ( array, array, &ad, &dynd, &reduction , oaextend );
 
 		//printfd("LMCreduce done\n" );

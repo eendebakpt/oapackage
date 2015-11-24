@@ -282,6 +282,7 @@ enum ordering_t {ORDER_LEX, ORDER_J5};
 
 /** @brief Contains properties of the design (number of rows, columns, levels)
  *
+ * Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
  */
 struct arraydata_t {
 	rowindex_t N;	/** number of runs */
@@ -299,7 +300,7 @@ struct arraydata_t {
 
 public:
 	/// create new arraydata_t object
-	arraydata_t ( array_t s, rowindex_t N_, colindex_t strength, colindex_t ncols );
+	arraydata_t ( array_t s, rowindex_t N, colindex_t strength, colindex_t ncols );
 	arraydata_t ( const std::vector<int> s, rowindex_t N, colindex_t strength, colindex_t ncols );
 	arraydata_t ( const array_t *s_, rowindex_t N, colindex_t strength, colindex_t ncols );
 	arraydata_t ( const arraydata_t &adp ); /// copy constructor
@@ -1605,6 +1606,9 @@ arraylist_t readarrayfile ( const char *fname, int verbose=1, int *setcols = 0 )
 const int NRAUTO = 0;
 /// write a list of arrays to file on disk
 int writearrayfile ( const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows=NRAUTO, int ncols=NRAUTO );
+
+/// write a list of arrays to file on disk
+int writearrayfile ( const char *fname, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows=NRAUTO, int ncols=NRAUTO );
 
 /// write a single array to file
 int writearrayfile ( const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );

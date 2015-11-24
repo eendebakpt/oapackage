@@ -3579,6 +3579,11 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
 	return i;
 }
 
+int writearrayfile ( const char *fname, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode, int nrows, int ncols )
+{
+	return writearrayfile ( fname, &arraylist, mode, nrows, ncols );	
+}
+
 
 /**
  * @brief Write all arrays in a list to file
