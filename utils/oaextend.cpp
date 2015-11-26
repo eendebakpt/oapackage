@@ -384,6 +384,8 @@ int main(int argc, char* argv[])
                     print_progress(csol, solutions, extensions, Tstart, current_col);
                     logstream(NORMAL) << cur_extension[0];
 
+		    //if (cur_extension-solutions.begin()>2) break;
+		    
                     if (n_processors==1) {
                         nr_extensions += extend_array(cur_extension->array, adcol, current_col,extensions, oaextend);
 

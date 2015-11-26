@@ -507,7 +507,7 @@ int log_print ( const int level, const char *message, ... )
 #endif
 
 	if ( level < 0 ) {		//level < 0 means set level, any message appended is printed as well
-		#pragma omp critical
+		#pragma omp critical(logprint)
 		{
 			va_list		va;
 			va_start ( va, message );
@@ -518,7 +518,7 @@ int log_print ( const int level, const char *message, ... )
 		}
 	} else {
 		if ( level <= _loglevel )	{ //if printing level is high enough, the message is shown
-			#pragma omp critical
+			#pragma omp critical(logprint)
 			{
 				va_list		va;
 				va_start ( va, message );
