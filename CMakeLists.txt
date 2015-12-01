@@ -39,10 +39,11 @@ find_package(MPI)	# Needed for legacy code and OpenMP functionality
 # ----------------------------------------------------------------------------
 #   Code
 # ----------------------------------------------------------------------------
-#add_definitions(-DEIGEN_MPL2_ONLY)
+add_definitions(-Wno-write-strings) # hack
 
 include_directories(.)
 include_directories(src)
+include_directories(nauty)
 link_directories(${CMAKE_SOURCE_DIR})
 
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/dev/oadevelop.h") 
@@ -245,7 +246,9 @@ endmacro()
 
 ############### Programs ################################
   
-  
+set(nautysrc nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/gtools.c nauty/naugroup.c)
+include_directories(nauty)
+
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example )
 set(progsextend )
 
@@ -319,6 +322,19 @@ endif()
 
 message(STATUS "Progs: ${progs}")
 
+###############
+message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
+ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} ${nautysrc} ) 
+  add_compile_flags(oagraph)
+  TARGET_LINK_LIBRARIES(oagraph oalib)
+
+  if (WIN32) 
+   #	message(STATUS "Win32 build: ${item}")
+  else()
+	TARGET_LINK_LIBRARIES(oagraph m ${ZLIB_LIBRARIES})
+  endif()
+
+###############
 
 foreach(item ${progs})
   ADD_EXECUTABLE(${item} "utils/${item}.cpp" ${headers}  ) # ${srcs}
