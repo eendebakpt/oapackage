@@ -139,6 +139,11 @@ array_transformation_t::array_transformation_t ( const arraydata_t *adp )
 	ad = new arraydata_t ( *adp );
 	init();
 }
+array_transformation_t::array_transformation_t ( const arraydata_t &adp )
+{
+	ad = new arraydata_t ( adp );
+	init();
+}
 
 /// Copy construction
 array_transformation_t::array_transformation_t ( const array_transformation_t &tt )
@@ -583,6 +588,7 @@ void array_link::setvalue ( int r, int c, int val )
 
 	this->array[r+this->n_rows*c]= val;
 }
+
 void array_link::setvalue ( int r, int c, double val )
 {
 	if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
@@ -850,6 +856,8 @@ array_link exampleArray ( int idx, int verbose )
 		myprintf ( "exampleArray: no such index %d", idx );
 	case 0: {
 		dstr ="array in OA(8,2, 2^2)";
+		if ( verbose )
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 		array_link al ( 8,2, 0 );
 		std::vector<int> s;
 		s.push_back ( 2 );

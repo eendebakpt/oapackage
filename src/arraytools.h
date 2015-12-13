@@ -1160,6 +1160,7 @@ public:
 
 public:
 	array_transformation_t ( const arraydata_t *ad );
+	array_transformation_t ( const arraydata_t &ad );
 	array_transformation_t ( );	/// default constructor
 	array_transformation_t ( const array_transformation_t  &at ); /// copy constructor
 	array_transformation_t & operator= ( const array_transformation_t &at ); /// assignment operator
