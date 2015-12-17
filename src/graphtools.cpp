@@ -65,9 +65,8 @@ void setcolors ( std::vector<int> colors, int *lab, int *ptn )
 }
 
 
-std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors )
+std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int verbose )
 {
-	int verbose=1;
 
 
 	//for(size_t j=0; j<colors.size(); j++) colors[j]=j;
@@ -76,8 +75,12 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors )
 		printf ( "colors: " );
 		display_vector ( colors );
 		printf ( "\n" );
-
 	}
+	if ( ( int ) colors.size() !=G.n_rows || G.n_rows!=G.n_columns ) {
+		myprintf ( "reduceNauty: input sizes not valid" );
+		return std::vector<int>();
+	}
+
 	int nvertices=G.n_rows;
 
 	/* DYNALLSTAT declares a pointer variable (to hold an array when it
@@ -143,15 +146,18 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors )
 
 	setcolors ( colors, lab, ptn );
 	options.defaultptn=false;
-	
-	if (verbose>=2) {
-	printf ( "options.defaultptn: %d\n ", options.defaultptn );
-	printf ( "lab: \n " );
-	print_perm ( lab, n );
-	printf ( "ptn: \n " );
-	print_perm ( ptn, n );
+
+	if ( verbose>=2 ) {
+		printf ( "options.defaultptn: %d\n ", options.defaultptn );
+		printf ( "lab: \n " );
+		print_perm ( lab, n );
+		printf ( "ptn: \n " );
+		print_perm ( ptn, n );
 	}
-	
+
+	if ( verbose )
+		printf ( "reduceNauty: calling densenauty\n" );
+
 	densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,NULL );
 	if ( verbose>=2 ) {
 		printf ( "Generators for Aut(C[%d]):\n",n );
@@ -178,28 +184,33 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors )
 }
 
 
-std::vector<int> reduceOAnauty ( const array_link &al, int verbose )
+
+
+} // end of nauty namespace
+
+
+array_transformation_t reduceOAnauty ( const array_link &al, int verbose )
 {
 	std::pair<array_link, std::vector<int> > Gc = array2graph ( al,  verbose );
 
 	array_link &G = Gc.first;
 	std::vector<int> &colors = Gc.second;
 
-	//for(int i=0; i<colors.size(); i++) colors[i]=i; // hack
-
-	if (verbose>=2) {
-	printf ( "graph:\n" );
-	G.showarray();
+	if ( verbose>=2 ) {
+		printf ( "graph:\n" );
+		G.showarray();
 	}
 
-	std::vector<int> r = reduceNauty ( G, colors );
-	return r;
+	std::vector<int> tr = nauty::reduceNauty ( G, colors );
+	arraydata_t arrayclass = arraylink2arraydata ( al );
+	array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
+
+	return ttm;
 }
 
 
-} // end of nauty namespace
-
 template<class IntType>
+/// helper function
 std::vector<int> indexvector ( const std::vector<IntType> s )
 {
 	//printf("indexvector: input "); print_perm(s);
@@ -293,29 +304,85 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 
 	int ss = std::accumulate ( s.begin(), s.end(), 0 ); // std::accumulate<int>(s.begin(), s.end(), 0);
 
-	if ( 0 ) {
-		array_link xy ( 2, nrows+ ss, 0 ) ;
-
-
-// calculate positions
-		for ( int row=0; row<nrows; row++ ) {
-			xy.at ( 0,row ) = 0 ;
-			xy.at ( 1, row ) = row;
-		}
-		int pos = nrows;
-
-		for ( int col=0; col<ncols; col++ ) {
-			for ( int ss=0; ss<s[col]; ss++ ) {
-				xy.at ( 0,pos ) = 2 + ss / s[col];
-				xy.at ( 1,pos ) = col;
-				pos = pos + 1;
-			}
-		}
-	}
-
 	return std::pair<array_link, std::vector<int> > ( G, colors );
 }
 
+
+/// From a relabelling of the graph return the corresponding array transformation
+array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_t &arrayclass, int verbose )
+{
+	///invert the labelling transformation
+	std::vector<int> ppi ( pp.size() );
+	for ( size_t i=0; i<pp.size(); i++ )
+		ppi[pp[i]]=i;
+
+	// extract colperms and rowperm and levelperms from pp
+	array_transformation_t ttr ( arrayclass );
+
+	if ( verbose ) {
+		printf ( "labelling2transformation: class %s\n", arrayclass.idstr().c_str() );
+	}
+	const int N= arrayclass.N;
+	std::copy ( pp.begin(), pp.begin() +N, ttr.rperm );
+	int rmin=pp.size();
+	for ( int j=0; j<N; j++ )
+		rmin = std::min ( rmin, ( int ) ttr.rperm[j] );
+	for ( int i=0; i<N; i++ )
+		ttr.rperm[i] -= rmin;
+	ttr=ttr.inverse();
+
+	if ( verbose ) {
+		printf ( "labelling2transformation: rowperm " );
+		print_perm ( ttr.rperm, N );
+	}
+
+	int ncols=arrayclass.ncols;
+	array_transformation_t ttc ( arrayclass );
+	std::vector<int> colperm ( arrayclass.ncols );
+	std::copy ( pp.begin() +N, pp.begin() +N+ncols, colperm.begin() );
+	colperm = sorthelper ( colperm );
+	ttc.setcolperm ( colperm );
+
+	if ( verbose ) {
+		printf ( "labelling2transformation: colperm " );
+		display_vector ( colperm );
+		printf ( "\n" );
+	}
+
+	std::vector<int> s = arrayclass.getS();
+
+	int ns = std::accumulate ( s.begin(), s.end(), 0 );
+	array_transformation_t ttl ( arrayclass );
+	ttl=ttl.inverse();
+
+	std::vector<int> lvlperm ( ns );
+	std::copy ( pp.begin() +N+ncols, pp.begin() +N+ncols+ns, lvlperm.begin() );
+	lvlperm=sorthelper ( lvlperm );
+
+	std::vector<int>cs=cumsum0 ( s );
+
+	//lp = []
+	for ( int ii=0; ii<ncols; ii++ ) {
+		std::vector<int> ww ( lvlperm.begin() +cs[ii], lvlperm.begin() +cs[ii+1] ); //  = lvlperm[cs[ii]:cs[ii + 1]]
+		//printf("ii %d: ww ", ii); display_vector(ww); printf("\n");
+		ww=sorthelper ( ww );
+		//printf("ww "); display_vector(ww); printf("\n");
+		//ww = ww - ww.min();        ww = np.argsort(ww)
+		//lp.append(ww)
+		if ( verbose ) {
+			printf ( "lvlperm %d: ",ii );
+			display_vector ( ww );
+			printf ( "\n" );
+			fflush ( 0 );
+		}
+		ttl.setlevelperm ( ii, ww );
+	}
+
+	ttl=ttl.inverse();
+	array_transformation_t tt = ttr*ttc*ttl;
+
+	return tt;
+}
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

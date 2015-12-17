@@ -72,6 +72,7 @@ import_array();
 #include "extend.h"
 #include "lmc.h"
 #include "Deff.h"
+#include "graphtools.h"
 #ifdef OADEV
 #include "oadevelop.h"
 #include "conference.h"
@@ -309,6 +310,7 @@ import numpy
 %include "extend.h"
 %include "lmc.h"
 %include "Deff.h"
+%include "graphtools.h"
 
 #ifdef OADEV
 %include "oadevelop.h"

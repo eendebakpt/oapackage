@@ -11,6 +11,22 @@
 
 #pragma once
 
+template<class Type>
+/// helper function
+std::vector<Type> sorthelper ( std::vector<Type> &v )
+{
+	std::vector<Type> w ( v.size() );
+	std::copy ( v.begin(), v.end(), w.begin() );
+	int rmin=w[0];
+	for ( int j=0; j<w.size(); j++ ) {
+		rmin = std::min ( rmin, w[j] );
+	}
+
+	for ( int i=0; i<w.size(); i++ )
+		w[i] -= rmin;
+	return w;
+}
+
 
 /* Interface to Nauty code
  *
@@ -21,17 +37,15 @@ namespace nauty
 #include "nauty.h"
 /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 
-
 	
-/// reduce graph to Nauty minimal form
-std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors );
-
-
-/// reduce design to Nauty minimal form
-std::vector<int> reduceOAnauty(const array_link &al, int verbose=1);
+/// reduce a colorred graph to Nauty minimal form
+std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int verbose=0 );
 	
 	
 } // end of nauty namespace
+
+/// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
+array_transformation_t reduceOAnauty(const array_link &al, int verbose=1);
 
 /**  Convert orthogonal array to graph representation
  *
@@ -40,3 +54,6 @@ std::vector<int> reduceOAnauty(const array_link &al, int verbose=1);
  *   The graph representation can be used for isomorphism testing.
 */
 std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose=1 );
+
+/// From a relabelling of the graph return the corresponding array transformation
+array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_t &arrayclass, int verbose=1 );

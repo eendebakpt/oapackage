@@ -151,8 +151,6 @@ swig_opts=[]
 compile_options=[]
 
 if oadev:
-  #sources = ['oalib_wrap.cxx'] + srcs + ['bitarray/bit_array.cpp']
-
   sources = ['oalib.i'] + sources
   swig_opts+=['-modern', '-c++', '-w503,401,362' , '-Isrc/', '-Idev/'] # , '-o oalib_wrap_dev.cxx']
   compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
@@ -162,6 +160,15 @@ else:
     swig_opts+=['-modern', '-c++', '-w503,401,362,302,389,446,509,305' , '-Isrc/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE']
+
+if 1:
+  swig_opts+=['-Inauty/']
+  compile_options+=['-Inauty/']
+
+  sources += [ 'src/graphtools.cpp' ]
+
+  for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/gtools.c nauty/naugroup.c'.split(' '):
+      sources+=[f]
 
 if platform.system()=='Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
