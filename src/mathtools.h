@@ -478,6 +478,36 @@ Type vectormin ( const std::vector<Type> &v, Type defaultvalue )
 
 
 template<class NumType>
+/// calculate cumulative sum of a vector
+std::vector<NumType> cumsum ( const std::vector<NumType> x )
+{
+	// initialize the result vector
+	std::vector<NumType> res ( x.size() );
+	std::partial_sum ( x.begin(), x.end(), res.begin() );
+	return res;
+}
+
+template<class NumType>
+/// calculate cumulative sum of a vector with added zero
+std::vector<NumType> cumsum0 ( const std::vector<NumType> x )
+{
+	// initialize the result vector
+	std::vector<NumType> res ( x.size() +1 );
+	res[0]=0;
+	std::partial_sum ( x.begin(), x.end(), res.begin() +1 );
+	return res;
+}
+
+template<class Type, class InputType>
+std::vector<Type> cumsum0(std::vector<InputType> s)
+{
+	std::vector<Type> c(s.size()+1);
+	c[0]=0;
+	for(int i=0; i<s.size();i++) c[i+1]=c[i]+s[i];
+}
+
+
+template<class NumType>
 /// create permutation of specified length
 std::vector<NumType> permutation ( int n )
 {

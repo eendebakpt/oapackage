@@ -1,6 +1,6 @@
 /** \file lmc.h
 
-\brief This file contains definitions are functions to perform LMC tests and reductions
+\brief This file contains definitions and functions to perform LMC tests and reductions
 
  C++ Interface: lmc
 
