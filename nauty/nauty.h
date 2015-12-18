@@ -31,8 +31,8 @@ it is necessary to check they are correct.
 
 #define HAVE_CONST 1    /* compiler properly supports const */
 
-//#define HAVE_TLS 0   /* have storage attribute for thread-local */
-//#define TLS_ATTR   /* if so, what it is.  if not, empty */
+#define HAVE_TLS 0   /* have storage attribute for thread-local */
+#define TLS_ATTR   /* if so, what it is.  if not, empty */
 
 #define USE_ANSICONTROLS 0 
                           /* whether --enable-ansicontrols is used */

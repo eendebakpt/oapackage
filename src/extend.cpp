@@ -989,7 +989,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 #endif
 		}
 
-		if (nlmcarrays>1) break;
+		//if (nlmcarrays>1) break; HACK
 		
 		if ( p->row < N ) {	/*column is not yet full */
 			//log_print(SYSTEM, "extend_array: at row p->row %d, col %d\n", p->row, p->col);
