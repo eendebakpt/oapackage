@@ -32,19 +32,12 @@ void permute ( Type *source, Type *target, const std::vector<int> p )
 		target[i]=source[p[i]];
 }
 
-int oaunittest(int verbose, int writetests=0)
+int oaunittest ( int verbose, int writetests=0 )
 {
 	double t0=get_time_ms();
-		const char *bstr = "OA unittest";
+	const char *bstr = "OA unittest";
 	cprintf ( verbose, "%s: start\n", bstr );
 
-	arraydata_t adata ( 2, 20, 2, 6 );
-	OAextend oaextendx;
-	oaextendx.setAlgorithm ( ( algorithm_t ) MODE_ORIGINAL, &adata );
-
-	std::vector<arraylist_t> aa ( adata.ncols+1 );
-	printf ( "OA unittest: create root array\n" );
-	create_root ( &adata, aa[adata.strength] );
 
 	{
 		cprintf ( verbose, "%s: array transformations\n", bstr );
@@ -85,23 +78,25 @@ int oaunittest(int verbose, int writetests=0)
 		const int N=40;
 		const int t = 0;
 		arraydata_t arrayclass ( 2, N, t, 6 );
-		 std::vector<double> alpha(3); alpha[0]=1; alpha[1]=1; alpha[2]=0;
-		 int niter=5000;
-		 double t00 =get_time_ms();
-		DoptimReturn rr =  Doptimize(arrayclass, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
+		std::vector<double> alpha ( 3 );
+		alpha[0]=1;
+		alpha[1]=1;
+		alpha[2]=0;
+		int niter=5000;
+		double t00 =get_time_ms();
+		DoptimReturn rr =  Doptimize ( arrayclass, 10, alpha, 0, DOPTIM_AUTOMATIC, niter );
 
-
-		array_t ss[7] ={3,3,2,2,2,2,2};
-				arraydata_t arrayclassmixed ( ss, 36, t, 5 );
-		 rr =  Doptimize(arrayclassmixed, 10, alpha, 0, DOPTIM_AUTOMATIC, niter);
+		array_t ss[7] = {3,3,2,2,2,2,2};
+		arraydata_t arrayclassmixed ( ss, 36, t, 5 );
+		rr =  Doptimize ( arrayclassmixed, 10, alpha, 0, DOPTIM_AUTOMATIC, niter );
 
 		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t00 );
 	}
-	
+
 	{
 // test PEC sequence
 		cprintf ( verbose, "%s: PEC sequence\n", bstr );
-		for ( int ii=0; ii<6; ii++ ) {
+		for ( int ii=0; ii<5; ii++ ) {
 			array_link al  = exampleArray ( ii, 0 );
 			std::vector<double> pec = PECsequence ( al );
 			printf ( "oaunittest: PEC for array %d: ", ii );
@@ -112,25 +107,33 @@ int oaunittest(int verbose, int writetests=0)
 
 	{
 		cprintf ( verbose, "%s: D-efficiency test\n", bstr );
-	//  D-efficiency near-zero test
-{
-array_link al = exampleArray(14);
-double D= al.Defficiency();
-std::vector<double> dd = al.Defficiencies();
-printf("D %f, D (method 2) %f\n", D, dd[0] );
-assert( fabs(D-dd[0])<1e-4 );
-}
-{
-array_link al = exampleArray(15);
-double D= al.Defficiency();
-std::vector<double> dd = al.Defficiencies();
-printf("D %f, D (method 2) %f\n", D, dd[0] );
-assert( fabs(D-dd[0])<1e-4 );
-assert( fabs(D-0.335063) < 1e-3 );
-}
+		//  D-efficiency near-zero test
+		{
+			array_link al = exampleArray ( 14 );
+			double D= al.Defficiency();
+			std::vector<double> dd = al.Defficiencies();
+			printf ( "D %f, D (method 2) %f\n", D, dd[0] );
+			assert ( fabs ( D-dd[0] ) <1e-4 );
+		}
+		{
+			array_link al = exampleArray ( 15 );
+			double D= al.Defficiency();
+			std::vector<double> dd = al.Defficiencies();
+			printf ( "D %f, D (method 2) %f\n", D, dd[0] );
+			assert ( fabs ( D-dd[0] ) <1e-4 );
+			assert ( fabs ( D-0.335063 ) < 1e-3 );
+		}
 
 	}
-	
+
+	arraydata_t adata ( 2, 20, 2, 6 );
+	OAextend oaextendx;
+	oaextendx.setAlgorithm ( ( algorithm_t ) MODE_ORIGINAL, &adata );
+
+	std::vector<arraylist_t> aa ( adata.ncols+1 );
+	printf ( "OA unittest: create root array\n" );
+	create_root ( &adata, aa[adata.strength] );
+
 	/** Test extend of arrays **/
 	{
 		cprintf ( verbose, "%s: extend arrays\n", bstr );
@@ -142,7 +145,11 @@ assert( fabs(D-0.335063) < 1e-3 );
 			printf ( "  extend: column %d->%d: %ld->%ld arrays\n", kk, kk+1, aa[kk].size(), aa[kk+1].size() );
 
 		}
-		myassert ( aa[adata.ncols].size() ==75, "number of arrays" );
+
+		if ( aa[adata.ncols].size() != 75 ) {
+			printf ( "extended ?? to %d arrays\n", (int)aa[adata.ncols].size() );
+		}
+		myassert ( aa[adata.ncols].size() ==75, "number of arrays is incorrect" );
 
 		aa[adata.ncols].size();
 		setloglevel ( QUIET );
@@ -159,7 +166,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 	}
 
 	arraylist_t lst;
-	
+
 	{ /** Test different methods **/
 		cprintf ( verbose, "%s: test 2 different methods\n", bstr );
 
@@ -205,10 +212,10 @@ assert( fabs(D-0.335063) < 1e-3 );
 			}
 		}
 		Pareto<mvalue_t<long>,long> r = parsePareto ( lst, 1 );
-		cprintf ( verbose,"%s: test Pareto %d/%d: %.3f [s]\n", bstr, r.number(), r.numberindices(),  ( get_time_ms() - t0x ) );
+		cprintf ( verbose,"%s: test Pareto %d/%d: %.3f [s]\n", bstr, r.number(), r.numberindices(), ( get_time_ms() - t0x ) );
 
 	}
-		
+
 	{
 		cprintf ( verbose,"%s: reduce randomized array\n", bstr );
 		array_link al = exampleArray ( 3 );
@@ -261,7 +268,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 		if ( 1 ) {
 			al = exampleArray ( 9, vb );
 			al.showproperties();
-			d = al.Defficiencies(0, 1);
+			d = al.Defficiencies ( 0, 1 );
 			//printf("verbose: %d\n", verbose);
 			if ( verbose>=2 )
 				printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
@@ -282,48 +289,48 @@ assert( fabs(D-0.335063) < 1e-3 );
 		al = exampleArray ( 13, vb );
 		//al.showarray();
 		//al.showproperties();
-		
-		d = al.Defficiencies(0,1);
+
+		d = al.Defficiencies ( 0,1 );
 		if ( verbose>=2 )
 			printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
 
-		if ( ( fabs( d[0]-0.939014) > 1e-4 ) || ( fabs( d[3]-0.896812) > 1e-4 )  || ( fabs( d[2]-1) > 1e-4 )  ) {
-			printf("ERROR: D-efficiencies of example array 13 incorrect! \n");
-		d = al.Defficiencies(2,1);
-						printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
+		if ( ( fabs ( d[0]-0.939014 ) > 1e-4 ) || ( fabs ( d[3]-0.896812 ) > 1e-4 )  || ( fabs ( d[2]-1 ) > 1e-4 ) ) {
+			printf ( "ERROR: D-efficiencies of example array 13 incorrect! \n" );
+			d = al.Defficiencies ( 2,1 );
+			printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
 
-		exit(1);	
+			exit ( 1 );
 		}
-		
-		for(int ii=11; ii<11; ii++) {
-		printf("ii %d: ", ii); al = exampleArray ( ii, vb );
-		al.showarray();
-		al.showproperties();
-		
-		d = al.Defficiencies();
-		//if ( verbose>=2 )
+
+		for ( int ii=11; ii<11; ii++ ) {
+			printf ( "ii %d: ", ii );
+			al = exampleArray ( ii, vb );
+			al.showarray();
+			al.showproperties();
+
+			d = al.Defficiencies();
+			//if ( verbose>=2 )
 			printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
 		}
-		
+
 	}
-{
+	{
 		cprintf ( verbose,"%s: test robustness\n", bstr );
 
-				array_link A(0,8,0);
-		printf("should return an error\n  ");
+		array_link A ( 0,8,0 );
+		printf ( "should return an error\n  " );
 		A.Defficiencies();
-		
-		A = array_link(1,8,0);
-		printf("should return an error\n  ");
-		A.at(0,0)=-2;
+
+		A = array_link ( 1,8,0 );
+		printf ( "should return an error\n  " );
+		A.at ( 0,0 ) =-2;
 		A.Defficiencies();
-}
+	}
 
 #ifdef HAVE_BOOST
 
 
-	if(writetests)
-	{
+	if ( writetests ) {
 		cprintf ( verbose,"OA unittest: reading and writing of files\n" );
 
 		boost::filesystem::path tmpdir = boost::filesystem::temp_directory_path();
@@ -350,7 +357,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 
 		// TODO: implement writing of binary files...
 
-//      oainfo(tempstr.c_str() );
+		//      oainfo(tempstr.c_str() );
 	}
 
 #endif
@@ -359,7 +366,7 @@ assert( fabs(D-0.335063) < 1e-3 );
 	cprintf ( verbose,"OA unittest: also run ptest.py to perform checks!\n" );
 
 	return 0;
-	
+
 }
 
 /**
@@ -396,8 +403,8 @@ int main ( int argc, char* argv[] )
 		print_options ( std::cout );
 	}
 
-	oaunittest(verbose, 1);
-	
+	oaunittest ( verbose, 1 );
+
 
 	return 0;
 }

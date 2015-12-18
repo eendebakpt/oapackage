@@ -165,7 +165,7 @@ endif ()
 # for debugging
 if("$ENV{USER}" STREQUAL "eendebakpt" )
   #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
-  set(COPTS "-g -O0" ) # -std=c++0x ")
+  #set(COPTS "-g -O0" ) # -std=c++0x ")
 endif()
 
 if(OADEV)
