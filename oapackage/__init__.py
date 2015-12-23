@@ -57,13 +57,15 @@ def unittest(verbose=1):
     # DOP reduction
     if verbose>=2:
         print('unittest: test delete-one-factor GWLP reduction')
-    al = oalib.exampleArray(11, 1)
+    al = oalib.exampleArray(5, 1)
     al2 = al.randomperm()
         
     alr=al.reduceDOP()    
     al2r=al2.reduceDOP()    
     if not alr==al2r:
-        print('error: DOP reduced arrays unequal!: %d'  % (al==al2) )
+        print('error: DOP reduced arrays unequal!: %d'  % (alr==al2r) )
+        print('alr'); alr.showarraycompact()
+        print('al2r'); al2r.showarraycompact()
         return False
 
     at = oalib.reductionDOP(al)

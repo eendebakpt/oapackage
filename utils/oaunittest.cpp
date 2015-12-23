@@ -397,6 +397,19 @@ int oaunittest ( int verbose, int writetests=0 )
 
 #endif
 
+if (0)
+{
+		cprintf ( verbose,"OA unittest: test nauty\n" );
+	array_link al = exampleArray ( 5, 2 );
+	arraydata_t arrayclass = arraylink2arraydata ( al );
+	array_transformation_t trans ( arrayclass );
+	trans.randomize();
+	array_link alr = trans.apply ( al );
+
+	//array_transformation_t ttm = reduceOAnauty ( alr, 1 );
+	//array_link alm = ttm.apply ( alr );	
+}
+
 	cprintf ( verbose,"OA unittest: complete %.3f [s]!\n", ( get_time_ms() - t0 ) );
 	cprintf ( verbose,"OA unittest: also run ptest.py to perform checks!\n" );
 

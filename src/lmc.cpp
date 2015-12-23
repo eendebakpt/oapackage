@@ -4015,7 +4015,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 		indexsort is ( dopgwp );
 
 		if ( ad.ismixed() ) {
-			printf ( "reduceArraysGWLP: warning array is mixed!\n" );
+			//printfd ( "reduceArraysGWLP: warning array is mixed!\n" );
 
 			dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
 
@@ -4095,7 +4095,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 
 			int changed = check_root_update ( alf.array, ad, reduction.array );
 			if ( changed ) {
-				printfd ( "reduceArraysGWLP: array changed %d.\n", changed );
+				//printfd ( "reduceArraysGWLP: array changed %d.\n", changed );
 				// reduction.getArray().showarray();
 			}
 		}

@@ -37,12 +37,14 @@ it is necessary to check they are correct.
 #define USE_ANSICONTROLS 0 
                           /* whether --enable-ansicontrols is used */
 
+/*
 #define _FILE_OFFSET_BITS no
 #if _FILE_OFFSET_BITS == 64
 #define _LARGEFILE_SOURCE
 #else
 #undef _FILE_OFFSET_BITS
 #endif
+*/
 
 /* Support of gcc extensions __builtin_clz, __builtin_clzl, __builtin_clzll */
 #define HAVE_CLZ 0
