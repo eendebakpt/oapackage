@@ -517,6 +517,7 @@ void LMCreduction_t::free()
 
 }
 
+#define MINCOLMAX 1000
 
 LMCreduction_t::LMCreduction_t ( const LMCreduction_t  &at )
 {
@@ -530,6 +531,8 @@ LMCreduction_t::LMCreduction_t ( const LMCreduction_t  &at )
 	ncols=at.ncols;
 	nrows=at.nrows;
 
+	targetcol=at.targetcol;
+	mincol=at.mincol;
 	staticdata = 0;
 
 	sd=symmdataPointer ( ( symmdata * ) 0 );
@@ -553,6 +556,9 @@ LMCreduction_t & LMCreduction_t::operator= ( const LMCreduction_t &at )	/// Assi
 	maxdepth=at.maxdepth;
 	lastcol=at.lastcol;
 	nred=at.nred;
+
+	targetcol=at.targetcol;
+	mincol=at.mincol;
 	ncols=at.ncols;
 	nrows=at.nrows;
 
@@ -580,6 +586,9 @@ void LMCreduction_t::reset()
 	state=REDUCTION_INITIAL;
 	init_state=COPY; // ?
 	transformation->reset();
+
+	targetcol=0;
+	mincol=MINCOLMAX;
 
 	//printf("here: ncols %d\n", ncols);
 	clearSymmetries();
@@ -635,8 +644,7 @@ void LMCreduction_t::updateFromLoop ( const arraydata_t &ad, const dyndata_t &dy
 
 	/* copy row permutation */
 	dyndatacpy.getRowperm ( this->transformation->rperm );
-	//for ( rowindex_t x=0; x<ad.N; x++ )
-	//    this->transformation->rperm[x] = dyndatacpy.rowsort[x].r;
+	
 	/* copy column permutation */
 	copy_perm ( dyndatacpy.colperm, this->transformation->cperm, ad.ncols );
 
@@ -660,7 +668,6 @@ void LMCreduction_t::updateFromLoop ( const arraydata_t &ad, const dyndata_t &dy
 		int rr, cc;
 		tmp.firstDiff ( tmp2, rr, cc );
 		printf ( "updateFromLoop: first diff col %d, row %d\n", cc, rr );
-
 	}
 }
 
@@ -1550,6 +1557,9 @@ lmc_t LMCreduce_root_level_perm ( array_t const *original, const arraydata_t* ad
 			}
 #endif
 		}
+
+		//printfd("l %d/%d\n", l, totalperms); reduction->show();
+		
 		// update level permutations structure
 		if ( reduction->mode>=OA_REDUCE ) {
 			root_row_permutation_from_index ( l, ad, lperm_p );
@@ -1568,12 +1578,6 @@ lmc_t LMCreduce_root_level_perm ( array_t const *original, const arraydata_t* ad
 		if ( ret==LMC_LESS ) {
 			if ( 0 ) {
 				printf ( "LMC_non_root: l %d returned LMC_LESS\ntransformed array:\n", l );
-				//show_array ( original, ad->ncols, ad->N, dyndata->colperm, dyndata->rowsort );
-				print_array ( "array:\n" , original, ad->ncols, ad->N );
-				printf ( "root lperm was:\n" );
-				print_perm ( rootrowperms[l], ad->N );
-				printf ( "------\n" );
-				print_array ( "LMC_non_root: reduction->array:\n", reduction->array, ad->ncols, ad->N );
 			}
 			break;
 		}
@@ -3065,18 +3069,18 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 	//printfd("oaextend.getAlgorithm() %d, MODE_ORIGINAL %d\n", oaextend.getAlgorithm(),MODE_ORIGINAL );
 	switch ( oaextend.getAlgorithm() ) {
 	case MODE_ORIGINAL: {
-		if (0)
-		{
-#pragma omp critical(test)	
-		printfd("FIXME: does not work for oaextendA !?!\n"); fflush(stdout);
-		//return LMC_MORE;
-		//ad->order=ORDER_J5;
-		//	setloglevel(EXTRADEBUG); 
-		 //return LMC_MORE;
-		 //printfd("extra logging\n"); fflush(stdout);
-		//setloglevel(EXTRADEBUG); printfd("extra logging\n"); fflush(stdout);
-		 //return LMC_MORE;
-		}		 
+		if ( 0 ) {
+			#pragma omp critical(test)
+			printfd ( "FIXME: does not work for oaextendA !?!\n" );
+			fflush ( stdout );
+			//return LMC_MORE;
+			//ad->order=ORDER_J5;
+			//	setloglevel(EXTRADEBUG);
+			//return LMC_MORE;
+			//printfd("extra logging\n"); fflush(stdout);
+			//setloglevel(EXTRADEBUG); printfd("extra logging\n"); fflush(stdout);
+			//return LMC_MORE;
+		}
 		lmc = LMCreduce ( array, array, &ad, &dynd, &reduction , oaextend );
 
 		//printfd("LMCreduce done\n" ); exit(0);
@@ -3461,19 +3465,10 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 		printfd ( "LMCreduce: acquired LMC_static_struct_t from single global object\n" );
 #endif
 	} else {
-		// printf("LMCreduce: using LMC_static_struct_t from reduction!\n");
 		tpp = ( reduction->staticdata );
-		//printf("here...\n");
-		//printf("tpp %ld\n", long(tpp));
 	}
 
-//    LMC_static_struct_t &tmpStatic = globalStatic;
 	LMC_static_struct_t &tmpStatic = *tpp;
-// printf(" &tmpStatic %ld, tpp %ld\n", (long)&tmpStatic, (long)tpp) ;
-	/*
-	printf("LMCreduce: tmpStatic: "); tmpStatic.show();
-	//tmpStatic.setRef("LMCreduce\n");
-	*/
 
 	//printfd("LMCreduce: reduction->init_state %d\n", reduction->init_state);
 
@@ -3487,6 +3482,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 			printf ( "LMCreduce: reduction.init_state is INIT_STATE_INVALID\n" );
 			throw;
 		}
+				
 		if ( reduction->init_state==COPY ) {
 			reduction->setArray ( array, ad->N, ad->ncols );
 			reduction->init_state=COPY;
@@ -3499,7 +3495,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 		bool rootform = check_root_form ( reduction->array, *ad );
 
 		if ( ! rootform ) {
-			log_print ( SYSTEM, "LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs special initialization! reduction->mode %d\n", reduction->mode );
+			log_print ( SYSTEM, "LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d)\n", reduction->mode, OA_TEST, OA_REDUCE );
 
 			int changed = check_root_update ( original, *ad, reduction->array );
 
@@ -3828,10 +3824,11 @@ std::vector< GWLPvalue > mixedProjGWLP ( const std::vector< GWLPvalue > dopgwp, 
 		GWLPvalue w = dopgwp[i];
 		std::vector<double> t;
 		t.push_back ( -ad.s[i] );
+
 		t.insert ( t.end(), w.v.begin(), w.v.end() );
 
 		if ( verbose>=2 ) {
-			printf ( "reduceArraysGWLP: mixed array: column %d\n   ", i );
+			printf ( "reduceArraysGWLP: mixed array: column %d: s[%d]=%d: \n   ", i, i, ad.s[i] );
 			display_vector<double> ( t );
 			printf ( "\n" );
 		}
@@ -3851,23 +3848,56 @@ array_transformation_t reductionDOP ( const array_link &al, int verbose )
 {
 	int strength=al.strength();
 
-
 	arraydata_t ad =arraylink2arraydata ( al );
 
+
 	std::vector< GWLPvalue > dopgwp = projectionGWLPs ( al );
+	if ( 0 ) { // hack
+		printfd ( "hack\n" );
+		for ( int i=0; i<5; i++ ) {
+			array_link d = al.deleteColumn ( i );
+			std::vector<double> gma = GWLP ( d );
+			printfd ( " i %d\n", i );
+			al.show();
+			if ( i<3 ) {
+				std::copy ( al.array, al.array+al.n_rows* ( 5-1 ), d.array );
+			}
+			if ( i==3 && 0 ) {
+				std::copy ( al.array, al.array+al.n_rows* ( 5-1 ), d.array );
+
+			}
+			gma = GWLP ( d );
+			if ( gma[3]==1.1 ) {
+				printf ( "huh?\n" );
+
+			}
+			for ( int j=0; j<0; j++ )
+				gma[4]=i;
+			printf ( "gma %d: ", i );
+			display_vector ( gma );
+			printf ( "\n" );
+			dopgwp[i]= gma;
+
+			//dopgwp[i]=i;
+		}
+	}
+
 	indexsort is ( dopgwp );
 
 
 	std::vector< GWLPvalue > dofvalues = dopgwp;
+
 	if ( ad.ismixed() ) {
 		dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
-
 	}
+
+	is.init ( dofvalues );
+
 
 	std::vector<DOFvalue> sdofvalues = is.sorted ( dofvalues );
 
 	if ( verbose>=2 ) {
-		printf ( "  delete-1-factor values sorted: " );
+		printf ( "reductionDOP: delete-1-factor values sorted: " );
 		display_vector< DOFvalue > ( sdofvalues );
 		std::cout << endl;
 	}
@@ -3896,22 +3926,33 @@ array_transformation_t reductionDOP ( const array_link &al, int verbose )
 
 	LMCreduction_t reduction ( &ad );
 
-	array_link lm ( al );
+	//array_link lm ( al );
 
 	if ( verbose>=3 )
 		ad.show ( 2 );
 
+
 	reduction.mode=OA_REDUCE;
 	reduction.init_state=COPY;
 	{
-	reduction.init_state=INIT;
+		reduction.init_state=INIT;
+		//reduction.init_state=COPY;
 		reduction.setArray ( alf );
-					int changed = check_root_update ( alf.array, ad, reduction.array );
-
+		int changed = check_root_update ( alf.array, ad, reduction.array );
+		copy_array ( alf.array, reduction.array, al.n_rows, al.n_columns ); // hack?
 	}
 
+	//printfd("hack...\n");	array_transformation_t atx(ad); LMCreduction_t reductionx(&ad);	reductionx.init_state=COPY; OAextend oaextendx; 	oaextendx.setAlgorithm ( MODE_ORIGINAL );
+//reductionx.mode=OA_TEST; reductionx.mode=OA_REDUCE_PARTIAL;
+//printfd("hack...\n");	lmc_t retx = LMCcheck ( al, ad, oaextendx, reductionx ); return atx;
+//	printfd("hack\n"); LMCcheck ( al, ad, oaextendx, reductionx ); // HACK last line changed, issue is the reduction.INIT???
+//	printfd("hack\n"); return at;
+	//printfd("hack\n"); copy_array(al.array, reduction.array, al.n_rows, al.n_columns); // hack?
+
+
 	lmc_t ret = LMCcheck ( alf, ad, oaextend, reduction );
-	return ( * ( reduction.transformation ) ) * at ;
+	array_transformation_t tmp = ( * ( reduction.transformation ) ) * at ;
+	return tmp;
 }
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int verbose, int dopruning, int strength, int dolmc )
@@ -3932,7 +3973,6 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 		//std::vector<int> s(ncols); for(int ik=0; ik<ncols; i++) s[ik]=2;
 
 		arraydata_t ad = arraylink2arraydata ( al, 0, strength );
-
 
 		if ( verbose>=4 ) {
 			std::vector<double> gwp = GWLP ( al );
@@ -3978,7 +4018,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 			printf ( "reduceArraysGWLP: warning array is mixed!\n" );
 
 			dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
-			
+
 			if ( verbose>=3 ) {
 				printf ( "old indexsort:\n" );
 				is.show();
@@ -4046,7 +4086,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 		if ( verbose>=3 )
 			ad.show ( 2 );
 
-		
+
 		reduction.mode=OA_REDUCE;
 		reduction.init_state=COPY;
 		{
@@ -4055,7 +4095,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 
 			int changed = check_root_update ( alf.array, ad, reduction.array );
 			if ( changed ) {
-				// printfd("reduceArraysGWLP: array changed %d)\n", changed);
+				printfd ( "reduceArraysGWLP: array changed %d.\n", changed );
 				// reduction.getArray().showarray();
 			}
 		}

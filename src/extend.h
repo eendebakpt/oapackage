@@ -65,8 +65,7 @@ public:
         algmode = MODE_AUTOSELECT;
 #endif
     };
-    OAextend( const OAextend &o)  {
-      this->singleExtendTime = o.singleExtendTime;
+    OAextend( const OAextend &o) : singleExtendTime(o.singleExtendTime) {
       this->nLMC = o.nLMC;
       this->checkarrays = o.checkarrays;
       this->use_row_symmetry = o.use_row_symmetry;

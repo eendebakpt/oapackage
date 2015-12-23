@@ -502,6 +502,12 @@ void display_vector ( const std::vector<atype> &v )
 	const char *sep = " ";
 	std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
 }
+#else
+template <class atype>
+void display_vector ( const std::vector<atype> &v )
+{
+// dummy	
+}
 #endif
 
 template <class atype>

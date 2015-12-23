@@ -32,14 +32,14 @@ class ndarray
 
 public:
 	Type *data;
-	std::vector<int> dims;
-	int k;
-	int n;
+	std::vector<int> dims; /// dimensions of the array
+	int k; // dimension of the array
+	int n; // total number of elements in the array
 	std::vector<int> cumdims;
 	std::vector<int> cumprod;
 
 private:
-	std::vector<int> tmpidx;
+	//std::vector<int> tmpidx;
 public:
 	ndarray ( std::vector<int> dimsx, int verbose=0 ) {
 		//verbose=2;
@@ -47,7 +47,7 @@ public:
 		dims = dimsx;
 		cumdims.resize ( k+1 );
 		cumprod.resize ( k+1 );
-		tmpidx.resize ( k );
+		//tmpidx.resize ( k );
 		n=1;
 		for ( int i=0; i<k; i++ )
 			n*= dims[i];
@@ -68,9 +68,11 @@ public:
 		std::fill ( data, data+n, 0 );
 	}
 
-	std::string tmpidxstr ( int i ) const {
+	
+	std::string idxstring ( int i ) const {
 		std::string s = "";
-		linear2idx ( i );
+		std::vector<int> tmpidx(this->k);
+		linear2idx ( i, tmpidx );
 
 		for ( int i=0; i<k; i++ ) {
 			s+= printfstring ( "[%d]", tmpidx[i] ) ;
@@ -79,29 +81,46 @@ public:
 	}
 
 
+	long totalsize() const {
+		return n;
+//	return this->cumprod[	
+	}
 	void show() const {
 		for ( int i=0; i<n; i++ ) {
-			std::string idxstr=tmpidxstr ( i );
-			myprintf ( "B[%d] = B%s = %f\n", i, idxstr.c_str(), ( double ) data[i] );
+			std::string idxstrx=idxstring ( i );
+			myprintf ( "B[%d] = B%s = %f\n", i, idxstrx.c_str(), ( double ) data[i] );
 		}
 	}
 
 	/// convert a linear index to normal indices
 	inline void linear2idx ( int ndx, int *nidx = 0 ) const {
-
+		
+		if (nidx==0) return;
+		
 		for ( int i=k-1; i>=0; i-- ) {
 			div_t xx = div ( ndx, cumprod[i] );
 			int vi = xx.rem;
 			int vj=xx.quot;
-
-			std::vector<int> *p = ( std::vector<int> * ) &tmpidx;
-			//tmpidx[i] = vj;
-			p->at ( i ) = vj;
+			nidx[i] = vj;
+			//std::vector<int> *p = ( std::vector<int> * ) &tmpidx; p->at ( i ) = vj;
 			ndx = vi;
 		}
+		/*
 		if ( nidx!=0 ) {
 			for ( int i=0; i<k; i++ )
 				nidx[i]=tmpidx[i];
+		} */
+	}
+	/// convert a linear index to normal indices
+	inline void linear2idx ( int ndx, std::vector<int> & nidx ) const {
+
+		assert(nidx.size()==this->k);
+		for ( int i=k-1; i>=0; i-- ) {
+			div_t xx = div ( ndx, cumprod[i] );
+			int vi = xx.rem;
+			int vj=xx.quot;
+			nidx[i] = vj;
+			ndx = vi;
 		}
 	}
 
@@ -114,6 +133,11 @@ public:
 		return lidx;
 	}
 
+	/// set all values of the array to specified value
+	void setconstant(Type val) {
+		std::fill(this->data, this->data+this->n, val);	
+	}
+	
 	/// set value at position
 	void set ( int *idx, Type val ) {
 		int lidx=getlinearidx ( idx );
@@ -253,6 +277,8 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 
 
 	int *dh = new int[sg.ngroups];
+//std::fill(dh, dh+sg.ngroups, 0);
+//printfd("dh: %d, %d\n", sg.ngroups, ad.ncolgroups);
 
 	std::vector<int> dims ( ad.ncolgroups );
 	for ( size_t i=0; i<dims.size(); i++ )
@@ -261,7 +287,6 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 		myprintf ( "distance_distribution_mixed before: \n" ); //display_vector(dd); std::cout << std::endl;
 		B.show();
 	}
-
 
 	for ( int r1=0; r1<N; r1++ ) {
 		for ( int r2=0; r2<r1; r2++ ) {
@@ -310,7 +335,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 
 	delete [] dh;
 
-
+/*
 	if ( 0 ) {
 		myprintf ( "test: " );
 		int tmp[100];
@@ -320,7 +345,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 		print_perm ( tmp, sg.ngroups );
 		myprintf ( " linear index: %d -> %d\n", li0, li );
 	}
-
+*/
 }
 
 template <class Type>
@@ -413,6 +438,9 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	int *bi = new int[sg.ngroups];
 	int *iout = new int[sg.ngroups];
 
+	for(int i=0; i<sg.ngroups; i++) bi[i]=0;
+	for(int i=0; i<sg.ngroups; i++) iout[i]=0;
+	
 //--------------
 
 	for ( int j=0; j<Bout.n; j++ ) {
@@ -442,7 +470,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 		}
 		Bout.data[j] /= N;
 		if ( verbose>=2 )
-			myprintf ( "macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.tmpidxstr ( j ).c_str(), Bout.data[j] );
+			myprintf ( "macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.idxstring ( j ).c_str(), Bout.data[j] );
 	}
 
 	if ( verbose>=1 ) {
@@ -452,8 +480,10 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 
 //----------------
 
-	std::vector<double> A ( sg.n+1 );
+	// use formula from page 555 in Xu and Wu  (Theorem 4.i)
+	std::vector<double> A ( sg.n+1, 0 );
 
+	
 	for ( int i=0; i<jprod; i++ ) {
 		//myprintf("   %s\n", B.tmpidxstr(i).c_str() );
 		Bout.linear2idx ( i, bi );
@@ -462,12 +492,14 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 			jsum += bi[j];
 		if ( verbose>=2 )
 			myprintf ( "   jsum %d/%d, i %d\n", jsum, ( int ) A.size(), i );
+		//printfd("jsum %d/%d, i %d/%d\n", jsum, sg.n+1, i, jprod);
 		A[jsum]+=Bout.data[i];
-
+		//}
 	}
 
 	delete [] iout;
 	delete [] bi;
+	
 	return A;
 }
 
@@ -574,15 +606,15 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 	symmetry_group sg ( adata.getS(), false );
 	//myprintf(" adata.ncolgroups: %d/%d\n", adata.ncolgroups, sg.ngroups);
 
+	
 	std::vector<int> dims ( adata.ncolgroups );
 	for ( unsigned int i=0; i<dims.size(); i++ )
 		dims[i] = adata.colgroupsize[i]+1;
 
-	//          myprintf("  dims:        "); display_vector<int>(dims, "%d "); std::cout << endl;
-
 	ndarray<double> B ( dims );
 	ndarray<double> Bout ( dims );
-
+	//printfd("GWLPmixed: %s\n", adata.idstr().c_str() ); printf("  dims "); display_vector(dims); printf("\n");
+	
 	distance_distribution_mixed ( al, B, verbose );
 	if ( verbose>=3 ) {
 		myprintf ( "GWLPmixed: distance distrubution\n" );

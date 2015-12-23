@@ -373,6 +373,7 @@ typedef symmdata * symmdataPointer;
 //typedef std::vector<std::vector<int> > arraysymmetry;
 typedef std::vector< arraysymmetry > symmetryset;
 
+// hack: add documentation here!
 enum INIT_STATE {INIT_STATE_INVALID, COPY, INIT, SETROOT};
 
 /// helper function
@@ -414,7 +415,7 @@ struct LMCreduction_t {
     long nred;
 
     int targetcol;	// NOTE: document this
-    int mincol;
+    int mincol;  // used in debugging
 
     int nrows, ncols;
 
@@ -725,13 +726,13 @@ public:
     /// get row permutation
     void getRowperm(rowperm_t &rperm) const {
 	if(this->rowsortl==0) {
-        for ( rowindex_t x=0; x<this->N; x++ )
-        rperm[x] = this->rowsort[x].r;
+	  for ( rowindex_t x=0; x<this->N; x++ )
+	    rperm[x] = this->rowsort[x].r;
 	} else {
-        for ( rowindex_t x=0; x<this->N; x++ )
-        rperm[x] = this->rowsortl[x];
-	  
+	  for ( rowindex_t x=0; x<this->N; x++ )
+	    rperm[x] = this->rowsortl[x];	  
 	}
+     // printfd("getRowperm: after "); print_perm(rperm, this->N);
     }
 
     /// return lightweight row permutation
@@ -842,7 +843,7 @@ inline int check_root_update ( carray_t *original, const arraydata_t &ad, array_
         //printf("check_root_update: copying!\n");
         copy_array ( root, target, ad.N, ad.strength );
         for ( int j=0; j<ad.N; j++ )
-            target[ad.N*ad.strength+j]=ad.s[ad.strength];
+            target[ad.N*ad.strength+j]=ad.s[ad.strength]+100;
         changed=1;
 
     }

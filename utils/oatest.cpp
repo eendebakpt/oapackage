@@ -414,11 +414,12 @@ int main ( int argc, char* argv[] )
 	opt.processCommandArgs ( argc, argv );
 
 
-			int randvalseed = opt.getIntValue ( 'r', 1 );
+	int randvalseed = opt.getIntValue ( 'r', 1 );
+	int ix = opt.getIntValue ( 'i', 11 );
 
-				srand ( randvalseed );
+	srand ( randvalseed );
 
-				
+
 	print_copyright();
 	//cout << system_uname();
 	setloglevel ( NORMAL );
@@ -431,65 +432,180 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
-		if (1) {
+
+	if ( 1 ) {
+
+		array_link al = exampleArray ( 11, 0 );
+		al = exampleArray ( ix, 1 );
+		al.showproperties();
+
+		al=al.reduceLMC();
+		//array_link al2 = al.randomperm();
+		array_link al2 = al.randomcolperm();
+ 		array_link alx=al2.reduceDOP();
+		//alx.showarraycompact();
+
+		//return 0;
+
+		printf ( "------------ start ------\n" );
+
+if(0)
+		{
+			arraydata_t ad = arraylink2arraydata ( al );
+
+			array_transformation_t atx ( ad );
+			atx.reset();
+			atx.rperm[al.n_rows-1]=0;
+			atx.rperm[0]=al.n_rows-1;
+			//atx.randomizerowperm();
+			LMCreduction_t reductionx ( &ad );
+
+			array_link alr = atx.apply ( al );
+
+			reductionx.init_state=COPY;
+			OAextend oaextendx;
+			oaextendx.setAlgorithm ( MODE_ORIGINAL );
+			reductionx.mode=OA_TEST;
+			reductionx.mode=OA_REDUCE_PARTIAL;
+			reductionx.mode=OA_REDUCE;
+			LMCcheck ( alr, ad, oaextendx, reductionx ); // HACK last line changed, issue is the reduction.INIT???
+
+			if ( 1 ) {
+				printf ( "--- al\n" );
+				al.showarraycompact();
+				printf ( "--- alr\n" );
+				alr.showarraycompact();
+
+				array_link alx=reductionx.transformation->apply ( al );
+
+				printf ( "--- alx\n" );
+				alx.showarraycompact();
+			}
+
+			reductionx.transformation->show();
+			return 0;
+		}
+
+
+		//al2=al;
+
+		{
+			printf ( "before shuffle\n" );
+			al.showarraycompact();
+//	printf("---\n");
+//	al2.showarraycompact();
+		}
+
+		array_transformation_t tr ( arraylink2arraydata ( al ) );
+		tr.reset();
+		tr.show();
+		tr.randomizerowperm();
+//std::swap(tr.rperm[0], tr.rperm[1]);
+		//al2 = tr.apply ( al );
+
+		if ( 0 ) {
+			arraydata_t ad = arraylink2arraydata ( al );
+
+			array_transformation_t atx ( ad );
+			LMCreduction_t reductionx ( &ad );
+
+			reductionx.init_state=COPY;
+			OAextend oaextendx;
+			oaextendx.setAlgorithm ( MODE_ORIGINAL );
+			reductionx.mode=OA_TEST;
+			reductionx.mode=OA_REDUCE_PARTIAL;
+			LMCcheck ( al, ad, oaextendx, reductionx ); // HACK last line changed, issue is the reduction.INIT???
+		}
+		array_transformation_t trx = reductionDOP ( al2, 0 );
+		array_link al2rX = trx.apply ( al2 );
+		//return 0;
+
+		array_link alr=al.reduceDOP()    ;
+		array_link al2r=alr;
+		al2r=al2.reduceDOP()    ;
+
+//	printf("...\n");
+
+		printf ( "--- alr\n" );
+		alr.showarraycompact();
+		printf ( "--- al2r\n" );
+		al2r.showarraycompact();
+		printf ( "--- al2rX\n" );
+		al2rX.showarraycompact();
+
+		if ( al2rX!=al2r ) {
+			printfd ( "error: reduceDOP and reductionDOP arrays unequal!: \n" );
+			trx.show();
+		}
+		if ( alr!=al2r ) {
+			printf ( "error: DOP reduced arrays unequal!: \n" );
+
+			alr.showarraycompact();
+			printf ( "---\n" );
+			al2r.showarraycompact();
+
+			//	trx.show();
+		}
+
+		return 0;
+	}
+	if ( 1 ) {
 		int ii = opt.getIntValue ( 'i', 1 );
-		array_link al = exampleArray(ii, 1);
-		
+		array_link al = exampleArray ( ii, 1 );
+
 		al.reduceDOP();
 		//al=al.randomperm();
 		al=al.randomcolperm();
-		
-		arraydata_t arrayclass = arraylink2arraydata(al);
+
+		arraydata_t arrayclass = arraylink2arraydata ( al );
 		array_transformation_t trans ( &arrayclass );
 		trans.randomizecolperm();
 		trans.randomizerowperm();
 		trans.randomize();
-		al=trans.apply(al);
+		al=trans.apply ( al );
 
-	
-		
+		array_transformation_t at = reductionDOP ( al, 1 );
+		array_link alr2 = at.apply ( al );
+
 		array_link alr = al.reduceDOP();
-		
-		
-		array_transformation_t at = reductionDOP(al, 1);
-		array_link alr2 = at.apply(al);
-		
+
+
+
 //alr2 = at.inverse().apply(al);
 
 		al.showarraycompact();
-		printf("----\n");
+		printf ( "----\n" );
 		alr.showarraycompact();
-		printf("----\n");
+		printf ( "----\n" );
 		alr2.showarraycompact();
-		
-		if (alr==alr2)
-			printf("arrays equal!\n");
+
+		if ( alr==alr2 )
+			printf ( "arrays equal!\n" );
 		else
-			printf("arrays unequal!\n");
-	return 0;	
+			printf ( "arrays unequal!\n" );
+		return 0;
 	}
-	
-	if (1) {
+
+	if ( 1 ) {
 		int ii = opt.getIntValue ( 'i', 1 );
-		array_link al = exampleArray(ii, 1);
-		
+		array_link al = exampleArray ( ii, 1 );
+
 		double A= al.Aefficiency();
-		std::vector<double> aa = Aefficiencies(al, 1);
-		
-		printf(" A : %f -> %f\n" , A, aa[0] );
-		printf(" A A1 A2: %f, %f, %f\n" , aa[0], aa[1], aa[2] );
-		
+		std::vector<double> aa = Aefficiencies ( al, 1 );
+
+		printf ( " A : %f -> %f\n" , A, aa[0] );
+		printf ( " A A1 A2: %f, %f, %f\n" , aa[0], aa[1], aa[2] );
+
 		al.showarray();
-		
-	return 0;	
+
+		return 0;
 	}
-	if (0)
-	{
+	if ( 0 ) {
 		int r = opt.getIntValue ( 'r', 8 );
 		int niter = opt.getIntValue ( 'i', 100 );
 
 		int race=0;
-		
+
 		#pragma omp parallel for // num_threads(8) // schedule(dynamic,1)
 		for ( int i=0; i<r; i++ ) {
 			array_link al = exampleArray ( 12 );
@@ -498,23 +614,23 @@ int main ( int argc, char* argv[] )
 			//al = exampleArray ( 12 );
 			//al = al.selectFirstColumns(9);
 //		int strength  = 3;
-			
+
 			int r=race;
 			race++;
-			if( r+1!=race )  {
-				printf("race condition\n");
+			if ( r+1!=race )  {
+				printf ( "race condition\n" );
 			}
-			
+
 			int N = al.n_rows;
 			//printf ( "iter loop %d: strength %d\n", i, ad.strength ) ;
 			printf ( "iter loop %d:\n", i ) ;
 			for ( int ij=0; ij<1; ij++ ) {
 				for ( int j=0; j<niter; j++ ) {
 #ifdef _OPENMP
-					printf(" loop %d: tid %d\n", j, omp_get_thread_num() );
+					printf ( " loop %d: tid %d\n", j, omp_get_thread_num() );
 #endif
 					OAextend oaextend;
-			arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
+					arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
 
 					arraydata_t adlocal ( &ad, al.n_columns );
 					LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
@@ -548,8 +664,7 @@ int main ( int argc, char* argv[] )
 		exit ( 0 );
 	}
 
-	if (0)
-	{
+	if ( 0 ) {
 		int r = opt.getIntValue ( 'r', 3 );
 
 		array_link al = exampleArray ( 12 );
@@ -585,7 +700,7 @@ int main ( int argc, char* argv[] )
 			printf ( "iter loop %d\n", ij );
 			for ( int j=0; j<200000; j++ ) {
 				//jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
-				fastj(al.array, N, 5, firstcolcomb );
+				fastj ( al.array, N, 5, firstcolcomb );
 			}
 		}
 		exit ( 0 );

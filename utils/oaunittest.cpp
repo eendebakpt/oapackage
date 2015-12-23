@@ -39,6 +39,8 @@ int oaunittest ( int verbose, int writetests=0 )
 	cprintf ( verbose, "%s: start\n", bstr );
 
 
+	int allgood=1;
+
 	{
 		cprintf ( verbose, "%s: array transformations\n", bstr );
 		// TODO: array transformation class: check non-symmetric case
@@ -147,7 +149,7 @@ int oaunittest ( int verbose, int writetests=0 )
 		}
 
 		if ( aa[adata.ncols].size() != 75 ) {
-			printf ( "extended ?? to %d arrays\n", (int)aa[adata.ncols].size() );
+			printf ( "extended ?? to %d arrays\n", ( int ) aa[adata.ncols].size() );
 		}
 		myassert ( aa[adata.ncols].size() ==75, "number of arrays is incorrect" );
 
@@ -217,6 +219,36 @@ int oaunittest ( int verbose, int writetests=0 )
 	}
 
 	{
+		cprintf ( verbose,"%s: check reduction transformation\n", bstr );
+		array_link al = exampleArray ( 6 ).reduceLMC();
+
+		arraydata_t adata=arraylink2arraydata ( al );
+		LMCreduction_t reduction ( &adata );
+			reduction.mode=OA_REDUCE;
+
+		reduction.init_state=COPY;
+		OAextend oaextend;
+		oaextend.setAlgorithm ( MODE_ORIGINAL, &adata );
+		array_link alr = al.randomperm();
+
+		array_link al2=reduction.transformation->apply ( al );
+
+		//printf("input: \n"); al2.showarray();
+		lmc_t tmp = LMCcheck ( alr,adata, oaextend, reduction );
+
+		array_link alx = reduction.transformation->apply ( alr );
+
+		bool c = alx==al;
+		if ( !c ) {
+			printf ( "oaunittest: error: reduction of randomized array failed!\n" );
+			printf("-- al \n");al.showarraycompact();
+			printf("-- alr \n"); alr.showarraycompact();
+			printf("-- alx \n");alx.showarraycompact();
+			allgood=0;
+		}
+	}
+
+	{
 		cprintf ( verbose,"%s: reduce randomized array\n", bstr );
 		array_link al = exampleArray ( 3 );
 
@@ -240,6 +272,7 @@ int oaunittest ( int verbose, int writetests=0 )
 			bool c= ( al==alr );
 			if ( !c ) {
 				printf ( "oaunittest: error: reduction of randomized array failed!\n" );
+				allgood=0;
 			}
 
 		}
@@ -274,6 +307,8 @@ int oaunittest ( int verbose, int writetests=0 )
 				printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
 			if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
 				printf ( "oaunittest: error: Defficiency not good!\n" );
+				allgood=0;
+
 			}
 		}
 		al = exampleArray ( 8, vb );
@@ -365,8 +400,14 @@ int oaunittest ( int verbose, int writetests=0 )
 	cprintf ( verbose,"OA unittest: complete %.3f [s]!\n", ( get_time_ms() - t0 ) );
 	cprintf ( verbose,"OA unittest: also run ptest.py to perform checks!\n" );
 
-	return 0;
-
+	if (	allgood ) {
+		printf("OA unittest: all tests ok\n");
+		return 0;
+}
+	else {
+		printf("OA unittest: ERROR!\n");
+		return 1;
+	}
 }
 
 /**

@@ -39,7 +39,6 @@ find_package(MPI)	# Needed for legacy code and OpenMP functionality
 # ----------------------------------------------------------------------------
 #   Code
 # ----------------------------------------------------------------------------
-#add_definitions(-Wno-write-strings) # hack
 
 include_directories(.)
 include_directories(src)
@@ -159,6 +158,8 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS "  -O3 -DEIGEN_MPL2_ONLY") # -fpermissive
   
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
+
   set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
 endif ()
 
@@ -166,6 +167,11 @@ endif ()
 if("$ENV{USER}" STREQUAL "eendebakpt" )
   #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
   #set(COPTS "-g -O0" ) # -std=c++0x ")
+endif()
+
+if("$ENV{OADEBUG}" STREQUAL "1")
+  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
+  set(COPTS "-g -O0" ) # -std=c++0x -Weffc++") 
 endif()
 
 if(OADEV)

@@ -548,9 +548,11 @@ array_link::array_link ( Eigen::MatrixXd &m )
 /// create an array by permuting columns
 array_link::array_link ( const array_link &rhs, const std::vector<int> &colperm ) : array ( 0 )
 {
+	//printfd("array_link: constructor: %dx%d\n",  rhs.n_rows,  rhs.n_columns);
 	init ( rhs.n_rows, rhs.n_columns );
 	for ( int c=0; c<rhs.n_columns; c++ ) {
 		int cp = colperm[c];
+		//cp=c; //hack
 		std::copy ( rhs.array+n_rows*cp, rhs.array+n_rows* ( cp+1 ), this->array+c*n_rows );
 	}
 }
@@ -3345,7 +3347,6 @@ int arrayfile_t::read_array ( array_link &a )
 		this->read_array_binary ( a.array+nrows*ngood, nrows, nrest );
 		a.index=index;
 		diffarray=a;
-		//myprintf("hack index: %d %d\n", index, diffarray.index);
 	}
 	break;
 	default
@@ -3567,7 +3568,6 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
 		alink = new array_link ( afile->nrows, afile->ncols, i+1 );
 		//index=afile->read_array ( alink->array, afile->nrows, afile->ncols );
 		index=afile->read_array ( *alink );
-		// myprintf("hack %d\n", index);
 
 		// NOTE: for array files we have used -1 to read arrays to the end of file,
 		if ( index<0 ) {

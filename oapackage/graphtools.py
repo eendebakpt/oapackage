@@ -41,7 +41,7 @@ def oa2graph(al, adata, verbose=1):
         (np.zeros(adata.N), np.ones(ncols), 2 * np.ones(nColumnLevelVertices)))
 
     im = np.zeros((nVertices, nVertices))  # incidence matrix
-
+    
     for row in range(0, nrows):
         idx = A[row, :] + vertexOffsets
         im[row, idx] = 1

@@ -175,7 +175,7 @@ inline lmc_t LMC_check_col_tplus ( const array_t *original, const array_t *array
 */
 inline lmc_t LMC_check_col_less ( const array_t *original, const array_t *array, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd )
 {
-	//printf("LMC_check_col: start\n");
+	//printfd("LMC_check_col: start: lperm "); print_perm(lperm, ad->s[0]);
 	lmc_t ret = LMC_EQUAL;
 	int cur_row=0, rowp;
 	const int oaindex = ad->oaindex;
@@ -210,6 +210,7 @@ inline lmc_t LMC_check_col_less ( const array_t *original, const array_t *array,
 				} else
 					if ( original[cur_row] > lperm[array[rowp]] ) { //the permuted array is lex. less than original
 						ret = LMC_LESS;
+						//printfd("LMC_check_col: LMC_LESS: lperm "); print_perm(lperm, ad->s[0]);
 						break;
 					}
 			}
@@ -1416,14 +1417,20 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 				// OPTIMIZE: in case of LMC_MORE we do not need the full column
 				// NOTE: VERY important for random LMC reductions!
 
-				if ( 1 ) {
+				if ( 1 ) { 
 					ret = LMC_check_col_less ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy );
+					
+					if(ret==LMC_LESS) {
+						//printfd("less! "); dyndatacpy->show();
+					}
 				} else {
 #ifdef SAFELPERM
 					safe_perform_level_perm<array_t> ( original+cpoffset, colbuffer, ad->N, lperm, ( int ) ad->s[dyndata->col] );
 #else
 					perform_level_perm ( original+cpoffset, colbuffer, ad->N, lperm );
 #endif
+					//printfd("...\n");
+					
 					ret = LMC_check_col_complete ( reduction->array+dyndata->col*ad->N, colbuffer, ad, dyndatacpy );
 				}
 			} else {

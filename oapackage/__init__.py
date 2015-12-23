@@ -45,7 +45,8 @@ def unittest(verbose=1):
             print('oapackage: unittest: error: array interface not working properly')
             
     arrayclass = oalib.arraylink2arraydata(al)
-
+#    print(arrayclass)
+    
     if verbose>=2:
         print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
@@ -61,8 +62,9 @@ def unittest(verbose=1):
         
     alr=al.reduceDOP()    
     al2r=al2.reduceDOP()    
-    if not al==al2:
+    if not alr==al2r:
         print('error: DOP reduced arrays unequal!: %d'  % (al==al2) )
+        return False
 
     at = oalib.reductionDOP(al)
     check=at.apply(al)==al.reduceDOP()  
@@ -71,6 +73,7 @@ def unittest(verbose=1):
 
     # test graphtools
     from . graphtools import oa2graph
+    arrayclass = oalib.arraylink2arraydata(al)
     _ = oa2graph(al, arrayclass)
     return True
 

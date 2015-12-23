@@ -177,22 +177,20 @@ public:
 		n=-1;
 	}
 
-	larray ( const numtype *data,int nn ) {
+	larray ( const numtype *data,int nn ) : d(0) {
 #ifdef OADEBUG
 		if ( nn<=0 )
 			myprintf ( "larray: constructor from pointer: nn %d\n", nn );
 #endif
-		d=0;
 		alloc ( nn );
 		std::copy ( data, data+nn, this->d );
 	}
 
-	larray ( int nn ) {
+	larray ( int nn ) : d(0) {
 #ifdef OADEBUG
 		if ( nn<=0 )
 			myprintf ( "larray: constructor nn %d\n", nn );
 #endif
-		d=0;
 		alloc ( nn );
 	}
 
@@ -1428,6 +1426,7 @@ public:
 	}
 
 	template<class Type>
+	/// initialize sorting structure with specified values
 	void init ( const std::deque<Type> &vals ) {
 		n = vals.size();
 		indices.resize ( n );
@@ -1436,6 +1435,7 @@ public:
 		this->sort ( vals );
 	}
 	template<class Type>
+	/// initialize sorting structure with specified values
 	void init ( const std::vector<Type> &vals ) {
 		n = vals.size();
 		indices.resize ( n );
