@@ -390,6 +390,8 @@ array_link  finalcheck ( const array_link &al,  const arraydata_t &arrayclass,  
 //TODO: IMPLEMENT flip method as well
 //TODO: Run valgrind...
 
+#include "graphtools.h"
+
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -439,9 +441,32 @@ int main ( int argc, char* argv[] )
 		al = exampleArray ( ix, 1 );
 		al.showproperties();
 
-		al=al.reduceLMC();
-		//array_link al2 = al.randomperm();
-		array_link al2 = al.randomcolperm();
+		//al=al.reduceLMC();
+		array_link al2 = al.randomperm();
+		
+		{
+			int verbose=1;
+		array_link alr = al.randomcolperm();
+		alr=al.randomperm();
+		
+		alr.showarray();
+		
+		
+				std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
+				arraydata_t arrayclass = arraylink2arraydata(alr);
+				printfd("colors: "); display_vector(Gc.second); printf("\n");
+				
+		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
+		printf ( "canon: " ); display_vector ( tr ); printf ( "\n" );
+		array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
+
+		ttm.show();
+		
+		ttm.apply(alr).showarray();
+		
+		return 0;
+		}
+		
  		array_link alx=al2.reduceDOP();
 		//alx.showarraycompact();
 

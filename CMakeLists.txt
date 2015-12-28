@@ -255,6 +255,8 @@ endmacro()
 set(nautysrc nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/gtools.c nauty/naugroup.c)
 include_directories(nauty)
 
+set(graphsrc )
+
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example )
 set(progsextend )
 
@@ -266,12 +268,12 @@ if(OADEV)
 endif()
    
 if (WIN32)
-  add_library(oalib STATIC ${srcsextend} ${headersextend})
+  add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
   add_library(oalibshared SHARED ${srcsextend} ${headersextend})
   add_compile_flags(oalibshared)
 else()
-  add_library(oalib STATIC ${srcsextend} ${headersextend})
+  add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
   add_library(oalibshared SHARED ${srcsextend} ${headersextend})
   add_compile_flags(oalib)
@@ -329,8 +331,8 @@ endif()
 message(STATUS "Progs: ${progs}")
 
 ###############
-message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
-ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} ${nautysrc} ) 
+#message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
+ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc} 
   add_compile_flags(oagraph)
   TARGET_LINK_LIBRARIES(oagraph oalib)
 

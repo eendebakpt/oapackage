@@ -48,6 +48,10 @@ def checkZlib(verbose=0):
         tmp_dir = tempfile.mkdtemp(prefix = 'helloztest_')
         bin_file_name = os.path.join(tmp_dir, 'helloz')
         file_name = bin_file_name + '.c'
+        
+        #print('tmp_dir: %s'  % tmp_dir)
+        #print('xxx: %s'  % file_name)
+
         with open(file_name, 'w') as fp:
             fp.write(c_code)
                 
@@ -286,7 +290,7 @@ except(IOError, ImportError):
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},
-       version = '2.0.30',
+       version = '2.0.31',
        author      = "Pieter Eendebak",
        description = "Package to generate and analyse orthogonal arrays and optimal designs",
        long_description=long_description,

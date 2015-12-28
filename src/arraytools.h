@@ -743,6 +743,8 @@ public:
 	array_link randomperm() const;
 	/// apply a random permutation of columns
 	array_link randomcolperm() const;
+	/// apply a random permutation of row
+	array_link randomrowperm() const;
 
 	/// This function calculates Helmert contrasts for the factors of an input design.
 	/// implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium

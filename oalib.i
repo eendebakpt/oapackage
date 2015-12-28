@@ -318,6 +318,8 @@ import numpy
 #endif
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
+%template(pairGraphColors) std::pair< array_link  , std::vector<int>  >;
+%template(intVector) std::vector<int>;
 
 %template(mvalue_t_long) mvalue_t<long>;
 %template(mvalue_t_double) mvalue_t<double>;

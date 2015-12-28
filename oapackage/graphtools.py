@@ -36,9 +36,16 @@ def oa2graph(al, adata, verbose=1):
     colOffset = adata.N
 
     s = np.array(adata.getS())
+    sc=np.cumsum(s)
+    sc0=np.hstack( ([0], sc) )
+    qq=np.ones(nColumnLevelVertices) # colors for column level vertices
+    for ii in range(sc.size):
+        qq[sc0[ii]:sc0[ii+1]]=2+ii
+    qq=2*np.ones(nColumnLevelVertices) # colors for column level vertices
+    
     vertexOffsets = adata.N + ncols + np.hstack((0, s[0:-1])).cumsum()
     colors = np.hstack(
-        (np.zeros(adata.N), np.ones(ncols), 2 * np.ones(nColumnLevelVertices)))
+        (np.zeros(adata.N), np.ones(ncols), qq))
 
     im = np.zeros((nVertices, nVertices))  # incidence matrix
     
@@ -57,17 +64,19 @@ def oa2graph(al, adata, verbose=1):
     # The non-row vertices do not have any connections to other non-row
     # vertices.
 
-    xy = np.zeros((2, nrows + s.sum()))
-
-    # calculate positions
-    for row in range(0, nrows):
-        xy[:, row] = np.array([0, row])
-
-    pos = nrows
-    for col in range(0, ncols):
-        for ss in range(0, s[col]):
-            xy[:, pos] = np.array([2 + ss / s[col], col])
-            pos = pos + 1
+    if 0:
+        # xy is an old data structure which is not used any moref
+        xy = np.zeros((2, nrows + s.sum()))
+    
+        # calculate positions
+        for row in range(0, nrows):
+            xy[:, row] = np.array([0, row])
+    
+        pos = nrows
+        for col in range(0, ncols):
+            for ss in range(0, s[col]):
+                xy[:, pos] = np.array([2 + ss / s[col], col])
+                pos = pos + 1
 
     return im, colors, dict({'adata': adata, 'im': im, 'colors': colors, 'nVertices': nVertices})
 

@@ -88,6 +88,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	   Nothing is allocated yet.  */
 
 	DYNALLSTAT ( graph,g,g_sz );
+	DYNALLSTAT ( graph,canong,canong_sz );
 	DYNALLSTAT ( int,lab,lab_sz );
 	DYNALLSTAT ( int,ptn,ptn_sz );
 	DYNALLSTAT ( int,orbits,orbits_sz );
@@ -104,6 +105,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	options.writeautoms = TRUE;
 	options.writeautoms = FALSE;
 
+options.getcanon=true;
 
 	int n = nvertices;
 
@@ -125,6 +127,8 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	 * space for the graph and the other arrays we need. */
 
 	DYNALLOC2 ( graph,g,g_sz,m,n,"malloc" );
+	DYNALLOC2 ( graph,canong,canong_sz,m,n,"malloc" );
+
 	DYNALLOC1 ( int,lab,lab_sz,n,"malloc" );
 	DYNALLOC1 ( int,ptn,ptn_sz,n,"malloc" );
 	DYNALLOC1 ( int,orbits,orbits_sz,n,"malloc" );
@@ -158,7 +162,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	if ( verbose )
 		printf ( "reduceNauty: calling densenauty\n" );
 
-	densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,NULL );
+	densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,canong );
 	if ( verbose>=2 ) {
 		printf ( "Generators for Aut(C[%d]):\n",n );
 
@@ -176,6 +180,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	// TODO: use colors in graph
 	//  delete allocated variables
 	DYNFREE ( g,g_sz );
+	DYNFREE ( canong,canong_sz );
 	DYNFREE ( lab,lab_sz );
 	DYNFREE ( ptn,ptn_sz );
 	DYNFREE ( orbits,orbits_sz );
@@ -267,9 +272,9 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 
 
 	// other vertices: color 2+...
-	std::vector<int> v = indexvector ( s );
+	//std::vector<int> v = indexvector ( s );
 	for ( int i=0; i<nColumnLevelVertices; i++ )
-		colors[i+nrows+ncols]=2+v[i];
+		colors[i+nrows+ncols]=2; //+v[i];
 
 
 	if ( verbose )
@@ -307,9 +312,24 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 	return std::pair<array_link, std::vector<int> > ( G, colors );
 }
 
+/// apply a vertex permutation to a graph
+array_link transformGraph ( const array_link &G, const std::vector<int> tr, int verbose )
+{
+	array_link H = G;
+
+	//printfd("transformGraph: tr "); display_vector(tr); printf("\n");
+	for ( int i=0; i<H.n_rows; i++ ) {
+		for ( int j=0; j<H.n_columns; j++ ) {
+			int ix=tr[i];
+			int jx=tr[j];
+			H.at ( ix,jx ) = G._at ( i,j );;
+		}
+	}
+	return H;
+}
 
 /// From a relabelling of the graph return the corresponding array transformation
-array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_t &arrayclass, int verbose )
+array_transformation_t oagraph2transformation ( const std::vector<int> &pp, const arraydata_t &arrayclass, int verbose )
 {
 	///invert the labelling transformation
 	std::vector<int> ppi ( pp.size() );
@@ -321,6 +341,12 @@ array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_
 
 	if ( verbose ) {
 		printf ( "labelling2transformation: class %s\n", arrayclass.idstr().c_str() );
+		printf ( "labelling2transformation: pp  " );
+		display_vector ( pp );
+		printf ( "\n" );
+		printf ( "labelling2transformation: ppi " );
+		display_vector ( ppi );
+		printf ( "\n" );
 	}
 	const int N= arrayclass.N;
 	std::copy ( pp.begin(), pp.begin() +N, ttr.rperm );
@@ -340,7 +366,13 @@ array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_
 	array_transformation_t ttc ( arrayclass );
 	std::vector<int> colperm ( arrayclass.ncols );
 	std::copy ( pp.begin() +N, pp.begin() +N+ncols, colperm.begin() );
+	printfd ( "colperm: " );
+	display_vector ( colperm );
+	printf ( "\n" );
 	colperm = sorthelper ( colperm );
+	printfd ( "colperm: " );
+	display_vector ( colperm );
+	printf ( "\n" );
 	ttc.setcolperm ( colperm );
 
 	if ( verbose ) {
@@ -357,6 +389,7 @@ array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_
 
 	std::vector<int> lvlperm ( ns );
 	std::copy ( pp.begin() +N+ncols, pp.begin() +N+ncols+ns, lvlperm.begin() );
+	//std::copy ( ppi.begin() +N+ncols, ppi.begin() +N+ncols+ns, lvlperm.begin() );
 	lvlperm=sorthelper ( lvlperm );
 
 	std::vector<int>cs=cumsum0 ( s );
@@ -364,13 +397,27 @@ array_transformation_t oagraph2transformation ( std::vector<int> &pp, arraydata_
 	//lp = []
 	for ( int ii=0; ii<ncols; ii++ ) {
 		std::vector<int> ww ( lvlperm.begin() +cs[ii], lvlperm.begin() +cs[ii+1] ); //  = lvlperm[cs[ii]:cs[ii + 1]]
+
+		//FIXME: level permutations in reduction....
+
+		//ww=sorthelper ( ww );
+
+		//std::vector<int> ww(s[ii]);
+		indexsort is ( ww );
+
+		printfd ( "index sorted: " );
+		display_vector ( is.indices );
+		printf ( "\n" );
+		ww=is.indices;
+
+		//for(int j=0; j<
+
 		//printf("ii %d: ww ", ii); display_vector(ww); printf("\n");
-		ww=sorthelper ( ww );
 		//printf("ww "); display_vector(ww); printf("\n");
 		//ww = ww - ww.min();        ww = np.argsort(ww)
 		//lp.append(ww)
-		if ( verbose ) {
-			printf ( "lvlperm %d: ",ii );
+		if ( verbose>=2 ) {
+			printf ( "oagraph2transformation: lvlperm %d: ",ii );
 			display_vector ( ww );
 			printf ( "\n" );
 			fflush ( 0 );

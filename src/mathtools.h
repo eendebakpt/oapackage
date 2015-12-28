@@ -1065,6 +1065,20 @@ inline void delete_perm ( numtype *perm )
 template <class numtype>
 /**
  * @brief Invert a permutation
+ * @param perm Permutation as integer type std::vector
+ * @return New permutation that is the inverse of the argument
+ */
+std::vector<numtype> invert_permutation ( std::vector<numtype> perm )
+{
+	std::vector<numtype> iperm(perm.size());
+	for ( size_t x=0; x<perm.size(); x++ )
+		iperm[perm[x]]=x;
+	return iperm;
+}
+
+template <class numtype>
+/**
+ * @brief Invert a permutation
  * @param perm Pointer to permutation
  * @param len
  * @return Pointer to new permutation that is the inverse of the argument
