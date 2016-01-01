@@ -117,7 +117,11 @@ void array_transformation_t::show ( std::ostream & out ) const
 void array_transformation_t::show ( ) const
 {
 #ifdef FULLPACKAGE
-	this->show ( cout );
+	//ofstream mycout = ofstream(stdout);	
+	std::stringstream ss;
+	this->show ( ss );
+	std::cout << ss.str();	
+	//this->show ( cout );
 #endif
 }
 

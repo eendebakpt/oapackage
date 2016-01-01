@@ -12,9 +12,9 @@ used, it is necessary to check they are correct.
 
 #define HAVE_ISATTY  1     /* if isatty() is available */
 //#define HAVE_TIMES  1      /* if times() is available */
-#define HAVE_TIME  1      /* if time() is available */
-#define HAVE_GETRUSAGE 1  /* if getrusage() is available */
-#define HAVE_GETTIMEOFDAY  1  /* if gettimeofday() */
+//#define HAVE_TIME  1      /* if time() is available */
+//#define HAVE_GETRUSAGE 1  /* if getrusage() is available */
+//#define HAVE_GETTIMEOFDAY  1  /* if gettimeofday() */
 
 /*==================================================================*/
 

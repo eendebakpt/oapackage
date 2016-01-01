@@ -445,7 +445,13 @@ int main ( int argc, char* argv[] )
 		array_link al = exampleArray ( 11, 0 );
 		al = exampleArray ( ix, 1 );
 		al.showproperties();
-
+		{
+		arraydata_t arrayclassx = arraylink2arraydata(al);
+		array_transformation_t trx(arrayclassx);
+		trx.show();
+		return 0;
+		}
+		
 		//al=al.reduceLMC();
 		array_link al2 = al.randomperm();
 		

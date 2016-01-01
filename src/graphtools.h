@@ -12,6 +12,7 @@
 #pragma once
 
 #include <vector>
+#include "arraytools.h"
 
 template<class Type>
 /// helper function, substruct minimum from list of values
