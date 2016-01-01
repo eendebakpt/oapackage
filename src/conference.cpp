@@ -12,7 +12,6 @@
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-//#include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
 

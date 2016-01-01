@@ -16,7 +16,6 @@
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-#include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
 
@@ -35,8 +34,6 @@ public:
 	array_link create_root ( ) const;
 
 };
-
-
 
 
 /// Helper structure
@@ -62,7 +59,6 @@ public:
 		}
 		return ll;
 	}
-
 };
 
 
