@@ -420,6 +420,11 @@ int main ( int argc, char* argv[] )
 	int ix = opt.getIntValue ( 'i', 11 );
 
 	srand ( randvalseed );
+	if (randvalseed==-1) {
+		randvalseed=time(NULL);
+		printf("random seed %d\n", randvalseed);
+		srand(randvalseed);	
+	}
 
 
 	print_copyright();
@@ -444,6 +449,7 @@ int main ( int argc, char* argv[] )
 		//al=al.reduceLMC();
 		array_link al2 = al.randomperm();
 		
+		if (1)
 		{
 			int verbose=1;
 		array_link alr = al.randomcolperm();
@@ -458,8 +464,13 @@ int main ( int argc, char* argv[] )
 				
 		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
 		printf ( "canon: " ); display_vector ( tr ); printf ( "\n" );
-		array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
+		std::vector<int> tri = invert_permutation(tr);
+		array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
 
+		array_link Gm = transformGraph ( Gc.first, tri, 1);
+		//printf("G minimal\n"); Gm.showarray(); return 0;
+
+		
 		ttm.show();
 		
 		ttm.apply(alr).showarray();

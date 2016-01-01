@@ -1242,9 +1242,6 @@ public:
 			}
 		}
 
-		//delete_perm(tmpcolpermai);
-		//delete_perm(tmpcolpermbi);
-		// delete_perm(tmpcolpermci);
 		//delete_perm(tmpc);
 		return c;
 	}

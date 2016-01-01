@@ -20,6 +20,8 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "extend.h"
 #include "Deff.h"
 
+#include "graphtools.h"
+
 #ifdef HAVE_BOOST
 #include <string>
 #include <boost/filesystem.hpp>
@@ -362,6 +364,15 @@ int oaunittest ( int verbose, int writetests=0 )
 		A.Defficiencies();
 	}
 
+	{
+				cprintf ( verbose,"%s: test nauty\n", bstr );
+
+				array_link alr = exampleArray(7, 0);
+		if (unittest_nautynormalform(alr, 1)==0 ) {
+			printf ( "oaunittest: error: unittest_nautynormalform returns an error!\n" );
+		}
+	
+	}
 #ifdef HAVE_BOOST
 
 

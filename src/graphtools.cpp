@@ -207,6 +207,8 @@ array_transformation_t reduceOAnauty ( const array_link &al, int verbose )
 	}
 
 	std::vector<int> tr = nauty::reduceNauty ( G, colors );
+	tr = invert_permutation(tr);
+
 	arraydata_t arrayclass = arraylink2arraydata ( al );
 	array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
 
@@ -331,10 +333,13 @@ array_link transformGraph ( const array_link &G, const std::vector<int> tr, int 
 /// From a relabelling of the graph return the corresponding array transformation
 array_transformation_t oagraph2transformation ( const std::vector<int> &pp, const arraydata_t &arrayclass, int verbose )
 {
+	if (arrayclass.ismixed() ) {
+		printfd("ERROR: oagraph2transformation not implemented for mixed-level designs\n");
+			array_transformation_t ttr ( arrayclass );
+return ttr;
+	}
 	///invert the labelling transformation
-	std::vector<int> ppi ( pp.size() );
-	for ( size_t i=0; i<pp.size(); i++ )
-		ppi[pp[i]]=i;
+	std::vector<int> ppi = invert_permutation(pp);
 
 	// extract colperms and rowperm and levelperms from pp
 	array_transformation_t ttr ( arrayclass );
@@ -366,17 +371,17 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 	array_transformation_t ttc ( arrayclass );
 	std::vector<int> colperm ( arrayclass.ncols );
 	std::copy ( pp.begin() +N, pp.begin() +N+ncols, colperm.begin() );
+	if (verbose>=2) {
 	printfd ( "colperm: " );
 	display_vector ( colperm );
 	printf ( "\n" );
+	}
 	colperm = sorthelper ( colperm );
-	printfd ( "colperm: " );
-	display_vector ( colperm );
-	printf ( "\n" );
+	colperm = invert_permutation(colperm);
 	ttc.setcolperm ( colperm );
 
 	if ( verbose ) {
-		printf ( "labelling2transformation: colperm " );
+		printfd ( "labelling2transformation: colperm " );
 		display_vector ( colperm );
 		printf ( "\n" );
 	}
@@ -385,7 +390,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
 	int ns = std::accumulate ( s.begin(), s.end(), 0 );
 	array_transformation_t ttl ( arrayclass );
-	ttl=ttl.inverse();
+	//ttl=ttl.inverse();
 
 	std::vector<int> lvlperm ( ns );
 	std::copy ( pp.begin() +N+ncols, pp.begin() +N+ncols+ns, lvlperm.begin() );
@@ -405,9 +410,11 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 		//std::vector<int> ww(s[ii]);
 		indexsort is ( ww );
 
+		if (verbose>=2) {
 		printfd ( "index sorted: " );
 		display_vector ( is.indices );
 		printf ( "\n" );
+		}
 		ww=is.indices;
 
 		//for(int j=0; j<
@@ -416,8 +423,8 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 		//printf("ww "); display_vector(ww); printf("\n");
 		//ww = ww - ww.min();        ww = np.argsort(ww)
 		//lp.append(ww)
-		if ( verbose>=2 ) {
-			printf ( "oagraph2transformation: lvlperm %d: ",ii );
+		if ( verbose>=1 ) {
+			printfd ( "oagraph2transformation: lvlperm %d: ",ii );
 			display_vector ( ww );
 			printf ( "\n" );
 			fflush ( 0 );
@@ -429,6 +436,59 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 	array_transformation_t tt = ttr*ttc*ttl;
 
 	return tt;
+}
+
+
+/// unittest: return 1 if all tests are good
+int unittest_nautynormalform(const array_link &al, int verbose)
+{
+		arraydata_t arrayclass = arraylink2arraydata ( al );
+
+	if (verbose>=2) {
+	printf("unittest_nautynormalform: testing on array\n");
+		al.showarray();
+	}
+	
+	array_link alr1 = al.randomperm();
+	array_link alr2 = al.randomperm();
+	
+	array_transformation_t ttx1 = reduceOAnauty ( alr1, 0 );
+	array_link alx1 = ttx1.apply ( alr1 );
+
+		array_transformation_t ttx2 = reduceOAnauty ( alr2, 0 );
+	array_link alx2 = ttx2.apply ( alr2 );
+
+	
+	/*
+	std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose>=2 );	
+		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
+		if (verbose) {
+		printfd ( "canon: " ); display_vector ( tr ); printf ( "\n" );
+		}
+		//return 0;
+		
+		//Gc.first.showarray();
+		std::vector<int> tri = invert_permutation(tr);
+		array_link Gm = transformGraph ( Gc.first, tri, 1);
+		printf("G minimal\n"); Gm.showarray();
+		//printf("j %d\n", j);
+		
+		array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
+		array_link alm = ttm.apply(alr);
+
+	std::pair<array_link, std::vector<int> > Gcm = array2graph ( alm,  verbose>=2 );	
+	*/
+	
+	if(alx1 != alx2 ) {
+		printfd("unittest_nautynormalform: error: transformed graphs unequal!\n");
+		
+		printf("alx1: \n");alx1.showarray();
+		printf("alx2: \n"); alx2.showarray();
+		
+		return 0;
+	}
+	
+	return 1;
 }
 
 

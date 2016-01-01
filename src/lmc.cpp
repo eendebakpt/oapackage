@@ -9,7 +9,7 @@
 #include "extend.h"
 
 #include "nonroot.h"
-
+ 
 #ifndef DOOPENMP
 // no OpenMP
 // disable omp pragma warnings

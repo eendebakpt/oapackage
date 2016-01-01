@@ -19,8 +19,6 @@
 #include "arrayproperties.h"
 #include "anyoption.h"
 #include "tools.h"
-#include "extend.h"
-
 #include "graphtools.h"
 
 
@@ -45,8 +43,8 @@ int main ( int argc, char* argv[] )
 
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	srand ( randvalseed );
-	if (randvalseed==-1) {
-		srand(time(NULL));	
+	if ( randvalseed==-1 ) {
+		srand ( time ( NULL ) );
 	}
 
 	int verbose = opt.getIntValue ( 'v', 1 );
@@ -68,66 +66,64 @@ int main ( int argc, char* argv[] )
 	//al.showarray();
 	arraydata_t arrayclass = arraylink2arraydata ( al );
 	array_transformation_t trans ( arrayclass );
-	trans.reset();	trans.randomize();
+	trans.reset();
+	trans.randomize();
 //	trans.reset(); trans.randomizerowperm();
-//trans.reset(); trans.randomizecolperm();
-//int j = rand() % al.n_rows; trans.reset(); trans.rperm[j]=0;trans.rperm[0]=j;
-//int j = rand() % al.n_columns; //j=randvalseed; trans.reset(); trans.cperm[j]=0;trans.cperm[0]=j;
 	array_link alr = trans.apply ( al ); // randomized array
 
-	
-	if (1) {
+/*
+	if ( 0 ) {
 		alr.showarray();
 		std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
-		
+
 		//for(int k=0; k<Gc.second.size(); k++) Gc.second[k]=0;
 		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
-		printf ( "canon: " ); display_vector ( tr ); printf ( "\n" );
+		printf ( "canon: " );
+		display_vector ( tr );
+		printf ( "\n" );
 		//return 0;
-		
+
 		Gc.first.showarray();
-		std::vector<int> tri = invert_permutation(tr);
-		array_link Gm = transformGraph ( Gc.first, tri, 1);
-		printf("G minimal\n"); Gm.showarray();
+		std::vector<int> tri = invert_permutation ( tr );
+		array_link Gm = transformGraph ( Gc.first, tri, 1 );
+		printf ( "G minimal\n" );
+		Gm.showarray();
 		//printf("j %d\n", j);
+
+		array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
+
 		return 0;
-
-		//		array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
-
 	}
+*/
 
 	// reduce to minimal form
-	array_transformation_t ttm = reduceOAnauty ( al, 1 );
+	printf ( "---- reduceOAnauty (first)\n" );
+	array_transformation_t ttm = reduceOAnauty ( al, 0 );
 	array_link alm = ttm.apply ( al );
+	printf ( "ttm: " );
 	ttm.show();
-	
-	//alr=alm;
-	
 
 	// reduce to minimal form
-	array_transformation_t ttrm = reduceOAnauty ( alr, 1 );
+	printf ( "---- reduceOAnauty (on alr)\n" );
+	array_transformation_t ttrm = reduceOAnauty ( alr, 0 );
 	array_link alrm = ttrm.apply ( alr );
 
-	printf("--- al\n"); al.showarraycompact();
-	printf("--- alr\n"); alr.showarraycompact();
-	printf("--- alm\n"); alm.showarraycompact();
-	printf("--- alrm\n"); alrm.showarraycompact();
+	printf ( "ttrm: " );
+	ttrm.show();
+
+	printf ( "--- al\n" );
+	al.showarraycompact();
+	printf ( "--- alr\n" );
+	alr.showarraycompact();
+	printf ( "--- alm\n" );
+	alm.showarraycompact();
+	printf ( "--- alrm\n" );
+	alrm.showarraycompact();
 
 
 	if ( alrm!=alm ) {
 		printf ( "error with nauty reduction...\n" );
 	}
-
-//return 0;
-
-if (0) {
-	array_link alx = al.randomperm();
-	array_transformation_t ttx = reduceOAnauty ( alx, 0 );
-	array_link alxm = ttx.apply ( alx );
-
-	printf ( "--- alxm \n" );
-	alxm.showarraycompact();
-}
 
 	if ( verbose )
 		printf ( "done\n" );
