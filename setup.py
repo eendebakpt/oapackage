@@ -115,8 +115,12 @@ class OATest(TestCommand):
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+        # New setuptools don't need this anymore, thus the try block.
+        try:
+            self.test_args = []
+            self.test_suite = True
+        except AttributeError:
+            pass
 
     def run_tests(self):
         #import here, cause outside the eggs aren't loaded
@@ -317,7 +321,7 @@ setup (name = 'OApackage',
 	      'Programming Language :: Python :: 3',
 	      'Programming Language :: Python :: 3.3',
 	      'Programming Language :: Python :: 3.4', 
-	      'Programming Language :: Python :: 3.5', 
+	      'Programming Language :: Python :: 3.5'
 	      ]
        )
 
