@@ -91,7 +91,7 @@ opengraphfile(filename,codetype,assumefixed,position)
 **********************************************************************/
 
 FILE*
-opengraphfile(char *filename, int *codetype, int assumefixed, long position)
+naunautyopengraphfile(char *filename, int *codetype, int assumefixed, long position)
 {
     FILE *f;
     int c,bl,firstc;

@@ -388,17 +388,17 @@ public:
 	bool operator< ( const mvalue_t &rhs ) const {
 		bool val=0;
 		if ( d==HIGH )
-			val = worse ( rhs );
+			val = (bool)worse ( rhs );
 		else
-			val= better ( rhs );
+			val= (bool)better ( rhs );
 		return val;
 	}
 	bool operator> ( const mvalue_t &rhs ) const {
 		bool val=0;
 		if ( d==HIGH )
-			val= better ( rhs );
+			val= (bool)better ( rhs );
 		else
-			val = worse ( rhs );
+			val = (bool)worse ( rhs );
 		// if (dverbose) myprintf("mvalue_t: operator>: %d\n", val);
 		return val;
 	}

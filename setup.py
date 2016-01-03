@@ -171,7 +171,7 @@ if 1:
 
   sources += [ 'src/graphtools.cpp' ]
 
-  for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/gtools.c nauty/naugroup.c'.split(' '):
+  for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c'.split(' '): # nauty/gtools.c
       sources+=[f]
 
 if platform.system()=='Windows':
