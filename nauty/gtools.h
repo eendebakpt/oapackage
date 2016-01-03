@@ -13,8 +13,8 @@ used, it is necessary to check they are correct.
 #define  _GTOOLS_H_
 
 #define HAVE_ERRNO_H  1      /* <errno.h> exists */
-#define HAVE_PERROR  1          /* perror() exists */
-#define HAVE_PIPE  1          /* pipe() exists */
+/*#define HAVE_PERROR  1          /* perror() exists */
+/*#define HAVE_PIPE  1          /* pipe() exists */
 /* #define HAVE_WAIT  1          /* wait() exists */
 /*#define HAVE_WAIT_H  1     /* <sys/wait.h> exists */
 /*#define HAVE_POPEN  1          /* popen() and pclose() exist */
@@ -23,14 +23,14 @@ used, it is necessary to check they are correct.
 /*#define FDOPEN_DEC  1        /* fdopen() is declared in stdio.h */
 #define SORTPROG  "sort"         /* name of sort program */
 #define SORT_NEWKEY 1  /* if -k is supported */
-#define HAVE_PID_T 1    /* pid_t is defined */
+/*#define HAVE_PID_T 1    /* pid_t is defined */
 #define PUTENV_DEC 1   /* putenv() is declared in stdlib.h */
 #define SETENV_DEC 1   /* setenv() is declared in stdlib.h */
-#define HAVE_PUTENV 1   /* putenv() exists */
-#define HAVE_SETENV 1   /* setenv() exists */
-#define HAVE_PTHREADS 1   /* Posix threads exist */
-#define HAVE_PTHREAD_H  1      /* <pthread.h> exists */
-#define HAVE_FSEEKO 1  /* fseeko() and ftello() exist */
+/*#define HAVE_PUTENV 1   /* putenv() exists */
+/*#define HAVE_SETENV 1   /* setenv() exists */
+/*#define HAVE_PTHREADS 1   /* Posix threads exist */
+/*#define HAVE_PTHREAD_H  1      /* <pthread.h> exists */
+/*#define HAVE_FSEEKO 1  /* fseeko() and ftello() exist */
 /*#define HAVE_SIGACTION 1  /* sigaction() exists */
 /*#define HAVE_SIGPROCMASK 1  /* sigprocmask() exists */
 

@@ -369,7 +369,7 @@ public:
 				return 0;
 			}
 		}
-		return 1;
+		return true;
 	}
 	bool operator!= ( const mvalue_t &rhs ) const {
 		if ( this->v.size() !=rhs.size() )
@@ -386,7 +386,7 @@ public:
 	}
 
 	bool operator< ( const mvalue_t &rhs ) const {
-		int val=0;
+		bool val=0;
 		if ( d==HIGH )
 			val = worse ( rhs );
 		else
@@ -394,7 +394,7 @@ public:
 		return val;
 	}
 	bool operator> ( const mvalue_t &rhs ) const {
-		int val=0;
+		bool val=0;
 		if ( d==HIGH )
 			val= better ( rhs );
 		else
