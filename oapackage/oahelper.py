@@ -420,7 +420,7 @@ def array2latex_old(ltable, htable=None):
 
 import subprocess
 
-def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
+def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
     """ Run specified command in external environment """
     if not idstr is None:
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
@@ -428,20 +428,34 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
         print('cmd: %s' % cmd)
     if not dryrun:
         
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        for jj, line in enumerate(iter(process.stdout.readline, '')):
-            x=process.poll()
-            #print(x)
+        process = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
+        for jj in range(10000000):
+            r=process.poll()
+            #print('poll done... %s' % r)
+            line = process.stdout.readline() 
+            #print('poll...')
             if verbose>=2:
                 print('runcommand: jj %d' % jj)
+            if verbose>=3:
+                print('runcommand: jj %d: "%s"' % (jj, line))
             if len(line)==0:
+                if verbose>=2:
+                    print('runcommand: len(line) %d' % len(line))
+                 
                 break
-            if jj>20:
-                print('hack: early abort of runcommand')
+            
+            if r is not None:
+                break
+            if jj>20000000:
+                print('error: early abort of runcommand')
                 break
             line=line.decode(encoding='UTF-8')
             sys.stdout.write(str(line))
-        
+            if jj%2==0:
+                sys.stdout.flush()
+            if verbose>=2:
+                print('end of loop...')
+        #print('exit loop...')
         r=process.poll()
         #r = os.system(cmd) # old method
         if (not r == 0):

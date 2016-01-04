@@ -301,9 +301,9 @@ int main ( int argc, char* argv[] )
 	// loop over all columns
 	for ( int k=kmin; k<=kmax; k++ ) {
 		int cleanrunK=1; /// indicates whether all necessary files for k columns have been found
-
+		
 		if ( verbose>=2 )
-			printf ( "\n#### oaclustergather: %d columns (time %.1f [s])\n", k, get_time_ms()-time0 );
+			printf ( " \n#### oaclustergather: %d columns (time %.1f [s])\n", k, get_time_ms()-time0 );
 		Pareto<mvalue_t<long>,array_link> pset;
 
 		arraydata_t adata0 ( adata, k );
@@ -314,7 +314,7 @@ int main ( int argc, char* argv[] )
 		std::string splittag = splitTag ( lvls );
 
 		if ( verbose )
-			printf ( "\n## oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
+			printf ( " \n## oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
 		// loop over all subsections
 		for ( int jj=0; jj<nsplit[level]; jj++ ) {
 			std::string subdir = splitDir ( tovec ( lvls, jj ) );
@@ -383,7 +383,7 @@ int main ( int argc, char* argv[] )
 					}
 					// check
 					if ( nparetosub[k]!=nn )  {
-						printfd ( "\n### warning: column %d: nparetosub[%d] %d, nn %d (number of arrays in .oa file)\n\n", jj, k, nparetosub[k], nn );
+						printfd ( " \n### warning: column %d: nparetosub[%d] %d, nn %d (number of arrays in .oa file)\n\n", jj, k, nparetosub[k], nn );
 						if ( ! allowparetodiff ) {
 							cleanrun=0;
 							cleanrunK=0;
@@ -410,7 +410,9 @@ int main ( int argc, char* argv[] )
 
 			if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit[level]-1 ) ) && verbose>=1 ) ) {
 				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
+				//std::cout << " dummy, verbose " << verbose << printfstring("jj %d", jj) << std::endl; // dummy print
 				//printf ( "  " ); pset.show ( 1 );
+				fflush(0);
 			}
 		}
 
@@ -442,6 +444,8 @@ int main ( int argc, char* argv[] )
 				printf ( "  writing pareto file %s\n", pfile0.c_str() );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 		}
+		
+		fflush(0);
 	}
 
 	if ( verbose )
