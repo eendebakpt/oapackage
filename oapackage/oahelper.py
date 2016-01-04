@@ -418,14 +418,32 @@ def array2latex_old(ltable, htable=None):
     ss += '\\end{tabular}\n'
     return ss
 
+import subprocess
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None):
+    """ Run specified command in external environment """
     if not idstr is None:
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
     if not dryrun:
-        r = os.system(cmd)
+        
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        for jj, line in enumerate(iter(process.stdout.readline, '')):
+            x=process.poll()
+            #print(x)
+            if verbose>=2:
+                print('runcommand: jj %d' % jj)
+            if len(line)==0:
+                break
+            if jj>20:
+                print('hack: early abort of runcommand')
+                break
+            line=line.decode(encoding='UTF-8')
+            sys.stdout.write(str(line))
+        
+        r=process.poll()
+        #r = os.system(cmd) # old method
         if (not r == 0):
             print('runcommand: cmd returned error!')
             print(cmd)
