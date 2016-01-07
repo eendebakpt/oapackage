@@ -2603,8 +2603,10 @@ void jstruct_t::calc ( const array_link &al )
 	int *pp = new_perm_init<int> ( jj );
 	//int ncolcombs = ncombs ( k, jj );
 
+	assert(al.is2level());
 	for ( int x=0; x<this->nc; x++ ) {
-		int jv = jvalue ( al, jj, pp ); // TODO: this is slow, we already have better code for this
+		//int jv = jvalue ( al, jj, pp ); // slow version
+		int jv = jvaluefast ( al.array, al.n_rows, jj, pp ); // slow version
 		this->vals[x]=jv;
 		next_comb_s ( pp, jj, k );
 		//  cout << printfstring("   J value %d\n", jv);
@@ -2645,14 +2647,14 @@ void jstruct_t::calcj4 ( const array_link &al )
 		const int idx1= pp[0]+pp[1]*al.n_columns;
 		const int idx2= pp[2]+pp[3]*al.n_columns;
 		int jv=0;
-		if ( 0 ) {
+/*		if ( 0 ) {
 			for ( int xr=0; xr<nr; xr++ ) {
 				int tmp = dtable.atfast ( xr, idx1 ) +dtable.atfast ( xr, idx2 );
 				tmp %= 2;
 				jv += tmp;
-				// tmp *=2; tmp--;jv -= tmp;
 			}
-		} {
+		} */
+		{
 			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
 			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
 			for ( int xr=0; xr<nr; xr++ ) {
@@ -2803,6 +2805,67 @@ int jvalue ( const array_link &ar,const int J, const int *pp )
 		tmp--;
 		jval -= tmp;
 	}
+	return ( jval );
+}
+
+
+/** @brief Calculate J-characteristic for a column combination
+*
+* We assume the array has values 0 and 1
+*/
+int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
+{
+	//carray_t *x = ar.array;
+	int jval=0;
+
+	//const array_t **cp = new const array_t* [J];
+	const array_t* cp[MAXCOLS];
+
+	for ( int i=0; i<J; i++ )
+		cp[i]=array+N*pp[i];
+
+	//colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
+
+	//FIXME2: implement cache system
+	// OPTIMIZE: change order of loops (with cache for tmp variable)
+	for ( rowindex_t r=0; r<N; r++ ) {
+		array_t tmp=0;
+		for ( int i=0; i<J; i++ ) {
+			//tmp+=array[r+ ppN[i]];
+			tmp+=cp[i][r]; //+ ppN[i]];
+			//tmp+= *(cp[i]++); //+ ppN[i]];
+		}
+		tmp %= 2;
+		//    tmp *=2;
+		//   tmp--;
+		jval += tmp;
+	}
+	jval = 2*jval-N;
+	//delete [] cp;
+	return ( jval );
+}
+
+/** @brief Calculate J-characteristic for a column combination
+*
+* We assume the array has values 0 and 1
+*/
+int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
+{
+	array_t tmpval[MAXROWS];
+
+#ifdef OADEBUG
+	assert ( N<=MAXROWS );
+#endif
+
+	std::fill_n ( tmpval, N, 0 );
+	//	memset(tmpval, 0, N*sizeof(array_t));
+	fastJupdate ( array, N, J, pp, tmpval );
+	int jval=0;
+	for ( rowindex_t r=0; r<N; r++ ) {
+		//tmpval[r] %= 2; jval += tmpval[r];
+		jval += tmpval[r] % 2;
+	}
+	jval = 2*jval-N;
 	return ( jval );
 }
 

@@ -34,7 +34,14 @@ void permute ( Type *source, Type *target, const std::vector<int> p )
 		target[i]=source[p[i]];
 }
 
-int oaunittest ( int verbose, int writetests=0 )
+enum {UGOOD, UERROR};
+
+/** unittest for oapackage
+ *
+ * Returns UGOOD if all tests are ok.
+ *
+ */
+int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 {
 	double t0=get_time_ms();
 	const char *bstr = "OA unittest";
@@ -43,6 +50,28 @@ int oaunittest ( int verbose, int writetests=0 )
 
 	int allgood=1;
 
+	/* J-characteristics */
+	{
+		cprintf ( verbose,"%s: J-characteristics\n", bstr );
+
+		array_link al=exampleArray ( 8,1 );
+
+		const int mm[]= {-1,-1,0, 0, 8,16,0,-1};
+
+		for ( int jj=2; jj<7; jj++ ) {
+			std::vector<int> jx = al.Jcharacteristics ( jj );
+			int j5max = vectormax ( jx, 0 );
+			if ( verbose>=2 ) {
+				printf ( "oaunittest: jj %d: j5max %d\n", jj, j5max );
+			}
+
+			if ( j5max!=mm[jj] ) {
+				printf ( "j5max %d (should be %d)\n", j5max, mm[jj] );
+				allgood=0;
+				return 0;
+			}
+		}
+	}
 	{
 		cprintf ( verbose, "%s: array transformations\n", bstr );
 		// TODO: array transformation class: check non-symmetric case
@@ -109,6 +138,7 @@ int oaunittest ( int verbose, int writetests=0 )
 		}
 	}
 
+
 	{
 		cprintf ( verbose, "%s: D-efficiency test\n", bstr );
 		//  D-efficiency near-zero test
@@ -158,6 +188,8 @@ int oaunittest ( int verbose, int writetests=0 )
 		aa[adata.ncols].size();
 		setloglevel ( QUIET );
 	}
+
+
 
 	{ /** Test dof **/
 		cprintf ( verbose, "%s: test delete-one-factor reduction\n", bstr );
@@ -226,7 +258,7 @@ int oaunittest ( int verbose, int writetests=0 )
 
 		arraydata_t adata=arraylink2arraydata ( al );
 		LMCreduction_t reduction ( &adata );
-			reduction.mode=OA_REDUCE;
+		reduction.mode=OA_REDUCE;
 
 		reduction.init_state=COPY;
 		OAextend oaextend;
@@ -243,9 +275,12 @@ int oaunittest ( int verbose, int writetests=0 )
 		bool c = alx==al;
 		if ( !c ) {
 			printf ( "oaunittest: error: reduction of randomized array failed!\n" );
-			printf("-- al \n");al.showarraycompact();
-			printf("-- alr \n"); alr.showarraycompact();
-			printf("-- alx \n");alx.showarraycompact();
+			printf ( "-- al \n" );
+			al.showarraycompact();
+			printf ( "-- alr \n" );
+			alr.showarraycompact();
+			printf ( "-- alx \n" );
+			alx.showarraycompact();
 			allgood=0;
 		}
 	}
@@ -279,6 +314,8 @@ int oaunittest ( int verbose, int writetests=0 )
 
 		}
 	}
+
+
 
 	/* Calculate symmetry group */
 	{
@@ -365,13 +402,13 @@ int oaunittest ( int verbose, int writetests=0 )
 	}
 
 	{
-				cprintf ( verbose,"%s: test nauty\n", bstr );
+		cprintf ( verbose,"%s: test nauty\n", bstr );
 
-				array_link alr = exampleArray(7, 0);
-		if (unittest_nautynormalform(alr, 1)==0 ) {
+		array_link alr = exampleArray ( 7, 0 );
+		if ( unittest_nautynormalform ( alr, 1 ) ==0 ) {
 			printf ( "oaunittest: error: unittest_nautynormalform returns an error!\n" );
 		}
-	
+
 	}
 #ifdef HAVE_BOOST
 
@@ -408,29 +445,27 @@ int oaunittest ( int verbose, int writetests=0 )
 
 #endif
 
-if (0)
-{
+	if ( 0 ) {
 		cprintf ( verbose,"OA unittest: test nauty\n" );
-	array_link al = exampleArray ( 5, 2 );
-	arraydata_t arrayclass = arraylink2arraydata ( al );
-	array_transformation_t trans ( arrayclass );
-	trans.randomize();
-	array_link alr = trans.apply ( al );
+		array_link al = exampleArray ( 5, 2 );
+		arraydata_t arrayclass = arraylink2arraydata ( al );
+		array_transformation_t trans ( arrayclass );
+		trans.randomize();
+		array_link alr = trans.apply ( al );
 
-	//array_transformation_t ttm = reduceOAnauty ( alr, 1 );
-	//array_link alm = ttm.apply ( alr );	
-}
+		//array_transformation_t ttm = reduceOAnauty ( alr, 1 );
+		//array_link alm = ttm.apply ( alr );
+	}
 
 	cprintf ( verbose,"OA unittest: complete %.3f [s]!\n", ( get_time_ms() - t0 ) );
 	cprintf ( verbose,"OA unittest: also run ptest.py to perform checks!\n" );
 
 	if (	allgood ) {
-		printf("OA unittest: all tests ok\n");
-		return 0;
-}
-	else {
-		printf("OA unittest: ERROR!\n");
-		return 1;
+		printf ( "OA unittest: all tests ok\n" );
+		return UGOOD;
+	} else {
+		printf ( "OA unittest: ERROR!\n" );
+		return UERROR;
 	}
 }
 
@@ -446,6 +481,7 @@ int main ( int argc, char* argv[] )
 	AnyOption opt;
 	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
 	opt.setOption ( "verbose", 'v' );
+	opt.setOption ( "random", 'r' );
 
 	opt.addUsage ( "OA: unittest: Perform some checks on the code" );
 	opt.addUsage ( "Usage: unittest [OPTIONS]" );
@@ -454,6 +490,7 @@ int main ( int argc, char* argv[] )
 
 	opt.processCommandArgs ( argc, argv );
 	int verbose = opt.getIntValue ( 'v', 1 );
+	int random = opt.getIntValue ( 'r', 0 );
 
 	if ( opt.getFlag ( "help" ) || opt.getFlag ( 'h' ) ) {
 		opt.printUsage();
@@ -468,7 +505,7 @@ int main ( int argc, char* argv[] )
 		print_options ( std::cout );
 	}
 
-	oaunittest ( verbose, 1 );
+	oaunittest ( verbose, 1, random );
 
 
 	return 0;

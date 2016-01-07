@@ -469,6 +469,7 @@ int main ( int argc, char* argv[] )
 	if ( verbose ) {
 		std::cout << "#time end: "<< currenttime() << std::endl;
 		std::cout << "#time total: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
+		fflush(0);
 	}
 	return 0;
 }

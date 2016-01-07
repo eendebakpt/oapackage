@@ -1138,8 +1138,38 @@ int free_sols ( arraylist_t &solutions );
 
 /* analyse arrays */
 
+/// helper function
+inline int fastJupdateValue ( rowindex_t N, carray_t *tmpval )
+{
+	int jval=0;
+	for ( rowindex_t r=0; r<N; r++ ) {
+		//tmpval[r] %= 2; jval += tmpval[r];
+		jval += tmpval[r] % 2;
+	}
+	jval = 2*jval-N;
+	return ( jval );
+}
+
+/// helper function
+inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp )
+{
+	//int jval=0;
+
+	for ( int i=0; i<J; i++ ) {
+		carray_t *cp = array+N*pp[i];
+		for ( rowindex_t r=0; r<N; r++ ) {
+			tmp[r]+=cp[r];
+			//tmp[r] ^= cp[r];
+		}
+	}
+	return;
+}
+
 /// Calculate J-value for an array
 int jvalue ( const array_link &ar,const int J, const int *pp );
+
+/// calcualte J-value for an array
+int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp );
 
 /// Analyse a list of arrays
 std::vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbose, const int jj = 4 );

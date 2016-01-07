@@ -742,7 +742,7 @@ if(0)
 			printf ( "iter loop %d\n", ij );
 			for ( int j=0; j<200000; j++ ) {
 				//jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
-				fastj ( al.array, N, 5, firstcolcomb );
+				jvaluefast ( al.array, N, 5, firstcolcomb );
 			}
 		}
 		exit ( 0 );

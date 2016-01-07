@@ -1687,92 +1687,6 @@ void clear_fracs()
 	nfrac2=0;
 }
 
-inline int fastJupdateValue ( rowindex_t N, carray_t *tmpval )
-{
-	int jval=0;
-	for ( rowindex_t r=0; r<N; r++ ) {
-		//tmpval[r] %= 2; jval += tmpval[r];
-		jval += tmpval[r] % 2;
-	}
-	jval = 2*jval-N;
-	return ( jval );
-}
-
-/// helper function
-inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp )
-{
-	//int jval=0;
-
-	for ( int i=0; i<J; i++ ) {
-		carray_t *cp = array+N*pp[i];
-		for ( rowindex_t r=0; r<N; r++ ) {
-			tmp[r]+=cp[r];
-			//tmp[r] ^= cp[r];
-		}
-	}
-
-	return;
-}
-
-/** @brief Calculate J-characteristic for a column combination
-*
-* We assume the array has values 0 and 1
-*/
-int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
-{
-	//carray_t *x = ar.array;
-	int jval=0;
-
-	//const array_t **cp = new const array_t* [J];
-	const array_t* cp[MAXCOLS];
-
-	for ( int i=0; i<J; i++ )
-		cp[i]=array+N*pp[i];
-
-	//colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
-
-	//FIXME2: implement cache system
-	// OPTIMIZE: change order of loops (with cache for tmp variable)
-	for ( rowindex_t r=0; r<N; r++ ) {
-		array_t tmp=0;
-		for ( int i=0; i<J; i++ ) {
-			//tmp+=array[r+ ppN[i]];
-			tmp+=cp[i][r]; //+ ppN[i]];
-			//tmp+= *(cp[i]++); //+ ppN[i]];
-		}
-		tmp %= 2;
-		//    tmp *=2;
-		//   tmp--;
-		jval += tmp;
-	}
-	jval = 2*jval-N;
-	//delete [] cp;
-	return ( jval );
-}
-
-/** @brief Calculate J-characteristic for a column combination
-*
-* We assume the array has values 0 and 1
-*/
-int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp )
-{
-	array_t tmpval[MAXROWS];
-
-#ifdef OADEBUG
-	assert ( N<=MAXROWS );
-#endif
-
-	std::fill_n ( tmpval, N, 0 );
-	//	memset(tmpval, 0, N*sizeof(array_t));
-	fastJupdate ( array, N, J, pp, tmpval );
-	int jval=0;
-	for ( rowindex_t r=0; r<N; r++ ) {
-		//tmpval[r] %= 2; jval += tmpval[r];
-		jval += tmpval[r] % 2;
-	}
-	jval = 2*jval-N;
-	return ( jval );
-}
 
 
 
@@ -1881,7 +1795,7 @@ lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	lmc_t ret = LMC_EQUAL;
 
 	/* loop over all possible column combinations for the first jj columns */
-	int goodj = abs ( fastj ( array, ad.N, jj, comb ) );
+	int goodj = abs ( jvaluefast ( array, ad.N, jj, comb ) );
 
 	/* initialize variables outside of loop */
 	colperm_t perm = new_perm<colindex_t> ( ad.ncols );
@@ -1891,7 +1805,7 @@ lmc_t LMCcheckj4 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	for ( int i=0; i<nc; i++ ) {
 		nfrac1++;
 
-		int jval=abs ( fastj ( array, ad.N, jj, comb ) );
+		int jval=abs ( jvaluefast ( array, ad.N, jj, comb ) );
 		//printf("LMCcheckj4: colcomb %d, goodj %d, jval %d\n", i, goodj, jval);
 		//int jval=0;
 		//    printf("X jval %d, jgood %d\n", jval, goodj);
@@ -2100,7 +2014,7 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 		//printf("  comb %d: ", i); print_perm(lc, 4);
 		perform_inv_perm ( comb, lc2, 4, lc );
 
-		ww[i]=abs ( fastj ( array, N, 4, lc2 ) );
+		ww[i]=abs ( jvaluefast ( array, N, 4, lc2 ) );
 		if ( verbose>=3 ) {
 			printf ( "  comb %d full: val %d: ", ( int ) i, ( int ) ww[i] );
 			print_perm ( lc2, 4 );
@@ -2273,7 +2187,7 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 	array_t tmpval[MAXROWS];
 
 	std::fill ( tmpval, tmpval+N, 0 );
-	fastJupdate ( array, N, jj, comb, tmpval );
+	fastJupdate ( array, N, jj, comb, tmpval bui);
 	ww[0]=abs ( fastJupdateValue ( N, tmpval ) );
 
 //	colindex_t comb[5];
@@ -2303,7 +2217,7 @@ jj45_t jj45val_orig ( carray_t *array, rowindex_t N, int jj, const colperm_t com
 
 	double ww[6];
 	if ( j5val==-1 )
-		ww[0]=abs ( fastj ( array, N, jj, comb ) );
+		ww[0]=abs ( jvaluefast ( array, N, jj, comb ) );
 	else
 		ww[0]=j5val;
 
@@ -2316,7 +2230,7 @@ jj45_t jj45val_orig ( carray_t *array, rowindex_t N, int jj, const colperm_t com
 		perform_inv_perm ( comb, lc2, 4, lc );
 		// printf("  comb %zu full: ", i); print_perm(lc2, 4);
 
-		ww[i+1]=abs ( fastj ( array, N, 4, lc2 ) );
+		ww[i+1]=abs ( jvaluefast ( array, N, 4, lc2 ) );
 		next_comb ( lc, 4, 5 );
 	}
 
@@ -2427,7 +2341,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	lmc_t ret = LMC_EQUAL;
 
 	/* loop over all possible column combinations for the first jj columns */
-	int jbase = abs ( fastj ( array, ad.N, jj, firstcolcomb ) );
+	int jbase = abs ( jvaluefast ( array, ad.N, jj, firstcolcomb ) );
 	jj45_t wbase = jj45val ( array, ad.N, jj, firstcolcomb, -1, 0 );
 
 	/* initialize variables outside of loop */
@@ -2461,7 +2375,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	for ( int i=0; i<nc; i++ ) {
 
 		// determine the J-characteristic for the selected combination
-		int j5val=abs ( fastj ( array, ad.N, jj, firstcolcomb ) ); // FIXME: this can be made faster by caching sub results...
+		int j5val=abs ( jvaluefast ( array, ad.N, jj, firstcolcomb ) ); // FIXME: this can be made faster by caching sub results...
 
 		if ( dverbose>=2 ) {
 			printf ( "   LMCcheckj5 column comb %d/%d (jj=%d): j5val %d, jbase %d\n", i, nc, jj, j5val, jbase );

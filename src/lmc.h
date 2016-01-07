@@ -852,8 +852,6 @@ inline int check_root_update ( carray_t *original, const arraydata_t &ad, array_
     return changed;
 }
 
-/// helper function
-int fastj ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp );
 
 typedef double jj45_t ;
 

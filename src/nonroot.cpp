@@ -1164,11 +1164,11 @@ inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *arr
 	}
 	pp[4]=dd->col;
 
-	int jbase= abs ( fastj ( original, ad->N, 5, pp ) );
+	int jbase= abs ( jvaluefast ( original, ad->N, 5, pp ) );
 	for ( int x=0; x<5; x++ )
 		pp[x]=dd->colperm[x];
 	pp[4]=dd->colperm[dd->col];
-	int jcol= abs ( fastj ( array, ad->N, 5, pp ) );	// NOTE: tricky lperms have not been done!
+	int jcol= abs ( jvaluefast ( array, ad->N, 5, pp ) );	// NOTE: tricky lperms have not been done!
 	if ( 1 && dd->col>4 ) {
 		//printf("array:\n");
 		//print_array(array, ad->N, ad->ncols);
