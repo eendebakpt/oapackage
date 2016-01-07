@@ -1530,12 +1530,16 @@ typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_lin
 
     Pareto optimality is calculated according to (rank; A3,A4; F4)
 */
-void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, int paretomethod)
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, paretomethod_t paretomethod)
 {
 	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
-	if (paretomethod)
-		paretofunction = calculateArrayParetoJ5<array_link>;
-
+	switch (paretomethod) {
+		case PARETOFUNCTION_J5:
+			paretofunction = calculateArrayParetoJ5<array_link>;
+			break;
+		default:
+			break;
+	}
 	Pareto<mvalue_t<long>,array_link> pset;
 
 	long ntotal=0;
@@ -1603,11 +1607,17 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 }
 
 
-Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose, int paretomethod )
+Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose, paretomethod_t paretomethod )
 {
-	pareto_cb paretofunction = calculateArrayParetoRankFA<long>;
-	if (paretomethod)
-		paretofunction = calculateArrayParetoJ5<long>;
+	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
+	switch (paretomethod) {
+		case PARETOFUNCTION_J5:
+			paretofunction = calculateArrayParetoJ5<array_link>;
+			break;
+		default:
+			break;
+	}
+	
 
 	Pareto<mvalue_t<long>,long> pset;
 	pset.verbose=verbose;

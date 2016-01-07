@@ -46,7 +46,8 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -h --help  			Prints this help " );
 	opt.addUsage ( " -v --verbose  			Verbose level (default: 1) " );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output file for filtered arrays (default: no output) " );
-	opt.addUsage( " -f [FORMAT]					Output format (TEXT, BINARY (default), D (binary difference) ) " );
+	opt.addUsage(  " -f [FORMAT]				Output format (TEXT, BINARY (default), D (binary difference) ) " );
+	opt.addUsage(  " --paretomethod [method]	Method to be used  " );
 
 	opt.processCommandArgs ( argc, argv );
 
@@ -63,7 +64,7 @@ int main ( int argc, char* argv[] )
 		outputprefix = opt.getValue ( 'o' );
 
 	int verbose = opt.getIntValue ( 'v', 1 );
-int paretoj5 = opt.getIntValue ( "paretomethod", 0 );
+paretomethod_t paretoj5 = (paretomethod_t) opt.getIntValue ( "paretomethod", PARETOFUNCTION_DEFAULT );
     std::string format = opt.getStringValue('f', "BINARY");
     arrayfile::arrayfilemode_t afmode = arrayfile_t::parseModeString(format);
 
