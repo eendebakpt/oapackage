@@ -2187,7 +2187,7 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 	array_t tmpval[MAXROWS];
 
 	std::fill ( tmpval, tmpval+N, 0 );
-	fastJupdate ( array, N, jj, comb, tmpval bui);
+	fastJupdate ( array, N, jj, comb, tmpval);
 	ww[0]=abs ( fastJupdateValue ( N, tmpval ) );
 
 //	colindex_t comb[5];
