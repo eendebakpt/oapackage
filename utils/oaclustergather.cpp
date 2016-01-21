@@ -149,7 +149,7 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb pare
 {
 	
 	//#pragma omp parallel for
-	#pragma omp parallel for num_threads(8)
+	#pragma omp parallel for num_threads(4)
 	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
 		if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
 			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
@@ -471,6 +471,6 @@ int main ( int argc, char* argv[] )
 		std::cout << "#time total: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
 		fflush(0);
 	}
-	return 0;
+	return cleanrun;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -678,7 +678,7 @@ def parseProcessingTime(logfile, verbose=0):
         for line in fileinput.input([logfile]):
             if line.startswith('#time'):
                 if verbose >= 1:
-                    print(line)
+                    #print(line)
                     print('parseProcessingTime: line: %s' % line, end="")
                     # print('xy %s' % line[10:])
             if line.startswith('#time start:'):

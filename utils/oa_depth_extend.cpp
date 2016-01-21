@@ -109,21 +109,6 @@ int main ( int argc, char* argv[] )
 
 	arrayfile::arrayfilemode_t mode = arrayfile::ABINARY_DIFF;
 
-#ifdef _OPENMP
-	//omp_set_num_threads(4);
-	printf ( "openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
-	//omp_set_dynamic(1);
-
-	if ( 0 ) {
-		//printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
-		omp_set_nested ( 1 );
-		//omp_set_dynamic(4);
-		printf ( "openmp: num threads %d\n", omp_get_max_threads() );
-//		printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
-	}
-	if ( omp_get_nested() !=0 )
-		printf ( "note: omp_get_nested()=%d, make sure to set OMP_THREAD_LIMIT!\n", omp_get_nested() );
-#endif
 
 	if ( opt.getValue ( "format" ) !=0 ) {
 		std::string format = opt.getValue ( 'f' );
@@ -146,6 +131,25 @@ int main ( int argc, char* argv[] )
 
 	int hack = opt.getIntValue ( 'H', 0 );
 
+		if (discardJ5>0) {
+	printf ( "  discardJ5: %d\n", discardJ5 );
+	}	
+#ifdef _OPENMP
+	//omp_set_num_threads(4);
+	printf ( "  openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
+	//omp_set_dynamic(1);
+
+	if ( 0 ) {
+		//printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
+		omp_set_nested ( 1 );
+		//omp_set_dynamic(4);
+		printf ( "openmp: num threads %d\n", omp_get_max_threads() );
+//		printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
+	}
+	if ( omp_get_nested() !=0 )
+		printf ( "note: omp_get_nested()=%d, make sure to set OMP_THREAD_LIMIT!\n", omp_get_nested() );
+#endif
+	
 #ifdef OADEBUG
 	if ( hack ) {
 		printfd ( "setting hack to on\n" );
@@ -354,6 +358,9 @@ int main ( int argc, char* argv[] )
 		}
 	}
 
+	if(dextend.discardJ5>=0) {
+		printf("dextend.discardJ5: %d, number %ld\n", dextend.discardJ5, dextend.discardJ5number);	
+	}
 	dextend.counter->showcounts ( *adfull );
 
 	//dextend.arraywriter->closeafiles();
