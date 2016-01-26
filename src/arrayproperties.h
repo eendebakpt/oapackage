@@ -96,7 +96,7 @@ std::vector<double> projectionGWLPvalues ( const array_link &al );
  */
 double CL2discrepancy(const array_link &al);
 
-/// add second order interactions to an array
+/// add intercept and second order interactions to an array
 array_link array2xf(const array_link &al);
 
 /// return rank of an array based on Eigen::ColPivHouseholderQR

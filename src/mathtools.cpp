@@ -259,8 +259,11 @@ int ncombscacheValue() {
 return 	ncombscachemax;
 }
 void initncombscache(int N) {
+
+
 	if(N==ncombscacheValue() )
 		return;
+	myprintf("initncombscache: value %d\n", N);
 #ifdef OADEBUG
 	myprintf("initncombscache: value %d\n", N);
 #endif
@@ -291,6 +294,7 @@ void initncombscache(int N) {
 			ncombsdata[i][j]=ncombs(i,j);
 		}
 }
+		
 }
 long ncombscache(int n, int k)
 {

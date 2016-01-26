@@ -2636,7 +2636,8 @@ void jstruct_t::calcj4 ( const array_link &al )
 			const array_t *p2 = al.array+al.n_rows*j;
 			array_t *pout = dtable.array+idx*dtable.n_rows;
 			for ( int x=0; x<nr; x++ ) {
-				pout[x] = p1[x]+p2[x];
+				//pout[x] = p1[x]+p2[x];
+				pout[x] = p1[x] ^ p2[x];
 				//dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
 			}
 
@@ -2661,8 +2662,10 @@ void jstruct_t::calcj4 ( const array_link &al )
 			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
 			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
 			for ( int xr=0; xr<nr; xr++ ) {
-				int tmp = o1[xr]  + o2[xr]; // dtable.atfast ( xr, idx2 );
-				tmp %= 2;
+				//int tmp = ( o1[xr]  + o2[xr] ) % 2; 
+				
+				int tmp = (o1[xr]) ^ (o2[xr]);
+				//printf(" tmp %d (%d %d)\n", tmp, o1[xr], o2[xr]);
 				jv += tmp;
 			}
 //			jv %= 2;

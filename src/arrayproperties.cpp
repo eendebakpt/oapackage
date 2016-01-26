@@ -358,14 +358,20 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 
 	if ( s==2 ) {
 		
+#ifdef _OPENMP
+#else 
 		initncombscache(n);
+#endif
 		
 		for ( int j=0; j<=n; j++ ) {
 			Bp[j]=0;
 			for ( int i=0; i<=n; i++ ) {
 				//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
-				//Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+#ifdef _OPENMP
+				Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+#else
 				Bp[j] +=  B[i] * krawtchouksCache<long> ( j, i, n ); //  calculate krawtchouk with dynamic programming
+#endif
 				//myprintf("--\n");
 				//	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
 
@@ -775,12 +781,15 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 	int k = al.n_columns;
 	int n = al.n_rows;
 
+	//Eigen::Map<Eigen::MatrixXd> v(al.array,al.n_rows, al.n_columns);
+	
 	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
 
 	for ( int c=0; c<k; ++c ) {
-		int ci = c*n;
+		//int ci = c*n;
+		array_t *p = al.array+c*n;
 		for ( int r=0; r<n; ++r ) {
-			mymatrix ( r, c ) = al.array[r+ci];
+			mymatrix ( r, c ) = p[r]; 
 		}
 	}
 	return mymatrix;

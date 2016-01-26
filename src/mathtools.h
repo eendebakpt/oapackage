@@ -738,7 +738,13 @@ inline Type ncombs ( const Type n, const Type k )
 	return sol/fact ( k );
 }
 
+/// initialize datastructure
 void initncombscache(int N);
+
+/** return number of combinations from previously calculated results
+ * 
+ *  The results should be calculated with initncombscache
+ */
 long ncombscache(int n, int k);
 
 template <class Type>
