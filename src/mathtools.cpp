@@ -1,5 +1,6 @@
 #include "mathtools.h"
 
+//#include <stdio.h>
 #include <numeric>
 
 /*
@@ -248,5 +249,59 @@ int fastrandK ( int K )
 {
 	return fastrand() % K;
 }
+
+// cached data
+
+long **ncombsdata = 0;
+int ncombscachemax=0;
+
+int ncombscacheValue() {
+return 	ncombscachemax;
+}
+void initncombscache(int N) {
+	if(N==ncombscacheValue() )
+		return;
+#ifdef OADEBUG
+	myprintf("initncombscache: value %d\n", N);
+#endif
+	const int rowsize=N+1;
+	const int nrows=N+1;
+		if(ncombsdata!=0) {
+	delete [] ncombsdata[0];
+	delete [] ncombsdata;
+			
+		}
+		
+	ncombsdata = new long* [nrows];
+	// if debugging, check for memory allocation
+	assert(ncombsdata);
+
+	//myprintf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);
+	ncombsdata[0] = new long [nrows*rowsize];
+
+	int offset = 0;
+	for ( int i = 0; i < nrows; i++ ) {
+		ncombsdata[i] = ncombsdata[0]+offset;
+		offset += rowsize;
+	}
+
+	for(int i=0; i<nrows; i++) {
+		for(int j=0; j<rowsize; j++) {
+			//myprintf("i j %d %d, %d\n", i, j, N);
+			ncombsdata[i][j]=ncombs(i,j);
+		}
+}
+}
+long ncombscache(int n, int k)
+{
+#ifdef OADEBUG
+	assert(ncombscache!=0)
+	assert(n<=ncombscacheValue() );
+	assert(k<=ncombscacheValue() );
+#endif
+	//printf("ncombscache: %d %d\n", n, k);
+	return ncombsdata[n][k];
+}
+
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

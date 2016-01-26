@@ -357,11 +357,15 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 	std::vector<double> Bp ( n+1 );
 
 	if ( s==2 ) {
+		
+		initncombscache(n);
+		
 		for ( int j=0; j<=n; j++ ) {
 			Bp[j]=0;
 			for ( int i=0; i<=n; i++ ) {
 				//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
-				Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+				//Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+				Bp[j] +=  B[i] * krawtchouksCache<long> ( j, i, n ); //  calculate krawtchouk with dynamic programming
 				//myprintf("--\n");
 				//	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
 
@@ -370,7 +374,6 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 		}
 
 	} else {
-		// NOTE: calculate krawtchouk with dynamic programming
 		for ( int j=0; j<=n; j++ ) {
 			Bp[j]=0;
 			for ( int i=0; i<=n; i++ ) {
@@ -783,7 +786,16 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 	return mymatrix;
 }
 
+/// return rank of an array based on Eigen::ColPivHouseholderQR
+int arrayrankColPiv ( const array_link &al )
+{
+	Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
+	int rank = lu_decomp.rank();
+	return rank;
+}
 
+/// return rank of an array based on Eigen::FullPivLU
 int arrayrank ( const array_link &al )
 {
 	Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
@@ -869,12 +881,15 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 	// init interactions
 	ww=k+1;
 	for ( int c=0; c<k; ++c ) {
-		for ( int c2=0; c2<c; ++c2 ) {
 			int ci = c*n;
+		for ( int c2=0; c2<c; ++c2 ) {
 			int ci2 = c2*n;
 
+			const array_t * p1 = al.array+ci;
+			const array_t * p2 = al.array+ci2;
 			for ( int r=0; r<n; ++r ) {
-				mymatrix ( r, ww ) = ( al.array[r+ci]+al.array[r+ci2] ) %2;
+				mymatrix ( r, ww ) = ( *p1+*p2 ) %2; p1++; p2++;
+				//mymatrix ( r, ww ) = ( p1[r]+p2[r] ) %2;
 			}
 			ww++;
 		}
@@ -888,13 +903,60 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 
 array_link array2xf ( const array_link &al )
 {
-	Eigen::MatrixXd mymatrix;
-	array2eigenxf ( al, mymatrix );
+	
+	
+	int k = al.n_columns;
+	int n = al.n_rows;
+	int m = 1 + k + k* ( k-1 ) /2;
+	array_link out(n, m, array_link::INDEX_DEFAULT);
 
-	array_link out ( mymatrix.rows(), mymatrix.cols(),-1 );
-	for ( int i=0; i<out.n_rows*out.n_columns; i++ ) {
-		out.array[i] = mymatrix ( i );
+	if (0) {
+	Eigen::MatrixXd tmp;  array2eigenxf(al, tmp);
+	for(int i=0; i<out.n_columns*out.n_rows; i++)
+		out.array[i]=tmp(i);
+	return out;
 	}
+	
+	// init first column
+	int ww=0;
+	for ( int r=0; r<n; ++r ) {
+		out.array[r]=1;
+	}
+
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		array_t *pout = out.array+(ww+c)*out.n_rows;
+		for ( int r=0; r<n; ++r ) {
+//			out._setvalue  ( r, ww+c,  al.array[r+ci] );
+			pout[r] = al.array[r+ci];
+		}
+	}
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+			int ci = c*n;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2*n;
+
+			const array_t * p1 = al.array+ci;
+			const array_t * p2 = al.array+ci2;
+			array_t *pout = out.array+ww*out.n_rows;
+			
+			for ( int r=0; r<n; ++r ) {
+				//out._setvalue(r, ww , ( p1[r]+p2[r] ) %2 );
+				pout[r] = ( p1[r]+p2[r] ) %2 ;
+			}
+			ww++;
+		}
+	}
+
+	
+	out *= 2;
+	out -= 1;
+	
 	return out;
 }
 

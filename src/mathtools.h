@@ -683,9 +683,9 @@ template <class Type>
 inline Type fact ( const Type f )
 {
 	//Factorial
-	Type  sol = 1;
 	if ( f <= 1 )
 		return 1;
+	Type  sol = 1;
 	for ( int i = f; i > 1; i-- ) {
 #ifdef OAOVERFLOW
 		if ( sol>std::numeric_limits<Type>::max() /100 ) {
@@ -737,6 +737,9 @@ inline Type ncombs ( const Type n, const Type k )
 		sol *= i;
 	return sol/fact ( k );
 }
+
+void initncombscache(int N);
+long ncombscache(int n, int k);
 
 template <class Type>
 /// calculate using multiplicative formula, see http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
@@ -1810,6 +1813,19 @@ inline Type krawtchouk ( Type j, Type x, Type n, Type s, int verbose=0 )
 
 template <class Type>
 /// calculate value of Krawtchouk polynomial
+inline Type krawtchouksCache ( Type j, Type x, Type n )
+{
+	Type val=0;
+
+	for ( Type i=0; i<=j; i++ ) {
+		val += powmo ( i ) * ncombscache ( x, i ) * ncombscache ( n-x, j-i );
+	}
+	//printf("krawtchouks: %d, %d, %d, %ld\n", (int) j, (int)x, (int)n, val);
+	return val;
+}
+
+template <class Type>
+/// calculate value of Krawtchouk polynomial
 inline Type krawtchouks ( Type j, Type x, Type n )
 {
 	Type val=0;
@@ -1817,11 +1833,21 @@ inline Type krawtchouks ( Type j, Type x, Type n )
 	for ( Type i=0; i<=j; i++ ) {
 		val += powmo ( i ) * ncombs ( x, i ) * ncombs ( n-x, j-i );
 	}
+	//printf("krawtchouks: %d, %d, %d, %ld\n", (int) j, (int)x, (int)n, val);
 	return val;
 }
 
+#include <Eigen/SVD>
+#include <Eigen/Core>
 
-
+	template < class Type>
+	/// return the condition number of a matrix
+	double conditionNumber(const Eigen::Matrix<Type,-1,-1> A)
+	{
+	Eigen::JacobiSVD<Eigen::Matrix<Type,-1,-1> > svd(A);
+	double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1);
+	return cond;
+	}
 
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

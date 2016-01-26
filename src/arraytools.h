@@ -767,6 +767,20 @@ public:
 	array_link operator + ( const array_link & ) const;
 	array_link operator - ( const array_link & ) const;
 
+	array_link operator *= ( array_t val ) {
+		int NN=this->n_rows*this->n_columns;
+	for(int i=0; i<NN; i++)
+		this->array[i] *= val;
+	return *this;
+	}
+
+		array_link operator -= ( array_t val ) {
+		int NN=this->n_rows*this->n_columns;
+	for(int i=0; i<NN; i++)
+		this->array[i] -= val;
+	return *this;
+	}
+	
 	/// get element from array, no error checking, inline version
 	inline const array_t& atfast ( const rowindex_t r, const colindex_t c ) const {
 		return this->array[r+this->n_rows*c];

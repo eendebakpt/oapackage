@@ -99,9 +99,13 @@ double CL2discrepancy(const array_link &al);
 /// add second order interactions to an array
 array_link array2xf(const array_link &al);
 
+/// return rank of an array based on Eigen::ColPivHouseholderQR
+int arrayrankColPiv ( const array_link &al );
+
 /// calculate the rank of an array
 int arrayrank(const array_link &al);
 
+Eigen::MatrixXd arraylink2eigen ( const array_link &al );
 
 #ifdef FULLPACKAGE
 
@@ -169,7 +173,9 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRan
    mvalue_t<long> v ( FF, mvalue_t<long>::LOW );
 
    // add the 3 values to the combined value
-   int r = array2xf(al).rank();
+   //int r = array2xf(al).rank();
+   int r = arrayrankColPiv(array2xf(al));
+   
    p.push_back ( r ); // rank of second order interaction matrix
    p.push_back ( wm ); // A4
    p.push_back ( v ); // F

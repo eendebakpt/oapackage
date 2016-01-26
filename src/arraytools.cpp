@@ -2632,9 +2632,12 @@ void jstruct_t::calcj4 ( const array_link &al )
 		for ( int j=0; j<al.n_columns; j++ ) {
 			int idx=i+j*al.n_columns;
 			// loop over all rows of original array
+			const array_t *p1 = al.array+al.n_rows*i;
+			const array_t *p2 = al.array+al.n_rows*j;
+			array_t *pout = dtable.array+idx*dtable.n_rows;
 			for ( int x=0; x<nr; x++ ) {
-				//dtable.array[x+idx*dtable.n_rows] = al.atfast ( x, i ) + al.atfast ( x, j );
-				dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
+				pout[x] = p1[x]+p2[x];
+				//dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
 			}
 
 		}

@@ -390,7 +390,48 @@ array_link  finalcheck ( const array_link &al,  const arraydata_t &arrayclass,  
 //TODO: IMPLEMENT flip method as well
 //TODO: Run valgrind...
 
+
+void speedtest ( const Eigen::MatrixXf mymatrix, int fac=1000 )
+{
+	double t0=get_time_ms();
+	int r=-1;
+	for ( int i=0; i<1000*fac; i++ ) {
+		Eigen::FullPivLU<Eigen::MatrixXf> lu ( mymatrix );
+		double thr=lu.threshold();
+		r = lu.rank();
+	}
+
+	double	dt=get_time_ms()-t0;
+
+	printf ( "speedtest %.3f (rank %d)\n", dt, r );
+}
+
+void speedtest ( const Eigen::MatrixXd mymatrix, int fac=1000 )
+{
+	double t0=get_time_ms();
+	int r=-1;
+	for ( int i=0; i<1000*fac; i++ ) {
+		Eigen::FullPivLU<Eigen::MatrixXd> lu ( mymatrix );
+		double thr=lu.threshold();
+		r = lu.rank();
+	}
+
+	double	dt=get_time_ms()-t0;
+
+	printf ( "speedtest %.3f (rank %d)\n", dt, r );
+}
 #include "graphtools.h"
+
+
+template < class Type>
+/// return the condition number of a matrix
+double conditionNumber ( const array_link M )
+{
+	MatrixXd A = arraylink2eigen ( M );
+	JacobiSVD<Matrix<Type,-1,-1> > svd ( A );
+	double cond = svd.singularValues() ( 0 ) / svd.singularValues() ( svd.singularValues().size()-1 );
+	return cond;
+}
 
 int main ( int argc, char* argv[] )
 {
@@ -398,6 +439,7 @@ int main ( int argc, char* argv[] )
 	/* parse command line options */
 	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
 	opt.setOption ( "output", 'o' );
+	opt.setOption ( "input", 'I' );
 	opt.setOption ( "rand", 'r' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
@@ -418,12 +460,17 @@ int main ( int argc, char* argv[] )
 
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	int ix = opt.getIntValue ( 'i', 11 );
+	int r = opt.getIntValue ( 'r', 0 );
+
+	char *input = opt.getValue ( 'I' );
+	if ( input==0 )
+		input="pp0.oa";
 
 	srand ( randvalseed );
-	if (randvalseed==-1) {
-		randvalseed=time(NULL);
-		printf("random seed %d\n", randvalseed);
-		srand(randvalseed);	
+	if ( randvalseed==-1 ) {
+		randvalseed=time ( NULL );
+		printf ( "random seed %d\n", randvalseed );
+		srand ( randvalseed );
 	}
 
 
@@ -440,959 +487,222 @@ int main ( int argc, char* argv[] )
 	setloglevel ( SYSTEM );
 
 
-	if ( 1 ) {
+	arraylist_t ll = readarrayfile ( input );
+	printf ( "oatest: %d arrays\n", ( int ) ll.size() );
+	for ( int i=0; i< (int)ll.size(); i++ ) {
+		array_link al = ll[i];
 
-		array_link al = exampleArray ( 11, 0 );
-		al = exampleArray ( ix, 1 );
-		al.showproperties();
-		{
-		arraydata_t arrayclassx = arraylink2arraydata(al);
-		array_transformation_t trx(arrayclassx);
-		trx.show();
-		return 0;
+		array_link A = array2xf ( al );
+
+		//Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
+		//printf("condition number: %e\n", conditionNumber(mymatrix) );
+
+		if ( ( int ) i==-1 ) {
+			A.show();
+			//A.transposed().showarray();
+			A.showarray();
 		}
-		
-		//al=al.reduceLMC();
-		array_link al2 = al.randomperm();
-		
-		if (1)
-		{
-			int verbose=1;
-		array_link alr = al.randomcolperm();
-		alr=al.randomperm();
-		
-		alr.showarray();
-		
-		
-				std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
-				arraydata_t arrayclass = arraylink2arraydata(alr);
-				printfd("colors: "); display_vector(Gc.second); printf("\n");
-				
-		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
-		printf ( "canon: " ); display_vector ( tr ); printf ( "\n" );
-		std::vector<int> tri = invert_permutation(tr);
-		array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
-
-		array_link Gm = transformGraph ( Gc.first, tri, 1);
-		//printf("G minimal\n"); Gm.showarray(); return 0;
-
-		
-		ttm.show();
-		
-		ttm.apply(alr).showarray();
-		
-		return 0;
-		}
-		
- 		array_link alx=al2.reduceDOP();
-		//alx.showarraycompact();
-
-		//return 0;
-
-		printf ( "------------ start ------\n" );
-
-if(0)
-		{
-			arraydata_t ad = arraylink2arraydata ( al );
-
-			array_transformation_t atx ( ad );
-			atx.reset();
-			atx.rperm[al.n_rows-1]=0;
-			atx.rperm[0]=al.n_rows-1;
-			//atx.randomizerowperm();
-			LMCreduction_t reductionx ( &ad );
-
-			array_link alr = atx.apply ( al );
-
-			reductionx.init_state=COPY;
-			OAextend oaextendx;
-			oaextendx.setAlgorithm ( MODE_ORIGINAL );
-			reductionx.mode=OA_TEST;
-			reductionx.mode=OA_REDUCE_PARTIAL;
-			reductionx.mode=OA_REDUCE;
-			LMCcheck ( alr, ad, oaextendx, reductionx ); // HACK last line changed, issue is the reduction.INIT???
-
-			if ( 1 ) {
-				printf ( "--- al\n" );
-				al.showarraycompact();
-				printf ( "--- alr\n" );
-				alr.showarraycompact();
-
-				array_link alx=reductionx.transformation->apply ( al );
-
-				printf ( "--- alx\n" );
-				alx.showarraycompact();
-			}
-
-			reductionx.transformation->show();
-			return 0;
-		}
-
-
-		//al2=al;
-
-		{
-			printf ( "before shuffle\n" );
-			al.showarraycompact();
-//	printf("---\n");
-//	al2.showarraycompact();
-		}
-
-		array_transformation_t tr ( arraylink2arraydata ( al ) );
-		tr.reset();
-		tr.show();
-		tr.randomizerowperm();
-//std::swap(tr.rperm[0], tr.rperm[1]);
-		//al2 = tr.apply ( al );
+		if ( int ( i ) ==-1 ) {
+			al.showarray();
+		} 
+		int rank =-1;
 
 		if ( 0 ) {
-			arraydata_t ad = arraylink2arraydata ( al );
+			// use float: about 20% speed profit
+			array_link A = array2xf ( al );
+			Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
+			int fac=4;
+			speedtest ( mymatrix, fac );
 
-			array_transformation_t atx ( ad );
-			LMCreduction_t reductionx ( &ad );
+			Eigen::MatrixXf mymatrixf = mymatrix.cast<float>();
+			speedtest ( mymatrixf, fac );
 
-			reductionx.init_state=COPY;
-			OAextend oaextendx;
-			oaextendx.setAlgorithm ( MODE_ORIGINAL );
-			reductionx.mode=OA_TEST;
-			reductionx.mode=OA_REDUCE_PARTIAL;
-			LMCcheck ( al, ad, oaextendx, reductionx ); // HACK last line changed, issue is the reduction.INIT???
+
+			exit ( 0 );
 		}
-		array_transformation_t trx = reductionDOP ( al2, 0 );
-		array_link al2rX = trx.apply ( al2 );
-		//return 0;
+		
+		if ( r==2 ) {
+			al=exampleArray ( 1,1 );
+			array_link A = array2xf ( al );
+			Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
+			//mymatrix=arraylink2eigen ( al );
 
-		array_link alr=al.reduceDOP()    ;
-		array_link al2r=alr;
-		al2r=al2.reduceDOP()    ;
+			Eigen::FullPivLU<Eigen::MatrixXd> lu ( mymatrix );
 
-//	printf("...\n");
+			double thr=lu.threshold();
+			rank = lu.rank();
 
-		printf ( "--- alr\n" );
-		alr.showarraycompact();
-		printf ( "--- al2r\n" );
-		al2r.showarraycompact();
-		printf ( "--- al2rX\n" );
-		al2rX.showarraycompact();
+			//MatrixXd l; //= MatrixXd::Identity();
+//l.block<5,3>(0,0).triangularView<StrictlyLower>() = lu.matrixLU();
+			cout << "Here is the L part:" << endl;
+			MatrixXd lx = lu.matrixLU();
+			MatrixXd l = MatrixXd::Identity ( mymatrix.rows() , mymatrix.rows() ); // = lu.matrixLU();
+			eigenInfo ( l );
+			eigenInfo ( lx );
+			int q = lx.rows();
 
-		if ( al2rX!=al2r ) {
-			printfd ( "error: reduceDOP and reductionDOP arrays unequal!: \n" );
-			trx.show();
+			l.block ( 0,0, mymatrix.rows(), q ).triangularView<StrictlyLower>() = lx.block ( 0,0,mymatrix.rows(), q );
+			cout << l << endl;
+			cout << "Here is the U part:" << endl;
+			MatrixXd u = lu.matrixLU().triangularView<Upper>();
+			cout << u << endl;
+			eigenInfo ( l );
+			eigenInfo ( u );
+
+//cout << l * u ;
+
+			MatrixXd r = lu.permutationP().inverse() * l * u * lu.permutationQ().inverse();
+
+			cout << "Difference:" << endl;
+			std::cout << r-mymatrix;
+			cout << "Let us now reconstruct the original matrix m:" << endl;
+			cout << lu.permutationP().inverse() * l * u * lu.permutationQ().inverse() << endl;
+
+			cout << "good format:" << endl;
+
+			MatrixXd g = l.inverse() * lu.permutationP() * mymatrix * lu.permutationQ();
+			cout << g << endl;
+
+			int fac=10;
+			speedtest ( mymatrix, fac );
+			speedtest ( g, fac );
+
+			exit ( 0 );
 		}
-		if ( alr!=al2r ) {
-			printf ( "error: DOP reduced arrays unequal!: \n" );
+		
+		switch ( r ) {
+		case 0: {
+			rank= A.rank();
+			if ( i<0 ) {
+				printf ( "rank %d: %d\n", ( int ) i, rank );
 
-			alr.showarraycompact();
-			printf ( "---\n" );
-			al2r.showarraycompact();
-
-			//	trx.show();
-		}
-
-		return 0;
-	}
-	if ( 1 ) {
-		int ii = opt.getIntValue ( 'i', 1 );
-		array_link al = exampleArray ( ii, 1 );
-
-		al.reduceDOP();
-		//al=al.randomperm();
-		al=al.randomcolperm();
-
-		arraydata_t arrayclass = arraylink2arraydata ( al );
-		array_transformation_t trans ( &arrayclass );
-		trans.randomizecolperm();
-		trans.randomizerowperm();
-		trans.randomize();
-		al=trans.apply ( al );
-
-		array_transformation_t at = reductionDOP ( al, 1 );
-		array_link alr2 = at.apply ( al );
-
-		array_link alr = al.reduceDOP();
-
-
-
-//alr2 = at.inverse().apply(al);
-
-		al.showarraycompact();
-		printf ( "----\n" );
-		alr.showarraycompact();
-		printf ( "----\n" );
-		alr2.showarraycompact();
-
-		if ( alr==alr2 )
-			printf ( "arrays equal!\n" );
-		else
-			printf ( "arrays unequal!\n" );
-		return 0;
-	}
-
-	if ( 1 ) {
-		int ii = opt.getIntValue ( 'i', 1 );
-		array_link al = exampleArray ( ii, 1 );
-
-		double A= al.Aefficiency();
-		std::vector<double> aa = Aefficiencies ( al, 1 );
-
-		printf ( " A : %f -> %f\n" , A, aa[0] );
-		printf ( " A A1 A2: %f, %f, %f\n" , aa[0], aa[1], aa[2] );
-
-		al.showarray();
-
-		return 0;
-	}
-	if ( 0 ) {
-		int r = opt.getIntValue ( 'r', 8 );
-		int niter = opt.getIntValue ( 'i', 100 );
-
-		int race=0;
-
-		#pragma omp parallel for // num_threads(8) // schedule(dynamic,1)
-		for ( int i=0; i<r; i++ ) {
-			array_link al = exampleArray ( 12 );
-			//al = exampleArray ( 1 );
-			al = exampleArray ( 2 );
-			//al = exampleArray ( 12 );
-			//al = al.selectFirstColumns(9);
-//		int strength  = 3;
-
-			int r=race;
-			race++;
-			if ( r+1!=race )  {
-				printf ( "race condition\n" );
 			}
+		}
+		break;
+		case 1: {
+			Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
+			Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
+			double thr=lu_decomp.threshold();
+			rank = lu_decomp.rank();
+			if ( (int)i<-1) {
+				printf ( "rank %d: %d\n", ( int ) i, rank );
 
-			int N = al.n_rows;
-			//printf ( "iter loop %d: strength %d\n", i, ad.strength ) ;
-			printf ( "iter loop %d:\n", i ) ;
-			for ( int ij=0; ij<1; ij++ ) {
-				for ( int j=0; j<niter; j++ ) {
-#ifdef _OPENMP
-					printf ( " loop %d: tid %d\n", j, omp_get_thread_num() );
-#endif
-					OAextend oaextend;
-					arraydata_t ad = arraylink2arraydata ( al, 0, al.strength() );
+			}
+		}
+		break;
+		case 2: {
+			Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
 
-					arraydata_t adlocal ( &ad, al.n_columns );
-					LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
-					// make sure code is thread safe
-					reduction.initStatic();
+			Eigen::FullPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
+			//Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
+			double thr=lu_decomp.threshold();
+			rank = lu_decomp.rank();
 
-					{
-						OAextend oaextendx=oaextend;
-						//oaextendx.setAlgorithm ( MODE_J5ORDERXFAST, &adlocal );
-						oaextendx.setAlgorithm ( MODE_ORIGINAL, &adlocal );
-						oaextendx.extendarraymode=OAextend::NONE;
-						reduction.init_state=COPY;
+			double mp = lu_decomp.maxPivot();
 
-						int extensioncol = al.n_columns-1;
-						arraylist_t extensions0;
+			if ( i<14 ) {
+				printf ( "\n---- array %d\n  threshold used: %e / %e\n" , ( int ) i, lu_decomp.threshold(), mp*lu_decomp.threshold() );
+				//std::cout << x << std::endl;;
+				eigenInfo ( mymatrix );
 
-//printf("here\n");
-//	        setloglevel(NORMAL);
-						extend_array ( al.array,  &adlocal, extensioncol, extensions0, oaextendx );
-//printf("here 2\n");
+				Eigen::MatrixXd x = lu_decomp.matrixQ();
+				//Eigen::MatrixXd x = lu_decomp.matrixLU();
+				//x = lu_decomp2.matrixQ();
+				VectorXd q = x.diagonal();
+
+				double minbest=fabs ( q ( 0 ) );
+				for ( int x=0; x<q.rows(); x++ ) {
+					double val =  q ( x );
+
+
+					if ( fabs ( val ) <1e-1 ) {
+						printf ( "diag %d: %e\n", x,val );
 					}
-
-					//lmc_t lmc =  LMCcheck ( al, ( adlocal ), oaextend, reduction ); // omp good
-				}
-
-
-
-			}
-
-		}
-		exit ( 0 );
-	}
-
-	if ( 0 ) {
-		int r = opt.getIntValue ( 'r', 3 );
-
-		array_link al = exampleArray ( 12 );
-		int strength  = 3;
-		arraydata_t ad = arraylink2arraydata ( al, 0, strength );
-		int N = al.n_rows;
-		for ( int ij=0; ij<2; ij++ ) {
-			for ( strength=1; strength<5; strength++ ) {
-//int s = strength_check ( al,  strength );
-				ad = arraylink2arraydata ( al, 0, strength );
-				int s = strength_check ( ad, al, 1 );
-				printf ( "iter loop %d: strength %d: %d\n", ij, strength, s );
-			}
-			strength=r;
-			ad = arraylink2arraydata ( al, 0, strength );
-			for ( int j=0; j<12000; j++ ) {
-				//strength_check ( al,  strength );
-				strength_check ( ad, al );
-			}
-		}
-		exit ( 0 );
-
-	}
-	{
-
-		array_link al = exampleArray ( 12 );
-		int N = al.n_rows;
-		colindex_t firstcolcomb[5];
-		init_perm ( firstcolcomb, 5 );
-		firstcolcomb[4]=8;
-		//retx= jj45split ( al.array, N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction );
-		for ( int ij=0; ij<20; ij++ ) {
-			printf ( "iter loop %d\n", ij );
-			for ( int j=0; j<200000; j++ ) {
-				//jj45_t xx = jj45val ( al.array, N, 5, firstcolcomb, -1, 1 );
-				jvaluefast ( al.array, N, 5, firstcolcomb );
-			}
-		}
-		exit ( 0 );
-	}
-
-	if ( 0 ) {
-		const int maxval=5;
-		int nelements = 8;
-		array_t array[8];
-		array[0]=maxval-1;
-		array[1]=2;
-		array[3]=2;
-		array[4]=0;
-		array[5]=4;
-		array[6]=1;
-
-		int elements[maxval];
-		for ( int i=0; i<10000; i++ ) {
-			std::fill ( elements, elements+maxval, 0 );
-			for ( int j=0; j<30000; j++ ) {
-				countelements ( array, nelements, maxval, elements );
-			}
-		}
-		exit ( 0 );
-	}
-
-	int r = opt.getIntValue ( 'r', 0 );
-	int dverbose = opt.getIntValue ( 'd', 1 );
-	int md = opt.getIntValue ( 'm', 0 );
-	int aidx = opt.getIntValue ( 'i', 0 );
-	int rr = opt.getIntValue ( "rows", 40 );
-	int cc = opt.getIntValue ( "cols", 7 );
-
-	srand ( r );
-	int verbose = opt.getIntValue ( 'v', 1 );
-	setloglevel ( verbose );
-
-
-	if ( 1 ) {
-		array_link A ( 0,8,0 );
-		printf ( "should return an error\n  " );
-		A.Defficiencies();
-
-		A = array_link ( 1,8,0 );
-		printf ( "should return an error\n  " );
-		A.at ( 0,0 ) =-2;
-		A.Defficiencies();
-		return 0;
-	}
-
-
-	if ( 0 ) {
-		double dt, mean;
-		arraydata_t arrayclass ( 2, rr, 0, cc );
-		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
-		int niter=opt.getIntValue ( "niter", 160000 );
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=0.5;
-		alpha[2]=0;
-		array_link al = arrayclass.randomarray();
-		int ro = aidx;
-
-		double t0=get_time_ms();
-		for ( int j=0; j<nrestarts; j++ ) {
-			seedfastrand ( ro+100*j );
-			srand ( ro+100*j );
-			array_link  al2 = optimDeff ( al, arrayclass, alpha, 0,  DOPTIM_UPDATE,  niter, 0 );
-		}
-		printf ( "dt %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
-		return 0;
-	}
-
-	if ( 1 ) {
-		//arraylist_t sols = readarrayfile("/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero.oa");
-		arraylist_t sols = readarrayfile ( "/home/eendebakpt/misc/oa/oacode/testdata/design-D-nearzero2.oa" );
-		array_link al = sols[0];
-		arraydata_t arrayclass = arraylink2arraydata ( al );
-		arrayclass=arraydata_t ( 2, 70, 0, 7 );
-
-		if ( aidx>10 )
-			al=arrayclass.randomarray ( 1 );
-		double D = Defficiency ( al,2 );
-
-		printf ( "---------\n" );
-		std::vector<double> dd = Defficiencies ( al,  arrayclass, 2, 0 );
-
-
-		double t0=get_time_ms();
-		for ( int i=0; i<1000; i++ ) {
-			double D = Defficiency ( al,0 );
-		}
-		printf ( "time %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
-		t0=get_time_ms();
-		for ( int i=0; i<1000; i++ ) {
-			Defficiencies ( al,arrayclass,0,0 );
-		}
-		printf ( "time %.1f [ms]\n", 1e3*get_time_ms ( t0 ) );
-
-		//throw; printf("throw done!\n");
-		return 0;
-	}
-
-
-	if ( 0 ) {
-		int N = 10;
-		int k =3;
-		const int nn = N*k;
-		std::vector<int> updatepos = permutation<int> ( nn );
-		if ( r==0 ) {
-			std::random_shuffle ( updatepos.begin(), updatepos.end() );
-		}
-		int updateidx = 0;
-
-		int niter=nn;
-
-//#pragma omp for
-		for ( int ii=0; ii<niter; ii++ ) {
-			// select random row and column
-			int r = updatepos[updateidx] % N;
-			int c = updatepos[updateidx] / N;
-			printf ( "ii %d: pos %3d: %3d %3d\n", ii, updatepos[ii], r, c );
-
-			updateidx++;
-		}
-
-		return 0;
-	}
-
-	if ( 0 ) {
-		double dt, mean;
-		arraydata_t arrayclass ( 2, rr, 0, cc );
-		int nrestarts=opt.getIntValue ( "nrestarts", 10 );
-		int niter=opt.getIntValue ( "niter", 60000 );
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=0;
-		alpha[2]=0;
-		int nabort=0;
-		array_link al = arrayclass.randomarray();
-		array_link al3;
-		al = arrayclass.randomarray();
-		int ro = aidx;
-
-		int ni=10;
-		std::vector<double> mm ( ni );
-		std::vector<double> m ( nrestarts );
-
-//					seedfastrand(ro); srand(ro); nabort=md; array_link  al2 = optimDeff ( al, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort ); return 0;
-
-
-		double t0=get_time_ms();
-		for ( int j=0; j<ni; j++ ) {
-			seedfastrand ( ro+100*j );
-			srand ( ro+100*j );
-			al = arrayclass.randomarray();
-			for ( int i=0; i<nrestarts; i++ ) {
-				seedfastrand ( i+ro +100*j );
-				srand ( i+ro+100*j );
-				array_link  al2 = optimDeff ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
-				//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
-				//array_link  alx = finalcheck(al2, arrayclass, alpha, verbose,  DOPTIM_UPDATE,  niter, nabort);
-
-				std::vector<double> dd = al2.Defficiencies();
-				double d = scoreD ( dd, alpha );
-				m[i]=d;
-
-				if ( 1 ) {
-					srand ( i+ro+200*j );
-					//al2 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, 3000 );
-					al3 = optimDeff ( al2, arrayclass, alpha, dverbose,  DOPTIM_SWAP,  niter, 6300 );
-					dd = al3.Defficiencies();
-					d = scoreD ( dd, alpha );
-					if ( d> m[i]+1e-8 ) {
-						printf ( "check! %.8f (%.6f %.6f) -> %.8f (%.6f %.6f)\n", m[i], al2.Defficiency(), al2.DsEfficiency() , d, al3.Defficiency(), al3.DsEfficiency() );
+					if ( ( fabs ( val ) <minbest ) && ( fabs ( val ) >thr ) ) {
+						minbest=val;
 					}
-					//m[i]=d;
-
 				}
+				//printf ( "minbest %e\n", minbest );
+				//printf ( "rank %d: %d\n", ( int ) i, rank );
+				// std::cout << "rank " << rank << ", diag: " << q << std::endl;
 			}
-			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
-			printf ( "  mm[%d] %.4f\n", j, mm[j] );
-
 		}
-		dt=get_time_ms()-t0;
-		mean = accumulate ( mm.begin(), mm.end(), 0.0 ) / mm.size();
-		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
+		break;
+		case 3: {
+			//printf ( " use SVD\n" );
+			Eigen::MatrixXd mymatrix = arraylink2eigen ( A );
 
+			JacobiSVD<Eigen::MatrixXd> svd ( mymatrix );
 
-
-		t0=get_time_ms();
-		for ( int j=0; j<ni; j++ ) {
-			seedfastrand ( ro+ 100*j );
-			srand ( ro+ 100*j );
-			al = arrayclass.randomarray();
-
-			for ( int i=0; i<nrestarts; i++ ) {
-// al = arrayclass.randomarray();
-				seedfastrand ( i+ro +100*j );
-				srand ( i+ro+100*j );
-
-				nabort=al.n_columns*al.n_rows+1;
-				array_link  al2 = optimDeff2level ( al, arrayclass, alpha, dverbose,  DOPTIM_UPDATE,  niter, nabort );
-				//DoptimReturn rr=Doptimize(arrayclass, nrestarts, niter, alpha, 1, 0, 1000, nabort);
-				std::vector<double> dd = al2.Defficiencies();
-				double d = scoreD ( dd, alpha );
-
-				m[i]=d;
-			}
-			mm[j]=*std::max_element ( m.begin(), m.end() ) ;
-			printf ( "  mm[%d] %.4f\n", j, mm[j] );
-
+			rank=svd.rank();
 		}
-		dt=get_time_ms()-t0;
-		mean = accumulate ( mm.begin(), mm.end(), 0.0 ) / mm.size();
-		printf ( "time %.1f [ms]: mean %.8f\n", dt*1e3, mean );
-		return 0;
+		break;
 
+		default:
+			printf ( "no such r value\n" );
+			break;
+		}
+		
+		if(i<5) {
+		printf("i %d: rank %d\n", (int) i, rank);	
+		}
 	}
 
 
 
 
 
+if ( 0 )
+{
 
+	array_link al = exampleArray ( 11, 0 );
+	al = exampleArray ( ix, 1 );
+	al.showproperties();
+	{
+		arraydata_t arrayclassx = arraylink2arraydata ( al );
+		array_transformation_t trx ( arrayclassx );
+		trx.show();
+		return 0;
+	}
 
-
-
-
-	// ################################
-
+	//al=al.reduceLMC();
+	array_link al2 = al.randomperm();
 
 	if ( 1 ) {
-		arraydata_t adata ( 2, rr, 0, cc );
-		int niter=10000;
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=1;
-		double t0=get_time_ms();
-		arraylist_t sols;
-		for ( int i=0; i<20; i++ ) {
-			array_link al = adata.randomarray ( 0 );
-			sols.push_back ( al );
-		}
-		DoptimReturn a = DoptimizeMixed ( sols, adata, alpha, verbose );
-		DoptimReturn a2 = DoptimizeMixed ( a.designs, adata, alpha, verbose );
-		DoptimReturn a3 = DoptimizeMixed ( a2.designs, adata, alpha, verbose );
+		int verbose=1;
+		array_link alr = al.randomcolperm();
+		alr=al.randomperm();
 
-		// TODO: incorporate into python code, C++ solution for sorting designs
-		// balance iteration with niter
-		return 0;
-	}
+		alr.showarray();
 
-	if ( 0 ) {
-		arraydata_t adata ( 2, 64, 0, 7 );
-		int niter=10000;
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=1;
-		double t0=get_time_ms();
-		for ( int i=0; i<10000+10000*aidx; i++ ) {
-			array_link al = adata.randomarray ( 0 );
-			//std::vector<double> dd = al.Defficiencies();
 
-			arraydata_t arrayclass = arraylink2arraydata ( al );
-			std::vector<double> dd = Defficiencies ( al, arrayclass, 0, 0 );
+		std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
+		arraydata_t arrayclass = arraylink2arraydata ( alr );
+		printfd ( "colors: " );
+		display_vector ( Gc.second );
+		printf ( "\n" );
 
-			//int dmethod = DOPTIM_SWAP;
-			//dmethod = DOPTIM_NONE;
-			//array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
-		}
-		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
+		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
+		printf ( "canon: " );
+		display_vector ( tr );
+		printf ( "\n" );
+		std::vector<int> tri = invert_permutation ( tr );
+		array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
+
+		array_link Gm = transformGraph ( Gc.first, tri, 1 );
+		//printf("G minimal\n"); Gm.showarray(); return 0;
+
+
+		ttm.show();
+
+		ttm.apply ( alr ).showarray();
 
 		return 0;
 	}
 
-	if ( 0 ) {
+}
 
-		arraydata_t adata ( 2, 80, 0, 7 );
-		int niter=10000;
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=1;
-		double t0=get_time_ms();
-		for ( int jjj=0; jjj<10; jjj++ ) {
-			for ( int i=0; i<4800; i++ ) {
-				array_link al = adata.randomarray ( 0 );
-				std::vector<double> dd = al.Defficiencies();
-			}
-		}
-		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
-	}
-	if ( 1 ) {
-		arraydata_t adata ( 2, 80, 0, 7 );
-		int niter=10000;
-		std::vector<double> alpha ( 3 );
-		alpha[0]=1;
-		alpha[1]=1;
-		double t0=get_time_ms();
-		for ( int i=0; i<10; i++ ) {
-			array_link al = adata.randomarray ( 0 );
-			std::vector<double> dd = al.Defficiencies();
-			int dmethod = DOPTIM_SWAP;
-			//dmethod = DOPTIM_NONE;
-			array_link  alx = optimDeff ( al, adata, alpha, 2, dmethod, niter, 3000 );
-		}
-		printf ( "dt %.3f [s]\n", get_time_ms()-t0 );
-
-		return 0;
-	}
-
-	if ( 0 ) {
-// test PEC sequence
-		srand ( get_time_ms() );
-		array_link al ( rr,cc,-1 );
-		arraydata_t arrayclass ( 2, rr, 1, cc );
-		arrayclass.show();
-		for ( int i=0; i<al.n_columns*al.n_rows; i++ )
-			al.array[i]=rand() %2;
-
-		double t0= ( get_time_ms() );
-
-		std::vector<double> pec = PECsequence ( al );
-		printf ( "PEC: " );
-		display_vector ( pec );
-		printf ( " \n" );
-		printf ( "dt: %.1f [s]\n" , get_time_ms()-t0 );
-		return 0;
-	}
-
-
-	if ( 0 ) {
-		array_link al = exampleArray ( aidx );
-		al.showarray();
-		return 0;
-	}
-	{
-		for ( int k=0; k<aidx; k++ )
-			fastrand();
-
-		const int N = 9;
-		arraydata_t arrayclass ( 3, N, 2, 2 );
-		arrayclass.show();
-		array_link al0=arrayclass.randomarray ( 0 )	;
-		//al0 = array_link(3,2,0);al0.at(0,0) =0; al0.at(1,0)=0; al0.at(2,0)=1;	al0.at(0,1) =0; al0.at(1,1)=1; al0.at(2,1)=1;
-		al0.showarray();
-
-
-		printf ( "D %f\n", al0.Defficiency() );
-		printf ( "-----\n" );
-		MatrixFloat mm= al0.getModelMatrix ( 2 );
-		std::cout << mm << std::endl;
-
-		printf ( "-----\n" );
-		mm = array2eigenModelMatrix ( al0 );
-		std::cout << mm << std::endl;
-		exit ( 0 );
-	}
-
-
-	{
-		array_link al = exampleArray ( aidx );
-		al.show();
-		std::cout << al.getModelMatrix ( 2 ) << std::endl;
-		printf ( "------\n" );
-		std::cout << array2eigenModelMatrix ( al ) << std::endl;
-		exit ( 0 );
-		al.showarray();
-		al.show();
-
-		MatrixFloat ww;
-		ww = array2eigenModelMatrix ( al );
-		for ( int ii=0; ii<10; ii++ ) {
-			al.Defficiencies();
-			//detXtX(ww);
-		}
-		exit ( 0 );
-
-		std::vector<double> dd;
-		for ( int ii=0; ii<10000; ii++ ) {
-			al = exampleArray ( aidx );
-			dd=al.Defficiencies();
-		}
-		printf ( "dd " );
-		display_vector ( dd );
-		std::cout << std::endl;
-		exit ( 0 );
-
-
-	}
-	{
-		array_link al = exampleArray ( aidx );
-		arraydata_t arrayclass=arraylink2arraydata ( al );
-
-		arrayclass.randomarray ( 1 ).showarray();
-		return 0;
-
-		al = exampleArray ( aidx );
-		al.showarray();
-
-		MatrixFloat ME = array2eigenME ( al );
-		std::cout << "---- ME ----\n";
-		std::cout << ME << std::endl;
-
-
-		//std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mm3 = array2eigenModelMatrix2 ( al, 2 );
-		//std::cout <<"gr\n" << mm3.first << std::endl;
-
-//		std::pair<Eigen::MatrixXd,Eigen::MatrixXd> mmx = array2eigenModelMatrix2 (al );
-
-		std::vector<double> dd = al.Defficiencies ( 2 );
-		printf ( "Defficiencies: %f %f %f\n", dd[0], dd[1], dd[2] );
-		printf ( "Defficiency: %f\n", al.Defficiency() );
-		//std::cout << "mmx\n"<< mmx.first << std::endl ;
-
-		if ( verbose>=2 ) {
-
-			MatrixFloat mm = al.getModelMatrix ( 2, 1 );
-			std::cout << "model matrix\n" << mm << std::endl;
-		}
-
-		return 0 ;
-
-	}
-
-	if ( 0 ) {
-		const char *fname = "/home/eendebakpt/tmp/test.oa";
-		arraylist_t ll = readarrayfile ( fname );
-		printf ( "read %ld arrays\n", ll.size() );
-		array_link al= ll[0];
-
-		al.show();
-		al.showarray();
-		printf ( "go!\n" );
-		array_link r = reduceDOPform ( al,1 );
-		printf ( "done!\n" );
-//	sleep(1);
-		std::cout.flush();
-		exit ( 0 );
-	}
-
-
-	if ( 0 ) {
-		const char *fname = "/home/eendebakpt/tmp/x.oa";
-		const char *fm = "r+b";
-		FILE *nfid = fopen ( fname, fm );
-		printf ( "## opened file with mode %s", fm );
-		printf ( "  " );
-		printfd ( "file is at position %d\n", ftell ( nfid ) );
-
-		char buf[4]= {1,2,3,4};
-		int p = fseek ( nfid, 0, SEEK_END );
-		printf ( "  p %d, nfid %ld\n", p, ( long ) nfid );
-		printf ( " fseek errno: %s\n", strerror ( errno ) );
-		int rr=fread ( buf, 1, 4, nfid );
-		printf ( "rr %d, something went wrong with fread()? %s\n", rr, strerror ( errno ) );
-		int pp = ftell ( nfid );
-		fseek ( nfid, 0, SEEK_CUR );
-		rr=fwrite ( buf, 1, 4, nfid );
-		printf ( "rr %d, something went wrong with fwrite()! %s\n", rr, strerror ( errno ) );
-		printf ( "  written rr %d\n", rr );
-//afile->seek(0);
-		exit ( 0 );
-	}
-
-
-	// load array
-
-	const char *afile="/home/eendebakpt/misc/oa/oacode/testdata/test-547-21.oa";
-	//const char *afile="/home/eendebakpt/misc/oa/oacode/build/xx32-11.oa";
-	// afile="/home/eendebakpt/misc/oa/oacode/build/xx32-6.oa";
-	//afile="/home/eendebakpt/misc/oa/oacode/build/xx12.oa";
-	// afile="/home/eendebakpt/misc/oa/oacode/build/xl.oa";
-	afile="/home/eendebakpt/misc/oa/oacode/build/x3.oa";
-//     afile="/home/eendebakpt/misc/oa/oacode/build/x3r.oa";
-
-	if ( opt.getArgc() >0 ) {
-		afile = opt.getArgv ( 0 );
-	}
-	printf ( "using array file %s\n", afile );
-
-	arraylist_t lst= readarrayfile ( afile );
-
-	if ( 0 ) {
-		int nn=lst.size();
-		for ( int ii=0; ii<nn; ii++ ) {
-			lst.push_back ( lst[ii] );
-		}
-		nn=lst.size();
-
-//    int ii=420; lst.erase(lst.begin(), lst.begin()+ii); lst.erase(lst.begin()+1, lst.end());
-
-//#define DOOPENMP 1
-
-		std::vector<int> rr ( lst.size() );
-#ifdef _OPENMP
-		printf ( "openmp: num arrays %ld, omp_get_num_threads() %d\n", lst.size(), omp_get_num_threads() );
-#endif
-		int lmccount=0;
-
-#ifdef _OPENMP
-		omp_set_num_threads ( 4 );
-#endif
-
-		#pragma omp parallel for
-		for ( int j=0; j< ( int ) lst.size(); j++ ) {
-			#pragma omp critical
-			{
-#ifdef _OPENMP
-				printf ( "oatest: j %d: thread %d\n", j, omp_get_thread_num() );
-#endif
-			}
-			array_link ee = lst[j];
-			int extcol=ee.n_columns;
-			arraydata_t adlocal=arraylink2arraydata ( ee,0,3 );
-			LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
-			LMCreduction_t tmp = reduction;
-
-			OAextend oaextend;
-			oaextend.setAlgorithm ( MODE_J5ORDERXFAST, &adlocal );
-
-			//getGlobalStatic;
-			#pragma omp critical
-			{
-#ifdef DOOPENMP
-				int jg = j % omp_get_num_threads();
-				jg=j % 8;
-
-				printf ( "  %s: j %d, reduction.staticdata %ld\n", __FUNCTION__, ( int ) j, ( long ) reduction.staticdata );
-
-				// #pragma omp critical
-				{
-					//           reduction.initStatic();
-					reduction.staticdata=new LMC_static_struct_t();
-					reduction.staticdata->update ( &adlocal );
-				}
-
-				printf ( "openmp: col %d: j %d/%ld, jg %d\n", extcol, j, ( long ) nn, jg );
-
-
-#else
-				// still make sure code is thread safe
-				reduction.initStatic();
-
-#endif
-
-			}
-
-			double t0, dt;
-			lmc_t lmc;
-
-			reduction.init_state=COPY;
-
-			t0=get_time_ms();
-			printfd ( "at critical point: LMCcheck... j %d\n", ( int ) j );
-			//#pragma omp critical
-			lmc =  LMCcheck ( ee, ( adlocal ), oaextend, reduction );
-			dt=get_time_ms()-t0;
-
-			#pragma omp critical
-			{
-				if ( lmc!=LMC_LESS )
-					lmccount++;
-				rr[j]=lmc;
-				reduction.releaseStatic();
-			}
-
-
-		}
-
-
-		printf ( "lmccount %d\n", lmccount );
-
-
-		exit ( 0 );
-
-	}
-
-
-	if ( 0 ) {
-		printf ( "FIXME: caching of J45 values?\n" );
-		printf ( "split acts on root part??\n" );
-		printf ( "fixme: should be perm instead of comb? ! ?\n" );
-		printf ( "we should be able to skip column selection in root stage\n" );
-
-		printf ( "FIXME: calculation of colperms group -> should be at most a factor 2 extra (since array is 1 column less!\n" );
-		printf ( "FIXME: calculation of colperms group -> eliminate overhead in sort and unique\n" );
-		printf ( "FIXME: LMCreduce -> for non root initialized arrays there are some funny comparisons!!!\n" );
-		printf ( " 	i) reduction.array is not initialized at all\n" );
-		printf ( " 	ii) check_root_update does not use dyndata\n" );
-		printf ( " 	iii) create unit tests\n" );
-		printf ( "FIXME: calculation of colperms group -> share between multiple arrays (LATER)\n" );
-	}
-
-	int strength = lst[0].strength();
-	//strength=1;
-	arraydata_t adata = arraylink2arraydata ( lst[0], 0, strength );
-	LMCreduction_t reduction ( &adata );
-
-
-	if ( 0 ) {
-		OAextend oaextend;
-		oaextend.setAlgorithm ( MODE_J5ORDERX, &adata );
-		oaextend.j5structure=J5_45;
-		double t0 =get_time_ms();
-		for ( size_t i=0; i<lst.size(); i++ ) {
-			printf ( "array %ld\n", i );
-			array_link al = lst[i];
-			lmc_t r = LMCcheck ( al, adata, oaextend, reduction ) ;
-			//lmc_t r = LMCcheckj5(al, adata, reduction, oaextend) ;
-
-			printf ( "lmc_t %d\n" , ( int ) r );
-			reduction.symms.showColperms();
-		}
-		double dt =get_time_ms()-t0;
-		printf ( "time: %.3f [ms]\n", 1e3*dt );
-	}
-
-	array_link al=lst[0];
-//    mydebug(al, adata, oaextend);
-	OAextend oaextend;
-//    oaextend.setAlgorithm(MODE_J5ORDERX, &adata);
-//   oaextend.j5structure=J5_45;
-
-
-	switch ( md ) {
-	case 0:
-		mydebug ( al, adata, oaextend, dverbose );
-		break;
-	case 1:
-		mydebug1 ( al, adata, oaextend, dverbose );
-		break;
-	case 2:
-		mydebug2 ( al, adata, oaextend, dverbose );
-		break;
-	case 3:
-		mydebug2d ( al, adata, oaextend, dverbose );
-		break;
-	case 5:
-		mydebug5 ( al, adata, oaextend, dverbose );
-		break;
-	case 10:
-		mydebug10 ( al, adata, oaextend, dverbose );
-		break;
-	}
-
-
-	arraysymmetry::rowpermpool.reset();
-
-	return 0;
+return 0;
 
 }
 

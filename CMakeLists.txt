@@ -156,7 +156,8 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-  set(COPTS "  -O3 -DEIGEN_MPL2_ONLY") # -fpermissive
+  set(COPTS "${COPTS}  -O3 ") # -fpermissive
+  set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
 

@@ -107,6 +107,19 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	}
 
 	{
+			cprintf ( verbose, "%s: rank \n", bstr );
+	
+			int rr[10]={4,11,13,18,16,14,4,4,29,29};
+			for(int ii=0; ii<10; ii++) {
+				array_link al = exampleArray(ii, 0);
+		   int r = arrayrankColPiv(array2xf(al));
+		   if (verbose>=2) printf("unittest: rank %d: %d\n", ii, r);
+		   myassert(rr[ii]==r, "unittest error: rank of example matrix\n");
+			}
+
+	}
+	
+	{
 		cprintf ( verbose, "%s: Doptimize \n", bstr );
 		const int N=40;
 		const int t = 0;
