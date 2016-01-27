@@ -738,6 +738,8 @@ inline Type ncombs ( const Type n, const Type k )
 	return sol/fact ( k );
 }
 
+int ncombscacheNumber();
+
 /// initialize datastructure
 void initncombscache(int N);
 

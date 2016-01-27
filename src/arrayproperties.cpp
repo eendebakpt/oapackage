@@ -68,10 +68,10 @@ public:
 		std::fill ( data, data+n, 0 );
 	}
 
-	
+
 	std::string idxstring ( int i ) const {
 		std::string s = "";
-		std::vector<int> tmpidx(this->k);
+		std::vector<int> tmpidx ( this->k );
 		linear2idx ( i, tmpidx );
 
 		for ( int i=0; i<k; i++ ) {
@@ -83,7 +83,7 @@ public:
 
 	long totalsize() const {
 		return n;
-//	return this->cumprod[	
+//	return this->cumprod[
 	}
 	void show() const {
 		for ( int i=0; i<n; i++ ) {
@@ -94,9 +94,10 @@ public:
 
 	/// convert a linear index to normal indices
 	inline void linear2idx ( int ndx, int *nidx = 0 ) const {
-		
-		if (nidx==0) return;
-		
+
+		if ( nidx==0 )
+			return;
+
 		for ( int i=k-1; i>=0; i-- ) {
 			div_t xx = div ( ndx, cumprod[i] );
 			int vi = xx.rem;
@@ -114,7 +115,7 @@ public:
 	/// convert a linear index to normal indices
 	inline void linear2idx ( int ndx, std::vector<int> & nidx ) const {
 
-		assert(nidx.size()==this->k);
+		assert ( nidx.size() ==this->k );
 		for ( int i=k-1; i>=0; i-- ) {
 			div_t xx = div ( ndx, cumprod[i] );
 			int vi = xx.rem;
@@ -134,10 +135,10 @@ public:
 	}
 
 	/// set all values of the array to specified value
-	void setconstant(Type val) {
-		std::fill(this->data, this->data+this->n, val);	
+	void setconstant ( Type val ) {
+		std::fill ( this->data, this->data+this->n, val );
 	}
-	
+
 	/// set value at position
 	void set ( int *idx, Type val ) {
 		int lidx=getlinearidx ( idx );
@@ -335,17 +336,17 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 
 	delete [] dh;
 
-/*
-	if ( 0 ) {
-		myprintf ( "test: " );
-		int tmp[100];
-		int li0= 1;
-		B.linear2idx ( li0, tmp );
-		int li = B.getlinearidx ( tmp );
-		print_perm ( tmp, sg.ngroups );
-		myprintf ( " linear index: %d -> %d\n", li0, li );
-	}
-*/
+	/*
+		if ( 0 ) {
+			myprintf ( "test: " );
+			int tmp[100];
+			int li0= 1;
+			B.linear2idx ( li0, tmp );
+			int li = B.getlinearidx ( tmp );
+			print_perm ( tmp, sg.ngroups );
+			myprintf ( " linear index: %d -> %d\n", li0, li );
+		}
+	*/
 }
 
 template <class Type>
@@ -357,26 +358,33 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 	std::vector<double> Bp ( n+1 );
 
 	if ( s==2 ) {
-		
-#ifdef _OPENMP
-#else 
-		initncombscache(n);
-#endif
-		
-		for ( int j=0; j<=n; j++ ) {
-			Bp[j]=0;
-			for ( int i=0; i<=n; i++ ) {
-				//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
-#ifdef _OPENMP
-				Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
-#else
-				Bp[j] +=  B[i] * krawtchouksCache<long> ( j, i, n ); //  calculate krawtchouk with dynamic programming
-#endif
-				//myprintf("--\n");
-				//	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
 
+		//initncombscache ( n );
+		//printf("n %d, ncombscacheNumber %d\n", n, ncombscacheNumber() );
+		
+		if ( n <= ncombscacheNumber() ) {
+			// use cached version of krawtchouks
+			//printfd("macwilliams_transform: using krawtchouksCache\n");
+			for ( int j=0; j<=n; j++ ) {
+				Bp[j]=0;
+				for ( int i=0; i<=n; i++ ) {
+					Bp[j] +=  B[i] * krawtchouksCache<long> ( j, i, n ); //  calculate krawtchouk with dynamic programming
+				}
+				Bp[j] /= N;
 			}
-			Bp[j] /= N;
+		} else {
+
+			for ( int j=0; j<=n; j++ ) {
+				Bp[j]=0;
+				for ( int i=0; i<=n; i++ ) {
+					//myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
+					Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+					//myprintf("--\n");
+					//	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
+
+				}
+				Bp[j] /= N;
+			}
 		}
 
 	} else {
@@ -447,9 +455,11 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	int *bi = new int[sg.ngroups];
 	int *iout = new int[sg.ngroups];
 
-	for(int i=0; i<sg.ngroups; i++) bi[i]=0;
-	for(int i=0; i<sg.ngroups; i++) iout[i]=0;
-	
+	for ( int i=0; i<sg.ngroups; i++ )
+		bi[i]=0;
+	for ( int i=0; i<sg.ngroups; i++ )
+		iout[i]=0;
+
 //--------------
 
 	for ( int j=0; j<Bout.n; j++ ) {
@@ -492,7 +502,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 	// use formula from page 555 in Xu and Wu  (Theorem 4.i)
 	std::vector<double> A ( sg.n+1, 0 );
 
-	
+
 	for ( int i=0; i<jprod; i++ ) {
 		//myprintf("   %s\n", B.tmpidxstr(i).c_str() );
 		Bout.linear2idx ( i, bi );
@@ -508,7 +518,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 
 	delete [] iout;
 	delete [] bi;
-	
+
 	return A;
 }
 
@@ -615,7 +625,7 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 	symmetry_group sg ( adata.getS(), false );
 	//myprintf(" adata.ncolgroups: %d/%d\n", adata.ncolgroups, sg.ngroups);
 
-	
+
 	std::vector<int> dims ( adata.ncolgroups );
 	for ( unsigned int i=0; i<dims.size(); i++ )
 		dims[i] = adata.colgroupsize[i]+1;
@@ -623,7 +633,7 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 	ndarray<double> B ( dims );
 	ndarray<double> Bout ( dims );
 	//printfd("GWLPmixed: %s\n", adata.idstr().c_str() ); printf("  dims "); display_vector(dims); printf("\n");
-	
+
 	distance_distribution_mixed ( al, B, verbose );
 	if ( verbose>=3 ) {
 		myprintf ( "GWLPmixed: distance distrubution\n" );
@@ -782,14 +792,14 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 	int n = al.n_rows;
 
 	//Eigen::Map<Eigen::MatrixXd> v(al.array,al.n_rows, al.n_columns);
-	
+
 	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
 
 	for ( int c=0; c<k; ++c ) {
 		//int ci = c*n;
 		array_t *p = al.array+c*n;
 		for ( int r=0; r<n; ++r ) {
-			mymatrix ( r, c ) = p[r]; 
+			mymatrix ( r, c ) = p[r];
 		}
 	}
 	return mymatrix;
@@ -890,14 +900,16 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 	// init interactions
 	ww=k+1;
 	for ( int c=0; c<k; ++c ) {
-			int ci = c*n;
+		int ci = c*n;
 		for ( int c2=0; c2<c; ++c2 ) {
 			int ci2 = c2*n;
 
 			const array_t * p1 = al.array+ci;
 			const array_t * p2 = al.array+ci2;
 			for ( int r=0; r<n; ++r ) {
-				mymatrix ( r, ww ) = ( *p1+*p2 ) %2; p1++; p2++;
+				mymatrix ( r, ww ) = ( *p1+*p2 ) %2;
+				p1++;
+				p2++;
 				//mymatrix ( r, ww ) = ( p1[r]+p2[r] ) %2;
 			}
 			ww++;
@@ -912,20 +924,21 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 
 array_link array2xf ( const array_link &al )
 {
-	
-	
+
+
 	int k = al.n_columns;
 	int n = al.n_rows;
 	int m = 1 + k + k* ( k-1 ) /2;
-	array_link out(n, m, array_link::INDEX_DEFAULT);
+	array_link out ( n, m, array_link::INDEX_DEFAULT );
 
-	if (0) {
-	Eigen::MatrixXd tmp;  array2eigenxf(al, tmp);
-	for(int i=0; i<out.n_columns*out.n_rows; i++)
-		out.array[i]=tmp(i);
-	return out;
+	if ( 0 ) {
+		Eigen::MatrixXd tmp;
+		array2eigenxf ( al, tmp );
+		for ( int i=0; i<out.n_columns*out.n_rows; i++ )
+			out.array[i]=tmp ( i );
+		return out;
 	}
-	
+
 	// init first column
 	int ww=0;
 	for ( int r=0; r<n; ++r ) {
@@ -936,7 +949,7 @@ array_link array2xf ( const array_link &al )
 	ww=1;
 	for ( int c=0; c<k; ++c ) {
 		int ci = c*n;
-		array_t *pout = out.array+(ww+c)*out.n_rows;
+		array_t *pout = out.array+ ( ww+c ) *out.n_rows;
 		for ( int r=0; r<n; ++r ) {
 //			out._setvalue  ( r, ww+c,  al.array[r+ci] );
 			pout[r] = al.array[r+ci];
@@ -946,14 +959,14 @@ array_link array2xf ( const array_link &al )
 	// init interactions
 	ww=k+1;
 	for ( int c=0; c<k; ++c ) {
-			int ci = c*n;
+		int ci = c*n;
 		for ( int c2=0; c2<c; ++c2 ) {
 			int ci2 = c2*n;
 
 			const array_t * p1 = al.array+ci;
 			const array_t * p2 = al.array+ci2;
 			array_t *pout = out.array+ww*out.n_rows;
-			
+
 			for ( int r=0; r<n; ++r ) {
 				//out._setvalue(r, ww , ( p1[r]+p2[r] ) %2 );
 				pout[r] = ( p1[r]+p2[r] ) %2 ;
@@ -962,10 +975,10 @@ array_link array2xf ( const array_link &al )
 		}
 	}
 
-	
+
 	out *= 2;
 	out -= 1;
-	
+
 	return out;
 }
 
@@ -1140,50 +1153,54 @@ int array_rank_D_B ( const array_link &al, std::vector<double> *ret  , int verbo
 	//cout << "The rank of A is " << lu_decomp.rank() << endl;
 }
 
-std::vector<double> Aefficiencies(const array_link &al, int verbose)
+std::vector<double> Aefficiencies ( const array_link &al, int verbose )
 {
-	myassert(al.is2level() );
+	myassert ( al.is2level() );
 	int N = al.n_rows;
-	int k = al.n_columns; int m = 1 + k + (k*(k-1))/2;
-	if (verbose) printf("Aefficiencies: array %d, %d\n", N, k );
+	int k = al.n_columns;
+	int m = 1 + k + ( k* ( k-1 ) ) /2;
+	if ( verbose )
+		printf ( "Aefficiencies: array %d, %d\n", N, k );
 	MatrixFloat X = array2eigenModelMatrix ( al );
-	
+
 	Eigen::FullPivLU<MatrixXd> lu_decomp ( X );
 	int rank = lu_decomp.rank();
-	if (rank<m) {
-		if (verbose)
-			printf("Aefficiencies: rank %d/%d\n", rank, m );
-	std::vector<double> aa(3);
-	aa[0] = 0;
-	aa[1] = 0;
-	aa[2] = 0;
-	return aa;
-	}
-	
-	if (verbose) printf("Aefficiencies: calculate information matrix\n" );
-	
-	MatrixFloat matXtX = ( X.transpose() * ( X ) ) /N;
-	
-	if (verbose) printf("Aefficiencies: invert information matrix\n" );
-	MatrixFloat M = matXtX.inverse();
-	
-	std::vector<double> aa(3);
-	double Ax=0;
-	for(int i=0; i<m; i++) {
-			Ax += M(i,i);
-	}
-	aa[0] = 1./(Ax/m);
-	Ax=0;
-	for(int i=1; i<k+1; i++) {
-			Ax += M(i,i);
+	if ( rank<m ) {
+		if ( verbose )
+			printf ( "Aefficiencies: rank %d/%d\n", rank, m );
+		std::vector<double> aa ( 3 );
+		aa[0] = 0;
+		aa[1] = 0;
+		aa[2] = 0;
+		return aa;
 	}
 
-	aa[1] = 1./(Ax/k);
-	Ax=0;
-	for(int i=k+1; i<m; i++) {
-			Ax += M(i,i);
+	if ( verbose )
+		printf ( "Aefficiencies: calculate information matrix\n" );
+
+	MatrixFloat matXtX = ( X.transpose() * ( X ) ) /N;
+
+	if ( verbose )
+		printf ( "Aefficiencies: invert information matrix\n" );
+	MatrixFloat M = matXtX.inverse();
+
+	std::vector<double> aa ( 3 );
+	double Ax=0;
+	for ( int i=0; i<m; i++ ) {
+		Ax += M ( i,i );
 	}
-	aa[2] = 1./(Ax/( k*(k-1)/2));
+	aa[0] = 1./ ( Ax/m );
+	Ax=0;
+	for ( int i=1; i<k+1; i++ ) {
+		Ax += M ( i,i );
+	}
+
+	aa[1] = 1./ ( Ax/k );
+	Ax=0;
+	for ( int i=k+1; i<m; i++ ) {
+		Ax += M ( i,i );
+	}
+	aa[2] = 1./ ( Ax/ ( k* ( k-1 ) /2 ) );
 	return aa;
 }
 
@@ -1356,8 +1373,8 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 		//matXtX = ( Xint.transpose() *(Xint) ).cast<eigenFloat>() /n;
 
 		X = array2eigenModelMatrix ( al );
-		
-		
+
+
 
 		//X1i = array2eigenX1 ( al, 1 );
 		//	X2 = array2eigenX2 ( al );
@@ -1386,7 +1403,7 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
 
 	}
 	MyMatrix matXtX = ( X.transpose() * ( X ) ) /n;
-	
+
 	//Matrix X1i =  X.block(0,0,N, 1+nme);
 
 	/*
@@ -1595,21 +1612,22 @@ double CL2discrepancy ( const array_link &al )
 
 #ifdef FULLPACKAGE
 
-typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_link &, int ) ;
+typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array_link &, int ) ;
 
 /** Calculate the Pareto optimal arrays from a list of array files
 
     Pareto optimality is calculated according to (rank; A3,A4; F4)
 */
-void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, paretomethod_t paretomethod)
+void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char *outfile, int verbose, arrayfilemode_t afmode, int nrows, int ncols, paretomethod_t paretomethod )
 {
 	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
-	switch (paretomethod) {
-		case PARETOFUNCTION_J5:
-			paretofunction = calculateArrayParetoJ5<array_link>;
-			break;
-		default:
-			break;
+	switch ( paretomethod ) {
+	case PARETOFUNCTION_J5:
+		paretofunction = calculateArrayParetoJ5<array_link>;
+		break;
+	default
+			:
+		break;
 	}
 	Pareto<mvalue_t<long>,array_link> pset;
 
@@ -1633,10 +1651,10 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 			}
 			Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3 );
 
-			if (verbose>=2) {
-			printf("values: ");
-			Pareto<mvalue_t<long>, array_link >::showvalue(p);
-			
+			if ( verbose>=2 ) {
+				printf ( "values: " );
+				Pareto<mvalue_t<long>, array_link >::showvalue ( p );
+
 			}
 			#pragma omp critical
 			{
@@ -1665,10 +1683,9 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 	// write files to disk
 	if ( verbose )
 		printf ( "calculateParetoEvenOdd: writing arrays to file %s\n", outfile );
-	if (verbose>=3)
-	{
+	if ( verbose>=3 ) {
 		printf ( "calculateParetoEvenOdd: afmode %d (TEXT %d)\n", afmode, ATEXT );
-		
+
 	}
 
 	if ( outfile!=0 ) {
@@ -1681,14 +1698,15 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verbose, paretomethod_t paretomethod )
 {
 	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
-	switch (paretomethod) {
-		case PARETOFUNCTION_J5:
-			paretofunction = calculateArrayParetoJ5<array_link>;
-			break;
-		default:
-			break;
+	switch ( paretomethod ) {
+	case PARETOFUNCTION_J5:
+		paretofunction = calculateArrayParetoJ5<array_link>;
+		break;
+	default
+			:
+		break;
 	}
-	
+
 
 	Pareto<mvalue_t<long>,long> pset;
 	pset.verbose=verbose;

@@ -276,6 +276,8 @@ int main ( int argc, char* argv[] )
 	std::vector<long> na ( kmax+1 );	  /// total number of arrays
 	std::vector<long> npareto ( kmax+1 ); /// total number of pareto arrays
 
+	initncombscache ( 30 );
+
 
 	std::vector<int> nsplit;
 	nsplit.push_back ( nsplit0 );

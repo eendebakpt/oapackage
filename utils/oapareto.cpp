@@ -77,6 +77,8 @@ paretomethod_t paretoj5 = (paretomethod_t) opt.getIntValue ( "paretomethod", PAR
 	int nc=0;
 	int nn;
 
+	initncombscache ( 20 );
+
 
 	 std::vector<std::string> infiles;
 		for ( int i = 0 ; i < opt.getArgc() ; i++ ) {

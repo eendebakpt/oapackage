@@ -255,18 +255,21 @@ int fastrandK ( int K )
 long **ncombsdata = 0;
 int ncombscachemax=0;
 
-int ncombscacheValue() {
+int ncombscacheNumber() {
 return 	ncombscachemax;
 }
 void initncombscache(int N) {
 
 
-	if(N==ncombscacheValue() )
+	if(N<=ncombscacheNumber() )
 		return;
 	myprintf("initncombscache: value %d\n", N);
 #ifdef OADEBUG
 	myprintf("initncombscache: value %d\n", N);
 #endif
+
+#pragma omp critical	
+	{
 	const int rowsize=N+1;
 	const int nrows=N+1;
 		if(ncombsdata!=0) {
@@ -293,6 +296,9 @@ void initncombscache(int N) {
 			//myprintf("i j %d %d, %d\n", i, j, N);
 			ncombsdata[i][j]=ncombs(i,j);
 		}
+		
+		ncombscachemax=N;
+	}
 }
 		
 }

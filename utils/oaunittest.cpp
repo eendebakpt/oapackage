@@ -50,6 +50,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 	int allgood=1;
 
+	initncombscache ( 20 );
+	
 	/* J-characteristics */
 	{
 		cprintf ( verbose,"%s: J-characteristics\n", bstr );
