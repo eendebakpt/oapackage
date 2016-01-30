@@ -2614,14 +2614,10 @@ void jstruct_t::calc ( const array_link &al )
 	delete_perm ( pp );
 }
 
-void jstruct_t::calcj4 ( const array_link &al )
+/// create J2 table as intermediate result for J-characteristic calculations
+array_link createJdtable(const array_link &al)
 {
-	// myprintf ( "jstruct_t::calcj4\n" );
-	assert ( jj==4 );
-	int *pp = new_perm_init<int> ( jj );
-	int ncolcombs = ncombs ( k, jj );
 	const int nr = al.n_rows;
-	const int N = nr;
 
 	// fill double column table
 	array_link dtable ( nr, al.n_columns*al.n_columns, -1 );
@@ -2642,7 +2638,20 @@ void jstruct_t::calcj4 ( const array_link &al )
 
 		}
 	}
+	
+	return dtable;
+}
 
+void jstruct_t::calcj4 ( const array_link &al )
+{
+	// myprintf ( "jstruct_t::calcj4\n" );
+	assert ( jj==4 );
+	int *pp = new_perm_init<int> ( jj );
+	int ncolcombs = ncombs ( k, jj );
+	const int nr = al.n_rows;
+	const int N = nr;
+
+	array_link dtable = createJdtable(al);
 	//myprintf("dtable\n"); dtable.showarray();
 
 	for ( int x=0; x<this->nc; x++ ) {
@@ -2650,13 +2659,6 @@ void jstruct_t::calcj4 ( const array_link &al )
 		const int idx1= pp[0]+pp[1]*al.n_columns;
 		const int idx2= pp[2]+pp[3]*al.n_columns;
 		int jv=0;
-/*		if ( 0 ) {
-			for ( int xr=0; xr<nr; xr++ ) {
-				int tmp = dtable.atfast ( xr, idx1 ) +dtable.atfast ( xr, idx2 );
-				tmp %= 2;
-				jv += tmp;
-			}
-		} */
 		{
 			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
 			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
@@ -2665,6 +2667,47 @@ void jstruct_t::calcj4 ( const array_link &al )
 				
 				int tmp = (o1[xr]) ^ (o2[xr]);
 				//printf(" tmp %d (%d %d)\n", tmp, o1[xr], o2[xr]);
+				jv += tmp;
+			}
+//			jv %= 2;
+		}
+		jv = 2*jv-N;
+		this->vals[x]=jv;
+		//myprintf(" val %d -> %d\n", jvalue ( al, jj, pp ), jv); myprintf("  perm "); print_perm(pp, jj);
+
+		next_comb_s ( pp, jj, k );
+	}
+
+	delete_perm ( pp );
+}
+
+/// create table with J2 values
+
+void jstruct_t::calcj5 ( const array_link &al )
+{
+	assert ( jj==5 );
+	int *pp = new_perm_init<int> ( jj );
+	int ncolcombs = ncombs ( k, jj );
+	const int nr = al.n_rows;
+	const int N = nr;
+
+	array_link dtable = createJdtable(al);
+
+
+	//myprintf("dtable\n"); dtable.showarray();
+
+	for ( int x=0; x<this->nc; x++ ) {
+		//int jv = jvalue ( al, jj, pp );  this->vals[x]=jv;
+		const int idx1= pp[0]+pp[1]*al.n_columns;
+		const int idx2= pp[2]+pp[3]*al.n_columns;
+		const int idx3 = pp[4];
+		int jv=0;
+		{
+			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
+			const array_t *o3 =  al.array+N*idx3;
+			for ( int xr=0; xr<nr; xr++ ) {
+				int tmp = (o1[xr]) ^ (o2[xr]) ^ o3[xr];
 				jv += tmp;
 			}
 //			jv %= 2;
@@ -2689,12 +2732,14 @@ jstruct_t::jstruct_t ( const array_link &al, int jj )
 	this->init ( N, k, jj );
 	if ( jj==4 && 1 )
 		this->calcj4 ( al );
+	else {
+	if ( jj==5 && 1 )
+		this->calcj5 ( al );		
 	else
 		this->calc ( al );
-
+	}
 	// calculate A value
 	this->calculateAberration();
-
 }
 
 jstruct_t::jstruct_t ( const int N_, const int k_, const int jj_ )

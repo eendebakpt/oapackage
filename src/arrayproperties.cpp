@@ -4,6 +4,7 @@
 #include <time.h>
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 
 #include <Eigen/SVD>
 #include <Eigen/Dense>
@@ -361,7 +362,7 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 
 		//initncombscache ( n );
 		//printf("n %d, ncombscacheNumber %d\n", n, ncombscacheNumber() );
-		
+
 		if ( n <= ncombscacheNumber() ) {
 			// use cached version of krawtchouks
 			//printfd("macwilliams_transform: using krawtchouksCache\n");
@@ -785,9 +786,9 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 	return v;
 }
 
-Eigen::MatrixXd array2xfeigen(const array_link &al)
+Eigen::MatrixXd array2xfeigen ( const array_link &al )
 {
-return arraylink2eigen ( array2xf ( al ) ); // TODO: convert this into single call
+	return arraylink2eigen ( array2xf ( al ) ); // TODO: convert this into single call
 }
 
 
@@ -828,6 +829,154 @@ int arrayrank ( const array_link &al )
 	int rank = lu_decomp.rank();
 	return rank;
 }
+
+/* Helper functions for rankStructure */
+
+#include <Eigen/Core>
+#include <Eigen/Dense>
+
+/// helper function
+std::vector<int> subIndices ( int ks, int k )
+{
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+	std::vector<int> idxsub ( msub );
+	for ( int i=0; i<ks+1; i++ )
+		idxsub[i]=i;
+	int n = ks* ( ks-1 ) /2;
+	for ( int i=0; i<n; i++ )
+		idxsub[i+1+ks]=i+1+k;
+
+	return idxsub;
+}
+/// helper function
+std::vector<int> subIndicesRemainder ( int ks, int k )
+{
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+
+	const int t2 = k* ( k-1 ) /2;
+	const int t2s = ks* ( ks-1 ) /2;
+
+	std::vector<int> idxsub ( m-msub );
+
+	for ( int i=0; i< ( k-ks ); i++ )
+		idxsub[i]=1+ks+i;
+	for ( int i=0; i< ( t2-t2s ); i++ )
+		idxsub[ ( k-ks ) +i]=1+k+t2s+i;
+
+	return idxsub;
+}
+/// helper function
+Eigen::MatrixXi permM ( int ks, int k, const Eigen::MatrixXi subperm, int verbose=1 )
+{
+	std::vector<int> idxsub = subIndices ( ks, k );
+	std::vector<int> idxrem = subIndicesRemainder ( ks, k );
+
+	if ( verbose ) {
+		myprintf ( "ks: %d, k %d, idxsub: ",ks, k );
+		print_perm ( idxsub ); //printf("\n");
+		myprintf ( "ks: %d, k %d, idxrem: ",ks, k );
+		print_perm ( idxrem ); //printf("\n");
+	}
+
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+
+	std::vector<int> ww ( idxsub.size() );
+
+	for ( size_t i=0; i<ww.size(); i++ )
+		ww[i] = idxsub[subperm ( i )];
+
+	Eigen::MatrixXi pm ( m,1 );
+	for ( size_t i=0; i<ww.size(); i++ )
+		pm ( i ) =ww[i];
+	for ( int i=0; i< ( m-msub ); i++ )
+		pm ( msub+i ) =idxrem[i];
+
+	/*
+	if ( verbose ) {
+		printf ( "permM: subperm:\n" );
+		std::cout << subperm.transpose() << std::endl;
+		printf ( "permM: idxsub (size %d):\n", ( int ) idxsub.size() );
+		print_perm ( idxsub );
+		printf ( "\n" );
+		printf ( "permM: pm:\n" );
+		std::cout << pm.transpose()  << std::endl;
+	}
+	*/
+
+	return pm;
+}
+
+
+/// calculate the rank of the second order interaction matrix of an array using the cache system
+int rankStructure::rankxf ( const array_link &al )
+{
+	this->ncalc++;
+	
+	ks = this->ks;
+	int k = al.n_columns;
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+	const int N=al.n_rows;
+
+	if ( verbose )
+		printf ( "rankStructure: rankxf: alsub %d, al %d\n", alsub.n_columns, al.n_columns );
+	if ( al.selectFirstColumns ( ks ) == this->alsub ) {
+
+	} else {
+		// update structure
+		if (verbose>=2)
+			printf ( "rankStructure: update structure (current ks %d, al.n_columns %d)\n", ks, al.n_columns );
+		updateStructure ( al.selectFirstColumns ( al.n_columns-nsub ) );
+
+	}
+	int rank0 = decomp.rank();
+	if ( verbose>=2 )
+		printfd ( "rankStructure: check 0\n" );
+
+	Eigen::MatrixXd A = array2xfeigen ( al );
+
+	// caculate permutation
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType subperm = decomp.colsPermutation ();
+	MatrixXi perm = permM ( ks, k, subperm.indices(), verbose );
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType ptmp ( perm );
+
+	// transform second order interaction matrix into suitable format
+
+	// method 2
+	//Eigen::MatrixXd Zxp = (A * ptmp).block(0, rank0, N, m-rank0);
+	//Eigen::MatrixXd ZxSub = this->Qi.block(rank0, 0, N-rank0, N)*(A * ptmp).block(0, rank0, N, m-rank0);
+	// method 1
+	Eigen::MatrixXd Zxp = A * ptmp;
+	Eigen::MatrixXd ZxSub = this->Qi.block ( rank0, 0, N-rank0, N ) *Zxp.block ( 0, rank0, N, m-rank0 );
+
+	// direct version
+	//Eigen::MatrixXd Zx = this->Qi*A * ptmp;
+	//Eigen::MatrixXd ZxSub = Zx.block ( rank0, rank0, Zx.rows()-rank0, m-rank0 );
+
+
+	if ( verbose>=2 ) {
+		printf ( "k %d, m %d\n", k, m );
+		//eigenInfo ( Zx, "Zx" );
+		printf ( "msub %d, m %d\n", msub, m );
+	}
+
+	if ( verbose>=2 ) {
+		printfd ( "rankStructure: ZxSub\n" );
+		eigenInfo ( ZxSub );
+	}
+
+	int rankx=rankdirect ( ZxSub );
+	int rank = rank0 + rankx;
+
+	if ( verbose ) {
+		printf ( "rankStructure: rank %d + %d = %d (%d)\n", rank0, rankx, rank, rankxfdirect ( A ) );
+	}
+	return rank;
+}
+
 
 /*
 void ABold(const Eigen::MatrixXd &mymatrix, double &A, double &B, int &rank, int verbose)

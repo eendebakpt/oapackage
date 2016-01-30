@@ -228,6 +228,8 @@ private:
 	void calc ( const array_link &al );
 	/// calculate J-characteristics, special function for jj=4
 	void calcj4 ( const array_link &al );
+	/// calculate J-characteristics, special function for jj=5
+	void calcj5 ( const array_link &al );
 
 public:
 	jstruct_t &operator= ( const jstruct_t &rhs );	// assignment

@@ -111,6 +111,98 @@ int arrayrank(const array_link &al);
 /// convert array_link to Eigen matrix
 Eigen::MatrixXd arraylink2eigen ( const array_link &al );
 
+
+/** Structure to efficiently calculate the rank of the second order interaction matrix of many arrays sharing a common subarray
+ *
+ * The input arrays are assumed to be of the form A_i = [A_0 X_i]
+ *
+ *
+ **/
+class rankStructure
+{
+public:
+	array_link alsub;
+	int r;
+	int verbose; /// verbosity level
+	int ks;	/// number of columns of subarray in cache
+
+	int nsub;
+
+private:
+	/// decomposition of subarray
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp;
+	Eigen::MatrixXd Qi;
+	
+	/// internal structure
+	int ncalc, nupdate;
+
+public:
+		/// constructor
+	rankStructure ( const array_link &al, int nsub =  3 ) {
+		verbose=0;
+		//ks = al.n_columns;
+		ks=0;
+		this->nsub=nsub;
+		ncalc=0; nupdate=0;
+		updateStructure(al);
+	}
+	/// constructor
+	rankStructure ( int nsub =  3 ) {
+		verbose=0;
+		//ks = al.n_columns;
+		ks=0;
+		this->nsub=nsub;
+		ncalc=0; nupdate=0;
+
+		array_link al =exampleArray(1);
+		updateStructure(al);
+	}
+
+	void info() const {
+		printf ( "	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows, alsub.n_columns, this->alsub.rank(), ( int ) decomp.rank() );
+	}
+
+	/// update the structure cache with a new array
+	void updateStructure ( const array_link &al )
+
+	{
+		this->alsub=al;
+		this->ks=al.n_columns;
+		Eigen::MatrixXd A = array2xf ( al ).getEigenMatrix();
+		//printfd("here...\n");
+		decomp.compute ( A );
+
+		this->Qi = decomp.matrixQ().inverse();
+		
+		nupdate++;
+		
+		if (this->verbose>=1 && nupdate%30==0) {
+		  printfd("updateStructure: ncalc %d, nupdate %d\n", ncalc, nupdate);
+		}
+	}
+
+	/// helper function
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType matrixP() const {
+		return decomp.colsPermutation();
+	}
+
+	/// calculate the rank of an array directly
+	int rankdirect ( const Eigen::MatrixXd &A ) const {
+		Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( A );
+		int rank = lu_decomp.rank();
+		return rank;
+	}
+
+	/// calculate the rank of the second order interaction matrix of an array directly
+	int rankxfdirect ( const array_link &al ) const {
+		Eigen::MatrixXd mymatrix = arraylink2eigen ( array2xf ( al ) ); //array2xf;
+		return rankdirect ( mymatrix );
+	}
+
+	/// calculate the rank of the second order interaction matrix of an array using the cache system
+	int rankxf ( const array_link &al );
+};
+
 #ifdef FULLPACKAGE
 
 #include "pareto.h"
@@ -127,6 +219,43 @@ void calculateParetoEvenOdd ( const std::vector<std::string> infiles, const char
 // Calculate the Pareto optimal desings from a list of arrays (rank; A3,A4; F4)
 Pareto<mvalue_t<long>,long> parsePareto(const arraylist_t &arraylist, int verbose, paretomethod_t paretomethod = PARETOFUNCTION_DEFAULT);
 
+/// calculate A3 and A4 value for array
+inline mvalue_t<long> A3A4( const array_link &al)
+{
+     const int N = al.n_rows;
+
+  std::vector<double> gwlp = al.GWLP();
+   long w3 = 0;
+   if (gwlp.size()>3) w3 = N*N*gwlp[3]; // the maximum value for w3 is N*choose(k, jj)
+   long w4 = 0;
+   if (gwlp.size()>4) w4 = N*N*gwlp[4]; 
+   //long xmax=N*ncombs ( k, 4 );
+   std::vector<long> w;
+   w.push_back ( w3 );
+   w.push_back ( w4 ); // )); = xmax*w3+w4;
+
+   mvalue_t<long> wm ( w, mvalue_t<long>::LOW );
+   return wm;
+}
+
+/// calculate F4 value for array
+inline mvalue_t<long> F4( const array_link &al, int verbose=1)
+{
+  jstruct_t js ( al, 4 );
+   std::vector<int> FF=js.calculateF();
+#ifdef FULLPACKAGE
+   if ( verbose>=3 ) {
+      printf ( "  parseArrayPareto: F (high to low): " );
+      display_vector ( FF );
+      std::cout << std::endl;
+	  //std::vector<int> Fval=js.Fval();
+      //display_vector ( Fval ); std::cout << std::endl;
+   }
+#endif
+
+    mvalue_t<long> v ( FF, mvalue_t<long>::LOW );
+    return v;
+}
 
 
 template <class IndexType>
@@ -144,42 +273,20 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRan
    int N = al.n_rows;
    //int k = al.n_columns;
 
-   typename Pareto<mvalue_t<long>,IndexType>::pValue p;
-   std::vector<double> gwlp = al.GWLP();
-   long w3 = 0;
-   if (gwlp.size()>3) w3 = N*N*gwlp[3]; // the maximum value for w3 is N*choose(k, jj)
-   long w4 = 0;
-   if (gwlp.size()>4) w4 = N*N*gwlp[4]; // the maximum value for w3 is N*choose(k, jj)
-   //long xmax=N*ncombs ( k, 4 );
-   std::vector<long> w;
-   w.push_back ( w3 );
-   w.push_back ( w4 ); // )); = xmax*w3+w4;
+  mvalue_t<long> wm = A3A4(al);
 
-   mvalue_t<long> wm ( w, mvalue_t<long>::LOW );
-	
    if ( verbose>=3 ) {
-      myprintf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", w4, gwlp[4] );
+       std::vector<double> gwlp = al.GWLP();
+      myprintf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", wm.v[1], gwlp[4] );
    }
 
-   jstruct_t js ( al, 4 );
-   std::vector<int> FF=js.calculateF();
-#ifdef FULLPACKAGE
-   if ( verbose>=3 ) {
-      printf ( "  parseArrayPareto: F (high to low): " );
-      display_vector ( FF );
-      std::cout << std::endl;
-	  //std::vector<int> Fval=js.Fval();
-      //display_vector ( Fval ); std::cout << std::endl;
-   }
-#endif
-
-   // long v = F2value ( FF );
-   mvalue_t<long> v ( FF, mvalue_t<long>::LOW );
+  mvalue_t<long> v = F4(al);
 
    // add the 3 values to the combined value
    //int r = array2xf(al).rank();
    int r = arrayrankColPiv(array2xf(al));
    
+   typename Pareto<mvalue_t<long>,IndexType>::pValue p;
    p.push_back ( r ); // rank of second order interaction matrix
    p.push_back ( wm ); // A4
    p.push_back ( v ); // F
@@ -188,15 +295,13 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRan
 	  myprintf("  parseArrayPareto: rank %d, verbose %d\n", al.rank(), verbose );
 	}
 
-  return p;
-  
+  return p;  
 }
 
-
+/// add Jmax criterium to Pareto set
 template <class IndexType>
-inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5 ( const array_link &al, int verbose  )
+void addJmax(const array_link &al, typename Pareto<mvalue_t<long>,IndexType>::pValue &p, int verbose=1)
 {
-  typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayParetoRankFA<IndexType> ( al, verbose);
   std::vector<int> j5 = al.Jcharacteristics(5);
   
   int j5max = vectormax ( j5, 0 );
@@ -210,6 +315,13 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5 
   
   p.push_back(v1);
   p.push_back(v2);
+}
+
+template <class IndexType>
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5 ( const array_link &al, int verbose  )
+{
+  typename Pareto<mvalue_t<long>,IndexType>::pValue p = calculateArrayParetoRankFA<IndexType> ( al, verbose);
+  addJmax<IndexType>(al, p, verbose);
   
   return p;
 }

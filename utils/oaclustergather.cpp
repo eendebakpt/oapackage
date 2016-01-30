@@ -144,12 +144,36 @@ void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vect
 
 
 typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array_link &, int ) ;
+typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb_cache ) ( const array_link &, int, rankStructure &rs ) ;
 
-void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose )
+template <class IndexType>
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5Cache ( const array_link &al, int verbose, rankStructure &rs  )
+{
+	
+	 const int N = al.n_rows;
+//   int r = arrayrankColPiv(array2xf(al));
+	 int r = rs.rankxf(al);
+  mvalue_t<long> wm = A3A4(al);
+  mvalue_t<long> v = F4(al);
+   
+   typename Pareto<mvalue_t<long>,IndexType>::pValue p;
+   p.push_back ( r ); // rank of second order interaction matrix
+   p.push_back ( wm ); // A4
+   p.push_back ( v ); // F
+  addJmax<IndexType>(al, p, verbose);
+  
+  return p;
+}
+
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
 {
 
-	//#pragma omp parallel for
-	#pragma omp parallel for num_threads(4)
+	// allocate for fast rank calculations
+	rankStructure rs[10];
+	printfd("addArraysToPareto: %d arrays\n", (int) arraylist.size() );
+	
+	#pragma omp parallel for
+//#pragma omp parallel for num_threads(4)
 	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
 		if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
 			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
@@ -162,8 +186,11 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb pare
 
 		const array_link &al = arraylist.at ( i );
 
+		/* Obtain thread number */
+		int tid = omp_get_thread_num();
+ 
 		//parseArrayPareto ( al, al, pset, verbose );
-		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3 );
+		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3, rs[tid] );
 
 		#pragma omp critical
 		{
@@ -172,8 +199,6 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb pare
 		}
 	}
 }
-
-
 
 const std::string filesep = "/";
 
@@ -255,11 +280,13 @@ int main ( int argc, char* argv[] )
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
-	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
+	pareto_cb_cache paretofunction = calculateArrayParetoJ5Cache<array_link>;
 
 	if ( paretomethod )
-		paretofunction = calculateArrayParetoJ5<array_link>;
+		paretofunction = calculateArrayParetoJ5Cache<array_link>;
 
+	assert(paretomethod==1); // other methods not implemented at this moment...
+	
 	arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString ( opt.getStringValue ( 'f', "BINARY" ) );
 
 	arraydata_t *adata = readConfigFile ( configfile );
@@ -279,7 +306,6 @@ int main ( int argc, char* argv[] )
 	std::vector<long> npareto ( kmax+1 ); /// total number of pareto arrays
 
 	initncombscache ( 30 );
-
 
 	std::vector<int> nsplit;
 	nsplit.push_back ( nsplit0 );
