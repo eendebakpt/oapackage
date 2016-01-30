@@ -263,7 +263,6 @@ void initncombscache(int N) {
 
 	if(N<=ncombscacheNumber() )
 		return;
-	myprintf("initncombscache: value %d\n", N);
 #ifdef OADEBUG
 	myprintf("initncombscache: value %d\n", N);
 #endif

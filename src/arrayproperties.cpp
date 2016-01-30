@@ -785,6 +785,12 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 	return v;
 }
 
+Eigen::MatrixXd array2xfeigen(const array_link &al)
+{
+return arraylink2eigen ( array2xf ( al ) ); // TODO: convert this into single call
+}
+
+
 /// convert array to Eigen matrix structure
 Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 {
@@ -916,9 +922,8 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 		}
 	}
 
-	mymatrix.array() -= .5;
 	mymatrix.array() *= 2;
-
+	mymatrix.array() -= 1;
 }
 
 
@@ -930,14 +935,6 @@ array_link array2xf ( const array_link &al )
 	int n = al.n_rows;
 	int m = 1 + k + k* ( k-1 ) /2;
 	array_link out ( n, m, array_link::INDEX_DEFAULT );
-
-	if ( 0 ) {
-		Eigen::MatrixXd tmp;
-		array2eigenxf ( al, tmp );
-		for ( int i=0; i<out.n_columns*out.n_rows; i++ )
-			out.array[i]=tmp ( i );
-		return out;
-	}
 
 	// init first column
 	int ww=0;

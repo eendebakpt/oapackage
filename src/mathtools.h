@@ -740,7 +740,7 @@ inline Type ncombs ( const Type n, const Type k )
 
 int ncombscacheNumber();
 
-/// initialize datastructure
+/// initialize datastructure, this function is not thread safe
 void initncombscache(int N);
 
 /** return number of combinations from previously calculated results

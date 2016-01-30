@@ -433,6 +433,269 @@ double conditionNumber ( const array_link M )
 	return cond;
 }
 
+
+#include <Eigen/Core>
+#include <Eigen/Dense>
+
+/// helper function
+std::vector<int> subIndices ( int ks, int k )
+{
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+	std::vector<int> idxsub ( msub );
+	for ( int i=0; i<ks+1; i++ )
+		idxsub[i]=i;
+	int n = ks* ( ks-1 ) /2;
+	for ( int i=0; i<n; i++ )
+		idxsub[i+1+ks]=i+1+k;
+
+	return idxsub;
+}
+/// helper function
+std::vector<int> subIndicesRemainder ( int ks, int k )
+{
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+
+	const int t2 = k* ( k-1 ) /2;
+	const int t2s = ks* ( ks-1 ) /2;
+
+	std::vector<int> idxsub ( m-msub );
+
+	for ( int i=0; i< ( k-ks ); i++ )
+		idxsub[i]=1+ks+i;
+	for ( int i=0; i< ( t2-t2s ); i++ )
+		idxsub[ ( k-ks ) +i]=1+k+t2s+i;
+
+	return idxsub;
+}
+
+
+/// helper function
+Eigen::MatrixXi permM ( int ks, int k, const Eigen::MatrixXi subperm, int verbose=1 )
+{
+	std::vector<int> idxsub = subIndices ( ks, k );
+	std::vector<int> idxrem = subIndicesRemainder ( ks, k );
+
+	if ( verbose ) {
+		printf ( "ks: %d, k %d, idxsub: ",ks, k );
+		print_perm ( idxsub ); //printf("\n");
+		printf ( "ks: %d, k %d, idxrem: ",ks, k );
+		print_perm ( idxrem ); //printf("\n");
+	}
+
+	const int m = 1+k+k* ( k-1 ) /2;
+	const int msub = 1+ks+ks* ( ks-1 ) /2;
+
+	std::vector<int> ww ( idxsub.size() );
+
+	for ( size_t i=0; i<ww.size(); i++ )
+		ww[i] = idxsub[subperm ( i )];
+
+	Eigen::MatrixXi pm ( m,1 );
+	for ( size_t i=0; i<ww.size(); i++ )
+		pm ( i ) =ww[i];
+	for ( int i=0; i< ( m-msub ); i++ )
+		pm ( msub+i ) =idxrem[i];
+
+	if ( verbose ) {
+		printf ( "permM: subperm:\n" );
+		std::cout << subperm.transpose() << std::endl;
+		printf ( "permM: idxsub (size %d):\n", ( int ) idxsub.size() );
+		print_perm ( idxsub );
+		printf ( "\n" );
+		printf ( "permM: pm:\n" );
+		std::cout << pm.transpose()  << std::endl;
+	}
+
+	return pm;
+}
+
+/// convert 2-level design to second order interaction matrix
+inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
+{
+	int k = al.n_columns;
+	int n = al.n_rows;
+	int m = 1 + k + k* ( k-1 ) /2;
+
+	mymatrix = Eigen::MatrixXd::Zero ( n,m );
+
+	// init first column
+	int ww=0;
+	for ( int r=0; r<n; ++r ) {
+		mymatrix ( r, ww ) = 1;
+	}
+
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int r=0; r<n; ++r ) {
+			mymatrix ( r, ww+c ) = al.array[r+ci];
+		}
+	}
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2*n;
+
+			const array_t * p1 = al.array+ci;
+			const array_t * p2 = al.array+ci2;
+			for ( int r=0; r<n; ++r ) {
+				mymatrix ( r, ww ) = ( *p1+*p2 ) %2;
+				p1++;
+				p2++;
+			}
+			ww++;
+		}
+	}
+
+	mymatrix.array() *= 2;
+	mymatrix.array() -= 1;
+}
+
+/** Structure to efficiently calculate the rank of the second order interaction matrix of many arrays sharing a common subarray
+ *
+ * The input arrays are assumed to be of the form A_i = [A_0 X_i]
+ *
+ *
+ **/
+class rankStructure
+{
+public:
+	array_link alsub;
+	int r;
+	int verbose; /// verbosity level
+	int ks;	/// number of columns of subarray in cache
+
+	int nsub;
+
+private:
+	/// decomposition of subarray
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp;
+	Eigen::MatrixXd Qi;
+
+public:
+		/// constructor
+	rankStructure ( const array_link &al, int nsub =  3 ) {
+		verbose=0;
+		//ks = al.n_columns;
+		ks=0;
+		this->nsub=nsub;
+		updateStructure(al);
+	}
+	/// constructor
+	rankStructure ( int nsub =  3 ) {
+		verbose=0;
+		//ks = al.n_columns;
+		ks=0;
+		this->nsub=nsub;
+		array_link al =exampleArray(1);
+		updateStructure(al);
+	}
+
+	void info() const {
+		printf ( "	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows, alsub.n_columns, this->alsub.rank(), ( int ) decomp.rank() );
+	}
+
+	/// update the structure cache with a new array
+	void updateStructure ( const array_link &al )
+
+	{
+		this->alsub=al;
+		this->ks=al.n_columns;
+		Eigen::MatrixXd A = array2xf ( al ).getEigenMatrix();
+		//printfd("here...\n");
+		decomp.compute ( A );
+
+		this->Qi = decomp.matrixQ().inverse();
+	}
+
+	/// helper function
+	Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType matrixP() const {
+		return decomp.colsPermutation();
+	}
+
+	/// calculate the rank of an array directly
+	int rankdirect ( const Eigen::MatrixXd &A ) const {
+		Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( A );
+		int rank = lu_decomp.rank();
+		return rank;
+	}
+
+	/// calculate the rank of the second order interaction matrix of an array directly
+	int rankxfdirect ( const array_link &al ) const {
+		Eigen::MatrixXd mymatrix = arraylink2eigen ( array2xf ( al ) ); //array2xf;
+		return rankdirect ( mymatrix );
+	}
+
+	/// calculate the rank of the second order interaction matrix of an array using the cache system
+	int rankxf ( const array_link &al ) {
+		ks = this->ks;
+		int k = al.n_columns;
+		const int m = 1+k+k* ( k-1 ) /2;
+		const int msub = 1+ks+ks* ( ks-1 ) /2;
+		const int N=al.n_rows;
+
+		if ( verbose )
+			printf ( "rankStructure: rankxf: alsub %d, al %d\n", alsub.n_columns, al.n_columns );
+		if ( al.selectFirstColumns ( ks ) == this->alsub ) {
+
+		} else {
+			// update structure
+			printf ( "rankStructure: update structure (current ks %d, al.n_columns %d)\n", ks, al.n_columns );
+			updateStructure ( al.selectFirstColumns ( al.n_columns-nsub ) );
+
+		}
+		int rank0 = decomp.rank();
+		if ( verbose>=2 )
+			printfd ( "rankStructure: check 0\n" );
+
+		Eigen::MatrixXd A = array2xfeigen ( al );
+
+		// caculate permutation
+		Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType subperm = decomp.colsPermutation ();
+		MatrixXi perm = permM ( ks, k, subperm.indices(), verbose );
+		Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType ptmp ( perm );
+
+		// transform second order interaction matrix into suitable format
+
+		// method 2
+		//Eigen::MatrixXd Zxp = (A * ptmp).block(0, rank0, N, m-rank0);
+		//Eigen::MatrixXd ZxSub = this->Qi.block(rank0, 0, N-rank0, N)*(A * ptmp).block(0, rank0, N, m-rank0);
+		// method 1
+		Eigen::MatrixXd Zxp = A * ptmp;
+		Eigen::MatrixXd ZxSub = this->Qi.block ( rank0, 0, N-rank0, N ) *Zxp.block ( 0, rank0, N, m-rank0 );
+
+		// direct version
+		//Eigen::MatrixXd Zx = this->Qi*A * ptmp;
+		//Eigen::MatrixXd ZxSub = Zx.block ( rank0, rank0, Zx.rows()-rank0, m-rank0 );
+
+
+		if ( verbose>=2 ) {
+			printf ( "k %d, m %d\n", k, m );
+			//eigenInfo ( Zx, "Zx" );
+			printf ( "msub %d, m %d\n", msub, m );
+		}
+
+		if ( verbose>=2 ) {
+			printfd ( "rankStructure: ZxSub\n" );
+			eigenInfo ( ZxSub );
+		}
+
+		int rankx=rankdirect ( ZxSub );
+		int rank = rank0 + rankx;
+
+		if ( verbose ) {
+			printf ( "rankStructure: rank %d + %d = %d (%d)\n", rank0, rankx, rank, rankxfdirect ( A ) );
+		}
+		return rank;
+	}
+};
+
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -443,6 +706,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "rand", 'r' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
+	opt.setOption ( "xx", 'x' );
 	opt.setOption ( "dverbose", 'd' );
 	opt.setOption ( "rows" );
 	opt.setOption ( "cols" );
@@ -461,6 +725,9 @@ int main ( int argc, char* argv[] )
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	int ix = opt.getIntValue ( 'i', 11 );
 	int r = opt.getIntValue ( 'r', 0 );
+	int xx = opt.getIntValue ( 'x', 3 );
+	int niter  = opt.getIntValue ( "niter", 100 );
+	int verbose  = opt.getIntValue ( "verbose", 1 );
 
 	char *input = opt.getValue ( 'I' );
 	if ( input==0 )
@@ -487,9 +754,62 @@ int main ( int argc, char* argv[] )
 	setloglevel ( SYSTEM );
 
 
+
+
+	{
+		array_link al = exampleArray ( r,1 );
+		array_link alsub = al.selectFirstColumns ( al.n_columns-3 );
+
+		rankStructure rs ( xx );
+					printfd("here\n");
+
+		rs.info();
+		rs.verbose=1;
+
+		int rd=-1, r=-1;
+
+		if ( 1 ) {
+			printfd("here\n");
+			int r = rs.rankxf ( al );
+			int rd= rs.rankxfdirect ( al );
+			printf ( "rank %d %d\n", r, rd );
+			assert ( r==rd );
+		}
+
+				if ( rs.verbose ) {
+			Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType subperm = rs.matrixP();
+			Eigen::MatrixXi  xx= subperm.indices();
+
+			printf ( "rs.decomp.colsPerm:\n" );
+			std::cout << xx.transpose() << std::endl;
+		}
+		
+		printf ( "\ntimings:\n" );
+		rs.verbose=0;
+		double t0;
+
+		t0 = get_time_ms();
+		arraylist_t ll = readarrayfile ( input );
+		for ( int i=0; i<niter; i++ ) {
+			al=ll[i % ll.size()];
+			r = rs.rankxf ( al );
+		}
+		printf ( "rankxf: %.2f [s] ...\n", get_time_ms() - t0 );
+		t0= get_time_ms();
+		for ( int i=0; i<niter; i++ ) {
+			al=ll[i % ll.size()];
+			rd = rs.rankxfdirect ( al );
+			//break;
+		}
+		printf ( "rankxfdirect: %.2f [s]\n", get_time_ms() - t0 );
+
+
+		return 0;
+	}
+
 	arraylist_t ll = readarrayfile ( input );
 	printf ( "oatest: %d arrays\n", ( int ) ll.size() );
-	for ( int i=0; i< (int)ll.size(); i++ ) {
+	for ( int i=0; i< ( int ) ll.size(); i++ ) {
 		array_link al = ll[i];
 
 		array_link A = array2xf ( al );
@@ -504,7 +824,7 @@ int main ( int argc, char* argv[] )
 		}
 		if ( int ( i ) ==-1 ) {
 			al.showarray();
-		} 
+		}
 		int rank =-1;
 
 		if ( 0 ) {
@@ -520,7 +840,7 @@ int main ( int argc, char* argv[] )
 
 			exit ( 0 );
 		}
-		
+
 		if ( r==2 ) {
 			al=exampleArray ( 1,1 );
 			array_link A = array2xf ( al );
@@ -569,7 +889,7 @@ int main ( int argc, char* argv[] )
 
 			exit ( 0 );
 		}
-		
+
 		switch ( r ) {
 		case 0: {
 			rank= A.rank();
@@ -584,7 +904,7 @@ int main ( int argc, char* argv[] )
 			Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
 			double thr=lu_decomp.threshold();
 			rank = lu_decomp.rank();
-			if ( (int)i<-1) {
+			if ( ( int ) i<-1 ) {
 				printf ( "rank %d: %d\n", ( int ) i, rank );
 
 			}
@@ -638,13 +958,14 @@ int main ( int argc, char* argv[] )
 		}
 		break;
 
-		default:
+		default
+				:
 			printf ( "no such r value\n" );
 			break;
 		}
-		
-		if(i<5) {
-		printf("i %d: rank %d\n", (int) i, rank);	
+
+		if ( i<5 ) {
+			printf ( "i %d: rank %d\n", ( int ) i, rank );
 		}
 	}
 
@@ -652,57 +973,56 @@ int main ( int argc, char* argv[] )
 
 
 
-if ( 0 )
-{
+	if ( 0 ) {
 
-	array_link al = exampleArray ( 11, 0 );
-	al = exampleArray ( ix, 1 );
-	al.showproperties();
-	{
-		arraydata_t arrayclassx = arraylink2arraydata ( al );
-		array_transformation_t trx ( arrayclassx );
-		trx.show();
-		return 0;
+		array_link al = exampleArray ( 11, 0 );
+		al = exampleArray ( ix, 1 );
+		al.showproperties();
+		{
+			arraydata_t arrayclassx = arraylink2arraydata ( al );
+			array_transformation_t trx ( arrayclassx );
+			trx.show();
+			return 0;
+		}
+
+		//al=al.reduceLMC();
+		array_link al2 = al.randomperm();
+
+		if ( 1 ) {
+			int verbose=1;
+			array_link alr = al.randomcolperm();
+			alr=al.randomperm();
+
+			alr.showarray();
+
+
+			std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
+			arraydata_t arrayclass = arraylink2arraydata ( alr );
+			printfd ( "colors: " );
+			display_vector ( Gc.second );
+			printf ( "\n" );
+
+			std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
+			printf ( "canon: " );
+			display_vector ( tr );
+			printf ( "\n" );
+			std::vector<int> tri = invert_permutation ( tr );
+			array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
+
+			array_link Gm = transformGraph ( Gc.first, tri, 1 );
+			//printf("G minimal\n"); Gm.showarray(); return 0;
+
+
+			ttm.show();
+
+			ttm.apply ( alr ).showarray();
+
+			return 0;
+		}
+
 	}
 
-	//al=al.reduceLMC();
-	array_link al2 = al.randomperm();
-
-	if ( 1 ) {
-		int verbose=1;
-		array_link alr = al.randomcolperm();
-		alr=al.randomperm();
-
-		alr.showarray();
-
-
-		std::pair<array_link, std::vector<int> > Gc = array2graph ( alr,  verbose );
-		arraydata_t arrayclass = arraylink2arraydata ( alr );
-		printfd ( "colors: " );
-		display_vector ( Gc.second );
-		printf ( "\n" );
-
-		std::vector<int> tr = nauty::reduceNauty ( Gc.first, Gc.second );
-		printf ( "canon: " );
-		display_vector ( tr );
-		printf ( "\n" );
-		std::vector<int> tri = invert_permutation ( tr );
-		array_transformation_t ttm = oagraph2transformation ( tri, arrayclass, verbose );
-
-		array_link Gm = transformGraph ( Gc.first, tri, 1 );
-		//printf("G minimal\n"); Gm.showarray(); return 0;
-
-
-		ttm.show();
-
-		ttm.apply ( alr ).showarray();
-
-		return 0;
-	}
-
-}
-
-return 0;
+	return 0;
 
 }
 

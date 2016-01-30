@@ -99,12 +99,16 @@ double CL2discrepancy(const array_link &al);
 /// add intercept and second order interactions to an array
 array_link array2xf(const array_link &al);
 
+/// add intercept and second order interactions to an array
+Eigen::MatrixXd array2xfeigen(const array_link &al);
+
 /// return rank of an array based on Eigen::ColPivHouseholderQR
 int arrayrankColPiv ( const array_link &al );
 
 /// calculate the rank of an array
 int arrayrank(const array_link &al);
 
+/// convert array_link to Eigen matrix
 Eigen::MatrixXd arraylink2eigen ( const array_link &al );
 
 #ifdef FULLPACKAGE

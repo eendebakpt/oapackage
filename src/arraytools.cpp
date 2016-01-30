@@ -912,8 +912,7 @@ array_link exampleArray ( int idx, int verbose )
 		break;
 	}
 	case 3: {
-		// array 7 in OA(32, 3, 2^9)
-		dstr="array 7 in OA(32, 3, 2^9)";
+		dstr="array ? in OA(32, 3, 2^7)";
 		if ( verbose )
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 

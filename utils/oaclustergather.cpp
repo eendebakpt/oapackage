@@ -143,11 +143,11 @@ void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vect
 }
 
 
-typedef Pareto<mvalue_t<long>, array_link >::pValue (*pareto_cb)(const array_link &, int ) ;
+typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array_link &, int ) ;
 
 void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose )
 {
-	
+
 	//#pragma omp parallel for
 	#pragma omp parallel for num_threads(4)
 	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
@@ -172,6 +172,8 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb pare
 		}
 	}
 }
+
+
 
 const std::string filesep = "/";
 
@@ -254,12 +256,12 @@ int main ( int argc, char* argv[] )
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
 	pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
-	
-	if (paretomethod)
+
+	if ( paretomethod )
 		paretofunction = calculateArrayParetoJ5<array_link>;
-	
-    arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString(opt.getStringValue('f', "BINARY"));
-	
+
+	arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString ( opt.getStringValue ( 'f', "BINARY" ) );
+
 	arraydata_t *adata = readConfigFile ( configfile );
 	assert ( adata!=0 );
 
@@ -303,7 +305,7 @@ int main ( int argc, char* argv[] )
 	// loop over all columns
 	for ( int k=kmin; k<=kmax; k++ ) {
 		int cleanrunK=1; /// indicates whether all necessary files for k columns have been found
-		
+
 		if ( verbose>=2 )
 			printf ( " \n#### oaclustergather: %d columns (time %.1f [s])\n", k, get_time_ms()-time0 );
 		Pareto<mvalue_t<long>,array_link> pset;
@@ -414,7 +416,7 @@ int main ( int argc, char* argv[] )
 				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
 				//std::cout << " dummy, verbose " << verbose << printfstring("jj %d", jj) << std::endl; // dummy print
 				//printf ( "  " ); pset.show ( 1 );
-				fflush(0);
+				fflush ( 0 );
 			}
 		}
 
@@ -446,8 +448,8 @@ int main ( int argc, char* argv[] )
 				printf ( "  writing pareto file %s\n", pfile0.c_str() );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 		}
-		
-		fflush(0);
+
+		fflush ( 0 );
 	}
 
 	if ( verbose )
@@ -471,7 +473,7 @@ int main ( int argc, char* argv[] )
 	if ( verbose ) {
 		std::cout << "#time end: "<< currenttime() << std::endl;
 		std::cout << "#time total: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
-		fflush(0);
+		fflush ( 0 );
 	}
 	return cleanrun;
 }
