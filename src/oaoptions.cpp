@@ -21,7 +21,7 @@ std::string compile_information()
 /** Return version of program */
 std::string version()
 {
-	std::string v = "2.1.1";
+	std::string v = "2.1.2";
 	return v;
 }
 

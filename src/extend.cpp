@@ -160,7 +160,7 @@ std::string OAextend::__repr__() const
 	s += printfstring ( "OAextend: singleExtendTime %.1f [s], nLMC %d", singleExtendTime, nLMC ) + split;
 	s += printfstring ( "OAextend: init_column_previous %d", init_column_previous ) + split;
 	s += printfstring ( "OAextend: algorithm %s", this->getAlgorithmName().c_str() ) + split;
-	if ( this->algmode==MODE_J5ORDERX ) {
+	if ( this->algmode==MODE_J5ORDERX || this->algmode==MODE_J5ORDERXFAST) {
 		s += printfstring ( "OAextend: special: j5structure %d", this->j5structure ) + split;
 	}
 	return s;
@@ -899,7 +899,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
 	/* extension data */
 	extend_data_t *es = new extend_data_t ( ad, p->col );
-	//	return 0; // HACK
 
 	rowindex_t nsg = find_row_symm ( array, ad, ncolsextension-1, es->gidx, es->gstart, es->gsize );
 	log_print ( DEBUG, "  number of row symmetry groups: %d\n", nsg ); //print_perm(esdyn->gidx, p->N);
@@ -974,6 +973,9 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 	//int gid = getGlobalStaticNumber(reduction.staticdata);
 	//printf("extend_array: initialized static to id %d (%ld)\n", gid, (long) reduction.staticdata);
 #endif
+	
+	//ad->show();
+	//oaextend.info();
 	
 	do {
 		showLoopProgress ( array, col_offset, N, node_rank, nlmcarrays );

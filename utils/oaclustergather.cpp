@@ -169,8 +169,10 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 {
 
 	// allocate for fast rank calculations
-	rankStructure rs[10];
+	rankStructure rs[25];
+	if (verbose>=2) {
 	printfd("addArraysToPareto: %d arrays\n", (int) arraylist.size() );
+	}
 	
 	#pragma omp parallel for
 //#pragma omp parallel for num_threads(4)

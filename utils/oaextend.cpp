@@ -351,6 +351,8 @@ int main(int argc, char* argv[])
             maxk=std::min(maxk, ad->ncols);
             //printf("col_start %d, maxk: %d %d\n", col_start, maxk, ad->ncols);
 
+	    //oaextend.info();  ad->show();
+	    
             time_t seconds;
             for (colindex_t current_col = col_start; current_col < maxk; current_col++)
             {

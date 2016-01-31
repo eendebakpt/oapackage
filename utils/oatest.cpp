@@ -542,30 +542,60 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	if ( 0 ) {
 
+		arraylist_t ll = readarrayfile ( "/home/eendebakpt/tmp/sp0-split-10/sp0-split-10-pareto-64.2-2-2-2-2-2-2-2-2-2.oa" );
+		array_link al=ll[0];
+
+		int r0= ( al ).rank();
+		int r=array2xf ( al ).rank();
+		printf ( "rank: %d %d\n",  r0,r );
+
+		arraydata_t arrayclass=arraylink2arraydata ( al, 1 );
+
+		OAextend oaextend=OAextend();
+		oaextend.checkarrays=0;
+		oaextend.setAlgorithm ( MODE_J5ORDERXFAST, &arrayclass );
+		setloglevel ( NORMAL );
+
+		arrayclass.show();
+		oaextend.info();
+
+		printf ( "extend!\n" );
+		al.show();
+
+		int current_col=al.n_columns;
+		arraylist_t extensions;
+		int nr_extensions = extend_array ( al.array, &arrayclass, current_col,extensions, oaextend );
+
+//arraylist_t ww=extend_array(al, arrayclass, oaextend);
+
+		return 0;
+	}
 
 
 	{
 		array_link al = exampleArray ( r,1 );
 		array_link alsub = al.selectFirstColumns ( al.n_columns-3 );
 
-		
+
 		{
-		double t0;
-				t0 = get_time_ms();
-		arraylist_t ll = readarrayfile ( input );
-		for ( int i=0; i<niter; i++ ) {
-			al=ll[i % ll.size()];
-			std::vector<int> j5 = al.Jcharacteristics(5);			
+			double t0;
+			t0 = get_time_ms();
+			arraylist_t ll = readarrayfile ( input );
+			for ( int i=0; i<niter; i++ ) {
+				al=ll[i % ll.size()];
+				std::vector<int> j5 = al.Jcharacteristics ( 5 );
+			}
+			std::vector<int> j5 = al.Jcharacteristics ( 5 );
+			display_vector ( j5 );
+			printf ( "\n" );
+
+			return 0;
 		}
-			std::vector<int> j5 = al.Jcharacteristics(5);			
-		display_vector(j5); printf("\n");
-		
-		return 0;
-		}
-		
+
 		rankStructure rs ( xx );
-					printfd("here\n");
+		printfd ( "here\n" );
 
 		rs.info();
 		rs.verbose=1;
@@ -573,21 +603,21 @@ int main ( int argc, char* argv[] )
 		int rd=-1, r=-1;
 
 		if ( 1 ) {
-			printfd("here\n");
+			printfd ( "here\n" );
 			int r = rs.rankxf ( al );
 			int rd= rs.rankxfdirect ( al );
 			printf ( "rank %d %d\n", r, rd );
 			assert ( r==rd );
 		}
 
-				if ( rs.verbose ) {
+		if ( rs.verbose ) {
 			Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType subperm = rs.matrixP();
 			Eigen::MatrixXi  xx= subperm.indices();
 
 			printf ( "rs.decomp.colsPerm:\n" );
 			std::cout << xx.transpose() << std::endl;
 		}
-		
+
 		printf ( "\ntimings:\n" );
 		rs.verbose=0;
 		double t0;
