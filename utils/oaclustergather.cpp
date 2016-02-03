@@ -440,7 +440,7 @@ int main ( int argc, char* argv[] )
 			const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
 			addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
 
-			if ( verbose>=2 || ( ( jj%20==0 || ( jj==nsplit[level]-1 ) ) && verbose>=1 ) ) {
+			if ( verbose>=3 || ( ( jj%60==0 || ( jj==nsplit[level]-1 ) ) && verbose>=2 ) ) {
 				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
 				//std::cout << " dummy, verbose " << verbose << printfstring("jj %d", jj) << std::endl; // dummy print
 				//printf ( "  " ); pset.show ( 1 );
@@ -449,8 +449,11 @@ int main ( int argc, char* argv[] )
 		}
 
 		if ( verbose ) {
-			printf ( "final pareto set %d cols: ", k );
-			pset.show ( 2 );
+			printf ( "  final pareto set %d cols (%d files): ", k, nsplit[level] );
+			if (verbose>=2)
+				pset.show ( 2 );
+			else
+				pset.show ( 1 );
 		}
 
 		// write pareto set to disk
@@ -473,7 +476,7 @@ int main ( int argc, char* argv[] )
 			std::string pfile = basedir + "/" + cdir + pfile0;
 
 			if ( verbose )
-				printf ( "  writing pareto file %s\n", pfile0.c_str() );
+				printf ( "  writing pareto file %s (%d/%d arrays)\n", pfile0.c_str(), npareto[k], na[k] );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 		}
 

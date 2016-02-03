@@ -426,6 +426,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
+    r=0
     if not dryrun:
         
         process = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
@@ -461,6 +462,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         if (not r == 0):
             print('runcommand: cmd returned error!')
             print(cmd)
+            return r
     else:
         if verbose >= 2 or (verbose and logfile is None):
             print('### dryrun\n%s\n###\n' % cmd)
@@ -474,6 +476,8 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         #print('no logfile')
         #raise Exception('no logfile')
 
+    # all good
+    return r
 
 def getArrayFile(afile):
     """ Return pointer to array file
