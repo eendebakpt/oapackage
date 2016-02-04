@@ -65,3 +65,5 @@ src/stest
 src/oadevelop.o
 dev/
 oalib_wrap.cpp
+swig_doc.i
+testdata/sp0-split-567-extend-64.2-2-2-2-2-2-2-2-2.oa

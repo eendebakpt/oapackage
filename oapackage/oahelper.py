@@ -1035,8 +1035,10 @@ import webbrowser
 import tempfile
 
 
-def testHtml(hh):
+def testHtml(hh=None):
     """ Test a short snippet of HTML """
+    if hh is None:
+      return
     page = markup.page()
     page.init()
     page.body()

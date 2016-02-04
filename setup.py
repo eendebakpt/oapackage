@@ -312,8 +312,11 @@ setup (name = 'OApackage',
         data_files = data_files,
         test_suite = "oapackage.unittest",
     scripts=scripts,
-    tests_require=['numpy'],
+          # nose and coverage are only for tests, but we'd like to encourage
+          # people to run tests!
+    tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
        zip_safe=False,
+      install_requires=['numpy>=1.9'],
 	requires=['numpy', 'matplotlib'],
 	classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research', 
 	      'Programming Language :: Python :: 2',

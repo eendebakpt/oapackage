@@ -74,6 +74,9 @@ def unittest(verbose=1):
         print('error: DOP reduction transformation is invalid')
 
     # test graphtools
+    if verbose>=2:
+        print('unittest: test graphtools')
+    #import . graphtools
     from . graphtools import oa2graph
     arrayclass = oalib.arraylink2arraydata(al)
     _ = oa2graph(al, arrayclass)
