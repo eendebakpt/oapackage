@@ -96,6 +96,9 @@ std::vector<double> projectionGWLPvalues ( const array_link &al );
  */
 double CL2discrepancy(const array_link &al);
 
+/// calculate second order interaction matrix for 2-level array
+array_link array2secondorder ( const array_link &al );
+
 /// add intercept and second order interactions to an array
 array_link array2xf(const array_link &al);
 
@@ -267,6 +270,8 @@ template <class IndexType>
  * 2) A3, A4 (lower is better)
  * 3) F4 (?? is better, sum of elements is constant)
  * 
+ * Valid for 2-level arrays of strength at least 1
+ * 
  * */
 inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRankFA ( const array_link &al, int verbose  )
 {
@@ -284,7 +289,18 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoRan
 
    // add the 3 values to the combined value
    //int r = array2xf(al).rank();
-   int r = arrayrankColPiv(array2xf(al));
+   //int r = arrayrankColPiv(array2xf(al));
+   
+   int r = arrayrankColPiv(array2secondorder(al) ) + 1 + al.n_columns;	// valid of 2-level arrays of strength at least 1
+   
+#ifdef OADEBUG
+{
+   int r1 = arrayrankColPiv(array2xf(al));
+   int r2 = arrayrankColPiv(array2secondorder(al) ) + 1 + al.n_columns;	// valid of 2-level arrays of strength at least 1
+  printfd("calculateArrayParetoRankFA: rank check %d %d\n", r1, r2);
+assert(r2==r1);
+}
+#endif
    
    typename Pareto<mvalue_t<long>,IndexType>::pValue p;
    p.push_back ( r ); // rank of second order interaction matrix

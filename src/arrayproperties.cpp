@@ -1076,10 +1076,41 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 }
 
 
+array_link array2secondorder ( const array_link &al )
+{
+	int k = al.n_columns;
+	int n = al.n_rows;
+	int m = 1 + k + k* ( k-1 ) /2;
+	int m2 = k* ( k-1 ) /2;
+	array_link out ( n, m2, array_link::INDEX_DEFAULT );
+
+	// init interactions
+	int ww=0;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2*n;
+
+			const array_t * p1 = al.array+ci;
+			const array_t * p2 = al.array+ci2;
+			array_t *pout = out.array+ww*out.n_rows;
+
+			for ( int r=0; r<n; ++r ) {
+				pout[r] = ( p1[r]+p2[r] ) %2 ;
+			}
+			ww++;
+		}
+	}
+
+	out *= 2;
+	out -= 1;
+
+	return out;
+
+}
+
 array_link array2xf ( const array_link &al )
 {
-
-
 	int k = al.n_columns;
 	int n = al.n_rows;
 	int m = 1 + k + k* ( k-1 ) /2;

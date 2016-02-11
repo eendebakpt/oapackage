@@ -776,6 +776,14 @@ public:
 	return *this;
 	}
 
+		array_link operator += ( array_t val ) {
+		int NN=this->n_rows*this->n_columns;
+	for(int i=0; i<NN; i++)
+		this->array[i] += val;
+	return *this;
+
+			
+		}
 		array_link operator -= ( array_t val ) {
 		int NN=this->n_rows*this->n_columns;
 	for(int i=0; i<NN; i++)
@@ -821,7 +829,10 @@ public:
 	/// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 	std::string md5() const;
 
-	bool firstDiff ( const array_link &A, int &r, int &c, int verbose=1 ) {
+	/// return index of first different column
+	int firstColumnDifference ( const array_link &A ) const;
+
+	bool firstDiff ( const array_link &A, int &r, int &c, int verbose=1 ) const {
 		r=0;
 		c=0;
 		for ( c=0; r<this->n_rows; r++ ) {

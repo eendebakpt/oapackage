@@ -738,6 +738,11 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
 
 }
 
+int array_link::firstColumnDifference ( const array_link &A ) const {
+		int r=-1, c=-1;
+		this->firstDiff (A, r, c, 0);
+		return c;		
+	}
 
 /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 std::string array_link::md5() const

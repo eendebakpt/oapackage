@@ -151,7 +151,7 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5C
 {
 	
 	 const int N = al.n_rows;
-//   int r = arrayrankColPiv(array2xf(al));
+   //int r = arrayrankColPiv(array2xf(al));
 	 int r = rs.rankxf(al);
   mvalue_t<long> wm = A3A4(al);
   mvalue_t<long> v = F4(al);
@@ -170,6 +170,8 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 
 	// allocate for fast rank calculations
 	rankStructure rs[25];
+	for(size_t i=0; i<25; i++) rs[i].nsub=4;
+	
 	if (verbose>=2) {
 	printfd("addArraysToPareto: %d arrays\n", (int) arraylist.size() );
 	}
@@ -476,7 +478,7 @@ int main ( int argc, char* argv[] )
 			std::string pfile = basedir + "/" + cdir + pfile0;
 
 			if ( verbose )
-				printf ( "  writing pareto file %s (%d/%d arrays)\n", pfile0.c_str(), npareto[k], na[k] );
+				printf ( "  writing pareto file %s (%ld/%ld arrays)\n", pfile0.c_str(), (long) npareto[k], (long) na[k] );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 		}
 
