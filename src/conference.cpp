@@ -49,6 +49,7 @@ array_link conference_t::create_root ( ) const
 
 }
 
+// return vector of length n with specified positions set to one
 std::vector<int> get_comb ( std::vector<int> p, int n, int zero=0, int one=1 )
 {
 	std::vector<int> c ( n );
@@ -65,8 +66,6 @@ void next_combx ( std::vector<int> c, int n )
 cperm insertzero ( cperm c, int pos, int value=0 )
 {
 	cperm cx =c;
-
-
 	cx.insert ( cx.begin() +pos, value );
 	return cx;
 
@@ -74,8 +73,7 @@ cperm insertzero ( cperm c, int pos, int value=0 )
 
 
 /*
-
- Values in column k for k > 1 and k <= N/2 + 1:
+Values in column k for k > 1 and k <= N/2 + 1 = q + 2:
 
 First value 1, value at position k is 0.
 
@@ -89,11 +87,11 @@ put q1 in upper half and q2 in lower half. we need:
 
 [Case v=-1]
 
-(inner prod 0 == 0):
+(inner prod with col 0 == 0):
 
 q1+q2=q
 
-(inner prod 1 == 0)
+(inner prod with col 1 == 0)
 
 q1 - (N/2 - 1 - 1 -q1) - [ q2-(N/2-1-q2) ]  + 1= 0
 
@@ -132,45 +130,128 @@ v=1
 
  */
 
-std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
-{
-	int n1=N/2-1;
-	int k1=-1;
+/*
+Values in column k for k > 1 and k > N/2 + 1 = 2 + q:
+First value 1, value at position k is 0.
 
-	int haszero=extcol<n1+2;
-	int q = -1;
-	int q1=-1, q2=-1;
-	int v=-100;
+From the remaining N-2 values we have q=(N-2)/2 positive. Inner product with column 0 is then satisfied.
+
+Value v at position 1 is irrevant to innerproduct with column 1, this can be either +1 or -1
+
+Top: 2 elements, Upper half: N/2-1 elements, bottom: N/2-1 elements
+
+The zero is in the bottom part. Let q1 and q2 be the number of +1 -1? signs in the upper and lower half, respectively.
+We need:
+
+[Case v=-1]
+
+(inner prod with col 0 == 0):
+
+q1+q2=q
+
+(inner prod with col 1 == 0)
+
+1 + q1 + (q-1-q2) = q
+
+[Case v=1] (<-- q even)
+
+(inner prod 0 == 0):
+
+q1+q2+1=q
+
+(inner prod 1 == 0)
+
+1 + q1 + (q-1-q2) = q
+
+==> v=+1: q1=(q-1)/2, q2=q1
+==> v=-1: q1=q/2, q2=q1
+
+Examples:
+
+N=8
+q=3
+q1=?
+q2=?
+v=?
+
+N=6
+q=2
+q1=?0
+q2=?
+n1=?
+v=1
+
+ */
+
+
+bool iseven ( int q )
+{
+	return ( q%2 ) ==0;
+}
+
+void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
+{
+	q = ( N-2 ) /2;
+
+	if ( k<= 2+q ) {
+		if ( iseven ( q ) ) {
+			q1=q/2-1;
+			v=1;
+			q2=q1+1;
+		} else {
+			q1= ( q-1 ) /2;
+			v=-1;
+			q2=q1+1;
+		}
+
+	} else {
+
+		if ( iseven ( q ) ) {
+			q1=q/2;
+			v=-1;
+			q2=q1;
+		} else {
+			q1= ( q-1 ) /2;
+			v=1;
+			q2=q1;
+
+		}
+
+	}
+}
+
+   /** Return all admissible columns (first part) for a conference array in normal form
+    *
+    *
+    **/
+   std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
+{
+	int k1=-1;
+	int n1=-1;
+	int k = extcol;
+
+	int q, q1, q2, v;
+	getConferenceNumbers ( N, k, q, q1, q2, v );
+
+	int haszero=extcol<q+2;
 	if ( haszero ) {
 
-		n1=n1-1;
-		k1=n1/2;
-		q  = ( N-2 ) /2;
+		n1=q-1;
+		//k1=n1/2;
 	} else {
-		printf ( "get_first: extcol %d, N %d, n1 %d, not implemented...\n", extcol, N, n1 );
-		k1 = n1/2;
+		//printf ( "conference array: extcol %d, N %d, n1 %d, not implemented...\n", extcol, N, n1 );
+		//k1 = n1/2;
+		n1=q;
 	}
 
-	std::vector<int> c ( k1 );
-	for ( int i=0; i<k1 ; i++ )
+	std::vector<int> c ( q1 );
+	for ( int i=0; i<q1 ; i++ )
 		c[i]=i;
 
 
-
-	// if q is even
-	if ( q%2==0 ) {
-		q1 = q/2-1;
-		q2 = q-q1-1;
-		v=1;
-	} else {
-		q1 = ( q-1 ) /2;
-		q2 = q1+1;
-
-		v=-1;
-	}
 	int nc = ncombs<long> ( n1, q1 );
 	if ( verbose )
-		printf ( "get_first: N %d, n1 %d, q %d, v %d, q1 %d, q2 %d, nc %d\n", N, n1, q, v, q1, q2, nc );
+		printf ( "conference array: extcol %d: N %d, n1 %d, q %d, v %d, q1 %d, q2 %d, nc %d\n", extcol, N, n1, q, v, q1, q2, nc );
 
 	std::vector<cperm> ff;
 	for ( long j=0; j<nc; j++ ) {
@@ -181,6 +262,7 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 
 		if ( haszero )
 			cc=insertzero ( cc, extcol );
+		//printfd("get_first: add element of size %d =  2 + %d\n", cc.size(), q );
 		ff.push_back ( cc );
 
 		if ( j+1<nc ) {
@@ -194,33 +276,47 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 }
 std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 {
-	int n1=N/2-1;
-	int k1=-1;
+	if (verbose)
+		printfd("get_second: N %d, extcol %d, target %d\n");
+	int k = extcol;
+	int q, q1, q2, v;
+	getConferenceNumbers ( N, k, q, q1, q2, v );
 
-	int haszero=extcol>=n1+2;
+int n1=-1;
+	int haszero=extcol>=q+2;
+	printf("extcol: %d, q %d\n", extcol, q);
+	
 	if ( haszero ) {
-		printf ( "get_second: not  implemented...\n" );
-		k1=n1/2;
+		//k1=n1/2;
+		n1=q-1;
 	} else {
-		k1 = n1- ( n1-target ) /2;
+		//k1 = n1- ( n1-target ) /2;
+		n1=q;
 	}
+	int qx=q2;
 
-	std::vector<int> c ( k1 );
-	for ( int i=0; i<k1 ; i++ )
+	std::vector<int> c ( qx );
+	for ( int i=0; i<qx ; i++ )
 		c[i]=i;
 
 	if ( verbose )
-		printf ( "get_second: N %d, n1 %d, target %d, k1 %d\n", N, n1, target, k1 );
+		printf ( "get_second: N %d, qx %d, target %d\n", N, qx, target );
 
-	int nc = ncombs<long> ( n1, k1 );
+	int nc = ncombs<long> ( n1, qx );
 	std::vector<cperm> ff;
 	for ( long j=0; j<nc; j++ ) {
 		cperm cc =get_comb ( c, n1, -1, 1 );
 
 		if ( haszero )
-			cc=insertzero ( cc, extcol );
+			cc=insertzero ( cc, extcol-(q+2) );
+		if (verbose>=2) {
+		printfd("add element of size %d =   %d\n", cc.size(), q );
+		display_vector(cc); printf("\n");
+		printf("c: "); display_vector(c); printf("\n");
+		}
+		
 		ff.push_back ( cc );
-		next_comb ( c, k1, n1 );
+		next_comb ( c, qx, n1 );
 	}
 
 
@@ -299,8 +395,10 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 
 	int k = extcol;
 
+	printf ( "--- extend_conference: extcol %d ---\n", extcol );
+
 	// loop over all possible first combinations
-	std::vector<cperm> ff = get_first ( N, extcol );
+	std::vector<cperm> ff = get_first ( N, extcol, verbose );
 	//std::vector<cperm> ff2 = get_second(N, extcol);
 
 	if ( verbose>=2 ) {
@@ -316,7 +414,6 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 
 	array_link als = al.selectFirstColumns ( extcol );
 
-	printf ( "--- extend_conference: extcol %d ---\n", extcol );
 	cperm c0 = getColumn ( al, 0 );
 	cperm c1 = getColumn ( al, 1 );
 	for ( size_t i=0; i<ce.first.size(); i++ ) {
@@ -327,14 +424,17 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 		int target = -ip;
 		std::vector<cperm> ff2 = get_second ( N, extcol, target, verbose>=2 );
 		ce.second=ff2;
+		
+		//printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
 		for ( size_t j=0; j<ff2.size(); j++ ) {
 			cperm c = ce.combine ( i, j );
 			int ip0 = innerprod ( c0, c );
 			int ip1 = innerprod ( c1, c );
 			//printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
+			
 			if ( verbose>=2 ) {
-				printf ( "extend %d: ip %d %d\n", ( int ) i, ip0, ip1 );
+				printf ( "extend_conference %d: ip %d %d\n", ( int ) i, ip0, ip1 );
 			}
 
 			if ( verbose>=2 ) {
@@ -345,8 +445,15 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 				alx.showarray();
 			}
 			// add array to good set if ip2 is zero
-			if ( ip0==0 && ip1==0 )
+			if ( ip0==0 && ip1==0 ) {
 				extensions.push_back ( c );
+			} else {
+			printfd("huh?");	
+			
+				printf(" ip0 ip 1 %d %d\n" , ip0, ip1); 
+				array_link alx = hstack ( al, c );
+				alx.showarray();
+			}
 		}
 	}
 

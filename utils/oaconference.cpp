@@ -81,10 +81,11 @@ int main ( int argc, char* argv[] )
 	al.showarray();
 
 
-	conference_extend_t ce = extend_conference ( al, ctype, 2, verbose );
+	int extcol=al.n_columns;
+	conference_extend_t ce = extend_conference ( al, ctype, extcol, verbose );
 
 	if ( output.length() >1 ) {
-		printf ( "write arrays to file %s...\n", output.c_str() );
+		printf ( "oaconference: write %d arrays to file %s...\n", (int)ce.nExtensions(), output.c_str() );
 		writearrayfile ( output.c_str(), ce.getarrays ( al ) );
 	}
 	printf ( "done...\n" );

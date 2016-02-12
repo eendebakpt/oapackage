@@ -33,6 +33,10 @@ public:
 
 	array_link create_root ( ) const;
 
+	std::string __repr__() const
+	{
+	return printfstring("conference type: N %d, ncols %d", this->N, this->ncols);
+	}
 };
 
 
@@ -44,10 +48,16 @@ struct conference_extend_t {
 
 public:
 
+	// combine first and second section into a single column
 	cperm combine ( int i, int j ) const {
 		cperm c =vstack ( this->first[i], this->second[j] );
 
+		//printfd("c.size() %d = %d + %d\n", c.size(),  this->first[i].size(),  this->second[i].size() );
 		return c;
+	}
+	
+	size_t nExtensions() const {
+	return this->extensions.size();	
 	}
 
 	arraylist_t getarrays ( const array_link al ) {
