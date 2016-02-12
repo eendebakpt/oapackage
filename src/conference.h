@@ -37,7 +37,12 @@ public:
 	{
 	return printfstring("conference type: N %d, ncols %d", this->N, this->ncols);
 	}
+	
 };
+
+/// reduce conference matrix to normal form
+	array_link reduceConference(const array_link &, int verbose = 0);
+	
 
 
 /// Helper structure

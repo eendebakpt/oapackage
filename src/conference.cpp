@@ -10,6 +10,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <vector>
+
 #include "arraytools.h"
 #include "arrayproperties.h"
 #include "tools.h"
@@ -17,6 +19,8 @@
 
 #include "oadevelop.h"
 #include "lmc.h"
+
+#include "graphtools.h"
 
 #include "conference.h"
 
@@ -47,6 +51,27 @@ array_link conference_t::create_root ( ) const
 
 	return al;
 
+}
+
+
+array_link reduceConference(const array_link &al, int verbose )
+{
+	const int nr = al.n_rows; const int nc=al.n_columns;
+	/// create graph
+	array_link G(2*nr*nc, 2*nr*nc, array_link::INDEX_DEFAULT);
+	
+	std::vector<int> colors(2*nr*nc);
+	
+	/// call nauty
+	std::vector<int> tr = nauty::reduceNauty(G, colors, verbose);
+	
+	// extract transformation
+	
+	// ...
+	
+	array_link alx;
+	return alx;
+	
 }
 
 // return vector of length n with specified positions set to one

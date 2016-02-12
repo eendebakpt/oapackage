@@ -21,6 +21,28 @@ Ideas contributed by:
 
 See the file LICENSE for copyright details.
 
+Usage
+-------
+
+The package can be used from Python:
+``` python
+>>> import oalib
+>>> al=oalib.exampleArray(0)
+>>> al.showarray()
+array: 
+  0   0
+  0   0
+  0   1
+  0   1
+  1   0
+  1   0
+  1   1
+  1   1
+>>> print('D-efficiency %f, rank %d' % (al.Defficiency(), al.rank()) )
+D-efficiency 1.000000, rank 2
+>>> print('Generalized wordlength pattern: %s' % str(al.GWLP()))
+Generalized wordlength pattern: (1.0, 0.0, 0.0)
+```
 
 Installation
 ------------

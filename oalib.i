@@ -155,6 +155,22 @@ def eigen2numpy(m):
 
 %pythoncode %{
 import sys
+ 
+def reduceGraphNauty(G, colors, verbose=1):
+  """ Reduce vertex transformation reducing array to normal form """
+  
+  al=array_link()
+  al.setarray(G)
+  v = _oalib.reduceNauty ( al, colors, verbose )
+  return v
+  
+def transformGraphMatrix(G, tr, verbose=1):
+    """ Apply a vertex permutation to a graph """
+    al=array_link()
+    al.setarray(G)
+    alt = _oalib.transformGraph(al, tr, verbose)  
+    return np.array(alt)
+  
 %}
 
 
