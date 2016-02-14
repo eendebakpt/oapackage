@@ -98,7 +98,7 @@ def get_version_info(verbose=0):
         if os.path.exists('src/version.h'):
             with open('src/version.h') as f:
                 ln=f.readline()
-                print(ln)
+                #print(ln)
                 m = re.search('.* "(.*)"',ln);
                 FULLVERSION=(m.group(1))
         else:
