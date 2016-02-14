@@ -155,17 +155,43 @@ def eigen2numpy(m):
 
 %pythoncode %{
 import sys
- 
+import numpy as np
+
 def reduceGraphNauty(G, colors, verbose=1):
-  """ Reduce vertex transformation reducing array to normal form """
+  """ Reduce vertex transformation reducing array to normal form
+  
+  The reduction is calculated using `Nauty <http://pallini.di.uniroma1.it/>`_
+
+  Arguments
+  ---------
+      G : Numpy array
+	the graph in incidence matrix form
+      colors : list
+	an optional vertex coloring
+  """
   
   al=array_link()
   al.setarray(G)
+  if colors is None:
+    colors = [0] * G.shape[0]
   v = _oalib.reduceNauty ( al, colors, verbose )
   return v
   
 def transformGraphMatrix(G, tr, verbose=1):
-    """ Apply a vertex permutation to a graph """
+    """ Apply a vertex permutation to a graph 
+    
+    Arguments
+    ---------
+      G : Numpy array
+	the graph in incidence matrix form
+      tr : list 
+	the vertex transformation as a list
+	
+    Returns
+    -------
+      The transformed graph
+      
+    """
     al=array_link()
     al.setarray(G)
     alt = _oalib.transformGraph(al, tr, verbose)  

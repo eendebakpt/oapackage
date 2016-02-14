@@ -3,6 +3,7 @@
 
 __all__ = ['oahelper']
 
+
 import oalib
 oalib.setloglevel(oalib.SYSTEM)
 oalib.log_print(-oalib.SYSTEM, '')
@@ -15,6 +16,8 @@ from . Doptim import *
 from . import scanf
 
 import numpy as np
+
+__version__ = oalib.version()
 
 #%%
 

@@ -85,6 +85,34 @@ def checkZlib(verbose=0):
     
     return ret_val
 
+
+#%%
+
+import re
+
+def get_version_info(verbose=0):
+  """ Extract version information from source code """
+    
+  GIT_REVISION=None
+  try:
+        if os.path.exists('src/version.h'):
+            with open('src/version.h') as f:
+                ln=f.readline()
+                print(ln)
+                m = re.search('.* "(.*)"',ln);
+                FULLVERSION=(m.group(1))
+        else:
+            FULLVERSION='0.0'
+  except Exception as E:
+        FULLVERSION = '0.0'
+  if verbose:
+      print('get_version_info: %s' % FULLVERSION )
+  return FULLVERSION, GIT_REVISION
+
+#print(get_version_info())
+
+
+
 #%% Hack to remove option for c++ code
 try:
 	# see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
@@ -290,7 +318,9 @@ try:
     long_description = pypandoc.convert('README.md', 'rst')
 except(IOError, ImportError):
     long_description = open('README.md', 'rt').read()
-    
+
+version = get_version_info()[0]    
+
 setup (name = 'OApackage',
       #cmdclass = {'test': OATest },
       cmdclass = {'test': OATest, 'install': CustomInstall},

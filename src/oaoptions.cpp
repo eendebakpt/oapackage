@@ -7,6 +7,7 @@
 
 #include "oaoptions.h"
 #include "arraytools.h"
+#include "version.h"
 
 /// Information about compile time options
 std::string compile_information()
@@ -21,7 +22,7 @@ std::string compile_information()
 /** Return version of program */
 std::string version()
 {
-	std::string v = "2.1.2";
+	std::string v = __version__; // "2.1.2";
 	return v;
 }
 

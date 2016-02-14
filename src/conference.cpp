@@ -57,11 +57,47 @@ array_link conference_t::create_root ( ) const
 array_link reduceConference(const array_link &al, int verbose )
 {
 	const int nr = al.n_rows; const int nc=al.n_columns;
+	const int nn = 2*(nr+nc);
 	/// create graph
-	array_link G(2*nr*nc, 2*nr*nc, array_link::INDEX_DEFAULT);
+	array_link G(2*(nr+nc), 2*(nr+nc), array_link::INDEX_DEFAULT);
 	
-	std::vector<int> colors(2*nr*nc);
+	std::vector<int> colors(2*(nr+nc));
 	
+	const int roffset0=0;
+	const int roffset1=nr;
+	const int coffset0=2*nr;
+	const int coffset1=2*nr+nc;
+	
+	/*
+Add edges as follows:
+(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+Zeros in A don't cause any edges.
+*/
+	for(int i=coffset0; i<coffset0+2*nc;i++) colors[i]=1;
+	
+	for(int i=0; i<nr; i++) G.at(roffset0+i, i+roffset1)=1; 
+	for(int i=0; i<nc; i++) G.at(coffset0+i, i+coffset1)=1;
+
+	for(int r=0; r<nr; r++) {
+	for(int c=0; c<nc; c++) {
+		if (al.at(r,c)==1) {
+		G.at(roffset0+r, coffset0+c)=1;
+		G.at(roffset1+r, coffset1+c)=1;
+		}
+		if (al.at(r,c)==-1) {
+		G.at(roffset0+r, coffset1+c)=1;
+		G.at(roffset1+r, coffset0+c)=1; G.at(coffset0+c, roffset1+r)=1;
+		}
+	}
+	}
+	
+	// make symmetryic
+	for(int i=0; i<nn; i++)
+		for(int j=i; j<nn; j++)
+			G.at(j,i)=G.at(i, j);
+		
 	/// call nauty
 	std::vector<int> tr = nauty::reduceNauty(G, colors, verbose);
 	
