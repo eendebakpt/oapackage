@@ -13,6 +13,8 @@ include mex/compile.m
 #include oalib_wrap.cxx
 
 recursive-include src *.h *.cpp
+recursive-include nauty *.h *.cpp *.c
+include nauty/nauty.h
 #recursive-include bitarray *.h *.cpp
 
 #graft python

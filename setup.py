@@ -12,7 +12,14 @@ from setuptools.command.test import test as TestCommand
 from codecs import open  # To use a consistent encoding
 from os import path
 import os,sys
-import numpy as np
+try:
+    import numpy as np
+    npinclude = np.get_include()
+except:
+    #raise ImportError('could not load numpy')
+    np=None
+    npinclude = ''
+    pass
 import platform
 
 here = path.abspath(path.dirname(__file__))
@@ -218,7 +225,7 @@ if 'VSC_SCRATCH' in os.environ.keys():
   
   libraries=['z']
   library_dirs=[zlibdir + '/lib']
-  include_dirs=['.', 'src', np.get_include(), zlibdir + '/include' ]
+  include_dirs=['.', 'src', npinclude, zlibdir + '/include' ]
   oalib_module = Extension('_oalib',
                            sources=sources,
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
@@ -226,7 +233,7 @@ if 'VSC_SCRATCH' in os.environ.keys():
 else:
   libraries=[]
   library_dirs=[]
-  include_dirs=['.', 'src', np.get_include() ]
+  include_dirs=['.', 'src', npinclude ]
 
   oalib_module = Extension('_oalib', sources=sources,
                            include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
