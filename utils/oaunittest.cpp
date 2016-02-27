@@ -19,6 +19,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "tools.h"
 #include "extend.h"
 #include "Deff.h"
+#include "conference.h"
 
 #include "graphtools.h"
 
@@ -51,6 +52,24 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	int allgood=1;
 
 	initncombscache ( 20 );
+	
+	/* conference matrices */
+	{
+		cprintf ( verbose,"%s: conference matrices\n", bstr );
+
+		int N=4;
+		conference_t ctype ( N, N );
+
+		arraylist_t kk;
+		array_link al = ctype.create_root();
+		kk.push_back(al);	
+
+		for(int extcol=2; extcol<N; extcol++) {
+			kk = extend_conference ( kk, ctype,  0 );
+		}
+				myassert ( kk.size()==1, "unittest error: conference matrices for N=4\n" );
+	}
+	
 	
 	/* J-characteristics */
 	{

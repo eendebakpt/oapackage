@@ -43,6 +43,9 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( "Usage: oaconference [OPTIONS] [FILE]" );
 	opt.addUsage ( "" );
 	opt.addUsage ( " -h --help  			Prints this help " );
+	opt.addUsage ( " -N --rows  			Number of rows " );
+	opt.addUsage ( " -v --verbose [INT] 			Verbosity level " );
+	opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
 	opt.processCommandArgs ( argc, argv );
 
 
@@ -70,28 +73,37 @@ int main ( int argc, char* argv[] )
 
 	if ( verbose )
 		printf ( "create conference matrices of size %dx%d\n", ctype.N, ctype.ncols );
-	array_link al = ctype.create_root();
 
+	arraylist_t kk;
 	if ( input.length() >1 ) {
-		arraylist_t kk = readarrayfile ( input.c_str() )	 ;
-		al=kk[0];
+		kk = readarrayfile ( input.c_str() )	 ;
+		//al=kk[0];
 	}
+else {
+	array_link al = ctype.create_root();
+kk.push_back(al);	
+}
+	//printf ( "initial array:\n" );
+	//al.showarray();
 
-	printf ( "initial array:\n" );
-	al.showarray();
+	arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
 
-
+	if (0) {
+	array_link al=kk[0];
 	int extcol=al.n_columns;
-	conference_extend_t ce = extend_conference ( al, ctype, extcol, verbose );
-
+	conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, verbose );
+	outlist = ce.getarrays ( al ) ;
+	}
+	
 	if ( output.length() >1 ) {
-		printf ( "oaconference: write %d arrays to file %s...\n", (int)ce.nExtensions(), output.c_str() );
-		writearrayfile ( output.c_str(), ce.getarrays ( al ) );
+		printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), output.c_str() );
+		writearrayfile ( output.c_str(),outlist );
 	}
 	printf ( "done...\n" );
 
 	return 0;
 
 }
+
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

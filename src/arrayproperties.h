@@ -176,6 +176,7 @@ public:
 		decomp.compute ( A );
 
 		this->Qi = decomp.matrixQ().inverse();
+		//this->Qi = decomp.matrixQ().transpose();
 		
 		nupdate++;
 		

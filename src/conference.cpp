@@ -54,60 +54,65 @@ array_link conference_t::create_root ( ) const
 }
 
 
-array_link reduceConference(const array_link &al, int verbose )
+array_link reduceConference ( const array_link &al, int verbose )
 {
-	const int nr = al.n_rows; const int nc=al.n_columns;
-	const int nn = 2*(nr+nc);
+	const int nr = al.n_rows;
+	const int nc=al.n_columns;
+	const int nn = 2* ( nr+nc );
 	/// create graph
-	array_link G(2*(nr+nc), 2*(nr+nc), array_link::INDEX_DEFAULT);
-	
-	std::vector<int> colors(2*(nr+nc));
-	
+	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
+
+	std::vector<int> colors ( 2* ( nr+nc ) );
+
 	const int roffset0=0;
 	const int roffset1=nr;
 	const int coffset0=2*nr;
 	const int coffset1=2*nr+nc;
-	
-	/*
-Add edges as follows:
-(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
-(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
-(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
-Zeros in A don't cause any edges.
-*/
-	for(int i=coffset0; i<coffset0+2*nc;i++) colors[i]=1;
-	
-	for(int i=0; i<nr; i++) G.at(roffset0+i, i+roffset1)=1; 
-	for(int i=0; i<nc; i++) G.at(coffset0+i, i+coffset1)=1;
 
-	for(int r=0; r<nr; r++) {
-	for(int c=0; c<nc; c++) {
-		if (al.at(r,c)==1) {
-		G.at(roffset0+r, coffset0+c)=1;
-		G.at(roffset1+r, coffset1+c)=1;
-		}
-		if (al.at(r,c)==-1) {
-		G.at(roffset0+r, coffset1+c)=1;
-		G.at(roffset1+r, coffset0+c)=1; G.at(coffset0+c, roffset1+r)=1;
+	/*
+	Add edges as follows:
+	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+	Zeros in A don't cause any edges.
+	*/
+	for ( int i=coffset0; i<coffset0+2*nc; i++ )
+		colors[i]=1;
+
+	for ( int i=0; i<nr; i++ )
+		G.at ( roffset0+i, i+roffset1 ) =1;
+	for ( int i=0; i<nc; i++ )
+		G.at ( coffset0+i, i+coffset1 ) =1;
+
+	for ( int r=0; r<nr; r++ ) {
+		for ( int c=0; c<nc; c++ ) {
+			if ( al.at ( r,c ) ==1 ) {
+				G.at ( roffset0+r, coffset0+c ) =1;
+				G.at ( roffset1+r, coffset1+c ) =1;
+			}
+			if ( al.at ( r,c ) ==-1 ) {
+				G.at ( roffset0+r, coffset1+c ) =1;
+				G.at ( roffset1+r, coffset0+c ) =1;
+				G.at ( coffset0+c, roffset1+r ) =1;
+			}
 		}
 	}
-	}
-	
+
 	// make symmetryic
-	for(int i=0; i<nn; i++)
-		for(int j=i; j<nn; j++)
-			G.at(j,i)=G.at(i, j);
-		
+	for ( int i=0; i<nn; i++ )
+		for ( int j=i; j<nn; j++ )
+			G.at ( j,i ) =G.at ( i, j );
+
 	/// call nauty
-	std::vector<int> tr = nauty::reduceNauty(G, colors, verbose);
-	
+	std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose );
+
 	// extract transformation
-	
+
 	// ...
-	
+
 	array_link alx;
 	return alx;
-	
+
 }
 
 // return vector of length n with specified positions set to one
@@ -201,7 +206,7 @@ Value v at position 1 is irrevant to innerproduct with column 1, this can be eit
 
 Top: 2 elements, Upper half: N/2-1 elements, bottom: N/2-1 elements
 
-The zero is in the bottom part. Let q1 and q2 be the number of +1 -1? signs in the upper and lower half, respectively.
+The zero is in the bottom part. Let q1 and q2 be the number of +1 signs in the upper and lower half, respectively.
 We need:
 
 [Case v=-1]
@@ -254,7 +259,7 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 {
 	q = ( N-2 ) /2;
 
-	if ( k<= 2+q ) {
+	if ( k< 2+q ) {
 		if ( iseven ( q ) ) {
 			q1=q/2-1;
 			v=1;
@@ -279,13 +284,14 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 		}
 
 	}
+	//printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
 
-   /** Return all admissible columns (first part) for a conference array in normal form
-    *
-    *
-    **/
-   std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
+/** Return all admissible columns (first part) for a conference array in normal form
+ *
+ *
+ **/
+std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 {
 	int k1=-1;
 	int n1=-1;
@@ -337,16 +343,18 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 }
 std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 {
-	if (verbose)
-		printfd("get_second: N %d, extcol %d, target %d\n");
+	//verbose=2;
+	if ( verbose )
+		printfd ( "get_second: N %d, extcol %d, target %d\n" );
 	int k = extcol;
 	int q, q1, q2, v;
 	getConferenceNumbers ( N, k, q, q1, q2, v );
 
-int n1=-1;
+	int n1=-1;
 	int haszero=extcol>=q+2;
-	printf("extcol: %d, q %d\n", extcol, q);
-	
+	if ( verbose )
+		printf ( "get_second: extcol: %d, q %d, haszero %d\n", extcol, q, haszero );
+
 	if ( haszero ) {
 		//k1=n1/2;
 		n1=q-1;
@@ -360,24 +368,26 @@ int n1=-1;
 	for ( int i=0; i<qx ; i++ )
 		c[i]=i;
 
-	if ( verbose )
-		printf ( "get_second: N %d, qx %d, target %d\n", N, qx, target );
 
 	int nc = ncombs<long> ( n1, qx );
+	if ( verbose )
+		printf ( "get_second: N %d, n1 %d, qx %d, target %d, nc %d\n", N, n1, qx, target, nc );
 	std::vector<cperm> ff;
 	for ( long j=0; j<nc; j++ ) {
 		cperm cc =get_comb ( c, n1, -1, 1 );
 
 		if ( haszero )
-			cc=insertzero ( cc, extcol-(q+2) );
-		if (verbose>=2) {
-		printfd("add element of size %d =   %d\n", cc.size(), q );
-		display_vector(cc); printf("\n");
-		printf("c: "); display_vector(c); printf("\n");
+			cc=insertzero ( cc, extcol- ( q+2 ) );
+		if ( verbose>=2 ) {
+			printfd ( "add element of size %d =   %d\n", cc.size(), q );
+			display_vector ( cc );
+			printf ( "\n" );
+			printf ( "c: " ); display_vector ( c ); printf ( "\n" );
 		}
-		
+
 		ff.push_back ( cc );
-		next_comb ( c, qx, n1 );
+		if (n1>0) // guard
+			next_comb ( c, qx, n1 );
 	}
 
 
@@ -444,7 +454,7 @@ int ipcheck ( const cperm col, const array_link &al, int cstart=2 )
 	return true;
 }
 
-conference_extend_t extend_conference ( const array_link al, const conference_t ct, int extcol, int verbose )
+conference_extend_t extend_conference_matrix ( const array_link al, const conference_t ct, int extcol, int verbose )
 {
 	// first create two sets of partial extensions
 
@@ -454,9 +464,10 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 
 	int N = ct.N;
 
-	int k = extcol;
+	const int k = extcol;
 
-	printf ( "--- extend_conference: extcol %d ---\n", extcol );
+	if (verbose)
+		printf ( "--- extend_conference_matrix: extcol %d ---\n", extcol );
 
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, extcol, verbose );
@@ -485,7 +496,7 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 		int target = -ip;
 		std::vector<cperm> ff2 = get_second ( N, extcol, target, verbose>=2 );
 		ce.second=ff2;
-		
+
 		//printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
 		for ( size_t j=0; j<ff2.size(); j++ ) {
@@ -493,7 +504,7 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 			int ip0 = innerprod ( c0, c );
 			int ip1 = innerprod ( c1, c );
 			//printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
-			
+
 			if ( verbose>=2 ) {
 				printf ( "extend_conference %d: ip %d %d\n", ( int ) i, ip0, ip1 );
 			}
@@ -509,9 +520,11 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 			if ( ip0==0 && ip1==0 ) {
 				extensions.push_back ( c );
 			} else {
-			printfd("huh?");	
-			
-				printf(" ip0 ip 1 %d %d\n" , ip0, ip1); 
+				printfd ( "huh?" );
+
+				printf ( " ip0 ip1 %d %d\n" , ip0, ip1 );
+				al.show();
+				printf ( "  c: %d\n", ( int ) c.size() );
 				array_link alx = hstack ( al, c );
 				alx.showarray();
 			}
@@ -539,7 +552,9 @@ conference_extend_t extend_conference ( const array_link al, const conference_t 
 			if ( ipcheck ( extensions[i], als ) ) {
 				e2.push_back ( extensions[i] );
 			} else {
-				printf ( "  reject due to innerproduct\n" );
+				if ( verbose>=2 ) {
+					printf ( "  reject due to innerproduct (extension %d)\n", ( int ) i );
+				}
 			}
 		} else {
 			if ( verbose>=2 ) {
@@ -575,6 +590,40 @@ void test_comb ( int n, int k )
 		next_comb ( c, k, n );
 	}
 }
+
+arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
+{
+	arraylist_t outlist;
+
+	if ( verbose>=2 ) {
+		printfd ( "extend_conference: start %d\n", ( int ) lst.size() );
+
+	}
+
+	int vb=std::max ( 0, verbose-1 );
+
+	for ( size_t i=0; i<lst.size(); i++ ) {
+		const array_link &al = lst[i];
+		int extcol=al.n_columns;
+		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb );
+
+
+		arraylist_t ll = ce.getarrays ( al );
+		const int nn = ll.size();
+
+		arraylist_t::iterator it = outlist.end();
+
+		outlist.insert ( it, ll.begin(), ll.end() );
+
+		if ( verbose ) {
+			printf ( "extend_conference: extended array %d to %d arrays\n", ( int ) i, nn );
+		}
+
+
+	}
+	return outlist;
+}
+
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

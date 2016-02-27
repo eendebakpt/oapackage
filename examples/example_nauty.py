@@ -22,7 +22,6 @@ print('reduced graph: ')
 print(Gx)
 
 
-    
 
     
 

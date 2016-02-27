@@ -80,7 +80,9 @@ public:
 /** Extend a list of conference designs with a single column.
  *
  */
-conference_extend_t extend_conference ( const array_link al, const conference_t ct, int extcol, int verbose=1 );
+conference_extend_t extend_conference_matrix ( const array_link al, const conference_t ct, int extcol, int verbose=1 );
+
+arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

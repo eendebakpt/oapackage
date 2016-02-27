@@ -14,12 +14,12 @@ from os import path
 import os,sys
 try:
     import numpy as np
-    npinclude = np.get_include()
-except:
-    #raise ImportError('could not load numpy')
-    np=None
-    npinclude = ''
-    pass
+except ImportError:
+    raise RuntimeError(
+        "numpy cannot be imported. numpy must be installed "
+        "prior to installing OApackage")
+        
+npinclude = np.get_include()
 import platform
 
 here = path.abspath(path.dirname(__file__))
