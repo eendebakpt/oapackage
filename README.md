@@ -44,6 +44,11 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
+For more usage examples see
+
+[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/eendebakpt/oapackage-examples)
+
+
 Installation
 ------------
 
