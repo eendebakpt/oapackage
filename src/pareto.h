@@ -27,10 +27,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef RPACKAGE
 // not implemented...
-#define myprintf Rprintf
+//#define myPrintf Rprintf
 #else
 #include <stdio.h>
-#define myprintf printf
+//#define myPrintf printf
 #endif
 
 #include <stdlib.h>

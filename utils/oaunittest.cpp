@@ -52,7 +52,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	int allgood=1;
 
 	initncombscache ( 20 );
-	
+
+#ifdef OADEV	
 	/* conference matrices */
 	{
 		cprintf ( verbose,"%s: conference matrices\n", bstr );
@@ -69,7 +70,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		}
 				myassert ( kk.size()==1, "unittest error: conference matrices for N=4\n" );
 	}
-	
+#endif	
 	
 	/* J-characteristics */
 	{
