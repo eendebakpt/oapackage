@@ -616,7 +616,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 		outlist.insert ( it, ll.begin(), ll.end() );
 
 		if ( verbose ) {
-			printf ( "extend_conference: extended array %d to %d arrays\n", ( int ) i, nn );
+			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, (int)lst.size(), nn );
 		}
 
 

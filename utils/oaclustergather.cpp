@@ -208,9 +208,11 @@ const std::string filesep = "/";
 
 /**
  * @brief Gather subset of arrays using Pareto optimality
+ * 
+ * 
  * @param argc
  * @param argv[]
- * @return
+ * @return Returns zero if we have a good run, otherwise an errorcode
  */
 int main ( int argc, char* argv[] )
 {
@@ -347,8 +349,10 @@ int main ( int argc, char* argv[] )
 		//printf("------------------- nsplit[level] %d\n", nsplit[level]);
 		std::string splittag = splitTag ( lvls );
 
-		if ( verbose )
+		if ( verbose ) {
 			printf ( " \n## oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
+			fflush ( 0 );			
+		}
 		// loop over all subsections
 		for ( int jj=0; jj<nsplit[level]; jj++ ) {
 			std::string subdir = splitDir ( tovec ( lvls, jj ) );
@@ -480,6 +484,7 @@ int main ( int argc, char* argv[] )
 			if ( verbose )
 				printf ( "  writing pareto file %s (%ld/%ld arrays)\n", pfile0.c_str(), (long) npareto[k], (long) na[k] );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
+			//fflush ( 0 );
 		}
 
 		fflush ( 0 );
@@ -508,6 +513,10 @@ int main ( int argc, char* argv[] )
 		std::cout << "#time total: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
 		fflush ( 0 );
 	}
-	return cleanrun;
+	
+	if (cleanrun) 
+		return 0;
+	else
+		return 1;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
