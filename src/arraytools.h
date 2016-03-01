@@ -1422,8 +1422,8 @@ public:
 	std::vector<int> colperm() const; /// return the column permutation of the transformation
 
 
-	void setrowperm ( std::vector<int>rp );
-	void setcolperm ( std::vector<int>colperm );
+	void setrowperm ( std::vector<int>rp ) { rperm = rp; };
+	void setcolperm ( std::vector<int>cp ) { cperm = cp; };
 
 private:
 	void init(int nr, int nc); 	/// initialize permutation structures
