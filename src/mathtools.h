@@ -925,6 +925,17 @@ void random_perm ( objecttype *s, numtype len )
 	}
 }
 
+template <class objecttype>
+/** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
+ */
+void random_perm ( std::vector<objecttype> s)
+{
+	int len=s.size();
+	for ( size_t i=0; i<len-1; i++ ) {
+		int j = i+myrand() % ( len-i );
+		std::swap ( s[i], s[j] );
+	}
+}
 
 template <class numtype>
 //! @brief Create a new combination and initialize

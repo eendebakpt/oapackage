@@ -1349,6 +1349,88 @@ private:
 };
 
 
+/** \brief Contains a transformation of a conference matrix
+ *
+ * Contains an array transformation. The transformation consists of column permutations, row permutations and sign switches for both the rows and columns.
+ *
+ * The sign switches and the permutations are not commutative. We apply the xxx first.
+ *
+ */
+class conference_transformation_t
+{
+public:
+	std::vector<int> rperm; 	/// row permutation
+	std::vector<int> cperm; 	/// column permutation
+
+	std::vector<int> cswitch; 	/// sign flips for the columns
+	std::vector<int> rswitch; 	/// sign flips for the columns
+
+	int nrows; int ncols;
+
+public:
+	conference_transformation_t ( );	/// default constructor
+	conference_transformation_t ( int nrows, int ncols );
+	//conference_transformation_t & operator= ( const conference_transformation_t &at ); /// assignment operator
+	//~conference_transformation_t();	/// destructor
+
+	/// show the array transformation
+	void show() const;
+
+	/// return true if the transformation is equal to the identity
+	bool isIdentity() const;
+
+	/// return the inverse transformation
+	conference_transformation_t inverse() const;
+
+	/// return the transformation to the identity transformation
+	void reset();
+
+	/// initialize to a random transformation
+	void randomize();
+
+	/// initialize with a random column permutation
+	void randomizecolperm();
+	/// initialize with a random row permutation
+	void randomizerowperm();
+
+	/// apply transformation to an array_link object
+	array_link apply ( const array_link &al ) const {
+		array_link trx ( al );
+
+		this->apply ( al.array, trx.array );
+		return trx;
+	}
+
+	/// composition operator. the transformations are applied from the left
+	conference_transformation_t operator* ( const conference_transformation_t b ) {
+
+		printf("not implemented...\n");
+		return *this;
+	}
+
+
+	/// apply transformation to an array
+	void apply ( const array_t *source, array_t *target ) const {
+		printf("not implemented...\n");
+
+		
+	}
+
+	//void show ( std::ostream &out ) const;
+
+	std::vector<int> rowperm() const;
+	std::vector<int> colperm() const; /// return the column permutation of the transformation
+
+
+	void setrowperm ( std::vector<int>rp );
+	void setcolperm ( std::vector<int>colperm );
+
+private:
+	void init(int nr, int nc); 	/// initialize permutation structures
+	//void free(); 	/// free permutation structures and arraydata_t structure
+};
+
+
 
 
 /** functions for working with array files*/

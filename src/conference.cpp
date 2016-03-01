@@ -76,14 +76,18 @@ array_link reduceConference ( const array_link &al, int verbose )
 	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
 	Zeros in A don't cause any edges.
 	*/
+	
+	// set colors
 	for ( int i=coffset0; i<coffset0+2*nc; i++ )
 		colors[i]=1;
 
+	// (1)
 	for ( int i=0; i<nr; i++ )
 		G.at ( roffset0+i, i+roffset1 ) =1;
 	for ( int i=0; i<nc; i++ )
 		G.at ( coffset0+i, i+coffset1 ) =1;
 
+	// (2), (3)
 	for ( int r=0; r<nr; r++ ) {
 		for ( int c=0; c<nc; c++ ) {
 			if ( al.at ( r,c ) ==1 ) {
@@ -103,12 +107,32 @@ array_link reduceConference ( const array_link &al, int verbose )
 		for ( int j=i; j<nn; j++ )
 			G.at ( j,i ) =G.at ( i, j );
 
+		if (verbose>=2)
+		{
+			printf("reduceConference: incidence graph:\n");
+			printf("   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc);
+		G.showarray();	
+		}
 	/// call nauty
 	std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose );
 
 	// extract transformation
 
+	if (verbose>=2) {
+	array_link Gx = transformGraph ( G, tr, 0 );
+	printfd("transformed graph\n"); Gx.showarray();
+
+	std::vector<int> tr1 = std::vector<int>(tr.begin () , tr.begin () + 2*nr);
+	std::vector<int> tr2 = std::vector<int>(tr.begin () +2*nr, tr.end() );
+	printf("  row vertex transformations: "); display_vector(tr1);
+	printf("  col vertex transformations: "); display_vector(tr2);
+		
+	}
+	
 	// ...
+	
+	// define conference matrix transformation object....
+	array_transformation_t t;
 
 	array_link alx;
 	return alx;

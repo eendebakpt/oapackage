@@ -1280,7 +1280,45 @@ array_link exampleArray ( int idx, int verbose )
 		break;
 	}
 	
+case 18: {
+		dstr="conference matrix of size 16, 7";
+		if ( verbose )
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+		//
+		array_link al ( 7,16, 0 );
+		int tmp[] = 	{0,  1,  1,  1,  1,  1,  1,  1,  0, -1, -1, -1, -1, -1,  1,  1,  0,
+       -1, -1, -1,  1,  1,  1,  1,  0, -1,  1, -1,  1,  1,  1,  1,  0, -1,
+       -1,  1,  1,  1, -1,  1,  0,  1,  1,  1, -1,  1,  1, -1,  0,  1,  1,
+       -1,  1, -1,  1,  1,  1,  1, -1, -1,  1,  1, -1,  1, -1,  1,  1,  1,
+        1, -1,  1, -1,  1,  1, -1, -1, -1,  1, -1,  1, -1,  1, -1,  1,  1,
+       -1,  1, -1, -1,  1,  1,  1, -1, -1,  1,  1, -1,  1,  1, -1, -1,  1,
+       -1,  1,  1,  1, -1, -1, -1,  1,  1, -1
+		             };
 
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		al=al.transposed();
+		return al;
+		break;
+	}
+
+	case 19: {
+		dstr="conference matrix of size 4, 3";
+		if ( verbose )
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+		//
+		array_link al ( 3, 4, 0 );
+		int tmp[] = 	{0,  1,  1,  1,  0, -1,  1,  1,  0,  1, -1,  1
+		             };
+
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		al=al.transposed();
+		return al;
+		break;
+	}
+	
+
+	
+       
 
 
 	} // end of switch
@@ -4702,6 +4740,76 @@ array_link hstacklastcol ( const array_link &al, const array_link &b )
 	size_t offset = al.n_rows* ( b.n_columns-1 );
 	std::copy ( b.array+offset, b.array+offset+al.n_rows, v.array+v.n_rows*al.n_columns );
 	return v;
+}
+
+void conference_transformation_t::init(int nr, int nc)
+{
+				this->rperm.resize(nr);
+						cperm.resize(nc);
+						rswitch.resize(nr);
+
+		cswitch.resize(nr);
+		
+		reset();
+}
+void conference_transformation_t::reset()
+
+		{
+		 for(size_t i=0; i<rperm.size(); i++)  rperm[i]=i;
+		 for(size_t i=0; i<cperm.size(); i++)  cperm[i]=i;
+		std::fill(rswitch.begin(), rswitch.end(), 1 );
+
+		std::fill(cswitch.begin(), cswitch.end(), 1 );
+
+	
+}
+
+conference_transformation_t::conference_transformation_t(int nr, int nc)
+{
+		init(nr, nc);
+}
+
+
+
+bool conference_transformation_t::isIdentity() const
+{
+	//	myprintf("isIdentity:\n");
+	for ( int i=0; i<ncols; ++i ) {
+		if ( cperm[i]!=i ) {
+			return 0;
+		}
+	}
+	//	myprintf("isIdentity: cols good\n");
+	for ( int i=0; i<nrows; ++i ) {
+		if ( rperm[i]!=i ) {
+			return 0;
+		}
+	}
+	//	myprintf("isIdentity: rows good\n");
+	for ( int c=0; c<ncols; ++c ) {
+		if (cswitch[c]!=1) return 0;
+	}
+	for ( int c=0; c<nrows; ++c ) {
+		if (rswitch[c]!=1) return 0;
+	}
+	//	myprintf("isIdentity: yes\n");
+	return 1;
+}
+
+/// initialize to a random transformation
+void conference_transformation_t::randomize()
+{
+	/* row and columns permutations */
+	random_perm ( rperm);
+	random_perm ( cperm);
+
+	/* sign switches */
+	for ( size_t x=0; x<rswitch.size(); x++ ) {
+		rswitch[x] = 2*( rand() % 2 ) -1;
+	}
+	for ( size_t x=0; x<cswitch.size(); x++ ) {
+		cswitch[x] = 2*( rand() % 2 ) -1;
+	}
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

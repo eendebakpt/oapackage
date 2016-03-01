@@ -23,6 +23,7 @@
 #include "oadevelop.h"
 #include "lmc.h"
 
+#include "conference.h"
 
 //void mydebug(array_link al, arraydata_t &adata, OAextend &oaextend, int);
 //void mydebug2(array_link al, arraydata_t &adata, OAextend &oaextend);
@@ -573,6 +574,19 @@ int main ( int argc, char* argv[] )
 		return 0;
 	}
 
+	{
+			// reduce conference
+		
+		
+	array_link al = exampleArray(19,1);
+	
+	printf("input array:\n");
+	al.showarray();
+		array_link alx = reduceConference(al, verbose);
+
+		alx.showarray();
+		exit(0);
+	}
 
 	{
 		array_link al = exampleArray ( r,1 );
