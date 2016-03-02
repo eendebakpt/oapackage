@@ -236,11 +236,14 @@ array_transformation_t::~array_transformation_t()
 	//this->print(cout);
 	delete_perm ( rperm );
 	delete_perm ( cperm );
+	if(lperms!=0) {
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
 		delete_perm ( lperms[c] );
 	}
 	delete [] lperms;
-
+	lperms=0;
+	}
+	
 	delete ad;
 }
 
@@ -1307,8 +1310,7 @@ case 18: {
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 		//
 		array_link al ( 3, 4, 0 );
-		int tmp[] = 	{0,  1,  1,  1,  0, -1,  1,  1,  0,  1, -1,  1
-		             };
+		int tmp[] = 	{0,  1,  1,  1,  0, -1,  1,  1,  0,  1, -1,  1 };
 
 		al.setarraydata ( tmp, al.n_rows*al.n_columns );
 		al=al.transposed();
@@ -1456,6 +1458,28 @@ void array_link::showarray() const
 	//write_array_format ( std::cout, array, this->n_rows, this->n_columns );	// does not work with ipython...
 	write_array_format ( array, this->n_rows, this->n_columns );
 }
+
+void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm)
+{
+	int ncols=source.n_columns;
+	int nrows = source.n_rows;
+	for ( int i = 0; i < ncols; i++ ) {
+		memcpy ( target.array+(perm[i] * nrows), source.array+i * nrows, nrows * sizeof ( array_t ) );
+	}
+	//printfd("results:\n");
+	//source.showarray();
+	//target.showarray();
+}
+
+void perform_row_permutation ( const array_link source, array_link &target, const std::vector<int> perm)
+{
+	int ncols=source.n_columns;
+	int nrows = source.n_rows;
+		for ( int i = 0; i < ncols; i++ )
+		for ( int j=0; j<nrows; j++ )
+			target.array[nrows*i+perm[j]]=source.array[nrows*i+j];
+}
+
 
 void array_link::create_root ( const arraydata_t &ad )
 {
@@ -4742,8 +4766,62 @@ array_link hstacklastcol ( const array_link &al, const array_link &b )
 	return v;
 }
 
+void conference_transformation_t::show(int verbose) const
+{
+	myprintf("row permutation: "); print_perm(rperm);
+	myprintf("  row flips: "); print_perm(rswitch);
+	myprintf("column permutation: "); print_perm(cperm);
+	myprintf("  col flips: "); print_perm(cswitch);
+}
+
+/// helper function to invert a permutation and sign switch
+void invert_perm_switch(const std::vector<int> perm, const std::vector<int> rswitch,  std::vector<int> &permout,  std::vector<int> &switchout)
+{
+	invert_permutation(perm, permout);
+	
+	for(size_t i=0;i<perm.size(); i++) {
+		switchout[perm[i]] = rswitch[i];	
+	}
+}
+
+
+conference_transformation_t conference_transformation_t::inverse() const
+{
+printfd("not tested...\n");	
+
+conference_transformation_t I(nrows, ncols);
+
+invert_perm_switch(rperm, rswitch, I.rperm, I.rswitch); 
+invert_perm_switch(cperm, cswitch, I.cperm, I.cswitch); 
+return I;
+}
+
+	array_link conference_transformation_t::apply ( const array_link &al ) const
+	{
+		array_link alx(al.n_rows, al.n_columns, al.index);
+		array_link tmp(al.n_rows, al.n_columns, al.index);
+		
+		
+		/* column permutations */
+		perform_column_permutation ( al, tmp, cperm);
+		perform_row_permutation ( tmp, alx, rperm);
+		
+		/* sign flips */
+		for(size_t r=0; r<(size_t)nrows; r++) {
+		for(size_t c=0; c<(size_t)ncols; c++) {
+				//alx.array[r+nrows*c] *= rswitch[r]*cswitch[c];
+						}
+		}
+		
+		printfd("not tested\n");	
+		return alx;
+	}
+	
 void conference_transformation_t::init(int nr, int nc)
 {
+	this->nrows = nr;
+	this->ncols = nc;
+	
 				this->rperm.resize(nr);
 						cperm.resize(nc);
 						rswitch.resize(nr);
@@ -4764,9 +4842,18 @@ void conference_transformation_t::reset()
 	
 }
 
+conference_transformation_t::conference_transformation_t()
+{
+		init(1, 1);
+}
 conference_transformation_t::conference_transformation_t(int nr, int nc)
 {
 		init(nr, nc);
+}
+
+conference_transformation_t::conference_transformation_t(const array_link &al)
+{
+		init(al.n_rows, al.n_columns);
 }
 
 
@@ -4794,6 +4881,18 @@ bool conference_transformation_t::isIdentity() const
 	}
 	//	myprintf("isIdentity: yes\n");
 	return 1;
+}
+
+/// initialize to a random column permutation
+void conference_transformation_t::randomizecolperm()
+{
+	random_perm ( cperm);
+}
+
+/// initialize to a random row permutation
+void conference_transformation_t::randomizerowperm()
+{
+	random_perm ( rperm);
 }
 
 /// initialize to a random transformation

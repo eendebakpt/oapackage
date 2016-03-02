@@ -60,9 +60,9 @@ array_link reduceConference ( const array_link &al, int verbose )
 	const int nc=al.n_columns;
 	const int nn = 2* ( nr+nc );
 	/// create graph
-	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
+	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT ); G.setconstant(0);
 
-	std::vector<int> colors ( 2* ( nr+nc ) );
+	std::vector<int> colors ( 2* ( nr+nc ) ); 
 
 	const int roffset0=0;
 	const int roffset1=nr;
@@ -78,6 +78,8 @@ array_link reduceConference ( const array_link &al, int verbose )
 	*/
 	
 	// set colors
+	for ( int i=0; i<coffset0; i++ )
+		colors[i]=0;
 	for ( int i=coffset0; i<coffset0+2*nc; i++ )
 		colors[i]=1;
 

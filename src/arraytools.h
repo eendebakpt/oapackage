@@ -583,7 +583,6 @@ inline void perform_column_permutation ( carray_t *source, array_t *target, colp
 	}
 }
 
-//void perform_row_permutation(const array_t *source, array_t *target, rowperm_t perm, int nrows, int ncols);
 
 /**
  * @brief Perform a row permutation
@@ -902,6 +901,8 @@ public:
 		assert ( this->n_rows==al.n_rows );
 		std::copy ( al.array+sc*this->n_rows, al.array+ ( sc+1 ) *this->n_rows, this->array+this->n_rows*c );
 	}
+	
+	
 public:
 	array_link ( const array_link &, const std::vector<int> &colperm );
 	array_link ( const array_t *array, rowindex_t nrows, colindex_t ncols, int index=0 );
@@ -985,6 +986,12 @@ inline cperm vstack(const cperm A, const cperm B) {
 		std::copy(B.begin(), B.end(), c.begin()+A.size() );
 		return c;
 }
+
+/// perform column permutation for an array
+void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm);
+
+/// perform row permutation for an array
+void perform_row_permutation ( const array_link source, array_link & target, const std::vector<int> perm);
 
 /// create arraydata_t structure from array
 arraydata_t arraylink2arraydata ( const array_link &al, int extracols = 0, int strength = 2 );
@@ -1323,7 +1330,7 @@ public:
 #endif
 		}
 
-		/* row permutaions */
+		/* row permutations */
 		perform_inv_row_permutation ( tmp, target, rperm, ad->N, ad->ncols );
 
 		destroy_array ( tmp );
@@ -1353,7 +1360,7 @@ private:
  *
  * Contains an array transformation. The transformation consists of column permutations, row permutations and sign switches for both the rows and columns.
  *
- * The sign switches and the permutations are not commutative. We apply the xxx first.
+ * The sign switches and the permutations are not commutative. We apply the permutations first and then the sign flips.
  *
  */
 class conference_transformation_t
@@ -1370,11 +1377,12 @@ public:
 public:
 	conference_transformation_t ( );	/// default constructor
 	conference_transformation_t ( int nrows, int ncols );
+	conference_transformation_t ( const array_link &al );
 	//conference_transformation_t & operator= ( const conference_transformation_t &at ); /// assignment operator
 	//~conference_transformation_t();	/// destructor
 
 	/// show the array transformation
-	void show() const;
+	void show(int verbose=1) const;
 
 	/// return true if the transformation is equal to the identity
 	bool isIdentity() const;
@@ -1394,12 +1402,7 @@ public:
 	void randomizerowperm();
 
 	/// apply transformation to an array_link object
-	array_link apply ( const array_link &al ) const {
-		array_link trx ( al );
-
-		this->apply ( al.array, trx.array );
-		return trx;
-	}
+	array_link apply ( const array_link &al ) const;
 
 	/// composition operator. the transformations are applied from the left
 	conference_transformation_t operator* ( const conference_transformation_t b ) {

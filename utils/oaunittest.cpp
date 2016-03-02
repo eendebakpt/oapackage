@@ -70,7 +70,38 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		}
 				myassert ( kk.size()==1, "unittest error: conference matrices for N=4\n" );
 	}
+	
+{
+		cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
+
+		array_link al = exampleArray(19,1);
+	conference_transformation_t T(al);
+	T.randomize();
+	
+	conference_transformation_t Ti = T.inverse();
+	array_link alx = Ti.apply(T.apply(al));		
+	
+	if (0) {
+	al.showarray();
+	T.show();
+	T.apply(al).showarray();
+	Ti.show();
+	alx.showarray();
+	}
+	
+	myassert(alx==al, "transformation of conference matrix")	;
+	
+}
 #endif	
+	
+	/* constructors */
+	{
+		cprintf ( verbose,"%s: constructors\n", bstr );
+		
+		array_transformation_t t;
+		conference_transformation_t ct;
+		
+	}
 	
 	/* J-characteristics */
 	{
@@ -522,6 +553,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( "Usage: unittest [OPTIONS]" );
 	opt.addUsage ( "" );
 	opt.addUsage ( " -v  --verbose  			Print documentation" );
+	opt.addUsage ( " -r  --random  			Seed for random number generator" );
 
 	opt.processCommandArgs ( argc, argv );
 	int verbose = opt.getIntValue ( 'v', 1 );

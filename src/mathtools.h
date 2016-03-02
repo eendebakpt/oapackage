@@ -928,7 +928,7 @@ void random_perm ( objecttype *s, numtype len )
 template <class objecttype>
 /** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
  */
-void random_perm ( std::vector<objecttype> s)
+void random_perm ( std::vector<objecttype> &s)
 {
 	int len=s.size();
 	for ( size_t i=0; i<len-1; i++ ) {
@@ -1091,12 +1091,25 @@ template <class numtype>
  * @param perm Permutation as integer type std::vector
  * @return New permutation that is the inverse of the argument
  */
-std::vector<numtype> invert_permutation ( std::vector<numtype> perm )
+std::vector<numtype> invert_permutation ( const std::vector<numtype> perm )
 {
 	std::vector<numtype> iperm(perm.size());
 	for ( size_t x=0; x<perm.size(); x++ )
 		iperm[perm[x]]=x;
 	return iperm;
+}
+
+template <class numtype>
+/**
+ * @brief Invert a permutation
+ * @param perm Permutation as integer type std::vector
+ * @param permout Output permutation 
+ */
+void invert_permutation ( const std::vector<numtype> perm, std::vector<numtype> &iperm )
+{
+	iperm.resize(perm.size());
+	for ( size_t x=0; x<perm.size(); x++ )
+		iperm[perm[x]]=x;
 }
 
 template <class numtype>

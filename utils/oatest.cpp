@@ -579,6 +579,11 @@ int main ( int argc, char* argv[] )
 		
 		
 	array_link al = exampleArray(19,1);
+//	conference_transformation_t T(al);
+//	T.randomize();
+//	conference_transformation_t Ti = T.inverse();
+//	array_link alx = Ti.apply(T.apply(al));		
+//	myassert(alx==al, "transformation of conference matrix")	
 	
 	printf("input array:\n");
 	al.showarray();
