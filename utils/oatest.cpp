@@ -585,11 +585,23 @@ int main ( int argc, char* argv[] )
 //	array_link alx = Ti.apply(T.apply(al));		
 //	myassert(alx==al, "transformation of conference matrix")	
 	
-	printf("input array:\n");
-	al.showarray();
+
+	for(int kk=0; kk<6; kk++)
+		al = reduceConference(al, 0);
+	array_link al0=al;
+	
+conference_transformation_t t(al);
+t.randomizecolperm();
+t.randomizerowperm();
+t.randomize();
+	al=t.apply(al);
+	
+	printf("input array:\n"); al.showarray();
 		array_link alx = reduceConference(al, verbose);
 
-		alx.showarray();
+	printf("input array:\n"); al0.showarray();
+	printf("input array: "); al.showarray();
+		printf("reduced: "); alx.showarray();
 		exit(0);
 	}
 

@@ -60,9 +60,10 @@ array_link reduceConference ( const array_link &al, int verbose )
 	const int nc=al.n_columns;
 	const int nn = 2* ( nr+nc );
 	/// create graph
-	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT ); G.setconstant(0);
+	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
+	G.setconstant ( 0 );
 
-	std::vector<int> colors ( 2* ( nr+nc ) ); 
+	std::vector<int> colors ( 2* ( nr+nc ) );
 
 	const int roffset0=0;
 	const int roffset1=nr;
@@ -76,7 +77,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
 	Zeros in A don't cause any edges.
 	*/
-	
+
 	// set colors
 	for ( int i=0; i<coffset0; i++ )
 		colors[i]=0;
@@ -109,34 +110,74 @@ array_link reduceConference ( const array_link &al, int verbose )
 		for ( int j=i; j<nn; j++ )
 			G.at ( j,i ) =G.at ( i, j );
 
-		if (verbose>=2)
-		{
-			printf("reduceConference: incidence graph:\n");
-			printf("   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc);
-		G.showarray();	
-		}
+	if ( verbose>=3 ) {
+		printf ( "reduceConference: incidence graph:\n" );
+		printf ( "   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc );
+		G.showarray();
+	}
 	/// call nauty
-	std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose );
+	const std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose>=2 );
+	const std::vector<int> tri = invert_permutation ( tr );
+	const std::vector<int> trx=tri;
 
 	// extract transformation
 
-	if (verbose>=2) {
-	array_link Gx = transformGraph ( G, tr, 0 );
-	printfd("transformed graph\n"); Gx.showarray();
+	if ( verbose>=2 ) {
+		if ( verbose>=3 ) {
+			array_link Gx = transformGraph ( G, tri, 0 );
+			printfd ( "transformed graph\n" );
+			Gx.showarray();
+		}
+		std::vector<int> tr1 = std::vector<int> ( trx.begin () , trx.begin () + 2*nr );
+		std::vector<int> tr2 = std::vector<int> ( trx.begin () +coffset0, trx.end() );
+		printf ( "  row vertex transformations: " );
+		display_vector ( tr1 );
+		printf ( "\n" );
+		printf ( "  col vertex transformations: " );
+		display_vector ( tr2 );
+		printf ( "\n" );
 
-	std::vector<int> tr1 = std::vector<int>(tr.begin () , tr.begin () + 2*nr);
-	std::vector<int> tr2 = std::vector<int>(tr.begin () +2*nr, tr.end() );
-	printf("  row vertex transformations: "); display_vector(tr1);
-	printf("  col vertex transformations: "); display_vector(tr2);
-		
 	}
-	
-	// ...
-	
-	// define conference matrix transformation object....
-	array_transformation_t t;
 
-	array_link alx;
+	// ...
+
+	// define conference matrix transformation object....
+	conference_transformation_t t ( al );
+
+	// extract transformation
+	std::vector<int> rr ( nr );
+	for ( int i=0; i<nr; i++ ) {
+		rr[i] = std::min ( trx[i], trx[i+nr] );
+	}
+
+	if ( verbose ) {
+		printf ( "rr: " );
+		print_perm ( rr );
+	}
+
+	t.rperm = invert_permutation ( argsort ( rr ) );
+
+	for ( int i=0; i<nr; i++ ) {
+		// FIXME: change i into proper index...
+		t.rswitch[ t.rperm[i]] = 2*(trx[i]<trx[i+nr])-1;
+	}
+
+	std::vector<int> cc ( nc );
+	for ( int i=0; i<nc; i++ ) {
+		cc[i] = std::min ( trx[coffset0+i], trx[coffset0+i+nc] );
+	}
+	t.cperm = invert_permutation ( argsort ( cc ) );
+
+	for ( int i=0; i<nc; i++ ) {
+		// FIXME
+		t.cswitch[ t.cperm[i]] = 2*(trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
+	}
+
+	if ( verbose ) {
+		printf ( "transform: \n" );
+		t.show();
+	}
+	array_link alx = t.apply ( al );
 	return alx;
 
 }
@@ -408,11 +449,13 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 			printfd ( "add element of size %d =   %d\n", cc.size(), q );
 			display_vector ( cc );
 			printf ( "\n" );
-			printf ( "c: " ); display_vector ( c ); printf ( "\n" );
+			printf ( "c: " );
+			display_vector ( c );
+			printf ( "\n" );
 		}
 
 		ff.push_back ( cc );
-		if (n1>0) // guard
+		if ( n1>0 ) // guard
 			next_comb ( c, qx, n1 );
 	}
 
@@ -492,7 +535,7 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 
 	const int k = extcol;
 
-	if (verbose)
+	if ( verbose )
 		printf ( "--- extend_conference_matrix: extcol %d ---\n", extcol );
 
 	// loop over all possible first combinations
@@ -642,7 +685,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 		outlist.insert ( it, ll.begin(), ll.end() );
 
 		if ( verbose ) {
-			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, (int)lst.size(), nn );
+			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
 		}
 
 

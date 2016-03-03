@@ -1558,6 +1558,13 @@ public:
 
 };
 
+template <class numtype>
+std::vector<int> argsort(const std::vector<numtype> vv)
+{
+		indexsort idx(vv);
+		return idx.indices;
+}
+
 #ifdef FULLPACKAGE
 #include "InfInt.h"
 #endif

@@ -72,9 +72,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 	//for(size_t j=0; j<colors.size(); j++) colors[j]=j;
 	if ( verbose ) {
 		printf ( "reduceNauty: %d vertices\n", G.n_rows );
-		printf ( "colors: " );
-		display_vector ( colors );
-		printf ( "\n" );
+		printf ( "  colors: " ); display_vector ( colors ); printf ( "\n" );
 	}
 	if ( ( int ) colors.size() !=G.n_rows || G.n_rows!=G.n_columns ) {
 		myprintf ( "reduceNauty: input sizes not valid" );
@@ -152,11 +150,9 @@ options.getcanon=true;
 	options.defaultptn=false;
 
 	if ( verbose>=2 ) {
-		printf ( "options.defaultptn: %d\n ", options.defaultptn );
-		printf ( "lab: \n " );
-		print_perm ( lab, n );
-		printf ( "ptn: \n " );
-		print_perm ( ptn, n );
+		printf ( "options.defaultptn: %d\n", options.defaultptn );
+		printf ( " lab: \n " );	print_perm ( lab, n );
+		printf ( " ptn: \n " ); print_perm ( ptn, n );
 	}
 
 	if ( verbose )

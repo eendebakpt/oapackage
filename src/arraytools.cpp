@@ -4809,7 +4809,7 @@ return I;
 		/* sign flips */
 		for(size_t r=0; r<(size_t)nrows; r++) {
 		for(size_t c=0; c<(size_t)ncols; c++) {
-				//alx.array[r+nrows*c] *= rswitch[r]*cswitch[c];
+				alx.array[r+nrows*c] *= rswitch[r]*cswitch[c];
 						}
 		}
 		
@@ -4826,7 +4826,7 @@ void conference_transformation_t::init(int nr, int nc)
 						cperm.resize(nc);
 						rswitch.resize(nr);
 
-		cswitch.resize(nr);
+		cswitch.resize(nc);
 		
 		reset();
 }
