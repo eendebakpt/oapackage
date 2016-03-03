@@ -117,10 +117,10 @@ void array_transformation_t::show ( std::ostream & out ) const
 void array_transformation_t::show ( ) const
 {
 #ifdef FULLPACKAGE
-	//ofstream mycout = ofstream(stdout);	
+	//ofstream mycout = ofstream(stdout);
 	std::stringstream ss;
 	this->show ( ss );
-	std::cout << ss.str();	
+	std::cout << ss.str();
 	//this->show ( cout );
 #endif
 }
@@ -236,14 +236,14 @@ array_transformation_t::~array_transformation_t()
 	//this->print(cout);
 	delete_perm ( rperm );
 	delete_perm ( cperm );
-	if(lperms!=0) {
-	for ( colindex_t c=0; c<ad->ncols; c++ ) {
-		delete_perm ( lperms[c] );
+	if ( lperms!=0 ) {
+		for ( colindex_t c=0; c<ad->ncols; c++ ) {
+			delete_perm ( lperms[c] );
+		}
+		delete [] lperms;
+		lperms=0;
 	}
-	delete [] lperms;
-	lperms=0;
-	}
-	
+
 	delete ad;
 }
 
@@ -383,27 +383,27 @@ arraydata_t arraylink2arraydata ( const array_link &al, int extracols, int stren
 	int ncols = ncols0+extracols;
 	std::vector<int> s ( ncols );
 	std::vector<int> smin ( ncols );
-	if (N>0) {
-	int ss=-1;
-	for ( int ik=0; ik<ncols0; ik++ ) {
-		array_t *xx=std::max_element ( al.array+N*ik, al.array+N* ( ik+1 ) );
-		ss=*xx+1;
-		s[ik]=ss;
-		array_t minval=*(std::min_element ( al.array+N*ik, al.array+N* ( ik+1 ) ) );
-		smin[ik]=0;
-		
-		if (s[ik]<0) {
-				myprintf("arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik);
+	if ( N>0 ) {
+		int ss=-1;
+		for ( int ik=0; ik<ncols0; ik++ ) {
+			array_t *xx=std::max_element ( al.array+N*ik, al.array+N* ( ik+1 ) );
+			ss=*xx+1;
+			s[ik]=ss;
+			array_t minval=* ( std::min_element ( al.array+N*ik, al.array+N* ( ik+1 ) ) );
+			smin[ik]=0;
+
+			if ( s[ik]<0 ) {
+				myprintf ( "arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik );
 				s[ik]=1;
+			}
+			if ( smin[ik]<0 ) {
+				myprintf ( "arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik );
+			}
 		}
-		if (smin[ik]<0) {
-				myprintf("arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik);
-		}
+		for ( int ik=ncols0; ik<ncols; ik++ )
+			s[ik]=ss; // repeat last factor value
 	}
-	for ( int ik=ncols0; ik<ncols; ik++ )
-		s[ik]=ss; // repeat last factor value
-	}
-	
+
 	if ( strength<0 )
 		strength = al.strength();
 	arraydata_t ad ( s, al.n_rows, strength, ncols );
@@ -741,11 +741,12 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
 
 }
 
-int array_link::firstColumnDifference ( const array_link &A ) const {
-		int r=-1, c=-1;
-		this->firstDiff (A, r, c, 0);
-		return c;		
-	}
+int array_link::firstColumnDifference ( const array_link &A ) const
+{
+	int r=-1, c=-1;
+	this->firstDiff ( A, r, c, 0 );
+	return c;
+}
 
 /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 std::string array_link::md5() const
@@ -1030,7 +1031,7 @@ array_link exampleArray ( int idx, int verbose )
 	}
 
 	case 9: {
-				dstr="array in OA(40, 2^7), D-optimal";
+		dstr="array in OA(40, 2^7), D-optimal";
 		if ( verbose )
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 
@@ -1148,7 +1149,7 @@ array_link exampleArray ( int idx, int verbose )
 	}
 
 	case 13: {
-						dstr="array in OA(25, 2^5)";
+		dstr="array in OA(25, 2^5)";
 		if ( verbose )
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 
@@ -1250,52 +1251,52 @@ array_link exampleArray ( int idx, int verbose )
 		return al;
 		break;
 	}
-		case 17: {
+	case 17: {
 		dstr="unique array in OA(64, 4, 2^7)";
 		if ( verbose )
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 		//
 		array_link al ( 64,7, 0 );
 		int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-       1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-       0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-       1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
-       1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1,
-       1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1,
-       1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1,
-       0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
-       1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1,
-       0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-       1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-       0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0,
-       1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0,
-       0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1,
-       0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0
+		                 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+		                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		                 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+		                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		                 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+		                 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+		                 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
+		                 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1,
+		                 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+		                 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1,
+		                 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+		                 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1,
+		                 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
+		                 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+		                 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0,
+		                 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0,
+		                 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1,
+		                 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0
 		             };
 
 		al.setarraydata ( tmp, al.n_rows*al.n_columns );
 		return al;
 		break;
 	}
-	
-case 18: {
+
+	case 18: {
 		dstr="conference matrix of size 16, 7";
 		if ( verbose )
 			myprintf ( "exampleArray: %s\n", dstr.c_str() );
 		//
 		array_link al ( 7,16, 0 );
 		int tmp[] = 	{0,  1,  1,  1,  1,  1,  1,  1,  0, -1, -1, -1, -1, -1,  1,  1,  0,
-       -1, -1, -1,  1,  1,  1,  1,  0, -1,  1, -1,  1,  1,  1,  1,  0, -1,
-       -1,  1,  1,  1, -1,  1,  0,  1,  1,  1, -1,  1,  1, -1,  0,  1,  1,
-       -1,  1, -1,  1,  1,  1,  1, -1, -1,  1,  1, -1,  1, -1,  1,  1,  1,
-        1, -1,  1, -1,  1,  1, -1, -1, -1,  1, -1,  1, -1,  1, -1,  1,  1,
-       -1,  1, -1, -1,  1,  1,  1, -1, -1,  1,  1, -1,  1,  1, -1, -1,  1,
-       -1,  1,  1,  1, -1, -1, -1,  1,  1, -1
+		                 -1, -1, -1,  1,  1,  1,  1,  0, -1,  1, -1,  1,  1,  1,  1,  0, -1,
+		                 -1,  1,  1,  1, -1,  1,  0,  1,  1,  1, -1,  1,  1, -1,  0,  1,  1,
+		                 -1,  1, -1,  1,  1,  1,  1, -1, -1,  1,  1, -1,  1, -1,  1,  1,  1,
+		                 1, -1,  1, -1,  1,  1, -1, -1, -1,  1, -1,  1, -1,  1, -1,  1,  1,
+		                 -1,  1, -1, -1,  1,  1,  1, -1, -1,  1,  1, -1,  1,  1, -1, -1,  1,
+		                 -1,  1,  1,  1, -1, -1, -1,  1,  1, -1
 		             };
 
 		al.setarraydata ( tmp, al.n_rows*al.n_columns );
@@ -1317,10 +1318,10 @@ case 18: {
 		return al;
 		break;
 	}
-	
 
-	
-       
+
+
+
 
 
 	} // end of switch
@@ -1459,23 +1460,23 @@ void array_link::showarray() const
 	write_array_format ( array, this->n_rows, this->n_columns );
 }
 
-void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm)
+void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm )
 {
 	int ncols=source.n_columns;
 	int nrows = source.n_rows;
 	for ( int i = 0; i < ncols; i++ ) {
-		memcpy ( target.array+(perm[i] * nrows), source.array+i * nrows, nrows * sizeof ( array_t ) );
+		memcpy ( target.array+ ( perm[i] * nrows ), source.array+i * nrows, nrows * sizeof ( array_t ) );
 	}
 	//printfd("results:\n");
 	//source.showarray();
 	//target.showarray();
 }
 
-void perform_row_permutation ( const array_link source, array_link &target, const std::vector<int> perm)
+void perform_row_permutation ( const array_link source, array_link &target, const std::vector<int> perm )
 {
 	int ncols=source.n_columns;
 	int nrows = source.n_rows;
-		for ( int i = 0; i < ncols; i++ )
+	for ( int i = 0; i < ncols; i++ )
 		for ( int j=0; j<nrows; j++ )
 			target.array[nrows*i+perm[j]]=source.array[nrows*i+j];
 }
@@ -1623,13 +1624,15 @@ double array_link::CL2discrepancy() const
 
 array_t array_link::max() const
 {
-	if (this->n_rows*this->n_columns==0) return 0;
-	return *std::max_element(this->array, this->array+this->n_rows*this->n_columns);
+	if ( this->n_rows*this->n_columns==0 )
+		return 0;
+	return *std::max_element ( this->array, this->array+this->n_rows*this->n_columns );
 }
 array_t array_link::min() const
 {
-	if (this->n_rows*this->n_columns==0) return 0;
-	return *std::min_element(this->array, this->array+this->n_rows*this->n_columns);
+	if ( this->n_rows*this->n_columns==0 )
+		return 0;
+	return *std::min_element ( this->array, this->array+this->n_rows*this->n_columns );
 }
 
 bool  array_link::foldover() const
@@ -2064,16 +2067,20 @@ std::vector<double> array_link::Defficiencies ( int verbose, int addDs0 ) const
 {
 	const array_link &al = *this;
 
-	if (this->min() < 0) {
-		myprintf("Defficiencies: error: input array should have elements ranging from 0 to s-1\n");
-		std::vector<double> x(3+addDs0); x[0] = NaN; x[1] = NaN;
-	 return x;
+	if ( this->min() < 0 ) {
+		myprintf ( "Defficiencies: error: input array should have elements ranging from 0 to s-1\n" );
+		std::vector<double> x ( 3+addDs0 );
+		x[0] = NaN;
+		x[1] = NaN;
+		return x;
 	}
-	if( this->n_rows<1 ) {
-		myprintf("Defficiencies: error: input array should have more than zero rows\n");
-		std::vector<double> x(3+addDs0); x[0] = NaN; x[1] = NaN;
-	 return x;
-		
+	if ( this->n_rows<1 ) {
+		myprintf ( "Defficiencies: error: input array should have more than zero rows\n" );
+		std::vector<double> x ( 3+addDs0 );
+		x[0] = NaN;
+		x[1] = NaN;
+		return x;
+
 	}
 	arraydata_t arrayclass = arraylink2arraydata ( al );
 
@@ -2416,7 +2423,7 @@ void arraydata_t::complete_arraydata()
 	const int verbose=0;
 
 	if ( verbose ) {
-		myprintf("complete_arraydata: strength %d\n", this->strength);
+		myprintf ( "complete_arraydata: strength %d\n", this->strength );
 		for ( int i=0; i<this->ncols; i++ )
 			myprintf ( "complete_arraydata: k %d, s %d\n", i, s[i] );
 	}
@@ -2452,7 +2459,8 @@ void arraydata_t::complete_arraydata()
 	int nbits = 8*sizeof ( rowsort_value_t );
 	rowsort_value_t val=1;
 	for ( int i=0; i<ad->ncols; i++ ) {
-		if (ad->s[i]==0) continue;
+		if ( ad->s[i]==0 )
+			continue;
 		if ( val != 0 && ( std::numeric_limits<rowsort_value_t>::max() / ( rowsort_value_t ) ad->s[i] ) < val ) {
 			// multiplication would exceed range of unsigned
 			myprintf ( "error: LMC checks for %d columns would lead to integer overflow\n", i );
@@ -2669,7 +2677,7 @@ void jstruct_t::calc ( const array_link &al )
 	int *pp = new_perm_init<int> ( jj );
 	//int ncolcombs = ncombs ( k, jj );
 
-	assert(al.is2level());
+	assert ( al.is2level() );
 	for ( int x=0; x<this->nc; x++ ) {
 		//int jv = jvalue ( al, jj, pp ); // slow version
 		int jv = jvaluefast ( al.array, al.n_rows, jj, pp ); // slow version
@@ -2682,7 +2690,7 @@ void jstruct_t::calc ( const array_link &al )
 }
 
 /// create J2 table as intermediate result for J-characteristic calculations
-array_link createJdtable(const array_link &al)
+array_link createJdtable ( const array_link &al )
 {
 	const int nr = al.n_rows;
 
@@ -2705,7 +2713,7 @@ array_link createJdtable(const array_link &al)
 
 		}
 	}
-	
+
 	return dtable;
 }
 
@@ -2718,7 +2726,7 @@ void jstruct_t::calcj4 ( const array_link &al )
 	const int nr = al.n_rows;
 	const int N = nr;
 
-	array_link dtable = createJdtable(al);
+	array_link dtable = createJdtable ( al );
 	//myprintf("dtable\n"); dtable.showarray();
 
 	for ( int x=0; x<this->nc; x++ ) {
@@ -2730,9 +2738,9 @@ void jstruct_t::calcj4 ( const array_link &al )
 			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
 			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
 			for ( int xr=0; xr<nr; xr++ ) {
-				//int tmp = ( o1[xr]  + o2[xr] ) % 2; 
-				
-				int tmp = (o1[xr]) ^ (o2[xr]);
+				//int tmp = ( o1[xr]  + o2[xr] ) % 2;
+
+				int tmp = ( o1[xr] ) ^ ( o2[xr] );
 				//printf(" tmp %d (%d %d)\n", tmp, o1[xr], o2[xr]);
 				jv += tmp;
 			}
@@ -2758,7 +2766,7 @@ void jstruct_t::calcj5 ( const array_link &al )
 	const int nr = al.n_rows;
 	const int N = nr;
 
-	array_link dtable = createJdtable(al);
+	array_link dtable = createJdtable ( al );
 
 
 	//myprintf("dtable\n"); dtable.showarray();
@@ -2774,7 +2782,7 @@ void jstruct_t::calcj5 ( const array_link &al )
 			const array_t *o2 = dtable.array+dtable.n_rows*idx2;
 			const array_t *o3 =  al.array+N*idx3;
 			for ( int xr=0; xr<nr; xr++ ) {
-				int tmp = (o1[xr]) ^ (o2[xr]) ^ o3[xr];
+				int tmp = ( o1[xr] ) ^ ( o2[xr] ) ^ o3[xr];
 				jv += tmp;
 			}
 //			jv %= 2;
@@ -2800,10 +2808,10 @@ jstruct_t::jstruct_t ( const array_link &al, int jj )
 	if ( jj==4 && 1 )
 		this->calcj4 ( al );
 	else {
-	if ( jj==5 && 1 )
-		this->calcj5 ( al );		
-	else
-		this->calc ( al );
+		if ( jj==5 && 1 )
+			this->calcj5 ( al );
+		else
+			this->calc ( al );
 	}
 	// calculate A value
 	this->calculateAberration();
@@ -3211,24 +3219,27 @@ void read_array ( FILE *fid, array_t *array, const int nrows, const int ncols )
 #include "boost/filesystem.hpp"
 #endif
 
-bool file_exists ( const std::string filename ) {
-return 	file_exists(filename.c_str() );
+bool file_exists ( const std::string filename )
+{
+	return 	file_exists ( filename.c_str() );
 }
 
-bool oa_file_exists ( const char * filename ) {
+bool oa_file_exists ( const char * filename )
+{
 	std::string s = filename;
-return 	oa_file_exists(s );
+	return 	oa_file_exists ( s );
 }
 
-bool oa_file_exists ( const std::string filename ) {
- if (file_exists(filename.c_str()) ) {
-	 return true;
- }
- std::string gzfile = filename + ".gz";
- if (file_exists(gzfile.c_str() ) ) {
-	return true;
- }
- return false;
+bool oa_file_exists ( const std::string filename )
+{
+	if ( file_exists ( filename.c_str() ) ) {
+		return true;
+	}
+	std::string gzfile = filename + ".gz";
+	if ( file_exists ( gzfile.c_str() ) ) {
+		return true;
+	}
+	return false;
 }
 
 /// return true if the specified file exists
@@ -3473,23 +3484,23 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 	return index;
 }
 
-	array_link arrayfile_t::readnext()
-	{
-		array_link al(this->nrows, this->ncols, array_link::INDEX_DEFAULT);
-		this->read_array(al);
-		return al;
-	}
+array_link arrayfile_t::readnext()
+{
+	array_link al ( this->nrows, this->ncols, array_link::INDEX_DEFAULT );
+	this->read_array ( al );
+	return al;
+}
 
-	void arrayfile_t::flush() 
-	{
-	if (this->nfid !=0 )
-		fflush(nfid);
-	#ifdef USEZLIB
-	if (this->gzfid !=0 ) {
+void arrayfile_t::flush()
+{
+	if ( this->nfid !=0 )
+		fflush ( nfid );
+#ifdef USEZLIB
+	if ( this->gzfid !=0 ) {
 		//gzflush(gzfid, Z_SYNC_FLUSH);
 	}
 #endif
-	}
+}
 int arrayfile_t::read_array ( array_link &a )
 {
 	int32_t index;
@@ -3780,7 +3791,7 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
 
 int writearrayfile ( const char *fname, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode, int nrows, int ncols )
 {
-	return writearrayfile ( fname, &arraylist, mode, nrows, ncols );	
+	return writearrayfile ( fname, &arraylist, mode, nrows, ncols );
 }
 
 
@@ -4155,7 +4166,7 @@ void arrayfile_t::closefile()
 		}
 
 	}
-*/
+	*/
 
 	// close file handles
 	if ( this->nfid!=0 ) {
@@ -4171,7 +4182,8 @@ void arrayfile_t::closefile()
 //delete afile;
 }
 
-void arrayfile_t::updatenumbers() {
+void arrayfile_t::updatenumbers()
+{
 	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
 		if ( verbose>=2 )
 			myprintf ( "arrayfile_t: updating numbers %d->%d\n", narrays, narraycounter );
@@ -4727,11 +4739,12 @@ array_link vstack ( const array_link &al, const array_link &b )
 {
 	assert ( al.n_columns==b.n_columns );
 	array_link v ( al.n_rows+b.n_rows, al.n_columns, array_link::INDEX_NONE );
-	int N1=al.n_rows; int N2=b.n_rows;
+	int N1=al.n_rows;
+	int N2=b.n_rows;
 	int N=N1+N2;
-	for(int c=0; c<al.n_columns; c++ ) {
-	std::copy ( al.array+c*N1, al.array+(c+1)*N1, v.array+c*N );
-	std::copy ( b.array+c*N2, al.array+(c+1)*N2, v.array+c*N+N1 );
+	for ( int c=0; c<al.n_columns; c++ ) {
+		std::copy ( al.array+c*N1, al.array+ ( c+1 ) *N1, v.array+c*N );
+		std::copy ( b.array+c*N2, al.array+ ( c+1 ) *N2, v.array+c*N+N1 );
 	}
 	return v;
 }
@@ -4739,7 +4752,7 @@ array_link vstack ( const array_link &al, const array_link &b )
 /// stack to arrays together
 array_link hstack ( const array_link &al, const cperm &b )
 {
-	assert ( al.n_rows==(int)b.size() );
+	assert ( al.n_rows== ( int ) b.size() );
 	array_link v ( al.n_rows, al.n_columns+1, array_link::INDEX_NONE );
 	std::copy ( al.array, al.array+al.n_columns*al.n_rows, v.array );
 	std::copy ( b.begin(), b.end(), v.array+v.n_rows*al.n_columns );
@@ -4766,94 +4779,95 @@ array_link hstacklastcol ( const array_link &al, const array_link &b )
 	return v;
 }
 
-void conference_transformation_t::show(int verbose) const
+void conference_transformation_t::show ( int verbose ) const
 {
-	myprintf("row permutation: "); print_perm(rperm);
-	myprintf("  row flips: "); print_perm(rswitch);
-	myprintf("column permutation: "); print_perm(cperm);
-	myprintf("  col flips: "); print_perm(cswitch);
+	myprintf ( "row permutation: " );
+	print_perm ( rperm );
+	myprintf ( "  row flips: " );
+	print_perm ( rswitch );
+	myprintf ( "column permutation: " );
+	print_perm ( cperm );
+	myprintf ( "  col flips: " );
+	print_perm ( cswitch );
 }
 
 /// helper function to invert a permutation and sign switch
-void invert_perm_switch(const std::vector<int> perm, const std::vector<int> rswitch,  std::vector<int> &permout,  std::vector<int> &switchout)
+void invert_perm_switch ( const std::vector<int> perm, const std::vector<int> rswitch,  std::vector<int> &permout,  std::vector<int> &switchout )
 {
-	invert_permutation(perm, permout);
-	
-	for(size_t i=0;i<perm.size(); i++) {
-		switchout[perm[i]] = rswitch[i];	
+	invert_permutation ( perm, permout );
+
+	for ( size_t i=0; i<perm.size(); i++ ) {
+		switchout[perm[i]] = rswitch[i];
 	}
 }
 
 
 conference_transformation_t conference_transformation_t::inverse() const
 {
-printfd("not tested...\n");	
+	printfd ( "not tested...\n" );
 
-conference_transformation_t I(nrows, ncols);
+	conference_transformation_t I ( nrows, ncols );
 
-invert_perm_switch(rperm, rswitch, I.rperm, I.rswitch); 
-invert_perm_switch(cperm, cswitch, I.cperm, I.cswitch); 
-return I;
+	invert_perm_switch ( rperm, rswitch, I.rperm, I.rswitch );
+	invert_perm_switch ( cperm, cswitch, I.cperm, I.cswitch );
+	return I;
 }
 
-	array_link conference_transformation_t::apply ( const array_link &al ) const
-	{
-		array_link alx(al.n_rows, al.n_columns, al.index);
-		array_link tmp(al.n_rows, al.n_columns, al.index);
-		
-		
-		/* column permutations */
-		perform_column_permutation ( al, tmp, cperm);
-		perform_row_permutation ( tmp, alx, rperm);
-		
-		/* sign flips */
-		for(size_t r=0; r<(size_t)nrows; r++) {
-		for(size_t c=0; c<(size_t)ncols; c++) {
-				alx.array[r+nrows*c] *= rswitch[r]*cswitch[c];
-						}
+array_link conference_transformation_t::apply ( const array_link &al ) const
+{
+	array_link alx ( al.n_rows, al.n_columns, al.index );
+	array_link tmp ( al.n_rows, al.n_columns, al.index );
+
+
+	/* column permutations */
+	perform_column_permutation ( al, tmp, cperm );
+	perform_row_permutation ( tmp, alx, rperm );
+
+	/* sign flips */
+	for ( size_t r=0; r< ( size_t ) nrows; r++ ) {
+		for ( size_t c=0; c< ( size_t ) ncols; c++ ) {
+			alx.array[r+nrows*c] *= rswitch[r]*cswitch[c];
 		}
-		
-		printfd("not tested\n");	
-		return alx;
 	}
-	
-void conference_transformation_t::init(int nr, int nc)
+
+	//printfd("not tested\n");
+	return alx;
+}
+
+void conference_transformation_t::init ( int nr, int nc )
 {
 	this->nrows = nr;
 	this->ncols = nc;
-	
-				this->rperm.resize(nr);
-						cperm.resize(nc);
-						rswitch.resize(nr);
 
-		cswitch.resize(nc);
-		
-		reset();
+	this->rperm.resize ( nr );
+	this->cperm.resize ( nc );
+	rswitch.resize ( nr );
+	cswitch.resize ( nc );
+
+	reset();
 }
 void conference_transformation_t::reset()
-
-		{
-		 for(size_t i=0; i<rperm.size(); i++)  rperm[i]=i;
-		 for(size_t i=0; i<cperm.size(); i++)  cperm[i]=i;
-		std::fill(rswitch.begin(), rswitch.end(), 1 );
-
-		std::fill(cswitch.begin(), cswitch.end(), 1 );
-
-	
+{
+	for ( size_t i=0; i<rperm.size(); i++ )
+		rperm[i]=i;
+	for ( size_t i=0; i<cperm.size(); i++ )
+		cperm[i]=i;
+	std::fill ( rswitch.begin(), rswitch.end(), 1 );
+	std::fill ( cswitch.begin(), cswitch.end(), 1 );
 }
 
 conference_transformation_t::conference_transformation_t()
 {
-		init(1, 1);
+	init ( 1, 1 );
 }
-conference_transformation_t::conference_transformation_t(int nr, int nc)
+conference_transformation_t::conference_transformation_t ( int nr, int nc )
 {
-		init(nr, nc);
+	init ( nr, nc );
 }
 
-conference_transformation_t::conference_transformation_t(const array_link &al)
+conference_transformation_t::conference_transformation_t ( const array_link &al )
 {
-		init(al.n_rows, al.n_columns);
+	init ( al.n_rows, al.n_columns );
 }
 
 
@@ -4874,10 +4888,12 @@ bool conference_transformation_t::isIdentity() const
 	}
 	//	myprintf("isIdentity: rows good\n");
 	for ( int c=0; c<ncols; ++c ) {
-		if (cswitch[c]!=1) return 0;
+		if ( cswitch[c]!=1 )
+			return 0;
 	}
 	for ( int c=0; c<nrows; ++c ) {
-		if (rswitch[c]!=1) return 0;
+		if ( rswitch[c]!=1 )
+			return 0;
 	}
 	//	myprintf("isIdentity: yes\n");
 	return 1;
@@ -4886,28 +4902,28 @@ bool conference_transformation_t::isIdentity() const
 /// initialize to a random column permutation
 void conference_transformation_t::randomizecolperm()
 {
-	random_perm ( cperm);
+	random_perm ( cperm );
 }
 
 /// initialize to a random row permutation
 void conference_transformation_t::randomizerowperm()
 {
-	random_perm ( rperm);
+	random_perm ( rperm );
 }
 
 /// initialize to a random transformation
 void conference_transformation_t::randomize()
 {
 	/* row and columns permutations */
-	random_perm ( rperm);
-	random_perm ( cperm);
+	random_perm ( rperm );
+	random_perm ( cperm );
 
 	/* sign switches */
 	for ( size_t x=0; x<rswitch.size(); x++ ) {
-		rswitch[x] = 2*( rand() % 2 ) -1;
+		rswitch[x] = 2* ( rand() % 2 ) -1;
 	}
 	for ( size_t x=0; x<cswitch.size(); x++ ) {
-		cswitch[x] = 2*( rand() % 2 ) -1;
+		cswitch[x] = 2* ( rand() % 2 ) -1;
 	}
 }
 

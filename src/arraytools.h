@@ -1411,18 +1411,10 @@ public:
 		return *this;
 	}
 
-
-	/// apply transformation to an array
-	void apply ( const array_t *source, array_t *target ) const {
-		printf("not implemented...\n");
-
-		
-	}
-
 	//void show ( std::ostream &out ) const;
 
-	std::vector<int> rowperm() const;
-	std::vector<int> colperm() const; /// return the column permutation of the transformation
+	//std::vector<int> rowperm() const;
+	//std::vector<int> colperm() const; /// return the column permutation of the transformation
 
 
 	void setrowperm ( std::vector<int>rp ) { rperm = rp; };

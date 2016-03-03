@@ -56,6 +56,7 @@ array_link conference_t::create_root ( ) const
 
 array_link reduceConference ( const array_link &al, int verbose )
 {
+	
 	const int nr = al.n_rows;
 	const int nc=al.n_columns;
 	const int nn = 2* ( nr+nc );
@@ -63,6 +64,9 @@ array_link reduceConference ( const array_link &al, int verbose )
 	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
 	G.setconstant ( 0 );
 
+	if (verbose)
+		printf("reduceConference: %d, %d\n", nr, nc);
+	
 	std::vector<int> colors ( 2* ( nr+nc ) );
 
 	const int roffset0=0;
@@ -86,21 +90,21 @@ array_link reduceConference ( const array_link &al, int verbose )
 
 	// (1)
 	for ( int i=0; i<nr; i++ )
-		G.at ( roffset0+i, i+roffset1 ) =1;
+		G.atfast ( roffset0+i, i+roffset1 ) =1;
 	for ( int i=0; i<nc; i++ )
-		G.at ( coffset0+i, i+coffset1 ) =1;
+		G.atfast ( coffset0+i, i+coffset1 ) =1;
 
 	// (2), (3)
 	for ( int r=0; r<nr; r++ ) {
 		for ( int c=0; c<nc; c++ ) {
-			if ( al.at ( r,c ) ==1 ) {
-				G.at ( roffset0+r, coffset0+c ) =1;
-				G.at ( roffset1+r, coffset1+c ) =1;
+			if ( al.atfast ( r,c ) ==1 ) {
+				G.atfast ( roffset0+r, coffset0+c ) =1;
+				G.atfast ( roffset1+r, coffset1+c ) =1;
 			}
 			if ( al.at ( r,c ) ==-1 ) {
-				G.at ( roffset0+r, coffset1+c ) =1;
-				G.at ( roffset1+r, coffset0+c ) =1;
-				G.at ( coffset0+c, roffset1+r ) =1;
+				G.atfast ( roffset0+r, coffset1+c ) =1;
+				G.atfast ( roffset1+r, coffset0+c ) =1;
+				G.atfast ( coffset0+c, roffset1+r ) =1;
 			}
 		}
 	}
@@ -108,7 +112,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 	// make symmetryic
 	for ( int i=0; i<nn; i++ )
 		for ( int j=i; j<nn; j++ )
-			G.at ( j,i ) =G.at ( i, j );
+			G.atfast ( j,i ) =G.at ( i, j );
 
 	if ( verbose>=3 ) {
 		printf ( "reduceConference: incidence graph:\n" );
@@ -150,7 +154,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 		rr[i] = std::min ( trx[i], trx[i+nr] );
 	}
 
-	if ( verbose ) {
+	if ( verbose>=2 ) {
 		printf ( "rr: " );
 		print_perm ( rr );
 	}
@@ -173,7 +177,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 		t.cswitch[ t.cperm[i]] = 2*(trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
 	}
 
-	if ( verbose ) {
+	if ( verbose>=2 ) {
 		printf ( "transform: \n" );
 		t.show();
 	}
@@ -693,6 +697,46 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	return outlist;
 }
 
+	 arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t lst, int verbose)
+		{
+
+		arraylist_t lstr;
+		arraylist_t lstgood;
+		//printf ( "read %d arrays\n" , (int)lst.size());
+
+		for ( int i=0; i<(int)lst.size(); i++ ) {
+			if(verbose>=1 && i%50==0) 
+				printf("selectConferenceIsomorpismClasses: reduce %d/%d\n", i, (int)lst.size() );
+			array_link alx = reduceConference ( lst[i], verbose>=2 );
+			lstr.push_back ( alx );
+		}
+
+
+		// perform stable sort
+		indexsort sortidx ( lstr );
+
+		const std::vector<int> &idx = sortidx.indices;
+
+		array_link prev= lst[0];
+		prev.setconstant ( -10 );
+
+		for ( size_t i=0; i<idx.size(); i++ ) {
+			array_link al=lstr[idx[i]];
+			if ( al!=prev ) {
+				// new isomorphism class
+				if (verbose>=2)
+				printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", (int) lstgood.size(), (int)i );
+
+				lstgood.push_back (	lst[i] );
+				prev=al;
+			}
+		}
+
+		if (verbose)
+		myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d\n", (int)lst.size(),(int) lstgood.size() );
+
+		return lstgood;
+		}
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

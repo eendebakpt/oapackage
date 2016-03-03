@@ -1447,7 +1447,7 @@ public:
 
 /** @brief Class to sort data without moving the data in memory
  *
- * The data is sorted by using a list of indices.
+ * The data is sorted by using a list of indices. A stable sort is being used.
  *
  */
 class indexsort

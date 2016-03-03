@@ -135,8 +135,7 @@ options.getcanon=true;
 
 	for ( int ix=0; ix<nvertices; ix++ ) {
 		for ( int iy=0; iy<nvertices; iy++ ) {
-			if ( G.at ( ix,iy ) >0 ) {
-
+			if ( G.atfast ( ix,iy ) >0 ) { 
 				ADDONEEDGE ( g, ix, iy, m );
 			}
 		}

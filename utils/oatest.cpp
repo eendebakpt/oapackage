@@ -574,35 +574,47 @@ int main ( int argc, char* argv[] )
 		return 0;
 	}
 
+
 	{
-			// reduce conference
-		
-		
-	array_link al = exampleArray(19,1);
+		arraylist_t lst = readarrayfile ( input );
+		arraylist_t lstgood  = selectConferenceIsomorpismClasses ( lst, verbose );
+
+		return 0;
+	}
+
+	{
+		// reduce conference
+
+
+		array_link al = exampleArray ( 19,1 );
 //	conference_transformation_t T(al);
 //	T.randomize();
 //	conference_transformation_t Ti = T.inverse();
-//	array_link alx = Ti.apply(T.apply(al));		
-//	myassert(alx==al, "transformation of conference matrix")	
-	
+//	array_link alx = Ti.apply(T.apply(al));
+//	myassert(alx==al, "transformation of conference matrix")
 
-	for(int kk=0; kk<6; kk++)
-		al = reduceConference(al, 0);
-	array_link al0=al;
-	
-conference_transformation_t t(al);
-t.randomizecolperm();
-t.randomizerowperm();
-t.randomize();
-	al=t.apply(al);
-	
-	printf("input array:\n"); al.showarray();
-		array_link alx = reduceConference(al, verbose);
 
-	printf("input array:\n"); al0.showarray();
-	printf("input array: "); al.showarray();
-		printf("reduced: "); alx.showarray();
-		exit(0);
+		for ( int kk=0; kk<6; kk++ )
+			al = reduceConference ( al, 0 );
+		array_link al0=al;
+
+		conference_transformation_t t ( al );
+		t.randomizecolperm();
+		t.randomizerowperm();
+		t.randomize();
+		al=t.apply ( al );
+
+		printf ( "input array:\n" );
+		al.showarray();
+		array_link alx = reduceConference ( al, verbose );
+
+		printf ( "input array:\n" );
+		al0.showarray();
+		printf ( "input array: " );
+		al.showarray();
+		printf ( "reduced: " );
+		alx.showarray();
+		exit ( 0 );
 	}
 
 	{
