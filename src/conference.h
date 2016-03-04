@@ -85,8 +85,11 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
 
 
-/// select representatives for the isomorphism classes of a list of arrays
+/// select representatives for the isomorphism classes of a list of conference arrays
 arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbose);
 
+/// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
+std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose);
 
+	
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

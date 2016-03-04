@@ -101,7 +101,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 				G.atfast ( roffset0+r, coffset0+c ) =1;
 				G.atfast ( roffset1+r, coffset1+c ) =1;
 			}
-			if ( al.at ( r,c ) ==-1 ) {
+			if ( al.atfast ( r,c ) ==-1 ) {
 				G.atfast ( roffset0+r, coffset1+c ) =1;
 				G.atfast ( roffset1+r, coffset0+c ) =1;
 				G.atfast ( coffset0+c, roffset1+r ) =1;
@@ -112,7 +112,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 	// make symmetryic
 	for ( int i=0; i<nn; i++ )
 		for ( int j=i; j<nn; j++ )
-			G.atfast ( j,i ) =G.at ( i, j );
+			G.atfast ( j,i ) =G.atfast ( i, j );
 
 	if ( verbose>=3 ) {
 		printf ( "reduceConference: incidence graph:\n" );
@@ -697,8 +697,9 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	return outlist;
 }
 
-	 arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t lst, int verbose)
-		{
+std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper(const arraylist_t lst, int verbose)
+{
+		const int nn = lst.size();
 
 		arraylist_t lstr;
 		arraylist_t lstgood;
@@ -717,9 +718,78 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 		const std::vector<int> &idx = sortidx.indices;
 
-		array_link prev= lst[0];
+		std::vector<int> cidx(nn);
+		
+		array_link prev;
+		
+		if (lst.size()>0)
+			prev= lst[0];
 		prev.setconstant ( -10 );
 
+		int ci=-1;
+		for ( size_t i=0; i<idx.size(); i++ ) {
+			array_link al=lstr[idx[i]];
+			if ( al!=prev ) {
+				// new isomorphism class
+				if (verbose>=2)
+				printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", (int) lstgood.size(), (int) idx[i] );
+
+				lstgood.push_back (	lst[idx[i]] );
+				prev=al;
+				ci++;
+			}
+			cidx[i]=ci;
+		}
+
+		if (verbose)
+		myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d\n", (int)lst.size(),(int) lstgood.size() );
+
+		return std::pair<arraylist_t, std::vector<int> > (lstgood, cidx);	
+}
+
+std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose) {
+	
+std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper(lst, verbose) ;
+return pp.second;
+}
+
+arraylist_t selectConferenceIsomorpismClasses(const arraylist_t lst, int verbose) {
+	
+std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper(lst, verbose) ;
+return pp.first;
+}
+
+/*
+arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t lst, int verbose)
+	{
+		const int nn = lst.size();
+
+		arraylist_t lstr;
+		arraylist_t lstgood;
+		//printf ( "read %d arrays\n" , (int)lst.size());
+
+		for ( int i=0; i<(int)lst.size(); i++ ) {
+			if(verbose>=1 && i%50==0) 
+				printf("selectConferenceIsomorpismClasses: reduce %d/%d\n", i, (int)lst.size() );
+			array_link alx = reduceConference ( lst[i], verbose>=2 );
+			lstr.push_back ( alx );
+		}
+
+
+		// perform stable sort
+		indexsort sortidx ( lstr );
+
+		const std::vector<int> &idx = sortidx.indices;
+
+		std::vector<int> cidx(nn);
+		
+		array_link prev;
+		
+		if (lst.size()>0)
+			prev= lst[0];
+		prev.setconstant ( -10 );
+
+		int ci=-1;
 		for ( size_t i=0; i<idx.size(); i++ ) {
 			array_link al=lstr[idx[i]];
 			if ( al!=prev ) {
@@ -729,7 +799,9 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 				lstgood.push_back (	lst[i] );
 				prev=al;
+				ci++;
 			}
+			cidx[i]=ci;
 		}
 
 		if (verbose)
@@ -737,6 +809,6 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 		return lstgood;
 		}
-
+*/
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

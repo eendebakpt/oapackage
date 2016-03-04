@@ -975,6 +975,11 @@ def arraystats(A, verbose=1):
     print('Ak: %s' % Ak)
     return Ak
 
+def argsort(seq):
+    """ Stable argsort """
+    #http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
+    return sorted(range(len(seq)), key=seq.__getitem__)
+
 
 def jseq(xx, comb):
     pp = functools.reduce(lambda y, i: xx[:, i] + y, comb, 0)
