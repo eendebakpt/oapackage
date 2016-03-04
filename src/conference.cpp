@@ -480,7 +480,7 @@ int innerprod ( const cperm a, const cperm b )
 	return ip;
 }
 
-int satisfy_symm ( const cperm c, const symmdata sd )
+int satisfy_symm ( const cperm c, const symmdata & sd )
 {
 	const int verbose=0;
 
@@ -515,7 +515,7 @@ cperm getColumn ( const array_link al, int c )
 }
 
 // return true if the extension column satisfies the inner product check
-int ipcheck ( const cperm col, const array_link &al, int cstart=2 )
+int ipcheck ( const cperm &col, const array_link &al, int cstart=2 )
 {
 
 	for ( int c=cstart; c<al.n_columns; c++ ) {
@@ -574,6 +574,15 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 
 		for ( size_t j=0; j<ff2.size(); j++ ) {
 			cperm c = ce.combine ( i, j );
+			
+#ifdef OADEBUG
+#else
+			if (1)
+			{
+				extensions.push_back ( c );
+				continue;
+			}
+#endif
 			int ip0 = innerprod ( c0, c );
 			int ip1 = innerprod ( c1, c );
 			//printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
@@ -606,7 +615,7 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 
 	ce.extensions=extensions;
 	if ( verbose>=2 )
-		printf ( "after generation: found %d extensions\n", ( int ) extensions.size() );
+		printf ( "  after generation: found %d extensions\n", ( int ) extensions.size() );
 	// perform row symmetry check
 
 	symmetry_group rs = al.row_symmetry_group();

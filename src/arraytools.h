@@ -965,6 +965,8 @@ public:
 
 // simple permutation type
 typedef std::vector<int> cperm;
+//typedef larray<int> cperm;
+
 //typedef array_link cperm;
 
 // concatenate 2 arrays in vertical direction
