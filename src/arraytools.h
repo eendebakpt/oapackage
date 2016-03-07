@@ -981,7 +981,7 @@ array_link hstack ( const array_link &al, const array_link &b );
 array_link hstacklastcol ( const array_link &A, const array_link &B );
 
 
-inline cperm vstack(const cperm A, const cperm B) {
+inline cperm vstack(const cperm &A, const cperm &B) {
 		cperm c(A.size()+B.size());
 		
 		std::copy(A.begin(), A.end(), c.begin() );

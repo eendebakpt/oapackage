@@ -468,12 +468,26 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 
 }
 
+/// calculate inner product between twee permutations
+int innerprod ( const cperm a, const array_link al, int col )
+{
+	int ip=0;
+	size_t nn = a.size();
+	const array_t *b = al.array+col*al.n_rows;
+	
+	for ( size_t i=0; i<nn; i++ ) {
+		ip+= a[i] * b[i];
+	}
+	return ip;
+}
+
 
 /// calculate inner product between twee permutations
 int innerprod ( const cperm a, const cperm b )
 {
 	int ip=0;
-	for ( size_t i=0; i<b.size(); i++ ) {
+	size_t nn = b.size();
+	for ( size_t i=0; i<nn; i++ ) {
 		//printf("innerprod %d: %d += %d + %d\n", (int)i, ip, a[i], b[i] );
 		ip+= a[i] * b[i];
 	}
@@ -517,12 +531,13 @@ cperm getColumn ( const array_link al, int c )
 // return true if the extension column satisfies the inner product check
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2 )
 {
-
 	for ( int c=cstart; c<al.n_columns; c++ ) {
-		cperm cx = getColumn ( al, c );
-		if ( innerprod ( col, cx ) !=0 ) {
+		if ( innerprod ( col, al, c ) !=0 ) 
 			return false;
-		}
+		//cperm cx = getColumn ( al, c );
+		//if ( innerprod ( col, cx ) !=0 ) {
+		//	return false;
+		//}
 	}
 	return true;
 }
@@ -566,6 +581,7 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 		//int ip = innerprod(c1, ce.first[i]);
 		//printf("extend1 %d: inner product %d\n", (int)i, ip);
 
+		// TODO: cache this function call
 		int target = -ip;
 		std::vector<cperm> ff2 = get_second ( N, extcol, target, verbose>=2 );
 		ce.second=ff2;
@@ -573,7 +589,7 @@ conference_extend_t extend_conference_matrix ( const array_link al, const confer
 		//printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
 		for ( size_t j=0; j<ff2.size(); j++ ) {
-			cperm c = ce.combine ( i, j );
+			cperm c = ce.combine ( i, j ); // TODO: this call is quite expensive. maybe make the checks inline?
 			
 #ifdef OADEBUG
 #else
