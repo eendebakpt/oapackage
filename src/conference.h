@@ -80,7 +80,7 @@ public:
 /** Extend a list of conference designs with a single column.
  *
  */
-conference_extend_t extend_conference_matrix ( const array_link al, const conference_t ct, int extcol, int verbose=1 );
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1 );
 
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
 
@@ -90,6 +90,12 @@ arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbo
 
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
 std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose);
+
+/** return max position of zero in array, returns -1 if no zero is found
+ * 
+ * The parameter k specifies the column to search in. For k=-1 all columns are searched.
+ */
+int maxz(const array_link &al, int k = -1);
 
 	
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
