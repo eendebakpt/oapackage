@@ -497,9 +497,10 @@ int innerprod ( const cperm a, const cperm b )
 int satisfy_symm ( const cperm c, const symmdata & sd )
 {
 	const int verbose=0;
-	
-	if(verbose>=2) {
-	printf("satisfy_symm: sd: ");	sd.show();
+
+	if ( verbose>=2 ) {
+		printf ( "satisfy_symm: sd: " );
+		sd.show();
 	}
 	//return true; // hack
 	int k = sd.rowvalue.n_columns-1;
@@ -515,7 +516,9 @@ int satisfy_symm ( const cperm c, const symmdata & sd )
 				// discard
 
 				if ( verbose ) {
-					printf("satisfy_symm: perm: "); display_vector(c); printf("\n");
+					printf ( "satisfy_symm: perm: " );
+					display_vector ( c );
+					printf ( "\n" );
 					printf ( "  discard i %d, k %d, c[i]=%d:   %d %d\n", ( int ) i, k, c[i], sd.rowvalue.atfast ( i, k ), sd.rowvalue.atfast ( i+1, k ) );
 				}
 				return false;
@@ -523,8 +526,8 @@ int satisfy_symm ( const cperm c, const symmdata & sd )
 		}
 
 	}
-		if(verbose>=2) {
-	printf("satisfy_symm: return true\n");
+	if ( verbose>=2 ) {
+		printf ( "satisfy_symm: return true\n" );
 	}
 	return true;
 }
@@ -540,10 +543,9 @@ cperm getColumn ( const array_link al, int c )
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 )
 {
 	for ( int c=cstart; c<al.n_columns; c++ ) {
-		if ( innerprod ( col, al, c ) !=0 )
-		{
-			if(verbose) {
-				printf("ipcheck: column %d to %d (inclusive), failed at col %d\n", c, cstart, al.n_columns+1);
+		if ( innerprod ( col, al, c ) !=0 ) {
+			if ( verbose ) {
+				printf ( "ipcheck: column %d to %d (inclusive), failed at col %d\n", c, cstart, al.n_columns+1 );
 			}
 			return false;
 		}
@@ -589,7 +591,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	std::vector<cperm> extensions ( 0 );
 	const int N = ct.N;
 	const int extcol=al.n_columns;
-	
+
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, kz, verbose );
 	//std::vector<cperm> ff2 = get_second(N, extcol);
@@ -694,7 +696,9 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 			// perform inner product check for all columns
 			if ( ! ipcheck ( extensions[i], als ) ) {
 				if ( verbose>=2 ) {
-					printf("   extension "); display_vector(extensions[i]); printf("\n");
+					printf ( "   extension " );
+					display_vector ( extensions[i] );
+					printf ( "\n" );
 					printf ( "  reject due to innerproduct (extension %d)\n", ( int ) i );
 					ipcheck ( extensions[i], als, 2, 1 );
 				}
@@ -732,10 +736,12 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 
 	//for ( int ii=maxzval+1; ii<std::min<int>(al.n_rows, maxzval+2); ii++ ) {
 	for ( int ii=maxzval+1; ii<al.n_rows; ii++ ) {
-		printf("array: kz %d: generate\n", ii );
+		if ( verbose>=2 )
+			printf ( "array: kz %d: generate\n", ii );
 		std::vector<cperm> extensionsX  = generateConferenceExtensions ( al, ct, ii, verbose, 1, 1 );
 
-		printf("array: kz %d: %d extensions\n", ii, (int) extensionsX.size() );
+		if ( verbose>=2 )
+			printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
 		ce.extensions.insert ( ce.extensions.end(), extensionsX.begin(), extensionsX.end() );
 	}
 
@@ -822,7 +828,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 	//printf ( "read %d arrays\n" , (int)lst.size());
 
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
-		if ( verbose>=1 && i%50==0 )
+		if ( verbose>=1 && i%500==0 )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		array_link alx = reduceConference ( lst[i], verbose>=2 );
 		lstr.push_back ( alx );
@@ -875,6 +881,69 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbo
 
 	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose ) ;
 	return pp.first;
+}
+
+bool compareLMC0x ( const array_link &alL, const array_link &alR )
+{
+	array_link L = alL;
+	array_link R = alR;
+
+	assert ( alL.n_rows==alR.n_rows );
+	assert ( alL.n_columns==alR.n_columns );
+
+	size_t nn = alL.n_columns*alL.n_rows;
+	for ( size_t i=0; i<nn; i++ ) {
+		if ( L.array[i]==0 )
+			L.array[i]=-100;
+		if ( R.array[i]==0 )
+			R.array[i]=-100;
+	}
+	return L < R;
+}
+
+bool compareLMC0 ( const array_link &alL, const array_link &alR )
+{
+//array_link L = alL;
+//	array_link R = alR;
+
+	assert ( alL.n_rows==alR.n_rows );
+	assert ( alL.n_columns==alR.n_columns );
+
+	for ( int c=0; c<alL.n_columns; c++ ) {
+		int zl = maxz ( alL, c );
+		int zr = maxz ( alR, c );
+
+		if ( zl<zr )
+			return true;
+		if ( zl>zr )
+			return false;
+
+		// zero is at same position in column, let LMC ordering decide
+
+		const array_t *al = alL.array + c*alL.n_rows;
+		const array_t *ar = alR.array + c*alR.n_rows;
+
+		for ( int r=0; r<alL.n_rows; r++ ) {
+			if ( al[r]> ar[r] )
+				return true;	// note the reversed sign here
+			if ( al[r]< ar[r] )
+				return false;	// note the reversed sign here
+		}
+
+
+
+	}
+// the arrays are equal
+	return false;
+
+}
+
+
+arraylist_t sortLMC0 ( const arraylist_t &lst )
+{
+	arraylist_t outlist = lst;
+	sort ( outlist.begin(), outlist.end(), compareLMC0 );
+	return outlist;
 }
 
 /*

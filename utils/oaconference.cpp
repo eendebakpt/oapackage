@@ -99,6 +99,8 @@ kk.push_back(al);
 	if (select)
 		outlist = selectConferenceIsomorpismClasses(outlist, verbose);
 	
+	sort(outlist.begin(), outlist.end(), compareLMC0);
+	
 	if (0) {
 	array_link al=kk[0];
 	int extcol=al.n_columns;

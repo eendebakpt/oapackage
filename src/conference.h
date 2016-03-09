@@ -97,5 +97,13 @@ std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int ve
  */
 int maxz(const array_link &al, int k = -1);
 
+/** Return true of the array is smaller in LMC0 ordering
+ *
+ */
+bool compareLMC0(const array_link &alL, const array_link &alR);
+
+/// sort list of arrays according to LMC-0 ordering
+arraylist_t sortLMC0(const arraylist_t &lst);
+
 	
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
