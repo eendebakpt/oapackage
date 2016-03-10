@@ -11,12 +11,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
+//#include <iostream>
 #include <algorithm>
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-#include "tools.h"
+//#include "tools.h"
 #include "extend.h"
 
 
@@ -31,11 +31,13 @@ public:
 	/// create new conference_t object
 	conference_t ( int N, int k );
 
+	/// create the unique representative of the 2 column design
 	array_link create_root ( ) const;
 
+	/// return string representation of the object
 	std::string __repr__() const
 	{
-	return printfstring("conference type: N %d, ncols %d", this->N, this->ncols);
+		return printfstring("conference type: N %d, ncols %d", this->N, this->ncols);
 	}
 	
 };
@@ -65,7 +67,7 @@ public:
 	return this->extensions.size();	
 	}
 
-	arraylist_t getarrays ( const array_link al ) {
+	arraylist_t getarrays ( const array_link al ) const {
 		arraylist_t ll;
 
 		for ( size_t i=0; i<this->extensions.size(); i++ ) {
@@ -77,11 +79,13 @@ public:
 };
 
 
+
+/** Extend a single conference design with candidate columns */
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1 );
+
 /** Extend a list of conference designs with a single column.
  *
  */
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1 );
-
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
 
 
@@ -97,7 +101,7 @@ std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int ve
  */
 int maxz(const array_link &al, int k = -1);
 
-/** Return true of the array is smaller in LMC0 ordering
+/** Return true of the array is smaller in LMC-0 ordering
  *
  */
 bool compareLMC0(const array_link &alL, const array_link &alR);

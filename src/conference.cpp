@@ -14,7 +14,7 @@
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-#include "tools.h"
+//#include "tools.h"
 #include "extend.h"
 
 #include "oadevelop.h"
@@ -196,9 +196,6 @@ std::vector<int> get_comb ( std::vector<int> p, int n, int zero=0, int one=1 )
 		c[p[i]]=one;
 	return c;
 }
-void next_combx ( std::vector<int> c, int n )
-{
-}
 
 cperm insertzero ( cperm c, int pos, int value=0 )
 {
@@ -320,12 +317,13 @@ v=1
 
  */
 
-
+/// return true of the argument is even
 bool iseven ( int q )
 {
 	return ( q%2 ) ==0;
 }
 
+/// return parameters of a conference design
 void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 {
 	q = ( N-2 ) /2;
@@ -412,6 +410,8 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 	return ff;
 
 }
+
+/** Return all admissible columns (block two) for a conference array in normal form */
 std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 {
 	//verbose=2;
@@ -463,12 +463,10 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 			next_comb ( c, qx, n1 );
 	}
 
-
 	return ff;
-
 }
 
-/// calculate inner product between twee permutations
+/// calculate inner product between two permutations
 int innerprod ( const cperm a, const array_link al, int col )
 {
 	int ip=0;
@@ -482,7 +480,7 @@ int innerprod ( const cperm a, const array_link al, int col )
 }
 
 
-/// calculate inner product between twee permutations
+/// calculate inner product between two permutations
 int innerprod ( const cperm a, const cperm b )
 {
 	int ip=0;
@@ -494,6 +492,7 @@ int innerprod ( const cperm a, const cperm b )
 	return ip;
 }
 
+/// helper function
 int satisfy_symm ( const cperm c, const symmdata & sd )
 {
 	const int verbose=0;
@@ -524,7 +523,6 @@ int satisfy_symm ( const cperm c, const symmdata & sd )
 				return false;
 			}
 		}
-
 	}
 	if ( verbose>=2 ) {
 		printf ( "satisfy_symm: return true\n" );
@@ -532,6 +530,7 @@ int satisfy_symm ( const cperm c, const symmdata & sd )
 	return true;
 }
 
+/// return column of an array in cperm format
 cperm getColumn ( const array_link al, int c )
 {
 	cperm cx ( al.n_rows );
@@ -557,10 +556,6 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=
 	return true;
 }
 
-/** return max position of zero in array, returns -1 if no zero is found
- *
- * The parameter k specifies the column to search in. For k=-1 all columns are searched.
- */
 int maxz ( const array_link &al, int k )
 {
 	int maxz=-1;
@@ -711,9 +706,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	if ( verbose>=1 )
 		printf ( "extend_conference: symmetry check + ip filter %d->%d\n", ( int ) extensions.size(), ( int ) e2.size() );
 
-
 	ce.extensions=e2;
-
 
 	return e2;
 }
@@ -769,7 +762,7 @@ array_link sortrows ( const array_link al )
 
 
 
-/// helper function
+/**
 void test_comb ( int n, int k )
 {
 	std::vector<int> c ( k );
@@ -785,6 +778,7 @@ void test_comb ( int n, int k )
 		next_comb ( c, k, n );
 	}
 }
+*/
 
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
 {
@@ -813,8 +807,6 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 		if ( verbose ) {
 			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
 		}
-
-
 	}
 	return outlist;
 }
@@ -833,7 +825,6 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 		array_link alx = reduceConference ( lst[i], verbose>=2 );
 		lstr.push_back ( alx );
 	}
-
 
 	// perform stable sort
 	indexsort sortidx ( lstr );
@@ -883,6 +874,7 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbo
 	return pp.first;
 }
 
+/// testing function
 bool compareLMC0x ( const array_link &alL, const array_link &alR )
 {
 	array_link L = alL;
@@ -903,13 +895,11 @@ bool compareLMC0x ( const array_link &alL, const array_link &alR )
 
 bool compareLMC0 ( const array_link &alL, const array_link &alR )
 {
-//array_link L = alL;
-//	array_link R = alR;
-
 	assert ( alL.n_rows==alR.n_rows );
 	assert ( alL.n_columns==alR.n_columns );
 
 	for ( int c=0; c<alL.n_columns; c++ ) {
+		// check position of zero in column c
 		int zl = maxz ( alL, c );
 		int zr = maxz ( alR, c );
 
@@ -929,11 +919,8 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
 			if ( al[r]< ar[r] )
 				return false;	// note the reversed sign here
 		}
-
-
-
 	}
-// the arrays are equal
+	// the arrays are equal
 	return false;
 
 }
@@ -946,56 +933,5 @@ arraylist_t sortLMC0 ( const arraylist_t &lst )
 	return outlist;
 }
 
-/*
-arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t lst, int verbose)
-	{
-		const int nn = lst.size();
-
-		arraylist_t lstr;
-		arraylist_t lstgood;
-		//printf ( "read %d arrays\n" , (int)lst.size());
-
-		for ( int i=0; i<(int)lst.size(); i++ ) {
-			if(verbose>=1 && i%50==0)
-				printf("selectConferenceIsomorpismClasses: reduce %d/%d\n", i, (int)lst.size() );
-			array_link alx = reduceConference ( lst[i], verbose>=2 );
-			lstr.push_back ( alx );
-		}
-
-
-		// perform stable sort
-		indexsort sortidx ( lstr );
-
-		const std::vector<int> &idx = sortidx.indices;
-
-		std::vector<int> cidx(nn);
-
-		array_link prev;
-
-		if (lst.size()>0)
-			prev= lst[0];
-		prev.setconstant ( -10 );
-
-		int ci=-1;
-		for ( size_t i=0; i<idx.size(); i++ ) {
-			array_link al=lstr[idx[i]];
-			if ( al!=prev ) {
-				// new isomorphism class
-				if (verbose>=2)
-				printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", (int) lstgood.size(), (int)i );
-
-				lstgood.push_back (	lst[i] );
-				prev=al;
-				ci++;
-			}
-			cidx[i]=ci;
-		}
-
-		if (verbose)
-		myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d\n", (int)lst.size(),(int) lstgood.size() );
-
-		return lstgood;
-		}
-*/
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
