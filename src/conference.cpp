@@ -197,14 +197,24 @@ std::vector<int> get_comb ( std::vector<int> p, int n, int zero=0, int one=1 )
 	return c;
 }
 
-cperm insertzero ( cperm c, int pos, int value=0 )
+// set vector of length n with specified positions set to one
+inline void get_comb ( const std::vector<int> &p, int n, int zero, int one, std::vector<int> &c )
 {
-	cperm cx =c;
-	cx.insert ( cx.begin() +pos, value );
-	return cx;
-
+	for ( int i=0; i<n ; i++ )
+		c[i]=zero;
+	for ( size_t i=0; i<p.size() ; i++ )
+		c[p[i]]=one;
 }
 
+/// return copy of vector with zero inserted at specified position
+inline cperm insertzero ( const cperm &c, int pos, int value=0 )
+{
+	cperm cx(c.size()+1);
+	std::copy(c.begin(), c.begin()+pos, cx.begin() );
+	cx[pos]=value;
+	std::copy(c.begin()+pos, c.end(), cx.begin() +pos+1);
+	return cx;
+}
 
 /*
 Values in column k for k > 1 and k <= N/2 + 1 = q + 2:
@@ -444,11 +454,18 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 	if ( verbose )
 		printf ( "get_second: N %d, n1 %d, qx %d, target %d, nc %d\n", N, n1, qx, target, nc );
 	std::vector<cperm> ff;
+	cperm ccx(n1 );
+	cperm cc;
 	for ( long j=0; j<nc; j++ ) {
-		cperm cc =get_comb ( c, n1, -1, 1 );
-
-		if ( haszero )
-			cc=insertzero ( cc, extcol- ( q+2 ) );
+		//printf("ccc: "); display_vector(cc); printf("\n");
+		//printf("ccx: "); display_vector(ccx); printf("\n");
+		
+		if ( haszero ) {
+		get_comb ( c, n1, -1, 1, ccx );
+			cc=insertzero ( ccx, extcol- ( q+2 ) );
+		} else {
+		cc =get_comb ( c, n1, -1, 1 );			
+		}
 		if ( verbose>=2 ) {
 			printfd ( "add element of size %d =   %d\n", cc.size(), q );
 			display_vector ( cc );
@@ -467,7 +484,7 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 }
 
 /// calculate inner product between two permutations
-int innerprod ( const cperm a, const array_link al, int col )
+int innerprod ( const cperm &a, const array_link &al, int col )
 {
 	int ip=0;
 	size_t nn = a.size();
@@ -481,7 +498,7 @@ int innerprod ( const cperm a, const array_link al, int col )
 
 
 /// calculate inner product between two permutations
-int innerprod ( const cperm a, const cperm b )
+int innerprod ( const cperm &a, const cperm &b )
 {
 	int ip=0;
 	size_t nn = b.size();
@@ -493,7 +510,7 @@ int innerprod ( const cperm a, const cperm b )
 }
 
 /// helper function
-int satisfy_symm ( const cperm c, const symmdata & sd )
+int satisfy_symm ( const cperm &c, const symmdata & sd )
 {
 	const int verbose=0;
 
@@ -531,7 +548,7 @@ int satisfy_symm ( const cperm c, const symmdata & sd )
 }
 
 /// return column of an array in cperm format
-cperm getColumn ( const array_link al, int c )
+cperm getColumn ( const array_link &al, int c )
 {
 	cperm cx ( al.n_rows );
 	std::copy ( al.array+c*al.n_rows, al.array+ ( c+1 ) *al.n_rows, cx.begin() );
