@@ -20,6 +20,7 @@
 #include "extend.h"
 
 
+
 /// Structure representing the type of conference designs
 class conference_t
 {
@@ -27,6 +28,9 @@ public:
 	rowindex_t N;	/** number of runs */
 	colindex_t ncols;	/** total number of columns (factors) in the design */
 
+	enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL};
+	conference_type ctype;
+	
 public:
 	/// create new conference_t object
 	conference_t ( int N, int k );
@@ -78,10 +82,15 @@ public:
 	}
 };
 
-
+struct conference_options{
+	int maxzpos;
+	
+	//conference_options() { maxzpos=-1; };
+	conference_options(int maxpos = -1); // { maxzpos=-1; };
+} ;
 
 /** Extend a single conference design with candidate columns */
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1 );
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
 
 /** Extend a list of conference designs with a single column.
  *
@@ -94,6 +103,13 @@ arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbo
 
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
 std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose);
+
+/** Generate candidate extensions
+ * 
+ * \param al design to be extended
+ * \param kz index of zero in candidate column
+ */
+std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose = 1, int filtersymm= 1, int filterip=1 );
 
 /** return max position of zero in array, returns -1 if no zero is found
  * 

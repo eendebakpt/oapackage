@@ -418,6 +418,62 @@ def array2latex_old(ltable, htable=None):
     ss += '\\end{tabular}\n'
     return ss
 
+def array2html(X, header=1, tablestyle = 'border-collapse: collapse;', trclass='', tdstyle='', trstyle='', thstyle=''):
+    """ Convert Numpy array to HTML table
+
+    Arguments
+    ---------
+        X : numpy array
+            array to be converted
+        header : integer
+            use header or not
+    Returns
+    -------
+        page : markup html object
+            generated table in HTML
+    
+    """
+    page = markup.page()
+    page.add('<!-- Created by array2html -->\n')
+    page.table(style=tablestyle)
+    offset = 0
+    nc = X.shape[1]
+    nr = X.shape[0]
+
+    if isinstance(trstyle, str):
+        trstyle = [trstyle]*nr
+    if isinstance(trclass, str):
+        trclass = [trclass]*nr
+
+    ri = 0
+    if header:
+        page.tr(style='font-weight: bold; border-bottom: solid 1px black;' + \
+                trstyle[ri], class_=trclass[ri])
+        ri = ri+1
+        for ii in range(nc):
+            if isinstance(X[offset, ii], tuple):
+                print('array2html: tuple instance')
+                page.th(X[offset, ii][0], style=thstyle+X[offset, ii][1] )
+            else:
+                page.th(X[offset, ii], style=thstyle )
+        page.tr.close()
+        offset = offset+1
+
+    nr = X.shape[0]-offset
+    for r in range(nr):
+        page.tr(style=trstyle[ri], _class=trclass[ri])
+        for ii in range(nc):
+            if isinstance(X[offset, ii], tuple):
+                page.td(X[offset, ii][0], style=tdstyle+X[offset, ii][1] )
+            else:
+                page.td(X[offset, ii], style=tdstyle )
+
+        page.tr.close()
+        offset = offset+1
+        ri = ri+1
+    page.table.close()
+    return page
+
 import subprocess
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):

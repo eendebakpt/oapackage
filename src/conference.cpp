@@ -28,6 +28,7 @@ conference_t::conference_t ( int N, int k )
 {
 	this->N = N;
 	this->ncols = k;
+	this->ctype = CONFERENCE_NORMAL;
 }
 
 array_link conference_t::create_root ( ) const
@@ -597,7 +598,7 @@ int maxz ( const array_link &al, int k )
 	return maxz ;
 }
 
-std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose = 1, int filtersymm= 1, int filterip=1 )
+std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip)
 {
 	conference_extend_t ce;
 	std::vector<cperm> extensions ( 0 );
@@ -680,7 +681,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 
 	ce.extensions=extensions;
 	if ( verbose>=2 )
-		printf ( "  after generation: found %d extensions\n", ( int ) extensions.size() );
+		printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
 	// perform row symmetry check
 
 	symmetry_group rs = al.row_symmetry_group();
@@ -721,14 +722,14 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	}
 
 	if ( verbose>=1 )
-		printf ( "extend_conference: symmetry check + ip filter %d->%d\n", ( int ) extensions.size(), ( int ) e2.size() );
+		printf ( "extend_conference: symmetry check %d + ip filter %d: %d->%d\n", filtersymm, filterip, ( int ) extensions.size(), ( int ) e2.size() );
 
 	ce.extensions=e2;
 
 	return e2;
 }
 
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose )
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos )
 {
 	// first create two sets of partial extensions
 
@@ -744,8 +745,26 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 	if ( verbose )
 		printf ( "--- extend_conference_matrix: extcol %d, maxz %d ---\n", extcol, maxzval );
 
+	const int zstart=maxzval+1;
+	if (maxzpos<0) {
+		if (ct.ctype==conference_t::CONFERENCE_NORMAL)
+			maxzpos = al.n_rows-1;
+		else {
+			if  (ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL) {
+				maxzpos = extcol; // maxzval+2;		
+				//printf("ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL: maxzpos %d/%d, extcol %d\n", maxzpos, al.n_rows-1, extcol);
+			}
+				else {
+				//
+				printfd("not implemented...");
+					maxzpos = al.n_rows-1;
+			}
+		}
+	}
+	
+	
 	//for ( int ii=maxzval+1; ii<std::min<int>(al.n_rows, maxzval+2); ii++ ) {
-	for ( int ii=maxzval+1; ii<al.n_rows; ii++ ) {
+	for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
 		if ( verbose>=2 )
 			printf ( "array: kz %d: generate\n", ii );
 		std::vector<cperm> extensionsX  = generateConferenceExtensions ( al, ct, ii, verbose, 1, 1 );
@@ -949,6 +968,8 @@ arraylist_t sortLMC0 ( const arraylist_t &lst )
 	sort ( outlist.begin(), outlist.end(), compareLMC0 );
 	return outlist;
 }
+
+conference_options::conference_options(int maxpos) { maxzpos=-1; }
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
