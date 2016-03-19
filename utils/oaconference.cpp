@@ -94,6 +94,9 @@ kk.push_back(al);
 		if ( verbose )
 		printf ( "oaconference: extend %d conference matrices of size %dx%d\n",  (int) kk.size(), ctype.N, ctype.ncols );
 
+
+		
+
 	arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
 
 	if (select)

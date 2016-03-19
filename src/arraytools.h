@@ -677,6 +677,9 @@ public:
 	void setColumn(int c, const std::vector<int> v) {
 			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
 	}
+	void setColumnChar(int c, const std::vector<signed char> v) {
+			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
+	}
 	//void setColumn2(int c, const cperm v) {
 	//		std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
 	//}
@@ -963,8 +966,10 @@ public:
 	//void initswig(); /// provide hook for Python __array_interface__ initialization
 };
 
+// TODO: make cpern into vector<uint8>?
 // simple permutation type
-typedef std::vector<int> cperm;
+typedef std::vector<signed char> cperm;
+//typedef std::vector<int> cperm;
 //typedef larray<int> cperm;
 
 //typedef array_link cperm;

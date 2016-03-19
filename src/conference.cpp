@@ -24,199 +24,6 @@
 
 #include "conference.h"
 
-conference_t::conference_t ( int N, int k )
-{
-	this->N = N;
-	this->ncols = k;
-	this->ctype = CONFERENCE_NORMAL;
-}
-
-array_link conference_t::create_root ( ) const
-{
-	array_link al ( this->N, 2, 0 ); // c.ncols
-
-	al.at ( 0,0 ) =0;
-	for ( int i=1; i<this->N; i++ ) {
-		al.at ( i, 0 ) = 1;
-	}
-	for ( int i=0; i<this->N; i++ ) {
-		if ( i==1 ) {
-			al.at ( 1,1 ) =0;
-			continue;
-		}
-		if ( i<=this->N/2 )
-			al.at ( i, 1 ) = 1;
-		else
-			al.at ( i, 1 ) = -1;
-	}
-
-	return al;
-
-}
-
-
-array_link reduceConference ( const array_link &al, int verbose )
-{
-
-	const int nr = al.n_rows;
-	const int nc=al.n_columns;
-	const int nn = 2* ( nr+nc );
-	/// create graph
-	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
-	G.setconstant ( 0 );
-
-	if ( verbose )
-		printf ( "reduceConference: %d, %d\n", nr, nc );
-
-	std::vector<int> colors ( 2* ( nr+nc ) );
-
-	const int roffset0=0;
-	const int roffset1=nr;
-	const int coffset0=2*nr;
-	const int coffset1=2*nr+nc;
-
-	/*
-	Add edges as follows:
-	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
-	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
-	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
-	Zeros in A don't cause any edges.
-	*/
-
-	// set colors
-	for ( int i=0; i<coffset0; i++ )
-		colors[i]=0;
-	for ( int i=coffset0; i<coffset0+2*nc; i++ )
-		colors[i]=1;
-
-	// (1)
-	for ( int i=0; i<nr; i++ )
-		G.atfast ( roffset0+i, i+roffset1 ) =1;
-	for ( int i=0; i<nc; i++ )
-		G.atfast ( coffset0+i, i+coffset1 ) =1;
-
-	// (2), (3)
-	for ( int r=0; r<nr; r++ ) {
-		for ( int c=0; c<nc; c++ ) {
-			if ( al.atfast ( r,c ) ==1 ) {
-				G.atfast ( roffset0+r, coffset0+c ) =1;
-				G.atfast ( roffset1+r, coffset1+c ) =1;
-			}
-			if ( al.atfast ( r,c ) ==-1 ) {
-				G.atfast ( roffset0+r, coffset1+c ) =1;
-				G.atfast ( roffset1+r, coffset0+c ) =1;
-				G.atfast ( coffset0+c, roffset1+r ) =1;
-			}
-		}
-	}
-
-	// make symmetryic
-	for ( int i=0; i<nn; i++ )
-		for ( int j=i; j<nn; j++ )
-			G.atfast ( j,i ) =G.atfast ( i, j );
-
-	if ( verbose>=3 ) {
-		printf ( "reduceConference: incidence graph:\n" );
-		printf ( "   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc );
-		G.showarray();
-	}
-	/// call nauty
-	const std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose>=2 );
-	const std::vector<int> tri = invert_permutation ( tr );
-	const std::vector<int> trx=tri;
-
-	// extract transformation
-
-	if ( verbose>=2 ) {
-		if ( verbose>=3 ) {
-			array_link Gx = transformGraph ( G, tri, 0 );
-			printfd ( "transformed graph\n" );
-			Gx.showarray();
-		}
-		std::vector<int> tr1 = std::vector<int> ( trx.begin () , trx.begin () + 2*nr );
-		std::vector<int> tr2 = std::vector<int> ( trx.begin () +coffset0, trx.end() );
-		printf ( "  row vertex transformations: " );
-		display_vector ( tr1 );
-		printf ( "\n" );
-		printf ( "  col vertex transformations: " );
-		display_vector ( tr2 );
-		printf ( "\n" );
-
-	}
-
-	// ...
-
-	// define conference matrix transformation object....
-	conference_transformation_t t ( al );
-
-	// extract transformation
-	std::vector<int> rr ( nr );
-	for ( int i=0; i<nr; i++ ) {
-		rr[i] = std::min ( trx[i], trx[i+nr] );
-	}
-
-	if ( verbose>=2 ) {
-		printf ( "rr: " );
-		print_perm ( rr );
-	}
-
-	t.rperm = invert_permutation ( argsort ( rr ) );
-
-	for ( int i=0; i<nr; i++ ) {
-		// FIXME: change i into proper index...
-		t.rswitch[ t.rperm[i]] = 2* ( trx[i]<trx[i+nr] )-1;
-	}
-
-	std::vector<int> cc ( nc );
-	for ( int i=0; i<nc; i++ ) {
-		cc[i] = std::min ( trx[coffset0+i], trx[coffset0+i+nc] );
-	}
-	t.cperm = invert_permutation ( argsort ( cc ) );
-
-	for ( int i=0; i<nc; i++ ) {
-		// FIXME
-		t.cswitch[ t.cperm[i]] = 2* ( trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
-	}
-
-	if ( verbose>=2 ) {
-		printf ( "transform: \n" );
-		t.show();
-	}
-	array_link alx = t.apply ( al );
-	return alx;
-
-}
-
-// return vector of length n with specified positions set to one
-std::vector<int> get_comb ( std::vector<int> p, int n, int zero=0, int one=1 )
-{
-	std::vector<int> c ( n );
-	for ( int i=0; i<n ; i++ )
-		c[i]=zero;
-	for ( size_t i=0; i<p.size() ; i++ )
-		c[p[i]]=one;
-	return c;
-}
-
-// set vector of length n with specified positions set to one
-inline void get_comb ( const std::vector<int> &p, int n, int zero, int one, std::vector<int> &c )
-{
-	for ( int i=0; i<n ; i++ )
-		c[i]=zero;
-	for ( size_t i=0; i<p.size() ; i++ )
-		c[p[i]]=one;
-}
-
-/// return copy of vector with zero inserted at specified position
-inline cperm insertzero ( const cperm &c, int pos, int value=0 )
-{
-	cperm cx(c.size()+1);
-	std::copy(c.begin(), c.begin()+pos, cx.begin() );
-	cx[pos]=value;
-	std::copy(c.begin()+pos, c.end(), cx.begin() +pos+1);
-	return cx;
-}
-
 /*
 Values in column k for k > 1 and k <= N/2 + 1 = q + 2:
 
@@ -367,6 +174,238 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 	//printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
 
+conference_t::conference_t ( int N, int k )
+{
+	this->N = N;
+	this->ncols = k;
+	this->ctype = CONFERENCE_NORMAL;
+}
+
+array_link conference_t::create_root_three ( ) const
+{
+	array_link al ( this->N, 3, 0 ); // c.ncols
+	
+		al.at ( 0,0 ) =0;
+	for ( int i=1; i<this->N; i++ ) {
+		al.at ( i, 0 ) = 1;
+	}
+	for ( int i=0; i<this->N; i++ ) {
+		if ( i==1 ) {
+			al.at ( 1,1 ) =0;
+			continue;
+		}
+		if ( i<=this->N/2 )
+			al.at ( i, 1 ) = 1;
+		else
+			al.at ( i, 1 ) = -1;
+	
+		
+	}
+	
+	int q, q1, q2, v;
+	const int k = 2;
+	const int N = this->N;
+	getConferenceNumbers ( this->N, k, q, q1, q2, v );
+
+	
+	
+	for(int i=3;i<N; i++) al.at(i,2)=-1;
+	al.at(0,2)=1;
+	al.at(1,2)=v;
+	al.at(2,2)=0;
+	for(int i=0; i<q1; i++) al.at(2+1+i,2) = 1;
+	for(int i=0; i<q2; i++) al.at(2+q+i,2) = 1;
+	
+	return al;
+}
+array_link conference_t::create_root ( ) const
+{
+	array_link al ( this->N, 2, 0 ); // c.ncols
+
+	al.at ( 0,0 ) =0;
+	for ( int i=1; i<this->N; i++ ) {
+		al.at ( i, 0 ) = 1;
+	}
+	for ( int i=0; i<this->N; i++ ) {
+		if ( i==1 ) {
+			al.at ( 1,1 ) =0;
+			continue;
+		}
+		if ( i<=this->N/2 )
+			al.at ( i, 1 ) = 1;
+		else
+			al.at ( i, 1 ) = -1;
+	}
+
+	return al;
+}
+
+
+array_link reduceConference ( const array_link &al, int verbose )
+{
+
+	const int nr = al.n_rows;
+	const int nc=al.n_columns;
+	const int nn = 2* ( nr+nc );
+	/// create graph
+	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
+	G.setconstant ( 0 );
+
+	if ( verbose )
+		printf ( "reduceConference: %d, %d\n", nr, nc );
+
+	std::vector<int> colors ( 2* ( nr+nc ) );
+
+	const int roffset0=0;
+	const int roffset1=nr;
+	const int coffset0=2*nr;
+	const int coffset1=2*nr+nc;
+
+	/*
+	Add edges as follows:
+	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+	Zeros in A don't cause any edges.
+	*/
+
+	// set colors
+	for ( int i=0; i<coffset0; i++ )
+		colors[i]=0;
+	for ( int i=coffset0; i<coffset0+2*nc; i++ )
+		colors[i]=1;
+
+	// (1)
+	for ( int i=0; i<nr; i++ )
+		G.atfast ( roffset0+i, i+roffset1 ) =1;
+	for ( int i=0; i<nc; i++ )
+		G.atfast ( coffset0+i, i+coffset1 ) =1;
+
+	// (2), (3)
+	for ( int r=0; r<nr; r++ ) {
+		for ( int c=0; c<nc; c++ ) {
+			if ( al.atfast ( r,c ) ==1 ) {
+				G.atfast ( roffset0+r, coffset0+c ) =1;
+				G.atfast ( roffset1+r, coffset1+c ) =1;
+			}
+			if ( al.atfast ( r,c ) ==-1 ) {
+				G.atfast ( roffset0+r, coffset1+c ) =1;
+				G.atfast ( roffset1+r, coffset0+c ) =1;
+				G.atfast ( coffset0+c, roffset1+r ) =1;
+			}
+		}
+	}
+
+	// make symmetryic
+	for ( int i=0; i<nn; i++ )
+		for ( int j=i; j<nn; j++ )
+			G.atfast ( j,i ) =G.atfast ( i, j );
+
+	if ( verbose>=3 ) {
+		printf ( "reduceConference: incidence graph:\n" );
+		printf ( "   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc );
+		G.showarray();
+	}
+	/// call nauty
+	const std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose>=2 );
+	const std::vector<int> tri = invert_permutation ( tr );
+	const std::vector<int> trx=tri;
+
+	// extract transformation
+
+	if ( verbose>=2 ) {
+		if ( verbose>=3 ) {
+			array_link Gx = transformGraph ( G, tri, 0 );
+			printfd ( "transformed graph\n" );
+			Gx.showarray();
+		}
+		std::vector<int> tr1 = std::vector<int> ( trx.begin () , trx.begin () + 2*nr );
+		std::vector<int> tr2 = std::vector<int> ( trx.begin () +coffset0, trx.end() );
+		printf ( "  row vertex transformations: " );
+		display_vector ( tr1 );
+		printf ( "\n" );
+		printf ( "  col vertex transformations: " );
+		display_vector ( tr2 );
+		printf ( "\n" );
+
+	}
+
+	// ...
+
+	// define conference matrix transformation object....
+	conference_transformation_t t ( al );
+
+	// extract transformation
+	std::vector<int> rr ( nr );
+	for ( int i=0; i<nr; i++ ) {
+		rr[i] = std::min ( trx[i], trx[i+nr] );
+	}
+
+	if ( verbose>=2 ) {
+		printf ( "rr: " );
+		print_perm ( rr );
+	}
+
+	t.rperm = invert_permutation ( argsort ( rr ) );
+
+	for ( int i=0; i<nr; i++ ) {
+		// FIXME: change i into proper index...
+		t.rswitch[ t.rperm[i]] = 2* ( trx[i]<trx[i+nr] )-1;
+	}
+
+	std::vector<int> cc ( nc );
+	for ( int i=0; i<nc; i++ ) {
+		cc[i] = std::min ( trx[coffset0+i], trx[coffset0+i+nc] );
+	}
+	t.cperm = invert_permutation ( argsort ( cc ) );
+
+	for ( int i=0; i<nc; i++ ) {
+		// FIXME
+		t.cswitch[ t.cperm[i]] = 2* ( trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
+	}
+
+	if ( verbose>=2 ) {
+		printf ( "transform: \n" );
+		t.show();
+	}
+	array_link alx = t.apply ( al );
+	return alx;
+
+}
+
+// return vector of length n with specified positions set to one
+cperm get_comb ( cperm p, int n, int zero=0, int one=1 )
+{
+	cperm c ( n, zero );
+	//for ( int i=0; i<n ; i++ )
+	//	c[i]=zero;
+	for ( size_t i=0; i<p.size() ; i++ )
+		c[p[i]]=one;
+	return c;
+}
+
+// set vector of length n with specified positions set to one
+inline void get_comb ( const cperm &p, int n, int zero, int one, cperm &c )
+{
+	//std::fill(c.begin(), c.end(), zero);
+	for ( int i=0; i<n ; i++ )
+		c[i]=zero;
+	for ( size_t i=0; i<p.size() ; i++ )
+		c[p[i]]=one;
+}
+
+/// return copy of vector with zero inserted at specified position
+inline cperm insertzero ( const cperm &c, int pos, int value=0 )
+{
+	cperm cx(c.size()+1);
+	std::copy(c.begin(), c.begin()+pos, cx.begin() );
+	cx[pos]=value;
+	std::copy(c.begin()+pos, c.end(), cx.begin() +pos+1);
+	return cx;
+}
+
+
+
 /** Return all admissible columns (first part) for a conference array in normal form
  *
  *
@@ -391,14 +430,14 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 		n1=q;
 	}
 
-	std::vector<int> c ( q1 );
+	cperm c ( q1 );
 	for ( int i=0; i<q1 ; i++ )
 		c[i]=i;
 
 
 	int nc = ncombs<long> ( n1, q1 );
-	if ( verbose )
-		printf ( "conference array: extcol %d: N %d, n1 %d, q %d, v %d, q1 %d, q2 %d, nc %d\n", extcol, N, n1, q, v, q1, q2, nc );
+	if ( verbose>=2 )
+		printf ( "get_first: conference array: extcol %d: N %d, n1 %d, q %d, v %d, q1 %d, q2 %d, nc %d\n", extcol, N, n1, q, v, q1, q2, nc );
 
 	std::vector<cperm> ff;
 	for ( long j=0; j<nc; j++ ) {
@@ -446,7 +485,7 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 	}
 	int qx=q2;
 
-	std::vector<int> c ( qx );
+	cperm c ( qx );
 	for ( int i=0; i<qx ; i++ )
 		c[i]=i;
 
@@ -598,6 +637,47 @@ int maxz ( const array_link &al, int k )
 	return maxz ;
 }
 
+std::vector<cperm> filterCandidates(const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
+{
+	symmetry_group rs = als.row_symmetry_group();
+	symmdata sd ( als );
+
+
+	if ( verbose>=2 )
+		sd.show ( 1 );
+
+	std::vector<cperm> e2 ( 0 );
+	for ( size_t i=0; i<extensions.size(); i++ ) {
+
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( extensions[i], sd ) ) {
+				if ( verbose>=2 ) {
+					printf ( "filterCandidates: reject due to row symm: " );
+					display_vector ( extensions[i] );
+					printf ( "\n" );
+				}
+				continue;
+			}
+		}
+		if ( filterip ) {
+
+			// perform inner product check for all columns
+			if ( ! ipcheck ( extensions[i], als ) ) {
+				if ( verbose>=2 ) {
+					printf ( "   extension " );
+					display_vector ( extensions[i] );
+					printf ( "\n" );
+					printf ( "filterCandidates: reject due to innerproduct (extension %d)\n", ( int ) i );
+					ipcheck ( extensions[i], als, 2, 1 );
+				}
+				continue;
+			}
+		}
+		e2.push_back ( extensions[i] );
+	}
+		return e2;
+	}
+
 std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip)
 {
 	conference_extend_t ce;
@@ -607,7 +687,6 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, kz, verbose );
-	//std::vector<cperm> ff2 = get_second(N, extcol);
 
 	if ( verbose>=2 ) {
 		for ( size_t i=0; i<ff.size(); i++ ) {
@@ -684,42 +763,8 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 		printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
 	// perform row symmetry check
 
-	symmetry_group rs = al.row_symmetry_group();
-	symmdata sd ( als );
 
-
-	if ( verbose>=2 )
-		sd.show ( 1 );
-
-	std::vector<cperm> e2 ( 0 );
-	for ( size_t i=0; i<extensions.size(); i++ ) {
-
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( extensions[i], sd ) ) {
-				if ( verbose>=2 ) {
-					printf ( "  reject due to row symm: " );
-					display_vector ( extensions[i] );
-					printf ( "\n" );
-				}
-				continue;
-			}
-		}
-		if ( filterip ) {
-
-			// perform inner product check for all columns
-			if ( ! ipcheck ( extensions[i], als ) ) {
-				if ( verbose>=2 ) {
-					printf ( "   extension " );
-					display_vector ( extensions[i] );
-					printf ( "\n" );
-					printf ( "  reject due to innerproduct (extension %d)\n", ( int ) i );
-					ipcheck ( extensions[i], als, 2, 1 );
-				}
-				continue;
-			}
-		}
-		e2.push_back ( extensions[i] );
-	}
+	std::vector<cperm> e2 = filterCandidates(extensions, al,  filtersymm,  filterip,  verbose );
 
 	if ( verbose>=1 )
 		printf ( "extend_conference: symmetry check %d + ip filter %d: %d->%d\n", filtersymm, filterip, ( int ) extensions.size(), ( int ) e2.size() );
@@ -729,28 +774,13 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	return e2;
 }
 
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos )
+int selectZmax(int maxzpos, const conference_t::conference_type &ctype, const array_link &al, int extcol)
 {
-	// first create two sets of partial extensions
-
-	conference_extend_t ce;
-	ce.extensions.resize ( 0 );
-
-	const int N = ct.N;
-
-	const int k = extcol;
-
-	const int maxzval = maxz ( al );
-
-	if ( verbose )
-		printf ( "--- extend_conference_matrix: extcol %d, maxz %d ---\n", extcol, maxzval );
-
-	const int zstart=maxzval+1;
 	if (maxzpos<0) {
-		if (ct.ctype==conference_t::CONFERENCE_NORMAL)
+		if (ctype==conference_t::CONFERENCE_NORMAL)
 			maxzpos = al.n_rows-1;
 		else {
-			if  (ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL) {
+			if  (ctype==conference_t::conference_t::CONFERENCE_DIAGONAL) {
 				maxzpos = extcol; // maxzval+2;		
 				//printf("ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL: maxzpos %d/%d, extcol %d\n", maxzpos, al.n_rows-1, extcol);
 			}
@@ -761,8 +791,25 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 			}
 		}
 	}
+	return maxzpos;
+}
+
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos )
+{
+	conference_extend_t ce;
+	ce.extensions.resize ( 0 );
+
+	const int N = ct.N;
+	const int k = extcol;
+	const int maxzval = maxz ( al );
+
+	if ( verbose )
+		printf ( "--- extend_conference_matrix: extcol %d, maxz %d ---\n", extcol, maxzval );
+
+	const int zstart=maxzval+1;
 	
-	
+	maxzpos = selectZmax(maxzpos, ct.ctype, al, extcol);
+		
 	//for ( int ii=maxzval+1; ii<std::min<int>(al.n_rows, maxzval+2); ii++ ) {
 	for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
 		if ( verbose>=2 )
@@ -777,6 +824,36 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 	return ce;
 }
 
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const conf_candidates_t &cande )
+{
+	conference_extend_t ce;
+	ce.extensions.resize ( 0 );
+
+	const int N = ct.N;
+	const int k = extcol;
+	const int maxzval = maxz ( al );
+
+	if ( verbose )
+		printf ( "--- extend_conference_matrix: extcol %d, maxz %d ---\n", extcol, maxzval );
+
+	const int zstart=maxzval+1;
+	
+	maxzpos = selectZmax(maxzpos, ct.ctype, al, extcol);
+		
+	//for ( int ii=maxzval+1; ii<std::min<int>(al.n_rows, maxzval+2); ii++ ) {
+	for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
+		if ( verbose>=2 )
+			printf ( "array: kz %d: generate\n", ii );
+		//std::vector<cperm> extensionsX  = generateConferenceExtensions ( al, ct, ii, verbose, 1, 1 );
+	std::vector<cperm> extensionsX  = filterCandidates ( cande.ce[ii],  al,1, 1, verbose);
+
+		if ( verbose>=2 )
+			printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
+		ce.extensions.insert ( ce.extensions.end(), extensionsX.begin(), extensionsX.end() );
+	}
+
+	return ce;
+}
 
 
 /// sort rows of an array based on the zero elements
@@ -816,6 +893,40 @@ void test_comb ( int n, int k )
 }
 */
 
+template<typename T>
+size_t vectorsizeof(const typename std::vector<T>& vec)
+{
+    return sizeof(T) * vec.size();
+}
+
+
+conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verbose=1) {
+	conf_candidates_t cande;
+
+		cande.ce.resize(ctype.N);
+		
+	// TODO: use 3-column root array
+	array_link al = ctype.create_root();
+	array_link al3 = ctype.create_root_three();
+	for(int i=3; i<ctype.N; i++) {
+		std::vector<cperm> ee = generateConferenceExtensions ( al3, ctype, i, 0, 0, 1);
+	
+	//printf("al3:\n"); al3.showarray();
+		
+	if ( (long)vectorsizeof(ee)>(long(4)*1024*1024*1024)/(long)ctype.N) {
+		printfd("generateCandidateExtensions: set of generated candidates too large, aborting");
+			assert(0);
+			exit(0);
+	}
+cande.ce[i] = ee;
+	}
+	
+cande.ce[2] = generateConferenceExtensions ( al, ctype, 2, 0, 0, 1);
+	
+	cande.info(verbose);
+
+	return cande;
+}
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
 {
 	arraylist_t outlist;
@@ -827,10 +938,13 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 	int vb=std::max ( 0, verbose-1 );
 
+	conf_candidates_t cande = generateCandidateExtensions(ctype, verbose);
+
 	for ( size_t i=0; i<lst.size(); i++ ) {
 		const array_link &al = lst[i];
 		int extcol=al.n_columns;
-		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb );
+		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1, cande );
+		//conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1);
 
 
 		arraylist_t ll = ce.getarrays ( al );

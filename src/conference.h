@@ -20,6 +20,19 @@
 #include "extend.h"
 
 
+struct conf_candidates_t {
+public:	
+	std::vector<std::vector<cperm> > ce;
+	
+	void info(int verbose=1) const {
+		for(int i=2; i<(int)ce.size(); i++) {
+		if (verbose) {
+	printf("generateCandidateExtensions: k %d: %d candinates\n", i, (int)ce[i].size() );	
+	}
+		}
+	}
+};
+
 
 /// Structure representing the type of conference designs
 class conference_t
@@ -37,6 +50,9 @@ public:
 
 	/// create the unique representative of the 2 column design
 	array_link create_root ( ) const;
+
+	/// create the unique representative of the 3 column design
+	array_link create_root_three ( ) const;
 
 	/// return string representation of the object
 	std::string __repr__() const
@@ -91,6 +107,9 @@ struct conference_options{
 
 /** Extend a single conference design with candidate columns */
 conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
+
+/// helper function
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const conf_candidates_t &cande );
 
 /** Extend a list of conference designs with a single column.
  *
