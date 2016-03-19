@@ -316,6 +316,7 @@ namespace std {
    %template(arraylist_t) deque<array_link>; // arraylist_t
    %template(jstructArray) vector<jstruct_t>; // results list
    %template(uint8Vector) std::vector<unsigned char>;
+   %template(charVector) std::vector<signed char>;
    %template(intVector) std::vector<int>;
    %template(longVector) std::vector<long>;
    %template(longDeque) deque<long>;

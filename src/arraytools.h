@@ -677,7 +677,7 @@ public:
 	void setColumn(int c, const std::vector<int> v) {
 			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
 	}
-	void setColumnChar(int c, const std::vector<signed char> v) {
+	void setColumn(int c, const std::vector<signed char> v) {
 			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
 	}
 	//void setColumn2(int c, const cperm v) {
