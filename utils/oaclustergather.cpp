@@ -431,7 +431,7 @@ int main ( int argc, char* argv[] )
 				}
 			else {
 				// no source of Pareto files....
-				if ( cleanrun || verbose>=2 ) {	// only report error if we are in a clean run
+				if ( cleanrun || verbose>=1 ) {	// only report error if we are in a clean run
 					fprintf ( stderr, "   error: file %s\n", psourcefile.c_str() );
 				}
 				cleanrun=0;

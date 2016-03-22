@@ -14,17 +14,24 @@
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-//#include "tools.h"
 #include "extend.h"
 
 #include "oadevelop.h"
-#include "lmc.h"
+//#include "lmc.h"
 
 #include "graphtools.h"
 
 #include "conference.h"
 
 /*
+
+######## Extension numbers
+
+When generating candidate extension columns many properties of the column are determined by N and the position of the zero in the column. (If the first 2 columns are in normal form).
+Below we write down the conditions and solve the resulting equations.
+
+#### Zero in middle block
+
 Values in column k for k > 1 and k <= N/2 + 1 = q + 2:
 
 First value 1, value at position k is 0.
@@ -67,6 +74,8 @@ q1 - (N/2 -1 -1 -q1) - [ q2-(N/2-1-q2) ]  + 1 = 0
 
 ---> q1+(q1+1)+1=q --> 2q1 = q - 2 --> q1 = q/2 - 1
 
+Example:
+
 N=8
 q=3
 q1=1
@@ -80,9 +89,8 @@ q2=1
 n1=1
 v=1
 
- */
+#### Zero in last block
 
-/*
 Values in column k for k > 1 and k > N/2 + 1 = 2 + q:
 First value 1, value at position k is 0.
 
@@ -136,7 +144,7 @@ v=1
  */
 
 /// return true of the argument is even
-bool iseven ( int q )
+inline bool iseven ( int q )
 {
 	return ( q%2 ) ==0;
 }
@@ -156,7 +164,6 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 			v=-1;
 			q2=q1+1;
 		}
-
 	} else {
 
 		if ( iseven ( q ) ) {
@@ -167,9 +174,7 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 			q1= ( q-1 ) /2;
 			v=1;
 			q2=q1;
-
 		}
-
 	}
 	//printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
@@ -197,9 +202,7 @@ array_link conference_t::create_root_three ( ) const
 		if ( i<=this->N/2 )
 			al.at ( i, 1 ) = 1;
 		else
-			al.at ( i, 1 ) = -1;
-	
-		
+			al.at ( i, 1 ) = -1;		
 	}
 	
 	int q, q1, q2, v;
@@ -207,8 +210,6 @@ array_link conference_t::create_root_three ( ) const
 	const int N = this->N;
 	getConferenceNumbers ( this->N, k, q, q1, q2, v );
 
-	
-	
 	for(int i=3;i<N; i++) al.at(i,2)=-1;
 	al.at(0,2)=1;
 	al.at(1,2)=v;
@@ -240,10 +241,133 @@ array_link conference_t::create_root ( ) const
 	return al;
 }
 
+conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose )
+{
+		const int nr = al.n_rows;
+	const int nc=al.n_columns;
+	const int nn = 2* ( nr+nc );
+	/// create graph
+	array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
+	G.setconstant ( 0 );
+
+	if ( verbose )
+		printf ( "reduceConference: %d, %d\n", nr, nc );
+
+	std::vector<int> colors ( 2* ( nr+nc ) );
+
+	const int roffset0=0;
+	const int roffset1=nr;
+	const int coffset0=2*nr;
+	const int coffset1=2*nr+nc;
+
+	/*
+	Add edges as follows:
+	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+	Zeros in A don't cause any edges.
+	*/
+
+	// set colors
+	for ( int i=0; i<coffset0; i++ )
+		colors[i]=0;
+	for ( int i=coffset0; i<coffset0+2*nc; i++ )
+		colors[i]=1;
+
+	// (1)
+	for ( int i=0; i<nr; i++ )
+		G.atfast ( roffset0+i, i+roffset1 ) =1;
+	for ( int i=0; i<nc; i++ )
+		G.atfast ( coffset0+i, i+coffset1 ) =1;
+
+	// (2), (3)
+	for ( int r=0; r<nr; r++ ) {
+		for ( int c=0; c<nc; c++ ) {
+			if ( al.atfast ( r,c ) ==1 ) {
+				G.atfast ( roffset0+r, coffset0+c ) =1;
+				G.atfast ( roffset1+r, coffset1+c ) =1;
+			}
+			if ( al.atfast ( r,c ) ==-1 ) {
+				G.atfast ( roffset0+r, coffset1+c ) =1;
+				G.atfast ( roffset1+r, coffset0+c ) =1;
+				G.atfast ( coffset0+c, roffset1+r ) =1;
+			}
+		}
+	}
+
+	// make symmetryic
+	for ( int i=0; i<nn; i++ )
+		for ( int j=i; j<nn; j++ )
+			G.atfast ( j,i ) =G.atfast ( i, j );
+
+	if ( verbose>=3 ) {
+		printf ( "reduceConference: incidence graph:\n" );
+		printf ( "   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc );
+		G.showarray();
+	}
+	/// call nauty
+	const std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose>=2 );
+	const std::vector<int> tri = invert_permutation ( tr );
+	const std::vector<int> trx=tri;
+
+	// extract transformation
+	if ( verbose>=2 ) {
+		if ( verbose>=3 ) {
+			array_link Gx = transformGraph ( G, tri, 0 );
+			printfd ( "transformed graph\n" );
+			Gx.showarray();
+		}
+		std::vector<int> tr1 = std::vector<int> ( trx.begin () , trx.begin () + 2*nr );
+		std::vector<int> tr2 = std::vector<int> ( trx.begin () +coffset0, trx.end() );
+		printf ( "  row vertex transformations: " );
+		display_vector ( tr1 );
+		printf ( "\n" );
+		printf ( "  col vertex transformations: " );
+		display_vector ( tr2 );
+		printf ( "\n" );
+	}
+
+	// ...
+
+	// define conference matrix transformation object....
+	conference_transformation_t t ( al );
+
+	// extract transformation
+	std::vector<int> rr ( nr );
+	for ( int i=0; i<nr; i++ ) {
+		rr[i] = std::min ( trx[i], trx[i+nr] );
+	}
+
+	if ( verbose>=2 ) {
+		printf ( "rr: " );
+		print_perm ( rr );
+	}
+
+	t.rperm = invert_permutation ( argsort ( rr ) );
+
+	for ( int i=0; i<nr; i++ ) {
+		t.rswitch[ t.rperm[i]] = 2* ( trx[i]<trx[i+nr] )-1;
+	}
+
+	std::vector<int> cc ( nc );
+	for ( int i=0; i<nc; i++ ) {
+		cc[i] = std::min ( trx[coffset0+i], trx[coffset0+i+nc] );
+	}
+	t.cperm = invert_permutation ( argsort ( cc ) );
+
+	for ( int i=0; i<nc; i++ ) {
+		t.cswitch[ t.cperm[i]] = 2* ( trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
+	}
+
+	if ( verbose>=2 ) {
+		printf ( "transform: \n" );
+		t.show();
+	}
+	return t;
+}
 
 array_link reduceConference ( const array_link &al, int verbose )
 {
-
 	const int nr = al.n_rows;
 	const int nc=al.n_columns;
 	const int nn = 2* ( nr+nc );
@@ -312,7 +436,6 @@ array_link reduceConference ( const array_link &al, int verbose )
 	const std::vector<int> trx=tri;
 
 	// extract transformation
-
 	if ( verbose>=2 ) {
 		if ( verbose>=3 ) {
 			array_link Gx = transformGraph ( G, tri, 0 );
@@ -327,7 +450,6 @@ array_link reduceConference ( const array_link &al, int verbose )
 		printf ( "  col vertex transformations: " );
 		display_vector ( tr2 );
 		printf ( "\n" );
-
 	}
 
 	// ...
@@ -349,7 +471,6 @@ array_link reduceConference ( const array_link &al, int verbose )
 	t.rperm = invert_permutation ( argsort ( rr ) );
 
 	for ( int i=0; i<nr; i++ ) {
-		// FIXME: change i into proper index...
 		t.rswitch[ t.rperm[i]] = 2* ( trx[i]<trx[i+nr] )-1;
 	}
 
@@ -360,7 +481,6 @@ array_link reduceConference ( const array_link &al, int verbose )
 	t.cperm = invert_permutation ( argsort ( cc ) );
 
 	for ( int i=0; i<nc; i++ ) {
-		// FIXME
 		t.cswitch[ t.cperm[i]] = 2* ( trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
 	}
 
@@ -403,7 +523,6 @@ inline cperm insertzero ( const cperm &c, int pos, int value=0 )
 	std::copy(c.begin()+pos, c.end(), cx.begin() +pos+1);
 	return cx;
 }
-
 
 
 /** Return all admissible columns (first part) for a conference array in normal form
@@ -456,9 +575,7 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 		}
 	}
 
-
 	return ff;
-
 }
 
 /** Return all admissible columns (block two) for a conference array in normal form */
@@ -605,10 +722,6 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=
 			}
 			return false;
 		}
-		//cperm cx = getColumn ( al, c );
-		//if ( innerprod ( col, cx ) !=0 ) {
-		//	return false;
-		//}
 	}
 	return true;
 }
@@ -696,8 +809,6 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 		}
 	}
 
-	// FIXME: the zero can be anywhere!
-
 	ce.first=ff;
 	ce.second=ff;
 
@@ -719,7 +830,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 		//printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
 		for ( size_t j=0; j<ff2.size(); j++ ) {
-			cperm c = ce.combine ( i, j ); // TODO: this call is quite expensive. maybe make the checks inline?
+			cperm c = ce.combine ( i, j );
 
 #ifdef OADEBUG
 #else
@@ -1072,7 +1183,6 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
 	}
 	// the arrays are equal
 	return false;
-
 }
 
 
@@ -1084,6 +1194,5 @@ arraylist_t sortLMC0 ( const arraylist_t &lst )
 }
 
 conference_options::conference_options(int maxpos) { maxzpos=-1; }
-
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -11,15 +11,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <iostream>
 #include <algorithm>
 
 #include "arraytools.h"
 #include "arrayproperties.h"
-//#include "tools.h"
 #include "extend.h"
 
 
+/// structure to cache a list of candidate extensions 
 struct conf_candidates_t {
 public:	
 	std::vector<std::vector<cperm> > ce;
@@ -65,6 +64,9 @@ public:
 /// reduce conference matrix to normal form
 	array_link reduceConference(const array_link &, int verbose = 0);
 	
+/// reduce conference matrix to normal form
+conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose );
+
 
 
 /// Helper structure
