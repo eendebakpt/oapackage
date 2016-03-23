@@ -1086,7 +1086,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 		outlist.insert ( it, ll.begin(), ll.end() );
 
-		if ( verbose ) {
+		if ( verbose>=2 || (verbose>=1 && (i%50==0 || i==lst.size()-1)  ) ) {
 			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
 		}
 	}
@@ -1102,7 +1102,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 	//printf ( "read %d arrays\n" , (int)lst.size());
 
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
-		if ( verbose>=1 && i%500==0 )
+		if ( verbose>=1 && i%1500==0 )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		array_link alx = reduceConference ( lst[i], verbose>=2 );
 		lstr.push_back ( alx );

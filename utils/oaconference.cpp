@@ -39,6 +39,7 @@ int main ( int argc, char* argv[] )
 
 	opt.setOption ( "input", 'i' );
 	opt.setOption ( "output", 'o' );
+	opt.setOption ( "ctype" );
 
 	opt.addUsage ( "Orthonal Array: oaconference: testing platform" );
 	opt.addUsage ( "Usage: oaconference [OPTIONS] [FILE]" );
@@ -47,6 +48,8 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -N --rows  			Number of rows " );
 	opt.addUsage ( " -v --verbose [INT] 			Verbosity level " );
 	opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
+	opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
+	opt.addUsage ( " --ctype [TYPE]				Zero for normal type" );
 	opt.processCommandArgs ( argc, argv );
 
 
@@ -57,6 +60,7 @@ int main ( int argc, char* argv[] )
 	int verbose = opt.getIntValue ( 'v', 1 );
 	int N = opt.getIntValue ( 'N', 10 );
 	int select = opt.getIntValue ( 's', 1 );
+	const conference_t::conference_type ctx = (conference_t::conference_type)opt.getIntValue ( "ctype", 0 );
 
 	const std::string output = opt.getStringValue ( 'o', "" );
 	const std::string input = opt.getStringValue ( 'i', "" );
@@ -70,50 +74,51 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
-	int k=3;
-	conference_t ctype ( N, k );
+	int kstart=-1;
+	int kmax=N;
+	conference_t ctype ( N, N );
+	ctype.ctype=ctx;
 
 
 	arraylist_t kk;
 	if ( input.length() >1 ) {
 		kk = readarrayfile ( input.c_str() )	 ;
 		//al=kk[0];
-		
-		if(kk.size()>0)
-		{
-		ctype = 	conference_t(N, k);
+
+		if ( kk.size() >0 ) {
+			ctype = 	conference_t ( N, kstart );
 		}
+		kstart=kk[0].n_columns;
+		kmax=kk[0].n_columns+1;
+	} else {
+		array_link al = ctype.create_root();
+		kk.push_back ( al );
+		kstart=2;
 	}
-else {
-	array_link al = ctype.create_root();
-kk.push_back(al);	
-}
-	//printf ( "initial array:\n" );
-	//al.showarray();
 
-		if ( verbose )
-		printf ( "oaconference: extend %d conference matrices of size %dx%d\n",  (int) kk.size(), ctype.N, ctype.ncols );
+	if ( verbose )
+		printf ( "oaconference: extend %d conference matrices of size %dx%d\n", ( int ) kk.size(), ctype.N, ctype.ncols );
 
+	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
+		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax);
+		arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
 
-		
+		if ( select )
+			outlist = selectConferenceIsomorpismClasses ( outlist, verbose );
 
-	arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
+		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
-	if (select)
-		outlist = selectConferenceIsomorpismClasses(outlist, verbose);
-	
-	sort(outlist.begin(), outlist.end(), compareLMC0);
-	
-	if (0) {
-	array_link al=kk[0];
-	int extcol=al.n_columns;
-	conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, verbose );
-	outlist = ce.getarrays ( al ) ;
-	}
-	
-	if ( output.length() >1 ) {
-		printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), output.c_str() );
-		writearrayfile ( output.c_str(),outlist );
+		if ( output.length() >1 ) {
+			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
+			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), output.c_str() );
+			writearrayfile ( output.c_str(),outlist );
+		}
+
+		//printf("generated columns: %d\n", outlist[0].n_columns);
+				printf ( "oaconference: extend column %d: generated %d arrays\n", extcol, (int)outlist.size() );
+
+		// loop
+		kk=outlist;
 	}
 	printf ( "done...\n" );
 
