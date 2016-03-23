@@ -771,6 +771,50 @@ int maxz ( const array_link &al, int k )
 	return maxz ;
 }
 
+/// filter candidate extensions based on symmetry propery
+std::vector<cperm> filterCandidatesSymm(const std::vector<cperm> &extensions, const array_link &als, int verbose )
+{
+		const int N = als.n_rows;
+		
+		int mval=0;
+		if (N%4==2) {
+			// S is symmetric
+			mval=1;
+		} else {
+			// else S is anti-symmetric
+			mval=-1;
+		}
+		if (verbose>=2)
+			printf("N %d, mval %d\n", N, mval);
+
+		const int k = als.n_columns;
+		cperm tmp(N);
+		for(int i=0; i<k; i++) tmp[i] = als.at(k, i);
+		
+			std::vector<cperm> e ( 0 );
+	for ( size_t i=0; i<extensions.size(); i++ ) {
+const cperm &ex = extensions[i];
+
+		int good=1;
+		for(int x=2; x<k; x++) {
+				if( tmp[x]!=mval*ex[x] ) {
+				good=0;
+				if (k>3 && verbose>=3) {
+				printf("discard extension %d: N %d, k %d: x %d\n", (int)i, N, k, x);
+				printf("tmp: "); printf_vector<signed char>(tmp, "%d "); printf("\n");
+				printf("ex: "); printf_vector<signed char>(ex, "%d ");printf("\n");
+				}
+				break;
+				}
+		}
+		if (good)
+			e.push_back ( extensions[i] );
+	}
+	if (verbose>=1)
+	printf("filterCandidatesSymm: k %d, filter %d/%d\n", k, (int)e.size(), (int)extensions.size() );
+		return e;
+
+}
 std::vector<cperm> filterCandidates(const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
 {
 	symmetry_group rs = als.row_symmetry_group();
@@ -977,8 +1021,17 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 		if ( verbose>=2 )
 			printf ( "array: kz %d: generate\n", ii );
 		//std::vector<cperm> extensionsX  = generateConferenceExtensions ( al, ct, ii, verbose, 1, 1 );
-	std::vector<cperm> extensionsX  = filterCandidates ( cande.ce[ii],  al,1, 1, verbose);
-
+	std::vector<cperm> extensionsX;
+	
+	if (ct.ctype==conference_t::CONFERENCE_DIAGONAL ) {
+		//printf("filter on symmetry time\n");
+		 //extensionsX = cande.ce[ii];
+		 extensionsX = filterCandidatesSymm ( cande.ce[ii],  al, verbose);
+		 extensionsX = filterCandidates ( extensionsX,  al,1, 1, verbose);
+	}
+	else {
+	 extensionsX  = filterCandidates ( cande.ce[ii],  al,1, 1, verbose);
+	}
 		if ( verbose>=2 )
 			printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
 		ce.extensions.insert ( ce.extensions.end(), extensionsX.begin(), extensionsX.end() );
@@ -1037,7 +1090,6 @@ conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verb
 
 		cande.ce.resize(ctype.N);
 		
-	// TODO: use 3-column root array
 	array_link al = ctype.create_root();
 	array_link al3 = ctype.create_root_three();
 	for(int i=3; i<ctype.N; i++) {
@@ -1086,8 +1138,9 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 		outlist.insert ( it, ll.begin(), ll.end() );
 
-		if ( verbose>=2 || (verbose>=1 && (i%50==0 || i==lst.size()-1)  ) ) {
+		if ( verbose>=2 || (verbose>=1 && (i%100==0 || i==lst.size()-1)  ) ) {
 			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
+			fflush(0);
 		}
 	}
 	return outlist;
@@ -1102,7 +1155,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 	//printf ( "read %d arrays\n" , (int)lst.size());
 
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
-		if ( verbose>=1 && i%1500==0 )
+		if ( verbose>=1 && (i%2500==0 || i==(int)lst.size()-1)  )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		array_link alx = reduceConference ( lst[i], verbose>=2 );
 		lstr.push_back ( alx );
