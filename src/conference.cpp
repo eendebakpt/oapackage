@@ -281,24 +281,35 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 		G.atfast ( coffset0+i, i+coffset1 ) =1;
 
 	// (2), (3)
-	for ( int r=0; r<nr; r++ ) {
 		for ( int c=0; c<nc; c++ ) {
+	for ( int r=0; r<nr; r++ ) {
 			if ( al.atfast ( r,c ) ==1 ) {
 				G.atfast ( roffset0+r, coffset0+c ) =1;
 				G.atfast ( roffset1+r, coffset1+c ) =1;
-			}
+			} else {
 			if ( al.atfast ( r,c ) ==-1 ) {
 				G.atfast ( roffset0+r, coffset1+c ) =1;
 				G.atfast ( roffset1+r, coffset0+c ) =1;
-				G.atfast ( coffset0+c, roffset1+r ) =1;
+				//G.atfast ( coffset0+c, roffset1+r ) =1;
+			}
 			}
 		}
 	}
 
 	// make symmetryic
+	/*
 	for ( int i=0; i<nn; i++ )
 		for ( int j=i; j<nn; j++ )
 			G.atfast ( j,i ) =G.atfast ( i, j );
+*/
+	const int nrg = G.n_rows;
+	for ( int i=0; i<nn; i++ ) {
+		
+		array_t *x = G.array+i*nrg; // offset to column
+		for ( int j=i; j<nn; j++ ) {
+			x[j] =G.array[i+j*nrg];
+		}
+	}
 
 	if ( verbose>=3 ) {
 		printf ( "reduceConference: incidence graph:\n" );
@@ -415,15 +426,25 @@ array_link reduceConference ( const array_link &al, int verbose )
 			if ( al.atfast ( r,c ) ==-1 ) {
 				G.atfast ( roffset0+r, coffset1+c ) =1;
 				G.atfast ( roffset1+r, coffset0+c ) =1;
-				G.atfast ( coffset0+c, roffset1+r ) =1;
+				//G.atfast ( coffset0+c, roffset1+r ) =1;
 			}
 		}
 	}
 
 	// make symmetryic
+	/*
 	for ( int i=0; i<nn; i++ )
 		for ( int j=i; j<nn; j++ )
 			G.atfast ( j,i ) =G.atfast ( i, j );
+*/
+	const int nrg = G.n_rows;
+	for ( int i=0; i<nn; i++ ) {
+		
+		array_t *x = G.array+i*nrg; // offset to column
+		for ( int j=i; j<nn; j++ ) {
+			x[j] =G.array[i+j*nrg];
+		}
+	}
 
 	if ( verbose>=3 ) {
 		printf ( "reduceConference: incidence graph:\n" );
