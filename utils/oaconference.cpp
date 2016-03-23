@@ -115,7 +115,7 @@ int main ( int argc, char* argv[] )
 		}
 
 		//printf("generated columns: %d\n", outlist[0].n_columns);
-				printf ( "oaconference: extend column %d: generated %d arrays\n", extcol, (int)outlist.size() );
+				printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, (int)outlist.size() );
 
 		// loop
 		kk=outlist;

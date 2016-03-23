@@ -1085,15 +1085,25 @@ size_t vectorsizeof(const typename std::vector<T>& vec)
 }
 
 
-conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verbose=1) {
+conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verbose=1, int ncstart=3) {
 	conf_candidates_t cande;
 
 		cande.ce.resize(ctype.N);
 		
 	array_link al = ctype.create_root();
 	array_link al3 = ctype.create_root_three();
-	for(int i=3; i<ctype.N; i++) {
-		std::vector<cperm> ee = generateConferenceExtensions ( al3, ctype, i, 0, 0, 1);
+	int ncmax=ctype.N;
+	if(ctype.ctype==conference_t::CONFERENCE_DIAGONAL)
+	{
+	ncmax=ncstart;	
+	}
+	
+	for(int extcol=ncstart-1; extcol<ncmax; extcol++) {
+		std::vector<cperm> ee;
+		if (extcol==2)
+ee = generateConferenceExtensions ( al, ctype, extcol, 0, 0, 1);
+else
+		ee= generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1);
 	
 	//printf("al3:\n"); al3.showarray();
 		
@@ -1102,10 +1112,9 @@ conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verb
 			assert(0);
 			exit(0);
 	}
-cande.ce[i] = ee;
+cande.ce[extcol] = ee;
 	}
 	
-cande.ce[2] = generateConferenceExtensions ( al, ctype, 2, 0, 0, 1);
 	
 	cande.info(verbose);
 
@@ -1122,7 +1131,10 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 	int vb=std::max ( 0, verbose-1 );
 
-	conf_candidates_t cande = generateCandidateExtensions(ctype, verbose);
+	int ncstart=3;
+	if (lst.size()>0) ncstart=lst[0].n_columns+1;
+	
+	conf_candidates_t cande = generateCandidateExtensions(ctype, verbose, ncstart);
 
 	for ( size_t i=0; i<lst.size(); i++ ) {
 		const array_link &al = lst[i];
