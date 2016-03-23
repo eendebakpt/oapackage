@@ -110,8 +110,8 @@ int main ( int argc, char* argv[] )
 
 		if ( output.length() >1 ) {
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
-			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), output.c_str() );
-			writearrayfile ( output.c_str(),outlist );
+			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
+			writearrayfile ( outfile.c_str(),outlist );
 		}
 
 		//printf("generated columns: %d\n", outlist[0].n_columns);
