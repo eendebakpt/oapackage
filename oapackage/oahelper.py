@@ -351,7 +351,7 @@ def fac(n):
 def choose(n, k):
     """ Return n choose k """
     ntok = 1
-    for t in xrange(min(k, n - k)):
+    for t in range(min(k, n - k)):
         ntok = ntok * (n - t) // (t + 1)
     return ntok
 #    return fac(n)/(fac(n-k)*fac(k))

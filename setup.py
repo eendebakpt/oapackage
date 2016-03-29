@@ -177,7 +177,7 @@ class OATest(TestCommand):
 #%% Define sources of the package
 oadev=0
 srcs=[ 'arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp','mathtools.cpp', 'oaoptions.cpp', 'tools.cpp',  'md5.cpp','strength.cpp']
-srcs=srcs+[ 'Deff.cpp' ]
+srcs=srcs+[ 'Deff.cpp', 'evenodd.cpp' ]
 #srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension

@@ -908,7 +908,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 			int ip1 = innerprod ( c1, c );
 			//printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
 
-			if ( verbose>=2 ) {
+			if ( verbose>=3 ) {
 				printf ( "extend_conference %d: ip %d %d\n", ( int ) i, ip0, ip1 );
 			}
 

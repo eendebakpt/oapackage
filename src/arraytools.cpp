@@ -120,8 +120,8 @@ void array_transformation_t::show ( ) const
 	//ofstream mycout = ofstream(stdout);
 	std::stringstream ss;
 	this->show ( ss );
-	std::cout << ss.str();
-	//this->show ( cout );
+	//std::cout << ss.str();
+	printf("%s", ss.str().c_str() );
 #endif
 }
 
