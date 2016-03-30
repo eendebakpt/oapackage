@@ -48,12 +48,13 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	const char *bstr = "OA unittest";
 	cprintf ( verbose, "%s: start\n", bstr );
 
+	srand(randval);
 
 	int allgood=1;
 
 	initncombscache ( 20 );
 
-#ifdef OADEV	
+#ifdef OADEV
 	/* conference matrices */
 	{
 		cprintf ( verbose,"%s: conference matrices\n", bstr );
@@ -63,46 +64,47 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 		arraylist_t kk;
 		array_link al = ctype.create_root();
-		kk.push_back(al);	
+		kk.push_back ( al );
 
-		for(int extcol=2; extcol<N; extcol++) {
+		for ( int extcol=2; extcol<N; extcol++ ) {
 			kk = extend_conference ( kk, ctype,  0 );
 		}
-				myassert ( kk.size()==1, "unittest error: conference matrices for N=4\n" );
+		myassert ( kk.size() ==1, "unittest error: conference matrices for N=4\n" );
 	}
-	
-{
-		cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
 
-		array_link al = exampleArray(19,1);
-	conference_transformation_t T(al);
-	T.randomize();
+	{
+		cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
+		
+		array_link al = exampleArray ( 19,1 );
+		conference_transformation_t T ( al );
+		//T.randomizerowflips();
+		T.randomize();
 	
-	conference_transformation_t Ti = T.inverse();
-	array_link alx = Ti.apply(T.apply(al));		
-	
-	if (0) {
-	al.showarray();
-	T.show();
-	T.apply(al).showarray();
-	Ti.show();
-	alx.showarray();
+		conference_transformation_t Ti = T.inverse();
+		array_link alx = Ti.apply ( T.apply ( al ) );
+
+		if ( 0 ) {
+			printf("input array:\n");al.showarray();
+			T.show();
+			printf("transformed array:\n");
+			T.apply ( al ).showarray();
+			Ti.show();
+			alx.showarray();
+		}
+
+		myassert ( alx==al, "transformation of conference matrix\n" )	;
 	}
-	
-	myassert(alx==al, "transformation of conference matrix")	;
-	
-}
-#endif	
-	
+#endif
+
 	/* constructors */
 	{
 		cprintf ( verbose,"%s: constructors\n", bstr );
-		
+
 		array_transformation_t t;
 		conference_transformation_t ct;
-		
+
 	}
-	
+
 	/* J-characteristics */
 	{
 		cprintf ( verbose,"%s: J-characteristics\n", bstr );
@@ -160,18 +162,19 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	}
 
 	{
-			cprintf ( verbose, "%s: rank \n", bstr );
-	
-			int rr[10]={4,11,13,18,16,14,4,4,29,29};
-			for(int ii=0; ii<10; ii++) {
-				array_link al = exampleArray(ii, 0);
-		   int r = arrayrankColPiv(array2xf(al));
-		   if (verbose>=2) printf("unittest: rank %d: %d\n", ii, r);
-		   myassert(rr[ii]==r, "unittest error: rank of example matrix\n");
-			}
+		cprintf ( verbose, "%s: rank \n", bstr );
+
+		int rr[10]= {4,11,13,18,16,14,4,4,29,29};
+		for ( int ii=0; ii<10; ii++ ) {
+			array_link al = exampleArray ( ii, 0 );
+			int r = arrayrankColPiv ( array2xf ( al ) );
+			if ( verbose>=2 )
+				printf ( "unittest: rank %d: %d\n", ii, r );
+			myassert ( rr[ii]==r, "unittest error: rank of example matrix\n" );
+		}
 
 	}
-	
+
 	{
 		cprintf ( verbose, "%s: Doptimize \n", bstr );
 		const int N=40;

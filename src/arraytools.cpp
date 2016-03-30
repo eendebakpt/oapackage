@@ -4793,12 +4793,12 @@ void conference_transformation_t::show ( int verbose ) const
 }
 
 /// helper function to invert a permutation and sign switch
-void invert_perm_switch ( const std::vector<int> perm, const std::vector<int> rswitch,  std::vector<int> &permout,  std::vector<int> &switchout )
+void invert_perm_switch ( const std::vector<int> perm, const std::vector<int> switchin,  std::vector<int> &permout,  std::vector<int> &switchout )
 {
 	invert_permutation ( perm, permout );
 
 	for ( size_t i=0; i<perm.size(); i++ ) {
-		switchout[perm[i]] = rswitch[i];
+		switchout[permout[i]] = switchin[i];
 	}
 }
 
@@ -4911,6 +4911,13 @@ void conference_transformation_t::randomizerowperm()
 {
 	random_perm ( rperm );
 }
+
+void conference_transformation_t::randomizerowflips()
+{
+	for(size_t i=0; i<this->rswitch.size(); i++) 
+		this->rswitch[i] = 2*(rand()%2)-1;
+}
+
 
 /// initialize to a random transformation
 void conference_transformation_t::randomize()

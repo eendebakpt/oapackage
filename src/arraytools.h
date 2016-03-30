@@ -1407,6 +1407,8 @@ public:
 	void randomizecolperm();
 	/// initialize with a random row permutation
 	void randomizerowperm();
+	/// initialize with random row switches
+	void randomizerowflips();
 
 	/// apply transformation to an array_link object
 	array_link apply ( const array_link &al ) const;
@@ -1419,10 +1421,6 @@ public:
 	}
 
 	//void show ( std::ostream &out ) const;
-
-	//std::vector<int> rowperm() const;
-	//std::vector<int> colperm() const; /// return the column permutation of the transformation
-
 
 	void setrowperm ( std::vector<int>rp ) { rperm = rp; };
 	void setcolperm ( std::vector<int>cp ) { cperm = cp; };

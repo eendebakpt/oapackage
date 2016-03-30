@@ -22,7 +22,6 @@
 #include "extend.h"
 
 #include "oadevelop.h"
-//#include "lmc.h"
 
 #ifdef OADEBUG
 #else
@@ -47,7 +46,6 @@ int main ( int argc, char* argv[] )
 	/* parse command line options */
 	opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
 	opt.setOption ( "output", 'o' );
-//	opt.setFlag ( "sort", 's' );
 	opt.setFlag ( "split", 's' );
 	opt.setFlag ( "extend", 'e' );
 	opt.setFlag ( "prune", 'p' );
@@ -144,7 +142,6 @@ int main ( int argc, char* argv[] )
 		omp_set_nested ( 1 );
 		//omp_set_dynamic(4);
 		printf ( "openmp: num threads %d\n", omp_get_max_threads() );
-//		printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
 	}
 	if ( omp_get_nested() !=0 )
 		printf ( "note: omp_get_nested()=%d, make sure to set OMP_THREAD_LIMIT!\n", omp_get_nested() );
@@ -231,8 +228,7 @@ int main ( int argc, char* argv[] )
 
 	double t0=get_time_ms();
 
-	setdtsymm ( 0 );
-	setdtlmc ( 0 );
+	//setdtsymm ( 0 ); setdtlmc ( 0 );
 
 	depth_extensions_storage_t *ds = 0;
 
@@ -269,29 +265,6 @@ int main ( int argc, char* argv[] )
 		depth_extend_t dextendloop ( dextend );
 		dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
 
-		if ( 0 ) {
-			double s=0;
-			//for(int ix=0; ix<2000; ix++) s+=al.strength(); printf("s %d\n", s);
-			for ( int jx=0; jx<1000; jx++ ) {
-				for ( int ix=0; ix<20000; ix++ )
-					s+=sqrt ( ix );
-			}
-			printf ( "s %f\n", s );
-			continue; // HACK
-		}
-		if ( 0 ) {
-			// HACK
-			int extensioncol = al.n_columns;
-			arraylist_t extensions0;
-			OAextend oaextendx = dextend.oaextend;
-			for ( int ni=0; ni<3000; ni++ ) {
-
-				extend_data_t *es = new extend_data_t ( adfull, 10 );
-				delete es;
-//	extend_array ( al.array,  adfull, extensioncol, extensions0, oaextendx );
-			}
-			continue;
-		}
 		depth_extend_array ( al, dextendloop, *adfull, verbose, ds, ai );
 
 		//ds->columnextensionsList[i];
