@@ -246,6 +246,12 @@ array_link::selectColumns(const std::vector< int > c) const
 
 select columns from an array ";
 
+%feature("docstring")  array_link::setColumn "void
+array_link::setColumn(int c, const std::vector< int > v) ";
+
+%feature("docstring")  array_link::setColumn "void
+array_link::setColumn(int c, const std::vector< signed char > v) ";
+
 %feature("docstring")  array_link::transposed "array_link
 array_link::transposed() const
 
@@ -288,7 +294,7 @@ Calculate F-values of a matrix. ";
 %feature("docstring")  array_link::Jcharacteristics "std::vector<int>
 array_link::Jcharacteristics(int jj=4) const
 
-Calculate J-characteristics of matrix. ";
+Calculate J-characteristics of matrix (the values are signed) ";
 
 %feature("docstring")  array_link::PECsequence "std::vector<double>
 array_link::PECsequence() const
@@ -314,6 +320,12 @@ array_link::foldover() const
 
 return true if the array is a foldover array ";
 
+%feature("docstring")  array_link::min "array_t array_link::min()
+const ";
+
+%feature("docstring")  array_link::max "array_t array_link::max()
+const ";
+
 %feature("docstring")  array_link::CL2discrepancy "double
 array_link::CL2discrepancy() const
 
@@ -327,6 +339,16 @@ regular fractions of two-level factorials\", Fang and Mukerjee, 2000
 array_link::randomperm() const
 
 apply a random permutation of rows, columns and levels ";
+
+%feature("docstring")  array_link::randomcolperm "array_link
+array_link::randomcolperm() const
+
+apply a random permutation of columns ";
+
+%feature("docstring")  array_link::randomrowperm "array_link
+array_link::randomrowperm() const
+
+apply a random permutation of row ";
 
 %feature("docstring")  array_link::getModelMatrix "MatrixFloat
 array_link::getModelMatrix(int order, int intercept=1) const
@@ -413,9 +435,14 @@ const
 return md5 sum of array representation (as represented with 32bit int
 datatype in memory) ";
 
+%feature("docstring")  array_link::firstColumnDifference "int
+array_link::firstColumnDifference(const array_link &A) const
+
+return index of first different column ";
+
 %feature("docstring")  array_link::firstDiff "bool
 array_link::firstDiff(const array_link &A, int &r, int &c, int
-verbose=1) ";
+verbose=1) const ";
 
 %feature("docstring")  array_link::create_root "void
 array_link::create_root(const arraydata_t &ad)
@@ -499,8 +526,6 @@ array ";
 %feature("docstring")  array_link::showarrayS "std::string
 array_link::showarrayS() const ";
 
-%feature("docstring")  array_link::data "long array_link::data() ";
-
 
 // File: classarray__transformation__t.xml
 %feature("docstring") array_transformation_t "
@@ -519,6 +544,10 @@ C++ includes: arraytools.h ";
 *ad)
 
 type of array ";
+
+%feature("docstring")  array_transformation_t::array_transformation_t
+"array_transformation_t::array_transformation_t(const arraydata_t
+&ad) ";
 
 %feature("docstring")  array_transformation_t::array_transformation_t
 "array_transformation_t::array_transformation_t() ";
@@ -617,10 +646,12 @@ lvlperm) ";
 
 Contains properties of the design (number of rows, columns, levels)
 
+Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
+
 C++ includes: arraytools.h ";
 
-%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(array_t s, rowindex_t N_, colindex_t
-strength, colindex_t ncols)
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(array_t s, rowindex_t N, colindex_t strength,
+colindex_t ncols)
 
 create new arraydata_t object ";
 
@@ -797,6 +828,16 @@ arrayfile::arrayfile_t::read_array(array_link &a)
 
 read array and return index ";
 
+%feature("docstring")  arrayfile::arrayfile_t::readnext "array_link
+arrayfile::arrayfile_t::readnext()
+
+read next array from the file ";
+
+%feature("docstring")  arrayfile::arrayfile_t::flush "void
+arrayfile::arrayfile_t::flush()
+
+flush any open file pointer ";
+
 %feature("docstring")  arrayfile::arrayfile_t::isbinary "bool
 arrayfile::arrayfile_t::isbinary() const
 
@@ -827,6 +868,9 @@ arrayfile::arrayfile_t::pos() const ";
 arrayfile::arrayfile_t::hasrandomaccess() const
 
 return true of the file format has random access mode ";
+
+%feature("docstring")  arrayfile::arrayfile_t::updatenumbers "void
+arrayfile::arrayfile_t::updatenumbers() ";
 
 %feature("docstring")  arrayfile::arrayfile_t::read_array "int
 arrayfile::arrayfile_t::read_array(array_t *array, const int nrows,
@@ -864,6 +908,352 @@ copy constructor ";
 
 %feature("docstring")  arraysymmetry::show "void
 arraysymmetry::show() const ";
+
+
+// File: structarraywriter__t.xml
+%feature("docstring") arraywriter_t "
+
+structure to write arrays to disk, thread safe
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  arraywriter_t::arraywriter_t "arraywriter_t::arraywriter_t() ";
+
+%feature("docstring")  arraywriter_t::~arraywriter_t "arraywriter_t::~arraywriter_t() ";
+
+%feature("docstring")  arraywriter_t::flush "void
+arraywriter_t::flush() ";
+
+%feature("docstring")  arraywriter_t::writeArray "void
+arraywriter_t::writeArray(const array_link &A) ";
+
+%feature("docstring")  arraywriter_t::writeArray "void
+arraywriter_t::writeArray(const arraylist_t &lst) ";
+
+%feature("docstring")  arraywriter_t::initArrayFiles "void
+arraywriter_t::initArrayFiles(const arraydata_t &ad, int kstart, const
+std::string prefix, arrayfilemode_t mode=ABINARY_DIFF) ";
+
+%feature("docstring")  arraywriter_t::nArraysWritten "int
+arraywriter_t::nArraysWritten() const
+
+return the total number arrays ";
+
+%feature("docstring")  arraywriter_t::closeafiles "void
+arraywriter_t::closeafiles() ";
+
+
+// File: structconf__candidates__t.xml
+%feature("docstring") conf_candidates_t "
+
+structure to cache a list of candidate extensions
+
+C++ includes: conference.h ";
+
+%feature("docstring")  conf_candidates_t::info "void
+conf_candidates_t::info(int verbose=1) const ";
+
+
+// File: structconference__extend__t.xml
+%feature("docstring") conference_extend_t "
+
+Helper structure.
+
+C++ includes: conference.h ";
+
+%feature("docstring")  conference_extend_t::combine "cperm
+conference_extend_t::combine(int i, int j) const ";
+
+%feature("docstring")  conference_extend_t::nExtensions "size_t
+conference_extend_t::nExtensions() const ";
+
+%feature("docstring")  conference_extend_t::getarrays "arraylist_t
+conference_extend_t::getarrays(const array_link al) const ";
+
+
+// File: structconference__options.xml
+%feature("docstring") conference_options "C++ includes: conference.h
+";
+
+%feature("docstring")  conference_options::conference_options "conference_options::conference_options(int maxpos=-1) ";
+
+
+// File: classconference__t.xml
+%feature("docstring") conference_t "
+
+Structure representing the type of conference designs.
+
+C++ includes: conference.h ";
+
+%feature("docstring")  conference_t::conference_t "conference_t::conference_t(int N, int k)
+
+create new conference_t object ";
+
+%feature("docstring")  conference_t::create_root "array_link
+conference_t::create_root() const
+
+create the unique representative of the 2 column design ";
+
+%feature("docstring")  conference_t::create_root_three "array_link
+conference_t::create_root_three() const
+
+create the unique representative of the 3 column design ";
+
+%feature("docstring")  conference_t::__repr__ "std::string
+conference_t::__repr__() const
+
+return string representation of the object ";
+
+
+// File: classconference__transformation__t.xml
+%feature("docstring") conference_transformation_t "
+
+Contains a transformation of a conference matrix.
+
+Contains an array transformation. The transformation consists of
+column permutations, row permutations and sign switches for both the
+rows and columns.
+
+The sign switches and the permutations are not commutative. We apply
+the permutations first and then the sign flips.
+
+C++ includes: arraytools.h ";
+
+%feature("docstring")
+conference_transformation_t::conference_transformation_t "conference_transformation_t::conference_transformation_t() ";
+
+%feature("docstring")
+conference_transformation_t::conference_transformation_t "conference_transformation_t::conference_transformation_t(int nrows,
+int ncols)
+
+default constructor ";
+
+%feature("docstring")
+conference_transformation_t::conference_transformation_t "conference_transformation_t::conference_transformation_t(const
+array_link &al) ";
+
+%feature("docstring")  conference_transformation_t::show "void
+conference_transformation_t::show(int verbose=1) const
+
+show the array transformation ";
+
+%feature("docstring")  conference_transformation_t::isIdentity "bool
+conference_transformation_t::isIdentity() const
+
+return true if the transformation is equal to the identity ";
+
+%feature("docstring")  conference_transformation_t::inverse "conference_transformation_t conference_transformation_t::inverse()
+const
+
+return the inverse transformation ";
+
+%feature("docstring")  conference_transformation_t::reset "void
+conference_transformation_t::reset()
+
+return the transformation to the identity transformation ";
+
+%feature("docstring")  conference_transformation_t::randomize "void
+conference_transformation_t::randomize()
+
+initialize to a random transformation ";
+
+%feature("docstring")  conference_transformation_t::randomizecolperm "void conference_transformation_t::randomizecolperm()
+
+initialize with a random column permutation ";
+
+%feature("docstring")  conference_transformation_t::randomizerowperm "void conference_transformation_t::randomizerowperm()
+
+initialize with a random row permutation ";
+
+%feature("docstring")  conference_transformation_t::randomizerowflips
+"void conference_transformation_t::randomizerowflips()
+
+initialize with random row switches ";
+
+%feature("docstring")  conference_transformation_t::apply "array_link
+conference_transformation_t::apply(const array_link &al) const
+
+apply transformation to an array_link object ";
+
+%feature("docstring")  conference_transformation_t::setrowperm "void
+conference_transformation_t::setrowperm(std::vector< int >rp) ";
+
+%feature("docstring")  conference_transformation_t::setcolperm "void
+conference_transformation_t::setcolperm(std::vector< int >cp) ";
+
+
+// File: structcounter__t.xml
+%feature("docstring") counter_t "
+
+structure to count and show number of arrays generated, the structure
+is thread safe
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  counter_t::counter_t "counter_t::counter_t(int
+n) ";
+
+%feature("docstring")  counter_t::addNfound "void
+counter_t::addNfound(int col, int num) ";
+
+%feature("docstring")  counter_t::nArrays "long counter_t::nArrays()
+const ";
+
+%feature("docstring")  counter_t::addNumberFound "void
+counter_t::addNumberFound(int n, int k) ";
+
+%feature("docstring")  counter_t::clearNumberFound "void
+counter_t::clearNumberFound() ";
+
+%feature("docstring")  counter_t::addNumberFound "void
+counter_t::addNumberFound(const counter_t &de) ";
+
+%feature("docstring")  counter_t::showcountscompact "void
+counter_t::showcountscompact() const
+
+show information about the number of arrays found ";
+
+%feature("docstring")  counter_t::showcounts "void
+counter_t::showcounts(const arraydata_t &ad) const
+
+show information about the number of arrays found ";
+
+%feature("docstring")  counter_t::showcounts "void
+counter_t::showcounts(const char *str, int first, int last) const
+
+show information about the number of arrays found ";
+
+
+// File: structdepth__extend__sub__t.xml
+%feature("docstring") depth_extend_sub_t "
+
+Helper structure for dynamic extension
+
+In this structure we keep track of pointers to valid column extensions
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  depth_extend_sub_t::depth_extend_sub_t "depth_extend_sub_t::depth_extend_sub_t(int nn=0) ";
+
+%feature("docstring")  depth_extend_sub_t::resize "void
+depth_extend_sub_t::resize(int nn) ";
+
+%feature("docstring")  depth_extend_sub_t::n "size_t
+depth_extend_sub_t::n() const ";
+
+%feature("docstring")  depth_extend_sub_t::updateExtensionPointers "std::vector<int> depth_extend_sub_t::updateExtensionPointers(int
+extcol) ";
+
+%feature("docstring")  depth_extend_sub_t::initialize "arraylist_t
+depth_extend_sub_t::initialize(const arraylist_t &alist, const
+arraydata_t &adf, const OAextend &oaextend)
+
+initialize the new list of extension columns ";
+
+%feature("docstring")  depth_extend_sub_t::selectArraysZ "arraylist_t
+depth_extend_sub_t::selectArraysZ(const arraylist_t &alist) const
+
+select the arrays with are LMC and hence need to be written to disk ";
+
+%feature("docstring")  depth_extend_sub_t::selectArraysXX "arraylist_t depth_extend_sub_t::selectArraysXX(const array_link &al,
+const arraylist_t &elist) const ";
+
+%feature("docstring")  depth_extend_sub_t::info "void
+depth_extend_sub_t::info() const ";
+
+
+// File: structdepth__extend__t.xml
+%feature("docstring") depth_extend_t "
+
+Helper structure for dynamic extension.
+
+This structure allows for writing the generated arrays to disk. It
+also contains functions to print progress of the extension.
+
+Multiple copies of this class are made, but they all share the same
+counter_t and arraywriter_t object.
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  depth_extend_t::depth_extend_t "depth_extend_t::depth_extend_t(const arraydata_t *ad_, double
+_logtime=10000000, int _discardJ5=-1) ";
+
+%feature("docstring")  depth_extend_t::depth_extend_t "depth_extend_t::depth_extend_t(const depth_extend_t &de) ";
+
+%feature("docstring")  depth_extend_t::~depth_extend_t "depth_extend_t::~depth_extend_t() ";
+
+%feature("docstring")  depth_extend_t::show "void
+depth_extend_t::show() ";
+
+%feature("docstring")  depth_extend_t::setNarraysMax "void
+depth_extend_t::setNarraysMax(long n) ";
+
+%feature("docstring")  depth_extend_t::maxArrayCheck "void
+depth_extend_t::maxArrayCheck()
+
+HACK ";
+
+%feature("docstring")  depth_extend_t::showsearchpath "void
+depth_extend_t::showsearchpath(int depth) const ";
+
+%feature("docstring")  depth_extend_t::showprogress "bool
+depth_extend_t::showprogress(int showtime=1, int depth=0, int
+forcelog=0)
+
+show information about the progress of the loop ";
+
+%feature("docstring")  depth_extend_t::info "void
+depth_extend_t::info() const ";
+
+%feature("docstring")  depth_extend_t::setposition "void
+depth_extend_t::setposition(int k, int c, int m, int extensioncols=-1,
+int goodextensioncols=-1)
+
+set the position in the dextend structure ";
+
+%feature("docstring")  depth_extend_t::setpositionGEC "void
+depth_extend_t::setpositionGEC(int k, int goodextensioncols)
+
+set the position in the dextend structure ";
+
+
+// File: structdepth__extensions__storage__t.xml
+%feature("docstring") depth_extensions_storage_t "
+
+Helper structure for the even-odd depth extension.
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  depth_extensions_storage_t::resize "void
+depth_extensions_storage_t::resize(size_t s) ";
+
+%feature("docstring")  depth_extensions_storage_t::set "void
+depth_extensions_storage_t::set(int ai, const arraylist_t &goodarrays,
+const arraylist_t &extension_column_list, depth_alg_t depthalg, const
+depth_extend_sub_t &dextendsub) ";
+
+
+// File: structdepth__path__t.xml
+%feature("docstring") depth_path_t "
+
+structure containing current position in search tree
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  depth_path_t::depth_path_t "depth_path_t::depth_path_t() ";
+
+%feature("docstring")  depth_path_t::updatePositionGEC "void
+depth_path_t::updatePositionGEC(int k, int goodextensioncols) ";
+
+%feature("docstring")  depth_path_t::updatePosition "void
+depth_path_t::updatePosition(int k, int c, int m, int extensioncols,
+int goodextensioncols) ";
+
+%feature("docstring")  depth_path_t::show "void
+depth_path_t::show(int depth, int maxentries=8) const ";
+
+%feature("docstring")  depth_path_t::init "void
+depth_path_t::init(int ncols, int _depthstart=9) ";
 
 
 // File: structdextend__t.xml
@@ -958,7 +1348,7 @@ set lightweight row permutation ";
 %feature("docstring")  dyndata_t::getRowperm "void
 dyndata_t::getRowperm(rowperm_t &rperm) const
 
-set row permutation ";
+get row permutation ";
 
 %feature("docstring")  dyndata_t::getRowperm "rowpermtypelight
 dyndata_t::getRowperm() const
@@ -1013,7 +1403,8 @@ C++ includes: strength.h ";
 
 Class to sort data without moving the data in memory.
 
-The data is sorted by using a list of indices.
+The data is sorted by using a list of indices. A stable sort is being
+used.
 
 C++ includes: mathtools.h ";
 
@@ -1029,10 +1420,14 @@ Constructor for deque class. ";
 Constructor for vector class. ";
 
 %feature("docstring")  indexsort::init "void indexsort::init(const
-std::deque< Type > &vals) ";
+std::deque< Type > &vals)
+
+initialize sorting structure with specified values ";
 
 %feature("docstring")  indexsort::init "void indexsort::init(const
-std::vector< Type > &vals) ";
+std::vector< Type > &vals)
+
+initialize sorting structure with specified values ";
 
 %feature("docstring")  indexsort::sort "void indexsort::sort(const
 Type *vals)
@@ -1093,16 +1488,11 @@ std::string &s) ";
 
 %feature("docstring")  InfInt::InfInt "InfInt::InfInt(long l) ";
 
-%feature("docstring")  InfInt::InfInt "InfInt::InfInt(long long l) ";
-
 %feature("docstring")  InfInt::InfInt "InfInt::InfInt(unsigned int l)
 ";
 
 %feature("docstring")  InfInt::InfInt "InfInt::InfInt(unsigned long
 l) ";
-
-%feature("docstring")  InfInt::InfInt "InfInt::InfInt(unsigned long
-long l) ";
 
 %feature("docstring")  InfInt::intSqrt "InfInt InfInt::intSqrt()
 const ";
@@ -1122,17 +1512,8 @@ InfInt::toString() const ";
 
 %feature("docstring")  InfInt::toLong "long InfInt::toLong() const ";
 
-%feature("docstring")  InfInt::toLongLong "long long
-InfInt::toLongLong() const ";
-
 %feature("docstring")  InfInt::toUnsignedInt "unsigned int
 InfInt::toUnsignedInt() const ";
-
-%feature("docstring")  InfInt::toUnsignedLong "unsigned long
-InfInt::toUnsignedLong() const ";
-
-%feature("docstring")  InfInt::toUnsignedLongLong "unsigned long long
-InfInt::toUnsignedLongLong() const ";
 
 
 // File: classjstruct__t.xml
@@ -1392,6 +1773,9 @@ C++ includes: extend.h ";
 
 %feature("docstring")  OAextend::OAextend "OAextend::OAextend() ";
 
+%feature("docstring")  OAextend::OAextend "OAextend::OAextend(const
+OAextend &o) ";
+
 %feature("docstring")  OAextend::OAextend "OAextend::OAextend(arraydata_t &ad) ";
 
 %feature("docstring")  OAextend::setAlgorithm "void
@@ -1518,6 +1902,11 @@ Pareto< ValueType, IndexType >::allindices() const
 
 return all indices of the Pareto optimal elements ";
 
+%feature("docstring")  Pareto::allvalues "std::vector<pValue> Pareto<
+ValueType, IndexType >::allvalues() const
+
+return all Paretop optimal elements ";
+
 %feature("docstring")  Pareto::addvalue "bool Pareto< ValueType,
 IndexType >::addvalue(pValue val, IndexType idx)
 
@@ -1543,6 +1932,55 @@ pareto_element< ValueType, IndexType >::isdominated(pValue v) ";
 ValueType, IndexType >::equal(pValue v)
 
 return true of the argument element is equal to this element ";
+
+
+// File: classrankStructure.xml
+%feature("docstring") rankStructure "
+
+Structure to efficiently calculate the rank of the second order
+interaction matrix of many arrays sharing a common subarray
+
+The input arrays are assumed to be of the form A_i = [A_0 X_i]
+
+C++ includes: arrayproperties.h ";
+
+%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(const array_link &al, int nsub=3)
+
+constructor ";
+
+%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(int nsub=3)
+
+constructor ";
+
+%feature("docstring")  rankStructure::info "void
+rankStructure::info() const ";
+
+%feature("docstring")  rankStructure::updateStructure "void
+rankStructure::updateStructure(const array_link &al)
+
+update the structure cache with a new array ";
+
+%feature("docstring")  rankStructure::matrixP "Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType
+rankStructure::matrixP() const
+
+helper function ";
+
+%feature("docstring")  rankStructure::rankdirect "int
+rankStructure::rankdirect(const Eigen::MatrixXd &A) const
+
+calculate the rank of an array directly ";
+
+%feature("docstring")  rankStructure::rankxfdirect "int
+rankStructure::rankxfdirect(const array_link &al) const
+
+calculate the rank of the second order interaction matrix of an array
+directly ";
+
+%feature("docstring")  rankStructure::rankxf "int
+rankStructure::rankxf(const array_link &al)
+
+calculate the rank of the second order interaction matrix of an array
+using the cache system ";
 
 
 // File: classsort__indices.xml
@@ -1691,7 +2129,7 @@ vals, bool ascending=true, int verbose=0) ";
 
 copy constructor ";
 
-%feature("docstring")  symmetry_group::permsize "long long
+%feature("docstring")  symmetry_group::permsize "perm_return_type
 symmetry_group::permsize() const
 
 return size of the group of all permutations respecting the symmetry
@@ -1738,6 +2176,20 @@ symmetry_group_walker::next() ";
 // File: namespacearrayfile.xml
 
 
+// File: namespaceEigen.xml
+
+
+// File: namespacenauty.xml
+%feature("docstring")  nauty::reduceNauty "std::vector<int>
+nauty::reduceNauty(const array_link &G, std::vector< int > colors, int
+verbose=0)
+
+reduce a colorred graph to Nauty minimal form
+
+The transformation returned is from the normal form to the specified
+graph. ";
+
+
 // File: namespacestd.xml
 
 
@@ -1767,8 +2219,8 @@ using SVD. ";
 array_link &al, std::vector< double > *ret=0, int verbose=0)
 
 Calculate the rank of the second order interaction matrix of an
-orthogonal array, the rank, D-efficiency and VIF-efficiency are
-appended to the second argument. ";
+orthogonal array, the rank, D-efficiency, VIF-efficiency and
+E-efficiency are appended to the second argument. ";
 
 %feature("docstring")  Defficiency "double Defficiency(const
 array_link &al, int verbose=0)
@@ -1778,7 +2230,7 @@ decomposition. ";
 
 %feature("docstring")  Defficiencies "std::vector<double>
 Defficiencies(const array_link &al, const arraydata_t &arrayclass, int
-verbose, int addDs0) ";
+verbose=0, int addDs0=0) ";
 
 %feature("docstring")  VIFefficiency "double VIFefficiency(const
 array_link &al, int verbose=0)
@@ -1793,7 +2245,12 @@ Calculate A-efficiency of matrix. ";
 %feature("docstring")  Eefficiency "double Eefficiency(const
 array_link &al, int verbose=0)
 
-Calculate A-efficiency of matrix (1 over the VIF-efficiency) ";
+Calculate E-efficiency of matrix (1 over the VIF-efficiency) ";
+
+%feature("docstring")  Aefficiencies "std::vector<double>
+Aefficiencies(const array_link &al, int verbose=0)
+
+calculate various A-efficiencies ";
 
 %feature("docstring")  projDeff "std::vector<double> projDeff(const
 array_link &al, int kp, int verbose)
@@ -1813,7 +2270,7 @@ Return the distance distribution of a design. ";
 %feature("docstring")  Jcharacteristics "std::vector<int>
 Jcharacteristics(const array_link &al, int jj=4, int verbose=0)
 
-Calculate J-characteristics of matrix. ";
+Calculate J-characteristics of matrix (the values are signed) ";
 
 %feature("docstring")  GWLP "std::vector<double> GWLP(const
 array_link &al, int verbose=0, int truncate=1)
@@ -1852,27 +2309,79 @@ The method is from \"A connection between uniformity and aberration in
 regular fractions of two-level factorials\", Fang and Mukerjee, 2000
 ";
 
+%feature("docstring")  array2secondorder "array_link
+array2secondorder(const array_link &al)
+
+calculate second order interaction matrix for 2-level array ";
+
 %feature("docstring")  array2xf "array_link array2xf(const array_link
 &al)
 
-add second order interactions to an array ";
+add intercept and second order interactions to an array ";
+
+%feature("docstring")  array2xfeigen "Eigen::MatrixXd
+array2xfeigen(const array_link &al)
+
+add intercept and second order interactions to an array ";
+
+%feature("docstring")  arrayrankColPiv "int arrayrankColPiv(const
+array_link &al)
+
+return rank of an array based on Eigen::ColPivHouseholderQR ";
 
 %feature("docstring")  arrayrank "int arrayrank(const array_link &al)
 
 calculate the rank of an array ";
 
-%feature("docstring")  parsePareto "Pareto<mvalue_t<long>,long>
-parsePareto(const arraylist_t &arraylist, int verbose) ";
+%feature("docstring")  arraylink2eigen "Eigen::MatrixXd
+arraylink2eigen(const array_link &al)
 
-%feature("docstring")  calculateArrayPareto "Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayPareto(const
-array_link &al, int verbose)
+convert array_link to Eigen matrix ";
+
+%feature("docstring")  calculateParetoEvenOdd "void
+calculateParetoEvenOdd(const std::vector< std::string > infiles, const
+char *outfile, int verbose=1, arrayfilemode_t afmode=ABINARY, int
+nrows=-1, int ncols=-1, paretomethod_t
+paretomethod=PARETOFUNCTION_DEFAULT)
+
+Calculate the Pareto optimal arrays from a list of array files
+
+Pareto optimality is calculated according to (rank; A3,A4; F4) ";
+
+%feature("docstring")  parsePareto "Pareto<mvalue_t<long>,long>
+parsePareto(const arraylist_t &arraylist, int verbose, paretomethod_t
+paretomethod=PARETOFUNCTION_DEFAULT) ";
+
+%feature("docstring")  A3A4 "mvalue_t<long> A3A4(const array_link
+&al)
+
+calculate A3 and A4 value for array ";
+
+%feature("docstring")  F4 "mvalue_t<long> F4(const array_link &al,
+int verbose=1)
+
+calculate F4 value for array ";
+
+%feature("docstring")  calculateArrayParetoRankFA "Pareto<mvalue_t<long>,IndexType>::pValue
+calculateArrayParetoRankFA(const array_link &al, int verbose)
 
 Add array to list of Pareto optimal arrays
 
 The values to be optimized are:
 
 1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (?? is
-better, sum of elements is constant) ";
+better, sum of elements is constant)
+
+Valid for 2-level arrays of strength at least 1 ";
+
+%feature("docstring")  addJmax "void addJmax(const array_link &al,
+typename Pareto< mvalue_t< long >, IndexType >::pValue &p, int
+verbose=1)
+
+add Jmax criterium to Pareto set ";
+
+%feature("docstring")  calculateArrayParetoJ5 "Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5(const
+array_link &al, int verbose) ";
 
 %feature("docstring")  parseArrayPareto "void parseArrayPareto(const
 array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType >
@@ -1902,19 +2411,44 @@ Return index of an array. ";
 
 
 // File: arraytools_8h.xml
-%feature("docstring")  arrayfile::eigenInfo "void eigenInfo(const
+%feature("docstring")  Eigen::eigenInfo "void eigenInfo(const
 MatrixFloat m, const char *str=\"eigen\", int verbose=1)
 
 show information about Eigen matrix ";
 
-%feature("docstring")  arrayfile::eigen2numpyHelper "void
+%feature("docstring")  Eigen::eigen2numpyHelper "void
 eigen2numpyHelper(double *pymat1, int n, const MatrixFloat &m) ";
 
-%feature("docstring")  arrayfile::dummy "Eigen::VectorXd dummy() ";
+%feature("docstring")  Eigen::dummy "Eigen::VectorXd dummy() ";
 
-%feature("docstring")  arrayfile::dummy2 "Eigen::MatrixXd dummy2() ";
+%feature("docstring")  Eigen::dummy2 "Eigen::MatrixXd dummy2() ";
 
-%feature("docstring")  arrayfile::printfstring "std::string
+%feature("docstring")  Eigen::file_exists "bool file_exists(const
+std::string filename)
+
+return true if the specified file exists ";
+
+%feature("docstring")  Eigen::file_exists "bool file_exists(const
+char *filename)
+
+return true if the specified file exists ";
+
+%feature("docstring")  Eigen::oa_file_exists "bool
+oa_file_exists(const char *filename)
+
+return true if the specified oa file exists ";
+
+%feature("docstring")  Eigen::oa_file_exists "bool
+oa_file_exists(const std::string filename)
+
+return true if the specified oa file exists ";
+
+%feature("docstring")  Eigen::readConfigFile "arraydata_t*
+readConfigFile(const char *file)
+
+Read array configuration from file. ";
+
+%feature("docstring")  Eigen::printfstring "std::string
 printfstring(const char *message,...)
 
 Function similar to printf returning C++ style string.
@@ -1926,12 +2460,12 @@ Parameters:
 
 message:  ";
 
-%feature("docstring")  arrayfile::copy_array "void copy_array(const
+%feature("docstring")  Eigen::copy_array "void copy_array(const
 array_t *src, array_t *const dst, const int nrows, const int ncols)
 
 Make a copy of an array. ";
 
-%feature("docstring")  arrayfile::destroy_array "int
+%feature("docstring")  Eigen::destroy_array "int
 destroy_array(array_t *array)
 
 Delete an array.
@@ -1941,7 +2475,7 @@ Parameters:
 
 array:  ";
 
-%feature("docstring")  arrayfile::create_array "static array_t*
+%feature("docstring")  Eigen::create_array "static array_t*
 create_array(const int nrows, const int ncols)
 
 Create an array.
@@ -1953,7 +2487,7 @@ nrows:  Number of rows
 
 ncols:  Number of columns ";
 
-%feature("docstring")  arrayfile::create_array "array_t*
+%feature("docstring")  Eigen::create_array "array_t*
 create_array(const arraydata_t *ad)
 
 Create an array from an arraydata_t structure.
@@ -1963,7 +2497,7 @@ Parameters:
 
 ad:  ";
 
-%feature("docstring")  arrayfile::equal_array_cols "int
+%feature("docstring")  Eigen::equal_array_cols "int
 equal_array_cols(carray_t *A, colindex_t col, colindex_t col2,
 rowindex_t nrows, rowindex_t rstart, rowindex_t rend)
 
@@ -1984,14 +2518,14 @@ rstart:
 
 rend:  ";
 
-%feature("docstring")  arrayfile::clone_array "array_t*
-clone_array(const array_t *const array, const rowindex_t nrows, const
-colindex_t ncols)
+%feature("docstring")  Eigen::clone_array "array_t* clone_array(const
+array_t *const array, const rowindex_t nrows, const colindex_t ncols)
 
 Clone an array. ";
 
-%feature("docstring")  arrayfile::perform_inv_column_permutation "void perform_inv_column_permutation(const array_t *source, array_t
-*target, colperm_t perm, int nrows, int ncols)
+%feature("docstring")  Eigen::perform_inv_column_permutation "void
+perform_inv_column_permutation(const array_t *source, array_t *target,
+colperm_t perm, int nrows, int ncols)
 
 Perform inverse column permutation on an array.
 
@@ -2008,11 +2542,11 @@ nrows:
 
 ncols:  ";
 
-%feature("docstring")  arrayfile::perform_column_permutation "void
+%feature("docstring")  Eigen::perform_column_permutation "void
 perform_column_permutation(carray_t *source, array_t *target,
 colperm_t perm, int nrows, int ncols) ";
 
-%feature("docstring")  arrayfile::perform_row_permutation "void
+%feature("docstring")  Eigen::perform_row_permutation "void
 perform_row_permutation(const array_t *source, array_t *target,
 rowperm_t perm, int nrows, int ncols)
 
@@ -2031,243 +2565,359 @@ nrows:  Number of rows
 
 ncols:  Numer of columns ";
 
-%feature("docstring")  arrayfile::perform_inv_row_permutation "void
+%feature("docstring")  Eigen::perform_inv_row_permutation "void
 perform_inv_row_permutation(const array_t *source, array_t *target,
 rowperm_t perm, int nrows, int ncols)
 
 apply inverse row permutation ";
 
-%feature("docstring")  arrayfile::exampleArray "array_link
+%feature("docstring")  Eigen::exampleArray "array_link
 exampleArray(int idx=0, int verbose=0)
 
 Return example array ";
 
-%feature("docstring")  arrayfile::hstack "array_link hstack(const
+%feature("docstring")  Eigen::hstack "array_link hstack(const
 array_link &al, const array_link &b) ";
 
-%feature("docstring")  arrayfile::hstacklastcol "array_link
+%feature("docstring")  Eigen::hstack "array_link hstack(const
+array_link &al, const cperm &b) ";
+
+%feature("docstring")  Eigen::hstacklastcol "array_link
 hstacklastcol(const array_link &A, const array_link &B) ";
 
-%feature("docstring")  arrayfile::arraylink2arraydata "arraydata_t
+%feature("docstring")  Eigen::vstack "cperm vstack(const cperm &A,
+const cperm &B) ";
+
+%feature("docstring")  Eigen::perform_column_permutation "void
+perform_column_permutation(const array_link source, array_link
+&target, const std::vector< int > perm)
+
+perform column permutation for an array ";
+
+%feature("docstring")  Eigen::perform_row_permutation "void
+perform_row_permutation(const array_link source, array_link &target,
+const std::vector< int > perm)
+
+perform row permutation for an array ";
+
+%feature("docstring")  Eigen::arraylink2arraydata "arraydata_t
 arraylink2arraydata(const array_link &al, int extracols=0, int
 strength=2)
 
 create arraydata_t structure from array ";
 
-%feature("docstring")  arrayfile::getJcounts "std::vector<int>
+%feature("docstring")  Eigen::getJcounts "std::vector<int>
 getJcounts(arraylist_t *arraylist, int N, int k, int verbose=1)
 
 Return number of arrays with j_{2n+1}=0 for n<m ";
 
-%feature("docstring")  arrayfile::predictJ "int predictJ(const
-array_t *array, const int N, const int k)
+%feature("docstring")  Eigen::predictJ "int predictJ(const array_t
+*array, const int N, const int k)
 
 Predict j4(1,2,3,k) using the theorem from Deng This works only for
 2-level arrays. The 0 corresponds to a +. ";
 
-%feature("docstring")  arrayfile::create_root "void
-create_root(array_t *array, const arraydata_t *ad)
+%feature("docstring")  Eigen::create_root "void create_root(array_t
+*array, const arraydata_t *ad)
 
 set first columns of an array to root form ";
 
-%feature("docstring")  arrayfile::create_root "void create_root(const
+%feature("docstring")  Eigen::create_root "void create_root(const
 arraydata_t *ad, arraylist_t &solutions)
 
 Creates the root of an OA. The root is appended to the current list of
 arrays. ";
 
-%feature("docstring")  arrayfile::array_diff "int array_diff(carray_p
-A, carray_p B, const rowindex_t r, const colindex_t c, rowindex_t
-&rpos, colindex_t &cpos)
+%feature("docstring")  Eigen::array_diff "int array_diff(carray_p A,
+carray_p B, const rowindex_t r, const colindex_t c, rowindex_t &rpos,
+colindex_t &cpos)
 
 Compare 2 arrays and return position of first difference. ";
 
-%feature("docstring")  arrayfile::array_cmp "int array_cmp(carray_p
-A, carray_p B, const rowindex_t r, const colindex_t c)
+%feature("docstring")  Eigen::array_cmp "int array_cmp(carray_p A,
+carray_p B, const rowindex_t r, const colindex_t c)
 
 Compare 2 arrays and return 0 if equal. ";
 
-%feature("docstring")  arrayfile::free_sols "int
-free_sols(arraylist_t &solutions) ";
+%feature("docstring")  Eigen::free_sols "int free_sols(arraylist_t
+&solutions) ";
 
-%feature("docstring")  arrayfile::jvalue "int jvalue(const array_link
+%feature("docstring")  Eigen::fastJupdateValue "int
+fastJupdateValue(rowindex_t N, carray_t *tmpval)
+
+helper function ";
+
+%feature("docstring")  Eigen::fastJupdate "void fastJupdate(const
+array_t *array, rowindex_t N, const int J, const colindex_t *pp,
+array_t *tmp)
+
+helper function ";
+
+%feature("docstring")  Eigen::jvalue "int jvalue(const array_link
 &ar, const int J, const int *pp)
 
-Calculate J-value for an array. ";
+Calculate J-value for an array ";
 
-%feature("docstring")  arrayfile::analyseArrays "std::vector<jstruct_t> analyseArrays(const arraylist_t &arraylist,
-const int verbose, const int jj=4)
+%feature("docstring")  Eigen::jvaluefast "int jvaluefast(const
+array_t *array, rowindex_t N, const int J, const colindex_t *pp)
+
+calcualte J-value for an array ";
+
+%feature("docstring")  Eigen::analyseArrays "std::vector<jstruct_t>
+analyseArrays(const arraylist_t &arraylist, const int verbose, const
+int jj=4)
 
 Analyse a list of arrays. ";
 
-%feature("docstring")  arrayfile::nArrays "int nArrays(const char
-*fname)
+%feature("docstring")  Eigen::nArrays "int nArrays(const char *fname)
 
 return number of arrays in an array file ";
 
-%feature("docstring")  arrayfile::arrayfileinfo "void
-arrayfileinfo(const char *fname, int &n, int &nr, int &nc)
+%feature("docstring")  Eigen::arrayfileinfo "void arrayfileinfo(const
+char *fname, int &n, int &nr, int &nc)
 
 return number of arrays in an array file ";
 
-%feature("docstring")  arrayfile::readarrayfile "int
-readarrayfile(const char *fname, arraylist_t *arraylist, int
-verbose=1, int *setcols=0, rowindex_t *setrows=0, int *setbits=0)
+%feature("docstring")  Eigen::readarrayfile "int readarrayfile(const
+char *fname, arraylist_t *arraylist, int verbose=1, int *setcols=0,
+rowindex_t *setrows=0, int *setbits=0)
 
 read list of arrays from file and append to list ";
 
-%feature("docstring")  arrayfile::readarrayfile "arraylist_t
+%feature("docstring")  Eigen::readarrayfile "arraylist_t
 readarrayfile(const char *fname, int verbose=1, int *setcols=0)
 
 read list of arrays from file ";
 
-%feature("docstring")  arrayfile::writearrayfile "int
+%feature("docstring")  Eigen::writearrayfile "int
 writearrayfile(const char *fname, const arraylist_t *arraylist,
-arrayfile::arrayfilemode_t mode=arrayfile::ATEXT, int nrows=0, int
-ncols=0)
+arrayfile::arrayfilemode_t mode=arrayfile::ATEXT, int nrows=NRAUTO,
+int ncols=NRAUTO)
 
 write a list of arrays to file on disk ";
 
-%feature("docstring")  arrayfile::writearrayfile "int
+%feature("docstring")  Eigen::writearrayfile "int
+writearrayfile(const char *fname, const arraylist_t arraylist,
+arrayfile::arrayfilemode_t mode=arrayfile::ATEXT, int nrows=NRAUTO,
+int ncols=NRAUTO)
+
+write a list of arrays to file on disk ";
+
+%feature("docstring")  Eigen::writearrayfile "int
 writearrayfile(const char *fname, const array_link &al,
 arrayfile::arrayfilemode_t mode=arrayfile::ATEXT)
 
 write a single array to file ";
 
-%feature("docstring")  arrayfile::appendarrayfile "int
+%feature("docstring")  Eigen::appendarrayfile "int
 appendarrayfile(const char *fname, const array_link al)
 
 append a single array to an array file. creates a new file if no file
 exists ";
 
-%feature("docstring")  arrayfile::selectArrays "arraylist_t
-selectArrays(const arraylist_t &al, std::vector< int > &idx)
-
-Make a selection of arrays. ";
-
-%feature("docstring")  arrayfile::selectArrays "arraylist_t
-selectArrays(const arraylist_t &al, std::vector< long > &idx)
-
-Make a selection of arrays. ";
-
-%feature("docstring")  arrayfile::selectArrays "void
-selectArrays(const arraylist_t &al, std::vector< int > &idx,
-arraylist_t &fl)
-
-Make a selection of arrays, append to list. ";
-
-%feature("docstring")  arrayfile::selectArrays "void
-selectArrays(const arraylist_t &al, std::vector< long > &idx,
-arraylist_t &fl) ";
-
-%feature("docstring")  arrayfile::selectArrays "void
-selectArrays(const std::string filename, std::vector< int > &idx,
-arraylist_t &fl, int verbose=0)
+%feature("docstring")  Eigen::selectArrays "void selectArrays(const
+std::string filename, std::vector< int > &idx, arraylist_t &fl, int
+verbose=0)
 
 Make a selection of arrays from binary array file, append to list. ";
 
-%feature("docstring")  arrayfile::selectArrays "array_link
+%feature("docstring")  Eigen::selectArrays "array_link
 selectArrays(std::string filename, int ii)
 
 Select a single array from a file. ";
 
-%feature("docstring")  arrayfile::keepElements "void
-keepElements(Container &al, std::vector< IntType > &idx)
-
-Make a selection of arrays, keep. ";
-
-%feature("docstring")  arrayfile::removeElements "void
-removeElements(Container &al, std::vector< IntType > &idx)
-
-Make a selection of arrays, remove. ";
-
-%feature("docstring")  arrayfile::selectArraysMask "void
-selectArraysMask(const arraylist_t &al, std::vector< MType > &mask,
-arraylist_t &rl)
-
-Make a selection of arrays from a list, append to list. ";
-
-%feature("docstring")  arrayfile::appendArrays "void
-appendArrays(const arraylist_t &al, const typename std::vector<
-IndexType > &idx, arraylist_t &lst)
-
-Append selection of arrays to existing list. ";
-
-%feature("docstring")  arrayfile::appendArrays "void
-appendArrays(const arraylist_t &al, arraylist_t &dst)
-
-Append selection of arrays to existing list. ";
-
-%feature("docstring")  arrayfile::create_arrayfile "arrayfile_t*
+%feature("docstring")  Eigen::create_arrayfile "arrayfile_t*
 create_arrayfile(const char *fname, int rows, int cols, int narrays,
 arrayfile::arrayfilemode_t mode=arrayfile::ATEXT, int nbits=8) ";
 
-%feature("docstring")  arrayfile::write_array_format "void
+%feature("docstring")  Eigen::save_arrays "int
+save_arrays(arraylist_t &solutions, const arraydata_t *ad, const int
+n_arrays, const int n_procs, const char *resultprefix,
+arrayfile::arrayfilemode_t mode=ATEXT) ";
+
+%feature("docstring")  Eigen::write_array_format "void
 write_array_format(std::ostream &ss, const atype *array, const int
 nrows, const int ncols, int width=3)
 
 write array to output stream ";
 
-%feature("docstring")  arrayfile::write_array_format "void
+%feature("docstring")  Eigen::selectArrays "arraylist_t
+selectArrays(const arraylist_t &al, std::vector< int > &idx)
+
+Make a selection of arrays. ";
+
+%feature("docstring")  Eigen::selectArrays "arraylist_t
+selectArrays(const arraylist_t &al, std::vector< long > &idx)
+
+Make a selection of arrays. ";
+
+%feature("docstring")  Eigen::selectArrays "void selectArrays(const
+arraylist_t &al, std::vector< int > &idx, arraylist_t &fl)
+
+Make a selection of arrays, append to list. ";
+
+%feature("docstring")  Eigen::selectArrays "void selectArrays(const
+arraylist_t &al, std::vector< long > &idx, arraylist_t &fl) ";
+
+%feature("docstring")  Eigen::keepElements "void
+keepElements(Container &al, std::vector< IntType > &idx)
+
+Make a selection of arrays, keep. ";
+
+%feature("docstring")  Eigen::removeElements "void
+removeElements(Container &al, std::vector< IntType > &idx)
+
+Make a selection of arrays, remove. ";
+
+%feature("docstring")  Eigen::selectArraysMask "void
+selectArraysMask(const arraylist_t &al, std::vector< MType > &mask,
+arraylist_t &rl)
+
+Make a selection of arrays from a list, append to list. ";
+
+%feature("docstring")  Eigen::appendArrays "void appendArrays(const
+arraylist_t &al, const typename std::vector< IndexType > &idx,
+arraylist_t &lst)
+
+Append selection of arrays to existing list. ";
+
+%feature("docstring")  Eigen::appendArrays "void appendArrays(const
+arraylist_t &al, arraylist_t &dst)
+
+Append selection of arrays to existing list. ";
+
+%feature("docstring")  Eigen::write_array_format "void
 write_array_format(const atype *array, const int nrows, const int
 ncols, int width=3)
 
 Write a formatted array ";
 
-%feature("docstring")  arrayfile::write_array_format "void
+%feature("docstring")  Eigen::write_array_format "void
 write_array_format(FILE *fid, const atype *array, const int nrows,
 const int ncols)
 
 Write a formatted array. ";
 
-%feature("docstring")  arrayfile::write_array_latex "void
+%feature("docstring")  Eigen::write_array_latex "void
 write_array_latex(std::ostream &ss, const atype *array, const int
 nrows, const int ncols)
 
 write an array in latex style ";
 
-%feature("docstring")  arrayfile::readbinheader "bool
-readbinheader(FILE *fid, int &nr, int &nc)
+%feature("docstring")  Eigen::readbinheader "bool readbinheader(FILE
+*fid, int &nr, int &nc)
 
 Read header for binary data file. Return true if valid header file. ";
 
-%feature("docstring")  arrayfile::writebinheader "void
+%feature("docstring")  Eigen::writebinheader "void
 writebinheader(FILE *fid, int nr, int nc)
 
 Write header for binary data file. ";
 
-%feature("docstring")  arrayfile::doublevector2binfile "void
+%feature("docstring")  Eigen::doublevector2binfile "void
 doublevector2binfile(const std::string fname, std::vector< Type >
 vals, int writeheader=1)
 
 Write a vector of integer elements to file. ";
 
-%feature("docstring")  arrayfile::vectorvector2binfile "void
+%feature("docstring")  Eigen::vectorvector2binfile "void
 vectorvector2binfile(const std::string fname, const std::vector<
 std::vector< double > > vals, int writeheader, int na)
 
 Write a vector of vector elements to binary file. ";
 
-%feature("docstring")  arrayfile::array2eigenX2 "MatrixFloat
+%feature("docstring")  Eigen::array2eigenX2 "MatrixFloat
 array2eigenX2(const array_link &al)
 
 convert 2-level array to second order interaction matrix in Eigen
 format ";
 
-%feature("docstring")  arrayfile::array2eigenX1 "MatrixFloat
+%feature("docstring")  Eigen::array2eigenX1 "MatrixFloat
 array2eigenX1(const array_link &al, int intercept=1) ";
 
-%feature("docstring")  arrayfile::array2eigenModelMatrix "MatrixFloat
+%feature("docstring")  Eigen::array2eigenModelMatrix "MatrixFloat
 array2eigenModelMatrix(const array_link &al)
 
 convert 2-level array to second order model matrix (intercept, X1, X2)
 ";
 
-%feature("docstring")  arrayfile::array2eigenME "MatrixFloat
+%feature("docstring")  Eigen::array2eigenME "MatrixFloat
 array2eigenME(const array_link &al, int verbose=1) ";
 
-%feature("docstring")  arrayfile::array2eigenModelMatrixMixed "std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed(const
+%feature("docstring")  Eigen::array2eigenModelMatrixMixed "std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed(const
 array_link &al, int verbose=1) ";
+
+
+// File: conference_8h.xml
+%feature("docstring")  reduceConference "array_link
+reduceConference(const array_link &, int verbose=0)
+
+reduce conference matrix to normal form ";
+
+%feature("docstring")  reduceConferenceTransformation "conference_transformation_t reduceConferenceTransformation(const
+array_link &al, int verbose)
+
+reduce conference matrix to normal form ";
+
+%feature("docstring")  extend_conference_matrix "conference_extend_t
+extend_conference_matrix(const array_link &al, const conference_t &ct,
+int extcol, int verbose=1, int maxzpos=-1)
+
+Extend a single conference design with candidate columns ";
+
+%feature("docstring")  extend_conference_matrix "conference_extend_t
+extend_conference_matrix(const array_link &al, const conference_t &ct,
+int extcol, int verbose, int maxzpos, const conf_candidates_t &cande)
+
+helper function ";
+
+%feature("docstring")  extend_conference "arraylist_t
+extend_conference(const arraylist_t &lst, const conference_t ctype,
+int verbose)
+
+Extend a list of conference designs with a single column. ";
+
+%feature("docstring")  selectConferenceIsomorpismClasses "arraylist_t
+selectConferenceIsomorpismClasses(const arraylist_t list, int verbose)
+
+select representatives for the isomorphism classes of a list of
+conference arrays ";
+
+%feature("docstring")  selectConferenceIsomorpismIndices "std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t
+lst, int verbose)
+
+select representatives for the isomorphism classes of a list of
+conference arrays, return indices of classes ";
+
+%feature("docstring")  generateConferenceExtensions "std::vector<cperm> generateConferenceExtensions(const array_link &al,
+const conference_t &ct, int kz, int verbose=1, int filtersymm=1, int
+filterip=1)
+
+Generate candidate extensions
+
+Parameters:
+-----------
+
+al:  design to be extended
+
+kz:  index of zero in candidate column ";
+
+%feature("docstring")  maxz "int maxz(const array_link &al, int k=-1)
+
+return max position of zero in array, returns -1 if no zero is found
+
+The parameter k specifies the column to search in. For k=-1 all
+columns are searched. ";
+
+%feature("docstring")  compareLMC0 "bool compareLMC0(const array_link
+&alL, const array_link &alR)
+
+Return true of the array is smaller in LMC-0 ordering ";
+
+%feature("docstring")  sortLMC0 "arraylist_t sortLMC0(const
+arraylist_t &lst)
+
+sort list of arrays according to LMC-0 ordering ";
 
 
 // File: Deff_8h.xml
@@ -2279,7 +2929,7 @@ calculate score from from set of efficiencies ";
 %feature("docstring")  optimDeff "array_link optimDeff(const
 array_link &A0, const arraydata_t &arrayclass, std::vector< double >
 alpha, int verbose=1, int optimmethod=DOPTIM_AUTOMATIC, int
-niter=100000, int nabortx=0)
+niter=100000, int nabort=0)
 
 Optimize a design according to the optimization function specified.
 
@@ -2294,11 +2944,23 @@ optimmethod=DOPTIM_AUTOMATIC, int niter=100000, int nabort=0)
 debugging function ";
 
 %feature("docstring")  Doptimize "DoptimReturn Doptimize(const
-arraydata_t &arrayclass, int nrestarts, std::vector< double > alpha,
-int verbose, int method=DOPTIM_AUTOMATIC, int niter=100000, double
-maxtime=100000, int nabort=5000)
+arraydata_t &arrayclass, int nrestarts, const std::vector< double >
+alpha, int verbose, int method=DOPTIM_AUTOMATIC, int niter=300000,
+double maxtime=100000, int nabort=5000)
 
 function to generate optimal designs ";
+
+%feature("docstring")  DoptimizeDebug "DoptimReturn
+DoptimizeDebug(const arraydata_t &arrayclass, int nrestarts, const
+std::vector< double > alpha, int verbose, int method=DOPTIM_AUTOMATIC,
+int niter=300000, double maxtime=100000, int nabort=5000) ";
+
+%feature("docstring")  DoptimizeMixed "DoptimReturn
+DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arrayclass,
+const std::vector< double > alpha, int verbose=1, int nabort=-1) ";
+
+
+// File: evenodd_8h.xml
 
 
 // File: extend_8h.xml
@@ -2337,6 +2999,43 @@ extend an array with a single column ";
 runExtendRoot(arraydata_t adata, int nmax, int verbose=0)
 
 simple wrapper function ";
+
+
+// File: graphtools_8h.xml
+%feature("docstring")  nauty::sorthelper "std::vector<Type>
+sorthelper(std::vector< Type > &v)
+
+helper function, substruct minimum from list of values ";
+
+%feature("docstring")  nauty::transformGraph "array_link
+transformGraph(const array_link &G, const std::vector< int > tr, int
+verbose=1)
+
+apply a vertex permutation to a graph ";
+
+%feature("docstring")  nauty::reduceOAnauty "array_transformation_t
+reduceOAnauty(const array_link &al, int verbose=1)
+
+reduce an orthogonal array to Nauty minimal form. the array
+transformation is returned ";
+
+%feature("docstring")  nauty::array2graph "std::pair<array_link,
+std::vector<int> > array2graph(const array_link &al, int verbose=1)
+
+Convert orthogonal array to graph representation
+
+The conversion method is as in Ryan and Bulutoglu. The resulting graph
+is bi-partite. The graph representation can be used for isomorphism
+testing. ";
+
+%feature("docstring")  nauty::oagraph2transformation "array_transformation_t oagraph2transformation(const std::vector< int >
+&pp, const arraydata_t &arrayclass, int verbose=1)
+
+From a relabelling of the graph return the corresponding array
+transformation. ";
+
+%feature("docstring")  nauty::unittest_nautynormalform "int
+unittest_nautynormalform(const array_link &al, int verbose=1) ";
 
 
 // File: InfInt_8h.xml
@@ -2408,10 +3107,11 @@ check_root_update(carray_t *original, const arraydata_t &ad, array_t
 return 0 if target is equal to original, otherwise return 1 and copy
 root initialization + 1 ";
 
-%feature("docstring")  fastj "int fastj(const array_t *array,
-rowindex_t N, const int J, const colindex_t *pp)
+%feature("docstring")  jj45val "jj45_t jj45val(carray_t *array,
+rowindex_t N, int jj, const colperm_t comb, int j5val=-1, int
+dosort=1)
 
-helper function ";
+return value based on J4-J5 ordering ";
 
 %feature("docstring")  random_transformation "void
 random_transformation(array_t *array, const arraydata_t *adp)
@@ -2486,6 +3186,9 @@ int dopruning=1, int strength=2, int dolmc=1)
 
 reduce arrays to canonical form using delete-1-factor ordering ";
 
+%feature("docstring")  reductionDOP "array_transformation_t
+reductionDOP(const array_link &al, int verbose=0) ";
+
 %feature("docstring")  selectUniqueArrays "void
 selectUniqueArrays(arraylist_t &xlist, arraylist_t &earrays, int
 verbose=1) ";
@@ -2556,6 +3259,19 @@ Return maximum element of a std::vector. ";
 Type > &v, Type defaultvalue)
 
 Return minimum element of a std::vector. ";
+
+%feature("docstring")  cumsum "std::vector<NumType> cumsum(const
+std::vector< NumType > x)
+
+calculate cumulative sum of a vector ";
+
+%feature("docstring")  cumsum0 "std::vector<NumType> cumsum0(const
+std::vector< NumType > x)
+
+calculate cumulative sum of a vector with added zero ";
+
+%feature("docstring")  cumsum0 "std::vector<Type>
+cumsum0(std::vector< InputType > s) ";
 
 %feature("docstring")  permutation "std::vector<NumType>
 permutation(int n)
@@ -2666,6 +3382,18 @@ k:  Number of entries in a certain combination
 
 n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k! ";
 
+%feature("docstring")  ncombscacheNumber "int ncombscacheNumber() ";
+
+%feature("docstring")  initncombscache "void initncombscache(int N)
+
+initialize datastructure, this function is not thread safe ";
+
+%feature("docstring")  ncombscache "long ncombscache(int n, int k)
+
+return number of combinations from previously calculated results
+
+The results should be calculated with initncombscache ";
+
 %feature("docstring")  ncombsm "Type ncombsm(const Type &n, const
 Type &k)
 
@@ -2675,6 +3403,12 @@ i/Binomial_coefficient#Computing_the_value_ of_binomial_coefficients
 
 %feature("docstring")  next_perm "bool next_perm(std::vector<
 permutationType > &s) ";
+
+%feature("docstring")  fastrand "int fastrand() ";
+
+%feature("docstring")  seedfastrand "void seedfastrand(int s) ";
+
+%feature("docstring")  fastrandK "int fastrandK(int k) ";
 
 %feature("docstring")  set_srand "void set_srand(unsigned int s)
 
@@ -2695,12 +3429,18 @@ alsohttp://en.wikipedia.org/wiki/Permutation#Numbering_permutations
 Parameters:
 -----------
 
-@param:  s
+param s
 
 len:  ";
 
 %feature("docstring")  random_perm "void random_perm(objecttype *s,
 numtype len)
+
+Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
+";
+
+%feature("docstring")  random_perm "void random_perm(std::vector<
+objecttype > &s)
 
 Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
 ";
@@ -2777,6 +3517,31 @@ Create a new permutation. ";
 %feature("docstring")  delete_perm "void delete_perm(numtype *perm)
 
 Delete a permutation. ";
+
+%feature("docstring")  invert_permutation "std::vector<numtype>
+invert_permutation(const std::vector< numtype > perm)
+
+Invert a permutation.
+
+Parameters:
+-----------
+
+perm:  Permutation as integer type std::vector
+
+New permutation that is the inverse of the argument ";
+
+%feature("docstring")  invert_permutation "void
+invert_permutation(const std::vector< numtype > perm, std::vector<
+numtype > &iperm)
+
+Invert a permutation.
+
+Parameters:
+-----------
+
+perm:  Permutation as integer type std::vector
+
+permout:  Output permutation ";
 
 %feature("docstring")  invert_permutation "void
 invert_permutation(numtype *perm, int len, numtype *iperm)
@@ -2937,6 +3702,9 @@ const numtype n) ";
 init_valueindex(numtype *valueindex, const numtype *bases, const
 numtype n) ";
 
+%feature("docstring")  argsort "std::vector<int> argsort(const
+std::vector< numtype > vv) ";
+
 %feature("docstring")  permute "std::vector<Type> permute(const
 std::vector< Type > x, const std::vector< IndexType > indices)
 
@@ -2987,16 +3755,20 @@ Type n, Type s, int verbose=0)
 
 calculate value of Krawtchouk polynomial ";
 
+%feature("docstring")  krawtchouksCache "Type krawtchouksCache(Type
+j, Type x, Type n)
+
+calculate value of Krawtchouk polynomial ";
+
 %feature("docstring")  krawtchouks "Type krawtchouks(Type j, Type x,
 Type n)
 
 calculate value of Krawtchouk polynomial ";
 
-%feature("docstring")  fastrand "int fastrand() ";
+%feature("docstring")  conditionNumber "double conditionNumber(const
+Eigen::Matrix< Type,-1,-1 > A)
 
-%feature("docstring")  seedfastrand "void seedfastrand(int s) ";
-
-%feature("docstring")  fastrandK "int fastrandK(int k) ";
+return the condition number of a matrix ";
 
 
 // File: md5_8h.xml
@@ -3073,13 +3845,25 @@ Print compile time options. ";
 // File: pareto_8h.xml
 
 
+// File: printfheader_8h.xml
+
+
 // File: strength_8h.xml
 %feature("docstring")  new_strength_freq_table "strength_freq_table
 new_strength_freq_table(int ncolcombs, int *nvalues, int &nelements)
-";
 
-%feature("docstring")  new_strength_freq_table "strength_freq_table
-new_strength_freq_table(int ncolcombs, int *nvalues) ";
+Constructor.
+
+Create a table with strength frequencies
+
+Parameters:
+-----------
+
+ncolcombs:  Number of column combinations to store
+
+nvalues:  Number of tuples that can occur for each column combination
+
+nelements:  Return variable with the size of the allocated array ";
 
 %feature("docstring")  create_reverse_colcombs_fixed "rev_index*
 create_reverse_colcombs_fixed(const int ncolcombs) ";
@@ -3103,21 +3887,44 @@ check_divisibility(const arraydata_t *)
 
 check whether an array passes divisibility test ";
 
-%feature("docstring")  valid_element "bool valid_element(const
-extend_data_t *es, const extendpos *p, carray_t *array) ";
-
 %feature("docstring")  print_frequencies "void print_frequencies(int
 **frequencies, const int nelements, const int *lambda, const int N) ";
 
 %feature("docstring")  set_colcombs_fixed "colindex_t**
 set_colcombs_fixed(int *&xlambda, int *&nvalues, int &ncolcombs, const
-array_t *s, const int strength, const int fixedcol, const int N) ";
+array_t *s, const int strength, const int fixedcol, const int N)
+
+Return all column combinations including a fixed column. At the same
+time allocate space for the number of values these columns have
+
+Parameters:
+-----------
+
+xlambda:
+
+nvalues:
+
+ncolcombs:
+
+s:
+
+strength:
+
+fixedcol:
+
+N:  ";
 
 %feature("docstring")  add_element_freqtable "void
 add_element_freqtable(extend_data_t *es, rowindex_t activerow,
 carray_t *array, strength_freq_table freqtable)
 
 Add row to frequency table using cache system. ";
+
+%feature("docstring")  add_element_freqtable_col "void
+add_element_freqtable_col(extend_data_t *es, rowindex_t activerow,
+carray_t *arraycol, strength_freq_table freqtable)
+
+fast version of add_element_freqtable ";
 
 %feature("docstring")  init_frequencies "void
 init_frequencies(extend_data_t *es, array_t *array)
@@ -3129,20 +3936,42 @@ recount_frequencies(int **frequencies, extend_data_t *es, colindex_t
 currentcol, rowindex_t rowstart, rowindex_t rowlast, carray_t *array)
 ";
 
-%feature("docstring")  strength_check "bool strength_check(const
-arraydata_t &ad, const array_link &al, int verbose=1)
-
-perform strength check on an array ";
-
 %feature("docstring")  set_indices "vindex_t** set_indices(colindex_t
 **colcombs, basetype *bases, const int k, colindex_t ncolcombs)
 
 Helper function. ";
 
 %feature("docstring")  strength_check "bool strength_check(const
+arraydata_t &ad, const array_link &al, int verbose=1)
+
+perform strength check on an array
+
+Special case for extension of an array with proper strength ";
+
+%feature("docstring")  strength_check "bool strength_check(const
 array_link &al, int strength, int verbose=0)
 
 perform strength check on an array ";
+
+%feature("docstring")  valid_element "bool valid_element(const
+extend_data_t *es, const extendpos *p, carray_t *array)
+
+Determine whether an element passes the strength test.
+
+Parameters:
+-----------
+
+es:
+
+p:
+
+array:  ";
+
+%feature("docstring")  valid_element_2level "bool
+valid_element_2level(const extend_data_t *es, const extendpos *p)
+
+Determine whether an element passes the strength test, specialized for
+2-level array ";
 
 
 // File: tools_8h.xml
@@ -3170,7 +3999,7 @@ const char *message,...) ";
 char *message,...) ";
 
 %feature("docstring")  myassert "void myassert(int condition, const
-char *str) ";
+char *str=0) ";
 
 %feature("docstring")  myassertdebug2 "void myassertdebug2(int
 condition, const char *str) ";
@@ -3314,7 +4143,10 @@ a:
 b:  ";
 
 %feature("docstring")  malloc2d_nelements "int
-malloc2d_nelements(const int nrows, const rtype *rowsizes) ";
+malloc2d_nelements(const int nrows, const rtype *rowsizes)
+
+Calculate the number of elements in a 2D table with rows with
+different sizes ";
 
 %feature("docstring")  malloc2d_irr "DataType** malloc2d_irr(const
 int nrows, const rtype *rowsizes)
@@ -3324,9 +4156,9 @@ Allocate a 2-dimensional array with non-uniform rows.
 Parameters:
 -----------
 
-nrows:
+nrows:  Number of rows in the table
 
-rowsizes:  ";
+rowsizes:  Size of each row ";
 
 %feature("docstring")  malloc2d_irr "DataType** malloc2d_irr(const
 int nrows, const rtype *rowsizes, int &nelements)
@@ -3337,9 +4169,12 @@ allocated space.
 Parameters:
 -----------
 
-nrows:
+nrows:  Number of rows in the table
 
-rowsizes:  ";
+rowsizes:  Size of each row
+
+nelements:  This parameter is initialized with the size of the array
+allocated ";
 
 %feature("docstring")  malloc2d "DataType** malloc2d(const numtype
 nrows, const int rowsize)
@@ -3395,11 +4230,6 @@ data:
 
 nrows:  ";
 
-%feature("docstring")  readConfigFile "arraydata_t*
-readConfigFile(const char *file)
-
-Read array configuration from file. ";
-
 %feature("docstring")  print_array "void print_array(const char *str,
 const array_t *array, const rowindex_t r, const colindex_t c) ";
 
@@ -3425,7 +4255,7 @@ print vector ";
 atype *array, const int x, const int y) ";
 
 %feature("docstring")  countelements "void countelements(carray_t
-*array, const int nelemenets, const int maxval, int *elements)
+*array, const int nelements, const int maxval, int *elements)
 
 Counts the number of occurences of each value in an array. ";
 
@@ -3441,14 +4271,13 @@ elem:
 
 elements:  ";
 
-%feature("docstring")  save_arrays "int save_arrays(arraylist_t
-&solutions, const arraydata_t *ad, const int n_arrays, const int
-n_procs, const char *resultprefix, arrayfile::arrayfilemode_t
-mode=ATEXT) ";
-
 %feature("docstring")  get_time_ms "double get_time_ms()
 
 return time with milisecond precision ";
+
+%feature("docstring")  get_time_ms "double get_time_ms(double t0)
+
+return time difference with milisecond precision ";
 
 %feature("docstring")  trim "void trim(std::string &str, const
 std::string &trimChars=\"\")
@@ -3495,8 +4324,8 @@ message:  ";
 
 %feature("docstring")  printtime "std::string printtime() ";
 
-%feature("docstring")  insertionSort "static void
-insertionSort(Object x[], int length)
+%feature("docstring")  insertionSort "void insertionSort(Object x[],
+int length)
 
 Tempalate for insertionSort.
 
@@ -3507,12 +4336,12 @@ x[]:
 
 length:  ";
 
-%feature("docstring")  bubbleSort "static void bubbleSort(itemType
-a[], indexType l, indexType r)
+%feature("docstring")  bubbleSort "void bubbleSort(itemType a[],
+indexType l, indexType r)
 
 sort arrays using bubbleSort ";
 
-%feature("docstring")  flipSort "static void flipSort(itemType a[],
+%feature("docstring")  flipSort "void flipSort(itemType a[],
 indexType l, indexType r)
 
 sorting similar to bubblesort but fast for sorted arrays ";
@@ -3549,6 +4378,9 @@ replace all occurces of a substring in a string ";
 printdoubleasbits(double decker)
 
 print a double value as bits ";
+
+
+// File: version_8h.xml
 
 
 // File: dir_68267d1309a1af8e8297ef4c3efbcdba.xml

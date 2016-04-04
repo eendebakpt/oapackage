@@ -3413,7 +3413,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
 
 			int changed = check_root_update ( original, *ad, reduction->array );
 
-			if ( checkloglevel ( DEBUG ) || 1 ) {
+			if ( checkloglevel ( DEBUG ) || 0 ) {
 				//print_array(original, ad->N, ad->strength );
 				printf ( "original:\n" );
 				print_array ( original, ad->N, ad->ncols );

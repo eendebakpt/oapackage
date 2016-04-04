@@ -22,7 +22,7 @@
 #include "extend.h"
 
 #include "oadevelop.h"
-
+ 
 #ifdef OADEBUG
 #else
 #define DOOPENMP
@@ -132,7 +132,7 @@ int main ( int argc, char* argv[] )
 		if (discardJ5>0) {
 	printf ( "  discardJ5: %d\n", discardJ5 );
 	}	
-#ifdef _OPENMP
+#ifdef _OPENMP 
 	//omp_set_num_threads(4);
 	printf ( "  openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
 	//omp_set_dynamic(1);

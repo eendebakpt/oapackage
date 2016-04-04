@@ -5,6 +5,11 @@
 
 #pragma once
 
+#ifdef OADEBUG
+#else
+#define DOOPENMP
+#endif
+
 #include "arraytools.h"
 //#include "arrayproperties.h"
 #include "lmc.h"
@@ -488,7 +493,7 @@ public:
 					int na= this->counter->nArrays();
 
 #ifdef DOOPENMP
-					printf ( "-- depth_extend: progress: %.1f [s], narrays %d, thread %d/%d\n", dt0, na, omp_get_thread_num(), omp_get_num_threads() );
+					printf ( "-- depth_extend: progress: %.1f [s], narrays %d (%.1f arrays/s), thread %d/%d\n", dt0, na, na/dt0, omp_get_thread_num(), omp_get_num_threads() );
 #else
 					printf ( "-- depth_extend: progress: %.1f [s], narrays %d (%.1f arrays/s)\n", dt0, na, na/dt0 );
 #endif

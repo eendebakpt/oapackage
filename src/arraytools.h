@@ -862,9 +862,6 @@ public:
 
 	// getarraydata (Python interface). this needs to be of type int32 (default python int type)
 	void getarraydata ( int* pymat1, int n ) {
-		//for(size_t i=0; i<n; i++) {
-		//    pymat[i]=this->array[i];
-		//}
 		std::copy ( this->array, this->array+n, pymat1 );
 	}
 
@@ -966,7 +963,6 @@ public:
 	//void initswig(); /// provide hook for Python __array_interface__ initialization
 };
 
-// TODO: make cpern into vector<uint8>?
 // simple permutation type
 typedef std::vector<signed char> cperm;
 //typedef std::vector<int> cperm;
@@ -1053,22 +1049,6 @@ inline  array_link & array_link::operator= ( const array_link& rhs )
 #else
 	return shallowcopy ( rhs );
 #endif
-	//myprintf("array_link::operator= (index %d)\n", rhs.index);
-	/*	this->n_rows = rhs.n_rows;
-		this->n_columns = rhs.n_columns;
-		this->index = rhs.index;
-		if (array_link::deepcopy) {
-		  // perform deep copy
-		  if(this->array)
-		    destroy_array(this->array);
-		  //this->array =  create_array(this->n_rows, this->n_columns);
-		  this->array = clone_array(rhs.array, this->n_rows, this->n_columns) ;
-
-		} else {
-		this->array = rhs.array;
-		}
-		return *this;
-		*/
 }
 
 inline  array_link & array_link::shallowcopy ( const array_link& rhs )
@@ -1127,14 +1107,7 @@ inline int array_link::operator> ( const array_link& rhs ) const
 	}
 #endif
 
-	return std::lexicographical_compare ( rhs.array, rhs.array + n_rows*n_columns, array, array + n_rows*n_columns ) ;
-
-	/*
-	if( (*this)==rhs)
-	    return 0;
-	if ( (*this) < rhs) return 0;
-	return 1;
-	*/
+	return std::lexicographical_compare ( rhs.array, rhs.array + n_rows*n_columns, array, array + n_rows*n_columns ) ;	
 }
 
 /**
@@ -1206,10 +1179,11 @@ inline void fastJupdate ( const array_t *array, rowindex_t N, const int J, const
 	return;
 }
 
-/// Calculate J-value for an array
+/** Calculate J-value for an array
+ */
 int jvalue ( const array_link &ar,const int J, const int *pp );
 
-/// calcualte J-value for an array
+/// calculate J-value for an array
 int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex_t *pp );
 
 /// Analyse a list of arrays

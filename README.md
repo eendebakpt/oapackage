@@ -1,25 +1,11 @@
 Orthogonal Array Package
 ========================
 
-(version 2.0)
+(version 2.2)
 
 The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the page <http://pietereendebak.nl/oapackage/>.
-If you use this code or any of the results, please cite this program as follows:
-
-Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays, P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
-
-The code was written by:
-
-* Pieter Eendebak <pieter.eendebak@gmail.com>
-* Vincent Brouerius van Nidek
-
-Ideas contributed by:
-
-* Eric Schoen <eric.schoen@tno.nl>
-
-See the file LICENSE for copyright details.
 
 Usage
 -------
@@ -44,10 +30,20 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
-For more usage examples see
+If you use this code or any of the results, please cite this program as follows:
 
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/eendebakpt/oapackage-examples)
+Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays, P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
 
+The code was written by:
+
+* Pieter Eendebak <pieter.eendebak@gmail.com>
+* Vincent Brouerius van Nidek
+
+Ideas contributed by:
+
+* Eric Schoen <eric.schoen@tno.nl>
+
+See the file LICENSE for copyright details.
 
 Installation
 ------------

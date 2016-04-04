@@ -1,22 +1,7 @@
 #include "mathtools.h"
 
-//#include <stdio.h>
 #include <numeric>
 
-/*
-dummy::dummy() { val = 0; }
-dummy::dummy(double d) {
-    val=d;
-}
-dummy::~dummy() {}
-
-int dummy::operator< ( const dummy &rhs ) const
-    {
-      myprintf("dummy class: operator <: value %f, %f\n", val, rhs.val);
-
-      return val < rhs.val;
-    }
-*/
 
 #ifdef RPACKAGE
 #else
@@ -273,8 +258,7 @@ void initncombscache(int N) {
 	const int nrows=N+1;
 		if(ncombsdata!=0) {
 	delete [] ncombsdata[0];
-	delete [] ncombsdata;
-			
+	delete [] ncombsdata;			
 		}
 		
 	ncombsdata = new long* [nrows];

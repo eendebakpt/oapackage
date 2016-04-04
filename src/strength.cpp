@@ -40,12 +40,14 @@ extend_data_t::extend_data_t ( const arraydata_t *ad, colindex_t extcol ) : adat
 	es->ncolcombs = ncolcombs;
 
 #ifdef FULLPACKAGE
+	/*
 	if ( checkloglevel ( DEBUG ) ) {
 		for ( int x=0; x<ncolcombs; x++ ) {
 			std::cout << "colcomb " << x << " ";
 			print_perm ( es->colcombs[x], es->adata->strength );
 		}
 	}
+	*/
 #endif
 
 	// allocate table for frequency count

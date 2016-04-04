@@ -46,6 +46,8 @@ import_array();
 %apply (int* ARGOUT_ARRAY1, int DIM1, double xx) {(int* rangevec, int n, double xx)}
 %apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(array_t* pymat2, int nrows, int ncols)}
 
+// enable keyword arguments in interface
+//%feature ("kwargs")
 
 %include "std_pair.i"
 
@@ -296,11 +298,8 @@ def __setitem__(self,index, value):
 
 
 // http://www.swig.org/Doc2.0/Python.html#Python_nn47
-//%include "carrays.i"
-//%array_class(int, intArray);
 
 %include "cpointer.i"
-//%pointer_functions(int, intp);
 
 
 // ignore variable argument length functions
