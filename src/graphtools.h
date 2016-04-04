@@ -21,11 +21,11 @@ std::vector<Type> sorthelper ( std::vector<Type> &v )
 	std::vector<Type> w ( v.size() );
 	std::copy ( v.begin(), v.end(), w.begin() );
 	int rmin=w[0];
-	for ( int j=0; j<w.size(); j++ ) {
+	for ( typename std::vector<Type>::size_type j=0; j<w.size(); j++ ) {
 		rmin = std::min ( rmin, w[j] );
 	}
 
-	for ( int i=0; i<w.size(); i++ )
+	for ( typename std::vector<Type>::size_type i=0; i<w.size(); i++ )
 		w[i] -= rmin;
 	return w;
 }

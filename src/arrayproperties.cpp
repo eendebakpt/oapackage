@@ -116,7 +116,7 @@ public:
 	/// convert a linear index to normal indices
 	inline void linear2idx ( int ndx, std::vector<int> & nidx ) const {
 
-		assert ( nidx.size() ==this->k );
+		assert ( (int) nidx.size() ==this->k );
 		for ( int i=k-1; i>=0; i-- ) {
 			div_t xx = div ( ndx, cumprod[i] );
 			int vi = xx.rem;

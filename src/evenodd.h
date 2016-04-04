@@ -7,7 +7,7 @@
 
 #ifdef OADEBUG
 #else
-#define DOOPENMP
+//#define DOOPENMP
 #endif
 
 #include "arraytools.h"

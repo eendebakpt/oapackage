@@ -141,10 +141,6 @@ options.getcanon=true;
 		}
 	}
 
-	//for ( v = 0; v < n; ++v )
-	//	ADDONEEDGE ( g,v, ( v+1 ) %n,m );
-
-
 	setcolors ( colors, lab, ptn );
 	options.defaultptn=false;
 
