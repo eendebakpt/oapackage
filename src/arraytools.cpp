@@ -121,7 +121,7 @@ void array_transformation_t::show ( ) const
 	std::stringstream ss;
 	this->show ( ss );
 	//std::cout << ss.str();
-	printf("%s", ss.str().c_str() );
+	printf ( "%s", ss.str().c_str() );
 #endif
 }
 
@@ -3485,6 +3485,28 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
 	return index;
 }
 
+arraylist_t  arrayfile_t::readarrays ( int nmax, int verbose )
+{
+	arraylist_t ll;
+
+	if ( ! this->isopen() ) {
+		if ( verbose<=1 ) {
+			myprintf ( "arrayfile_t::readarrays: array file is not open (file %s)\n", this->filename.c_str() );
+		}
+
+		return ll;
+	}
+
+	for ( int i=0; i<nmax; i++ ) {
+
+		array_link x = this->readnext();
+		if ( x.index==array_link::INDEX_ERROR )
+			break;
+		ll.push_back ( x );
+	}
+	return ll;
+}
+
 array_link arrayfile_t::readnext()
 {
 	array_link al ( this->nrows, this->ncols, array_link::INDEX_DEFAULT );
@@ -3527,15 +3549,16 @@ int arrayfile_t::read_array ( array_link &a )
 			} else {
 				myprintf ( "error reading array: index %d, result %d\n", index, result );
 			}
-			index=-1;
+			index=array_link::INDEX_ERROR;
 			a.index=index;
 			break;
 
 		}
+		/*
 		if ( index==-1 ) {
 			myprintf ( "arrayfile_t::read_array: updating index (-1 is invalid)\n" );
 			index=0;
-		}
+		}*/
 		int32_t nrest;
 		result = afread ( &nrest, 1,sizeof ( int32_t ) );
 
@@ -3769,7 +3792,6 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
 		if ( verbose>=3 )
 			myprintf ( "readarrayfile: i %ld\n", i );
 		alink = new array_link ( afile->nrows, afile->ncols, i+1 );
-		//index=afile->read_array ( alink->array, afile->nrows, afile->ncols );
 		index=afile->read_array ( *alink );
 
 		// NOTE: for array files we have used -1 to read arrays to the end of file,
@@ -4914,8 +4936,8 @@ void conference_transformation_t::randomizerowperm()
 
 void conference_transformation_t::randomizerowflips()
 {
-	for(size_t i=0; i<this->rswitch.size(); i++) 
-		this->rswitch[i] = 2*(rand()%2)-1;
+	for ( size_t i=0; i<this->rswitch.size(); i++ )
+		this->rswitch[i] = 2* ( rand() %2 )-1;
 }
 
 

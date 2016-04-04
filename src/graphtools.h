@@ -3,7 +3,7 @@
 \brief This file contains definitions and functions related to graphs and designs.
 
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2015
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2016
 
  Copyright: See COPYING file that comes with this distribution
 */

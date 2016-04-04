@@ -19,7 +19,8 @@
 #include "tools.h"
 #include "arrayproperties.h"
 
-#include "oadevelop.h"
+//#include "oadevelop.h"
+#include "evenodd.h"
 #include "pareto.h"
 
 /// calculate directory name for job splitted into parts
@@ -147,22 +148,22 @@ typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array
 typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb_cache ) ( const array_link &, int, rankStructure &rs ) ;
 
 template <class IndexType>
-inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5Cache ( const array_link &al, int verbose, rankStructure &rs  )
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5Cache ( const array_link &al, int verbose, rankStructure &rs )
 {
-	
-	 const int N = al.n_rows;
-   //int r = arrayrankColPiv(array2xf(al));
-	 int r = rs.rankxf(al);
-  mvalue_t<long> wm = A3A4(al);
-  mvalue_t<long> v = F4(al);
-   
-   typename Pareto<mvalue_t<long>,IndexType>::pValue p;
-   p.push_back ( r ); // rank of second order interaction matrix
-   p.push_back ( wm ); // A4
-   p.push_back ( v ); // F
-  addJmax<IndexType>(al, p, verbose);
-  
-  return p;
+
+	const int N = al.n_rows;
+	//int r = arrayrankColPiv(array2xf(al));
+	int r = rs.rankxf ( al );
+	mvalue_t<long> wm = A3A4 ( al );
+	mvalue_t<long> v = F4 ( al );
+
+	typename Pareto<mvalue_t<long>,IndexType>::pValue p;
+	p.push_back ( r ); // rank of second order interaction matrix
+	p.push_back ( wm ); // A4
+	p.push_back ( v ); // F
+	addJmax<IndexType> ( al, p, verbose );
+
+	return p;
 }
 
 void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
@@ -170,16 +171,19 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 
 	// allocate for fast rank calculations
 	rankStructure rs[25];
-	for(size_t i=0; i<25; i++) rs[i].nsub=4;
-	
-	if (verbose>=2) {
-	printfd("addArraysToPareto: %d arrays\n", (int) arraylist.size() );
+	for ( size_t i=0; i<25; i++ )
+		rs[i].nsub=3;
+
+	if ( verbose>=2 ) {
+		printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
 	}
-	
+
 	#pragma omp parallel for
 //#pragma omp parallel for num_threads(4)
+//	#pragma omp parallel for dynamic
+//	#pragma omp parallel for schedule(static, 10000)
 	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
-		if ( verbose>=3 || ( ( i%5000==0 ) && verbose>=2 ) ) {
+		if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
 			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
 			printf ( "  " );
 			pset.show ( 1 );
@@ -192,7 +196,7 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 
 		/* Obtain thread number */
 		int tid = omp_get_thread_num();
- 
+
 		//parseArrayPareto ( al, al, pset, verbose );
 		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3, rs[tid] );
 
@@ -208,8 +212,8 @@ const std::string filesep = "/";
 
 /**
  * @brief Gather subset of arrays using Pareto optimality
- * 
- * 
+ *
+ *
  * @param argc
  * @param argv[]
  * @return Returns zero if we have a good run, otherwise an errorcode
@@ -291,8 +295,8 @@ int main ( int argc, char* argv[] )
 	if ( paretomethod )
 		paretofunction = calculateArrayParetoJ5Cache<array_link>;
 
-	assert(paretomethod==1); // other methods not implemented at this moment...
-	
+	assert ( paretomethod==1 ); // other methods not implemented at this moment...
+
 	arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString ( opt.getStringValue ( 'f', "BINARY" ) );
 
 	arraydata_t *adata = readConfigFile ( configfile );
@@ -300,6 +304,9 @@ int main ( int argc, char* argv[] )
 
 	if ( verbose ) {
 		printf ( "oaclustergather: basedir %s, split0 %d, nsplit1 %d, kmin %d, kmax %d, verbose %d\n", basedir.c_str(), split0, nsplit1, kmin, kmax, verbose );
+#ifdef DOOPENMP
+		printf ( "oaclustergather: openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
+#endif
 	}
 	if ( verbose ) {
 		std::cout << "#time start: "<< currenttime() << std::endl;
@@ -351,7 +358,7 @@ int main ( int argc, char* argv[] )
 
 		if ( verbose ) {
 			printf ( " \n## oaclustergather: %d columns, gathering results for stage %d: split %s (time %.1f [s])\n", k, level, splittag.c_str(), get_time_ms()-time0 );
-			fflush ( 0 );			
+			fflush ( 0 );
 		}
 		// loop over all subsections
 		for ( int jj=0; jj<nsplit[level]; jj++ ) {
@@ -432,7 +439,7 @@ int main ( int argc, char* argv[] )
 			else {
 				// no source of Pareto files....
 				if ( cleanrun || verbose>=1 ) {	// only report error if we are in a clean run
-					fprintf ( stderr, "   error: file %s\n", psourcefile.c_str() );
+					fprintf ( stdout, "   error: file %s\n", psourcefile.c_str() );
 				}
 				cleanrun=0;
 				cleanrunK=0;
@@ -443,11 +450,44 @@ int main ( int argc, char* argv[] )
 				}
 			}
 
-			const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
-			addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
+			long naread=0; // number of arrays read
+			if ( 0 ) {
+				const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
+				naread = arraylist.size() ;
+				addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
+			} else {
+				// blocked read of arrays
+				const long narraymax = 50000; // max number of arrays to read in a block
+				arrayfile_t afile ( psourcefile.c_str(), 0 );
+
+				if ( ! afile.isopen() ) {
+					if ( verbose ) {
+						myprintf ( "oaclustergather: problem with file %s\n", afile.filename.c_str() );
+					}
+					return 0;
+				}
+
+				long narrays = afile.narrays;
+				if ( narrays<0 )
+					narrays = arrayfile_t::NARRAYS_MAX;
+
+				int loop=0;
+				while ( true ) {
+					long n = std::min( narraymax, narrays-naread );
+					//printf(" try to read %ld/%ld arrays\n", n, narraymax);
+					const arraylist_t arraylist = afile.readarrays ( n );
+					if (verbose>=2)
+						printf ( "oaclustergather: read arrays in block %d: %d arrays (%ld/%ld)\n", loop, ( int ) arraylist.size(), naread, narrays );
+					if (arraylist.size() <=0 )
+						break;
+					addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
+					naread += arraylist.size() ;
+					loop++;
+				}
+			}
 
 			if ( verbose>=3 || ( ( jj%60==0 || ( jj==nsplit[level]-1 ) ) && verbose>=2 ) ) {
-				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], arraylist.size(), pset.number(), pset.numberindices() );
+				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], naread, pset.number(), pset.numberindices() );
 				//std::cout << " dummy, verbose " << verbose << printfstring("jj %d", jj) << std::endl; // dummy print
 				//printf ( "  " ); pset.show ( 1 );
 				fflush ( 0 );
@@ -456,7 +496,7 @@ int main ( int argc, char* argv[] )
 
 		if ( verbose ) {
 			printf ( "  final pareto set %d cols (%d files): ", k, nsplit[level] );
-			if (verbose>=2)
+			if ( verbose>=2 )
 				pset.show ( 2 );
 			else
 				pset.show ( 1 );
@@ -482,7 +522,7 @@ int main ( int argc, char* argv[] )
 			std::string pfile = basedir + "/" + cdir + pfile0;
 
 			if ( verbose )
-				printf ( "  writing pareto file %s (%ld/%ld arrays)\n", pfile0.c_str(), (long) npareto[k], (long) na[k] );
+				printf ( "  writing pareto file %s (%ld/%ld arrays)\n", pfile0.c_str(), ( long ) npareto[k], ( long ) na[k] );
 			writearrayfile ( pfile.c_str(), &pp, arrayfilemode, adata->N, k );
 			//fflush ( 0 );
 		}
@@ -508,13 +548,19 @@ int main ( int argc, char* argv[] )
 	/* free allocated structures */
 	delete adata;
 
+	const long natotal = std::accumulate ( na.begin(), na.end(), 0 );
+
+	if ( verbose>=2 ) {
+		printf ( "  total number of arrays: %ld, %.1f Marrays/hour\n", natotal, ( 3600./1e6 ) *natotal/ ( get_time_ms()-time0 ) );
+	}
+
 	if ( verbose ) {
 		std::cout << "#time end: "<< currenttime() << std::endl;
 		std::cout << "#time total: " << printfstring ( "%.1f", get_time_ms()-time0 ) << " [s]" << std::endl;
 		fflush ( 0 );
 	}
-	
-	if (cleanrun) 
+
+	if ( cleanrun )
 		return 0;
 	else
 		return 1;

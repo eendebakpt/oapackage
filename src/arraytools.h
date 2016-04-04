@@ -525,13 +525,11 @@ static inline array_t* create_array ( const int nrows, const int ncols )
 
 /**
  * @brief Create an array from an arraydata_t structure
- * @param ad
- * @return
  */
 inline array_t* create_array ( const arraydata_t *ad )
 {
 	return create_array ( ad->N, ad->ncols );
-}
+} 
 
 
 /**
@@ -1251,8 +1249,6 @@ public:
 
 		const int nc = this->ad->ncols;
 		//const int nr = this->ad->N;
-		//colperm_t tmpc = new_perm<colindex_t>(nc);
-		//rowperm_t tmpr = new_perm<rowindex_t>(nr);
 
 		//  myprintf("  array_transformation_t operator*: perform perms\n");
 
@@ -1261,11 +1257,6 @@ public:
 
 		// perform the column permutations
 		perform_inv_perm ( b.cperm, c.cperm, nc, a.cperm );
-		//invert_permutation(tmpc, nc, c.colperm);
-
-		//colperm_t tmpcolpermai = invert_permutation ( a.colperm, nc);
-		//colperm_t tmpcolpermbi = invert_permutation ( b.colperm, nc);
-		//colperm_t tmpcolpermci = invert_permutation ( c.colperm, nc);
 
 		/* level permutations */
 		for ( colindex_t ci=0; ci<ad->ncols; ci++ ) {
@@ -1273,18 +1264,6 @@ public:
 			levelperm_t l2 = a.lperms[ci];
 
 			composition_perm ( l1, l2, this->ad->s[ci], c.lperms[ci] );
-
-			if ( ci==133 ) {
-
-				myprintf ( "a:\n" );
-				a.show();
-				myprintf ( "b:\n" );
-				b.show();
-				myprintf ( "permutation of col %d:\n", ci );
-				print_perm ( l1, ad->s[ci] );
-				print_perm ( l2, ad->s[ci] );
-				print_perm ( c.lperms[ci], ad->s[ci] );
-			}
 		}
 
 		//delete_perm(tmpc);
@@ -1413,7 +1392,7 @@ private:
 
 namespace arrayfile
 {
-
+ 
 /// format mode
 enum arrayfilemode_t {ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR};
 enum afilerw_t {READ, WRITE, READWRITE};
@@ -1444,6 +1423,8 @@ public:
 
 	int narraycounter;
 
+	static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000;	/* maximum number of arrays in structure */
+
 public:
 
 	/// default constructor
@@ -1470,6 +1451,9 @@ public:
 
 	/// read next array from the file
 	array_link readnext();
+
+	/// read set of array from the file
+	arraylist_t  readarrays(int nmax = NARRAYS_MAX, int verbose=1);
 
 	/// flush any open file pointer
 	void flush();
@@ -1544,7 +1528,6 @@ public:
 		return ( this->mode==ABINARY );
 	}
 
-	static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000;	/* maximum number of arrays in structure */
 
 private:
 
