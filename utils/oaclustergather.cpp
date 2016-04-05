@@ -19,6 +19,8 @@
 #include "tools.h"
 #include "arrayproperties.h"
 
+#include "timsort.hpp"
+
 //#include "oadevelop.h"
 #include "evenodd.h"
 #include "pareto.h"
@@ -475,7 +477,12 @@ int main ( int argc, char* argv[] )
 				while ( true ) {
 					long n = std::min( narraymax, narrays-naread );
 					//printf(" try to read %ld/%ld arrays\n", n, narraymax);
-					const arraylist_t arraylist = afile.readarrays ( n );
+					arraylist_t arraylist = afile.readarrays ( n );
+					
+					// http://www.cs.kent.edu/~jbaker/23Workshop/Chesebrough/mergesort/mergesortOMP.cpp
+					// ??? http://berenger.eu/blog/c-openmp-a-shared-memory-quick-sort-using-with-openmp-tasks-example-source-code/
+					//std::sort(arraylist.begin(), arraylist.end() ); // sorting the arrays makes the rank calculations with subrank re-use more efficient
+					gfx::timsort(arraylist.begin(), arraylist.end() ); // sorting the arrays makes the rank calculations with subrank re-use more efficient
 					if (verbose>=2)
 						printf ( "oaclustergather: read arrays in block %d: %d arrays (%ld/%ld)\n", loop, ( int ) arraylist.size(), naread, narrays );
 					if (arraylist.size() <=0 )
@@ -499,7 +506,7 @@ int main ( int argc, char* argv[] )
 			if ( verbose>=2 )
 				pset.show ( 2 );
 			else
-				pset.show ( 1 );
+				pset.show ( 2 );
 		}
 
 		// write pareto set to disk
