@@ -24,8 +24,9 @@
 #include "oadevelop.h"
  
 #ifdef OADEBUG
+
 #else
-#define DOOPENMP
+//#define DOOPENMP
 #endif
 
 #ifdef DOOPENMP
@@ -140,7 +141,6 @@ int main ( int argc, char* argv[] )
 	if ( 0 ) {
 		//printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
 		omp_set_nested ( 1 );
-		//omp_set_dynamic(4);
 		printf ( "openmp: num threads %d\n", omp_get_max_threads() );
 	}
 	if ( omp_get_nested() !=0 )
@@ -239,12 +239,8 @@ int main ( int argc, char* argv[] )
 	} else {
 		//exit(0);
 	}
+
 	// loop over all arrays
-
-	//printf("loop start\n"); double t0x=get_time_ms(); // HACK
-	//dextend.oaextend.extendarraymode=OAextend::NONE; // HACK
-
-	//FIXME2: enable this parallel loop?, num_threads(4)
 	#pragma omp parallel for  schedule(dynamic,1)
 	for ( int ai=0; ai< ( int ) arraylist->size(); ai++ ) {
 		const array_link &al = arraylist->at ( ai );
@@ -266,12 +262,6 @@ int main ( int argc, char* argv[] )
 		dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
 
 		depth_extend_array ( al, dextendloop, *adfull, verbose, ds, ai );
-
-		//ds->columnextensionsList[i];
-		// 		printfd("#### omp_get_thread_num() %d: num extensions %d\n", omp_get_thread_num(), ds->columnextensionsList[ai].size() );
-
-		//printfd ( "array %zu: thread %d/%d\n", ai , omp_get_thread_num(), omp_get_num_threads() );
-
 
 		if ( ai%800==0 ) {
 			printf ( "array %d: ", ai );
@@ -308,26 +298,9 @@ int main ( int argc, char* argv[] )
 			dextendloop.setposition ( al.n_columns, ai, arraylist->size(), 0, 0 );
 			dextendloop.loglevelcol=al.n_columns;
 
-//printf("ai %zu: dextendloop.extension_column_list.size(), =dextendsub.valididx.size(): %zu %zu\n", ai, dextendloop.extension_column_list.size(), ds->dextendsubList[ai].valididx.size() );
-//printf("ai %zu: ->ad: %ld\n", ai , (long) dextendloop.ad );
-//printf("ai %zu: ->ad.s: %ld\n", ai, (long) dextendloop.ad->s );
-//adfull->show();
-//dextendloop.ad->show();
-
-			/*
-			for (int kk=0; kk<ds->goodarrayslist[ai].size(); kk++) {
-								int ps = ds->goodarrayslist[ai][kk].row_symmetry_group().permsize();
-			printfd("## array %zu: group size %d\n", kk, ps);
-			}
-			*/
-
-//printf("## oa_depth_extend: ds->goodarrayslist[ai][0].n_columns %d, extensioncol %d\n", ds->goodarrayslist[ai][0].n_columns, extensioncol );
-
-//ds->depthalglist[ai]=DEPTH_DIRECT; // HACK
 			processDepth ( ds->goodarrayslist[ai], ds->depthalglist[ai], dextendloop, ds->dextendsubList[ai], extensioncol, verbose );
 
 //		dextendloop.showprogress(1, extensioncol, 1);
-
 		}
 	}
 

@@ -70,15 +70,13 @@ set(srcsextend ${srcs} src/extend.cpp src/lmc.cpp src/nonroot.cpp )
 set(headersextend ${headersextend} src/InfInt.h)
 set(srcsextend ${srcsextend} src/InfInt.cpp)
 
+set(headersextend ${headersextend} src/conference.h)
+set(srcsextend ${srcsextend} src/conference.cpp)
 
 if(OADEV)
   set(headersextend ${headersextend} dev/oadevelop.h)
   set(srcsextend ${srcsextend} dev/oadevelop.cpp)
   include_directories(dev)
-
-  set(headersextend ${headersextend} src/conference.h)
-  set(srcsextend ${srcsextend} src/conference.cpp)
-
 endif()
 
 set(OUTPUTDIR ${CMAKE_SOURCE_DIR})
@@ -261,14 +259,14 @@ include_directories(nauty)
 
 set(graphsrc )
 
-set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example )
+set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference)
 set(progsextend )
 
 if(OAEXTEND)
   list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oa_depth_extend oaextendA oaconference  oaclustergather)
+  list(APPEND progs oatest oa_depth_extend oaextendA oaclustergather)
 endif()
    
 if (WIN32)

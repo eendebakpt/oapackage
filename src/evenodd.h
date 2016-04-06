@@ -483,12 +483,13 @@ public:
 	/// show information about the progress of the loop
 	bool showprogress ( int showtime=1, int depth= 0, int forcelog=0 )  {
 		{
-			double dt0 = get_time_ms()-t0;
-			double dt = get_time_ms()-tp;
+			double currenttime = get_time_ms();
+			double dt = currenttime-tp;
 			if ( ( dt>logtime ) || forcelog ) {
 				#pragma omp critical
 				tp=get_time_ms();
 				this->arraywriter->flush();
+				double dt0 = currenttime-t0;
 				if ( showtime ) {
 					int na= this->counter->nArrays();
 
@@ -558,6 +559,37 @@ struct depth_extensions_storage_t {
 	std::vector<depth_alg_t> depthalglist;
 	std::vector<depth_extend_sub_t> dextendsubList;
 };
+
+/** Extend arrays using a depth-first or breadth-first approach
+ * 
+ * @param goodarrays List of arrays to extend
+ * @param depthalg Extend using depth-first or breadth-first
+ * @param dextend Option structure for the extension
+ * @param dextendsublight Data structure for the extensions
+ * @param extensioncol Column to extend
+ * @param verbose Verbosity level
+ */
+void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t &dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int verbose = 0 );
+
+/// depth-first extension of arrays. depending on the symmetry group of the array to be extended a direct method is used or a method with caching of candidate columns
+void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose );
+
+/// variation of depth_extend for arrays with large symmetry groups
+void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose );
+
+
+
+
+/** @brief perform depth-first extension
+ *
+ * The arrays generated are pruned by keeping a list of possible extension values
+ *
+ */
+void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int col, int verbose=1 );
+
+
+/// depth extend a single array
+void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const arraydata_t &adfull, int verbose , depth_extensions_storage_t *ds = 0, int = 0 );
 
 
 
