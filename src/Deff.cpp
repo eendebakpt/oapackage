@@ -73,7 +73,6 @@ DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestartsmax, std::v
 			myprintf ( "Doptimize: iteration %d/%d: %f %f %f: score %.3f\n", i, nrestartsmax, dd[0], dd[1], dd[2], score );
 		}
 
-		
 		}
 
 #ifdef DOOPENMP
@@ -181,7 +180,6 @@ double scoreD ( const std::vector<double> dd, const std::vector<double> alpha )
 
 DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector<double> alpha, int verbose, int nabort )
 {
-
 	const size_t nn = sols.size();
 	double t0 = get_time_ms();
 	std::vector<std::vector<double> > dds ( nn );
@@ -404,15 +402,12 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
 		myprintf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
 	}
 
-	//myprintf("nx %d\n", nx);
 	return A;
-//      return std::pair<array_link, std::vector<double> >(A, dd);
 }
 
 
 array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niter, int nabort )
 {
-
 	int nx=0;
 	int N = arrayclass.N;
 	int k = arrayclass.ncols;
@@ -474,8 +469,6 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 
 		switch ( optimmethod ) {
 		case DOPTIM_SWAP: // swap
-
-
 			A._setvalue ( r,c,o2 );
 			A._setvalue ( r2,c2,o );
 			break;
@@ -579,7 +572,6 @@ extern "C" {
 	
 	double DoptimizeR ( int *pN, int *pk, int *nrestarts, double *alpha1, double *alpha2, double *alpha3, int *_verbose, int *pointer_method, int *_niter, double *maxtime , int *nabort, double *output )
 	{
-
 		int niter=*_niter;
 		int method=*pointer_method;
 		int N = *pN;
@@ -627,7 +619,6 @@ std::vector<double> dd = best.Defficiencies();
 		if ( verbose>=2 ) {
 			myprintf ( "DoptimizeR: done\n" );
 		}
-//best.showarray();
 
 		return best.Defficiency();
 

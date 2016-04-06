@@ -483,7 +483,7 @@ bool valid_element_2level ( const extend_data_t *es, const extendpos *p )
 		//int freq_pos = freqpositions[z];
 
 		//OPTIMIZE: create a lambda minus one table
-		//FIXME2: use structure of freqtable to make better indexing
+		//IDEA: use structure of freqtable to make better indexing
 
 		if ( freqtable0[freqpositions2[z]] >= es->lambda2lvl ) { // (es->freqtable[z][freq_pos]  >= es->lambda2lvl)
 			//cout << "colcomb:" << z << endl;
@@ -510,10 +510,7 @@ bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose 
 	
 	strength_check_t strengthcheck ( ad.strength );
 
-	//int oaindextmin = get_oaindex ( ad.s, ad.strength-1, ad.N );
-
 	/* set column combinations with extending column fixed */
-
 	int fixcol=al.n_columns-1;
 	if ( verbose>=2 )
 		myprintf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
@@ -548,23 +545,6 @@ bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose 
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
 		//myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
 
-
-		/*
-		for ( int t=0; t<ad.strength; t++ )
-			arraycol[t] = al.array+ad.N*strengthcheck.colcombs[i][t];
-		for ( int t=0; t<ad.strength; t++ )
-			sss[t]= ad.s[strengthcheck.colcombs[i][t]];
-
-		for ( int r=0; r<ad.N; r++ ) {
-			int valindex=0;
-			for ( int t=0; t<ad.strength; t++ ) {
-				int s = sss[t];
-				array_t val = arraycol[t][r];
-				valindex = valindex*s+val;
-			}
-			strengthcheck.freqtable[i][valindex]++;
-		}
-		*/
 		assert ( ad.N<=MAXROWS );
 			int valindex[MAXROWS];
 			std::fill_n(valindex, ad.N, 0);
@@ -582,8 +562,6 @@ bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose 
 				strengthcheck.freqtable[i][vi]++;
 			}
 	
-		
-		
 		for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
 			//    myprintf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], nvalues[i] );
 			if ( strengthcheck.freqtable[i][j]!=ad.N/strengthcheck.nvalues[i] ) {
@@ -604,8 +582,6 @@ bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose 
 	}
 //	print_frequencies(strengthcheck.freqtable, strengthcheck.ncolcombs, nvalues, ad.N);
 
-	//delete [] sss;	delete [] arraycol;
-	
 	return val;
 }
 
@@ -691,7 +667,6 @@ colindex_t **set_colcombs_fixed ( int*& xlambda, int*& nvalues, int &ncolcombs, 
 		nvalues[i] = prod;
 		xlambda[i] = N/prod;
 	}
-	//return colcombs;
 
 	prod = 1;	//First lambda manually, because of copy-for-loop
 	for ( i = 0; i < strength; i++ )

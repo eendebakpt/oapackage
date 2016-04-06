@@ -302,7 +302,6 @@ void array_transformation_t::randomize()
 	for ( int x=0; x<ad->ncolgroups; x++ ) {
 		random_perm ( cperm+ad->colgroupindex[x], +ad->colgroupsize[x] );
 	}
-	//cout << "random permutation: col perm "; print_perm(colperm, ad->ncols);
 
 	/* level permutation */
 	for ( colindex_t c=0; c<ad->ncols; c++ ) {
@@ -336,11 +335,8 @@ array_transformation_t array_transformation_t::inverse() const
 
 	/* level permutations */
 	for ( colindex_t ci=0; ci<ad->ncols; ci++ ) {
-//	  levelperm_t l1 = b.lperms[tmpcolpermai[ci]];
-//	  levelperm_t l2 = a.lperms[ci];
 
 		colindex_t cir = this->cperm[ci];
-//	  colindex_t cir = A.colperm[ci];
 
 		invert_permutation ( this->lperms[ci], this->ad->s[ci], A.lperms[cir] );
 
@@ -468,9 +464,6 @@ void foldtest ( jstruct_t &js, const array_link &al, int jj, int verbose )
 	free2d ( tmpcol, jj+1 );
 	delete_comb ( pp );
 }
-
-// / write arrayfile to file in test format
-//void write_arrayfile_text ( FILE *fid, carray_t *array, const int nrows, const int ncols, int index = 0 );
 
 /** Return number of arrays with j_{2n+1}=0 for n<m */
 std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose )
@@ -680,8 +673,6 @@ array_link::array_link ( const std::vector<int> &v, rowindex_t nrows, colindex_t
 	//myprintf("array_link::constructor: from array (index %d)\n", index);
 	this->array = create_array ( nrows, ncols );
 	std::copy ( v.begin(), v.begin() +nrows*ncols, this->array );
-
-	//initswig();
 }
 
 //! Default constructor
@@ -703,8 +694,6 @@ void array_link::init ( rowindex_t r, colindex_t c )
 
 	this->array = create_array ( n_rows, n_columns );
 
-	//initswig();
-
 }
 
 
@@ -725,9 +714,6 @@ array_link::~array_link()
 array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_ ) : n_rows ( nrows ), n_columns ( ncols ), index ( index_ )
 {
 	this->array = create_array ( nrows, ncols );
-
-//	initswig();
-
 }
 
 //! Create array link with array
@@ -736,9 +722,6 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
 // myprintf("array_link::array_link: nrows %d, ncols %d\n", nrows, ncols);
 	this->array = create_array ( nrows, ncols );
 	this->setarraydata ( data, nrows*ncols );
-
-//	initswig();
-
 }
 
 int array_link::firstColumnDifference ( const array_link &A ) const
@@ -4238,19 +4221,6 @@ arrayfile_t::~arrayfile_t()
 
 
 	closefile();
-	/*
-	// close file handles
-	if ( nfid!=0 ) {
-	    fclose ( nfid );
-	    nfid=0;
-	}
-	#ifdef USEZLIB
-	if ( gzfid!=0 ) {
-	    gzclose ( gzfid );
-	    gzfid=0;
-	}
-	#endif
-	*/
 }
 
 /**
@@ -4292,7 +4262,7 @@ void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int
 
 		// fill bit array
 		for ( int i=0; i<nrows*ncols; i++ ) {
-			// TODO: this can be made much faster by parsing multiple bits
+			// IDEA: this can be made faster by parsing multiple bits
 			array[i] = bit_array_get_bit_nocheck ( bitarr, i );
 		}
 		bit_array_free ( bitarr );
@@ -4352,8 +4322,6 @@ void arrayfile_t::write_array_binary_diff ( const array_link &A )
 		A.showarray();
 		myprintf ( "-------------\n" );
 	}
-
-//    printf("write_array_binary_diff: i %d\n", i);
 
 	for ( int i=0; i<diffarray.n_columns; i++ ) {
 // printf("write_array_binary_diff: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));
@@ -4419,7 +4387,6 @@ void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
 		this->write_array_binary ( z );
 	} else {
 		array_link z = rest;
-		//printf("write_array_binary_diffzero: writing array (i): "); z.show();
 		this->write_array_binary ( z );
 	}
 
@@ -4556,20 +4523,11 @@ int appendarrayfile ( const char *fname, const array_link al )
 		}
 	}
 
-	//printf("before append: afile->narrays %d, narraycounter %d\n", afile->narrays, afile->narraycounter);
+	//printf("before seek: afile->narrays %d, narraycounter %d\n", afile->narrays, afile->narraycounter);
 	afile->seek ( afile->narrays );
-	//printf("after seek: afile->narrays %d, narraycounter %d, ftell %ld\n", afile->narrays, afile->narraycounter, ftell(afile->nfid) );
 
-#ifdef WIN32
-#else
-	// debugging code
-	if ( 0 ) {
-		int fs = get_file_status ( afile->nfid );
-		printf ( "# file status %d (O_RDONLY %d, O_RDWR %d, O_APPEND %d)\n", fs, O_RDONLY , O_RDWR, O_APPEND );
-		printf ( "# file status mask: (O_RDONLY %d, O_WRONLY %d, O_RDWR %d, O_APPEND %d)\n", O_RDONLY & fs , O_WRONLY & fs, O_RDWR & fs, O_APPEND & fs );
-		printf ( "# file status mod 4: %d\n", fs % 4 );
-	}
-#endif
+//		int fs = get_file_status ( afile->nfid );
+//		printf ( "# file status %d (O_RDONLY %d, O_RDWR %d, O_APPEND %d)\n", fs, O_RDONLY , O_RDWR, O_APPEND );
 
 	if ( ! afile->isopen() ) {
 		printf ( "writearrayfile: problem with file %s\n", fname );
@@ -4651,9 +4609,6 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
 				display_vector<int> ( sidx );
 				std::cout << std::endl;
 			}
-			//vv.sortdescending(idx);
-			// std::vector<int> sidx2 = vv.sorted(idx);
-			//cout << "sidx2: "; display_vector<int>(sidx2); cout << endl;
 			arraylist_t tmp;
 			if ( verbose>=2 ) {
 				std::cout << "vv.indices: ";
@@ -4841,7 +4796,6 @@ array_link conference_transformation_t::apply ( const array_link &al ) const
 	array_link alx ( al.n_rows, al.n_columns, al.index );
 	array_link tmp ( al.n_rows, al.n_columns, al.index );
 
-
 	/* column permutations */
 	perform_column_permutation ( al, tmp, cperm );
 	perform_row_permutation ( tmp, alx, rperm );
@@ -4853,7 +4807,6 @@ array_link conference_transformation_t::apply ( const array_link &al ) const
 		}
 	}
 
-	//printfd("not tested\n");
 	return alx;
 }
 

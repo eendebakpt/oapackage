@@ -59,8 +59,6 @@ void symmetry_group::init ( const std::vector<Type> vals, bool ascendingx, int v
 	int nsg=0;
 	Type prev; //=vals[0];
 
-	//       printf("symmetry_group::init: yy\n");
-
 	prev = std::numeric_limits<Type>::quiet_NaN();
 	/* count number of symmetry groups */
 	for ( int i=0; i<n; i++ ) {
@@ -190,7 +188,6 @@ bool symmetry_group_walker::nextsub ( int g )
 //myprintf("symmetry_group_walker::nextsub: %d\n", g);
 //print_perm(perms[g]);
 	bool of = next_perm ( perms[g] );
-//print_perm(perms[g]);
 	if ( of && g>0 )
 		of = nextsub ( g-1 );
 
@@ -216,7 +213,6 @@ std::vector<int> symmetry_group_walker::fullperm() const
 
 // instantiate classes
 //template symmetry_group::symmetry_group<int>(std::vector<int>, int);
-//template symmetry_group::symmetry_group<double>(std::vector<double>, int);
 
 /* Random number generators */
 

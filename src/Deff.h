@@ -28,8 +28,6 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, st
 array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose=1, int optimmethod= DOPTIM_AUTOMATIC, int niter=100000, int nabort = 0 );
 
 
-//typedef std::pair< std::vector<std::vector<double> >, arraylist_t > DoptimReturn;
-
 /** @brief Structure containing results of the Doptimize function
  *
  */
@@ -43,6 +41,8 @@ struct DoptimReturn {
 
 /// function to generate optimal designs
 DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestarts, const std::vector<double> alpha, int verbose, int method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort=5000 );
+
+/// helper function
 DoptimReturn DoptimizeDebug ( const arraydata_t &arrayclass, int nrestarts, const std::vector<double> alpha, int verbose, int method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort=5000 );
 
 DoptimReturn DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector<double> alpha, int verbose=1, int nabort=-1);

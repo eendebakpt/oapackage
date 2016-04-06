@@ -7,7 +7,7 @@
 #include "extend.h"
 
 
-// TODO: fold non_root and non_root_j4 into each other: only difference: TPLUSONECOLUMN?
+// IDEA: fold non_root and non_root_j4 into each other: only difference: TPLUSONECOLUMN?
 
 inline void cpy_dyndata_rowsort ( const dyndata_t *src, dyndata_t *dest )
 {
@@ -21,7 +21,6 @@ inline void cpy_dyndata_rowsort ( const dyndata_t *src, dyndata_t *dest )
 	memcpy ( dest->rowsort, src->rowsort, sizeof ( rowsort_t ) *dest->N );
 }
 
-//static void cpy_dyndata_rowsort(const dyndata_t *src, dyndata_t *dest)  __attribute__ ((noinline));
 inline void cpy_dyndata_rowsortl ( const dyndata_t *src, dyndata_t *dest )
 {
 #ifdef OADEBUG
@@ -1141,10 +1140,8 @@ inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *arr
 
 	const int cpoffset = ad->N*dd->colperm[dd->col];
 	if ( dd->col<4 ) { // XXX
-		//printf("here\n");
 		lmc_t ret = LMC_check_col ( original+dd->col*+ad->N, array+cpoffset, lperm, ad, dd );
 		return ret;
-
 	}
 
 	if ( log_print ( DEBUG,"" ) ) {
@@ -1344,9 +1341,6 @@ lmc_t LMCreduce_non_root_j4 ( const array_t * original, const arraydata_t* ad, c
 */
 lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic )
 {
-	//dyndata[-100]=0; exit(0); // trick to get feedback from valgrind
-
-
 	/* static allocation of data structures for non-root stage of LMC check */
 	levelperm_t *lperm_p = 0;
 	colperm_t *colperm_p = 0;
@@ -1377,9 +1371,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 #endif
 
 	// OPTIMIZE: use buffer for rowsort values to take multiplication out of LMC_check_col
-
-	//debug_print_transformations(reduction, original, *array, ad, dyndata);
-
 	// OPTIMIZE: check whether changing order of this loop makes a difference
 	lmc_t ret = LMC_MORE;
 	init_perm<colindex_t> ( colpermloop, remsize );	// intialize for entire loop
@@ -1406,7 +1397,7 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 		for ( int j=0; j<nlevelperms; j++ ) {
 			/* copy dyndata rowsort data */
 			// OPTIMIZE: eliminate this copy by moving it into check_col, saves up to 15% for large run sizes
-			cpy_dyndata_rowsort ( dyndata, dyndatacpy );  //FIXME: not for col_ft!
+			cpy_dyndata_rowsort ( dyndata, dyndatacpy ); 
 			dyndatacpy->col = dyndata->col;  // TODO: needed?
 
 			/* LMC_check_col performs level permutations, updates the sorting structure and compares with the original array on blocks of oaindex */
@@ -1447,45 +1438,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 					}
 					dyndatacpy->col = dyndata->col;  // TODO: needed?
 
-					/*
-					if (ret==LMC_EQUAL && 0) {
-					    int vv=0;
-					    if (vv) {
-					        printf("\n#### input: dyndata->col %d\n", dyndata->col);
-					        dyndata->show();
-					        printf("## before LMC_check_col: ret %d, dyndatacpy->col %d\n", ret, dyndatacpy->col);
-					        dyndatacpy->show();
-
-					    }
-					    cpy_dyndata_rowsort ( dyndata, dyndatacpy );
-					    dyndatacpy->col = dyndata->col;  // TODO: needed?
-					    lmc_t ret2 =  LMC_check_col ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy );
-					    if (vv) {
-					        printf("after LMC_check_col:\n");
-					        dyndatacpy->show();
-					        printf("\n");
-					    }
-
-					    if(ret!=ret2) {
-					        printf("LMC_check_col_ft returned different value: col_ft %d, LMC_check_col %d\n", ret, ret2);
-
-					        printf("orig\n");
-					        //print_column_rowsort2(original+cpoffset, reduction->array+dyndata->col*+ad->N, dyndata->rowsort, lperm, ad->N);
-					//print_column_rowsort(original+cpoffset, dyndata->rowsort, ad->N);
-					        printf("new column: lperm ");
-					        print_perm(lperm, 2);
-					//print_column_rowsort(reduction->array+dyndata->col*+ad->N, dyndata->rowsort, ad->N);
-
-					        cpy_dyndata_rowsort ( dyndata, dyndatacpy );
-					        dyndatacpy->col = dyndata->col;  // TODO: needed?
-					        printf("LMC_check_col_new: dverbose\n");
-					        lmc_t ret2 =  LMC_check_col_ft_2level ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy, *(reduction->sd), 1 );
-					        //print_column_rowsort2(original+cpoffset, reduction->array+dyndata->col*+ad->N, dyndatacpy->rowsort, lperm, ad->N);
-					        exit(0);
-					    }
-
-					}
-					*/
 				} else 	{
 					ret =  LMC_check_col_j5order ( reduction->array, original, lperm, ad, dyndatacpy );
 				}
@@ -1493,9 +1445,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 
 			//printf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j, ret);
 
-#ifdef OADEBUG
-			//   debug_print_xxx ( ret, cpoffset, nlevels, dyndata, lperm, reduction, original, ad );
-#endif
 			if ( ret==LMC_LESS ) {
 				//logstream ( DEBUG ) << printfstring ( "  LMC_LESS: column %d\n", col );
 				//printf("LMCreduce_non_root: found reduction: lastcol %d->%d\n", reduction->lastcol, col);
@@ -1707,7 +1656,6 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
 			if ( ret==LMC_LESS ) {
 				reduction->lastcol=col;
 			}
-
 
 			if ( ret==LMC_EQUAL ) {
 				//printf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 ); // @PTE
