@@ -557,7 +557,7 @@ int main ( int argc, char* argv[] )
 
 	const long natotal = std::accumulate ( na.begin(), na.end(), 0 );
 
-	if ( verbose>=2 ) {
+	if ( verbose>=1 ) {
 		printf ( "  total number of arrays: %ld, %.1f Marrays/hour\n", natotal, ( 3600./1e6 ) *natotal/ ( get_time_ms()-time0 ) );
 	}
 

@@ -14,7 +14,6 @@
 #ifdef _WIN32
 #include <math.h>
 //#define isnan(x) _isnan(x)
-//#define std::isinf(x) (!_finite(x))
 #else
 #include <stdbool.h>
 #include <unistd.h>
@@ -966,16 +965,12 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
 	LMCreduction_t reduction ( ad );
 	reduction.init_state=COPY;
-	// FIXME2: move this out of the loop
 	reduction.initStatic();	// needed to make the extend code thread safe
 
 #ifdef OADEBUG
 	//int gid = getGlobalStaticNumber(reduction.staticdata);
-	//printf("extend_array: initialized static to id %d (%ld)\n", gid, (long) reduction.staticdata);
+	//printfd("extend_array: initialized static to id %d (%ld)\n", gid, (long) reduction.staticdata);
 #endif
-	
-	//ad->show();
-	//oaextend.info();
 	
 	do {
 		showLoopProgress ( array, col_offset, N, node_rank, nlmcarrays );

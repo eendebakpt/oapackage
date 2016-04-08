@@ -864,7 +864,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
 				cur_row = j*oaindex+k;
 				rowp = rowsort[cur_row].r;
 
-				// FIXME: use != method for other functions as well
+				// OPTIMIZE: use != method for other functions as well
 				if ( originalcol[cur_row ] != lperm[arraycol[rowp]] ) {
 					if ( originalcol[cur_row ] < lperm[arraycol[rowp]] ) {
 						ret = LMC_MORE;
@@ -1592,7 +1592,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
 		/* loop over all level permutations */
 		for ( int j=0; j<nlevelperms; j++ ) {
 			/* copy dyndata rowsort data */
-			cpy_dyndata_rowsortl ( dyndata, dyndatacpy );  //FIXME: not for col_ft!
+			cpy_dyndata_rowsortl ( dyndata, dyndatacpy );  //NOTE: not for col_ft!?
 
 			dyndatacpy->col = dyndata->col;  // TODO: needed?
 			//   if(dyndatacpy->col!=dyndata->col) {  printf("dyndata->col %d, dyndatacpy->col %d\n", dyndata->col, dyndatacpy->col);  }

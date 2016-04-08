@@ -65,7 +65,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 	if ( verbose>=2 )
 		printfd ( "initialize: %d \n", alist.size() );
 
-	#pragma omp parallel for schedule(dynamic,1)	// FIXME: implement this
+	#pragma omp parallel for schedule(dynamic,1)	
 	for ( int k=0; k<(int)alist.size(); ++k ) {
 		LMCreduction_t reduction ( &ad );
 		// needed to make the code thread-safe
@@ -76,7 +76,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 		lmc_t rx = LMC_EQUAL;
 		reduction.updateSDpointer ( alist[k] );
 		/*
-		if ( 0 ) { // FIXME: enable this?
+		if ( 0 ) { // IDEA: enable this?
 			reduction.updateSDpointer ( alist[k] );
 			int col=alist[k].n_columns-1;
 			rx = LMC_check_col_rowsymm ( alist[k].array+alist[k].n_rows* ( alist[k].n_columns-1 ), &ad,  *reduction.sd.get(),col, 0 );
