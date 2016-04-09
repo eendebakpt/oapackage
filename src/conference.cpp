@@ -16,9 +16,6 @@
 #include "arrayproperties.h"
 #include "extend.h"
 
-#include "oadevelop.h"
-//#include "lmc.h"
-
 #include "graphtools.h"
 
 #include "conference.h"
