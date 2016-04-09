@@ -14,8 +14,9 @@
 #include <algorithm>
 
 #include "arraytools.h"
+#include "graphtools.h"
 #include "arrayproperties.h"
-#include "extend.h"
+//#include "extend.h"
 
 
 /// structure to cache a list of candidate extensions 
@@ -42,7 +43,8 @@ public:
 
 	enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL};
 	conference_type ctype;
-	
+	matrix_isomorphism_t itype;
+		
 public:
 	/// create new conference_t object
 	conference_t ( int N, int k );
@@ -53,6 +55,30 @@ public:
 	/// create the unique representative of the 3 column design
 	array_link create_root_three ( ) const;
 
+	void addRootArrays(arraylist_t &lst) const
+	{
+			if(this->itype==CONFERENCE_ISOMORPHISM) {
+					
+					lst.push_back( this->create_root() );
+			} else {
+					array_link al(this->N, 1, al.INDEX_DEFAULT);
+					for(int i=N/2+1; i<=N; i++) {
+						al.setconstant(-1);
+						al.at(0,0)=0;
+						for(int k=1; k<i; k++)
+							al.at(k,0)=1;
+						lst.push_back(al);
+					}
+				
+			}
+		
+		if (0) {
+		for(size_t i=0;i<lst.size();i++) {
+		printf("root array %d:\n", int(i));
+		lst[i].showarray();
+		}
+		}
+	}
 	/// return string representation of the object
 	std::string __repr__() const
 	{
@@ -120,10 +146,10 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 
 /// select representatives for the isomorphism classes of a list of conference arrays
-arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbose);
+arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM);
 
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
-std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose);
+std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM);
 
 /** Generate candidate extensions
  * 

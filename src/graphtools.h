@@ -14,21 +14,17 @@
 #include <vector>
 #include "arraytools.h"
 
-template<class Type>
-/// helper function, substruct minimum from list of values
-std::vector<Type> sorthelper ( std::vector<Type> &v )
-{
-	std::vector<Type> w ( v.size() );
-	std::copy ( v.begin(), v.end(), w.begin() );
-	int rmin=w[0];
-	for ( typename std::vector<Type>::size_type j=0; j<w.size(); j++ ) {
-		rmin = std::min ( rmin, w[j] );
-	}
 
-	for ( typename std::vector<Type>::size_type i=0; i<w.size(); i++ )
-		w[i] -= rmin;
-	return w;
-}
+/** Isomorphism types for matrices
+ * 
+ * Isotopy: permute rows, columns and symbols
+ * Matrix isomorphism: permute rows and columns
+ * Conference isomorphism: permute rows, columns and to row and column negations (values in 0, +1, -1)
+ * Orthogonal array isomorphism: permutations of rows, columns and column symbol permutations
+ */
+enum matrix_isomorphism_t {ISOTOPY, MATRIX_ISOMORPHISM, CONFERENCE_ISOMORPHISM, OA_ISOMORPHISM};
+
+const matrix_isomorphism_t CONFERENCE_RESTRICTED_ISOMORPHISM = OA_ISOMORPHISM;
 
 
 /* Interface to Nauty code
@@ -40,7 +36,7 @@ namespace nauty
 #include "nauty.h"
 /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 	
-/** reduce a colorred graph to Nauty minimal form
+/** reduce a colored graph to Nauty minimal form
  * 
  * The transformation returned is from the normal form to the specified graph.
  * 

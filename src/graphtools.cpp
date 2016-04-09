@@ -12,6 +12,22 @@
 #endif
 
 
+template<class Type>
+/// helper function, substruct minimum from list of values
+std::vector<Type> sorthelper ( std::vector<Type> &v )
+{
+	std::vector<Type> w ( v.size() );
+	std::copy ( v.begin(), v.end(), w.begin() );
+	int rmin=w[0];
+	for ( typename std::vector<Type>::size_type j=0; j<w.size(); j++ ) {
+		rmin = std::min ( rmin, w[j] );
+	}
+
+	for ( typename std::vector<Type>::size_type i=0; i<w.size(); i++ )
+		w[i] -= rmin;
+	return w;
+}
+
 /* Interface to Nauty code
  *
  */

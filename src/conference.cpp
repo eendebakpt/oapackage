@@ -184,6 +184,7 @@ conference_t::conference_t ( int N, int k )
 	this->N = N;
 	this->ncols = k;
 	this->ctype = CONFERENCE_NORMAL;
+	this->itype = CONFERENCE_ISOMORPHISM;
 }
 
 array_link conference_t::create_root_three ( ) const
@@ -1086,6 +1087,8 @@ size_t vectorsizeof(const typename std::vector<T>& vec)
 
 
 conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verbose=1, int ncstart=3) {
+	
+	// TODO: implement this for the CONFERENCE_RESTRICTED_ISOMORPHISM case
 	conf_candidates_t cande;
 
 		cande.ce.resize(ctype.N);
@@ -1134,7 +1137,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	int ncstart=3;
 	if (lst.size()>0) ncstart=lst[0].n_columns+1;
 	
-	conf_candidates_t cande = generateCandidateExtensions(ctype, verbose, ncstart);
+	conf_candidates_t cande = generateCandidateExtensions(ctype, verbose>=2, ncstart);
 
 	for ( size_t i=0; i<lst.size(); i++ ) {
 		const array_link &al = lst[i];
@@ -1158,7 +1161,8 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	return outlist;
 }
 
-std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t lst, int verbose )
+
+std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t lst, int verbose, matrix_isomorphism_t itype )
 {
 	const int nn = lst.size();
 
@@ -1169,7 +1173,24 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
 		if ( verbose>=1 && (i%2500==0 || i==(int)lst.size()-1)  )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
-		array_link alx = reduceConference ( lst[i], verbose>=2 );
+		array_link alx;
+		
+		switch(itype) {
+			case CONFERENCE_ISOMORPHISM:
+			{
+				alx= reduceConference ( lst[i], verbose>=2 );
+		}
+		break;
+			case CONFERENCE_RESTRICTED_ISOMORPHISM:
+			{
+		array_transformation_t t = reduceOAnauty( lst[i], verbose>=2);
+alx=t.apply(lst[i]);
+break;
+		}
+			default:
+				printfd("error: isomorphism type not implemented\n");
+				break;
+	}
 		lstr.push_back ( alx );
 	}
 
@@ -1207,17 +1228,17 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 	return std::pair<arraylist_t, std::vector<int> > ( lstgood, cidx );
 }
 
-std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t lst, int verbose )
+std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t lst, int verbose,  matrix_isomorphism_t itype )
 {
 
-	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose ) ;
+	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose, itype ) ;
 	return pp.second;
 }
 
-arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbose )
+arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbose, matrix_isomorphism_t itype )
 {
 
-	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose ) ;
+	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose , itype) ;
 	return pp.first;
 }
 

@@ -32,6 +32,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "output", 'o' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
+	opt.setOption ( "itype" );
 	opt.setOption ( "rows", 'N' );
 	opt.setOption ( "select", 's' );
 	opt.setOption ( "cols" );
@@ -50,8 +51,9 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
 	opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
 	opt.addUsage ( " --ctype [TYPE]				Zero for normal type" );
+	opt.addUsage ( printfstring(" --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM).c_str() );
 	opt.processCommandArgs ( argc, argv );
-
+ 
 
 	print_copyright();
 	//cout << system_uname();
@@ -61,6 +63,7 @@ int main ( int argc, char* argv[] )
 	int N = opt.getIntValue ( 'N', 10 );
 	int select = opt.getIntValue ( 's', 1 );
 	const conference_t::conference_type ctx = (conference_t::conference_type)opt.getIntValue ( "ctype", 0 );
+	const matrix_isomorphism_t itype = (matrix_isomorphism_t)opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
 
 	const std::string output = opt.getStringValue ( 'o', "" );
 	const std::string input = opt.getStringValue ( 'i', "" );
@@ -78,6 +81,7 @@ int main ( int argc, char* argv[] )
 	int kmax=N;
 	conference_t ctype ( N, N );
 	ctype.ctype=ctx;
+	ctype.itype=itype;
 
 
 	arraylist_t kk;
@@ -91,20 +95,19 @@ int main ( int argc, char* argv[] )
 		kstart=kk[0].n_columns;
 		kmax=kk[0].n_columns+1;
 	} else {
-		array_link al = ctype.create_root();
-		kk.push_back ( al );
-		kstart=2;
+		ctype.addRootArrays(kk);
+		kstart=kk[0].n_columns;		
 	}
 
 	if ( verbose )
-		printf ( "oaconference: extend %d conference matrices of size %dx%d\n", ( int ) kk.size(), ctype.N, ctype.ncols );
+		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d)\n", ( int ) kk.size(), ctype.N, ctype.ncols, itype );
 
 	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
 		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax);
 		arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
 
 		if ( select )
-			outlist = selectConferenceIsomorpismClasses ( outlist, verbose );
+			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
 
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
