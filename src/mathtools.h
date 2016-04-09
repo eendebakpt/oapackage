@@ -1224,7 +1224,7 @@ inline std::vector<object> perform_perm ( const std::vector<object> src, const s
 {
 	//myprintf("perform_perm: src %d, perm %d\n", src.size(), perm.size() );
 	std::vector<object> dst ( src.size() );
-	for ( int i=0; i<perm.size(); i++ ) {
+	for ( size_t i=0; i<perm.size(); i++ ) {
 		dst[perm[i]]=src[i];
 	}
 	return dst;

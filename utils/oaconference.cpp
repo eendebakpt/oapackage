@@ -18,8 +18,7 @@
 #include "tools.h"
 #include "extend.h"
 
-#include "oadevelop.h"
-#include "lmc.h"
+//#include "lmc.h"
 
 #include "conference.h"
 
