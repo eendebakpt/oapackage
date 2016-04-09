@@ -144,6 +144,9 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
  */
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
 
+/** Extend a list of conference designs with a single column */
+arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose );
+
 
 /// select representatives for the isomorphism classes of a list of conference arrays
 arraylist_t  selectConferenceIsomorpismClasses(const arraylist_t list, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM);
@@ -157,6 +160,9 @@ std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t lst, int ve
  * \param kz index of zero in candidate column
  */
 std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose = 1, int filtersymm= 1, int filterip=1 );
+
+/** Generate candidate extensions for restricted isomorphism classes */
+std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1);
 
 /** return max position of zero in array, returns -1 if no zero is found
  * 

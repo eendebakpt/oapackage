@@ -856,6 +856,10 @@ std::vector<cperm> filterCandidates(const std::vector<cperm> &extensions, const 
 
 std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip)
 {
+	if(ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM) {
+	return generateConferenceRestrictedExtensions(al, ct, kz, verbose,filtersymm,filterip);
+}
+
 	conference_extend_t ce;
 	std::vector<cperm> extensions ( 0 );
 	const int N = ct.N;
@@ -948,6 +952,148 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	return e2;
 }
 
+int nOnesFirstColumn( const array_link &al)
+{
+	int n=0;
+		for(int i=0; i<al.n_rows; i++)
+			n+= al.atfast(i,0)==1;
+		return n;
+}
+
+indexsort rowsorter(const array_link &al) 
+{
+
+	std::vector<mvalue_t<int> > rr;
+	for ( int i=0; i<al.n_rows; i++ ) {
+		mvalue_t<int> m;
+		for ( int k=0; k<al.n_columns; k++ )
+			m.v.push_back (al.at ( i, k ) );
+		rr.push_back ( m );
+	}
+	indexsort is(rr);
+	return rr;
+}
+
+std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip)
+{
+
+	const int extcol=al.n_columns;
+//const int N = al.n_rows;
+	const int N = ct.N;
+
+	// special case
+	if(extcol==1) {
+		std::vector<cperm> ee;
+		
+		// we have no values +1 in the first column and 
+		int no = nOnesFirstColumn(al);
+		int n1=no-1;
+		int n2 = N-n1-2;
+		
+		// in the second column we start with [1,0]^T and then in block1: k1 values +1, block2: k2 values +1
+		// we must have k2 = k1+(n2-n1)/2 = k1 +N -2n1-2
+		
+			cperm cc(N);
+			cc[0]=1; cc[1]=0;
+		for(int k1=0; k1<=n1; k1++) 
+		{
+				int k2 = k1+(n2-n1)/2;
+				if (k2>n2)
+					continue;
+				if (k2<0)
+					continue;
+				printf("generateConferenceRestrictedExtensions: column 1: n1 %d, n2 %d, k1 %d, k2 %d\n", n1, n2, k1, k2);
+				
+				std::fill(cc.begin()+2, cc.end(), -1);
+				
+				for(int i=2; i<2+k1; i++)
+					cc[i]=1;
+				for(int i=2+n1; i<2+n1+k2; i++)
+					cc[i]=1;
+				
+				ee.push_back(cc);
+		}			
+	return ee;	
+	}
+
+	std::vector<int> moi; // indices of -1 in first column
+	for(int i=0; i<N; i++) {
+		if (al.atfast(i,0)==-1) moi.push_back(i);
+	}
+	array_link alx = al.clone();
+	
+	// multiply
+	for(size_t i =0; i<moi.size();i++) {
+	alx.negateRow(moi[i]);	
+	}
+	
+	// sort rows of array
+	indexsort is = rowsorter(alx);
+
+	// now get candidate columns for the normal case, afterwards convert then using the rowsorter and row negations
+	
+	// FIXME: factor next block into a function (also in the other function)
+	
+	// loop over all possible first combinations
+	std::vector<cperm> ff = get_first ( N, kz, verbose );
+
+	if ( verbose>=2 ) {
+		for ( size_t i=0; i<ff.size(); i++ ) {
+			printf ( "extend1 %d: N %d: ", ( int ) i, N );
+			display_vector ( ff[i] );
+			printf ( "\n" );
+		}
+	}
+
+	conference_extend_t ce;
+	std::vector<cperm> extensions ( 0 );
+
+	ce.first=ff;
+	ce.second=ff;
+
+	array_link als = al.selectFirstColumns ( extcol );
+
+	cperm c0 = getColumn ( al, 0 );
+	cperm c1 = getColumn ( al, 1 );
+	for ( size_t i=0; i<ce.first.size(); i++ ) {
+		int ip = innerprod ( c0, ce.first[i] );
+		//int ip = innerprod(c1, ce.first[i]);
+		//printf("extend1 %d: inner product %d\n", (int)i, ip);
+
+		// TODO: cache this function call
+		int target = -ip;
+
+		std::vector<cperm> ff2 = get_second ( N, kz, target, verbose>=2 );
+		ce.second=ff2;
+
+		//printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
+
+		for ( size_t j=0; j<ff2.size(); j++ ) {
+			cperm c = ce.combine ( i, j );
+
+
+				extensions.push_back ( c );
+				continue;
+			
+		}
+	}
+
+	ce.extensions=extensions;
+	if ( verbose>=2 )
+		printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
+	// perform row symmetry check
+
+
+	std::vector<cperm> e2 = filterCandidates(extensions, al,  filtersymm,  filterip,  verbose );
+
+	if ( verbose>=1 )
+		printf ( "extend_conference: symmetry check %d + ip filter %d: %d->%d\n", filtersymm, filterip, ( int ) extensions.size(), ( int ) e2.size() );
+
+	ce.extensions=e2;
+
+	return e2;
+}
+
 int selectZmax(int maxzpos, const conference_t::conference_type &ctype, const array_link &al, int extcol)
 {
 	if (maxzpos<0) {
@@ -978,13 +1124,12 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 	const int maxzval = maxz ( al );
 
 	if ( verbose )
-		printf ( "--- extend_conference_matrix: extcol %d, maxz %d ---\n", extcol, maxzval );
+		printf ( "--- extend_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype );
 
 	const int zstart=maxzval+1;
 	
 	maxzpos = selectZmax(maxzpos, ct.ctype, al, extcol);
 		
-	//for ( int ii=maxzval+1; ii<std::min<int>(al.n_rows, maxzval+2); ii++ ) {
 	for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
 		if ( verbose>=2 )
 			printf ( "array: kz %d: generate\n", ii );
@@ -1085,7 +1230,6 @@ size_t vectorsizeof(const typename std::vector<T>& vec)
 
 conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verbose=1, int ncstart=3) {
 	
-	// TODO: implement this for the CONFERENCE_RESTRICTED_ISOMORPHISM case
 	conf_candidates_t cande;
 
 		cande.ce.resize(ctype.N);
@@ -1100,11 +1244,13 @@ conf_candidates_t generateCandidateExtensions(const conference_t ctype, int verb
 	
 	for(int extcol=ncstart-1; extcol<ncmax; extcol++) {
 		std::vector<cperm> ee;
+		
+ {
 		if (extcol==2)
 ee = generateConferenceExtensions ( al, ctype, extcol, 0, 0, 1);
 else
 		ee= generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1);
-	
+}
 	//printf("al3:\n"); al3.showarray();
 		
 	if ( (long)vectorsizeof(ee)>(long(4)*1024*1024*1024)/(long)ctype.N) {
@@ -1120,6 +1266,40 @@ cande.ce[extcol] = ee;
 
 	return cande;
 }
+
+arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose )
+{
+	arraylist_t outlist;
+
+	if ( verbose>=2 ) {
+		printfd ( "extend_conference: start %d\n", ( int ) lst.size() );
+	}
+
+	int vb=std::max ( 0, verbose-1 );
+
+	int ncstart=3;
+	if (lst.size()>0) ncstart=lst[0].n_columns+1;
+	
+
+	for ( size_t i=0; i<lst.size(); i++ ) {
+		const array_link &al = lst[i];
+		int extcol=al.n_columns;
+		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1);
+
+
+		arraylist_t ll = ce.getarrays ( al );
+		const int nn = ll.size();
+
+		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
+
+		if ( verbose>=2 || (verbose>=1 && (i%100==0 || i==lst.size()-1)  ) ) {
+			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
+			fflush(0);
+		}
+	}
+	return outlist;
+}
+
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
 {
 	arraylist_t outlist;
@@ -1146,9 +1326,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 		arraylist_t ll = ce.getarrays ( al );
 		const int nn = ll.size();
 
-		arraylist_t::iterator it = outlist.end();
-
-		outlist.insert ( it, ll.begin(), ll.end() );
+		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
 		if ( verbose>=2 || (verbose>=1 && (i%100==0 || i==lst.size()-1)  ) ) {
 			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );

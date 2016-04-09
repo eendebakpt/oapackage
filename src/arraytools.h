@@ -815,6 +815,10 @@ public:
 
 	void _setvalue ( int row, int col, int val );	/// set value of an array, no error checking!
 
+	void negateRow(rowindex_t r) {
+	for(int c=0; c<this->n_columns;c++)
+		this->atfast(r,c) *= -1;
+	}
 	/// print information about array
 	void show() const {
 		myprintf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, ( void * ) array );

@@ -18,7 +18,6 @@
 #include "tools.h"
 #include "extend.h"
 
-//#include "lmc.h"
 
 #include "conference.h"
 
@@ -101,9 +100,24 @@ int main ( int argc, char* argv[] )
 	if ( verbose )
 		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d)\n", ( int ) kk.size(), ctype.N, ctype.ncols, itype );
 
+	kmax=3;
+	
 	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
 		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax);
-		arraylist_t outlist = extend_conference ( kk, ctype,  verbose );
+		
+		arraylist_t outlist;
+		switch(ctype.itype) {
+			case CONFERENCE_RESTRICTED_ISOMORPHISM:			
+		outlist = extend_conference_restricted ( kk, ctype,  verbose );
+		break;
+
+			case CONFERENCE_ISOMORPHISM:			
+		outlist = extend_conference ( kk, ctype,  verbose );
+		break;
+			default:
+				printfd("isomorphism type not implemented");
+				break;
+		}
 
 		if ( select )
 			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
@@ -116,8 +130,7 @@ int main ( int argc, char* argv[] )
 			writearrayfile ( outfile.c_str(),outlist );
 		}
 
-		//printf("generated columns: %d\n", outlist[0].n_columns);
-				printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, (int)outlist.size() );
+		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, (int)outlist.size() );
 
 		// loop
 		kk=outlist;
