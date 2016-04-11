@@ -75,9 +75,10 @@ import_array();
 #include "lmc.h"
 #include "Deff.h"
 #include "graphtools.h"
+#include "evenodd.h"
+#include "conference.h"
 #ifdef OADEV
 #include "oadevelop.h"
-#include "conference.h"
 #endif
 %}
 
@@ -353,10 +354,10 @@ import numpy
 %include "lmc.h"
 %include "Deff.h"
 %include "graphtools.h"
-
+%include "evenodd.h"
+%include "conference.h"
 #ifdef OADEV
 %include "oadevelop.h"
-%include "conference.h"
 #endif
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;

@@ -178,6 +178,7 @@ class OATest(TestCommand):
 oadev=0
 srcs=[ 'arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp','mathtools.cpp', 'oaoptions.cpp', 'tools.cpp',  'md5.cpp','strength.cpp']
 srcs=srcs+[ 'Deff.cpp', 'evenodd.cpp' ]
+srcs=[ 'conference.cpp']+srcs
 #srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
 
 srcs=srcs+[ 'lmc.cpp', 'extend.cpp']	# code used for extension
@@ -186,7 +187,6 @@ if os.path.exists('dev/oadevelop.cpp') and 1:
   oadev=1
   print('Building development code')
   srcs=[ 'dev/oadevelop.cpp']+srcs
-  srcs=[ 'src/conference.cpp']+srcs
 
 sources =   srcs + ['src/bitarray/bit_array.cpp']
 swig_opts=[]

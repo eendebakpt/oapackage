@@ -232,6 +232,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "split0" );
 	opt.setOption ( "split1" );
 	opt.setOption ( "split2" );
+	opt.setOption ( "split3" );
+	opt.setOption ( "split4" );
 	opt.setOption ( "numbersfile" );
 	opt.setOption ( "cleanrun" );
 	opt.setOption ( "config", 'c' );
@@ -239,6 +241,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "paretomethod" );
 	opt.setOption ( "nsplit1" );
 	opt.setOption ( "nsplit2" );
+	opt.setOption ( "nsplit3" );
+	opt.setOption ( "nsplit4" );
 	opt.setOption ( "nparetodiff" );	// allow difference in pareto files for .oa files and numbers file
 	opt.setOption ( "kmin" );
 	opt.setOption ( "kmax" );
@@ -257,6 +261,8 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " --nsplit0 [NUMBER]		Number of split files at level 0" );
 	opt.addUsage ( " --nsplit1 [NUMBER]		Number of split files at level 1" );
 	opt.addUsage ( " --nsplit2 [NUMBER]		Number of split files at level 2" );
+	opt.addUsage ( " --nsplit3 [NUMBER]		Number of split files at level 3" );
+	opt.addUsage ( " --split[x] [NUMBER]		Split index at level [x]" );
 	opt.addUsage ( " --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process" );
 	opt.addUsage ( " --paretomethod [0, 1]		If 1 add J5 to Pareto criterium" );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) " );
@@ -283,11 +289,16 @@ int main ( int argc, char* argv[] )
 	int needcleanrun = opt.getIntValue ( "cleanrun", 1 );
 	int split0 = opt.getIntValue ( "split0", -1 );
 	int split1 = opt.getIntValue ( "split1", -1 );
+	int split2 = opt.getIntValue ( "split2", -1 );
+	int split3 = opt.getIntValue ( "split3", -1 );
+	int split4 = opt.getIntValue ( "split4", -1 );
 	int nsplit0 = opt.getIntValue ( "nsplit0", -1 );
 	int nsplit1 = opt.getIntValue ( "nsplit1", -1 );
+	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
+	int nsplit3 = opt.getIntValue ( "nsplit3", -1 );
+	int nsplit4 = opt.getIntValue ( "nsplit4", -1 );
 	int paretomethod = opt.getIntValue ( "paretomethod", 0 );
 	int allowparetodiff = opt.getIntValue ( "nparetodiff", 0 );
-	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
 	int kmin = opt.getIntValue ( "kmin", 9 );
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
@@ -326,19 +337,25 @@ int main ( int argc, char* argv[] )
 	nsplit.push_back ( nsplit0 );
 	nsplit.push_back ( nsplit1 );
 	nsplit.push_back ( nsplit2 );
+	nsplit.push_back ( nsplit3 );
+	nsplit.push_back ( nsplit4 );
 
 	std::vector<int> lvls;
 	if ( split0>=0 ) {
 		lvls.push_back ( split0 );
 		if ( split1>=0 ) {
 			lvls.push_back ( split1 );
+		if ( split2>=0 ) {
+			lvls.push_back ( split2 );
+		if ( split3>=0 ) {
+			lvls.push_back ( split3 );
+		}
+		}
 		}
 	}
 	if ( verbose ) {
 		std::cout << "oaclustergather: levels "<< splitTag ( lvls ) << std::endl;
 	}
-
-	//printf("xxx nsplit0 %d\n", nsplit0 );
 
 	/* Loop over all subdirectories for all number of columns */
 	int cleanrun=1; /// indicates whether all necessary files have been found

@@ -585,7 +585,7 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
  * The arrays generated are pruned by keeping a list of possible extension values
  *
  */
-void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int col, int verbose=1 );
+//void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int col, int verbose=1 );
 
 
 /// depth extend a single array

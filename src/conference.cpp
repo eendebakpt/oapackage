@@ -1032,7 +1032,7 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
 
 	// now get candidate columns for the normal case, afterwards convert then using the rowsorter and row negations
 	
-	// FIXME: factor next block into a function (also in the other function)
+	printfd("FIXME: factor next block into a function (also in the other function)\n");
 	
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, kz, verbose );
