@@ -146,6 +146,13 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 	return v;
 }
 
+void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int extcol, int verbose )
+{
+	printfd("use depth_extend_omp instead...\n");
+	return;
+}
+
+
 void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t &dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int verbose )
 {
 	//if (goodarrays.size()>0 ) 		printfd(": start: goodarrays[0].ncols %d\n", goodarrays[0].n_columns );

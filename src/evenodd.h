@@ -58,7 +58,9 @@ public:
 	void writeArray ( const array_link &A ) {
 
 		// writing arrays with multiple threads at the same time is not supported
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			size_t i = A.n_columns;
 			if ( writearrays ) {
@@ -172,7 +174,9 @@ struct counter_t {
 	}
 
 	void addNfound ( int col, int num ) {
+#ifdef DOOPENMP
 		#pragma omp atomic
+#endif
 		this->nfound[col]+=num;
 	}
 
@@ -181,14 +185,18 @@ struct counter_t {
 		return na;
 	}
 	void addNumberFound ( int n, int k ) {
+#ifdef DOOMP
 		#pragma omp critical (DEXTEND_NFOUND)
+#endif
 		{
 			this->nfound[k]+=n;
 		}
 	}
 
 	void clearNumberFound() {
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			for ( size_t k=0; k<this->nfound.size(); k++ ) {
 				this->nfound[k]=0;
@@ -197,7 +205,9 @@ struct counter_t {
 	}
 
 	void addNumberFound ( const counter_t &de ) {
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			for ( size_t k=0; k<this->nfound.size(); k++ ) {
 				this->nfound[k]+=de.nfound[k];
@@ -208,7 +218,9 @@ struct counter_t {
 
 	/// show information about the number of arrays found
 	inline void showcountscompact() const {
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			//printf("depth_extend: counts ");
 			//for ( size_t i=ad->strength; i<= ( size_t ) ad->ncols; i++ ) {
@@ -459,7 +471,9 @@ public:
 	void maxArrayCheck() {
 		if ( arraywriter==0 )
 			return;
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			if ( arraywriter->nwritten>this->narraysmax ) { /// HACK
 				printf ( "dextend_t: number of arrays written: %d, quitting\n", arraywriter->nwritten );
@@ -486,7 +500,9 @@ public:
 			double currenttime = get_time_ms();
 			double dt = currenttime-tp;
 			if ( ( dt>logtime ) || forcelog ) {
-				#pragma omp critical
+#ifdef DOOPENMP
+		#pragma omp critical
+#endif
 				tp=get_time_ms();
 				this->arraywriter->flush();
 				double dt0 = currenttime-t0;
@@ -519,14 +535,18 @@ public:
 
 	/// set the position in the dextend structure
 	void setposition ( int k, int c, int m, int extensioncols=-1, int goodextensioncols=-1 ) {
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			searchpath.updatePosition ( k, c, m, extensioncols, goodextensioncols );
 		}
 	}
 	/// set the position in the dextend structure
 	void setpositionGEC ( int k, int goodextensioncols ) {
+#ifdef DOOPENMP
 		#pragma omp critical
+#endif
 		{
 			searchpath.updatePositionGEC ( k, goodextensioncols );
 		}

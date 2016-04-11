@@ -274,7 +274,7 @@ if os.name=='nt':
     # for cygwin/mingw ?
   #oalib_module.extra_compile_args += ['-fpermissive', '-std=gnu++11' ];  
 else:
-  oalib_module.extra_compile_args += ['-O2', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
+  oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
 
 
 
