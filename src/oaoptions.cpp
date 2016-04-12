@@ -92,6 +92,7 @@ void print_options ( std::ostream &outx )
 	//outx << "SVN version: " << svn_version << std::endl;
 
 	outx <<tabsep << "array_t type: sizeof(array_t) " << sizeof ( array_t ) << std::endl;
+	outx <<tabsep << "integer types: sizeof(unsigned long int) " << sizeof ( unsigned long int ) << "," << " sizeof(int) " << sizeof (int ) << std::endl;
 	outx <<tabsep << "floating point type: sizeof(float) " << sizeof ( float ) << ", sizeof(double) " << sizeof ( double ) << ", sizeof(long double) " << sizeof ( long double ) <<  std::endl;
 	outx <<tabsep << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
 

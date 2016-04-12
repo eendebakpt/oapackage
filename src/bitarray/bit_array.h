@@ -29,7 +29,15 @@
 #define BIT_ARRAY_HEADER_SEEN
 
 // 64 bit
-typedef unsigned long word_t, word_addr_t, bit_index_t;
+//typedef unsigned long word_t, word_addr_t, bit_index_t;
+
+#ifdef _MSC_VER
+typedef unsigned __int64 uint64_t;
+#else
+#include <stdint.h>
+#endif
+typedef uint64_t word_t, word_addr_t, bit_index_t;
+
 // 32 bit
 //typedef unsigned int word_t, word_addr_t, bit_index_t;
 
@@ -39,6 +47,7 @@ struct BIT_ARRAY {
   unsigned long num_of_bits;
 };
 
+// Number of words required to store so many bits
 word_addr_t nwords(bit_index_t b);
 
 // Constructor - create a new bit array of length nbits

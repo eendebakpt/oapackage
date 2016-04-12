@@ -103,7 +103,7 @@ AnyOption * parseOptions(int argc, char* argv[], algorithm_t &algorithm )
     opt->addUsage( " -g  --generate [FILE]		Only generate arrays, do not perform LMC check" );
     opt->addUsage( "  --rowsymmetry [VALUE]		Use row symmetry in generation" );
     opt->addUsage( " -o [STR]  --output [FILE]	Set prefix for output (default: result) " );
-    opt->addUsage( " -f [FORMAT]			Output format (default: TEXT, or BINARY) " );
+    opt->addUsage( " -f [FORMAT]			Output format (default: TEXT, or BINARY, D, Z). Format D is binary difference, format Z is binary with zero-difference " );
     opt->addUsage( " --initcolprev [INTEGER]	Initialization method of new column (default: 1)" );
     opt->addUsage( " --maxk [INTEGER] Maximum number of columns to exten to (default: extracted from config file) " );
     opt->addUsage( " --streaming			Operate in streaming mode. Generated arrays will be written to disk immediately. " );
