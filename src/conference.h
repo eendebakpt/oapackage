@@ -61,7 +61,7 @@ public:
 					
 					lst.push_back( this->create_root() );
 			} else {
-					array_link al(this->N, 1, al.INDEX_DEFAULT);
+					array_link al(this->N, 1, array_link::INDEX_DEFAULT);
 					for(int i=N/2+1; i<=N; i++) {
 						al.setconstant(-1);
 						al.at(0,0)=0;
