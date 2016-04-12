@@ -704,7 +704,7 @@ int satisfy_symm ( const cperm &c, const symmdata & sd )
 	}
 	for ( size_t i=2; i<c.size()-1; i++ ) {
 		if ( sd.rowvalue.atfast ( i, k ) ==sd.rowvalue.atfast ( i+1, k ) ) {
-			if ( c[i]<c[i+1] && c[i]!=0 and c[i+1]!=0 ) {
+			if ( c[i]<c[i+1] && c[i]!=0 && c[i+1]!=0 ) {
 				// discard
 
 				if ( verbose ) {
@@ -1100,7 +1100,7 @@ int selectZmax(int maxzpos, const conference_t::conference_type &ctype, const ar
 		if (ctype==conference_t::CONFERENCE_NORMAL)
 			maxzpos = al.n_rows-1;
 		else {
-			if  (ctype==conference_t::conference_t::CONFERENCE_DIAGONAL) {
+			if  (ctype==conference_t::CONFERENCE_DIAGONAL) {
 				maxzpos = extcol; // maxzval+2;		
 				//printf("ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL: maxzpos %d/%d, extcol %d\n", maxzpos, al.n_rows-1, extcol);
 			}
@@ -1253,7 +1253,7 @@ else
 }
 	//printf("al3:\n"); al3.showarray();
 		
-	if ( (long)vectorsizeof(ee)>(long(4)*1024*1024*1024)/(long)ctype.N) {
+	if ( (long)vectorsizeof(ee)>(long(1)*1024*1024*1024)/(long)ctype.N) {
 		printfd("generateCandidateExtensions: set of generated candidates too large, aborting");
 			assert(0);
 			exit(0);
