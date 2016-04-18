@@ -377,7 +377,7 @@ public:
  * This structure allows for writing the generated arrays to disk.
  * It also contains functions to print progress of the extension.
  * 
- * Multiple copies of this class are made, but they all share the same counter_t and arraywriter_t object.
+ * Multiple copies of this class are made, but they all share the same counter_t and arraywriter_t object. Also t0 and tp are shared
  *
  */
 struct depth_extend_t {
@@ -392,15 +392,16 @@ public:
 
 	arraylist_t extension_column_list;	// list of possible extensions
 
-	// shared by mutiple instances of dextend_t (could be made static)
-	arraywriter_t *arraywriter;
-	counter_t *counter;
 
 	/// if set to true write arrays to disk
 	int writearrays;
 
 	int discardJ5;  	/// if true, then we discard the designs which have J5 maximal
 	long discardJ5number;
+
+	// shared by mutiple instances of dextend_t (could be made static)
+	arraywriter_t *arraywriter;
+	counter_t *counter;
 
 	static double t0;	// time since start of calculation
 	static double tp;	// time since last progress report

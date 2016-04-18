@@ -34,6 +34,8 @@
 void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, depth_extend_sub_t &dextendsub, int extcol, int verbose=1, int nomp = 0 );
 
 
+double depth_extend_t::t0=0;
+double  depth_extend_t::tp=0;
 
 
 /// helper function
