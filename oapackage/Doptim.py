@@ -200,7 +200,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
         print('generateDpage: writen scatterplot to %s' % scatterfile)
     plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
 
-
     #%% Create page
 
     page = markup.page()
@@ -335,7 +334,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         s = arrayclass.getS()
         arrayclass
     sx = tuple(s.astype(np.int64))
-    sx=tuple( [int(v) for v in sx] )
+    sx = tuple([int(v) for v in sx])
 
     sg = oalib.symmetry_group(sx)
     gidx = tuple(sg.gidx)
@@ -600,6 +599,3 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
 
     return scores, dds, sols, nrestarts
-
-
-

@@ -1009,6 +1009,7 @@ typedef std::deque<array_link> arraylist_t;
 /** Return number of arrays with j_{2n+1}=0 for n<m */
 std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose=1 );
 
+
 /** @brief Predict j4(1,2,3,k) using the theorem from Deng
  * This works only for 2-level arrays. The 0 corresponds to a +
  *
@@ -1393,6 +1394,8 @@ private:
 /** functions for working with array files*/
 
 #ifdef FULLPACKAGE
+
+void showArrayList(const arraylist_t &lst);
 
 namespace arrayfile
 {

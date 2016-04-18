@@ -465,6 +465,8 @@ void foldtest ( jstruct_t &js, const array_link &al, int jj, int verbose )
 	delete_comb ( pp );
 }
 
+
+
 /** Return number of arrays with j_{2n+1}=0 for n<m */
 std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose )
 {
@@ -753,6 +755,14 @@ std::string array_link::md5() const
 }
 
 #ifdef FULLPACKAGE
+
+void showArrayList(const arraylist_t &lst)
+{
+	for(size_t i=0; i<lst.size(); i++) {
+			printf("array %d:\n", (int)i);
+			lst[i].showarray();
+	}
+}
 
 /**
  * @brief Print an array to a stream (formatted)

@@ -169,38 +169,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-
 import sys
 import unittest
 from string import whitespace as WHITESPACE
 from string import digits as DIGITS
 #from sets import Set
-Set=set
+Set = set
 
 __all__ = ['scanf', 'sscanf', 'fscanf']
 __version__ = '1.0'
 
 
 class CharacterBuffer(object):
+
     """A CharacterBuffer allows us to get a character, and to "unget" a
     character.  Abstract class"""
 
     def getch(self):
         """Returns the next character.  If there are no more characters
         left in the stream, returns the empty string."""
-        pass ## implement me!
+        pass  # implement me!
 
     def ungetch(self, ch):
         """Tries to put back a character.  Can be called at most once
         between calls to getch()."""
-        pass ## implement me!
-
+        pass  # implement me!
 
     def scanCharacterSet(self, characterSet, maxChars=0):
         """Support function that scans across a buffer till we hit
         something outside the allowable characterSet."""
         return self.scanPredicate(lambda ch: ch in characterSet, maxChars)
-
 
     def scanPredicate(self, predicate, maxChars=0):
         """Support function that scans across a buffer till we hit
@@ -220,14 +218,15 @@ class CharacterBuffer(object):
         return ''.join(chars)
 
 
-
 class CharacterBufferFromIterable(CharacterBuffer):
+
     """Implementation of CharacterBuffers for iterable things.
     We keep a 'lastChar' attribute to simulate ungetc()."""
+
     def __init__(self, iterable):
         self.iterator = iter(iterable)
         self.lastChar = ''
-        
+
     def getch(self):
         if self.lastChar == '':
             try:
@@ -243,10 +242,11 @@ class CharacterBufferFromIterable(CharacterBuffer):
 
 
 class CharacterBufferFromStdin(CharacterBuffer):
+
     def __init__(self, stdin):
         self.stdin = stdin
         self.lastChar = ''
-        
+
     def getch(self):
         if self.lastChar == '':
             try:
@@ -261,19 +261,19 @@ class CharacterBufferFromStdin(CharacterBuffer):
         self.lastChar = ch
 
 
-
 class CharacterBufferFromFile(CharacterBuffer):
+
     """Implementation of CharacterBuffers for files.  We use the native
     read(1) and seek() calls, so we don't have to do so much magic."""
+
     def __init__(self, myfile):
         self.myfile = myfile
-        
+
     def getch(self):
         return self.myfile.read(1)
 
     def ungetch(self, ch):
         self.myfile.seek(- len(ch), 1)
-
 
 
 def readiter(inputFile, *args):
@@ -284,12 +284,14 @@ def readiter(inputFile, *args):
             yield ch
         else:
             raise StopIteration
-        
+
 
 def isIterable(thing):
     """Returns true if 'thing' looks iterable."""
-    try: iter(thing)
-    except TypeError: return False
+    try:
+        iter(thing)
+    except TypeError:
+        return False
     return True
 
 
@@ -317,10 +319,10 @@ def makeCharBuffer(thing):
     """
     if isinstance(thing, CharacterBuffer):
         return thing
-    elif isFileLike(thing):  
-        ## this check must come before isIterable, since files
-        ## provide a line-based iterator that we don't want to use.
-        ## Plus we want to take advantage of file.seek()
+    elif isFileLike(thing):
+        # this check must come before isIterable, since files
+        # provide a line-based iterator that we don't want to use.
+        # Plus we want to take advantage of file.seek()
         return CharacterBufferFromFile(thing)
     elif isIterable(thing):
         return CharacterBufferFromIterable(thing)
@@ -329,14 +331,15 @@ def makeCharBuffer(thing):
 
 
 class CappedBuffer(CharacterBuffer):
+
     """Implementation of a buffer that caps the number of bytes we can
     getch().  The cap may or may not include whitespace characters."""
+
     def __init__(self, buffer, width, ignoreWhitespace=False):
         self.buffer = buffer
         self.bytesRead = 0
         self.width = width
         self.ignoreWhitespace = ignoreWhitespace
-
 
     def getch(self):
         if self.bytesRead < self.width:
@@ -347,10 +350,8 @@ class CappedBuffer(CharacterBuffer):
         else:
             return ''
 
-
     def isIgnoredChar(self, ch):
         return self.ignoreWhitespace and isWhitespaceChar(ch)
-
 
     def ungetch(self, ch):
         self.buffer.ungetch(ch)
@@ -360,13 +361,15 @@ class CappedBuffer(CharacterBuffer):
         assert self.bytesRead >= 0
 
 
-
 class FormatError(ValueError):
+
     """A FormatError is raised if we run into errors while scanning
     for input."""
     pass
 
+
 class IncompleteCaptureError(ValueError):
+
     """The *scanf() functions raise IncompleteCaptureError if a problem
     occurs doing scanning."""
     pass
@@ -408,8 +411,8 @@ def bscanf(buffer, formatString):
 Scans a CharacterBuffer 'buffer' for formats specified in the
 formatString.  See scanf module's docs for list of supported format
 characters."""
-    ## TODO: we may want to do some caching here of compiled formatStrings,
-    ## similar to that of the 're' module.
+    # TODO: we may want to do some caching here of compiled formatStrings,
+    # similar to that of the 're' module.
     parser = compile(formatString)
     return parser(buffer)
 
@@ -434,18 +437,19 @@ def handleWhitespace(buffer):
     return ''.join(chars)
 
 
-## We keep a few sets as module variables just to incur the cost of
-## constructing them just once.
+# We keep a few sets as module variables just to incur the cost of
+# constructing them just once.
 _PLUS_MINUS_SET = Set("+-")
 _DIGIT_SET = Set(DIGITS)
 _OCT_SET = Set("01234567")
 _HEX_SET = Set("0123456789ABCDEFabcdef")
 
+
 def handleDecimalInt(buffer, optional=False, allowLeadingWhitespace=True):
     """Tries to scan for an integer.  If 'optional' is set to False,
     returns None if an integer can't be successfully scanned."""
     if allowLeadingWhitespace:
-        handleWhitespace(buffer)  ## eat leading spaces
+        handleWhitespace(buffer)  # eat leading spaces
     chars = []
     chars += buffer.scanCharacterSet(_PLUS_MINUS_SET, 1)
     chars += buffer.scanCharacterSet(_DIGIT_SET)
@@ -472,7 +476,7 @@ def handleInt(buffer, base=0):
     chars += buffer.scanCharacterSet(_PLUS_MINUS_SET)
     chars += buffer.scanCharacterSet("0")
     if chars and chars[-1] == '0':
-        chars += buffer.scanCharacterSet("xX")        
+        chars += buffer.scanCharacterSet("xX")
     chars += buffer.scanCharacterSet(_HEX_SET)
     try:
         return int(''.join(chars), base)
@@ -486,14 +490,14 @@ def handleHex(buffer):
 
 def handleFloat(buffer, allowLeadingWhitespace=True):
     if allowLeadingWhitespace:
-        handleWhitespace(buffer) ## eat leading whitespace
+        handleWhitespace(buffer)  # eat leading whitespace
     chars = []
     chars += buffer.scanCharacterSet(_PLUS_MINUS_SET)
     chars += buffer.scanCharacterSet(_DIGIT_SET)
     chars += buffer.scanCharacterSet(".")
     chars += buffer.scanCharacterSet(_DIGIT_SET)
     chars += buffer.scanCharacterSet("eE")
-    chars += buffer.scanCharacterSet(_PLUS_MINUS_SET)    
+    chars += buffer.scanCharacterSet(_PLUS_MINUS_SET)
     chars += buffer.scanCharacterSet(_DIGIT_SET)
     try:
         return float(''.join(chars))
@@ -501,7 +505,6 @@ def handleFloat(buffer, allowLeadingWhitespace=True):
         raise FormatError("invalid literal characters: %s" % ''.join(chars))
 
 
-    
 def handleChars(buffer,
                 allowLeadingWhitespace=False,
                 isBadCharacter=lambda ch: False,
@@ -514,7 +517,8 @@ def handleChars(buffer,
     if chars:
         return ''.join(chars)
     else:
-        if optional: return None
+        if optional:
+            return None
         raise FormatError(("Empty buffer."))
 
 
@@ -523,7 +527,7 @@ def handleString(buffer, allowLeadingWhitespace=True):
     characters (skipping leading spaces, and reading up to space)."""
     return handleChars(buffer,
                        allowLeadingWhitespace=allowLeadingWhitespace,
-                       isBadCharacter=isWhitespaceChar) 
+                       isBadCharacter=isWhitespaceChar)
 
 
 def makeHandleLiteral(literal):
@@ -533,7 +537,8 @@ def makeHandleLiteral(literal):
             return ch
         else:
             buffer.ungetch(ch)
-            if optional: return None
+            if optional:
+                return None
             raise FormatError("%s != %s" % (literal, ch))
     return f
 
@@ -557,8 +562,8 @@ def makeIgnoredHandler(handler):
     return f
 
 
-
 class CompiledPattern:
+
     def __init__(self, handlers, formatString):
         self.handlers = handlers
         self.formatString = formatString
@@ -568,8 +573,8 @@ class CompiledPattern:
         try:
             for h in self.handlers:
                 value = h(buffer)
-                ## We use None as the sentinel value that ignored handlers
-                ## will emit.
+                # We use None as the sentinel value that ignored handlers
+                # will emit.
                 if value is not None:
                     results.append(value)
             return tuple(results)
@@ -592,7 +597,8 @@ def compile(formatString):
     formatBuffer = CharacterBufferFromIterable(formatString)
     while True:
         ch = formatBuffer.getch()
-        if ch == '': break
+        if ch == '':
+            break
         if isWhitespaceChar(ch):
             handleWhitespace(formatBuffer)
             handlers.append(makeIgnoredHandler(handleWhitespace))
@@ -614,7 +620,7 @@ def _compileFormat(formatBuffer):
                                 allowLeadingWhitespace=False)
 
     def readFormat():
-        return formatBuffer.getch()  ## Finally, read the format
+        return formatBuffer.getch()  # Finally, read the format
 
     suppression = readOptionalSuppression()
     width = readOptionalWidth()
@@ -623,9 +629,8 @@ def _compileFormat(formatBuffer):
     if handler:
         return handler
     else:
-        ## At this point, since we couldn't figure out the format, die loudly.
+        # At this point, since we couldn't figure out the format, die loudly.
         raise FormatError("Invalid format character %s" % formatCh)
-
 
 
 _FORMAT_HANDLERS = {'d': handleDecimalInt,
@@ -645,14 +650,15 @@ def makeFormattedHandler(suppression, width, formatCh):
         if suppression:
             return makeIgnoredHandler(handler)
         return handler
+
     def applyWidth(handler):
         if width != None:
             return makeWidthLimitedHandler(handler, width,
                                            ignoreWhitespace=True)
         return handler
 
-    ## 'c' is a special case: it's the only handler that can't ignore
-    ## whitespace.
+    # 'c' is a special case: it's the only handler that can't ignore
+    # whitespace.
     if formatCh == 'c':
         if width == None:
             return applySuppression(handleChar)
@@ -666,17 +672,15 @@ def makeFormattedHandler(suppression, width, formatCh):
         return None
 
 
-
-
 ######################################################################
 ##
-## Of course we have test cases.  *grin*
+# Of course we have test cases.  *grin*
 ##
 
 class ScanfTests(unittest.TestCase):
+
     def bufferFromString(self, s):
         return CharacterBufferFromIterable(s)
-
 
     def testBufferFromString(self):
         b = self.bufferFromString("hello")
@@ -695,7 +699,6 @@ class ScanfTests(unittest.TestCase):
         b = makeCharBuffer("+++-+++++1234")
         self.assertEquals("+++", b.scanPredicate(lambda ch: ch == '+'))
 
-
     def testUngetch(self):
         b = self.bufferFromString("ong")
         b.ungetch('y')
@@ -707,14 +710,14 @@ class ScanfTests(unittest.TestCase):
         self.assertEquals('g', b.getch())
         self.assertEquals('', b.getch())
 
-
     def testRepeatedGetchOnEmptyStreamIsOk(self):
         b = self.bufferFromString("")
         self.assertEquals('', b.getch())
         self.assertEquals('', b.getch())
 
     def testCappedBuffer(self):
-        b = CappedBuffer(self.bufferFromString("supercalifragilisticexpialidocious"), 5)
+        b = CappedBuffer(
+            self.bufferFromString("supercalifragilisticexpialidocious"), 5)
         self.assertEquals("s", b.getch())
         self.assertEquals("u", b.getch())
         self.assertEquals("p", b.getch())
@@ -724,8 +727,7 @@ class ScanfTests(unittest.TestCase):
         self.assertEquals('', b.getch())
         b.ungetch('r')
         self.assertEquals("r", b.getch())
-        self.assertEquals('' ,b.getch())
-
+        self.assertEquals('', b.getch())
 
     def testWhitespaceScanning(self):
         b = self.bufferFromString("    42\n43")
@@ -733,20 +735,18 @@ class ScanfTests(unittest.TestCase):
         self.assertEquals("", handleWhitespace(b))
         self.assertEquals("4", b.getch())
 
-
     def testDecimalDigitScanning(self):
         b = self.bufferFromString("42 43!44")
         self.assertEquals(42, handleDecimalInt(b))
         self.assertEquals(" ", handleWhitespace(b))
         self.assertEquals(43, handleDecimalInt(b))
 
-        b2 = self.bufferFromString("-1-2+3-4");
+        b2 = self.bufferFromString("-1-2+3-4")
         self.assertEquals(-1, handleDecimalInt(b2))
         self.assertEquals(-2, handleDecimalInt(b2))
         self.assertEquals(3, handleDecimalInt(b2))
         self.assertEquals(-4, handleDecimalInt(b2))
         self.assertRaises(FormatError, handleDecimalInt, b2)
-
 
     def testCharacter(self):
         b = self.bufferFromString("hi!")
@@ -754,12 +754,11 @@ class ScanfTests(unittest.TestCase):
         self.assertEquals("i", handleChar(b))
         self.assertEquals("!", handleChar(b))
         self.assertRaises(FormatError, handleChar, b)
-        
 
     def testString(self):
         b = self.bufferFromString("-42 + 1 equals -41")
         self.assertEquals("-42", handleString(b))
-        handleWhitespace(b)    
+        handleWhitespace(b)
         self.assertEquals("+", handleString(b))
         handleWhitespace(b)
         self.assertEquals("1", handleString(b))
@@ -768,25 +767,21 @@ class ScanfTests(unittest.TestCase):
         handleWhitespace(b)
         self.assertEquals("-41", handleString(b))
 
-
     def testIntegerScanning(self):
         self.assertEquals((42, 43),
                           sscanf("   42\n   43  ", "%d %d"))
         self.assertEquals((8,), sscanf("10", "%o"))
         self.assertEquals((8,), sscanf("010", "%o"))
         self.assertEquals((15,), sscanf("F", "%x"))
-        self.assertEquals((15,), sscanf("f", "%x"))        
+        self.assertEquals((15,), sscanf("f", "%x"))
         self.assertEquals((15,), sscanf("0xF", "%x"))
         self.assertEquals((15,), sscanf("0XF", "%x"))
         self.assertEquals((15,), sscanf("0Xf", "%x"))
         self.assertEquals((-1, -2, 3, -4), sscanf("-1-2+3-4", "%d%d%d%d"))
 
-
-        
     def testWordScanning(self):
         self.assertEquals(("hello", "world"),
                           sscanf("   hello world", "%s %s"))
-
 
     def testSuppression(self):
         self.assertEquals((), sscanf(" hello world", "%*s %*s"))
@@ -794,20 +789,18 @@ class ScanfTests(unittest.TestCase):
                           sscanf("hello happy world", "%*s %s %*s"))
         self.assertEquals((), sscanf("h", "%*c"))
 
-
     def testWidth(self):
         self.assertEquals(("00010",), sscanf("00010101010111", "%5c"))
         self.assertEquals(("xy",), sscanf("xyz", "%2s"))
         self.assertEquals(("xy",), sscanf("              xyz", "%2s"))
         self.assertEquals(("  ",), sscanf("              xyz", "%2c"))
 
-
     def testFscanf(self):
         import io
         b = io.StringIO("hello world")
         self.assertEquals(("hello", " ", "world"), fscanf(b, "%s%c%s"))
-        ## Check that calling fscanf() twice doesn't
-        ## drop the last character
+        # Check that calling fscanf() twice doesn't
+        # drop the last character
         b2 = io.StringIO("hello world")
         self.assertEquals(("hello",), fscanf(b2, "%s"))
         self.assertEquals((" ",), fscanf(b2, "%c"))
@@ -819,7 +812,6 @@ class ScanfTests(unittest.TestCase):
         This case checks that"""
         self.assertEquals((42.0,),
                           sscanf("    42.0", "%f"))
-
 
     def testFloats(self):
         self.assertEquals((3.14,
@@ -834,9 +826,8 @@ class ScanfTests(unittest.TestCase):
                            3.14e-10
                            0e0""", "%f %f %f %f %f %f"))
 
-
     def testMoreSimpleScanningExamples(self):
-        self.assertEquals((192,168,1,1),
+        self.assertEquals((192, 168, 1, 1),
                           sscanf("192.168.1.1", "%d.%d.%d.%d"))
         self.assertEquals(("a", "b", "c"),
                           sscanf("  ab   c  ", "%1s%1s%s"))
@@ -850,12 +841,12 @@ class ScanfTests(unittest.TestCase):
                           sscanf("  hi danny", "  hi %s"))
         self.assertEquals(("a", "b", 3),
                           sscanf("ab3", "%c%c%d"))
-        ## this case is weird, but it happens in C too!
+        # this case is weird, but it happens in C too!
         self.assertRaises(IncompleteCaptureError,
                           sscanf, "  hi danny", "hi %s")
 
-        ## The example that's used in
-        ## 'http://docs.python.org/lib/node109.html'
+        # The example that's used in
+        # 'http://docs.python.org/lib/node109.html'
         self.assertEquals(("/usr/bin/sendmail", 0, 4),
                           sscanf("/usr/bin/sendmail - 0 errors, 4 warnings",
                                  "%s - %d errors, %d warnings"))
@@ -868,7 +859,6 @@ class ScanfTests(unittest.TestCase):
         self.assertRaises(FormatError, compile, "% d")
         self.assertRaises(FormatError, compile, "%* d")
 
-        
 
 if __name__ == '__main__':
     unittest.main()

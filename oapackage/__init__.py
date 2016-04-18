@@ -8,9 +8,9 @@ import oalib
 oalib.setloglevel(oalib.SYSTEM)
 oalib.log_print(-oalib.SYSTEM, '')
 from oalib import *
-#import .oahelper
+# import .oahelper
 from . oahelper import *
-#import .Doptim
+# import .Doptim
 from . Doptim import *
 # import scanf
 from . import scanf
@@ -20,6 +20,7 @@ import numpy as np
 __version__ = oalib.version()
 
 #%%
+
 
 def autodoctest():
     """ Test the module using autodoc
@@ -40,46 +41,50 @@ def unittest(verbose=1):
     al = oalib.array_link()
     ii = 0
     al = oalib.exampleArray(ii, 0)
-    
+
     if not isinstance(al.getarray(), np.ndarray):
-        print('oapackage: unittest: error: array interface not working properly')
+        print(
+            'oapackage: unittest: error: array interface not working properly')
     else:
-        if not al[2,0]==al.getarray()[2,0]:
-            print('oapackage: unittest: error: array interface not working properly')
-            
+        if not al[2, 0] == al.getarray()[2, 0]:
+            print(
+                'oapackage: unittest: error: array interface not working properly')
+
     arrayclass = oalib.arraylink2arraydata(al)
 #    print(arrayclass)
-    
-    if verbose>=2:
+
+    if verbose >= 2:
         print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
-    aa=oalib.Aefficiencies(al)
+    aa = oalib.Aefficiencies(al)
     if verbose >= 2:
         print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 
     # DOP reduction
-    if verbose>=2:
+    if verbose >= 2:
         print('unittest: test delete-one-factor GWLP reduction')
     al = oalib.exampleArray(5, 1)
     al2 = al.randomperm()
-        
-    alr=al.reduceDOP()    
-    al2r=al2.reduceDOP()    
-    if not alr==al2r:
-        print('error: DOP reduced arrays unequal!: %d'  % (alr==al2r) )
-        print('alr'); alr.showarraycompact()
-        print('al2r'); al2r.showarraycompact()
+
+    alr = al.reduceDOP()
+    al2r = al2.reduceDOP()
+    if not alr == al2r:
+        print('error: DOP reduced arrays unequal!: %d' % (alr == al2r))
+        print('alr')
+        alr.showarraycompact()
+        print('al2r')
+        al2r.showarraycompact()
         return False
 
     at = oalib.reductionDOP(al)
-    check=at.apply(al)==al.reduceDOP()  
+    check = at.apply(al) == al.reduceDOP()
     if not check:
         print('error: DOP reduction transformation is invalid')
 
     # test graphtools
-    if verbose>=2:
+    if verbose >= 2:
         print('unittest: test graphtools')
-    #import . graphtools
+    # import . graphtools
     from . graphtools import oa2graph
     arrayclass = oalib.arraylink2arraydata(al)
     _ = oa2graph(al, arrayclass)

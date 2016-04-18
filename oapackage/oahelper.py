@@ -29,7 +29,8 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
 except:
-    warnings.warn('oahelper: matplotlib cannot be found, not all functionality is available')
+    warnings.warn(
+        'oahelper: matplotlib cannot be found, not all functionality is available')
     pass
 
 
@@ -418,7 +419,8 @@ def array2latex_old(ltable, htable=None):
     ss += '\\end{tabular}\n'
     return ss
 
-def array2html(X, header=1, tablestyle = 'border-collapse: collapse;', trclass='', tdstyle='', trstyle='', thstyle=''):
+
+def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='', tdstyle='', trstyle='', thstyle=''):
     """ Convert Numpy array to HTML table
 
     Arguments
@@ -431,7 +433,7 @@ def array2html(X, header=1, tablestyle = 'border-collapse: collapse;', trclass='
     -------
         page : markup html object
             generated table in HTML
-    
+
     """
     page = markup.page()
     page.add('<!-- Created by array2html -->\n')
@@ -441,40 +443,41 @@ def array2html(X, header=1, tablestyle = 'border-collapse: collapse;', trclass='
     nr = X.shape[0]
 
     if isinstance(trstyle, str):
-        trstyle = [trstyle]*nr
+        trstyle = [trstyle] * nr
     if isinstance(trclass, str):
-        trclass = [trclass]*nr
+        trclass = [trclass] * nr
 
     ri = 0
     if header:
-        page.tr(style='font-weight: bold; border-bottom: solid 1px black;' + \
+        page.tr(style='font-weight: bold; border-bottom: solid 1px black;' +
                 trstyle[ri], class_=trclass[ri])
-        ri = ri+1
+        ri = ri + 1
         for ii in range(nc):
             if isinstance(X[offset, ii], tuple):
                 print('array2html: tuple instance')
-                page.th(X[offset, ii][0], style=thstyle+X[offset, ii][1] )
+                page.th(X[offset, ii][0], style=thstyle + X[offset, ii][1])
             else:
-                page.th(X[offset, ii], style=thstyle )
+                page.th(X[offset, ii], style=thstyle)
         page.tr.close()
-        offset = offset+1
+        offset = offset + 1
 
-    nr = X.shape[0]-offset
+    nr = X.shape[0] - offset
     for r in range(nr):
         page.tr(style=trstyle[ri], _class=trclass[ri])
         for ii in range(nc):
             if isinstance(X[offset, ii], tuple):
-                page.td(X[offset, ii][0], style=tdstyle+X[offset, ii][1] )
+                page.td(X[offset, ii][0], style=tdstyle + X[offset, ii][1])
             else:
-                page.td(X[offset, ii], style=tdstyle )
+                page.td(X[offset, ii], style=tdstyle)
 
         page.tr.close()
-        offset = offset+1
-        ri = ri+1
+        offset = offset + 1
+        ri = ri + 1
     page.table.close()
     return page
 
 import subprocess
+
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
     """ Run specified command in external environment """
@@ -482,39 +485,40 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
-    r=0
+    r = 0
     if not dryrun:
-        
-        process = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
+
+        process = subprocess.Popen(
+            cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
-            r=process.poll()
+            r = process.poll()
             #print('poll done... %s' % r)
-            line = process.stdout.readline() 
-            #print('poll...')
-            if verbose>=2:
+            line = process.stdout.readline()
+            # print('poll...')
+            if verbose >= 2:
                 print('runcommand: jj %d' % jj)
-            if verbose>=3:
+            if verbose >= 3:
                 print('runcommand: jj %d: "%s"' % (jj, line))
-            if len(line)==0:
-                if verbose>=2:
+            if len(line) == 0:
+                if verbose >= 2:
                     print('runcommand: len(line) %d' % len(line))
-                 
+
                 break
-            
+
             if r is not None:
                 break
-            if jj>20000000:
+            if jj > 20000000:
                 print('error: early abort of runcommand')
                 break
-            line=line.decode(encoding='UTF-8')
+            line = line.decode(encoding='UTF-8')
             sys.stdout.write(str(line))
-            if jj%2==0:
+            if jj % 2 == 0:
                 sys.stdout.flush()
-            if verbose>=2:
+            if verbose >= 2:
                 print('end of loop...')
         #print('exit loop...')
-        r=process.poll()
-        #r = os.system(cmd) # old method
+        r = process.poll()
+        # r = os.system(cmd) # old method
         if (not r == 0):
             print('runcommand: cmd returned error!')
             print(cmd)
@@ -534,6 +538,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
 
     # all good
     return r
+
 
 def getArrayFile(afile):
     """ Return pointer to array file
@@ -582,13 +587,15 @@ def checkArrayFile(afile, cache=1):
 
 try:
     basestring  # attempt to evaluate basestring
+
     def isstr(s):
         return isinstance(s, basestring)
 except NameError:
     # probably Python 3.x
     def isstr(s):
         return isinstance(s, str)
-        
+
+
 def checkFiles(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
         cache: 0 (no), 1 (check), -1 (always)
@@ -613,6 +620,8 @@ def checkFiles(lst, cache=1, verbose=0):
     return c
 
 #%%
+
+
 def checkFilesOA(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
         cache: 0 (no), 1 (check), -1 (always)
@@ -738,7 +747,7 @@ def parseProcessingTime(logfile, verbose=0):
         for line in fileinput.input([logfile]):
             if line.startswith('#time'):
                 if verbose >= 1:
-                    #print(line)
+                    # print(line)
                     print('parseProcessingTime: line: %s' % line, end="")
                     # print('xy %s' % line[10:])
             if line.startswith('#time start:'):
@@ -893,7 +902,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
         number of columns
     t: integer
         strength of the arrays
-        
+
     >>> r = runExtend(16, 5, 3, verbose=0)    
     """
     if verbose:
@@ -991,6 +1000,7 @@ if 0:
         xx = xx.reshape((ncols, nrows)).transpose()
         return xx
 
+
 def getposjvals(A, t, verbose=1):
     N = A.shape[0]
     k = A.shape[1]
@@ -1031,9 +1041,10 @@ def arraystats(A, verbose=1):
     print('Ak: %s' % Ak)
     return Ak
 
+
 def argsort(seq):
     """ Stable argsort """
-    #http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
+    # http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
     return sorted(range(len(seq)), key=seq.__getitem__)
 
 
@@ -1099,7 +1110,7 @@ import tempfile
 def testHtml(hh=None):
     """ Test a short snippet of HTML """
     if hh is None:
-      return
+        return
     page = markup.page()
     page.init()
     page.body()
@@ -1161,7 +1172,7 @@ def DefficiencyBound(D, k, k2):
     ------
     D2 : float
         bound on the D-efficiency of extensions of a design with k columns to k2 columns    
-    
+
     """
     m = 1. + k + k * (k - 1) / 2
     m2 = 1. + k2 + k2 * (k2 - 1) / 2
@@ -1192,7 +1203,7 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.resize(w, h)
     elif be == 'module://IPython.kernel.zmq.pylab.backend_inline':
         pass
-         # mngr.canvas.manager.window.setGeometry(x,y,w,h)
+        # mngr.canvas.manager.window.setGeometry(x,y,w,h)
         #mngr.canvas.manager.window.SetPosition((x, y))
         #mngr.canvas.manager.window.resize(w, h)
     else:
