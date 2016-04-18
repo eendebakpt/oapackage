@@ -27,26 +27,26 @@
 #include <string>
 using namespace std;
 
-void print_all_permutations(const string& s)
+void print_all_permutations ( const string& s )
 {
-    string s1 = s;
-    sort(s1.begin(), s1.end()); 
+	string s1 = s;
+	sort ( s1.begin(), s1.end() );
 	int n=0;
-    do {
-        cout << s1 << endl;
+	do {
+		cout << s1 << endl;
 		n++;
-    } while (next_permutation(s1.begin(), s1.end()));
-	printf("%d/%ld perms (len %ld)\n", n, factorial<long>(s1.size()), (long) s1.size() );
+	} while ( next_permutation ( s1.begin(), s1.end() ) );
+	printf ( "%d/%ld perms (len %ld)\n", n, factorial<long> ( s1.size() ), ( long ) s1.size() );
 }
 
 void testx()
 {
-	
 
 
-    print_all_permutations("001111112222222");
 
-exit(0);
+	print_all_permutations ( "001111112222222" );
+
+	exit ( 0 );
 }
 
 int main ( int argc, char* argv[] )
@@ -77,13 +77,13 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -v --verbose [INT] 			Verbosity level " );
 	opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
 	opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
-	opt.addUsage ( printfstring(" --ctype [TYPE]				Zero for normal type, %d for diagonal, %d for double conference type ",conference_t::CONFERENCE_DIAGONAL, conference_t::DCONFERENCE ).c_str() );
-	opt.addUsage ( printfstring(" --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM).c_str() );
+	opt.addUsage ( printfstring ( " --ctype [TYPE]				Zero for normal type, %d for diagonal, %d for double conference type ",conference_t::CONFERENCE_DIAGONAL, conference_t::DCONFERENCE ).c_str() );
+	opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM ).c_str() );
 	opt.processCommandArgs ( argc, argv );
- 
+
 
 	//testx();
-	
+
 	print_copyright();
 	//cout << system_uname();
 	setloglevel ( NORMAL );
@@ -92,8 +92,8 @@ int main ( int argc, char* argv[] )
 	int N = opt.getIntValue ( 'N', 10 );
 	int kmax = opt.getIntValue ( 'k', N );
 	int select = opt.getIntValue ( 's', 1 );
-	const conference_t::conference_type ctx = (conference_t::conference_type)opt.getIntValue ( "ctype", 0 );
-	const matrix_isomorphism_t itype = (matrix_isomorphism_t)opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
+	const conference_t::conference_type ctx = ( conference_t::conference_type ) opt.getIntValue ( "ctype", 0 );
+	const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
 
 	const std::string output = opt.getStringValue ( 'o', "" );
 	const std::string input = opt.getStringValue ( 'i', "" );
@@ -123,59 +123,62 @@ int main ( int argc, char* argv[] )
 		kstart=kk[0].n_columns;
 		kmax=kk[0].n_columns+1;
 	} else {
-		
-		ctype.addRootArrays(kk);
-		kstart=kk[0].n_columns;		
+
+		ctype.addRootArrays ( kk );
+		kstart=kk[0].n_columns;
 	}
 
 	if ( verbose )
-		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d)\n", ( int ) kk.size(), ctype.N, ctype.ncols, itype );
+		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) kk.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );
 
-	if (verbose>=3) {
-		printf("--- initial set of arrays ---\n");
-			showArrayList(kk);
+	if ( verbose>=3 ) {
+		printf ( "--- initial set of arrays ---\n" );
+		showArrayList ( kk );
 	}
-		
-	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
-		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax);
-		
-		arraylist_t outlist;
-		
-		switch(ctype.ctype) {
-			case conference_t::DCONFERENCE:
-		outlist = extend_double_conference ( kk, ctype,  verbose );
-				
-				break;
-			
-			case conference_t::CONFERENCE_NORMAL:
-			case conference_t::CONFERENCE_DIAGONAL:
-		switch(ctype.itype) {
-			case CONFERENCE_RESTRICTED_ISOMORPHISM:			
-		outlist = extend_conference_restricted ( kk, ctype,  verbose );
-		break;
 
-			case CONFERENCE_ISOMORPHISM:			
-		outlist = extend_conference ( kk, ctype,  verbose );
-		break;
-			default:
-				printfd("isomorphism type not implemented");
-				break;
+	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
+		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax );
+
+		arraylist_t outlist;
+
+		switch ( ctype.ctype ) {
+		case conference_t::DCONFERENCE:
+		{
+			outlist = extend_double_conference ( kk, ctype,  verbose );
+			break;
 		}
-			default:
-				printfd("not implemented\n");
+		case conference_t::CONFERENCE_NORMAL:
+		case conference_t::CONFERENCE_DIAGONAL:
+			switch ( ctype.itype ) {
+			case CONFERENCE_RESTRICTED_ISOMORPHISM:
+				outlist = extend_conference_restricted ( kk, ctype,  verbose );
+				break;
+
+			case CONFERENCE_ISOMORPHISM:
+				outlist = extend_conference ( kk, ctype,  verbose );
+				break;
+			default
+					:
+				printfd ( "isomorphism type not implemented" );
+				break;
+			}
+			break;
+		default:
+			printfd ( "not implemented: itype %d\n", ctype.itype );
+			break;
 		}
 		if ( select )
 			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
 
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
-		
+
 		if ( output.length() >=1 ) {
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
 			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
 			writearrayfile ( outfile.c_str(),outlist );
 		}
 
-		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, (int)outlist.size() );
+		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, ( int ) outlist.size() );
 
 		// loop
 		kk=outlist;

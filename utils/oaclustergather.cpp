@@ -266,6 +266,8 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process" );
 	opt.addUsage ( " --paretomethod [0, 1]		If 1 add J5 to Pareto criterium" );
 	opt.addUsage ( " -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) " );
+	opt.addUsage ( "" );
+	opt.addUsage ( "Returns zero output code on succesfull run." );
 	opt.processCommandArgs ( argc, argv );
 
 	print_copyright();
@@ -417,7 +419,7 @@ int main ( int argc, char* argv[] )
 					cleanrunK=0;
 					if ( needcleanrun ) {
 
-						exit ( 0 );
+						exit ( 1 );
 					} else {
 						continue;
 					}
@@ -463,7 +465,7 @@ int main ( int argc, char* argv[] )
 				cleanrun=0;
 				cleanrunK=0;
 				if ( needcleanrun )
-					exit ( 0 );
+					exit ( 1 );
 				else {
 					continue;
 				}
