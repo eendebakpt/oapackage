@@ -472,7 +472,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 		depth_extend_log ( i, alist, nn, dextend,  extcol,  verbose );
 
 		//printf("dextend.discardJ5 %d, extcol %d\n", dextend.discardJ5, extcol);
-		if (dextend.discardJ5 >=0 and (dextend.discardJ5 <= extcol) ) {
+		if (dextend.discardJ5 >=0 && (dextend.discardJ5 <= extcol) ) {
 			std::vector<int> j5 = al.Jcharacteristics(5);
 			for(size_t i=0; i<j5.size(); i++) j5[i]=abs(j5[i]);
 			int j5max = vectormax(j5, 0);
