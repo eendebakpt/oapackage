@@ -175,7 +175,11 @@ int main ( int argc, char* argv[] )
 		if ( output.length() >=1 ) {
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
 			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
-			writearrayfile ( outfile.c_str(),outlist );
+			
+			if(outlist.size() < 20000 )
+				writearrayfile ( outfile.c_str(),outlist);
+			else
+				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
 		}
 
 		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, ( int ) outlist.size() );

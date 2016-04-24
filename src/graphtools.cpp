@@ -251,7 +251,18 @@ std::vector<int> indexvector ( const std::vector<IntType> s )
  *   The conversion method is as in Ryan and Bulutoglu.
  *   The resulting graph is bi-partite.
  *   The graph representation can be used for isomorphism testing.
-*/
+ * 
+ * For each array the graph consists of:
+ *
+ * i) For each row a vertex 
+ * ii) For each column a vertex
+ * iii) For each column j there are s_j vertices corresponding to the levels
+ * 
+ * The vertices are labelled according to these 3 groups. Next edges are created:
+ * 
+ * i) For each entry of the array the corresponding row is connected to the column-level vertex 
+ * ii) Each column vertex is connected to all the column-level vertices with the same column index
+ */
 std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose )
 {
 	arraydata_t arrayclass = arraylink2arraydata ( al );
@@ -260,8 +271,8 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 	const std::vector<int> s = arrayclass.getS();
 
 	int nRowVertices = nrows;
-	int nColumnLevelVertices = std::accumulate ( s.begin(), s.end(), 0 );
 	int nColVertices = ncols;
+	int nColumnLevelVertices = std::accumulate ( s.begin(), s.end(), 0 );
 
 	int nVertices = nrows + ncols + nColumnLevelVertices; // number of vertices in the graph
 	int colOffset = nrows;
@@ -270,24 +281,27 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 
 	std::vector<int> cs = cumsum0 ( s );
 
+	
 	for ( size_t j=0; j<s.size(); j++ )
 		vertexOffsets[j] = colOffset + ncols + cs[j];
 
-	std::vector<int> colors ( nVertices );
-
+	std::vector<int> colors ( nVertices ); 
+	
+	//printf("arrayclass.ncolgroups %d\n", arrayclass.ncolgroups);
+	symmetry_group sg ( arrayclass.getS(), 0 );
+	
 	// row vertices: color 0
 	for ( int i=0; i<nrows; i++ )
 		colors[i]=0;
-	// column vertices: color 1
+	// column vertices: color 1 + column group index
 	for ( int i=0; i<ncols; i++ )
-		colors[i+nrows]=1;
+		colors[i+nrows]=1+sg.gidx[i];
 
 
-	// other vertices: color 2+...
-	//std::vector<int> v = indexvector ( s );
+	// other vertices: color 2
 	for ( int i=0; i<nColumnLevelVertices; i++ )
-		colors[i+nrows+ncols]=2; //+v[i];
-
+		colors[i+nrows+ncols]=(arrayclass.ncolgroups-1)+2;
+	
 
 	if ( verbose )
 		printf ( "array2graph: generating graph of size %d=%d+%d+%d\n", nVertices, nrows, ncols, nColumnLevelVertices );
@@ -302,7 +316,6 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 		}
 	}
 
-
 	if ( nColVertices > 0 ) {
 		int colidx = 2;
 		for ( int col =0; col<ncols; col++ ) {
@@ -315,7 +328,7 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 	}
 
 	// The non-row vertices do not have any connections to other non-row vertices.
-	int ss = std::accumulate ( s.begin(), s.end(), 0 ); // std::accumulate<int>(s.begin(), s.end(), 0);
+	//int ss = std::accumulate ( s.begin(), s.end(), 0 ); 
 
 	return std::pair<array_link, std::vector<int> > ( G, colors );
 }
@@ -340,9 +353,9 @@ array_link transformGraph ( const array_link &G, const std::vector<int> tr, int 
 array_transformation_t oagraph2transformation ( const std::vector<int> &pp, const arraydata_t &arrayclass, int verbose )
 {
 	if ( arrayclass.ismixed() ) {
-		printfd ( "ERROR: oagraph2transformation not implemented for mixed-level designs\n" );
-		array_transformation_t ttr ( arrayclass );
-		return ttr;
+		printfd ( "ERROR: oagraph2transformation not tested for mixed-level designs\n" );
+		//array_transformation_t ttr ( arrayclass );
+		//return ttr;
 	}
 	///invert the labelling transformation
 	std::vector<int> ppi = invert_permutation ( pp );
@@ -419,17 +432,30 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
 		//printf("ii %d: ww ", ii); display_vector(ww); printf("\n");
 		//printf("ww "); display_vector(ww); printf("\n");
-		if ( verbose>=1 ) {
+		if ( verbose>=2 ) {
 			printfd ( "oagraph2transformation: lvlperm %d: ",ii );
 			display_vector ( ww );
 			printf ( "\n" );
 			fflush ( 0 );
 		}
 		ttl.setlevelperm ( ii, ww );
+		
+		//printfd("## ii %d\n", ii); ttl.show();
 	}
 
 	ttl=ttl.inverse();
+
+	if (0) {
+		printfd("## ttr \n"); ttr.show();
+		printfd("## ttc \n"); ttc.show();
+		printfd("## ttl \n"); ttl.show();
+		{	array_transformation_t tt = ttr*ttc*ttl; //ttc*ttl;
+			tt.show();
+exit(0);
+		}
+	}
 	array_transformation_t tt = ttr*ttc*ttl;
+	//	printfd("## tt \n"); tt.show();
 
 	return tt;
 }

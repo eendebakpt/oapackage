@@ -44,9 +44,9 @@ typedef unsigned __int32 uint32_t;
 #ifdef NOZLIB
 #else
 #ifdef FULLPACKAGE
-	#ifndef USEZLIB
-		#define USEZLIB 1
-	#endif
+#ifndef USEZLIB
+#define USEZLIB 1
+#endif
 #endif
 #endif
 #endif
@@ -295,8 +295,8 @@ struct arraydata_t {
 	ordering_t order;	/** Ordering used for arrays */
 
 	/* derived data */
-	colindex_t ncolgroups;
-	colindex_t *colgroupindex ;
+	colindex_t ncolgroups; /// number of groups of columns with the same number of levels
+	colindex_t *colgroupindex ; /// specifies for each column the index of the column group
 	colindex_t *colgroupsize ;
 	int oaindex;	/* index of the array */
 
@@ -529,7 +529,7 @@ static inline array_t* create_array ( const int nrows, const int ncols )
 inline array_t* create_array ( const arraydata_t *ad )
 {
 	return create_array ( ad->N, ad->ncols );
-} 
+}
 
 
 /**
@@ -672,16 +672,16 @@ public:
 	//void setColumnX(int c, const std::vector<numtype> v) {
 	//		std::copy(this->array+c*this->n_rows, this->array+(c+1)*this->n_rows, v.begin() );
 	//}
-	void setColumn(int c, const std::vector<int> v) {
-			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
+	void setColumn ( int c, const std::vector<int> v ) {
+		std::copy ( v.begin(), v.end(), this->array+c*this->n_rows );
 	}
-	void setColumn(int c, const std::vector<signed char> v) {
-			std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
+	void setColumn ( int c, const std::vector<signed char> v ) {
+		std::copy ( v.begin(), v.end(), this->array+c*this->n_rows );
 	}
 	//void setColumn2(int c, const cperm v) {
 	//		std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
 	//}
-	
+
 	/// return transposed array
 	array_link transposed() const;
 
@@ -771,26 +771,26 @@ public:
 
 	array_link operator *= ( array_t val ) {
 		int NN=this->n_rows*this->n_columns;
-	for(int i=0; i<NN; i++)
-		this->array[i] *= val;
-	return *this;
+		for ( int i=0; i<NN; i++ )
+			this->array[i] *= val;
+		return *this;
 	}
 
-		array_link operator += ( array_t val ) {
+	array_link operator += ( array_t val ) {
 		int NN=this->n_rows*this->n_columns;
-	for(int i=0; i<NN; i++)
-		this->array[i] += val;
-	return *this;
+		for ( int i=0; i<NN; i++ )
+			this->array[i] += val;
+		return *this;
 
-			
-		}
-		array_link operator -= ( array_t val ) {
-		int NN=this->n_rows*this->n_columns;
-	for(int i=0; i<NN; i++)
-		this->array[i] -= val;
-	return *this;
+
 	}
-	
+	array_link operator -= ( array_t val ) {
+		int NN=this->n_rows*this->n_columns;
+		for ( int i=0; i<NN; i++ )
+			this->array[i] -= val;
+		return *this;
+	}
+
 	/// get element from array, no error checking, inline version
 	inline const array_t& atfast ( const rowindex_t r, const colindex_t c ) const {
 		return this->array[r+this->n_rows*c];
@@ -815,9 +815,9 @@ public:
 
 	void _setvalue ( int row, int col, int val );	/// set value of an array, no error checking!
 
-	void negateRow(rowindex_t r) {
-	for(int c=0; c<this->n_columns;c++)
-		this->atfast(r,c) *= -1;
+	void negateRow ( rowindex_t r ) {
+		for ( int c=0; c<this->n_columns; c++ )
+			this->atfast ( r,c ) *= -1;
 	}
 	/// print information about array
 	void show() const {
@@ -903,8 +903,8 @@ public:
 		assert ( this->n_rows==al.n_rows );
 		std::copy ( al.array+sc*this->n_rows, al.array+ ( sc+1 ) *this->n_rows, this->array+this->n_rows*c );
 	}
-	
-	
+
+
 public:
 	array_link ( const array_link &, const std::vector<int> &colperm );
 	array_link ( const array_t *array, rowindex_t nrows, colindex_t ncols, int index=0 );
@@ -984,19 +984,20 @@ array_link hstack ( const array_link &al, const array_link &b );
 array_link hstacklastcol ( const array_link &A, const array_link &B );
 
 
-inline cperm vstack(const cperm &A, const cperm &B) {
-		cperm c(A.size()+B.size());
-		
-		std::copy(A.begin(), A.end(), c.begin() );
-		std::copy(B.begin(), B.end(), c.begin()+A.size() );
-		return c;
+inline cperm vstack ( const cperm &A, const cperm &B )
+{
+	cperm c ( A.size() +B.size() );
+
+	std::copy ( A.begin(), A.end(), c.begin() );
+	std::copy ( B.begin(), B.end(), c.begin() +A.size() );
+	return c;
 }
 
 /// perform column permutation for an array
-void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm);
+void perform_column_permutation ( const array_link source, array_link &target, const std::vector<int> perm );
 
 /// perform row permutation for an array
-void perform_row_permutation ( const array_link source, array_link & target, const std::vector<int> perm);
+void perform_row_permutation ( const array_link source, array_link & target, const std::vector<int> perm );
 
 /// create arraydata_t structure from array
 arraydata_t arraylink2arraydata ( const array_link &al, int extracols = 0, int strength = 2 );
@@ -1110,7 +1111,7 @@ inline int array_link::operator> ( const array_link& rhs ) const
 	}
 #endif
 
-	return std::lexicographical_compare ( rhs.array, rhs.array + n_rows*n_columns, array, array + n_rows*n_columns ) ;	
+	return std::lexicographical_compare ( rhs.array, rhs.array + n_rows*n_columns, array, array + n_rows*n_columns ) ;
 }
 
 /**
@@ -1247,15 +1248,11 @@ public:
 	/// composition operator. the transformations are applied from the left
 	array_transformation_t operator* ( const array_transformation_t b ) {
 
-		//  myprintf("  array_transformation_t operator*: create output object\n");
 		array_transformation_t c ( this->ad );
 
 		const array_transformation_t &a = *this;
 
 		const int nc = this->ad->ncols;
-		//const int nr = this->ad->N;
-
-		//  myprintf("  array_transformation_t operator*: perform perms\n");
 
 		// perform the rows permutations
 		perform_inv_perm ( b.rperm, c.rperm, this->ad->N, a.rperm );
@@ -1268,10 +1265,17 @@ public:
 			levelperm_t l1 = b.lperms[a.cperm[ci]];
 			levelperm_t l2 = a.lperms[ci];
 
+			/*
+			printf("composition of level perms: s[%d]=%d, s[%d]=%d\n", ci, this->ad->s[ci], a.cperm[ci], this->ad->s[a.cperm[ci]]  );
+			printf("  l1: "); print_perm(l1,this->ad->s[a.cperm[ci]]);
+			printf("  l2: "); print_perm(l2, this->ad->s[ci]);
+			composition_perm ( l1, l2, this->ad->s[ci], c.lperms[ci] );
+			printf("  output: "); print_perm(c.lperms[ci], this->ad->s[ci]);
+			*/
 			composition_perm ( l1, l2, this->ad->s[ci], c.lperms[ci] );
 		}
 
-		//delete_perm(tmpc);
+		//printf("* operator: output\n"); c.show();
 		return c;
 	}
 
@@ -1337,17 +1341,16 @@ public:
 	std::vector<int> cswitch; 	/// sign flips for the columns
 	std::vector<int> rswitch; 	/// sign flips for the columns
 
-	int nrows; int ncols;
+	int nrows;
+	int ncols;
 
 public:
 	conference_transformation_t ( );	/// default constructor
 	conference_transformation_t ( int nrows, int ncols );
 	conference_transformation_t ( const array_link &al );
-	//conference_transformation_t & operator= ( const conference_transformation_t &at ); /// assignment operator
-	//~conference_transformation_t();	/// destructor
 
 	/// show the array transformation
-	void show(int verbose=1) const;
+	void show ( int verbose=1 ) const;
 
 	/// return true if the transformation is equal to the identity
 	bool isIdentity() const;
@@ -1365,6 +1368,8 @@ public:
 	void randomizecolperm();
 	/// initialize with a random row permutation
 	void randomizerowperm();
+	/// initialize with random col switches
+	void randomizecolflips();
 	/// initialize with random row switches
 	void randomizerowflips();
 
@@ -1373,18 +1378,52 @@ public:
 
 	/// composition operator. the transformations are applied from the left
 	conference_transformation_t operator* ( const conference_transformation_t b ) {
+		const int N = this->nrows;
+		const int ncols = this->ncols;
 
-		printf("not implemented...\n");
-		return *this;
+		conference_transformation_t c(N, ncols);
+		
+		const conference_transformation_t &a = *this;
+
+		
+		// perform the rows permutations
+		//perform_inv_perm ( b.rperm, c.rperm, N, a.rperm );
+		composition_perm ( a.rperm, b.rperm, c.rperm );
+
+		// perform the column permutations
+		//perform_inv_perm ( b.cperm, c.cperm, ncols, a.cperm );
+		composition_perm ( a.cperm, b.cperm, c.cperm );
+
+		//printf("after inv_perm: a.cperm "); print_perm(a.cperm);
+		//printf("after inv_perm: b.cperm "); print_perm(b.cperm);
+		//printf("after inv_perm: c.cperm "); print_perm(c.cperm);
+		
+		/* rowsign switches */
+		for ( rowindex_t ri=0; ri<N; ri++ ) {
+			int rix = b.rperm[ri];
+			c.rswitch[rix] = a.rswitch[ri] * b.rswitch[rix];			
+		}
+
+		/* column sign switches */
+		for ( colindex_t ci=0; ci<ncols; ci++ ) {
+			int cix = b.cperm[ci];
+			c.cswitch[cix] = b.cswitch[cix] * a.cswitch[ci];			
+		}
+
+		return c;
 	}
 
 	//void show ( std::ostream &out ) const;
 
-	void setrowperm ( std::vector<int>rp ) { rperm = rp; };
-	void setcolperm ( std::vector<int>cp ) { cperm = cp; };
+	void setrowperm ( std::vector<int>rp ) {
+		rperm = rp;
+	};
+	void setcolperm ( std::vector<int>cp ) {
+		cperm = cp;
+	};
 
 private:
-	void init(int nr, int nc); 	/// initialize permutation structures
+	void init ( int nr, int nc ); 	/// initialize permutation structures
 	//void free(); 	/// free permutation structures and arraydata_t structure
 };
 
@@ -1395,11 +1434,11 @@ private:
 
 #ifdef FULLPACKAGE
 
-void showArrayList(const arraylist_t &lst);
+void showArrayList ( const arraylist_t &lst );
 
 namespace arrayfile
 {
- 
+
 /// format mode
 enum arrayfilemode_t {ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR};
 enum afilerw_t {READ, WRITE, READWRITE};
@@ -1460,7 +1499,7 @@ public:
 	array_link readnext();
 
 	/// read set of array from the file
-	arraylist_t  readarrays(int nmax = NARRAYS_MAX, int verbose=1);
+	arraylist_t  readarrays ( int nmax = NARRAYS_MAX, int verbose=1 );
 
 	/// flush any open file pointer
 	void flush();
@@ -1880,8 +1919,8 @@ inline bool readbinheader ( FILE *fid, int &nr, int &nc )
 
 	double h[4];
 	int nn = fread ( h, sizeof ( double ), 4, fid );
-	nr=(int)h[2];
-	nc=(int)h[3];
+	nr= ( int ) h[2];
+	nc= ( int ) h[3];
 
 	//myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
 	bool valid=false;

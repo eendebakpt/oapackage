@@ -35,6 +35,111 @@ void permute ( Type *source, Type *target, const std::vector<int> p )
 		target[i]=source[p[i]];
 }
 
+/// check transformation inverse. return 0 if test is good
+int checkConferenceInverse ( const array_link &al )
+{
+	conference_transformation_t T1(al);	
+	T1.randomize();
+
+	conference_transformation_t T1i = T1.inverse();
+	conference_transformation_t II = T1i * T1;
+
+	myassert ( II.isIdentity(), "unittest error: inverse of conference matrix transformation\n" );
+	myassert ( al == II.apply(al), "unittest error: inverse of conference matrix transformation\n" );
+
+	return 0;
+}
+
+/// check composition operator. returns 0 if test id good
+int checkConferenceComposition ( const array_link &al, int verbose=0 )
+{
+	conference_transformation_t T1(al);	
+	T1.randomize();
+	//for(int i=0; i<1; i++) {
+	//T1.reset(); T1.randomizecolperm();
+	//T1.randomizecolflips();
+	//T1.randomizerowperm();
+		//print_perm(T1.cperm); printf("\n");
+	//}
+	
+	conference_transformation_t T2(al);	
+	T2.randomize();
+	//T2.reset(); //T2.randomizecolperm();	//T2.randomizerowperm();
+	//T2.randomizecolflips();
+
+	conference_transformation_t T3 = T2 * T1;
+	
+	array_link al2 = T2.apply ( al );
+	array_link al12 = T1.apply ( al2 );
+	array_link al3 = T3.apply ( al );
+
+	if ( verbose ) {
+		printfd("checkTransformationComposition: transforms\n");
+	T1.show();
+	T2.show();
+	T3.show();
+		printfd("checkTransformationComposition: arrays\n");
+		al.showarray();
+		al2.showarray();
+		al12.showarray();
+		al3.showarray();
+	}
+
+	myassert ( al3==al12, "unittest error: composition of conference transformations\n" );
+
+	return 0;
+}
+
+/// check transformation inverse. return 0 if test is good
+int checkTransformationInverse ( const array_link &al )
+{
+	arraydata_t adataX = arraylink2arraydata ( al );
+	array_transformation_t T1 ( &adataX );
+	T1.randomize();
+
+	array_transformation_t T1i = T1.inverse();
+	array_transformation_t II = T1i * T1;
+
+	myassert ( II.isIdentity(), "unittest error: inverse of array transformation\n" );
+
+	return 0;
+}
+/// check composition operator. returns 0 if test id good
+int checkTransformationComposition ( const array_link &al, int verbose=0 )
+{
+	arraydata_t adataX = arraylink2arraydata ( al );
+
+	array_transformation_t T1 ( &adataX );
+	T1.randomize();
+	array_transformation_t T2 ( &adataX );
+	T2.randomize();
+	array_transformation_t T3;
+	T3= T1 * T2;
+
+	//T2.reset(); T2.randomize();
+	array_link al2 = T2.apply ( al );
+
+	//T1.show(); al2.showarray(); exit(0);
+
+	array_link al12 = T1.apply ( al2 );
+	array_link al3 = T3.apply ( al );
+
+	if ( verbose ) {
+		printfd("checkTransformationComposition\n");
+	T1.show();
+	T2.show();
+	T3.show();
+		al.showarray();
+		al2.showarray();
+		al12.showarray();
+		al3.showarray();
+	}
+
+	myassert ( al3==al12, "unittest error: composition of array transformations\n" );
+
+	return 0;
+}
+
 enum {UGOOD, UERROR};
 
 /** unittest for oapackage
@@ -48,9 +153,9 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 	const char *bstr = "OA unittest";
 	cprintf ( verbose, "%s: start\n", bstr );
 
-	srand(randval);
+	srand ( randval );
 
-	int allgood=1;
+	int allgood=UGOOD;
 
 	initncombscache ( 20 );
 
@@ -74,19 +179,20 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 	{
 		cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
-		
+
 		array_link al = exampleArray ( 19,1 );
 		conference_transformation_t T ( al );
 		//T.randomizerowflips();
 		T.randomize();
-	
+
 		conference_transformation_t Ti = T.inverse();
 		array_link alx = Ti.apply ( T.apply ( al ) );
 
 		if ( 0 ) {
-			printf("input array:\n");al.showarray();
+			printf ( "input array:\n" );
+			al.showarray();
 			T.show();
-			printf("transformed array:\n");
+			printf ( "transformed array:\n" );
 			T.apply ( al ).showarray();
 			Ti.show();
 			alx.showarray();
@@ -122,14 +228,13 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 			if ( j5max!=mm[jj] ) {
 				printf ( "j5max %d (should be %d)\n", j5max, mm[jj] );
-				allgood=0;
-				return 0;
+				allgood=UERROR;
+				return allgood;
 			}
 		}
 	}
 	{
 		cprintf ( verbose, "%s: array transformations\n", bstr );
-		// TODO: array transformation class: check non-symmetric case
 
 		const int N=9;
 		const int t = 3;
@@ -138,27 +243,34 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		array_link al ( adataX.N,adataX.ncols,-1 );
 		al.create_root ( adataX );
 
-		array_transformation_t T1 ( &adataX );
-		T1.randomize();
-		array_transformation_t T2 ( &adataX );
-		T2.randomize();
-		array_transformation_t T3;
-		T3= T1 * T2;
+		if ( checkTransformationInverse ( al ) )
+			allgood=UERROR;
 
+		if ( checkTransformationComposition ( al ) )
+			allgood=UERROR;
 
-		array_transformation_t T1i = T1.inverse();
-		array_transformation_t II = T1i * T1;
+		al = exampleArray ( 5, 1 );
+		if ( checkTransformationInverse ( al ) )
+			allgood=UERROR;
 
-		myassert ( II.isIdentity(), "unittest error: inverse of array transformation\n" );
+		if ( checkTransformationComposition ( al ) )
+			allgood=UERROR;
+		
 
-		array_link al2 = T2.apply ( al );
-		array_link al12 = T1.apply ( al2 );
-		array_link al3 = T3.apply ( al );
+		for (int i=0; i<15; i++) {
+			al=exampleArray(18,0);
+		if ( checkConferenceComposition ( al ) )
+			allgood=UERROR;
+		if ( checkConferenceInverse ( al ) )
+			allgood=UERROR;
+			al=exampleArray(19,0);
+		if ( checkConferenceComposition ( al ) )
+			allgood=UERROR;
+		if ( checkConferenceInverse ( al ) )
+			allgood=UERROR;
 
-		// T1.show(); T2.show();
-		// al.showarray(); al2.showarray(); al12.showarray(); al3.showarray();
+		}		
 
-		myassert ( al3==al12, "unittest error: composition of array transformations\n" );
 	}
 
 	{
@@ -350,7 +462,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 			alr.showarraycompact();
 			printf ( "-- alx \n" );
 			alx.showarraycompact();
-			allgood=0;
+			allgood=UERROR;
 		}
 	}
 
@@ -378,7 +490,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 			bool c= ( al==alr );
 			if ( !c ) {
 				printf ( "oaunittest: error: reduction of randomized array failed!\n" );
-				allgood=0;
+				allgood=UERROR;
 			}
 
 		}
@@ -415,7 +527,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 				printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
 			if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
 				printf ( "oaunittest: error: Defficiency not good!\n" );
-				allgood=0;
+				allgood=UERROR;
 
 			}
 		}
@@ -442,6 +554,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 			d = al.Defficiencies ( 2,1 );
 			printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
 
+			allgood=UERROR;
 			exit ( 1 );
 		}
 
@@ -514,16 +627,27 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 #endif
 
-	if ( 0 ) {
+	{
 		cprintf ( verbose,"OA unittest: test nauty\n" );
 		array_link al = exampleArray ( 5, 2 );
 		arraydata_t arrayclass = arraylink2arraydata ( al );
-		array_transformation_t trans ( arrayclass );
-		trans.randomize();
-		array_link alr = trans.apply ( al );
 
-		//array_transformation_t ttm = reduceOAnauty ( alr, 1 );
-		//array_link alm = ttm.apply ( alr );
+		for ( int i=0; i<20; i++ ) {
+			array_link alx = al;
+			alx.randomperm();
+			array_transformation_t t1 = reduceOAnauty ( al );
+			array_link alr1 = t1.apply ( al );
+
+			array_transformation_t t2 = reduceOAnauty ( alx );
+			array_link alr2 = t2.apply ( alx );
+
+
+			if ( alr1 != alr2 )
+				printf ( "oaunittest: error: Nauty reductions unequal!\n" );
+			allgood=UERROR;
+
+
+		}
 	}
 
 	cprintf ( verbose,"OA unittest: complete %.3f [s]!\n", ( get_time_ms() - t0 ) );

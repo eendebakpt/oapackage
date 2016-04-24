@@ -1203,6 +1203,23 @@ inline void composition_perm ( const numtype * A, const  numtype* B, int n, numt
 	}
 }
 
+template <class numtype>
+/**
+ * @brief Calculate composition of 2 permutations
+ *
+ * Calculates C = B \circ A
+ * @param A
+ * @param B
+ * @param n
+ * @param C
+ */
+inline void composition_perm ( const std::vector<numtype> &A, const std::vector<numtype> &B,  std::vector<numtype> &C )
+{
+	for ( int i=0; i<A.size(); i++ ) {
+		C[i] = B[A[i]];
+	}
+}
+
 template <class object, class numtype>
 /**
  * @brief Perform a permutation on a set of objects
@@ -1232,7 +1249,7 @@ inline std::vector<object> perform_perm ( const std::vector<object> src, const s
 
 /// Perform inverse permutation
 template <class object, class numtype>
-inline void perform_inv_perm ( const std::vector<object> src, std::vector<object> target, const int n, const std::vector<numtype> perm )
+inline void perform_inv_perm ( const std::vector<object> src, std::vector<object> &target, const int n, const std::vector<numtype> perm )
 {
 	for ( int i=0; i<n; i++ ) {
 		target[i]=src[perm[i]];

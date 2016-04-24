@@ -25,9 +25,7 @@
 
 #include "conference.h"
 
-//void mydebug(array_link al, arraydata_t &adata, OAextend &oaextend, int);
-//void mydebug2(array_link al, arraydata_t &adata, OAextend &oaextend);
-
+/*
 void mydebug10 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=0 )
 {
 	double t0,t,dt;
@@ -255,73 +253,6 @@ void mydebug ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbo
 	}
 }
 
-void mydebug1 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=1 )
-{
-	oaextend.setAlgorithm ( MODE_J5ORDERX, &adata );
-
-	lmc_t r=LMC_MORE;
-	int niter=1;
-
-	if ( dverbose<0 ) {
-		niter=5;
-		dverbose=0 ;
-	}
-
-	printf ( "mydebug1! al %d %d\n", al.n_rows, al.n_columns );
-	LMCreduction_t reduction ( &adata );
-	reduction.init_state=COPY;
-
-	double t0 =get_time_ms();
-	LMCreduction_t reductionx=reduction;
-	//oaextend.setAlgorithm(MODE_J4);
-	for ( int ix=0; ix<niter; ix++ ) {
-		r = LMCcheck ( al, adata, oaextend, reductionx ) ;
-	}
-	double dt =get_time_ms()-t0;
-	printf ( "original lmc_t: %d, time: %.3f [ms]\n", ( int ) r, 1e3*dt );
-
-}
-
-void mydebug2 ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=1 )
-{
-	lmc_t r=LMC_MORE;
-	int niter=1;
-	if ( dverbose<0 ) {
-		niter=10;
-		dverbose=0 ;
-	}
-	printf ( "mydebug2! al %d %d\n", al.n_rows, al.n_columns );
-	oaextend.setAlgorithm ( MODE_J5ORDERX, &adata );
-
-	double t0=get_time_ms(), dt;
-
-	LMCreduction_t reduction ( &adata );
-	//  oaextend.setAlgorithm(MODE_J5ORDERX, &adata);
-
-	// pre-compute
-	LMCreduction_t reductionsub = calculateSymmetryGroups ( al.deleteColumn ( -1 ), adata,  oaextend );
-
-	dt =get_time_ms()-t0;
-	printf ( "pre-compute: time: %.3f [ms]\n", 1e3*dt );
-
-	//reductionsub.showColperms(1);
-	if ( dverbose ) {
-		reductionsub.symms.showColcombs ( 1 );
-		reductionsub.symms.showSymmetries ( 1 );
-	}
-
-	printf ( "running LMCcheckXX: " );
-	adata.show();
-	lmc_t rn = r;
-	t0 =get_time_ms();
-	for ( int ix=0; ix<niter; ix++ ) {
-		copy_array ( al.array, reduction.array, adata.N, adata.ncols ); // hack?
-		rn = LMCcheckSymmetryMethod ( al, adata, oaextend, reduction, reductionsub, dverbose ) ;
-	}
-	dt =get_time_ms()-t0;
-	printf ( "new lmt_t %d: time: %.3f [ms]\n", rn, 1e3*dt );
-
-}
 
 void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=1 )
 {
@@ -350,6 +281,7 @@ void mydebug2d ( array_link al, arraydata_t &adata, OAextend &oaextend, int dver
 	printf ( "lmc_symmetry direct lmt_t %d: time: %.3f [ms]\n", rn, 1e3*dt );
 
 }
+*/
 
 #include <Eigen/SVD>
 #include <Eigen/Dense>
@@ -386,10 +318,6 @@ array_link finalcheck ( const array_link &al,  const arraydata_t &arrayclass,  s
 }
 
 
-//TODO: use optimDeff2level by default
-//TODO: make enum for selection strategy?
-//TODO: IMPLEMENT flip method as well
-//TODO: Run valgrind...
 
 
 void speedtest ( const Eigen::MatrixXf mymatrix, int fac=1000 )
@@ -543,6 +471,33 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+
+	if ( 1 ) {
+
+		array_link al = exampleArray ( 5 );
+		array_link alx = al;
+		alx.randomperm();
+
+		array_transformation_t t1 = reduceOAnauty ( al );
+		//t1.show();	return 0;
+
+		array_link alr1 = t1.apply ( al );
+
+
+		array_transformation_t t2 = reduceOAnauty ( alx );
+		array_link alr2 = t2.apply ( alx );
+
+
+		printf ( "reduced:\n" );
+		alr1.showarray();
+		printf ( "random reduced:\n" );
+		alr2.showarray();
+
+		if ( alr1 != alr2 )
+			printf ( "error: reductions unequal!\n" );
+
+		return 0;
+	}
 	if ( 0 ) {
 
 		arraylist_t ll = readarrayfile ( "/home/eendebakpt/tmp/sp0-split-10/sp0-split-10-pareto-64.2-2-2-2-2-2-2-2-2-2.oa" );

@@ -2465,15 +2465,11 @@ void arraydata_t::complete_arraydata()
 		val *= ad->s[i];
 
 	}
-	//std::cout << "max rowsort value: "<< val << printfstring(" (ncols %d, nbits %d)", ad->ncols, nbits) <<  std::endl;
 #endif
-//ad->ncolgroups = symm_group_index<array_t, colindex_t>(ad->s, ad->ncols, dummy, ad->colgroupindex, ad->colgroupsize);
-	//delete [] dummy;
 }
 
 array_link arraydata_t::randomarray ( int strength, int ncols ) const
 {
-
 	if ( ncols==-1 )
 		ncols=this->ncols;
 	array_link al ( this->N, this->ncols, -1 );
@@ -2485,7 +2481,6 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
 		array_t s = this->getfactorlevel ( i );
 
 		int step = floor ( double ( N ) /s );
-		//myprintf("randomarray: col %d: s %d, step %d\n", i, s, step );
 		if ( strength==1 ) {
 			for ( int j=0; j<s; j++ ) {
 				std::fill ( al.array+coloffset+step*j, al.array+coloffset+step* ( j+1 ), j );
@@ -2498,7 +2493,6 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
 			}
 		}
 	}
-	//myprintf("----\n"); al.showarray();
 	return al;
 }
 
@@ -4792,8 +4786,6 @@ void invert_perm_switch ( const std::vector<int> perm, const std::vector<int> sw
 
 conference_transformation_t conference_transformation_t::inverse() const
 {
-	printfd ( "not tested...\n" );
-
 	conference_transformation_t I ( nrows, ncols );
 
 	invert_perm_switch ( rperm, rswitch, I.rperm, I.rswitch );
@@ -4895,6 +4887,12 @@ void conference_transformation_t::randomizecolperm()
 void conference_transformation_t::randomizerowperm()
 {
 	random_perm ( rperm );
+}
+
+void conference_transformation_t::randomizecolflips()
+{
+	for ( size_t i=0; i<this->cswitch.size(); i++ )
+		this->cswitch[i] = 2* ( rand() %2 )-1;
 }
 
 void conference_transformation_t::randomizerowflips()
