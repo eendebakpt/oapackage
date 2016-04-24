@@ -308,6 +308,7 @@ public:
 	arraydata_t ( const arraydata_t &adp ); /// copy constructor
 
 	arraydata_t ( const arraydata_t *adp, colindex_t newncols ); /// copy constructor
+	arraydata_t (  ); /// dummy constructor
 
 	~arraydata_t();	/// destructor
 
@@ -767,7 +768,9 @@ public:
 	}
 
 	array_link operator + ( const array_link & ) const;
+	array_link operator + ( array_t v ) const;
 	array_link operator - ( const array_link & ) const;
+	array_link operator - ( array_t v ) const;
 
 	array_link operator *= ( array_t val ) {
 		int NN=this->n_rows*this->n_columns;
@@ -1007,6 +1010,18 @@ arraydata_t arraylink2arraydata ( const array_link &al, int extracols = 0, int s
 typedef std::deque<array_link> arraylist_t;
 /* // //typedef std::vector<array_link> arraylist_t; */
 
+/// add a constant value to all arrays in a list
+inline arraylist_t addConstant(const arraylist_t &lst, int v)
+{
+		arraylist_t out(lst.size());
+		
+		for(size_t i=0; i<lst.size(); i++)		{
+		out[i] = lst[i] + v;	
+		}
+		
+		return out;
+}
+
 /** Return number of arrays with j_{2n+1}=0 for n<m */
 std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose=1 );
 
@@ -1240,9 +1255,22 @@ public:
 	/// apply transformation to an array_link object
 	array_link apply ( const array_link &al ) const {
 		array_link trx ( al );
-
 		this->apply ( al.array, trx.array );
 		return trx;
+	}
+	/// apply transformation to an array_link object
+	array_link applygeneric ( const array_link &al ) const {
+	
+		// find level transformation
+		
+		// transform
+		array_link tmp = al + 1 ;
+
+		array_link trx ( tmp );
+		this->apply ( al.array, trx.array );
+		
+		// reverse transformation
+		return trx + (-1);
 	}
 
 	/// composition operator. the transformations are applied from the left

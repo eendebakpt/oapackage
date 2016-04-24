@@ -2220,6 +2220,9 @@ arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t n
 	complete_arraydata();
 }
 
+arraydata_t::arraydata_t ( ) : N ( 0), ncols (0), strength ( 0), order (ORDER_LEX), colgroupindex( 0), colgroupsize(0)
+{
+}
 
 arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols )
 {
@@ -4696,6 +4699,21 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<long> &idx )
 			myprintf ( "selectArrays: error: index out of bounds: index %d, size %ld\n", val, ( long ) al.size() );
 	}
 	return rl;
+}
+
+array_link array_link::operator+ ( array_t v  ) const
+{
+	array_link tmp = ( *this );
+	for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+		tmp.array[i] += v;
+	return tmp;
+}
+array_link array_link::operator- ( array_t v  ) const
+{
+	array_link tmp = ( *this );
+	for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+		tmp.array[i] -= v;
+	return tmp;
 }
 
 array_link array_link::operator+ ( const array_link &b ) const

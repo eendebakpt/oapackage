@@ -49,7 +49,9 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 array_link transformGraph ( const array_link &G, const std::vector<int> tr, int verbose = 1 );
 
 /// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
-array_transformation_t reduceOAnauty(const array_link &al, int verbose=1);
+array_transformation_t reduceOAnauty(const array_link &al, int verbose=0);
+
+array_transformation_t reduceOAnauty(const array_link &al, int verbose, const arraydata_t &ad);
 
 /**  Convert orthogonal array to graph representation
  *
@@ -58,6 +60,14 @@ array_transformation_t reduceOAnauty(const array_link &al, int verbose=1);
  *   The graph representation can be used for isomorphism testing.
 */
 std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose=1 );
+
+/**  Convert orthogonal array to graph representation
+ *
+ *   The conversion method is as in Ryan and Bulutoglu.
+ *   The resulting graph is bi-partite.
+ *   The graph representation can be used for isomorphism testing.
+*/
+std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose, const arraydata_t &ad );
 
 /// From a relabelling of the graph return the corresponding array transformation
 array_transformation_t oagraph2transformation ( const std::vector<int> &pp, const arraydata_t &arrayclass, int verbose=1 );

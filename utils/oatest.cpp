@@ -414,6 +414,8 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 }
 
 
+
+
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -471,6 +473,34 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	
+	if (1) {
+		
+		arraydata_t ad;
+		
+			conference_t ctype(8, 3);
+			ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
+			ctype.ctype=conference_t::DCONFERENCE;
+			arraylist_t lst= readarrayfile("test.oa");
+			int verbose=1;
+			
+			for(int i=0; i<(int) lst.size() ;i++) {
+							array_transformation_t t = reduceOAnauty ( lst[i]+1, 2 );
+							
+						array_link A = t.apply(lst[i]+1) + (-1);
+						printf("array %d\n", i);
+						lst[i].showarray();
+						printf("array %d reduced\n", i);
+						A.showarray();
+			}
+			
+			arraylist_t lst2 = addConstant(lst, 0);
+			
+			arraylist_t outlist = selectConferenceIsomorpismClasses ( lst2, verbose, ctype.itype );
+			outlist = addConstant(outlist, 0);
+			writearrayfile("test2.oa", outlist);
+			exit(0);
+	}
 
 	if ( 1 ) {
 
@@ -478,13 +508,13 @@ int main ( int argc, char* argv[] )
 		array_link alx = al;
 		alx.randomperm();
 
-		array_transformation_t t1 = reduceOAnauty ( al );
+		array_transformation_t t1 = reduceOAnauty ( al, 1 );
 		//t1.show();	return 0;
 
 		array_link alr1 = t1.apply ( al );
 
 
-		array_transformation_t t2 = reduceOAnauty ( alx );
+		array_transformation_t t2 = reduceOAnauty ( alx, 1 );
 		array_link alr2 = t2.apply ( alx );
 
 

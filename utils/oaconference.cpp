@@ -41,11 +41,7 @@ void print_all_permutations ( const string& s )
 
 void testx()
 {
-
-
-
 	print_all_permutations ( "001111112222222" );
-
 	exit ( 0 );
 }
 
@@ -145,6 +141,7 @@ int main ( int argc, char* argv[] )
 		case conference_t::DCONFERENCE:
 		{
 			outlist = extend_double_conference ( kk, ctype,  verbose );
+		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 			break;
 		}
 		case conference_t::CONFERENCE_NORMAL:
@@ -167,9 +164,11 @@ int main ( int argc, char* argv[] )
 			printfd ( "not implemented: itype %d\n", ctype.itype );
 			break;
 		}
-		if ( select )
-			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
 
+		if ( select ) {
+			//cprintf(verbose>=2, "start of selectConferenceIsomorpismClasses\n");
+			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
+		}
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
 		if ( output.length() >=1 ) {

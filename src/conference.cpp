@@ -821,6 +821,44 @@ std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, 
 	return e;
 
 }
+
+/** filter conferece matrix extension candidates
+ * 
+ * Filtering is based in symmetry and ip
+ */
+std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
+{
+	symmetry_group rs = als.row_symmetry_group();
+	symmdata sd ( als );
+
+
+	if ( verbose>=2 )
+		sd.show ( 1 );
+
+	std::vector<cperm> e2 ( 0 );
+	for ( size_t i=0; i<extensions.size(); i++ ) {
+
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( extensions[i], sd ) ) {
+				continue;
+			}
+		}
+		if ( filterip ) {
+
+			// perform inner product check for all columns
+			if ( ! ipcheck ( extensions[i], als, 0 ) ) {
+				continue;
+			}
+		}
+		e2.push_back ( extensions[i] );
+	}
+	return e2;
+}
+
+/** filter conferece matrix extension candidates
+ * 
+ * Filtering is based in symmetry and ip
+ */
 std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
 {
 	symmetry_group rs = als.row_symmetry_group();
@@ -1016,9 +1054,11 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		} while ( std::next_permutation ( c.begin(), c.end() ) );
 	}
 	
-cc= filterCandidates ( cc, al, filtersymm,  filterip, verbose );
-		printfd ( "generateDoubleConferenceExtensions: generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
-
+		//printfd ( "generateDoubleConferenceExtensions: before filter generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
+cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
+		if (verbose) {
+			printfd ( "generateDoubleConferenceExtensions: generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
+}
 	return cc;
 }
 	std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip ) {
@@ -1446,10 +1486,19 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
 		arraylist_t lstr;
 		arraylist_t lstgood;
-		//printf ( "read %d arrays\n" , (int)lst.size());
 
+		// safety check
+		if (lst.size()>0) {
+				if ( lst[0].min()<-1 ) {
+					printfd("error: arrays should have positive integer values\n");
+					arraylist_t lstgood;
+					std::vector<int> cidx;
+					return std::pair<arraylist_t, std::vector<int> > ( lstgood, cidx );
+
+				}
+		} 
 		for ( int i=0; i< ( int ) lst.size(); i++ ) {
-			if ( verbose>=1 && ( i%2500==0 || i== ( int ) lst.size()-1 ) )
+			if ( verbose>=1 && ( i%5000==0 || i== ( int ) lst.size()-1 ) )
 				printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 			array_link alx;
 
@@ -1459,8 +1508,12 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 			}
 			break;
 			case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-				array_transformation_t t = reduceOAnauty ( lst[i], verbose>=2 );
-				alx=t.apply ( lst[i] );
+				arraydata_t arrayclass(3, lst[i].n_rows, 1, lst[i].n_columns);
+				//printfd("run %d ", i); arrayclass.show();
+				array_transformation_t t = reduceOAnauty ( lst[i]+1, verbose>=2, arrayclass );
+				
+				//printf("--------\n"); t.show(); lst[i].showarray();
+				alx=t.apply ( lst[i]+1 ) + (- 1);
 				break;
 			}
 			default

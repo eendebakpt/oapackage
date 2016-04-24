@@ -204,10 +204,18 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 
 } // end of nauty namespace
 
-
 array_transformation_t reduceOAnauty ( const array_link &al, int verbose )
 {
-	std::pair<array_link, std::vector<int> > Gc = array2graph ( al,  verbose );
+	//printfd("start of reduceOAnauty direct\n");
+			
+arraydata_t ad = arraylink2arraydata(al);
+	return reduceOAnauty(al, verbose, ad);	
+}
+
+array_transformation_t reduceOAnauty ( const array_link &al, int verbose, const arraydata_t &arrayclass )
+{
+	//printfd("here: "); arrayclass.show();
+	std::pair<array_link, std::vector<int> > Gc = array2graph ( al,  verbose, arrayclass );
 
 	array_link &G = Gc.first;
 	std::vector<int> &colors = Gc.second;
@@ -220,8 +228,7 @@ array_transformation_t reduceOAnauty ( const array_link &al, int verbose )
 	std::vector<int> tr = nauty::reduceNauty ( G, colors );
 	tr = invert_permutation ( tr );
 
-	arraydata_t arrayclass = arraylink2arraydata ( al );
-	array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose );
+	array_transformation_t ttm = oagraph2transformation ( tr, arrayclass, verbose>=2 );
 
 	return ttm;
 }
@@ -246,6 +253,12 @@ std::vector<int> indexvector ( const std::vector<IntType> s )
 	return v;
 }
 
+std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose )
+{
+	arraydata_t arrayclass = arraylink2arraydata ( al );
+	return array2graph(al, verbose, arrayclass);
+}
+
 /**  Convert orthogonal array to graph representation
  *
  *   The conversion method is as in Ryan and Bulutoglu.
@@ -263,9 +276,8 @@ std::vector<int> indexvector ( const std::vector<IntType> s )
  * i) For each entry of the array the corresponding row is connected to the column-level vertex 
  * ii) Each column vertex is connected to all the column-level vertices with the same column index
  */
-std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose )
+std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, int verbose, const arraydata_t &arrayclass )
 {
-	arraydata_t arrayclass = arraylink2arraydata ( al );
 	int nrows = al.n_rows;
 	int ncols = al.n_columns;
 	const std::vector<int> s = arrayclass.getS();
@@ -353,7 +365,8 @@ array_link transformGraph ( const array_link &G, const std::vector<int> tr, int 
 array_transformation_t oagraph2transformation ( const std::vector<int> &pp, const arraydata_t &arrayclass, int verbose )
 {
 	if ( arrayclass.ismixed() ) {
-		printfd ( "ERROR: oagraph2transformation not tested for mixed-level designs\n" );
+		printfd ( "note: oagraph2transformation not tested for mixed-level designs\n" );
+		arrayclass.show();
 		//array_transformation_t ttr ( arrayclass );
 		//return ttr;
 	}
@@ -432,7 +445,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
 		//printf("ii %d: ww ", ii); display_vector(ww); printf("\n");
 		//printf("ww "); display_vector(ww); printf("\n");
-		if ( verbose>=2 ) {
+		if ( verbose>=1 ) {
 			printfd ( "oagraph2transformation: lvlperm %d: ",ii );
 			display_vector ( ww );
 			printf ( "\n" );
