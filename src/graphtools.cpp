@@ -200,15 +200,11 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 }
 
 
-
-
 } // end of nauty namespace
 
 array_transformation_t reduceOAnauty ( const array_link &al, int verbose )
 {
-	//printfd("start of reduceOAnauty direct\n");
-			
-arraydata_t ad = arraylink2arraydata(al);
+	arraydata_t ad = arraylink2arraydata(al);
 	return reduceOAnauty(al, verbose, ad);	
 }
 
@@ -339,9 +335,6 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 		}
 	}
 
-	// The non-row vertices do not have any connections to other non-row vertices.
-	//int ss = std::accumulate ( s.begin(), s.end(), 0 ); 
-
 	return std::pair<array_link, std::vector<int> > ( G, colors );
 }
 
@@ -429,7 +422,6 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
 	std::vector<int>cs=cumsum0 ( s );
 
-	//lp = []
 	for ( int ii=0; ii<ncols; ii++ ) {
 		std::vector<int> ww ( lvlperm.begin() +cs[ii], lvlperm.begin() +cs[ii+1] ); //  = lvlperm[cs[ii]:cs[ii + 1]]
 
@@ -443,8 +435,6 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 		}
 		ww=is.indices;
 
-		//printf("ii %d: ww ", ii); display_vector(ww); printf("\n");
-		//printf("ww "); display_vector(ww); printf("\n");
 		if ( verbose>=1 ) {
 			printfd ( "oagraph2transformation: lvlperm %d: ",ii );
 			display_vector ( ww );
@@ -462,13 +452,8 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 		printfd("## ttr \n"); ttr.show();
 		printfd("## ttc \n"); ttc.show();
 		printfd("## ttl \n"); ttl.show();
-		{	array_transformation_t tt = ttr*ttc*ttl; //ttc*ttl;
-			tt.show();
-exit(0);
-		}
 	}
 	array_transformation_t tt = ttr*ttc*ttl;
-	//	printfd("## tt \n"); tt.show();
 
 	return tt;
 }

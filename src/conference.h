@@ -142,8 +142,6 @@ public:
 	// combine first and second section into a single column
 	cperm combine ( int i, int j ) const {
 		cperm c =vstack ( this->first[i], this->second[j] );
-
-		//printfd("c.size() %d = %d + %d\n", c.size(),  this->first[i].size(),  this->second[i].size() );
 		return c;
 	}
 
