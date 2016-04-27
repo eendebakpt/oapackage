@@ -55,6 +55,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "ii", 'i' );
 	opt.setOption ( "kmax", 'k' );
 	opt.setOption ( "itype" );
+	opt.setOption ( "j3zero" );
 	opt.setOption ( "rows", 'N' );
 	opt.setOption ( "select", 's' );
 	opt.setOption ( "cols" );
@@ -75,6 +76,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
 	opt.addUsage ( printfstring ( " --ctype [TYPE]				Zero for normal type, %d for diagonal, %d for double conference type ",conference_t::CONFERENCE_DIAGONAL, conference_t::DCONFERENCE ).c_str() );
 	opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM ).c_str() );
+	opt.addUsage ( " --j3zero [INT]		Restrict designs to J3=0" );
 	opt.processCommandArgs ( argc, argv );
 
 
@@ -90,7 +92,8 @@ int main ( int argc, char* argv[] )
 	int select = opt.getIntValue ( 's', 1 );
 	const conference_t::conference_type ctx = ( conference_t::conference_type ) opt.getIntValue ( "ctype", 0 );
 	const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
-
+	const int j3zero = opt.getIntValue ( "j3zero", 0 );
+	
 	const std::string output = opt.getStringValue ( 'o', "" );
 	const std::string input = opt.getStringValue ( 'i', "" );
 
@@ -107,6 +110,7 @@ int main ( int argc, char* argv[] )
 	conference_t ctype ( N, N );
 	ctype.ctype=ctx;
 	ctype.itype=itype;
+	ctype.j3zero=j3zero;
 
 	arraylist_t kk;
 	if ( input.length() >1 ) {

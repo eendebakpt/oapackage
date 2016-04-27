@@ -278,7 +278,11 @@ bool oa_file_exists ( const char *filename );
 /// return true if the specified oa file exists
 bool oa_file_exists ( const std::string filename );
 
+/// create J2 table as intermediate result for J-characteristic calculations for conference matrices
+array_link createJ2tableConference ( const array_link &confmatrix );
 
+/// create J2 table as intermediate result for J-characteristic calculations
+array_link createJdtable ( const array_link &al );
 
 enum ordering_t {ORDER_LEX, ORDER_J5};
 

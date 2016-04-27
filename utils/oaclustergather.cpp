@@ -330,7 +330,7 @@ int main ( int argc, char* argv[] )
 
 	assert ( nsplit0!=-1 ); // prevent legacy code from running
 
-	std::vector<long> na ( kmax+1 );	  /// total number of arrays
+	std::vector<long> na ( kmax+1 );	  /// mber of arrays
 	std::vector<long> npareto ( kmax+1 ); /// total number of pareto arrays
 
 	initncombscache ( 30 );
@@ -574,10 +574,10 @@ int main ( int argc, char* argv[] )
 	/* free allocated structures */
 	delete adata;
 
-	const long natotal = std::accumulate ( na.begin(), na.end(), 0 );
+	const long long natotal = std::accumulate ( na.begin(), na.end(), 0 );
 
 	if ( verbose>=1 ) {
-		printf ( "  total number of arrays: %ld, %.1f Marrays/hour\n", natotal, ( 3600./1e6 ) *natotal/ ( get_time_ms()-time0 ) );
+		printf ( "  total number of arrays: %lld, %.1f Marrays/hour\n", natotal, double( 3600./1e6 ) * double(natotal)/ ( get_time_ms()-time0 ) );
 	}
 
 	if ( verbose ) {

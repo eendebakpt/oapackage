@@ -2680,6 +2680,32 @@ void jstruct_t::calc ( const array_link &al )
 	delete_perm ( pp );
 }
 
+/// create J2 table as intermediate result for J-characteristic calculations for conference matrices
+array_link createJ2tableConference ( const array_link &confmatrix )
+{
+	const int nr = confmatrix.n_rows;
+
+	// fill double column table
+	array_link dtable ( nr, confmatrix.n_columns*confmatrix.n_columns, -1 );
+
+	// loop over all column pairs
+	for ( int i=0; i<confmatrix.n_columns; i++ ) {
+		for ( int j=0; j<confmatrix.n_columns; j++ ) {
+			int idx=i+j*confmatrix.n_columns;
+			// loop over all rows of original array
+			const array_t *p1 = confmatrix.array+confmatrix.n_rows*i;
+			const array_t *p2 = confmatrix.array+confmatrix.n_rows*j;
+			array_t *pout = dtable.array+idx*dtable.n_rows;
+			for ( int x=0; x<nr; x++ ) {
+				pout[x] = p1[x] * p2[x];
+			}
+
+		}
+	}
+
+	return dtable;
+}
+
 /// create J2 table as intermediate result for J-characteristic calculations
 array_link createJdtable ( const array_link &al )
 {

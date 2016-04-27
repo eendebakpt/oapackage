@@ -178,10 +178,12 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 
 conference_t::conference_t ( int N, int k )
 {
+
 	this->N = N;
 	this->ncols = k;
 	this->ctype = CONFERENCE_NORMAL;
 	this->itype = CONFERENCE_ISOMORPHISM;
+	this->j3zero = 0;
 }
 
 array_link conference_t::create_root_three ( ) const
@@ -855,6 +857,56 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
 	return e2;
 }
 
+/// filter candidate extensions on J3 value
+std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_link &als, int verbose )
+{
+
+	const int N = als.n_rows;
+
+	array_link dtable = createJ2tableConference ( als );
+	
+	if (verbose>=2) {
+	printf("array + dtable\n");	als.showarray(); printfd("dtable:\n"); dtable.showarray();
+	}
+	
+	int nc = dtable.n_columns;
+
+		if ( verbose>=1 ) {
+		printf ( "filterJ3: array %dx%d, nc %d\n", N, als.n_columns, nc );
+	}
+
+	std::vector<cperm> e2 ( 0 );
+	for ( size_t i=0; i<extensions.size(); i++ ) {
+		const cperm &c = extensions[i];
+
+		//std::vector<int> cx(c.begin(), c.end() ); printf("i %d: ", (int)i); print_perm(cx); 
+
+		// FIXME: only loop over i<j pairs
+			int jv=0;
+		for ( int idx1=0; idx1<nc; idx1++ ) {
+			jv=0;
+
+			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+			for ( int xr=0; xr<N; xr++ ) {
+
+				jv += ( o1[xr] ) * ( c[xr] );
+			}
+
+			if ( jv!=0 )
+				continue;
+		}
+		
+		if (jv==0)
+			e2.push_back ( c );
+	}
+
+	if ( verbose>=1 ) {
+		printf ( "filterJ3: %ld -> %ld extensions\n", ( long ) extensions.size(), ( long ) e2.size() );
+	}
+	return e2;
+}
+
+
 /** filter conferece matrix extension candidates
  *
  * Filtering is based in symmetry and ip
@@ -1227,6 +1279,11 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 	int filtersymm=1;
 	std::vector<cperm> cc = generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
 
+	if ( ct.j3zero ) {
+		//printfd("filter on j3 values\n");
+		cc = filterJ3 ( cc, al, verbose );
+	}
+
 	ce.extensions = cc; //.insert ( ce.extensions.end(), cc.begin(), cc.end() );
 
 
@@ -1579,8 +1636,7 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbo
 	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose , itype ) ;
 	return pp.first;
 }
-
-/// testing function
+/*
 bool compareLMC0x ( const array_link &alL, const array_link &alR )
 {
 	array_link L = alL;
@@ -1598,8 +1654,47 @@ bool compareLMC0x ( const array_link &alL, const array_link &alR )
 	}
 	return L < R;
 }
+*/
 
+/// return true of alL is smaller than alR in LMC-0 ordering
 bool compareLMC0 ( const array_link &alL, const array_link &alR )
+{
+	assert ( alL.n_rows==alR.n_rows );
+	assert ( alL.n_columns==alR.n_columns );
+
+	for ( int c=0; c<alL.n_columns; c++ ) {
+		const array_t *al = alL.array + c*alL.n_rows;
+		const array_t *ar = alR.array + c*alR.n_rows;
+
+		// check position of zero(s) in column c
+		for ( int r=0; r<alL.n_rows; r++ ) {
+			if ( al[r]==0 &&  ar[r]!=0 )
+				return true;
+			if ( al[r]!=0 && ar[r]==0 )
+				return false;			
+		}
+		
+		int zl = maxz ( alL, c );
+		int zr = maxz ( alR, c );
+
+		if ( zl<zr )
+			return true;
+		if ( zl>zr )
+			return false;
+
+		// zero is at same position(s) in column, let LMC ordering decide
+		for ( int r=0; r<alL.n_rows; r++ ) {
+			if ( al[r]> ar[r] )
+				return true;	// note the reversed sign here
+			if ( al[r]< ar[r] )
+				return false;	// note the reversed sign here
+		}
+	}
+	// the arrays are equal
+	return false;
+}
+
+bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
 {
 	assert ( alL.n_rows==alR.n_rows );
 	assert ( alL.n_columns==alR.n_columns );

@@ -44,6 +44,8 @@ public:
 	enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
 	conference_type ctype;
 	matrix_isomorphism_t itype;
+	
+	bool j3zero;
 
 public:
 	/// create new conference_t object
