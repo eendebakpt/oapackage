@@ -4,6 +4,7 @@
  */
 
 #include <printfheader.h>
+#include <map>
 
 #include "arraytools.h"
 #include "arrayproperties.h"
@@ -67,8 +68,8 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 	if ( verbose>=2 )
 		printfd ( "initialize: %d \n", alist.size() );
 
-	#pragma omp parallel for schedule(dynamic,1)	
-	for ( int k=0; k<(int)alist.size(); ++k ) {
+	#pragma omp parallel for schedule(dynamic,1)
+	for ( int k=0; k< ( int ) alist.size(); ++k ) {
 		LMCreduction_t reduction ( &ad );
 		// needed to make the code thread-safe
 		reduction.initStatic();
@@ -142,7 +143,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 	for ( size_t i=0; i<valididx.size(); i++ )
 		valididx[i]=i;
 
- 
+
 	if ( verbose>=3 )
 		printf ( "   v %ld\n", v.size() );
 	return v;
@@ -150,7 +151,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 
 void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int extcol, int verbose )
 {
-	printfd("use depth_extend_omp instead...\n");
+	printfd ( "use depth_extend_omp instead...\n" );
 	return;
 }
 
@@ -158,7 +159,7 @@ void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const de
 void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t &dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int verbose )
 {
 	//if (goodarrays.size()>0 ) 		printfd(": start: goodarrays[0].ncols %d\n", goodarrays[0].n_columns );
-	
+
 	depth_extend_sub_t dextendsub=dextendsublight;
 	switch ( depthalg ) {
 	case DEPTH_EXTENSIONS:
@@ -216,7 +217,7 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
 	for ( size_t i=0; i<alist.size(); i++ ) {
 		array_link al = alist[i];
 		int ps =alist[i].row_symmetry_group().permsize();
-		
+
 		printfd ( "### extcol %d: array %d: row group size %d\n", extcol, i, ps );
 
 		dextend.setposition ( extcol, i, alist.size(), -1, -1 );
@@ -240,7 +241,7 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
 		} else {
 			depth_extend_t dextendloop ( dextend );
 			dextendloop.setposition ( al.n_columns, i, alist.size(), 0, 0 );
-			depth_extend_array ( al, dextendloop, *adfull, verbose, 0, i );			
+			depth_extend_array ( al, dextendloop, *adfull, verbose, 0, i );
 		}
 	}
 }
@@ -474,19 +475,20 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 		depth_extend_log ( i, alist, nn, dextend,  extcol,  verbose );
 
 		//printf("dextend.discardJ5 %d, extcol %d\n", dextend.discardJ5, extcol);
-		if (dextend.discardJ5 >=0 && (dextend.discardJ5 <= extcol) ) {
-			std::vector<int> j5 = al.Jcharacteristics(5);
-			for(size_t i=0; i<j5.size(); i++) j5[i]=abs(j5[i]);
-			int j5max = vectormax(j5, 0);
-			
-			if (j5max==al.n_rows) {
-				if (dlocal.verbose>=2) {
-				printf("depth_extend: discardJ5: extcol %d, j5max %d: setting number of extensions (%d) to zero\n", extcol, j5max, (int) nn);
-				//dextend.showprogress ( 1, extcol );
-				dextend.showsearchpath ( extcol );
+		if ( dextend.discardJ5 >=0 && ( dextend.discardJ5 <= extcol ) ) {
+			std::vector<int> j5 = al.Jcharacteristics ( 5 );
+			for ( size_t i=0; i<j5.size(); i++ )
+				j5[i]=abs ( j5[i] );
+			int j5max = vectormax ( j5, 0 );
+
+			if ( j5max==al.n_rows ) {
+				if ( dlocal.verbose>=2 ) {
+					printf ( "depth_extend: discardJ5: extcol %d, j5max %d: setting number of extensions (%d) to zero\n", extcol, j5max, ( int ) nn );
+					//dextend.showprogress ( 1, extcol );
+					dextend.showsearchpath ( extcol );
 				}
 				dextend.discardJ5number+=nn;
-			nn=0;	
+				nn=0;
 			}
 		}
 
@@ -535,7 +537,8 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 				// make sure code is thread safe
 				reduction.initStatic();
 
-				double t0; double dt;
+				double t0;
+				double dt;
 				lmc_t lmc;
 
 				//reduction.reset();
@@ -603,14 +606,14 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 				// parallel method
 				const size_t alocalsize = alocal.size();
 				cprintf ( dv>=1, "depth_extend_omp: extcol %d, i %ld/%ld, running parallel omp on %ld arrays!\n ", extcol, i, alist.size(), alocal.size() );
-				
+
 				//printfd ( "  openmp: num threads %d, omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_max_threads(), omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
 				//printfd ( " using omp loop: narrays %d, extcol %d\n", alocalsize, extcol) ;
-				
+
 //				omp_set_num_threads(4);
 				#pragma omp parallel for schedule(dynamic,1)
 				//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
-				for ( int i=0; i<(int)alocalsize; i++ ) {
+				for ( int i=0; i< ( int ) alocalsize; i++ ) {
 					depth_extend_sub_t dlocal2 ( 0 );
 					dlocal2.valididx=localvalididx;
 
@@ -636,6 +639,112 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 	cprintf ( dv>=1, "depth_extend: extcol %d: input %zu arrays, nn %d, branching %d/%zu\n", extcol, alist.size(), ( int ) dextendsub.valididx.size(), bi, alist.size() );
 }
 
+/// add arrays to set of Pareto results
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
+{
+
+	// allocate for fast rank calculations
+	rankStructure rs[25];
+	for ( size_t i=0; i<25; i++ )
+		rs[i].nsub=3;
+
+	if ( verbose>=2 ) {
+		printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
+	}
+
+	#pragma omp parallel for
+//#pragma omp parallel for num_threads(4)
+//	#pragma omp parallel for dynamic
+//	#pragma omp parallel for schedule(static, 10000)
+	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
+		if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
+			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+			printf ( "  " );
+			pset.show ( 1 );
+//#ifdef OPENMP
+			//printf(" openmp: %d\n",  omp_get_num_threads() );
+//#endif
+		}
+
+		const array_link &al = arraylist.at ( i );
+
+		/* Obtain thread number */
+		int tid = omp_get_thread_num();
+
+		//parseArrayPareto ( al, al, pset, verbose );
+		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3, rs[tid] );
+
+		#pragma omp critical
+		{
+			// add the new tuple to the Pareto set
+			pset.addvalue ( p, al );
+		}
+	}
+}
+
+Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
+{
+	// blocked read of arrays
+	const long narraymax = 25000; // max number of arrays to read in a block
+	arrayfile_t afile ( inputfile, 0 );
+	if ( ! afile.isopen() ) {
+		if ( verbose ) {
+			printfd ( "problem with file %s\n", afile.filename.c_str() );
+		}
+		return 0;
+	}
+
+	if (verbose>=2) {
+	myprintf("calculateJstatistics: file %s\n", inputfile);
+	}
+	const int N = afile.nrows;
+	Jcounter jcounter ( N, jj );
+
+	long narrays = afile.narrays;
+	long naread=0;
+	if ( narrays<0 )
+		narrays = arrayfile_t::NARRAYS_MAX;
+
+	double t0=get_time_ms();
+	int loop=0;
+	while ( true ) {
+		if ( verbose>=1 )
+			myprintf ( "calculate stats: read %ld/%ld\n", naread, narrays );
+
+		long n = std::min ( narraymax, narrays-naread );
+		arraylist_t arraylist = afile.readarrays ( n );
+		if ( arraylist.size() <=0 )
+			break;
+
+		for ( size_t i=0; i<arraylist.size(); i++ ) {
+			jcounter.addArray ( arraylist[i] );
+		}
+		naread += arraylist.size() ;
+		loop++;
+	}
+	afile.closefile();
+	jcounter.dt=get_time_ms()-t0;
+
+	return jcounter;
+
+}
+
+
+Jcounter& Jcounter::operator += ( Jcounter &jc )
+{
+	assert ( this->N==jc.N );
+	assert ( this->jj==jc.jj );
+
+
+	for ( std::map<int , long >::const_iterator it = this->maxJcounts.begin(); it !=  this->maxJcounts.end(); ++it ) {
+		long val = jc.maxJcounts[ ( int ) it->first];
+		this->maxJcounts[it->first] += val;
+	}
+
+	this->dt += jc.dt;
+	
+	return *this;
+}
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -196,6 +196,19 @@ struct array_link;
 struct arraydata_t;
 
 
+/// possible values for J-values
+inline std::vector<int> Fval ( int N, int strength ) 
+{
+	int x=pow ( ( double ) 2, strength+1 );	// TODO: replace by integer power
+	int nn = floor ( ( double ) N/x ) +1;
+	std::vector<int> Fv ( nn );
+	for ( int i=0; i<nn; i++ ) {
+		Fv[i]=N-x*i;
+	}
+	return Fv;
+}
+
+
 /**
  * @brief struct to hold data of an array, e.g. J-characteristic, rank
  *
@@ -234,7 +247,13 @@ private:
 public:
 	jstruct_t &operator= ( const jstruct_t &rhs );	// assignment
 
+		/// calculate maximum J value
+	int maxJ (  ) const;
+
+	/// calculate possible values in F vector
 	std::vector<int> Fval ( int strength = 3 ) const;
+	
+	/// calculate histogram of J values
 	std::vector<int> calculateF ( int strength = 3 ) const;
 
 	// calculate aberration value
@@ -242,7 +261,6 @@ public:
 		// TODO: find reference
 		jstruct_t *js = this;
 		js->A=0;
-		//printf("js->nc %d\n", js->nc);
 		for ( int i=0; i<js->nc; i++ ) {
 			//printf("   i %d: %d\n", i, js->vals[i]*js->vals[i]);
 			js->A += js->vals[i]*js->vals[i];
@@ -342,6 +360,9 @@ public:
 		if ( s!=0 )
 			delete [] s;
 		this->s = new array_t[this->ncols];
+		
+		if (ad2.s==0)
+			printf("error: invalid arraydata_t structure\n");
 		std::copy ( ad2.s, ad2.s+this->ncols, s );
 		return *this;
 	}
@@ -1760,7 +1781,7 @@ protected:
 using namespace arrayfile;
 
 /// return number of arrays in an array file
-int nArrays ( const char *fname );
+long nArrays ( const char *fname );
 
 /// return number of arrays in an array file
 inline void arrayfileinfo ( const char *fname, int &n, int &nr, int &nc )

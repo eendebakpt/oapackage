@@ -2220,8 +2220,10 @@ arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t n
 	complete_arraydata();
 }
 
-arraydata_t::arraydata_t ( ) : N ( 0), ncols (0), strength ( 0), order (ORDER_LEX), colgroupindex( 0), colgroupsize(0)
+
+arraydata_t::arraydata_t ( ) : N ( 0), ncols (0), strength (0), s(0), order (ORDER_LEX), colgroupindex( 0), colgroupsize(0)
 {
+	//printfd("hit dummy constructor...\n");
 }
 
 arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols )
@@ -2250,7 +2252,7 @@ arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols )
 	}
 	complete_arraydata();
 
-	//myprintf("hack: created arraydata_t:\n"); this->show(3);
+	//printfd("created arraydata_t with pointer constructor:\n"); this->show(3);
 }
 
 /// @brief copy constructor
@@ -2262,7 +2264,12 @@ arraydata_t::arraydata_t ( const arraydata_t &adp ) : N ( adp.N ), ncols ( adp.n
 }
 arraydata_t::~arraydata_t()
 {
-	//myprintf("~arraydata_t\n");
+#ifdef OADEBUG
+	if(s==0)
+		printfd("s is zero\n");
+	if(colgroupindex==0)
+		printfd("colgroupindex is zero\n");
+#endif	
 	delete [] s;
 	delete [] colgroupindex;
 	delete [] colgroupsize;
@@ -2632,6 +2639,18 @@ jstruct_t::jstruct_t()
 // myprintf("jstruct_t()\n");
 	this->nc=0;
 	this->A=-1;
+}
+
+int jstruct_t::maxJ ( ) const
+{
+	int vmax = 0;
+	for (size_t i=0; i< this->vals.size(); i++) {
+		int v = abs(this->vals[i]);
+		if (v>vmax)
+			vmax=v;
+	}
+	return vmax;
+			
 }
 
 std::vector<int> jstruct_t::Fval ( int strength ) const
@@ -3361,7 +3380,7 @@ int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx )
 	return 0;
 }
 
-arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int narrays, arrayfilemode_t m, int nb )
+arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int narray, arrayfilemode_t m, int nb )
 {
 	//closefile();
 	this->verbose=0;
@@ -3745,10 +3764,10 @@ arraydata_t* readConfigFile ( const char *file )
 	return ad;
 }
 
-int nArrays ( const char *fname )
+long nArrays ( const char *fname )
 {
 	arrayfile_t af ( fname, 0 );
-	int n = af.narrays;
+	long n = af.narrays;
 	af.closefile();
 	return n;
 }

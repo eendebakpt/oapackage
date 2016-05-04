@@ -10,6 +10,8 @@
 //#define DOOPENMP
 #endif
 
+#include <map>
+
 #include "arraytools.h"
 //#include "arrayproperties.h"
 #include "lmc.h"
@@ -422,8 +424,7 @@ public:
 		logtime=_logtime;
 		if ( ad==0 )
 			printf ( "depth_extend_t: pointer to arraydata_t is zero!" );
-		//nfound.resize ( ad->N );
-		//writefiles=0;
+
 		writearrays=1;
 		narraysmax=LONG_MAX-1;
 
@@ -521,9 +522,7 @@ public:
 						searchpath.show ( depth );
 					}
 				}
-				//
 				return true;
-				//info();
 			} else
 				return false;
 		}
@@ -613,5 +612,106 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
 void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const arraydata_t &adfull, int verbose , depth_extensions_storage_t *ds = 0, int = 0 );
 
 
+/// callback function for Pareto calculations
+typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array_link &, int ) ;
+/// callback function for Pareto calculations with cache
+typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb_cache ) ( const array_link &, int, rankStructure &rs ) ;
+
+template <class IndexType>
+inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5Cache ( const array_link &al, int verbose, rankStructure &rs )
+{
+
+	const int N = al.n_rows;
+	int r = rs.rankxf ( al );
+	mvalue_t<long> wm = A3A4 ( al );
+	mvalue_t<long> v = F4 ( al );
+
+	typename Pareto<mvalue_t<long>,IndexType>::pValue p;
+	p.push_back ( r ); // rank of second order interaction matrix
+	p.push_back ( wm ); // A4
+	p.push_back ( v ); // F
+	addJmax<IndexType> ( al, p, verbose );
+
+	return p;
+}
+
+#include <algorithm>
+
+/// add arrays to set of Pareto results
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose );
+
+class Jcounter
+{
+public:
+	int N; /// number of rows
+	int jj;
+	std::vector<int> fvals;
+	std::map<int,long> maxJcounts;
+double dt; 	/// time needed for calculation
+
+	Jcounter ( int N, int jj = 5 ) {
+		this->init ( N, jj );
+
+	}
+
+	void showPerformance() const {
+	myprintf("Jcounter: %.1f Marrays/h\n", (1e-6*3600.)*double(narrays())/this->dt );	
+	}
+	long narrays() const {
+
+		long r = 0;
+		for ( std::map<int , long >::const_iterator it = maxJcounts.begin(); it != maxJcounts.end(); ++it ) {
+			r+= it->second;
+		}
+
+	return r;
+
+	}
+	void show() const {
+
+		for ( std::map<int , long >::const_iterator it = maxJcounts.begin();
+		        it != maxJcounts.end(); ++it ) {
+			myprintf("max(J%d) %d: %ld\n", this->jj, it->first, it->second) ;
+		}
+	}
+	
+	Jcounter& operator += ( Jcounter &jc);
+	
+
+	void addArray ( const array_link &al, int verbose=0 ) {
+		jstruct_t js ( al, this->jj );
+		int maxJ = js.maxJ();
+
+		if ( verbose ) {
+			std::vector<int> FF =js.calculateF();
+			printf ( "addArray: maxJ %d: ", maxJ );
+			display_vector ( FF );
+			printf ( "\n" );
+		}
+		maxJcounts[maxJ]++;
+	}
+
+private:
+	void init ( int N, int jj ) {
+		this->N = N;
+		this->jj = jj;
+		this->fvals = Fval ( N, 3 );
+		this->dt = 0;
+		
+		maxJcounts.clear();
+
+		for ( size_t j=0; j<fvals.size(); j++ ) {
+			//printf("adding val %d: %d\n", (int)j, fvals[j]);
+			maxJcounts[fvals[j]]=0;
+		}
+
+	}
+
+};
+
+
+
+/// calculate J-value statistics
+Jcounter calculateJstatistics(const char *afile, int jj=5, int verbose=1);
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

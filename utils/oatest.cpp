@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 #include "arraytools.h"
 #include "arrayproperties.h"
@@ -20,6 +21,7 @@
 #include "tools.h"
 #include "extend.h"
 
+#include "evenodd.h"
 #include "oadevelop.h"
 #include "lmc.h"
 
@@ -414,8 +416,6 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 }
 
 
-
-
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -426,6 +426,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "rand", 'r' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "ii", 'i' );
+	opt.setOption ( "jj" );
 	opt.setOption ( "xx", 'x' );
 	opt.setOption ( "dverbose", 'd' );
 	opt.setOption ( "rows" );
@@ -445,13 +446,15 @@ int main ( int argc, char* argv[] )
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	int ix = opt.getIntValue ( 'i', 11 );
 	int r = opt.getIntValue ( 'r', 0 );
-	int xx = opt.getIntValue ( 'x', 3 );
-	int niter  = opt.getIntValue ( "niter", 100 );
+		int jj = opt.getIntValue ( "jj", 5 );
+
+	int xx = opt.getIntValue ( 'x', 0 );
+	int niter  = opt.getIntValue ( "niter", 10 );
 	int verbose  = opt.getIntValue ( "verbose", 1 );
 
 	char *input = opt.getValue ( 'I' );
 	if ( input==0 )
-		input="pp0.oa";
+		input="test.oa";
 
 	srand ( randvalseed );
 	if ( randvalseed==-1 ) {
@@ -473,35 +476,72 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
-	
-	if (1) {
+	{
 		
-		arraydata_t ad;
 		
-			conference_t ctype(8, 3);
-			ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
-			ctype.ctype=conference_t::DCONFERENCE;
-			arraylist_t lst= readarrayfile("test.oa");
-			int verbose=1;
-			
-			for(int i=0; i<(int) lst.size() ;i++) {
-							array_transformation_t t = reduceOAnauty ( lst[i]+1, 2 );
-							
-						array_link A = t.apply(lst[i]+1) + (-1);
-						printf("array %d\n", i);
-						lst[i].showarray();
-						printf("array %d reduced\n", i);
-						A.showarray();
-			}
-			
-			arraylist_t lst2 = addConstant(lst, 0);
-			
-			arraylist_t outlist = selectConferenceIsomorpismClasses ( lst2, verbose, ctype.itype );
-			outlist = addConstant(outlist, 0);
-			writearrayfile("test2.oa", outlist);
-			exit(0);
-	}
+//		long imax = std::numeric_limits<long>::max(); printf("max for long %ld\n" , imax);
+//		 imax = std::numeric_limits<int>::max();
+//	printf("max for int %ld\n" , imax);
+//	exit(0);
+		
+		arraylist_t lst= readarrayfile (input );
+		printf ( "read %d arrays\n", ( int ) lst.size() );
+		std::sort ( lst.begin(), lst.end() );
 
+
+		
+		Jcounter jcounter = calculateJstatistics(input, jj, 1);
+		Jcounter jcounter2 = calculateJstatistics(input, jj, 1);
+						jcounter += jcounter2;
+						
+		printf ( "--- results ---\n" );
+		jcounter.show();
+		jcounter.showPerformance();
+
+		int jj=0;
+		if ( xx ) {
+			Pareto<mvalue_t<long>,array_link> pset;
+			for ( int i=0; i<niter; i++ )
+				addArraysToPareto ( pset, calculateArrayParetoJ5Cache<array_link>, lst, jj, verbose );
+		}
+
+		exit ( 0 );
+	}
+	
+	
+	
+	
+	/*
+	
+	if ( 1 ) {
+
+		arraydata_t ad;
+
+		conference_t ctype ( 8, 3 );
+		ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
+		ctype.ctype=conference_t::DCONFERENCE;
+		arraylist_t lst= readarrayfile ( "test.oa" );
+		int verbose=1;
+
+		for ( int i=0; i< ( int ) lst.size() ; i++ ) {
+			array_transformation_t t = reduceOAnauty ( lst[i]+1, 2 );
+
+			array_link A = t.apply ( lst[i]+1 ) + ( -1 );
+			printf ( "array %d\n", i );
+			lst[i].showarray();
+			printf ( "array %d reduced\n", i );
+			A.showarray();
+		}
+
+		arraylist_t lst2 = addConstant ( lst, 0 );
+
+		arraylist_t outlist = selectConferenceIsomorpismClasses ( lst2, verbose, ctype.itype );
+		outlist = addConstant ( outlist, 0 );
+		writearrayfile ( "test2.oa", outlist );
+		exit ( 0 );
+	}
+*/
+	
 	if ( 1 ) {
 
 		array_link al = exampleArray ( 5 );

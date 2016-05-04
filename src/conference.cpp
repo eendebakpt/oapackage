@@ -833,7 +833,6 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
 	symmetry_group rs = als.row_symmetry_group();
 	symmdata sd ( als );
 
-
 	if ( verbose>=2 )
 		sd.show ( 1 );
 
@@ -1445,6 +1444,7 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
 
 arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
 {
+	// TODO: cache candidate extensions
 	arraylist_t outlist;
 
 	if ( verbose>=2 ) {

@@ -108,8 +108,10 @@ bool readNumbersFile ( const char *numbersfile, std::vector<long> &na, std::vect
 		return 0;
 	}
 	long np, n, k;
-	//int k;
 
+	std::fill(na.begin(), na.end(), -1);
+	std::fill(npareto.begin(), npareto.end(), -1);
+	
 	while ( 1 ) {
 		int r = fscanf ( fid, "k %ld: %ld %ld\n", &k, &n, &np );
 		//printf("read numbers file: %s: r %d: %ld %ld %ld\n", numbersfile, r, k, n, np);
@@ -146,69 +148,6 @@ void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vect
 }
 
 
-typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb ) ( const array_link &, int ) ;
-typedef Pareto<mvalue_t<long>, array_link >::pValue ( *pareto_cb_cache ) ( const array_link &, int, rankStructure &rs ) ;
-
-template <class IndexType>
-inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5Cache ( const array_link &al, int verbose, rankStructure &rs )
-{
-
-	const int N = al.n_rows;
-	//int r = arrayrankColPiv(array2xf(al));
-	int r = rs.rankxf ( al );
-	mvalue_t<long> wm = A3A4 ( al );
-	mvalue_t<long> v = F4 ( al );
-
-	typename Pareto<mvalue_t<long>,IndexType>::pValue p;
-	p.push_back ( r ); // rank of second order interaction matrix
-	p.push_back ( wm ); // A4
-	p.push_back ( v ); // F
-	addJmax<IndexType> ( al, p, verbose );
-
-	return p;
-}
-
-void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
-{
-
-	// allocate for fast rank calculations
-	rankStructure rs[25];
-	for ( size_t i=0; i<25; i++ )
-		rs[i].nsub=3;
-
-	if ( verbose>=2 ) {
-		printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
-	}
-
-	#pragma omp parallel for
-//#pragma omp parallel for num_threads(4)
-//	#pragma omp parallel for dynamic
-//	#pragma omp parallel for schedule(static, 10000)
-	for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
-		if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
-			printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
-			printf ( "  " );
-			pset.show ( 1 );
-//#ifdef OPENMP
-			//printf(" openmp: %d\n",  omp_get_num_threads() );
-//#endif
-		}
-
-		const array_link &al = arraylist.at ( i );
-
-		/* Obtain thread number */
-		int tid = omp_get_thread_num();
-
-		//parseArrayPareto ( al, al, pset, verbose );
-		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3, rs[tid] );
-
-		#pragma omp critical
-		{
-			// add the new tuple to the Pareto set
-			pset.addvalue ( p, al );
-		}
-	}
-}
 
 const std::string filesep = "/";
 
@@ -330,7 +269,7 @@ int main ( int argc, char* argv[] )
 
 	assert ( nsplit0!=-1 ); // prevent legacy code from running
 
-	std::vector<long> na ( kmax+1 );	  /// mber of arrays
+	std::vector< long> na ( kmax+1 );	  /// number of arrays
 	std::vector<long> npareto ( kmax+1 ); /// total number of pareto arrays
 
 	initncombscache ( 30 );
@@ -347,12 +286,12 @@ int main ( int argc, char* argv[] )
 		lvls.push_back ( split0 );
 		if ( split1>=0 ) {
 			lvls.push_back ( split1 );
-		if ( split2>=0 ) {
-			lvls.push_back ( split2 );
-		if ( split3>=0 ) {
-			lvls.push_back ( split3 );
-		}
-		}
+			if ( split2>=0 ) {
+				lvls.push_back ( split2 );
+				if ( split3>=0 ) {
+					lvls.push_back ( split3 );
+				}
+			}
 		}
 	}
 	if ( verbose ) {
@@ -406,12 +345,21 @@ int main ( int argc, char* argv[] )
 
 
 			if ( b ) {
-				// get number of arrays from numbers file
-				na[k]+=nasub[k];
+				printf("  --> nasub[%d]=%ld\n", k, nasub[k] );
 
-				assert ( nasub[k]>=0 );
+				if (nasub[k]<0) {
+							long nnarrays = nArrays ( afile.c_str() );
+							printfd("   --> adding %ld arrays\n" , nnarrays);
+							//nasub[k]=nnarrays;
+							na[k] += nnarrays;
+				} else {
+				// get number of arrays from numbers file
+					na[k]+=nasub[k];
+
+					assert ( nasub[k]>=0 );
+				}
 			} else {
-				// get number of arrays from array file
+				// get numbers of arrays from array file
 				int nnarrays = nArrays ( afile.c_str() );
 				if ( nnarrays < 0 ) {
 					printf ( "no numbers file and no array file (afile %s)\n", afile.c_str() );
@@ -472,11 +420,7 @@ int main ( int argc, char* argv[] )
 			}
 
 			long naread=0; // number of arrays read
-			if ( 0 ) {
-				const arraylist_t arraylist = readarrayfile ( psourcefile.c_str(), 0 );
-				naread = arraylist.size() ;
-				addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
-			} else {
+			{
 				// blocked read of arrays
 				const long narraymax = 50000; // max number of arrays to read in a block
 				arrayfile_t afile ( psourcefile.c_str(), 0 );
@@ -494,17 +438,16 @@ int main ( int argc, char* argv[] )
 
 				int loop=0;
 				while ( true ) {
-					long n = std::min( narraymax, narrays-naread );
+					long n = std::min ( narraymax, narrays-naread );
 					//printf(" try to read %ld/%ld arrays\n", n, narraymax);
 					arraylist_t arraylist = afile.readarrays ( n );
-					
+
 					// http://www.cs.kent.edu/~jbaker/23Workshop/Chesebrough/mergesort/mergesortOMP.cpp
 					// ??? http://berenger.eu/blog/c-openmp-a-shared-memory-quick-sort-using-with-openmp-tasks-example-source-code/
-					//std::sort(arraylist.begin(), arraylist.end() ); // sorting the arrays makes the rank calculations with subrank re-use more efficient
-					gfx::timsort(arraylist.begin(), arraylist.end() ); // sorting the arrays makes the rank calculations with subrank re-use more efficient
-					if (verbose>=2)
+					gfx::timsort ( arraylist.begin(), arraylist.end() ); // sorting the arrays makes the rank calculations with subrank re-use more efficient
+					if ( verbose>=2 )
 						printf ( "oaclustergather: read arrays in block %d: %d arrays (%ld/%ld)\n", loop, ( int ) arraylist.size(), naread, narrays );
-					if (arraylist.size() <=0 )
+					if ( arraylist.size() <=0 )
 						break;
 					addArraysToPareto ( pset, paretofunction, arraylist, jj, verbose );
 					naread += arraylist.size() ;
@@ -514,8 +457,6 @@ int main ( int argc, char* argv[] )
 
 			if ( verbose>=3 || ( ( jj%60==0 || ( jj==nsplit[level]-1 ) ) && verbose>=2 ) ) {
 				printf ( "oaclustergather: file %d/%d, %ld arrays: %d Pareto values, %d Pareto elements\n", jj, nsplit[level], naread, pset.number(), pset.numberindices() );
-				//std::cout << " dummy, verbose " << verbose << printfstring("jj %d", jj) << std::endl; // dummy print
-				//printf ( "  " ); pset.show ( 1 );
 				fflush ( 0 );
 			}
 		}
@@ -533,7 +474,7 @@ int main ( int argc, char* argv[] )
 		arraylist_t pp = pset.allindicesdeque();
 		npareto[k] =  pset.numberindices();
 
-		if ( cleanrunK || ( !needcleanrun ) ) {
+		if ( ( cleanrunK || ( !needcleanrun ) ) && (outputprefix!=0) ) {
 			std::string cdir =  splitDir ( lvls ); //printfstring ( "sp0-split-%d/", split0 );
 			std::string xxx =  splitFile ( lvls );
 			if ( lvls.size() >0 ) {
@@ -574,10 +515,10 @@ int main ( int argc, char* argv[] )
 	/* free allocated structures */
 	delete adata;
 
-	const long long natotal = std::accumulate ( na.begin(), na.end(), 0 );
+	const long natotal = std::accumulate ( na.begin(), na.end(), (long)0 );
 
 	if ( verbose>=1 ) {
-		printf ( "  total number of arrays: %lld, %.1f Marrays/hour\n", natotal, double( 3600./1e6 ) * double(natotal)/ ( get_time_ms()-time0 ) );
+		printf ( "  total number of arrays: %ld, %.1f Marrays/hour\n", natotal, double ( 3600./1e6 ) * double ( natotal ) / ( get_time_ms()-time0 ) );
 	}
 
 	if ( verbose ) {

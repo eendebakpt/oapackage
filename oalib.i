@@ -301,6 +301,7 @@ def __setitem__(self,index, value):
 // http://www.swig.org/Doc2.0/Python.html#Python_nn47
 
 %include "cpointer.i"
+%include "std_map.i"
 
 
 // ignore variable argument length functions
@@ -322,6 +323,8 @@ namespace std {
    %template(longDeque) deque<long>;
    %template(doubleVector) std::vector<double>;
    %template(stringVector) std::vector<std::string>;
+   
+   %template(map_int_long) std::map<int, long>;
 };
 
 
