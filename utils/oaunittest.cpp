@@ -55,17 +55,9 @@ int checkConferenceComposition ( const array_link &al, int verbose=0 )
 {
 	conference_transformation_t T1(al);	
 	T1.randomize();
-	//for(int i=0; i<1; i++) {
-	//T1.reset(); T1.randomizecolperm();
-	//T1.randomizecolflips();
-	//T1.randomizerowperm();
-		//print_perm(T1.cperm); printf("\n");
-	//}
 	
 	conference_transformation_t T2(al);	
 	T2.randomize();
-	//T2.reset(); //T2.randomizecolperm();	//T2.randomizerowperm();
-	//T2.randomizecolflips();
 
 	conference_transformation_t T3 = T2 * T1;
 	
