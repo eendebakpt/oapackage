@@ -416,6 +416,24 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 }
 
 
+/// write number of arrays and number of Pareto arrays to text file
+void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verbose)
+{
+
+	FILE *fid = fopen ( numbersfile, "wt" );
+	
+	fprintf(fid, "# statistics file\n");
+	fprintf(fid, "N %d, jj %d\n", jc.N, jc.jj);
+	
+			for ( std::map<int , long >::const_iterator it = jc.maxJcounts.begin(); it != jc.maxJcounts.end(); ++it ) {
+			fprintf(fid, "%d: %ld", it->first, it->second);
+		}
+
+	fclose ( fid );
+}
+
+
+
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -498,6 +516,9 @@ int main ( int argc, char* argv[] )
 		jcounter.show();
 		jcounter.showPerformance();
 
+		 writeStatisticsFile ( "numbers-J.txt", jcounter, 1);
+		
+		
 		int jj=0;
 		if ( xx ) {
 			Pareto<mvalue_t<long>,array_link> pset;

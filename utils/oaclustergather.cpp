@@ -131,7 +131,7 @@ bool readNumbersFile ( const char *numbersfile, std::vector<long> &na, std::vect
 }
 
 /// write number of arrays and number of Pareto arrays to text file
-void writeNumbersFile ( const char *numbersfile, std::vector<long> na, std::vector<long> npareto, int kmin=-1, int kmax= -1 )
+void writeNumbersFile ( const char *numbersfile, const std::vector<long> &na, const std::vector<long> &npareto, int kmin=-1, int kmax= -1 )
 {
 
 	if ( kmin<0 )

@@ -1215,7 +1215,7 @@ template <class numtype>
  */
 inline void composition_perm ( const std::vector<numtype> &A, const std::vector<numtype> &B,  std::vector<numtype> &C )
 {
-	for ( int i=0; i<A.size(); i++ ) {
+	for ( size_t i=0; i<A.size(); i++ ) {
 		C[i] = B[A[i]];
 	}
 }

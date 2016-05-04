@@ -669,8 +669,11 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 		const array_link &al = arraylist.at ( i );
 
 		/* Obtain thread number */
+#ifdef DOOPENMP
 		int tid = omp_get_thread_num();
-
+#else
+		int tid=0;
+#endif
 		//parseArrayPareto ( al, al, pset, verbose );
 		Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3, rs[tid] );
 
