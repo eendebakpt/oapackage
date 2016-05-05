@@ -694,6 +694,9 @@ public:
 	/// select columns from an array
 	array_link selectColumns ( const std::vector<int> c ) const;
 
+		/// select single column from an array
+	array_link selectColumns ( int c ) const;
+
 	//template <class numtype>
 	//void setColumnX(int c, const std::vector<numtype> v) {
 	//		std::copy(this->array+c*this->n_rows, this->array+(c+1)*this->n_rows, v.begin() );
@@ -796,6 +799,14 @@ public:
 	array_link operator + ( array_t v ) const;
 	array_link operator - ( const array_link & ) const;
 	array_link operator - ( array_t v ) const;
+
+	array_link operator * ( array_t val ) const {
+		array_link al(*this);
+		int NN=this->n_rows*this->n_columns;
+		for ( int i=0; i<NN; i++ )
+			al.array[i] *= val;
+		return al;
+	}
 
 	array_link operator *= ( array_t val ) {
 		int NN=this->n_rows*this->n_columns;

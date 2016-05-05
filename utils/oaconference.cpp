@@ -175,6 +175,13 @@ int main ( int argc, char* argv[] )
 		}
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
+		if (1) {
+		for(size_t i=0; i<outlist.size(); i++) {
+				if( ! isConferenceFoldover(outlist[i]) )
+					printfd("found an even-odd conference matrix!!!\n");
+		}
+		}
+		
 		if ( output.length() >=1 ) {
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
 			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );

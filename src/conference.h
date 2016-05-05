@@ -44,7 +44,7 @@ public:
 	enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
 	conference_type ctype;
 	matrix_isomorphism_t itype;
-	
+
 	bool j3zero;
 
 public:
@@ -57,18 +57,27 @@ public:
 	/// create the unique representative of the 3 column design
 	array_link create_root_three ( ) const;
 
-	arraylist_t createDconferenceRootArrays() const {
+	arraylist_t createDconferenceRootArrays ( int j1zero=0 ) const {
 		arraylist_t lst;
 		array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-		for ( int i=N/2+1; i<=N; i++ ) {
+		if ( j1zero ) {
 			al.setconstant ( -1 );
 			al.at ( 0,0 ) =0;
 			al.at ( 1,0 ) =0;
-			for ( int k=2; k<i; k++ )
+			for ( int k=2; k<N/2+1; k++ )
 				al.at ( k,0 ) =1;
 			lst.push_back ( al );
-		}
 
+		} else {
+			for ( int i=N/2+1; i<=N; i++ ) {
+				al.setconstant ( -1 );
+				al.at ( 0,0 ) =0;
+				al.at ( 1,0 ) =0;
+				for ( int k=2; k<i; k++ )
+					al.at ( k,0 ) =1;
+				lst.push_back ( al );
+			}
+		}
 		return lst;
 	}
 
@@ -100,7 +109,8 @@ public:
 		case DCONFERENCE: {
 			switch ( this->itype ) {
 			case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-				arraylist_t tmp = this->createDconferenceRootArrays();
+				const int j1zero=1;
+				arraylist_t tmp = this->createDconferenceRootArrays ( j1zero );
 				lst.insert ( lst.end(), tmp.begin(), tmp.end() );
 			}
 			break;
@@ -203,7 +213,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1 );
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int j1zero=1 );
 
 /** return max position of zero in array, returns -1 if no zero is found
  *
@@ -219,5 +229,28 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 /// sort list of arrays according to LMC-0 ordering
 arraylist_t sortLMC0 ( const arraylist_t &lst );
 
+
+inline bool isConferenceFoldover ( const array_link &al )
+{
+
+	array_link alt = al.transposed();
+	array_link alt2 = alt*-1;
+
+	for ( int i=0; i<al.n_rows; i++ ) {
+		array_link alx = alt.selectColumns ( i );
+		int foundcol=0;
+		for ( int j=0; j<al.n_rows; j++ ) {
+			array_link alx2 = alt2.selectColumns ( j );
+			if ( alx==alx2 ) {
+				foundcol=1;
+				break;
+			}
+		}
+		if ( !foundcol ) {
+			return false;
+		}
+	}
+	return true;
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

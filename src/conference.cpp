@@ -1076,7 +1076,7 @@ indexsort rowsorter ( const array_link &al )
 }
 
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip, int j1zero )
 {
 	assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM );
 
@@ -1095,9 +1095,11 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		for ( int k=2; k<i+2; k++ )
 			c[k]=1;
 
-		sort ( c.begin(), c.end() );
+		std::sort ( c.begin(), c.end() );
 
-
+		if (j1zero && i!=(N-2)/2)
+			continue;
+		
 		do {
 			//cout << s1 << endl;
 			n++;

@@ -800,6 +800,15 @@ array_link array_link::selectLastColumns ( int ii ) const
 	return d;
 }
 
+array_link array_link::selectColumns ( int c ) const
+{
+	array_link d ( this->n_rows, 1, INDEX_DEFAULT );
+		mycheck ( c>=0, "array_link::selectColumns: c<0\n" );
+		mycheck ( c<this->n_columns, "array_link::selectColumns: c>=ncols\n" );
+		std::copy ( this->array+c*this->n_rows, this->array+ ( c+1 ) *this->n_rows, d.array );
+	return d;
+}
+
 array_link array_link::selectColumns ( std::vector<int> c ) const
 {
 	array_link d ( this->n_rows, c.size(), INDEX_DEFAULT );
@@ -3380,7 +3389,7 @@ int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx )
 	return 0;
 }
 
-arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int narray, arrayfilemode_t m, int nb )
+arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t m, int nb )
 {
 	//closefile();
 	this->verbose=0;
@@ -3393,7 +3402,8 @@ arrayfile_t::arrayfile_t ( const std::string fname, int nrows, int ncols, int na
 #ifdef USEZLIB
 	this->gzfid=0;
 #endif
-	createfile ( fname, nrows, ncols, narrays, m, nb );
+
+	createfile ( fname, nrows, ncols, narrays_, m, nb );
 
 }
 
