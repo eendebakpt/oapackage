@@ -688,7 +688,7 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
 {
 	// blocked read of arrays
-	const long narraymax = 25000; // max number of arrays to read in a block
+	const long narraymax = 100000; // max number of arrays to read in a block
 	arrayfile_t afile ( inputfile, 0 );
 	if ( ! afile.isopen() ) {
 		if ( verbose ) {
@@ -701,7 +701,8 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
 	myprintf("calculateJstatistics: file %s\n", inputfile);
 	}
 	const int N = afile.nrows;
-	Jcounter jcounter ( N, jj );
+	const int k = afile.ncols;
+	Jcounter jcounter ( N, jj, k );
 
 	long narrays = afile.narrays;
 	long naread=0;
@@ -719,9 +720,7 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
 		if ( arraylist.size() <=0 )
 			break;
 
-		for ( size_t i=0; i<arraylist.size(); i++ ) {
-			jcounter.addArray ( arraylist[i] );
-		}
+		jcounter.addArrays(arraylist);
 		naread += arraylist.size() ;
 		loop++;
 	}
@@ -732,6 +731,13 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
 
 }
 
+	/// add list of arrays to object
+	void Jcounter::addArrays ( const arraylist_t &arraylist, int verbose ) {
+	#pragma omp parallel for schedule(dynamic,1)
+			for ( size_t i=0; i<arraylist.size(); i++ ) {
+			this->addArray ( arraylist[i] );
+		}
+	}
 
 Jcounter& Jcounter::operator += ( Jcounter &jc )
 {
@@ -739,8 +745,8 @@ Jcounter& Jcounter::operator += ( Jcounter &jc )
 	assert ( this->jj==jc.jj );
 
 
-	for ( std::map<int , long >::const_iterator it = this->maxJcounts.begin(); it !=  this->maxJcounts.end(); ++it ) {
-		long val = jc.maxJcounts[ ( int ) it->first];
+	for ( std::map<jindex_t , long >::const_iterator it = jc.maxJcounts.begin(); it !=  jc.maxJcounts.end(); ++it ) {
+		long val = jc.maxJcounts[  it->first];
 		this->maxJcounts[it->first] += val;
 	}
 
@@ -762,6 +768,9 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 
 	Jcounter jc;
 
+	if(fid==0)
+		return jc;
+	
 	while ( !feof ( fid ) )  {
 
 		fgets ( line, 512, fid );
@@ -784,14 +793,14 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 					printf ( "readStatisticsFile: found N %d, jj %d\n", N, jj );
 			}
 		} else {
-			int x;
-			long y;
-			sscanf ( line, "%d: %ld", &x, &y );
+			int x,y;
+			long z;
+			sscanf ( line, "k %d: %d %ld", &x, &y, &z );
 			
 			if (y<0) {
 			printfd("error: negative count in statistics file\n");	
 			}
-			jc.maxJcounts[x] = y;
+			jc.maxJcounts[ jindex_t(x,y) ] = z;
 		}
 	}
 	fclose ( fid );
@@ -810,8 +819,8 @@ void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verb
 	fprintf ( fid, "# statistics file\n" );
 	fprintf ( fid, "N %d, jj %d\n", jc.N, jc.jj );
 
-	for ( std::map<int , long >::const_iterator it = jc.maxJcounts.begin(); it != jc.maxJcounts.end(); ++it ) {
-		fprintf ( fid, "%d: %ld\n", it->first, it->second );
+	for ( std::map<jindex_t , long >::const_iterator it = jc.maxJcounts.begin(); it != jc.maxJcounts.end(); ++it ) {
+		fprintf ( fid, "k %d: %d %ld\n", it->first.k, it->first.j, it->second );
 	}
 
 	fclose ( fid );

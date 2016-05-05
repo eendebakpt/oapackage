@@ -194,10 +194,6 @@ int main ( int argc, char* argv[] )
 
 	{
 
-		const char *numbersfile = "numbers-J.txt";
-		Jcounter jc = readStatisticsFile ( numbersfile, verbose );
-		jc.show();
-		exit ( 0 );
 
 //		long imax = std::numeric_limits<long>::max(); printf("max for long %ld\n" , imax);
 //		 imax = std::numeric_limits<int>::max();
@@ -211,8 +207,7 @@ int main ( int argc, char* argv[] )
 
 
 		Jcounter jcounter = calculateJstatistics ( input, jj, 1 );
-		Jcounter jcounter2 = calculateJstatistics ( input, jj, 1 );
-		jcounter += jcounter2;
+		//Jcounter jcounter2 = calculateJstatistics ( input, jj, 1 ); jcounter += jcounter2;
 
 		printf ( "--- results ---\n" );
 		jcounter.show();
@@ -220,7 +215,12 @@ int main ( int argc, char* argv[] )
 
 		writeStatisticsFile ( "numbers-J.txt", jcounter, 1 );
 
+		const char *numbersfile = "numbers-J.txt";
+		Jcounter jc = readStatisticsFile ( numbersfile, verbose );
+		jc.show();
+		exit ( 0 );
 
+		
 		int jj=0;
 		if ( xx ) {
 			Pareto<mvalue_t<long>,array_link> pset;

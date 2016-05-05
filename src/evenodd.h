@@ -640,29 +640,54 @@ inline typename Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5C
 /// add arrays to set of Pareto results
 void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose );
 
+struct jindex_t {
+	int k;
+	int j;
+	
+	jindex_t(int k_, int j_) :  k(k_),j(j_) { }
+	
+public:
+	
+	bool operator<(const jindex_t &rhs) const
+	{
+			if(this->k<rhs.k)
+				return true;
+			if(this->k>rhs.k)
+				return false;
+			
+				return (this->j < rhs.j);
+	}
+	std::string toString() const {
+	return printfstring("k%d-j%d", this->k, this->j);
+	}
+} ;
+
 class Jcounter
 {
 public:
 	int N; /// number of rows
 	int jj;
 	std::vector<int> fvals;
-	std::map<int,long> maxJcounts;
+	std::map<jindex_t,long> maxJcounts;
 double dt; 	/// time needed for calculation
 
 	Jcounter ( )  : N(-1), jj ( -1) { }
 
-	Jcounter ( int N, int jj = 5 ) {
-		this->init ( N, jj );
+	Jcounter ( int N, int jj = 5, int k = -1 ) {
+		this->init ( N, jj, k );
 
 	}
 
+	bool isOpen() const {
+	return N>0;	
+	}
 	void showPerformance() const {
 	myprintf("Jcounter: %.1f Marrays/h\n", (1e-6*3600.)*double(narrays())/this->dt );	
 	}
 	long narrays() const {
 
 		long r = 0;
-		for ( std::map<int , long >::const_iterator it = maxJcounts.begin(); it != maxJcounts.end(); ++it ) {
+		for ( std::map<jindex_t , long >::const_iterator it = maxJcounts.begin(); it != maxJcounts.end(); ++it ) {
 			r+= it->second;
 		}
 
@@ -671,30 +696,41 @@ double dt; 	/// time needed for calculation
 	}
 	void show() const {
 
-		for ( std::map<int , long >::const_iterator it = maxJcounts.begin();
+		for ( std::map<jindex_t , long >::const_iterator it = maxJcounts.begin();
 		        it != maxJcounts.end(); ++it ) {
-			myprintf("max(J%d) %d: %ld\n", this->jj, it->first, it->second) ;
+			myprintf("k %d: max(J%d) %d: %ld\n", it->first.k, this->jj, it->first.j, it->second) ;
 		}
 	}
 	
 	Jcounter& operator += ( Jcounter &jc);
 	
 
-	void addArray ( const array_link &al, int verbose=0 ) {
-		jstruct_t js ( al, this->jj );
-		int maxJ = js.maxJ();
+	/// add list of arrays to object
+	void addArrays ( const arraylist_t &arraylist, int verbose=0 );
 
+	/// add single array to statistics object
+	void addArray ( const array_link &al, int verbose=0 ) {
+		//jstruct_t js ( al, this->jj );
+		jstruct_t js ( al.selectFirstColumns(5), this->jj );
+		
+		int maxJ = js.maxJ();
+		
+		int k = al.n_columns;
+		
 		if ( verbose ) {
+			jstruct_t js ( al, this->jj );
 			std::vector<int> FF =js.calculateF();
 			printf ( "addArray: maxJ %d: ", maxJ );
 			display_vector ( FF );
 			printf ( "\n" );
 		}
-		maxJcounts[maxJ]++;
+		jindex_t ji = jindex_t(k, maxJ);
+#pragma omp critical
+		maxJcounts[ ji ]++;
 	}
 
 private:
-	void init ( int N, int jj ) {
+	void init ( int N, int jj, int k = -1 ) {
 		this->N = N;
 		this->jj = jj;
 		this->fvals = Fval ( N, 3 );
@@ -702,11 +738,13 @@ private:
 		
 		maxJcounts.clear();
 
+		if (k>0) {
 		for ( size_t j=0; j<fvals.size(); j++ ) {
-			//printf("adding val %d: %d\n", (int)j, fvals[j]);
-			maxJcounts[fvals[j]]=0;
+			jindex_t ji(k, fvals[j] );
+			printf("adding val %s\n", ji.toString().c_str());
+			maxJcounts[ji]=0;
 		}
-
+		}
 	}
 
 };
