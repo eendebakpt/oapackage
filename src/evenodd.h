@@ -649,6 +649,8 @@ public:
 	std::map<int,long> maxJcounts;
 double dt; 	/// time needed for calculation
 
+	Jcounter ( )  : N(-1), jj ( -1) { }
+
 	Jcounter ( int N, int jj = 5 ) {
 		this->init ( N, jj );
 
@@ -708,6 +710,11 @@ private:
 	}
 
 };
+
+/// read statistics object from disk
+Jcounter readStatisticsFile ( const char *numbersfile, int verbose );
+/// write statistics object to disk
+void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verbose );
 
 
 

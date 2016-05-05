@@ -147,7 +147,49 @@ void writeNumbersFile ( const char *numbersfile, const std::vector<long> &na, co
 	fclose ( fid );
 }
 
+std::vector<int> getSplit( AnyOption &opt)
+{
+	int nsplit0 = opt.getIntValue ( "nsplit0", -1 );
+	int nsplit1 = opt.getIntValue ( "nsplit1", -1 );
+	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
+	int nsplit3 = opt.getIntValue ( "nsplit3", -1 );
+	int nsplit4 = opt.getIntValue ( "nsplit4", -1 );
 
+		assert ( nsplit0!=-1 ); // prevent legacy code from running
+
+	std::vector<int> nsplit;
+	nsplit.push_back ( nsplit0 );
+	nsplit.push_back ( nsplit1 );
+	nsplit.push_back ( nsplit2 );
+	nsplit.push_back ( nsplit3 );
+	nsplit.push_back ( nsplit4 );
+	
+	return nsplit;
+}
+
+std::vector<int> getLevels( AnyOption &opt)
+{
+	int split0 = opt.getIntValue ( "split0", -1 );
+	int split1 = opt.getIntValue ( "split1", -1 );
+	int split2 = opt.getIntValue ( "split2", -1 );
+	int split3 = opt.getIntValue ( "split3", -1 );
+	int split4 = opt.getIntValue ( "split4", -1 );
+
+		std::vector<int> lvls;
+	if ( split0>=0 ) {
+		lvls.push_back ( split0 );
+		if ( split1>=0 ) {
+			lvls.push_back ( split1 );
+			if ( split2>=0 ) {
+				lvls.push_back ( split2 );
+				if ( split3>=0 ) {
+					lvls.push_back ( split3 );
+				}
+			}
+		}
+	}
+return lvls;
+}
 
 const std::string filesep = "/";
 
@@ -168,6 +210,8 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "output", 'o' );
 	opt.setOption ( "verbose", 'v' );
 	opt.setOption ( "basedir", 'b' );
+	opt.setOption ( "method" );
+
 	opt.setOption ( "split0" );
 	opt.setOption ( "split1" );
 	opt.setOption ( "split2" );
@@ -195,6 +239,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -b --basedir [DIR]  			Base calculation dir " );
 	opt.addUsage ( " -c --config [CONFIGFILE]  		Config file to use " );
 	opt.addUsage ( " -f [FORMAT]					Output format (TEXT, or default:BINARY) " );
+	opt.addUsage ( " --method [METHOD]				Default: 0 (Pareto). Other options: 1 (J-statistics)" );
 	opt.addUsage ( " --numbersfile [FILENAME] 	Output name of number of arrays " );
 	opt.addUsage ( " --cleanrun [INTEGER]		If set to 1 abort when not all files are found. If set to zero generate partial results (default: 1)" );
 	opt.addUsage ( " --nsplit0 [NUMBER]		Number of split files at level 0" );
@@ -227,23 +272,43 @@ int main ( int argc, char* argv[] )
 	const std::string basedir = opt.getStringValue ( "basedir", "" );
 	const char *configfile = opt.getStringValue ( "config", "oaconfig.txt" );
 	int verbose = opt.getIntValue ( 'v', 1 );
+	int method = opt.getIntValue ( "method", 1 );
 	int needcleanrun = opt.getIntValue ( "cleanrun", 1 );
-	int split0 = opt.getIntValue ( "split0", -1 );
-	int split1 = opt.getIntValue ( "split1", -1 );
-	int split2 = opt.getIntValue ( "split2", -1 );
-	int split3 = opt.getIntValue ( "split3", -1 );
-	int split4 = opt.getIntValue ( "split4", -1 );
-	int nsplit0 = opt.getIntValue ( "nsplit0", -1 );
-	int nsplit1 = opt.getIntValue ( "nsplit1", -1 );
-	int nsplit2 = opt.getIntValue ( "nsplit2", -1 );
-	int nsplit3 = opt.getIntValue ( "nsplit3", -1 );
-	int nsplit4 = opt.getIntValue ( "nsplit4", -1 );
 	int paretomethod = opt.getIntValue ( "paretomethod", 0 );
 	int allowparetodiff = opt.getIntValue ( "nparetodiff", 0 );
 	int kmin = opt.getIntValue ( "kmin", 9 );
 	int kmax = opt.getIntValue ( "kmax", 24 );
 	const char *numbersfile = opt.getStringValue ( "numbersfile", 0 );
 
+
+	arraydata_t *adata = readConfigFile ( configfile );
+	assert ( adata!=0 );
+
+		std::vector<int> nsplit =  getSplit(opt);
+	std::vector<int> lvls =  getLevels(opt);
+
+	if ( verbose ) {
+				std::string splittag = splitTag ( lvls );
+
+		printf ( "oaclustergather: basedir %s, kmin %d, kmax %d, verbose %d\n", basedir.c_str(), kmin, kmax, verbose );
+#ifdef DOOPENMP
+		printf ( "oaclustergather: openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
+#endif
+	}
+	if ( verbose ) {
+		std::cout << "#time start: "<< currenttime() << std::endl;
+	}
+	double time0=get_time_ms();
+	if ( verbose ) {
+		std::cout << "oaclustergather: levels "<< splitTag ( lvls ) << std::endl;
+	}
+
+	if (method==1) {
+		
+	
+		exit(0);
+	}
+	
 	pareto_cb_cache paretofunction = calculateArrayParetoJ5Cache<array_link>;
 
 	if ( paretomethod )
@@ -253,50 +318,12 @@ int main ( int argc, char* argv[] )
 
 	arrayfile::arrayfilemode_t arrayfilemode = arrayfile_t::parseModeString ( opt.getStringValue ( 'f', "BINARY" ) );
 
-	arraydata_t *adata = readConfigFile ( configfile );
-	assert ( adata!=0 );
-
-	if ( verbose ) {
-		printf ( "oaclustergather: basedir %s, split0 %d, nsplit1 %d, kmin %d, kmax %d, verbose %d\n", basedir.c_str(), split0, nsplit1, kmin, kmax, verbose );
-#ifdef DOOPENMP
-		printf ( "oaclustergather: openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
-#endif
-	}
-	if ( verbose ) {
-		std::cout << "#time start: "<< currenttime() << std::endl;
-	}
-	double time0=get_time_ms();
-
-	assert ( nsplit0!=-1 ); // prevent legacy code from running
 
 	std::vector< long> na ( kmax+1 );	  /// number of arrays
 	std::vector<long> npareto ( kmax+1 ); /// total number of pareto arrays
 
 	initncombscache ( 30 );
 
-	std::vector<int> nsplit;
-	nsplit.push_back ( nsplit0 );
-	nsplit.push_back ( nsplit1 );
-	nsplit.push_back ( nsplit2 );
-	nsplit.push_back ( nsplit3 );
-	nsplit.push_back ( nsplit4 );
-
-	std::vector<int> lvls;
-	if ( split0>=0 ) {
-		lvls.push_back ( split0 );
-		if ( split1>=0 ) {
-			lvls.push_back ( split1 );
-			if ( split2>=0 ) {
-				lvls.push_back ( split2 );
-				if ( split3>=0 ) {
-					lvls.push_back ( split3 );
-				}
-			}
-		}
-	}
-	if ( verbose ) {
-		std::cout << "oaclustergather: levels "<< splitTag ( lvls ) << std::endl;
-	}
 
 	/* Loop over all subdirectories for all number of columns */
 	int cleanrun=1; /// indicates whether all necessary files have been found

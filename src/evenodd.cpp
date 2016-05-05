@@ -749,5 +749,72 @@ Jcounter& Jcounter::operator += ( Jcounter &jc )
 	return *this;
 }
 
+/// read statistics object from disk
+Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
+{
+
+	FILE *fid = fopen ( numbersfile, "rt" );
+
+	int N=-1;
+	int jj=-1;
+
+	char line[512];
+
+	Jcounter jc;
+
+	while ( !feof ( fid ) )  {
+
+		fgets ( line, 512, fid );
+		if ( verbose>=2 ) {
+			printf ( "read line: |%s|\n", line );
+		}
+		if ( strlen ( line ) ==0 )
+			continue;
+
+		if ( line[0]=='#' )
+			continue; // comment
+
+
+		if ( N<0 ) {
+
+			int r = sscanf ( line, "N %d, jj %d", &N, &jj );
+			jc = Jcounter ( N, jj );
+			if ( r>0 ) {
+				if ( verbose )
+					printf ( "readStatisticsFile: found N %d, jj %d\n", N, jj );
+			}
+		} else {
+			int x;
+			long y;
+			sscanf ( line, "%d: %ld", &x, &y );
+			
+			if (y<0) {
+			printfd("error: negative count in statistics file\n");	
+			}
+			jc.maxJcounts[x] = y;
+		}
+	}
+	fclose ( fid );
+
+
+	return jc;
+}
+
+
+/// write statistics object to disk
+void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verbose )
+{
+
+	FILE *fid = fopen ( numbersfile, "wt" );
+
+	fprintf ( fid, "# statistics file\n" );
+	fprintf ( fid, "N %d, jj %d\n", jc.N, jc.jj );
+
+	for ( std::map<int , long >::const_iterator it = jc.maxJcounts.begin(); it != jc.maxJcounts.end(); ++it ) {
+		fprintf ( fid, "%d: %ld\n", it->first, it->second );
+	}
+
+	fclose ( fid );
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

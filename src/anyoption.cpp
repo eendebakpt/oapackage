@@ -792,7 +792,7 @@ AnyOption::getFlag( const char *option )
 }
 
 char*
-AnyOption::getValue( char option )
+AnyOption::getValue( char option ) 
 {
 	if( !valueStoreOK() )
 		return NULL;
