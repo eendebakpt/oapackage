@@ -856,7 +856,7 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
 	return e2;
 }
 
-/// filter candidate extensions on J3 value
+/// filter candidate extensions on J3 value (only pairs with extention are checked)
 std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_link &als, int verbose )
 {
 
@@ -892,7 +892,7 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 			}
 
 			if ( jv!=0 )
-				continue;
+				break;
 		}
 		
 		if (jv==0)
@@ -1076,10 +1076,11 @@ indexsort rowsorter ( const array_link &al )
 }
 
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip, int j1zero )
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
 {
 	assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM );
 
+	int j1zero = ct.j1zero;
 
 	std::vector<cperm> cc;
 

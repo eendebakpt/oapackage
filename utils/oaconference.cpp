@@ -55,6 +55,7 @@ int main ( int argc, char* argv[] )
 	opt.setOption ( "ii", 'i' );
 	opt.setOption ( "kmax", 'k' );
 	opt.setOption ( "itype" );
+	opt.setOption ( "j1zero" );
 	opt.setOption ( "j3zero" );
 	opt.setOption ( "rows", 'N' );
 	opt.setOption ( "select", 's' );
@@ -92,6 +93,7 @@ int main ( int argc, char* argv[] )
 	int select = opt.getIntValue ( 's', 1 );
 	const conference_t::conference_type ctx = ( conference_t::conference_type ) opt.getIntValue ( "ctype", 0 );
 	const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
+	const int j1zero = opt.getIntValue ( "j1zero", 0 );
 	const int j3zero = opt.getIntValue ( "j3zero", 0 );
 	
 	const std::string output = opt.getStringValue ( 'o', "" );
@@ -111,6 +113,7 @@ int main ( int argc, char* argv[] )
 	ctype.ctype=ctx;
 	ctype.itype=itype;
 	ctype.j3zero=j3zero;
+	ctype.j1zero=j1zero;
 
 	arraylist_t kk;
 	if ( input.length() >1 ) {

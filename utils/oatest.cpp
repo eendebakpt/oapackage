@@ -192,6 +192,15 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	
+	{
+		arraylist_t ll = readarrayfile("/home/eendebakpt/oatmp/conf/dconferencej1j3-12-6.oa");
+		array_link al = ll[0];
+		
+		al.showproperties();
+		
+	exit(0);	
+	}
 	{
 
 

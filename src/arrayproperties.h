@@ -99,7 +99,7 @@ double CL2discrepancy(const array_link &al);
 /// calculate second order interaction matrix for 2-level array
 array_link array2secondorder ( const array_link &al );
 
-/// add intercept and second order interactions to an array
+/// add intercept and second order interactions to a 2-level array
 array_link array2xf(const array_link &al);
 
 /// add intercept and second order interactions to an array

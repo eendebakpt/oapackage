@@ -1411,7 +1411,9 @@ bool array_link::is2level() const
 void array_link::showproperties() const
 {
 	myprintf ( "array: %d rows, %d cols\n", this->n_rows, this->n_columns );
+	if (this->min()>=0) {
 	myprintf ( "  strength %d, rank %d\n", this->strength(), this->rank() );
+	}
 	myprintf ( "  D-efficiency %.3f\n", this->Defficiency() );
 	std::vector<double> gwlp = this->GWLP();
 #ifdef FULLPACKAGE
@@ -1425,7 +1427,6 @@ void array_link::showproperties() const
 #ifdef SWIGCODE
 long array_link::data()
 {
-	//return static_cast<long>(array);
 	//return ( static_cast<long>( (void *) array ) );
 	return ( long ( size_t ( ( void * ) array ) ) );
 }
@@ -2699,10 +2700,9 @@ void jstruct_t::calc ( const array_link &al )
 	assert ( al.is2level() );
 	for ( int x=0; x<this->nc; x++ ) {
 		//int jv = jvalue ( al, jj, pp ); // slow version
-		int jv = jvaluefast ( al.array, al.n_rows, jj, pp ); // slow version
+		int jv = jvaluefast ( al.array, al.n_rows, jj, pp ); 
 		this->vals[x]=jv;
 		next_comb_s ( pp, jj, k );
-		//  cout << printfstring("   J value %d\n", jv);
 	}
 
 	delete_perm ( pp );
