@@ -244,6 +244,32 @@ array_link conference_t::create_root ( ) const
 	return al;
 }
 
+bool isConferenceFoldover ( const array_link &al, int verbose)
+{
+
+	array_link alt = al.transposed();
+	array_link alt2 = alt*-1;
+
+	for ( int i=0; i<al.n_rows; i++ ) {
+		array_link alx = alt.selectColumns ( i );
+		int foundcol=0;
+		for ( int j=0; j<al.n_rows; j++ ) {
+			array_link alx2 = alt2.selectColumns ( j );
+			if ( alx==alx2 ) {
+				foundcol=1;
+				break;
+			}
+		}
+		if ( !foundcol ) {
+				if (verbose) {
+				printf("isConferenceFoldover: no foldover for row %d\n", i);
+				}
+			return false;
+		}
+	}
+	return true;
+}
+
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose )
 {
 	const int nr = al.n_rows;
@@ -691,7 +717,7 @@ int innerprod ( const cperm &a, const cperm &b )
 }
 
 /// helper function
-int satisfy_symm ( const cperm &c, const symmdata & sd )
+int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2)
 {
 	const int verbose=0;
 
@@ -707,9 +733,10 @@ int satisfy_symm ( const cperm &c, const symmdata & sd )
 		display_vector ( c );
 		printf ( "\n" );
 	}
-	for ( size_t i=2; i<c.size()-1; i++ ) {
+	for ( size_t i=rowstart; i<c.size()-1; i++ ) {
 		if ( sd.rowvalue.atfast ( i, k ) ==sd.rowvalue.atfast ( i+1, k ) ) {
-			if ( c[i]<c[i+1] && c[i]!=0 && c[i+1]!=0 ) {
+			//if ( c[i]<c[i+1] && c[i]!=0 && c[i+1]!=0 ) {
+			if ( ((char)c[i])< ((char)c[i+1] ) ) {
 				// discard
 
 				if ( verbose ) {
@@ -824,14 +851,65 @@ std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, 
 
 }
 
+class DconferenceFilter
+{
+public:
+	array_link als;
+	int filtersymm;
+	int filterj2;
+	int filterfirst;
+
+	symmdata sd;
+	long ngood;
+	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterip ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterip ), filterfirst ( 0 ), sd ( als ), ngood ( 0 ) {
+		//sd = symmdata( als );
+	}
+
+	/// return True of the extension satisfies all checks
+	bool filter ( const cperm &c ) {
+		if ( filterfirst ) {
+			if (  c[0]<0 ) {
+				return false;
+			}
+		}
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( c, sd, 0 ) ) {
+				return false;
+			}
+		}
+		if ( filterj2 ) {
+
+			// perform inner product check for all columns
+			if ( ! ipcheck ( c, als, 0 ) ) {
+				return false;
+			}
+		}
+		ngood++;
+		return true;
+	}
+
+	bool filterSymmetry ( const cperm &c ) const {
+		return  satisfy_symm ( c, sd, 0);
+	}
+	/// return True of the extension satisfies the J2 check
+	bool filterJ2 ( const cperm &c ) const {
+		return ipcheck ( c, als, 0 );
+	}
+
+private:
+
+};
+
 /** filter conferece matrix extension candidates
  *
  * Filtering is based in symmetry and ip
  */
 std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
 {
-	symmetry_group rs = als.row_symmetry_group();
+//	symmetry_group rs = als.row_symmetry_group();
 	symmdata sd ( als );
+	DconferenceFilter dfilter ( als, filtersymm, filterip );
+	dfilter.filterfirst=1;
 
 	if ( verbose>=2 )
 		sd.show ( 1 );
@@ -839,19 +917,11 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
 	std::vector<cperm> e2 ( 0 );
 	for ( size_t i=0; i<extensions.size(); i++ ) {
 
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( extensions[i], sd ) ) {
-				continue;
-			}
-		}
-		if ( filterip ) {
+		if ( dfilter.filter ( extensions[i] ) ) {
+			e2.push_back ( extensions[i] );
 
-			// perform inner product check for all columns
-			if ( ! ipcheck ( extensions[i], als, 0 ) ) {
-				continue;
-			}
 		}
-		e2.push_back ( extensions[i] );
+
 	}
 	return e2;
 }
@@ -863,14 +933,17 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 	const int N = als.n_rows;
 
 	array_link dtable = createJ2tableConference ( als );
-	
-	if (verbose>=2) {
-	printf("array + dtable\n");	als.showarray(); printfd("dtable:\n"); dtable.showarray();
+
+	if ( verbose>=2 ) {
+		printf ( "array + dtable\n" );
+		als.showarray();
+		printfd ( "dtable:\n" );
+		dtable.showarray();
 	}
-	
+
 	int nc = dtable.n_columns;
 
-		if ( verbose>=1 ) {
+	if ( verbose>=1 ) {
 		printf ( "filterJ3: array %dx%d, nc %d\n", N, als.n_columns, nc );
 	}
 
@@ -878,10 +951,10 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 	for ( size_t i=0; i<extensions.size(); i++ ) {
 		const cperm &c = extensions[i];
 
-		//std::vector<int> cx(c.begin(), c.end() ); printf("i %d: ", (int)i); print_perm(cx); 
+		//std::vector<int> cx(c.begin(), c.end() ); printf("i %d: ", (int)i); print_perm(cx);
 
 		// FIXME: only loop over i<j pairs
-			int jv=0;
+		int jv=0;
 		for ( int idx1=0; idx1<nc; idx1++ ) {
 			jv=0;
 
@@ -894,8 +967,8 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 			if ( jv!=0 )
 				break;
 		}
-		
-		if (jv==0)
+
+		if ( jv==0 )
 			e2.push_back ( c );
 	}
 
@@ -1075,6 +1148,21 @@ indexsort rowsorter ( const array_link &al )
 	return rr;
 }
 
+void print_cperm ( const cperm &c )
+{
+	for ( size_t i=0; i<c.size(); i++ ) {
+		printf ( "%3d", c[i] );
+	}
+}
+
+void showCandidates ( const std::vector<cperm> &cc )
+{
+	for ( size_t i=0; i<cc.size(); i++ ) {
+		printf ( "%d: ", ( int ) i );
+		print_cperm ( cc[i] );
+		printf ( "\n" );
+	}
+}
 
 std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
 {
@@ -1087,6 +1175,9 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 	const int N = ct.N;
 	cperm c ( N );
 
+	DconferenceFilter dfilter ( al, filtersymm, filterip );
+	dfilter.filterfirst=1;
+
 	unsigned long n=0;
 	for ( int i=0; i<N-2; i++ ) {
 		// fill initial permutation
@@ -1098,20 +1189,26 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 
 		std::sort ( c.begin(), c.end() );
 
-		if (j1zero && i!=(N-2)/2)
+		if ( j1zero && i!= ( N-2 ) /2 )
 			continue;
-		
+
 		do {
 			//cout << s1 << endl;
 			n++;
-			cc.push_back ( c );
+
+			if ( dfilter.filter ( c ) ) {
+				cc.push_back ( c );
+			}
 		} while ( std::next_permutation ( c.begin(), c.end() ) );
 	}
 
 	//printfd ( "generateDoubleConferenceExtensions: before filter generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
-	cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
-	if ( verbose ) {
-		printfd ( "generateDoubleConferenceExtensions: generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
+	//cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
+	if ( verbose || 1 ) {
+		printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
+
+		//al.show();
+		//al.transposed().showarray(); showCandidates ( cc );
 	}
 	return cc;
 }
@@ -1449,7 +1546,6 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 {
 	// TODO: cache candidate extensions
 	arraylist_t outlist;
-
 	if ( verbose>=2 ) {
 		printfd ( "extend_double_conference: start %d\n", ( int ) lst.size() );
 	}
@@ -1674,9 +1770,9 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
 			if ( al[r]==0 &&  ar[r]!=0 )
 				return true;
 			if ( al[r]!=0 && ar[r]==0 )
-				return false;			
+				return false;
 		}
-		
+
 		int zl = maxz ( alL, c );
 		int zr = maxz ( alR, c );
 
