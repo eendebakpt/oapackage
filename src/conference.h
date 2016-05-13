@@ -215,7 +215,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1 );
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0 );
 
 /** return max position of zero in array, returns -1 if no zero is found
  *

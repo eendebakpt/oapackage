@@ -1098,7 +1098,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 				}
 			}
 		} else {	//reached end of column
-			//printf("  reached end of column\n");
 			narrays++;
 
 			if ( ( narrays % oaextend.nLMC == 0 ) || ( ( get_time_ms()-extendTime ) > oaextend.singleExtendTime ) ) {
@@ -1108,7 +1107,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 					logstream ( QUIET ) << ", time " << printtime();
 					printf ( "  OA extension: current row: " );
 					print_perm ( array+col_offset, N, 36 );
-					//print_array(array, ad->N, ad->ncols);
 
 					//testreduction(ad, array, dynd);
 				}
@@ -1125,18 +1123,12 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 			// quicktransformtest(array, tmparray, reduction, tmptransformation, ad);
 
 
-
 			if ( oaextend.checkarrays==0 )
 				lmc = LMC_MORE;
 			else {
 				//  reduction->mode=LMC_REDUCE_PARTIAL;
 				lmc =  LMCcheck ( array, *ad, oaextend, reduction );
-
-				//logstream ( DEBUG ) << printfstring ( "   array %d: lmc %d\n", narrays-1, lmc );
-
 			}
-
-			//delete reduction;
 
 			if ( lmc == LMC_MORE || lmc == LMC_EQUAL ) {
 				if ( checkloglevel ( DEBUG ) ) {
@@ -1160,7 +1152,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 				case OAextend::STOREARRAY: {
 					array_link	tmp_extension ( array, N, p->col+1, nlmcarrays );
 					arrayfile_t *storefile = ( arrayfile_t * ) &oaextend.storefile;	// trick to prevent const warnings
-					//printf("  store array to file %s\n", storefile->filename.c_str() );
 					/** Note:
 					*
 					* If you only want to store a selection of arrays, here one should insert
@@ -1182,15 +1173,11 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 				}
 				nlmcarrays++;
 			}
-			//if (NOFINAL) { printf("array has been tested, returning to stack"); stack->print() };
 			more_branches = return_stack ( stack, p, array, col_offset );
 		}
 	} while ( more_branches );	/* continue as long as more branches are left */
 
-	//printf(" loglevel %d (QUIET %d)\n", getloglevel(), QUIET);
 	log_print ( QUIET, "Found %lu arrays in total, only %d in LMC form, total is %d\n", narrays, ( int ) ( extensions.size() - start_number ), ( int ) extensions.size() );
-	//int ret = log_print(QUIET, "dom");
-//printf("ret %d\n", ret);
 
 	delete es;
 	destroy_array ( array );

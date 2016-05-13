@@ -2738,13 +2738,15 @@ array_link createJ2tableConference ( const array_link &confmatrix )
 array_link createJdtable ( const array_link &al )
 {
 	const int nr = al.n_rows;
+//cons int nc = al.n_columns*al.n_columns;
+const int nc = (al.n_columns+1)*al.n_columns/2;
 
 	// fill double column table
-	array_link dtable ( nr, al.n_columns*al.n_columns, -1 );
+	array_link dtable ( nr, nc, -1 );
 
 	// loop over all column pairs
 	for ( int i=0; i<al.n_columns; i++ ) {
-		for ( int j=0; j<al.n_columns; j++ ) {
+		for ( int j=0; j<=i; j++ ) {
 			int idx=i+j*al.n_columns;
 			// loop over all rows of original array
 			const array_t *p1 = al.array+al.n_rows*i;
