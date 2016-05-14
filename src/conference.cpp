@@ -1206,15 +1206,53 @@ struct branch_t {
 
 const int bvals[3] = {0,1,-1};
 
+template<class object_t>
+class lightstack_t {
+	object_t *stack;
+private:
+	int size;
+	int n;
+public:
+	
+	lightstack_t(int sz) : size(sz), n(0)
+	{
+		stack = new object_t[sz];
+	}
+	~lightstack_t()
+	{
+			delete [] stack;
+	}
+	
+	bool empty() const {
+	return n==0;	
+	}
+	void push(const object_t &o) {
+#ifdef OADEBUG
+		assert(this->n<this->size);
+#endif
+			this->stack[n] = o;
+			n++;
+	}
+	object_t & top() const 
+	{
+		assert(n>0);
+			return this->stack[n-1];
+	}
+	void pop() {
+			n--;
+	}
+};
+
 std::vector<cperm> generateDoubleConferenceExtensions( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterJ3 )
 {
+	const int N = al.n_rows;
 	DconferenceFilter dfilter ( al, filtersymm, filterj2 );
 
 	std::vector<cperm> cc;
 	cperm c ( al.n_rows );
 
-	std::stack <branch_t> branches;
-	const int N = al.n_rows;
+	//std::stack <branch_t> branches;
+	lightstack_t<branch_t> branches(3*N);
 
 	c[0]=1;
 	branch_t b = {0, 1, {2,N/2-2,N/2-1} };
@@ -1223,8 +1261,9 @@ std::vector<cperm> generateDoubleConferenceExtensions( const array_link &al, con
 	
 	// FIXME: compare number of results with original version of function (n is higher, cc.size() is lower)
 	// FIXME: valgrind
-	// FIXME: do faster inline checks (e.g. abort with partial symmetry
-	// FIXME: 
+	
+	// FIXME: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
+	// FIXME: make list of active rows for symmetry check
 	long n=0;
 	do {
 
@@ -1267,6 +1306,8 @@ std::vector<cperm> generateDoubleConferenceExtensions( const array_link &al, con
 			bnew.rval = bvals[i];
 			bnew.nvals[i]--;
 			//printf("push new branch: i %d\n", i);
+			// FIXME: make direct push possible
+			// FIXME: can we eliminate the branches object altogether?
 			branches.push ( bnew );
 		}
 
@@ -1329,6 +1370,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
 	}
 	return cc;
 }
+
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip )
 {
 
