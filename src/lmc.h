@@ -40,6 +40,7 @@ For more information please contact Pieter Eendebak, <pieter.eendebak@gmail.com>
 #include <iomanip>
 #include <assert.h>
 #include <set>
+#include <vector>
 
 #include "mathtools.h"
 #include "tools.h"
@@ -326,6 +327,26 @@ public:
 	  printf("symmdata: ft:"); this->ft.show();
 	 this->ft.showarray(); 
 	}
+    }
+    
+    /// list with indices set to check for symmetry reductions
+    std::vector<int> checkIdx(int col=-1) const    
+    {
+      const int N = this->orig.n_rows;
+      if (col<0) 
+	col = orig.n_columns-1;
+	
+      std::vector<int> idx(N);
+      
+     // rowvalue.showarray();
+      
+      // never check first index
+      for (int row=1; row<N; row++ )	
+      {
+	if (this->rowvalue._at(row, col)==this->rowvalue._at(row-1, col) )
+	  idx[row]=1;
+      }
+      return idx;
     }
 };
 

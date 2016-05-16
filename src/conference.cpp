@@ -1204,97 +1204,129 @@ struct branch_t {
 	int nvals[3];	/// number of 0, 1, and -1
 };
 
-const int bvals[3] = {0,1,-1};
+const int bvals[3] = {0,1,-1}; // these are ordered
 
 template<class object_t>
-class lightstack_t {
+class lightstack_t
+{
 	object_t *stack;
 private:
 	int size;
 	int n;
 public:
-	
-	lightstack_t(int sz) : size(sz), n(0)
-	{
+
+	lightstack_t ( int sz ) : size ( sz ), n ( 0 ) {
 		stack = new object_t[sz];
 	}
-	~lightstack_t()
-	{
-			delete [] stack;
+	~lightstack_t() {
+		delete [] stack;
 	}
-	
+
 	bool empty() const {
-	return n==0;	
+		return n==0;
 	}
-	void push(const object_t &o) {
+	void push ( const object_t &o ) {
 #ifdef OADEBUG
-		assert(this->n<this->size);
+		assert ( this->n<this->size );
 #endif
-			this->stack[n] = o;
-			n++;
+		this->stack[n] = o;
+		n++;
 	}
-	object_t & top() const 
-	{
-		assert(n>0);
-			return this->stack[n-1];
+	object_t & top() const {
+		assert ( n>0 );
+		return this->stack[n-1];
 	}
 	void pop() {
-			n--;
+		n--;
 	}
 };
 
-std::vector<cperm> generateDoubleConferenceExtensions( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterJ3 )
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterJ3 )
 {
+	//verbose=2;
+	filtersymm=0;
+	
 	const int N = al.n_rows;
 	DconferenceFilter dfilter ( al, filtersymm, filterj2 );
 
+	std::vector<int> sidx = dfilter.sd.checkIdx();
+	if (verbose>=2) {
+printfd("sidx: "); print_perm(sidx); printf("\n");
+	}
 	std::vector<cperm> cc;
 	cperm c ( al.n_rows );
 
 	//std::stack <branch_t> branches;
-	lightstack_t<branch_t> branches(3*N);
+	lightstack_t<branch_t> branches ( 3*N );
 
 	c[0]=1;
-	branch_t b = {0, 1, {2,N/2-2,N/2-1} };
-	branches.push ( b );
-	double t0=get_time_ms();
 	
+	// push initial branches
+	branch_t b1 = {0, 1, {2,N/2-2,N/2-1} };
+	branches.push ( b1 );
+	branch_t b0 = {0, 0, {1,N/2-1,N/2-1} };
+	branches.push ( b0 );
+	double t0=get_time_ms();
+
 	// FIXME: compare number of results with original version of function (n is higher, cc.size() is lower)
 	// FIXME: valgrind
-	
+
 	// FIXME: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
 	// FIXME: make list of active rows for symmetry check
 	long n=0;
 	do {
 
 		branch_t b = branches.top();
-		branches.pop();
-		if (verbose>=2)
-		printf ( "branch: row %d, val %d, nums %d %d %d\n", b.row, b.rval, b.nvals[0], b.nvals[1],b.nvals[2] );
-
+		branches.pop(); // FIXME: use reference and pop later
+		if ( verbose>=2 ) {
+			printf ( "branch: row %d, val %d, nums %d %d %d\n", b.row, b.rval, b.nvals[0], b.nvals[1],b.nvals[2] );
+			for(int x=b.row+1; x<N; x++) 
+				c[x]=-9;
+			c[b.row]=b.rval;
+			printf("   "); print_cperm(c); printf("\n");
+		}
 		c[b.row]=b.rval;
 		if ( b.row==N-1 ) {
 			n++;
 			if ( dfilter.filter ( c ) ) {
-		if (verbose>=2) {
-				printf ( "push candindate: " );
-				print_cperm ( c );
-				printf ( "\n" );
-		}
+				if ( verbose>=2 ) {
+					printf ( "## push candindate: " );
+					print_cperm ( c );
+					printf ( "\n" );
+				}
 				cc.push_back ( c );
 			} else {
-				if (verbose>=2) {
-		printf ( "discard candindate: " );
-				print_cperm ( c );
-				printf ( "\n" );
+				if ( verbose>=2 ) {
+					printf ( "## discard candindate: " );
+					print_cperm ( c );
+					printf ( "\n" );
 				}
 			}
 			continue;
 		}
-		for ( int i=0; i<3; i++ ) {
+		int istart=0;
+		const int iend = 3;
+		if ( sidx[b.row+1] && 1) {
+			if ( c[b.row]==-1 ) {
+				istart=2;
+				
+				if (verbose>=2) {
+			printfd("symmetry: istart %d\n", istart);
+
+			printf("row %d: ", b.row); print_cperm(c); printf("\n");
+				}
+			}
+			if ( c[b.row]==1 && 1) {
+				istart=1;
+			//printfd("symmetry: istart %d\n", istart);			
+			}
+		}
+		for ( int i=istart; i<iend; i++ ) {
 
 			if ( b.nvals[i]==0 )
 				continue;
+
+
 			//c[b.row]= bvals[i];
 			// checks
 			if ( ! ( 1 ) )
@@ -1311,9 +1343,10 @@ std::vector<cperm> generateDoubleConferenceExtensions( const array_link &al, con
 			branches.push ( bnew );
 		}
 
-	} while ( ! branches.empty() ) ;
+	} while ( ! branches.empty() )
+		;
 
-		if ( verbose || 1 ) {
+	if ( verbose || 1 ) {
 		printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
 		//al.show();
 		//al.transposed().showarray(); showCandidates ( cc );
