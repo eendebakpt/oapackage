@@ -219,7 +219,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 			}
 
 			if ( j5max!=mm[jj] ) {
-				printf ( "j5max %d (should be %d)\n", j5max, mm[jj] );
+				printfd ( "j5max %d (should be %d)\n", j5max, mm[jj] );
 				allgood=UERROR;
 				return allgood;
 			}
@@ -408,6 +408,16 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		setloglevel ( QUIET );
 
 		lst = aa[8];
+	}
+
+	{
+		cprintf ( verbose, "%s: test dtable creation\n", bstr );
+		double t0x=get_time_ms();
+
+		for(int i=0; i<4; i++) {
+		array_link al = exampleArray(5);
+				array_link dtable = createJdtable ( al );
+		}
 	}
 
 	{

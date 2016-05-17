@@ -800,6 +800,9 @@ public:
 	array_link operator - ( const array_link & ) const;
 	array_link operator - ( array_t v ) const;
 
+	/// elementwise multiplication
+	array_link operator * ( const array_link &rhs ) const;
+
 	array_link operator * ( array_t val ) const {
 		array_link al(*this);
 		int NN=this->n_rows*this->n_columns;

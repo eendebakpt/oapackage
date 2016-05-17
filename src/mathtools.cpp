@@ -284,9 +284,9 @@ void initncombscache(int N) {
 long ncombscache(int n, int k)
 {
 #ifdef OADEBUG
-	assert(ncombscache!=0)
-	assert(n<=ncombscacheValue() );
-	assert(k<=ncombscacheValue() );
+	assert(ncombsdata!=0);
+	//assert(n<=ncombscacheValue() );
+	//assert(k<=ncombscacheValue() );
 #endif
 	//printf("ncombscache: %d %d\n", n, k);
 	return ncombsdata[n][k];

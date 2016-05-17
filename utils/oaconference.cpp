@@ -186,7 +186,7 @@ int main ( int argc, char* argv[] )
 		if (1) {
 		for(size_t i=0; i<outlist.size(); i++) {
 				if( ! isConferenceFoldover(outlist[i]) )
-					printfd("found an even-odd conference matrix!!!\n");
+					printfd("#### found an even-odd conference matrix!!!\n");
 		}
 		}
 		

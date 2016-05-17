@@ -2712,14 +2712,16 @@ void jstruct_t::calc ( const array_link &al )
 array_link createJ2tableConference ( const array_link &confmatrix )
 {
 	const int nr = confmatrix.n_rows;
-
+const int nc = (confmatrix.n_columns+1)*confmatrix.n_columns/2;
+//const int nc = confmatrix.n_columns*confmatrix.n_columns;
 	// fill double column table
-	array_link dtable ( nr, confmatrix.n_columns*confmatrix.n_columns, -1 );
+	array_link dtable ( nr, nc, -1 );
 
 	// loop over all column pairs
+	int idx=0;
 	for ( int i=0; i<confmatrix.n_columns; i++ ) {
-		for ( int j=0; j<confmatrix.n_columns; j++ ) {
-			int idx=i+j*confmatrix.n_columns;
+		for ( int j=0; j<=i; j++ ) {
+			//int idx=i+j*confmatrix.n_columns;
 			// loop over all rows of original array
 			const array_t *p1 = confmatrix.array+confmatrix.n_rows*i;
 			const array_t *p2 = confmatrix.array+confmatrix.n_rows*j;
@@ -2727,7 +2729,7 @@ array_link createJ2tableConference ( const array_link &confmatrix )
 			for ( int x=0; x<nr; x++ ) {
 				pout[x] = p1[x] * p2[x];
 			}
-
+idx++;
 		}
 	}
 
@@ -2738,16 +2740,18 @@ array_link createJ2tableConference ( const array_link &confmatrix )
 array_link createJdtable ( const array_link &al )
 {
 	const int nr = al.n_rows;
-//cons int nc = al.n_columns*al.n_columns;
-const int nc = (al.n_columns+1)*al.n_columns/2;
+const int nc = al.n_columns*al.n_columns;
+//const int nc = (al.n_columns+1)*al.n_columns/2;
 
 	// fill double column table
 	array_link dtable ( nr, nc, -1 );
 
 	// loop over all column pairs
+	int idx=0;
 	for ( int i=0; i<al.n_columns; i++ ) {
-		for ( int j=0; j<=i; j++ ) {
-			int idx=i+j*al.n_columns;
+		for ( int j=0; j<al.n_columns; j++ ) {
+			//printfd("dtable: size %d: idx %d\n", nc, idx);
+			//int idx=i+j*al.n_columns;
 			// loop over all rows of original array
 			const array_t *p1 = al.array+al.n_rows*i;
 			const array_t *p2 = al.array+al.n_rows*j;
@@ -2757,7 +2761,7 @@ const int nc = (al.n_columns+1)*al.n_columns/2;
 				pout[x] = p1[x] ^ p2[x];
 				//dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
 			}
-
+idx++;
 		}
 	}
 
@@ -4788,6 +4792,15 @@ array_link array_link::operator- ( const array_link &b ) const
 	array_link tmp = ( *this );
 	for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
 		tmp.array[i] -= b.array[i];
+	return tmp;
+}
+
+array_link array_link::operator* ( const array_link &rhs ) const
+{
+	assert ( this->equalsize ( rhs ) );
+	array_link tmp = ( *this );
+	for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+		tmp.array[i] *= rhs.array[i];
 	return tmp;
 }
 

@@ -1,1 +1,1 @@
-const char *__version__ = "2.2.6";
+const char *__version__ = "2.2.7";
