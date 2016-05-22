@@ -192,15 +192,82 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
-	
-	{
-		arraylist_t ll = readarrayfile("/home/eendebakpt/oatmp/conf/dconferencej1j3-12-6.oa");
+
+	if ( 0 ) {
+
+
+		arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-12-6.oa" );
 		array_link al = ll[0];
-		
+		int N = al.n_rows;
+
 		al.showproperties();
-		
-	exit(0);	
+
+		exit ( 0 );
 	}
+
+	{
+		int filterip=1;
+		int filtersymm=1;
+		int filterj3 = 1;
+		array_link al = exampleArray ( 21, 1 );
+		
+		int kstart=3;
+		array_link als = al.selectFirstColumns ( kstart );
+
+		al.show();
+		als.show();
+
+		al.showarray();
+
+		int N = al.n_rows;
+
+		conference_t				ct = conference_t ( N, N );
+		ct.j1zero=1;
+		ct.j3zero=1;
+		ct.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
+		ct.ctype=conference_t::DCONFERENCE;
+
+
+		DconferenceFilter dfilter ( al, filtersymm, filterip );
+		printf ( "## %d column candidates:\n", kstart );
+		std::vector<cperm> cc2 = generateDoubleConferenceExtensions ( als, ct, verbose, filtersymm, filterip, filterj3 );
+
+		printf ( "## inflate:\n" );
+
+		std::vector<cperm> cc;
+		std::vector<cperm> cci;
+		for ( size_t i=0; i<cc2.size(); i++ ) {
+			cperm basecandidate = cc2[i];
+
+			DconferenceFilter filter ( als, 1, 1 );
+			filter.filterj3=1;
+
+			cc=  inflateCandidateExtension ( basecandidate, al, ct, verbose, filter );
+
+			printf("inflate: array %d: generated %ld\n", (int)i, (long)cc.size() );
+			cci.insert ( cci.begin(), cc.begin(), cc.end() );
+		}
+printf("total inflated: %ld\n", cci.size() );
+
+		//exit(0);
+		//printf ( "no symm:\n" );
+		//cc = generateDoubleConferenceExtensions ( als, ct, verbose, 0, filterip, filterj3, 0 );
+
+		printf ( "## full array (with symm):\n" );
+
+		std::vector<cperm> cc3 = generateDoubleConferenceExtensions ( al, ct, verbose, 0, filterip, filterj3, 1 );
+
+		printf ( "## full array (no symm):\n" );
+
+		cc3 = generateDoubleConferenceExtensions ( al, ct, verbose, 0, filterip, filterj3, 0 );
+
+
+		//	printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
+		exit ( 0 );
+	}
+
+
+
 	{
 
 
@@ -229,7 +296,7 @@ int main ( int argc, char* argv[] )
 		jc.show();
 		exit ( 0 );
 
-		
+
 		int jj=0;
 		if ( xx ) {
 			Pareto<mvalue_t<long>,array_link> pset;

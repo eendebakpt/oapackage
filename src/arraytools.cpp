@@ -879,6 +879,7 @@ array_link exampleArray ( int idx, int verbose )
 	default
 			:
 		myprintf ( "exampleArray: no such index %d", idx );
+		return array_link();
 	case 0: {
 		dstr ="array in OA(8,2, 2^2)";
 		if ( verbose )
@@ -1322,11 +1323,44 @@ array_link exampleArray ( int idx, int verbose )
 		break;
 	}
 
+	case 20: {
+		dstr="first LMC-0 double conference matrix in DC(24,3)";
+		if ( verbose )
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+		//
+		array_link al ( 24,3, 0 );
+		int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1,
+       -1, -1, -1, -1, -1, -1, -1,  1, -1,  0,  1,  1,  1,  1,  1, -1, -1,
+       -1, -1, -1,  0,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1,  1, -1, -1,
+        0,  1,  1, -1, -1,  1,  1,  1, -1, -1,  1,  1,  1, -1, -1, -1,  0,
+        1,  1, -1, -1};
+
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		//al=al.transposed();
+		return al;
+		break;
+	}
+
+		case 21: {
+		dstr="second LMC-0 double conference matrix in DC(16,4)";
+		if ( verbose )
+			myprintf ( "exampleArray: %s\n", dstr.c_str() );
+		//
+		array_link al ( 16, 4, 0 );
+		int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1,  1,
+       -1,  0,  1,  1,  1, -1, -1, -1,  0,  1,  1,  1, -1, -1, -1,  1, -1,
+       -1,  0,  1, -1,  1,  1, -1,  1,  1, -1, -1,  0,  1, -1,  1, -1,  1,
+       -1,  1, -1,  0, -1,  1, -1, -1,  0,  1,  1,  1, -1
+};
+
+		al.setarraydata ( tmp, al.n_rows*al.n_columns );
+		//al=al.transposed();
+		return al;
+		break;
+	}
 
 
-
-
-
+	
 	} // end of switch
 
 	return array_link ( 1,1,-1 );

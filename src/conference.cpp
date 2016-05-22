@@ -717,8 +717,8 @@ int innerprod ( const cperm &a, const cperm &b )
 	return ip;
 }
 
-/// helper function
-int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2 )
+/// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
 {
 	const int verbose=0;
 
@@ -766,7 +766,7 @@ cperm getColumn ( const array_link &al, int c )
 }
 
 // return true if the extension column satisfies the inner product check
-int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 )
+int ipcheck ( const cperm &col, const array_link &al, int cstart, int verbose )
 {
 	for ( int c=cstart; c<al.n_columns; c++ ) {
 		if ( innerprod ( col, al, c ) !=0 ) {
@@ -905,135 +905,6 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 }
 
 
-class DconferenceFilter
-{
-public:
-	array_link als;
-	int filtersymm;
-	int filterj2;
-	int filterj3;
-	int filterfirst;
-	array_link dtable; /// table of J2 vectors for J3 filter
-	array_link inline_dtable; /// table of J2 vectors for inline J3 filter
-	int inline_row;
-	
-	symmdata sd;
-	long ngood;
-	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterip ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterip ), filterfirst ( 0 ), sd ( als ), ngood ( 0 ) {
-		//sd = symmdata( als );
-
-		dtable = createJ2tableConference ( als );
-
-		if (als.n_columns>=2) {
-		inline_dtable = als.selectColumns(0)-als.selectColumns(1); // createJ2tableConference ( als.selectFirstColumns(2) );
-		inline_dtable = hstack(inline_dtable, als.selectColumns(0)+1);
-		inline_dtable = hstack(inline_dtable, als.selectColumns(0)*als.selectColumns(0)-1);
-		inline_dtable = hstack(inline_dtable, als.selectColumns(1)*als.selectColumns(1)-1);
-		
-		//inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
-		//inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
-	
-		inline_row = als.n_rows;
-		int br=0;
-		for(int i=als.n_rows-1; i>=0; i--) {
-			for (int c=0; c<als.n_columns; c++) {
-			if (inline_dtable.at(i,0)!=0) {
-					br=1; break;
-			}
-			}
-			if (br) {
-				break;
-			}
-				inline_row=i;
-		}
-		//inline_dtable.showarray();
-		printfd("  inline J3 check: inline_row %d\n", inline_row);
-		} else {
-		inline_row=-1;	
-		}
-	}
-
-	/// return True of the extension satisfies all checks
-	bool filter ( const cperm &c ) {
-		if ( filterfirst ) {
-			if ( c[0]<0 ) {
-				return false;
-			}
-		}
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( c, sd, 0 ) ) {
-				return false;
-			}
-		}
-		if ( filterj2 ) {
-			// perform inner product check for all columns
-			if ( ! ipcheck ( c, als, 0 ) ) {
-				return false;
-			}
-		}
-		if ( filterj3 ) {
-			// perform inner product check for all columns
-			if ( ! this->filterJ3 ( c ) ) {
-				return false;
-			}
-		}
-		ngood++;
-		return true;
-	}
-
-	/// return True of the candidate satisfies the J3 check
-	bool filterJ3 ( const cperm &c ) const {
-		const int nc = dtable.n_columns;
-		const int N = als.n_rows;
-		int jv=0;
-		for ( int idx1=0; idx1<nc; idx1++ ) {
-			jv=0;
-
-			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
-			for ( int xr=0; xr<N; xr++ ) {
-
-				jv += ( o1[xr] ) * ( c[xr] );
-			}
-
-			if ( jv!=0 )
-				return false;
-		}
-		return true;
-	}
-
-		/// return True of the candidate satisfies the J3 check
-	bool filterJ3inline ( const cperm &c ) const {
-		const int nc = inline_dtable.n_columns;
-		const int N = als.n_rows;
-		int jv=0;
-		for ( int idx1=0; idx1<nc; idx1++ ) {
-			jv=0;
-
-			const array_t *o1 = inline_dtable.array+inline_dtable.n_rows*idx1;
-			for ( int xr=0; xr<N; xr++ ) {
-
-				jv += ( o1[xr] ) * ( c[xr] );
-			}
-
-			if ( jv!=0 )
-				return false;
-		}
-		return true;
-	}
-
-
-	/// return True of the candidate satisfies the symmetry check
-	bool filterSymmetry ( const cperm &c ) const {
-		return  satisfy_symm ( c, sd, 0 );
-	}
-	/// return True of the candidate extension satisfies the J2 check
-	bool filterJ2 ( const cperm &c ) const {
-		return ipcheck ( c, als, 0 );
-	}
-
-private:
-
-};
 
 /** filter conferece matrix extension candidates
  *
@@ -1290,18 +1161,91 @@ public:
 	}
 };
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterJ3 )
+
+void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
+{
+	const symmdata &sd = filter.sd;
+
+	int lastcol = al.n_columns-1;
+	symmetry_group sg = al.row_symmetry_group(); //(sd.rowvalue.selectColumns(lastcol));
+	// TODO: only groups with size>1
+	int nblocks = sg.ngroups;
+
+
+	if ( block==nblocks ) {
+		// TODO: make this loop in n-1 case?
+
+		ntotal++;
+		if ( filter.filter ( candidate ) ) {
+			list.push_back ( candidate );
+		}
+		return;
+	}
+	
+	
+
+	
+
+	printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
+	int gstart = sg.gstart[block];
+	int gend = sg.gstart[block+1];
+	const int blocksize = sg.gsize[block];
+
+		if (block<=4) {
+	printfd("row: %d to %d\n", gstart, gend);	
+	cperm tmp( candidate.begin() +gstart, candidate.begin() +gend );
+	printf("   current perm: "); print_cperm(tmp); printf("\n");
+	}
+
+	unsigned long iter=0;
+	do {
+		if (block<=4 && blocksize>1) {
+			printf("  iter %ld\n", iter);
+		}
+		//cout << s1 << endl;
+		iter++;
+		inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, ct, verbose, filter,ntotal );
+		// TODO: run inline filter
+		// TODO: smart symmetry generation
+	} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
+
+
+}
+
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &al, const conference_t & ct, int verbose , const DconferenceFilter &filter )
+{
+	long ntotal=0;
+	symmetry_group sg = al.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
+	printf ( "inflateCandidateExtension: symmetry group\n" );
+	sg.show();
+
+	cperm candidate = basecandidate;
+	int block=0;
+	std::vector<cperm> cc;
+	inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, al, ct, verbose, filter, ntotal );
+
+	if (verbose) {
+		printfd("generated %ld/%ld candidates \n", (long)cc.size(), ntotal );
+	}
+	return cc;
+}
+
+
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline )
 {
 	//verbose=2;
-	filtersymm=0;
-	const int filtersymminline = 1;
-	
+	//FIXME filtersymm=0;
+
+	printf ( "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n", filtersymm, filtersymminline, filterj2, filterj3 );
+
 	const int N = al.n_rows;
 	DconferenceFilter dfilter ( al, filtersymm, filterj2 );
 
 	std::vector<int> sidx = dfilter.sd.checkIdx();
-	if (verbose>=2) {
-printfd("sidx: "); print_perm(sidx); printf("\n");
+	if ( verbose>=2 ) {
+		printfd ( "sidx: " );
+		print_perm ( sidx );
+		printf ( "\n" );
 	}
 	std::vector<cperm> cc;
 	cperm c ( al.n_rows );
@@ -1310,7 +1254,7 @@ printfd("sidx: "); print_perm(sidx); printf("\n");
 	lightstack_t<branch_t> branches ( 3*N );
 
 	c[0]=1;
-	
+
 	// push initial branches
 	branch_t b1 = {0, 1, {2,N/2-2,N/2-1} };
 	branches.push ( b1 );
@@ -1319,8 +1263,8 @@ printfd("sidx: "); print_perm(sidx); printf("\n");
 	double t0=get_time_ms();
 
 #ifdef OADEBUG
-	std::vector<long> nb(N+1);
-#endif	
+	std::vector<long> nb ( N+1 );
+#endif
 
 	// FIXME: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
 	long n=0;
@@ -1333,17 +1277,19 @@ printfd("sidx: "); print_perm(sidx); printf("\n");
 		branches.pop(); // FIXME: use reference and pop later
 		if ( verbose>=2 ) {
 			printf ( "branch: row %d, val %d, nums %d %d %d\n", b.row, b.rval, b.nvals[0], b.nvals[1],b.nvals[2] );
-			for(int x=b.row+1; x<N; x++) 
+			for ( int x=b.row+1; x<N; x++ )
 				c[x]=-9;
 			c[b.row]=b.rval;
-			printf("   "); print_cperm(c); printf("\n");
+			printf ( "   " );
+			print_cperm ( c );
+			printf ( "\n" );
 		}
 		c[b.row]=b.rval;
-		
-		if (b.row==dfilter.inline_row) {
+
+		if ( b.row==dfilter.inline_row && filterj3 ) {
 			// FIXME: inline_row can be one earlier?
-				if (! dfilter.filterJ3inline(c) )
-					continue;
+			if ( ! dfilter.filterJ3inline ( c ) )
+				continue;
 		}
 		if ( b.row==N-1 ) {
 			n++;
@@ -1368,16 +1314,18 @@ printfd("sidx: "); print_perm(sidx); printf("\n");
 		if ( sidx[b.row+1] && filtersymminline ) {
 			if ( c[b.row]==-1 ) {
 				istart=2;
-				
-				if (verbose>=2) {
-			printfd("symmetry: istart %d\n", istart);
 
-			printf("row %d: ", b.row); print_cperm(c); printf("\n");
+				if ( verbose>=2 ) {
+					printfd ( "symmetry: istart %d\n", istart );
+
+					printf ( "row %d: ", b.row );
+					print_cperm ( c );
+					printf ( "\n" );
 				}
 			}
-			if ( c[b.row]==1 && 1) {
+			if ( c[b.row]==1 && 1 ) {
 				istart=1;
-			//printfd("symmetry: istart %d\n", istart);			
+				//printfd("symmetry: istart %d\n", istart);
 			}
 		}
 		for ( int i=istart; i<iend; i++ ) {
@@ -1406,13 +1354,13 @@ printfd("sidx: "); print_perm(sidx); printf("\n");
 		;
 
 #ifdef OADEBUG
-		if (1) {
-		printf("branch count:\n");
-		for(int i=0; i<=N; i++) {
-		printf("  %d: %ld\n", i, nb[i]);	
+	if ( 1 ) {
+		printf ( "branch count:\n" );
+		for ( int i=0; i<=N; i++ ) {
+			printf ( "  %d: %ld\n", i, nb[i] );
 		}
-		}
-#endif		
+	}
+#endif
 	if ( verbose || 1 ) {
 		printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
 		//al.show();

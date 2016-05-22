@@ -215,7 +215,8 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0 );
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0, int filtersymminline = 1 );
+
 
 /** return max position of zero in array, returns -1 if no zero is found
  *
@@ -234,5 +235,151 @@ arraylist_t sortLMC0 ( const arraylist_t &lst );
 
 /// return true if the design is a foldover array
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
+
+
+/// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2 );
+
+// return true if the extension column satisfies the inner product check
+int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
+
+/// class to filter designs
+class DconferenceFilter
+{
+public:
+	array_link als;
+	int filtersymm;
+	int filterj2;
+	int filterj3;
+	int filterfirst;
+	
+	mutable long ngood;
+private:
+	array_link dtable; /// table of J2 vectors for J3 filter
+	array_link inline_dtable; /// table of J2 vectors for inline J3 filter
+	
+public:
+	int inline_row;	
+	symmdata sd;
+	
+public:
+	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterip ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterip ), filterj3(1), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
+		//sd = symmdata( als );
+
+		dtable = createJ2tableConference ( als );
+
+		if (als.n_columns>=2) {
+		inline_dtable = als.selectColumns(0)-als.selectColumns(1); // createJ2tableConference ( als.selectFirstColumns(2) );
+		inline_dtable = hstack(inline_dtable, als.selectColumns(0)+1);
+		inline_dtable = hstack(inline_dtable, als.selectColumns(0)*als.selectColumns(0)-1);
+		inline_dtable = hstack(inline_dtable, als.selectColumns(1)*als.selectColumns(1)-1);
+		
+		//inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
+		//inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
+	
+		inline_row = als.n_rows;
+		int br=0;
+		for(int i=als.n_rows-1; i>=0; i--) {
+			for (int c=0; c<als.n_columns; c++) {
+			if (inline_dtable.at(i,0)!=0) {
+					br=1; break;
+			}
+			}
+			if (br) {
+				break;
+			}
+				inline_row=i;
+		}
+		//inline_dtable.showarray();
+		printfd("  inline J3 check: inline_row %d\n", inline_row);
+		} else {
+		inline_row=-1;	
+		}
+	}
+
+	/// return True of the extension satisfies all checks
+	bool filter ( const cperm &c ) const {
+		if ( filterfirst ) {
+			if ( c[0]<0 ) {
+				return false;
+			}
+		}
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( c, sd, 0 ) ) {
+				return false;
+			}
+		}
+		if ( filterj2 ) {
+			// perform inner product check for all columns
+			if ( ! ipcheck ( c, als, 0 ) ) {
+				return false;
+			}
+		}
+		if ( filterj3 ) {
+			// perform inner product check for all columns
+			if ( ! this->filterJ3 ( c ) ) {
+				return false;
+			}
+		}
+		ngood++;
+		return true;
+	}
+
+	/// return True of the candidate satisfies the J3 check
+	bool filterJ3 ( const cperm &c ) const {
+		const int nc = dtable.n_columns;
+		const int N = als.n_rows;
+		int jv=0;
+		for ( int idx1=0; idx1<nc; idx1++ ) {
+			jv=0;
+
+			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+			for ( int xr=0; xr<N; xr++ ) {
+
+				jv += ( o1[xr] ) * ( c[xr] );
+			}
+
+			if ( jv!=0 )
+				return false;
+		}
+		return true;
+	}
+
+		/// return True of the candidate satisfies the J3 check
+	bool filterJ3inline ( const cperm &c ) const {
+		const int nc = inline_dtable.n_columns;
+		const int N = als.n_rows;
+		int jv=0;
+		for ( int idx1=0; idx1<nc; idx1++ ) {
+			jv=0;
+
+			const array_t *o1 = inline_dtable.array+inline_dtable.n_rows*idx1;
+			for ( int xr=0; xr<N; xr++ ) {
+
+				jv += ( o1[xr] ) * ( c[xr] );
+			}
+
+			if ( jv!=0 )
+				return false;
+		}
+		return true;
+	}
+
+
+	/// return True of the candidate satisfies the symmetry check
+	bool filterSymmetry ( const cperm &c ) const {
+		return  satisfy_symm ( c, sd, 0 );
+	}
+	/// return True of the candidate extension satisfies the J2 check
+	bool filterJ2 ( const cperm &c ) const {
+		return ipcheck ( c, als, 0 );
+	}
+
+private:
+
+};
+
+// inflate candindate column: FIXME: documentation
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &al, const conference_t & ct, int verbose , const DconferenceFilter &filter );
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

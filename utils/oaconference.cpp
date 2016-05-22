@@ -111,37 +111,37 @@ int main ( int argc, char* argv[] )
 	int kstart=-1;
 	conference_t ctype ( N, N );
 
-	arraylist_t kk;
+	arraylist_t inputarrays;
 	if ( input.length() >1 ) {
-		kk = readarrayfile ( input.c_str() )	 ;
+		inputarrays = readarrayfile ( input.c_str() )	 ;
 		//al=kk[0];
 
-		if ( kk.size() >0 ) {
+		if ( inputarrays.size() >0 ) {
 			ctype = conference_t ( N, kstart );
 		}
 	ctype.ctype=ctx;
 	ctype.itype=itype;
 	ctype.j3zero=j3zero;
 	ctype.j1zero=j1zero;
-		kstart=kk[0].n_columns;
-		kmax=kk[0].n_columns+1;
+		kstart=inputarrays[0].n_columns;
+		kmax=inputarrays[0].n_columns+1;
 	} else {
 	ctype.ctype=ctx;
 	ctype.itype=itype;
 	ctype.j3zero=j3zero;
 	ctype.j1zero=j1zero;
 
-		ctype.addRootArrays ( kk );
-		kstart=kk[0].n_columns;
+		ctype.addRootArrays ( inputarrays );
+		kstart=inputarrays[0].n_columns;
 	}
 
 	if ( verbose ) {
-		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) kk.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );
+		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) inputarrays.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );
 		printf ( "oaconference: ctype %d (DCONFERENCE %d, CONFERENCE_NORMAL %d) )\n", ctype.ctype, conference_t::DCONFERENCE, conference_t::CONFERENCE_NORMAL );
 	}
 	if ( verbose>=3 ) {
 		printf ( "--- initial set of arrays ---\n" );
-		showArrayList ( kk );
+		showArrayList ( inputarrays );
 	}
 
 	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
@@ -152,7 +152,7 @@ int main ( int argc, char* argv[] )
 		switch ( ctype.ctype ) {
 		case conference_t::DCONFERENCE:
 		{
-			outlist = extend_double_conference ( kk, ctype,  verbose );
+			outlist = extend_double_conference ( inputarrays, ctype,  verbose );
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 			break;
 		}
@@ -160,11 +160,11 @@ int main ( int argc, char* argv[] )
 		case conference_t::CONFERENCE_DIAGONAL:
 			switch ( ctype.itype ) {
 			case CONFERENCE_RESTRICTED_ISOMORPHISM:
-				outlist = extend_conference_restricted ( kk, ctype,  verbose );
+				outlist = extend_conference_restricted ( inputarrays, ctype,  verbose );
 				break;
 
 			case CONFERENCE_ISOMORPHISM:
-				outlist = extend_conference ( kk, ctype,  verbose );
+				outlist = extend_conference ( inputarrays, ctype,  verbose );
 				break;
 			default
 					:
@@ -203,7 +203,7 @@ int main ( int argc, char* argv[] )
 		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, ( int ) outlist.size() );
 
 		// loop
-		kk=outlist;
+		inputarrays=outlist;
 	}
 	printf ( "done...\n" );
 
