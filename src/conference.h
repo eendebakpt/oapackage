@@ -19,6 +19,13 @@
 //#include "extend.h"
 
 
+inline void print_cperm ( const cperm &c )
+{
+	for ( size_t i=0; i<c.size(); i++ ) {
+		printf ( "%3d", c[i] );
+	}
+}
+
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
 public:
@@ -322,6 +329,39 @@ public:
 			}
 		}
 		ngood++;
+		return true;
+	}
+	/// return True of the extension satisfies all checks
+	bool filterReason ( const cperm &c ) const {
+		if ( filterfirst ) {
+			if ( c[0]<0 ) {
+				printf("filterfirst\n");
+				return false;
+			}
+		}
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( c, sd, 0 ) ) {
+				printf("symmetry\n");
+				return false;
+			}
+		}
+		if ( filterj2 ) {
+			// perform inner product check for all columns
+			if ( ! ipcheck ( c, als, 0 ) ) {
+				printf("j2\n");
+				return false;
+			}
+		}
+		if ( filterj3 ) {
+			// perform inner product check for all columns
+			if ( ! this->filterJ3 ( c ) ) {
+				printf("j3\n");
+				return false;
+			}
+		}
+		ngood++;
+		printf("filter check good\n");
+
 		return true;
 	}
 

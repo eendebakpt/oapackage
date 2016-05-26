@@ -778,12 +778,12 @@ std::ostream &operator<< ( std::ostream & stream, const array_link &A )
 
 #endif // FULLPACKAGE
 
-array_link array_link::selectFirstColumns ( int ii ) const
+array_link array_link::selectFirstColumns ( int ncols ) const
 {
-	mycheck ( ii>=0, "array_link::selectFirstColumn: ii<0\n" );
-	mycheck ( ii<=this->n_columns, "array_link::selectFirstColumn: ii too large\n" );
-	array_link d ( this->n_rows, ii, -1 );
-	for ( int i=0; i<ii; i++ )
+	mycheck ( ncols>=0, "array_link::selectFirstColumn: ii<0\n" );
+	mycheck ( ncols<=this->n_columns, "array_link::selectFirstColumn: ncols too large\n" );
+	array_link d ( this->n_rows, ncols, -1 );
+	for ( int i=0; i<ncols; i++ )
 		std::copy ( this->array+i*this->n_rows, this->array+ ( i+1 ) *this->n_rows, d.array+i*this->n_rows );
 	return d;
 }

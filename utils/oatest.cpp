@@ -159,6 +159,7 @@ int main ( int argc, char* argv[] )
 	opt.processCommandArgs ( argc, argv );
 
 
+	double t0=get_time_ms(), dt=0;
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	int ix = opt.getIntValue ( 'i', 11 );
 	int r = opt.getIntValue ( 'r', 0 );
@@ -209,15 +210,17 @@ int main ( int argc, char* argv[] )
 		int filterip=1;
 		int filtersymm=1;
 		int filterj3 = 1;
-		array_link al = exampleArray ( 21, 1 );
-		
-		int kstart=3;
+		array_link al = exampleArray ( 20, 1 );
+		al.show();
+		al=al.selectFirstColumns(3);		int kstart=2;
+		//al=al.selectFirstColumns(4);		int kstart=3;
 		array_link als = al.selectFirstColumns ( kstart );
 
-		al.show();
-		als.show();
+		//als.show();
 
+		printf("find extensions of:\n");
 		al.showarray();
+		al.row_symmetry_group().show();
 
 		int N = al.n_rows;
 
@@ -230,36 +233,45 @@ int main ( int argc, char* argv[] )
 
 		DconferenceFilter dfilter ( al, filtersymm, filterip );
 		printf ( "## %d column candidates:\n", kstart );
-		std::vector<cperm> cc2 = generateDoubleConferenceExtensions ( als, ct, verbose, filtersymm, filterip, filterj3 );
+		std::vector<cperm> ccX = generateDoubleConferenceExtensions ( als, ct, verbose, filtersymm, filterip, filterj3 );
 
-		printf ( "## inflate:\n" );
+		printf ( "## inflate:\n" ); t0=get_time_ms();
 
 		std::vector<cperm> cc;
 		std::vector<cperm> cci;
-		for ( size_t i=0; i<cc2.size(); i++ ) {
-			cperm basecandidate = cc2[i];
-
-			DconferenceFilter filter ( als, 1, 1 );
+		// loop over all candidinates with k columns and inflate to (k+1)-column candidates
+		for ( size_t i=0; i<ccX.size(); i++ ) {
+			cperm basecandidate = ccX[i];
+			DconferenceFilter filter ( al, 1, 1 );
 			filter.filterj3=1;
 
-			cc=  inflateCandidateExtension ( basecandidate, al, ct, verbose, filter );
+			printf("### inflate candidate:");
+			printf(" "); print_cperm( basecandidate); printf("\n");
+			cc=  inflateCandidateExtension ( basecandidate, als, ct, verbose, filter );
 
-			printf("inflate: array %d: generated %ld\n", (int)i, (long)cc.size() );
+			printf("inflate: array %d/%d: generated %ld candidates\n", (int)i, (int)ccX.size(), (long)cc.size() );
 			cci.insert ( cci.begin(), cc.begin(), cc.end() );
 		}
-printf("total inflated: %ld\n", cci.size() );
+printf("generated: total inflated: %ld\n", cci.size() );
+		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
 
 		//exit(0);
 		//printf ( "no symm:\n" );
 		//cc = generateDoubleConferenceExtensions ( als, ct, verbose, 0, filterip, filterj3, 0 );
 
+		exit(0);
 		printf ( "## full array (with symm):\n" );
 
+		t0=get_time_ms();
 		std::vector<cperm> cc3 = generateDoubleConferenceExtensions ( al, ct, verbose, 0, filterip, filterj3, 1 );
-
-		printf ( "## full array (no symm):\n" );
-
+		for(size_t i=0; i<cc3.size();i++) {
+		printf("  %d: ", (int)i); print_cperm(cc3[i]); printf("\n");	
+		}
+		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
+		
+		printf ( "## full array (no symm):\n" ); t0=get_time_ms();
 		cc3 = generateDoubleConferenceExtensions ( al, ct, verbose, 0, filterip, filterj3, 0 );
+		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
 
 
 		//	printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
