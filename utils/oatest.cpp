@@ -162,7 +162,7 @@ int main ( int argc, char* argv[] )
 	double t0=get_time_ms(), dt=0;
 	int randvalseed = opt.getIntValue ( 'r', 1 );
 	int ix = opt.getIntValue ( 'i', 11 );
-	int r = opt.getIntValue ( 'r', 0 );
+	int r = opt.getIntValue ( 'r', 20 );
 	int jj = opt.getIntValue ( "jj", 5 );
 
 	int xx = opt.getIntValue ( 'x', 0 );
@@ -210,9 +210,10 @@ int main ( int argc, char* argv[] )
 		int filterip=1;
 		int filtersymm=1;
 		int filterj3 = 1;
-		array_link al = exampleArray ( 20, 1 );
+		array_link al = exampleArray ( r, 1 );
 		al.show();
-		al=al.selectFirstColumns(3);		int kstart=2;
+		
+		al=al.selectFirstColumns(xx);		int kstart=xx-1;
 		//al=al.selectFirstColumns(4);		int kstart=3;
 		array_link als = al.selectFirstColumns ( kstart );
 
@@ -232,8 +233,9 @@ int main ( int argc, char* argv[] )
 
 
 		DconferenceFilter dfilter ( al, filtersymm, filterip );
-		printf ( "## %d column candidates:\n", kstart );
+		printf ( "## %d column candidates:\n", kstart ); t0=get_time_ms();
 		std::vector<cperm> ccX = generateDoubleConferenceExtensions ( als, ct, verbose, filtersymm, filterip, filterj3 );
+		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
 
 		printf ( "## inflate:\n" ); t0=get_time_ms();
 
@@ -247,7 +249,8 @@ int main ( int argc, char* argv[] )
 
 			printf("### inflate candidate:");
 			printf(" "); print_cperm( basecandidate); printf("\n");
-			cc=  inflateCandidateExtension ( basecandidate, als, ct, verbose, filter );
+			//for(int ij=0; ij<100; ij++)
+				cc=  inflateCandidateExtension ( basecandidate, als, ct, verbose, filter );
 
 			printf("inflate: array %d/%d: generated %ld candidates\n", (int)i, (int)ccX.size(), (long)cc.size() );
 			cci.insert ( cci.begin(), cc.begin(), cc.end() );
@@ -255,7 +258,6 @@ int main ( int argc, char* argv[] )
 printf("generated: total inflated: %ld\n", cci.size() );
 		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
 
-		//exit(0);
 		//printf ( "no symm:\n" );
 		//cc = generateDoubleConferenceExtensions ( als, ct, verbose, 0, filterip, filterj3, 0 );
 
@@ -268,6 +270,7 @@ printf("generated: total inflated: %ld\n", cci.size() );
 		printf("  %d: ", (int)i); print_cperm(cc3[i]); printf("\n");	
 		}
 		printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
+		exit(0);
 		
 		printf ( "## full array (no symm):\n" ); t0=get_time_ms();
 		cc3 = generateDoubleConferenceExtensions ( al, ct, verbose, 0, filterip, filterj3, 0 );

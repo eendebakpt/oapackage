@@ -19,6 +19,7 @@
 
 #include "graphtools.h"
 
+#include "lmc.h" 
 #include "conference.h"
 
 /*
@@ -718,6 +719,24 @@ int innerprod ( const cperm &a, const cperm &b )
 }
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart)
+{
+	//return true; // hack
+//	int k = sd.rowvalue.n_columns-1;
+
+	for ( size_t i=rowstart; i<c.size()-1; i++ ) {
+		if ( check_indices[i+1] ) {
+			if ( ( ( unsigned char ) c[i] ) > ( ( unsigned char ) c[i+1] ) ) {
+				// discard
+				return false;
+			}
+		}
+	}
+	// accept
+	return true;
+}
+
+/// helper function, return true if a candidate extensions satisfies the symmetry test
 int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
 {
 	const int verbose=0;
@@ -1163,7 +1182,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 
 	int lastcol = al.n_columns-1;
 	//symmetry_group alsg = al.row_symmetry_group(); //(sd.rowvalue.selectColumns(lastcol));
-	// TODO: only groups with size>1
+	// TODO: inline symmetry checks
 	int nblocks = alsg.ngroups;
 
 

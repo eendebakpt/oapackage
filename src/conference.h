@@ -15,6 +15,7 @@
 
 #include "arraytools.h"
 #include "graphtools.h"
+#include "lmc.h"
 #include "arrayproperties.h"
 //#include "extend.h"
 
@@ -247,6 +248,9 @@ bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
 /// helper function, return true if a candidate extensions satisfies the symmetry test
 int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2 );
 
+/// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart=2 );
+
 // return true if the extension column satisfies the inner product check
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
 
@@ -265,6 +269,8 @@ private:
 	array_link dtable; /// table of J2 vectors for J3 filter
 	array_link inline_dtable; /// table of J2 vectors for inline J3 filter
 	
+	/// indices to check for symmetry check
+	std::vector<int> check_indices;
 public:
 	int inline_row;	
 	symmdata sd;
@@ -273,6 +279,8 @@ public:
 	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterip ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterip ), filterj3(1), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 
+		check_indices = sd.checkIdx();
+		
 		dtable = createJ2tableConference ( als );
 
 		if (als.n_columns>=2) {
@@ -312,7 +320,7 @@ public:
 			}
 		}
 		if ( filtersymm ) {
-			if ( ! satisfy_symm ( c, sd, 0 ) ) {
+			if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
 				return false;
 			}
 		}
@@ -408,7 +416,7 @@ public:
 
 	/// return True of the candidate satisfies the symmetry check
 	bool filterSymmetry ( const cperm &c ) const {
-		return  satisfy_symm ( c, sd, 0 );
+		return  satisfy_symm ( c, check_indices, 0 );
 	}
 	/// return True of the candidate extension satisfies the J2 check
 	bool filterJ2 ( const cperm &c ) const {
