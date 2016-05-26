@@ -172,13 +172,12 @@
 			if (verbose)
 				printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns\n", kx ); 
 			
-
-
-			
 			cci = doubleConferenceInflate(ccX, als, filter, ct, verbose);
 
 			printf("## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld\n", kstart, cci.size() );
 				printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t00 ));	
+				
+				ccX=cci;
 			}
 			
 				return cci;
@@ -287,35 +286,7 @@
 
 				std::vector<cperm> cci = generateDoubleConferenceExtensionsInflate (al, ct, verbose, 1, 1);
 
-	/*			
-				if (0) {
-				DconferenceFilter dfilter ( al, filtersymm, filterip );
-				printf ( "## %d column candidates:\n", kstart ); t0=get_time_ms();
-				std::vector<cperm> ccX = generateDoubleConferenceExtensions ( als, ct, verbose, filtersymm, filterip, filterj3 );
-				printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
 
-				printf ( "## inflate:\n" ); t0=get_time_ms();
-
-				std::vector<cperm> cc;
-				std::vector<cperm> cci;
-				// loop over all candidinates with k columns and inflate to (k+1)-column candidates
-				for ( size_t i=0; i<ccX.size(); i++ ) {
-					cperm basecandidate = ccX[i];
-					DconferenceFilter filter ( al, 1, 1 );
-					filter.filterj3=1;
-
-					printf("### inflate candidate:");
-					printf(" "); print_cperm( basecandidate); printf("\n");
-					//for(int ij=0; ij<100; ij++)
-						cc=  inflateCandidateExtension ( basecandidate, als, ct, verbose, filter );
-
-					printf("inflate: array %d/%d: generated %ld candidates\n", (int)i, (int)ccX.size(), (long)cc.size() );
-					cci.insert ( cci.begin(), cc.begin(), cc.end() );
-				}
-		printf("generated: total inflated: %ld\n", cci.size() );
-				printf("   dt %.1f [ms]\n", 1e3*(get_time_ms()-t0 ));
-				}
-				*/
 				//printf ( "no symm:\n" );
 				//cc = generateDoubleConferenceExtensions ( als, ct, verbose, 0, filterip, filterj3, 0 );
 
