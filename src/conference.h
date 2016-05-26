@@ -276,7 +276,7 @@ public:
 	symmdata sd;
 	
 public:
-	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterip ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterip ), filterj3(1), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
+	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3 = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3(1), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 
 		check_indices = sd.checkIdx();
@@ -306,7 +306,7 @@ public:
 				inline_row=i;
 		}
 		//inline_dtable.showarray();
-		printfd("  inline J3 check: inline_row %d\n", inline_row);
+		//printfd("  inline J3 check: inline_row %d\n", inline_row);
 		} else {
 		inline_row=-1;	
 		}

@@ -1235,15 +1235,16 @@ std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  cons
 {
 	long ntotal=0;
 	symmetry_group alsg = al.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
-	printf ( "inflateCandidateExtension: symmetry group\n" );
-	alsg.show();
+
+	
+	//printf ( "inflateCandidateExtension: symmetry group\n" ); alsg.show();
 
 	cperm candidate = basecandidate;
 	int block=0;
 	std::vector<cperm> cc;
 	inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, al, alsg, ct, verbose, filter, ntotal );
 
-	if (verbose) {
+	if (verbose>=2) {
 		printfd("generated %ld/%ld candidates \n", (long)cc.size(), ntotal );
 	}
 	return cc;
