@@ -1658,6 +1658,21 @@ public:
 	}
 #endif
 
+    /// list with indices set to check for symmetry reductions
+    std::vector<int> checkIndices() const    
+    {
+      std::vector<int> check_indices(n);
+      
+      // never check first index
+      for (int row=1; row<n; row++ )	
+      {
+	if (this->gidx[row]==this->gidx[row-1] )
+	  check_indices[row]=1;
+      }
+      return check_indices;
+    }
+
+
 	/// representation function (for python interface)
 	std::string __repr__() const {
 		std::stringstream ss;

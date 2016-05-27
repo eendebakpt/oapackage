@@ -249,7 +249,10 @@ bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
 int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2 );
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart=2 );
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart=2);
+
+/// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend );
 
 // return true if the extension column satisfies the inner product check
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
@@ -428,6 +431,6 @@ private:
 };
 
 // inflate candindate column: FIXME: documentation
-std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &al, const conference_t & ct, int verbose , const DconferenceFilter &filter );
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als, const array_link &alx, const conference_t & ct, int verbose , const DconferenceFilter &filter );
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

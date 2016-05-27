@@ -19,7 +19,7 @@
 
 #include "graphtools.h"
 
-#include "lmc.h" 
+#include "lmc.h"
 #include "conference.h"
 
 /*
@@ -719,7 +719,25 @@ int innerprod ( const cperm &a, const cperm &b )
 }
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart)
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
+{
+	//return true; // hack
+//	int k = sd.rowvalue.n_columns-1;
+
+	for ( int i=rowstart+1; i<rowend; i++ ) {
+		if ( check_indices[i] ) {
+			if ( ( ( unsigned char ) c[i-1] ) > ( ( unsigned char ) c[i] ) ) {
+				// discard
+				return false;
+			}
+		}
+	}
+	// accept
+	return true;
+}
+
+/// helper function, return true if a candidate extensions satisfies the symmetry test
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart )
 {
 	//return true; // hack
 //	int k = sd.rowvalue.n_columns-1;
@@ -1176,11 +1194,12 @@ public:
 };
 
 
-void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al, const symmetry_group &alsg, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
+void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al,
+									   const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
 {
 	const symmdata &sd = filter.sd;
 
-	int lastcol = al.n_columns-1;
+	//int lastcol = al.n_columns-1;
 	//symmetry_group alsg = al.row_symmetry_group(); //(sd.rowvalue.selectColumns(lastcol));
 	// TODO: inline symmetry checks
 	int nblocks = alsg.ngroups;
@@ -1196,56 +1215,62 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		}
 		return;
 	}
-	
+
 
 	//printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
 	const int blocksize = alsg.gsize[block];
-	
-	if (blocksize==1) {
+
+	if ( blocksize==1 ) {
 		// easy case
-			inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, ct, verbose, filter,ntotal );	
-			return;
+		inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+		return;
 	}
 	int gstart = alsg.gstart[block];
 	int gend = alsg.gstart[block+1];
 
-		if (block<=-1) {
-	printfd("row: %d to %d\n", gstart, gend);	
-	cperm tmp( candidate.begin() +gstart, candidate.begin() +gend );
-	printf("   current perm: "); print_cperm(tmp); printf("\n");
+	if ( block<=-1 ) {
+		printfd ( "row: %d to %d\n", gstart, gend );
+		cperm tmp ( candidate.begin() +gstart, candidate.begin() +gend );
+		printf ( "   current perm: " );
+		print_cperm ( tmp );
+		printf ( "\n" );
 	}
 
 	unsigned long iter=0;
 	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
 	do {
-		if (block<=4 && blocksize>1 && 0) {
-			printf("  block %d, iter %ld\n", block, iter);
+		if ( block<=4 && blocksize>1 && 0 ) {
+			printf ( "  block %d, iter %ld\n", block, iter );
 		}
 		//cout << s1 << endl;
 		iter++;
-		inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, ct, verbose, filter,ntotal );
-		// TODO: run inline filter
+		
 		// TODO: smart symmetry generation
+		if (satisfy_symm(candidate, check_indices, gstart, gend)) {
+		inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+		}
+		// TODO: run inline filter
 	} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
-
 
 }
 
-std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &al, const conference_t & ct, int verbose , const DconferenceFilter &filter )
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const array_link &alx, const conference_t & ct, int verbose , const DconferenceFilter &filter )
 {
 	long ntotal=0;
-	symmetry_group alsg = al.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
+	symmetry_group alsg = als.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
+	symmetry_group alxsg = alx.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
 
+	const std::vector<int> check_indices = alxsg.checkIndices();
 	
 	//printf ( "inflateCandidateExtension: symmetry group\n" ); alsg.show();
 
 	cperm candidate = basecandidate;
 	int block=0;
 	std::vector<cperm> cc;
-	inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, al, alsg, ct, verbose, filter, ntotal );
+	inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, als, alsg, check_indices, ct, verbose, filter, ntotal );
 
-	if (verbose>=2) {
-		printfd("generated %ld/%ld candidates \n", (long)cc.size(), ntotal );
+	if ( verbose>=2 ) {
+		printfd ( "generated %ld/%ld candidates \n", ( long ) cc.size(), ntotal );
 	}
 	return cc;
 }
@@ -1295,7 +1320,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		nb[b.row]++;
 #endif
 		branches.pop(); // FIXME: use reference and pop later
-		if ( verbose>=3 ) {
+		if ( verbose>=3 && 0 ) {
 			printf ( "branch: row %d, val %d, nums %d %d %d\n", b.row, b.rval, b.nvals[0], b.nvals[1],b.nvals[2] );
 			for ( int x=b.row+1; x<N; x++ )
 				c[x]=-9;
@@ -1323,7 +1348,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 				}
 				cc.push_back ( c );
 			} else {
-				if ( verbose>=2 || 0) {
+				if ( verbose>=2 || 0 ) {
 					printf ( "## discard candindate: " );
 					print_cperm ( c );
 					printf ( "\n" );

@@ -122,12 +122,12 @@ std::ostream& logstream ( int level );
 
 std::string system_uname();
 
-inline void mycheck ( int condition, const char *message, ... )
+inline void mycheck_handler ( const char *file, const char* func, int line, int condition, const char* message, ... )
 {
 	if ( condition==0 ) {
 		va_list		va;
 		va_start ( va, message );
-		myprintf ( "mycheck: " );
+		myprintf ( "mycheck: %s: %s (line %d): ", file,func, line );
 #ifdef RPACKAGE
 		myprintf("(not implemented) %s", message);
 #else
@@ -141,8 +141,12 @@ inline void mycheck ( int condition, const char *message, ... )
 		exit ( 1 );
 #endif
 	}
-
+	
+	
 }
+
+
+#define mycheck(...) mycheck_handler(__FILE__,__FUNCTION__, __LINE__, __VA_ARGS__)
 
 inline void myassert ( int condition, const char *str = 0 )
 {

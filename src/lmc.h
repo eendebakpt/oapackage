@@ -338,8 +338,6 @@ public:
 	
       std::vector<int> idx(N);
       
-     // rowvalue.showarray();
-      
       // never check first index
       for (int row=1; row<N; row++ )	
       {
