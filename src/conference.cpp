@@ -1630,7 +1630,12 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 
 	int filterip=1;
 	int filtersymm=1;
-	std::vector<cperm> cc = generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
+	std::vector<cperm> cc;
+	
+	if (k>3)
+	cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1);
+		else
+	cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
 
 	if ( ct.j3zero ) {
 		//printfd("filter on j3 values\n");
@@ -2087,6 +2092,64 @@ arraylist_t sortLMC0 ( const arraylist_t &lst )
 conference_options::conference_options ( int maxpos )
 {
 	maxzpos=-1;
+}
+
+std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
+{
+	std::vector<cperm> cci;
+	std::vector<cperm> cc;
+	// loop over all candidinates with k columns and inflate to (k+1)-column candidates
+	for ( size_t i=0; i<ccX.size(); i++ ) {
+		cperm basecandidate = ccX[i];
+
+		if ( verbose>=2 )
+			printf ( "### inflate candidate:" );
+		//printf(" "); print_cperm( basecandidate); printf("\n");
+		cc=  inflateCandidateExtension ( basecandidate, als, alfull, ct, verbose, filter );
+
+		if ( verbose>2 ) {
+			printf ( "inflate: array %d/%d: generated %ld candidates\n", ( int ) i, ( int ) ccX.size(), ( long ) cc.size() );
+		}
+		cci.insert ( cci.begin(), cc.begin(), cc.end() );
+	}
+	return cci;
+}
+std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart )
+{
+	//kstart=1;
+	double t00=get_time_ms();
+	int kfinal=al.n_columns;
+	if ( kstart<0 )
+		kstart = al.n_columns-1;
+	assert ( kstart>=1 );
+
+	std::vector<cperm> cci;
+
+	array_link als = al.selectFirstColumns ( kstart );
+
+	double t0=get_time_ms();
+	std::vector<cperm> ccX = generateDoubleConferenceExtensions ( als, ct, verbose, 1, filterj2, filterj3 );
+	printf ( "   initial generation: dt %.1f [ms]\n", 1e3* ( get_time_ms()-t0 ) );
+
+	for ( int kx=kstart; kx<kfinal; kx++ ) {
+		als = al.selectFirstColumns ( kx );
+		array_link alx = al.selectFirstColumns ( kx+1 );
+		DconferenceFilter filter ( alx, 1, filterj2, filterj3 );
+
+		if ( verbose )
+			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: start with %d extensions\n", kx, ( int ) ccX.size() );
+
+		cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose );
+
+		if (verbose) {
+		printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld\n", kstart, cci.size() );
+		printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
+		}
+		
+		ccX=cci;
+	}
+
+	return cci;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
