@@ -178,6 +178,17 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
 	//printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
 
+conference_t::conference_t ( const conference_t  &rhs )
+{
+	this->N = rhs.N;
+	this->ncols = rhs.ncols;
+	this->ctype = rhs.ctype;
+	this->itype = rhs.itype;
+
+	this->j1zero = rhs.j1zero;
+	this->j3zero = rhs.j3zero;
+}
+
 conference_t::conference_t ( int N, int k )
 {
 
@@ -1195,7 +1206,7 @@ public:
 
 
 void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al,
-									   const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
+                                       const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
 {
 	const symmdata &sd = filter.sd;
 
@@ -1244,10 +1255,10 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		}
 		//cout << s1 << endl;
 		iter++;
-		
+
 		// TODO: smart symmetry generation
-		if (satisfy_symm(candidate, check_indices, gstart, gend)) {
-		inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+		if ( satisfy_symm ( candidate, check_indices, gstart, gend ) ) {
+			inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
 		}
 		// TODO: run inline filter
 	} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
@@ -1257,11 +1268,13 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const array_link &alx, const conference_t & ct, int verbose , const DconferenceFilter &filter )
 {
 	long ntotal=0;
+	
+	// FIXME: cache this value!
 	symmetry_group alsg = als.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
 	symmetry_group alxsg = alx.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
 
 	const std::vector<int> check_indices = alxsg.checkIndices();
-	
+
 	//printf ( "inflateCandidateExtension: symmetry group\n" ); alsg.show();
 
 	cperm candidate = basecandidate;
@@ -1631,11 +1644,11 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 	int filterip=1;
 	int filtersymm=1;
 	std::vector<cperm> cc;
-	
-	if (k>3)
-	cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1);
-		else
-	cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
+
+	if ( k>3 )
+		cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1 );
+	else
+		cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
 
 	if ( ct.j3zero ) {
 		//printfd("filter on j3 values\n");
@@ -2129,7 +2142,10 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
 
 	double t0=get_time_ms();
 	std::vector<cperm> ccX = generateDoubleConferenceExtensions ( als, ct, verbose, 1, filterj2, filterj3 );
-	printf ( "   initial generation: dt %.1f [ms]\n", 1e3* ( get_time_ms()-t0 ) );
+	if ( verbose )
+		printf ( "generateDoubleConferenceExtensionsInflate: extend array with %d columns (kfinal %d)\n", al.n_columns, kfinal );
+	if ( verbose )
+		printf ( "   initial generation: dt %.1f [ms]\n", 1e3* ( get_time_ms()-t0 ) );
 
 	for ( int kx=kstart; kx<kfinal; kx++ ) {
 		als = al.selectFirstColumns ( kx );
@@ -2137,19 +2153,109 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
 		DconferenceFilter filter ( alx, 1, filterj2, filterj3 );
 
 		if ( verbose )
-			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: start with %d extensions\n", kx, ( int ) ccX.size() );
+			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: start with %d extensions\n", kx+1, ( int ) ccX.size() );
 
 		cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose );
 
-		if (verbose) {
-		printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld\n", kstart, cci.size() );
-		printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
+		if ( verbose ) {
+			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld\n", kx+1, cci.size() );
+			printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
 		}
-		
+
 		ccX=cci;
 	}
 
 	return cci;
+}
+
+const int CandidateGenerator::START_COL = 2;
+
+
+
+CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ), filter ( DconferenceFilter ( al, 1, 1, 1 ) )
+{
+	this->verbose=1;
+	this->last_valid=0;
+	this->candidate_list.clear();
+	this->candidate_list.resize ( 100 ); // set a safe max
+	this->al = al;
+//	this->filter = ;
+}
+
+
+
+std::vector<cperm> CandidateGenerator::generateCandidates ( const array_link &al )
+{
+	
+	const char *tag = "generateDoubleConferenceExtensionsInflate (cache)";
+	const int filterj2=1;
+	const int filterj3=1;
+	double t00=get_time_ms();
+
+	int startcol = this->startColumn ( al );
+	
+	//printf("in cache:\n");this->al.showarray();
+	//printf("current :\n"); al.showarray();
+	
+	int kfinal=al.n_columns;
+	int ncfinal = al.n_columns+1;
+	int finalcol=kfinal;
+
+	if ( verbose ) {
+		printf("\n");
+		printf ( "## %s: startcol %d, ncfinal %d\n", tag, startcol, ncfinal );
+	}
+
+	std::vector<cperm> ccX, cci;
+	int kstart=-1;
+
+	if ( startcol==-1 ) {
+		array_link als = al.selectFirstColumns ( START_COL );
+		startcol=START_COL+1;
+		int averbose=1;
+
+		double t0=get_time_ms();
+		ccX = generateDoubleConferenceExtensions ( als, ct, averbose, 1, filterj2, filterj3 );
+		printf("    set this->candidate_list[%d] = %d\n", START_COL+1, (int)ccX.size() );
+		this->candidate_list[START_COL+1] = ccX;
+		last_valid= START_COL+1;
+		 kstart=startcol-1;
+} else {
+	// FIXME: check this bound is sharp
+		ccX = this->candidate_list[startcol-1];
+	 kstart=startcol-2;
+	}
+
+
+
+	array_link als;
+
+	for ( int kx=kstart; kx<kfinal; kx++ ) {
+		als = al.selectFirstColumns ( kx );
+		array_link alx = al.selectFirstColumns ( kx+1 );
+		DconferenceFilter filter ( alx, 1, filterj2, filterj3 );
+
+		if ( verbose )
+			printf ( "## %s: at %d columns: start with %d extensions\n", tag, kx+1, ( int ) ccX.size() );
+
+		cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose>=2 );
+
+		if ( verbose ) {
+			printf ( "## %s: at %d columns: total inflated: %ld\n",tag,  kx+1, cci.size() );
+			printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
+		}
+
+		ccX=cci;
+
+		this->candidate_list[kx+2] = ccX;
+		this->last_valid=kx+1;
+	}
+
+	if ( verbose )
+		printf ( "CandidateGenerator::generateCandidate: generated %d candidates with %d columns\n", 	(int)this->candidate_list[finalcol].size(), ncfinal);
+
+	this->al = al;
+	return 	this->candidate_list[ncfinal];
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
