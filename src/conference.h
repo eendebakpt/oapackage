@@ -469,7 +469,7 @@ public:
 		printf("CandidateGenerator: %d columns: %ld elements\n", i, (long) candidate_list[i].size());
 	}
 	}
-	const static int START_COL;
+	static const  int START_COL = 2;
 private:
 	/// find the starting column for the extension
 	int startColumn ( const array_link &alx ) {
