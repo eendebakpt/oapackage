@@ -109,7 +109,7 @@ int main ( int argc, char* argv[] )
 	setloglevel ( SYSTEM );
 
 	int kstart=-1;
-	conference_t ctype ( N, N );
+	conference_t ctype ( N, ceil(N/2)+2 );
 
 	arraylist_t inputarrays;
 	if ( input.length() >1 ) {

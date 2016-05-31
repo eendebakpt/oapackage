@@ -195,17 +195,21 @@ int main ( int argc, char* argv[] )
 	if ( 1 ) {
 
 // FIXME: make unittest of this one
-		arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-36-8.oa" );
+		//arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-36-8.oa" );
+		//arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-28-4.oa" );
+		arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-32-8.oa" );
+		
+		
 		array_link alx = ll[0];
 		alx.showproperties();
 		int N = alx.n_rows;
 
-		printf("first:\n"); ll[41].showarray();
-		printf("next :\n"); ll[42].showarray();
+		int fi=51;
+		printf("first:\n"); ll[fi].showarray(); printf("next :\n"); ll[fi+1].showarray(); printf("  first diff index: %d\n", ll[fi].firstColumnDifference(ll[fi+1]) );
 		
 
 		conference_t ct(N, 2*N);
-		CandidateGenerator cgenerator(alx, ct);
+		CandidateGenerator cgenerator(array_link() , ct);
 		cgenerator.verbose=1;
 		cgenerator.show();
 
@@ -221,26 +225,36 @@ t0=get_time_ms();
 }
 
 		t0=get_time_ms();
-		for(size_t i=4; i<ll.size(); i++) {
+		std::vector<cperm> cc1;
+		for(size_t i=51; i<ll.size(); i++) {
 			printf("--- i %d -------\n", (int) i);
 			const array_link &al = ll[i];
 			int nc1=-1;
-			if (0) {
-			std::vector<cperm> cc1 = generateDoubleConferenceExtensionsInflate (al, ct, 1, 1, 1);
+			if (1) {
+				printfd("   _________________________\n");
+			 cc1 = generateDoubleConferenceExtensionsInflate (al, ct, 1, 1, 1);
 			 nc1=cc1.size();
+				printfd("   _________________________\n");
 			}
 			//cperm tmp= cc1[0]; printf("size cc1: %d\n", (int)tmp.size() );
 			
+			cgenerator.verbose=2;
 			std::vector<cperm> cc2 = cgenerator.generateCandidates(al);
 			//printf("size cc2: %d\n", cc2[0].size());
 			
+			
+			
 			int nc2=cc2.size();
 			
-		printf("number of candidates: %d/%d\n", nc1, nc2);	
+		printf("%d: number of candidates: %d/%d\n", (int)i, nc1, nc2);	
 		cgenerator.show();
 		
-		if(i==42) {
-			//break;
+		if(i==53) {
+			printf("cc1: \n");
+			showCandidates(cc1);
+			printf("cc2: \n");
+			showCandidates(cc2);
+			break;
 		}
 		}
 				printf ( "   dtt %.1f [ms]\n", 1e3* ( get_time_ms()-t0 ) );

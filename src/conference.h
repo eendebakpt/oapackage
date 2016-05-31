@@ -27,6 +27,16 @@ inline void print_cperm ( const cperm &c )
 	}
 }
 
+/// show a list of candidate extensions
+inline void showCandidates ( const std::vector<cperm> &cc )
+{
+	for ( size_t i=0; i<cc.size(); i++ ) {
+		printf ( "%d: ", ( int ) i );
+		print_cperm ( cc[i] );
+		printf ( "\n" );
+	}
+}
+
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
 public:
@@ -282,15 +292,15 @@ public:
 	symmdata sd;
 
 public:
-/*	/// dummy initializer
-	DconferenceFilter ()
-	{
-		filtersymm=-1;
-		filterj2=-1;
-		filterj3=-1;		
-		this->sd = symmdata();
-	}
-	*/
+	/*	/// dummy initializer
+		DconferenceFilter ()
+		{
+			filtersymm=-1;
+			filterj2=-1;
+			filterj3=-1;
+			this->sd = symmdata();
+		}
+		*/
 	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3 = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( 1 ), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 
@@ -456,27 +466,35 @@ public:
 	std::vector< std::vector<cperm> > candidate_list;
 	array_link al;
 	conference_t ct;
-	DconferenceFilter filter;
+	//DconferenceFilter filter;
 	int verbose;
 
 	CandidateGenerator ( const array_link &al, const conference_t &ct );
 
+	/// generate candidates with caching
 	std::vector<cperm> generateCandidates ( const array_link &al );
 
+
 	void show() const {
-		printf("CandidateGenerator: N %d\n", this->ct.N );
-	for(int i =2; i<=last_valid; i++) {
-		printf("CandidateGenerator: %d columns: %ld elements\n", i, (long) candidate_list[i].size());
-	}
+		printf ( "CandidateGenerator: N %d\n", this->ct.N );
+		for ( int i =2; i<=last_valid; i++ ) {
+			printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list[i].size() );
+		}
 	}
 	const static int START_COL;
 private:
-	/// find the starting column for the extension
+	/** find the starting column for the extension
+	 * 
+	 * For startcol k the elements in candidate_list[k] are valid 
+	 */
 	int startColumn ( const array_link &alx ) {
-		assert ( this->al.n_columns==alx.n_columns );
-
+		if ( this->al.n_columns!=alx.n_columns ) {
+			int startcol=-1;
+			return startcol;
+		}
 		int startcol = al.firstColumnDifference ( alx );
-		startcol = std::min(startcol, last_valid);
+		//printfd(" ---> startcol %d, last_valid %d\n", startcol, last_valid);
+		startcol = std::min ( startcol, last_valid );
 		if ( startcol<2 )
 			startcol=-1;
 		return startcol;
