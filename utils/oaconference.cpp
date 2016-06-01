@@ -135,8 +135,9 @@ int main ( int argc, char* argv[] )
 		kstart=inputarrays[0].n_columns;
 	}
 
-	if(ctype.ctype==conference_t::DCONFERENCE)
-		kmax=ceil(N/2)+2;
+	if(ctype.ctype==conference_t::DCONFERENCE) {
+		kmax=std::min( (int)(ceil(N/2)+2), kmax);
+	}
 	
 	if ( verbose ) {
 		printf ( "oaconference: extend %d conference matrices to size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) inputarrays.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );

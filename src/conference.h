@@ -494,10 +494,10 @@ private:
 		}
 		int startcol = al.firstColumnDifference ( alx );
 		
+		
+		if (0){
 		int rx, ry;
 		al.firstDiff(alx, rx, ry, 1);
-		
-		{
 		printfd(" ---> startcol %d, last_valid %d\n", startcol, last_valid);
 		printf(" ---> cache array\n");this->al.showarray();
 		printf(" --->alx\n");alx.showarray();
