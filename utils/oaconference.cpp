@@ -95,7 +95,7 @@ int main ( int argc, char* argv[] )
 	const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
 	const int j1zero = opt.getIntValue ( "j1zero", 0 );
 	const int j3zero = opt.getIntValue ( "j3zero", 0 );
-	
+
 	const std::string output = opt.getStringValue ( 'o', "" );
 	const std::string input = opt.getStringValue ( 'i', "" );
 
@@ -109,7 +109,7 @@ int main ( int argc, char* argv[] )
 	setloglevel ( SYSTEM );
 
 	int kstart=-1;
-	conference_t ctype ( N, ceil(N/2)+2 );
+	conference_t ctype ( N, N );
 
 	arraylist_t inputarrays;
 	if ( input.length() >1 ) {
@@ -119,24 +119,27 @@ int main ( int argc, char* argv[] )
 		if ( inputarrays.size() >0 ) {
 			ctype = conference_t ( N, kstart );
 		}
-	ctype.ctype=ctx;
-	ctype.itype=itype;
-	ctype.j3zero=j3zero;
-	ctype.j1zero=j1zero;
+		ctype.ctype=ctx;
+		ctype.itype=itype;
+		ctype.j3zero=j3zero;
+		ctype.j1zero=j1zero;
 		kstart=inputarrays[0].n_columns;
 		kmax=inputarrays[0].n_columns+1;
 	} else {
-	ctype.ctype=ctx;
-	ctype.itype=itype;
-	ctype.j3zero=j3zero;
-	ctype.j1zero=j1zero;
+		ctype.ctype=ctx;
+		ctype.itype=itype;
+		ctype.j3zero=j3zero;
+		ctype.j1zero=j1zero;
 
 		ctype.addRootArrays ( inputarrays );
 		kstart=inputarrays[0].n_columns;
 	}
 
+	if(ctype.ctype==conference_t::DCONFERENCE)
+		kmax=ceil(N/2)+2;
+	
 	if ( verbose ) {
-		printf ( "oaconference: extend %d conference matrices of size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) inputarrays.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );
+		printf ( "oaconference: extend %d conference matrices to size %dx%d (itype %d (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d) )\n", ( int ) inputarrays.size(), ctype.N, ctype.ncols, itype, CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM );
 		printf ( "oaconference: ctype %d (DCONFERENCE %d, CONFERENCE_NORMAL %d) )\n", ctype.ctype, conference_t::DCONFERENCE, conference_t::CONFERENCE_NORMAL );
 	}
 	if ( verbose>=3 ) {
@@ -150,10 +153,9 @@ int main ( int argc, char* argv[] )
 		arraylist_t outlist;
 
 		switch ( ctype.ctype ) {
-		case conference_t::DCONFERENCE:
-		{
+		case conference_t::DCONFERENCE: {
 			outlist = extend_double_conference ( inputarrays, ctype,  verbose );
-		sort ( outlist.begin(), outlist.end(), compareLMC0 );
+			sort ( outlist.begin(), outlist.end(), compareLMC0 );
 			break;
 		}
 		case conference_t::CONFERENCE_NORMAL:
@@ -172,7 +174,8 @@ int main ( int argc, char* argv[] )
 				break;
 			}
 			break;
-		default:
+		default
+				:
 			printfd ( "not implemented: itype %d\n", ctype.itype );
 			break;
 		}
@@ -183,19 +186,19 @@ int main ( int argc, char* argv[] )
 		}
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
-		if (1) {
-		for(size_t i=0; i<outlist.size(); i++) {
-				if( ! isConferenceFoldover(outlist[i]) )
-					printfd("#### found an even-odd conference matrix!!!\n");
+		if ( 1 ) {
+			for ( size_t i=0; i<outlist.size(); i++ ) {
+				if ( ! isConferenceFoldover ( outlist[i] ) )
+					printfd ( "#### found an even-odd conference matrix!!!\n" );
+			}
 		}
-		}
-		
+
 		if ( output.length() >=1 ) {
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
 			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
-			
-			if(outlist.size() < 20000 )
-				writearrayfile ( outfile.c_str(),outlist);
+
+			if ( outlist.size() < 20000 )
+				writearrayfile ( outfile.c_str(),outlist );
 			else
 				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
 		}

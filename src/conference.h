@@ -493,7 +493,15 @@ private:
 			return startcol;
 		}
 		int startcol = al.firstColumnDifference ( alx );
-		//printfd(" ---> startcol %d, last_valid %d\n", startcol, last_valid);
+		
+		int rx, ry;
+		al.firstDiff(alx, rx, ry, 1);
+		
+		{
+		printfd(" ---> startcol %d, last_valid %d\n", startcol, last_valid);
+		printf(" ---> cache array\n");this->al.showarray();
+		printf(" --->alx\n");alx.showarray();
+		}
 		startcol = std::min ( startcol, last_valid );
 		if ( startcol<2 )
 			startcol=-1;

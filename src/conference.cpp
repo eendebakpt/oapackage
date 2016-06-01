@@ -2110,6 +2110,7 @@ conference_options::conference_options ( int maxpos )
 
 std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
 {
+	//verbose=2;
 	std::vector<cperm> cci;
 	std::vector<cperm> cc;
 	// loop over all candidinates with k columns and inflate to (k+1)-column candidates
@@ -2159,7 +2160,7 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
 		cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose );
 
 		if ( verbose ) {
-			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld\n", kx+1, cci.size() );
+			printf ( "## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld candidates for column %d\n", kx+1, cci.size(), kx+1 );
 			printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
 		}
 

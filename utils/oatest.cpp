@@ -199,6 +199,8 @@ int main ( int argc, char* argv[] )
 		//arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-28-4.oa" );
 		arraylist_t ll = readarrayfile ( "/home/eendebakpt/oatmp/conf/dconferencej1j3-32-8.oa" );
 		
+		//ll[52]=ll[51]; 
+		//ll[51]=ll[52]; 
 		
 		array_link alx = ll[0];
 		alx.showproperties();
@@ -226,7 +228,7 @@ t0=get_time_ms();
 
 		t0=get_time_ms();
 		std::vector<cperm> cc1;
-		for(size_t i=51; i<ll.size(); i++) {
+		for(size_t i=0; i<ll.size(); i++) {
 			printf("--- i %d -------\n", (int) i);
 			const array_link &al = ll[i];
 			int nc1=-1;
@@ -249,7 +251,7 @@ t0=get_time_ms();
 		printf("%d: number of candidates: %d/%d\n", (int)i, nc1, nc2);	
 		cgenerator.show();
 		
-		if(i==53) {
+		if(i==52 && 0) {
 			printf("cc1: \n");
 			showCandidates(cc1);
 			printf("cc2: \n");

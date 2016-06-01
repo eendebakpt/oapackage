@@ -875,14 +875,18 @@ public:
 	/// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 	std::string md5() const;
 
-	/// return index of first different column
+	/// return index?? of first different column
 	int firstColumnDifference ( const array_link &A ) const;
 
+	/** calculate row and column index of first difference between two arrays
+	 * 
+	 * The difference is according to the column-major ordering. 
+	 */
 	bool firstDiff ( const array_link &A, int &r, int &c, int verbose=1 ) const {
 		r=0;
 		c=0;
-		for ( c=0; r<this->n_rows; r++ ) {
 			for ( c=0; c<this->n_columns; c++ ) {
+		for ( r=0; r<this->n_rows; r++ ) {
 				if ( this->at ( r, c ) !=A.at ( r,c ) ) {
 					if ( verbose ) {
 						myprintf ( "first difference of array at %d, %d\n", r, c );
