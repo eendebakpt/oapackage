@@ -1,10 +1,6 @@
-/** \file oatest.cpp
-
- C++ program: oatest
-
- oatest: tool for testing new algorithms
-
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
+/** \file conference.h
+ 
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2016
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -17,9 +13,9 @@
 #include "graphtools.h"
 #include "lmc.h"
 #include "arrayproperties.h"
-//#include "extend.h"
 
 
+/// print a candidate extension
 inline void print_cperm ( const cperm &c )
 {
 	for ( size_t i=0; i<c.size(); i++ ) {
@@ -119,7 +115,6 @@ public:
 						al.at ( k,0 ) =1;
 					lst.push_back ( al );
 				}
-
 			}
 			break;
 			default
@@ -269,7 +264,6 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
 
 
-
 /// class to filter designs
 class DconferenceFilter
 {
@@ -292,15 +286,6 @@ public:
 	symmdata sd;
 
 public:
-	/*	/// dummy initializer
-		DconferenceFilter ()
-		{
-			filtersymm=-1;
-			filterj2=-1;
-			filterj3=-1;
-			this->sd = symmdata();
-		}
-		*/
 	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3 = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( 1 ), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 

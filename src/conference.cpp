@@ -678,7 +678,6 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 	cperm cc;
 	for ( long j=0; j<nc; j++ ) {
 		//printf("ccc: "); display_vector(cc); printf("\n");
-		//printf("ccx: "); display_vector(ccx); printf("\n");
 
 		if ( haszero ) {
 			get_comb ( c, n1, -1, 1, ccx );
@@ -935,7 +934,6 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
 
 			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
 			for ( int xr=0; xr<N; xr++ ) {
-
 				jv += ( o1[xr] ) * ( c[xr] );
 			}
 
@@ -974,9 +972,7 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
 
 		if ( dfilter.filter ( extensions[i] ) ) {
 			e2.push_back ( extensions[i] );
-
 		}
-
 	}
 	return e2;
 }
@@ -1117,7 +1113,6 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	if ( verbose>=2 )
 		printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
 	// perform row symmetry check
-
 
 	std::vector<cperm> e2 = filterCandidates ( extensions, al,  filtersymm,  filterip,  verbose );
 

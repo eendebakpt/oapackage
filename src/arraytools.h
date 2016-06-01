@@ -707,9 +707,6 @@ public:
 	void setColumn ( int c, const std::vector<signed char> v ) {
 		std::copy ( v.begin(), v.end(), this->array+c*this->n_rows );
 	}
-	//void setColumn2(int c, const cperm v) {
-	//		std::copy(v.begin(), v.end(), this->array+c*this->n_rows);
-	//}
 
 	/// return transposed array
 	array_link transposed() const;
@@ -857,6 +854,7 @@ public:
 
 	void _setvalue ( int row, int col, int val );	/// set value of an array, no error checking!
 
+	/// multiply a row by -1
 	void negateRow ( rowindex_t r ) {
 		for ( int c=0; c<this->n_columns; c++ )
 			this->atfast ( r,c ) *= -1;
@@ -875,7 +873,7 @@ public:
 	/// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 	std::string md5() const;
 
-	/// return index?? of first different column
+	/// return index of first different column
 	int firstColumnDifference ( const array_link &A ) const;
 
 	/** calculate row and column index of first difference between two arrays
