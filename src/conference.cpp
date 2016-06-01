@@ -2170,7 +2170,7 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
 	return cci;
 }
 
-const int CandidateGenerator::START_COL = 2;
+//const int CandidateGenerator::START_COL = 2;
 
 
 
