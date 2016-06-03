@@ -148,8 +148,10 @@ int main ( int argc, char* argv[] )
 		showArrayList ( inputarrays );
 	}
 
+	double t0 = get_time_ms();
+	
 	for ( int extcol=kstart; extcol<kmax; extcol++ ) {
-		printf ( "oaconference: extend column %d (max number of columns %d)\n", extcol, kmax );
+		printf ( "oaconference: extend column %d (max number of columns %d, time %.1f [s])\n", extcol, kmax, get_time_ms(t0) );
 
 		arraylist_t outlist;
 
@@ -204,7 +206,7 @@ int main ( int argc, char* argv[] )
 				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
 		}
 
-		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays\n", extcol, ( int ) outlist.size() );
+		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays (%.1f [s])\n", extcol, ( int ) outlist.size(),  get_time_ms(t0) );
 
 		// loop
 		inputarrays=outlist;

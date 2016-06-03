@@ -202,6 +202,9 @@ int main ( int argc, char* argv[] )
 		//ll[52]=ll[51]; 
 		//ll[51]=ll[52]; 
 		
+		//ll[0].Fvalues(4);
+		//ll[0].Fvalues(5);
+		
 		array_link alx = ll[0];
 		alx.showproperties();
 		int N = alx.n_rows;

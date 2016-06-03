@@ -1240,8 +1240,10 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 	unsigned long iter=0;
 	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
 	do {
+		// FIXME: for larger block sizes do not use naive generation
 		if ( block<=4 && blocksize>1 && 0 ) {
-			printf ( "  block %d, iter %ld\n", block, iter );
+			cperm xx(  candidate.begin() +gstart, candidate.begin() +gend ) ;
+			printf ( "  block %d, blocksize %d, iter %ld (k? %d)", block, blocksize, iter, al.n_columns ); print_cperm ( xx); printf("\n");
 		}
 		//cout << s1 << endl;
 		iter++;
@@ -1629,10 +1631,12 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 
 	if ( k>=3 && filtersymm && filterip && 1 ) {
 		//cgenerator.last_valid=0;
+		// FIXME: for large symmetry blocks start with k higher!
 		cc = cgenerator.generateCandidates ( al );
 	} else {
-		if ( k>3 )
+		if ( k>3 ) {
 			cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1 );
+		}
 		else
 			cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
 	}

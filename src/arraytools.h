@@ -253,7 +253,7 @@ public:
 	/// calculate possible values in F vector
 	std::vector<int> Fval ( int strength = 3 ) const;
 	
-	/// calculate histogram of J values
+	/// calculate histogram of J values for a 2-level array
 	std::vector<int> calculateF ( int strength = 3 ) const;
 
 	// calculate aberration value
