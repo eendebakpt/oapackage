@@ -685,6 +685,9 @@ public:
 	/// return array with selected column removed
 	array_link deleteColumn ( int index ) const;
 
+	/// return array with first n rows
+	array_link selectFirstRows ( int n ) const;
+
 	/// return array with first n columns selected
 	array_link selectFirstColumns ( int n ) const;
 

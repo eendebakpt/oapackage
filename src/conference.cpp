@@ -1041,6 +1041,14 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, kz, verbose );
 
+	// filter based on symmetry
+
+	if (filtersymm && 0) {
+		array_link alx = al.selectFirstRows((N+2)/2);
+		DconferenceFilter cfilter(alx, 1, 0, 0);
+		ff= cfilter.filterList(ff);
+	}	
+
 	if ( verbose>=2 ) {
 		for ( size_t i=0; i<ff.size(); i++ ) {
 			printf ( "extend1 %d: N %d: ", ( int ) i, N );
@@ -1814,7 +1822,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
 		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
-		if ( verbose>=2 || ( verbose>=1 && ( i%100==0 || i==lst.size()-1 ) ) ) {
+		if ( verbose>=2 || ( verbose>=1 && ( i%200==0 || i==lst.size()-1 ) ) ) {
 			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
 			fflush ( 0 );
 		}
@@ -1883,8 +1891,8 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
 		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
-		if ( verbose>=2 || ( verbose>=1 && ( i%100==0 || i==lst.size()-1 ) ) ) {
-			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
+		if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
+			printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld)\n", ( int ) i, ( int ) lst.size(), nn, (long)outlist.size() );
 			fflush ( 0 );
 		}
 	}
@@ -1910,7 +1918,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 		}
 	}
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
-		if ( verbose>=1 && ( i%5000==0 || i== ( int ) lst.size()-1 ) )
+		if ( verbose>=1 && ( i%15000==0 || i== ( int ) lst.size()-1 ) )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		array_link alx;
 

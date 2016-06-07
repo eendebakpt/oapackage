@@ -189,7 +189,7 @@ int main ( int argc, char* argv[] )
 		}
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
-		if ( 1 ) {
+		if ( ctype.ctype==conference_t::DCONFERENCE ) {
 			for ( size_t i=0; i<outlist.size(); i++ ) {
 				if ( ! isConferenceFoldover ( outlist[i] ) )
 					printfd ( "#### found an even-odd conference matrix!!!\n" );

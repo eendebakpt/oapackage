@@ -269,10 +269,10 @@ class DconferenceFilter
 {
 public:
 	array_link als;
-	int filtersymm;
-	int filterj2;
-	int filterj3;
-	int filterfirst;
+	int filtersymm; // filter based on symmetry
+	int filterj2; /// filter based on j2 value
+	int filterj3; /// filter based on j3 value
+	int filterfirst; /// filter only columns with first value >=0
 
 	mutable long ngood;
 private:
@@ -286,7 +286,7 @@ public:
 	symmdata sd;
 
 public:
-	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3 = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( 1 ), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
+	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 
 		check_indices = sd.checkIdx();
@@ -323,6 +323,18 @@ public:
 		}
 	}
 
+	/// filter a list of cperms using the filter method
+	std::vector<cperm> filterList(const std::vector<cperm> &lst) const
+	{
+		std::vector<cperm> out;
+		for(size_t i=0; i<lst.size(); i++) {
+		if (this->filter(lst[i]) )
+			out.push_back(lst[i]);
+		}
+		printfd("filterList: %d -> %d\n", lst.size(), out.size() );
+		return out;
+	}
+	
 	/// return True of the extension satisfies all checks
 	bool filter ( const cperm &c ) const {
 		if ( filterfirst ) {
