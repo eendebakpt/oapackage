@@ -994,18 +994,7 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
 	std::vector<cperm> e2 ( 0 );
 	for ( size_t i=0; i<extensions.size(); i++ ) {
 
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( extensions[i], sd ) ) {
-				if ( verbose>=2 ) {
-					printf ( "filterCandidates: reject due to row symm: " );
-					display_vector ( extensions[i] );
-					printf ( "\n" );
-				}
-				continue;
-			}
-		}
 		if ( filterip ) {
-
 			// perform inner product check for all columns
 			if ( ! ipcheck ( extensions[i], als ) ) {
 				if ( verbose>=2 ) {
@@ -1014,6 +1003,16 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
 					printf ( "\n" );
 					printf ( "filterCandidates: reject due to innerproduct (extension %d)\n", ( int ) i );
 					ipcheck ( extensions[i], als, 2, 1 );
+				}
+				continue;
+			}
+		}
+		if ( filtersymm ) {
+			if ( ! satisfy_symm ( extensions[i], sd ) ) {
+				if ( verbose>=2 ) {
+					printf ( "filterCandidates: reject due to row symm: " );
+					display_vector ( extensions[i] );
+					printf ( "\n" );
 				}
 				continue;
 			}
@@ -1043,8 +1042,9 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 
 	// filter based on symmetry
 
-	if (filtersymm && 0) {
+	if ( filtersymm && 1) {
 		array_link alx = al.selectFirstRows((N+2)/2);
+		
 		DconferenceFilter cfilter(alx, 1, 0, 0);
 		ff= cfilter.filterList(ff);
 	}	
@@ -1090,10 +1090,6 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 			int ip0 = innerprod ( c0, c );
 			int ip1 = innerprod ( c1, c );
 			//printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
-
-			if ( verbose>=3 ) {
-				printf ( "extend_conference %d: ip %d %d\n", ( int ) i, ip0, ip1 );
-			}
 
 			if ( verbose>=2 ) {
 				//alx.showarraycompact();
@@ -1716,6 +1712,7 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 			extensionsX = filterCandidatesSymm ( cande.ce[ii],  al, verbose );
 			extensionsX = filterCandidates ( extensionsX,  al,1, 1, verbose );
 		} else {
+			// FIXME: this can be much more efficient if we cache previous filtering from other arrays (with partial results)
 			extensionsX  = filterCandidates ( cande.ce[ii],  al,1, 1, verbose );
 		}
 		if ( verbose>=2 )
