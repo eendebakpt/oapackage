@@ -827,6 +827,31 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart, int verbose )
 	return true;
 }
 
+
+int minz(const array_link &al, int k)
+{
+	const int N = al.n_rows;
+	int minzidx=-1;
+	const int nr=al.n_rows;
+	if ( k==-1 ) {
+		for ( int k=0; k<al.n_columns; k++ ) {
+			for ( int r=0; r<N; r++ ) {
+				if ( al._at ( r, k ) ==0 ) {
+					minzidx = std::min ( minzidx, r );
+				}
+			}
+		}
+		return minzidx;
+	} else {
+		for ( int r=0; r<N; r++ ) {
+			if ( al._at ( r, k ) ==0 ) {
+				return r;
+			}
+		}
+	}
+	return minzidx ;
+}
+
 int maxz ( const array_link &al, int k )
 {
 	int maxzidx=-1;
@@ -1636,7 +1661,7 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 	if ( k>=3 && filtersymm && filterip && 1 ) {
 		//cgenerator.last_valid=0;
 		// FIXME: for large symmetry blocks start with k higher!
-		cc = cgenerator.generateCandidates ( al );
+		cc = cgenerator.generateDoubleConfCandidates ( al );
 	} else {
 		if ( k>3 ) {
 			cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1 );
@@ -2164,7 +2189,7 @@ CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_
 
 
 
-std::vector<cperm> CandidateGenerator::generateCandidates ( const array_link &al )
+std::vector<cperm> CandidateGenerator::generateDoubleConfCandidates ( const array_link &al )
 {
 
 	const char *tag = "generateDoubleConferenceExtensionsInflate (cache)";
@@ -2222,6 +2247,8 @@ std::vector<cperm> CandidateGenerator::generateCandidates ( const array_link &al
 
 		cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose>=2 );
 
+		cci = filter.filterListZero(cci);
+		
 		if ( verbose >=2 ) {
 			printf ( "## %s: at %d columns: total inflated: %ld\n",tag,  kx+1, cci.size() );
 			printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
@@ -2236,6 +2263,14 @@ std::vector<cperm> CandidateGenerator::generateCandidates ( const array_link &al
 	if ( verbose>=2 )
 		printf ( "CandidateGenerator::generateCandidate: generated %d candidates with %d columns\n",	( int ) this->candidate_list[ncfinal].size(), ncfinal );
 
+	if (1) {
+		printf("lastcol:\n");
+		array_link ax = al.selectLastColumns(1); // .transposed();
+		cperm tmp(ax.array, ax.array+ax.n_rows);
+		printf("   "); print_cperm(tmp); printf("\n");
+		printf("generated candidates:\n");
+		showCandidates(this->candidate_list[ncfinal]);		
+	}
 	this->al = al;
 	return 	this->candidate_list[ncfinal];
 }

@@ -264,6 +264,9 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
 
 
+/// return minimal position of zero in design
+int minz(const array_link &al, int k);
+
 /// class to filter designs
 class DconferenceFilter
 {
@@ -273,7 +276,8 @@ public:
 	int filterj2; /// filter based on j2 value
 	int filterj3; /// filter based on j3 value
 	int filterfirst; /// filter only columns with first value >=0
-
+	int filterzero; /// filter based on first occurence of zero in a column
+	
 	mutable long ngood;
 private:
 	array_link dtable; /// table of J2 vectors for J3 filter
@@ -281,12 +285,14 @@ private:
 
 	/// indices to check for symmetry check
 	std::vector<int> check_indices;
+	/// used for filtering based on zero
+	int minzvalue;
 public:
 	int inline_row;
 	symmdata sd;
 
 public:
-	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), ngood ( 0 ), sd ( als ) {
+	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero(0), ngood ( 0 ), sd ( als ) {
 		//sd = symmdata( als );
 
 		check_indices = sd.checkIdx();
@@ -302,6 +308,9 @@ public:
 			//inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
 			//inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
 
+			
+			minzvalue = minz(als, als.n_columns-1); /// FIXME: set last column here
+			
 			inline_row = als.n_rows;
 			int br=0;
 			for ( int i=als.n_rows-1; i>=0; i-- ) {
@@ -334,7 +343,19 @@ public:
 		printfd("filterList: %d -> %d\n", lst.size(), out.size() );
 		return out;
 	}
-	
+
+		/// filter a list of cperms using the filterZero method
+	std::vector<cperm> filterListZero(const std::vector<cperm> &lst) const
+	{
+		std::vector<cperm> out;
+		for(size_t i=0; i<lst.size(); i++) {
+		if (this->filterZero(lst[i]) )
+			out.push_back(lst[i]);
+		}
+		printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
+		return out;
+	}
+
 	/// return True of the extension satisfies all checks
 	bool filter ( const cperm &c ) const {
 		if ( filterfirst ) {
@@ -445,6 +466,16 @@ public:
 	bool filterJ2 ( const cperm &c ) const {
 		return ipcheck ( c, als, 0 );
 	}
+	/// return True of the candidate extension satisfies the zero
+	bool filterZero ( const cperm &c ) const {
+		// TODO: minzvalue-1?
+		for(int i=0; i<minzvalue-1; i++) {
+		if (c[i]==0)
+			return false;
+		}
+return true;
+		
+	}
 
 private:
 
@@ -468,8 +499,15 @@ public:
 
 	CandidateGenerator ( const array_link &al, const conference_t &ct );
 
-	/// generate candidates with caching
-	std::vector<cperm> generateCandidates ( const array_link &al );
+	/** generate candidates with caching
+	 * this method uses symmetry inflation
+	 */
+	std::vector<cperm> generateDoubleConfCandidates ( const array_link &al );
+
+		/** generate candidates with caching
+	 * this method uses j2 filtering
+	 */
+	std::vector<cperm> generateConfCandidates ( const array_link &al );
 
 
 	void show() const {

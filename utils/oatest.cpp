@@ -244,7 +244,7 @@ t0=get_time_ms();
 			//cperm tmp= cc1[0]; printf("size cc1: %d\n", (int)tmp.size() );
 			
 			cgenerator.verbose=2;
-			std::vector<cperm> cc2 = cgenerator.generateCandidates(al);
+			std::vector<cperm> cc2 = cgenerator.generateDoubleConfCandidates(al);
 			//printf("size cc2: %d\n", cc2[0].size());
 			
 			
