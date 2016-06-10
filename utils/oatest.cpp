@@ -214,9 +214,9 @@ int main ( int argc, char* argv[] )
 		
 
 		conference_t ct(N, 2*N);
-		CandidateGenerator cgenerator(array_link() , ct);
+		CandidateGeneratorDouble cgenerator(array_link() , ct);
 		cgenerator.verbose=1;
-		cgenerator.show();
+		cgenerator.showDoubleCandidates();
 
 double t0;
 if (0) {
@@ -252,7 +252,7 @@ t0=get_time_ms();
 			int nc2=cc2.size();
 			
 		printf("%d: number of candidates: %d/%d\n", (int)i, nc1, nc2);	
-		cgenerator.show();
+		cgenerator.showDoubleCandidates();
 		
 		if(i==52 && 0) {
 			printf("cc1: \n");

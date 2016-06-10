@@ -1016,8 +1016,9 @@ public:
 typedef std::vector<signed char> cperm;
 //typedef std::vector<int> cperm;
 //typedef larray<int> cperm;
-
 //typedef array_link cperm;
+typedef std::vector<cperm> cperm_list;
+
 
 // concatenate 2 arrays in vertical direction
 array_link hstack ( const array_link &al, const array_link &b );
