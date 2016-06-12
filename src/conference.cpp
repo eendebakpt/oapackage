@@ -557,7 +557,7 @@ array_link reduceConference ( const array_link &al, int verbose )
 }
 
 // return vector of length n with specified positions set to one
-cperm get_comb ( cperm p, int n, int zero=0, int one=1 )
+cperm get_comb ( const cperm p, int n, int zero=0, int one=1 )
 {
 	cperm c ( n, zero );
 	//for ( int i=0; i<n ; i++ )
@@ -568,9 +568,16 @@ cperm get_comb ( cperm p, int n, int zero=0, int one=1 )
 }
 
 // set vector of length n with specified positions set to one
+inline void set_comb ( const cperm &p, cperm &c, int n, int zero=0, int one=1 )
+{
+	std::fill(c.begin(), c.begin()+n, zero);
+	for ( size_t i=0; i<p.size() ; i++ )
+		c[p[i]]=one;
+}
+
+// set vector of length n with specified positions set to one
 inline void get_comb ( const cperm &p, int n, int zero, int one, cperm &c )
 {
-	//std::fill(c.begin(), c.end(), zero);
 	for ( int i=0; i<n ; i++ )
 		c[i]=zero;
 	for ( size_t i=0; i<p.size() ; i++ )
@@ -587,6 +594,14 @@ inline cperm insertzero ( const cperm &c, int pos, int value=0 )
 	return cx;
 }
 
+
+/// set vector with zero inserted at specified position, no error checking
+void insertzero ( cperm &target, const cperm &c, int pos, int value=0 )
+{
+	std::copy ( c.begin(), c.begin() +pos, target.begin() );
+	target[pos]=value;
+	std::copy ( c.begin() +pos, c.end(), target.begin() +pos+1 );
+}
 
 /** Return all admissible columns (first part) for a conference array in normal form
  *
@@ -675,15 +690,18 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 		printf ( "get_second: N %d, n1 %d, qx %d, target %d, nc %d\n", N, n1, qx, target, nc );
 	std::vector<cperm> ff;
 	cperm ccx ( n1 );
-	cperm cc;
+	cperm cc(n1+haszero);
 	for ( long j=0; j<nc; j++ ) {
 		//printf("ccc: "); display_vector(cc); printf("\n");
 
 		if ( haszero ) {
 			get_comb ( c, n1, -1, 1, ccx );
-			cc=insertzero ( ccx, extcol- ( q+2 ) );
+			//cc=insertzero ( ccx, extcol- ( q+2 ) );
+			insertzero ( cc, ccx, extcol- ( q+2 ) );
 		} else {
-			cc =get_comb ( c, n1, -1, 1 );
+			//cc =get_comb ( c, n1, -1, 1 );
+			set_comb ( c, cc, n1, -1, 1 );
+			
 		}
 		if ( verbose>=2 ) {
 			printfd ( "add element of size %d =   %d\n", cc.size(), q );
@@ -1731,9 +1749,11 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 			printf ( "array: kz %d: generate\n", ii );
 		std::vector<cperm> extensionsX;
 
-		//const std::vector<cperm> &cl = cgenerator.cande.ce[ii];
+		{
+			//const std::vector<cperm> &cl = cgenerator.cande.ce[ii];
 		//FIXME: only if valid
-		const std::vector<cperm> &cl = cgenerator.generateConfCandidates ( al, ii );
+		 const std::vector<cperm> &cl = cgenerator.generateConfCandidates ( al, ii );
+		//printfd ( " cande %d --> cache %d\n", ( int ) cgenerator.cande.ce[ii].size(), ( int ) cl.size() );
 		if ( ct.ctype==conference_t::CONFERENCE_DIAGONAL ) {
 			extensionsX = filterCandidatesSymm ( cl,  al, verbose ); // FIXME: is this needed?
 			extensionsX = filterCandidates ( extensionsX,  al,1, 1, verbose );
@@ -1741,6 +1761,10 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 			// FIXME: for cached generated candidates we could remove the filterj2 check
 			extensionsX  = filterCandidates ( cl,  al,1, 1, verbose );
 		}
+
+		//extensionsX  = filterCandidates ( cande,  al,1, 1, verbose );
+		}
+		
 		if ( verbose>=2 )
 			printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
 		ce.extensions.insert ( ce.extensions.end(), extensionsX.begin(), extensionsX.end() );
@@ -1779,15 +1803,16 @@ size_t vectorsizeof ( const typename std::vector<T>& vec )
 }
 
 
-conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int verbose=1, int ncstart=3, int ncmax=-1 )
+conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int verbose=1, int ncstart=3, int ncmax=-1, int root = -1 )
 {
 
 	conf_candidates_t cande;
 
 	cande.ce.resize ( ctype.N );
 
-	array_link al = ctype.create_root();
+	array_link al2 = ctype.create_root();
 	array_link al3 = ctype.create_root_three();
+ 
 	if ( ncmax==-1 ) {
 		ncmax=ctype.N;
 		if ( ctype.ctype==conference_t::CONFERENCE_DIAGONAL ) {
@@ -1798,10 +1823,28 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
 	for ( int extcol=ncstart-1; extcol<ncmax; extcol++ ) {
 		std::vector<cperm> ee;
 		{
-			if ( extcol==2 )
-				ee = generateConferenceExtensions ( al, ctype, extcol, 0, 0, 1 );
+	switch (root) {
+		case -1:
+		{
+			if (extcol==2)
+				ee = generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );
 			else
-				ee= generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1 );
+				ee = generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1 );
+	}
+break;
+		case 2:
+				ee = generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );
+break;
+			break;
+		case 3:
+				ee = generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1 );
+ break;
+		default:
+			printfd("not implemented!\n");
+			break;
+	}
+
+	
 		}
 		//printf("al3:\n"); al3.showarray();
 
@@ -1902,9 +1945,17 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	if ( lst.size() >0 )
 		ncstart=lst[0].n_columns+1;
 
+	/// FIXME: move higher up in hierarchy
 	CandidateGenerator cgenerator ( array_link(), ctype );
 	//printfd ( "CandidateGenerator: constructed\n" );
 	//cgenerator.verbose=2;
+
+	if ( 0 ) {
+		// debugging
+		cgenerator.generateConfCandidates ( lst[0],5 );
+		cgenerator.generateConfCandidates ( lst[0],7 );
+		cgenerator.showCandidates();
+	}
 
 	// legacy code, fixed set of candidates, remove later
 	//cgenerator.cande  = generateCandidateExtensions ( ctype, verbose>=2, ncstart );
@@ -1946,7 +1997,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 		}
 	}
 	for ( int i=0; i< ( int ) lst.size(); i++ ) {
-		if ( verbose>=1 && ( i%15000==0 || i== ( int ) lst.size()-1 ) )
+		if ( verbose>=1 && ( i%20000==0 || i== ( int ) lst.size()-1 ) )
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		array_link alx;
 
@@ -2121,9 +2172,10 @@ conference_options::conference_options ( int maxpos )
 std::vector<cperm> conferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
 {
 	// FIXME: j2 check only for last pair
-	std::vector<cperm> cci = filter.filterList ( ccX );
+	//std::vector<cperm> cci = filter.filterList ( ccX );
+	std::vector<cperm> cci = filter.filterListJ2last ( ccX );
 
-	//printfd("inflate: %d -> %d\n", (int)ccX.size(), (int) cci.size() );
+	//printfd ( "inflate: %d: %d -> %d (als %d, alx %d, filter size %d)\n", als.n_columns, ( int ) ccX.size(), ( int ) cci.size() , als.n_columns, alfull.n_columns, filter.als.n_columns );
 	return cci;
 }
 
@@ -2195,8 +2247,8 @@ CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_
 {
 	this->verbose=1;
 	this->candidate_list_conf.resize ( ct.N+1 ); // set a safe max
-	this->last_valid_conf.resize(ct.N+1);
-	this->alz.resize(ct.N+1);
+	this->last_valid_conf.resize ( ct.N+1 );
+	this->alz.resize ( ct.N+1 );
 
 	for ( size_t i=0; i< ( size_t ) ct.N; i++ ) {
 		this->candidate_list_conf[i].resize ( ct.N );
@@ -2217,7 +2269,7 @@ CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const
 }
 
 
-std::vector<cperm> CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const
+const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const
 {
 	std::vector<cperm> cx;
 
@@ -2246,97 +2298,107 @@ std::vector<cperm> CandidateGenerator::generateConfCandidates ( const array_link
 	int kstart=-1;
 
 	if ( startcol==-1 ) {
-		const int START_COL=2;
-		array_link als = al.selectFirstColumns ( START_COL );
-		startcol=START_COL+1;
+		int targetcol =al.n_columns+1;
 		int averbose=1;
+
+			int root=3;
+	if(kfinal==2)
+		root=2;
+	startcol=root;
 
 		double t0=get_time_ms();
 		const int ncmax=kz+1;
 		const int ncstart=kz+1;
-		conf_candidates_t tmp = generateCandidateExtensions ( ct, 0, ncstart, ncmax );
+		conf_candidates_t tmp = generateCandidateExtensions ( ct, 0, ncstart, ncmax, root );
 		ccX = tmp.ce[kz];
 
-	//::showCandidates(tmp.ce[kz]);
+		//::showCandidates(tmp.ce[kz]);
 
 		this->candidate_list_conf[kz][startcol] = ccX;
 		this->last_valid_conf[kz]= startcol;
-		kstart=startcol-1; // ??
+		kstart=startcol; // ??
 
 		if ( verbose>=2 ) {
-			printf ( "   ## %s: initial generate: %d\n", tag, ( int ) ccX.size() );
+			printf ( "   ## %s: initial generate: %d candidates (kstart %d, kfinal %d)\n", tag, ( int ) ccX.size(), kstart, kfinal );
+			this->startColumn ( al, kz , 1 );
 		}
 
 	} else {
 		// FIXME: check this bound is sharp
 		ccX = this->candidate_list_conf[kz][startcol];
 		this->last_valid_conf[kz]=startcol;
-		kstart=startcol-1; // ??
+		kstart=startcol; // ??
 
-		if ( verbose>=2 ) {
-			printf ( "   ## %s: initial cache: %d (startcol %d)\n", tag, ( int ) ccX.size(), startcol );
-			
+		if ( verbose>=2 || 0) {
+			printf ( "   ## %s: initial cache: %d (startcol %d, kstart %d, kfinal %d)\n", tag, ( int ) ccX.size(), startcol, kstart, kfinal );
+
 			conf_candidates_t tmp = generateCandidateExtensions ( ct, 0, kz+1, kz+1 );
 
-this->startColumn ( al, kz , 1);
-			
-			printf("from cache:\n");
-			::showCandidates(ccX);
-			printf("direct:\n");
-			::showCandidates(ccX);
+			this->startColumn ( al, kz , 1 );
+
+			if (0) {
+			printf ( "from cache:\n" );
+			::showCandidates ( ccX );
+			printf ( "direct:\n" );
+			::showCandidates ( ccX );
 			//exit(0);
+			}
 		}
 	}
 
-	array_link als;
+	// FIXME: used indices to lists
 
 	for ( int kx=kstart; kx<kfinal; kx++ ) {
-		als = al.selectFirstColumns ( kx );
+		// generates candidates for column index kx+1?
+		
 		array_link alx = al.selectFirstColumns ( kx+1 );
 		DconferenceFilter filter ( alx, 0, filterj2, filterj3 );
-
-		if ( verbose >=2 )
+ 
+		if ( verbose >=2 || 0 ) {
 			printf ( "## %s: at %d columns: start with %d extensions, to generate extensions for column %d (%d column array)\n", tag, kx+1, ( int ) ccX.size(), kx+1 , kx+2 );
 
-		cci = conferenceInflate ( ccX, als, alx, filter, ct, verbose>=2 );
-
+			printfd ( " --> inflate generates candindates for column %d\n", kx+1 );
+	}
+	size_t nprev=ccX.size();
+	
+		ccX = conferenceInflate ( ccX, alx, alx, filter, ct, verbose>=2 );
+		//ccX=cci;
 
 		if ( verbose >=2 ) {
-			printf ( "## %s: at %d columns: total inflated: %ld\n",tag,  kx+1, cci.size() );
+			printf ( "## %s: at %d columns: total inflated: %ld->%ld\n",tag,  kx+1, ccX.size(), (long)nprev );
 			printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
 		}
 
-		ccX=cci;
 
-		this->candidate_list_conf[kz][kx+2] = ccX;
-		this->last_valid_conf[kz]=kx+2;
+		this->candidate_list_conf[kz][kx+1] = ccX;
+		this->last_valid_conf[kz]=kx+1;
 	}
 
 	if ( verbose>=2 )
-		printf ( "CandidateGenerator::generateCandidate: generated %d candidates with %d columns\n",	( int ) this->candidate_list_conf[kz][ncfinal].size(), ncfinal );
+		printf ( "## %s: generated %d candidates for column index %d (with %d columns)\n",	tag, ( int ) this->candidate_list_conf[kz][ncfinal-1].size(), ncfinal-1, ncfinal );
 
 	this->alz[kz] = al;
-	
+
 	// FIXME: consistency check
-	if (0) {
+	if ( 0 ) {
 		conf_candidates_t tmp = generateCandidateExtensions ( ct, 0, kz+1, kz+1 );
 		cperm_list cctmp=tmp.ce[kz];
-		DconferenceFilter filter(al, 0, 1, 0);
-		
-		cctmp=filter.filterList(cctmp);
-		if (cctmp.size() != this->candidate_list_conf[kz][ncfinal].size()  || 1) {
-		printf("DIFF: direct %d -> cached %d\n", (int)	cctmp.size(), (int) this->candidate_list_conf[kz][ncfinal].size() );
+		DconferenceFilter filter ( al, 0, 1, 0 );
+
+		cctmp=filter.filterList ( cctmp );
+		if ( cctmp.size() != this->candidate_list_conf[kz][ncfinal].size()  || 1 ) {
+			printf ( "DIFF: direct %d -> cached %d\n", ( int )	cctmp.size(), ( int ) this->candidate_list_conf[kz][ncfinal].size() );
 		}
 	}
 //	std::vector<cperm> CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const
 
-	
-	return 	this->candidate_list_conf[kz][ncfinal];
+
+	return 	this->candidate_list_conf[kz][kfinal];
 
 	//return cx;
 }
 
-std::vector<cperm> CandidateGeneratorDouble::generateDoubleConfCandidates ( const array_link &al ) const
+const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidates ( const array_link &al ) const
 {
 
 	const char *tag = "generateDoubleConfCandidates (cache)";
@@ -2408,7 +2470,7 @@ std::vector<cperm> CandidateGeneratorDouble::generateDoubleConfCandidates ( cons
 	}
 
 	if ( verbose>=2 )
-		printf ( "CandidateGenerator::%s: generated %d candidates with %d columns\n",tag, 	( int ) this->candidate_list_double[ncfinal].size(), ncfinal );
+		printf ( "CandidateGenerator::%s: generated %d candidates with %d columns\n",tag,	( int ) this->candidate_list_double[ncfinal].size(), ncfinal );
 
 	if ( 0 ) {
 		printf ( "lastcol:\n" );

@@ -209,7 +209,9 @@ public:
 
 private:
 
+	/// candidate_list_conf[kz][k] are the valid candidates with a zero at position kz and at column index k
 	mutable std::vector< std::vector<cperm_list > > candidate_list_conf;
+	/// index of last valid entry in cache
 			mutable std::vector<int> last_valid_conf;
 
 public:
@@ -219,7 +221,7 @@ public:
 	/** generate candidates with caching
 	 * this method uses j2 filtering
 	 */
-	std::vector<cperm> generateConfCandidates ( const array_link &al, int kz ) const;
+	const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const;
 
 	void showCandidates() const {
 		
@@ -241,20 +243,23 @@ public:
 private:
 	/** find the starting column for the extension
 	 *
-	 * For startcol k the elements in candidate_list_conf[kz][k] are valid
+	 * Startcol is the index of the first column with valid elements, if corresponds to
+	 * startcol=k the elements in candidate_list_conf[kz][k] are valid
 	 */
 	int startColumn ( const array_link &alx, int kz, int verbose=0 ) const {
 		if ( this->alz[kz].n_columns!=alx.n_columns ) {
 			int startcol=-1;
+			//printfd(" ### reset because of column diff!\n");
 			return startcol;
 		}
 		int startcol = alz[kz].firstColumnDifference ( alx );
 
 		startcol = std::min ( startcol, last_valid_conf[kz] );
-		if ( startcol<2 )
+		if ( startcol<2 ) {
 			startcol=-1;
+		}
 		
-		if (verbose) {
+		if (verbose || startcol==-2) {
 				printfd("startColumn: startcol %d\n", startcol);
 				printf("-- cache --\n");
 				this->alz[kz].transposed().showarray();
@@ -290,7 +295,7 @@ public:
 	/** generate candidates with caching
 	 * this method uses symmetry inflation
 	 */
-	std::vector<cperm> generateDoubleConfCandidates ( const array_link &al ) const;
+	const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
 
 	void showCandidates() const {
 		printf ( "CandidateGenerator: N %d\n", this->ct.N );
@@ -469,16 +474,28 @@ public:
 	}
 
 	/// filter a list of cperms using the filter method
-	std::vector<cperm> filterList ( const std::vector<cperm> &lst ) const {
+	std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const {
 		std::vector<cperm> out;
 		for ( size_t i=0; i<lst.size(); i++ ) {
 			if ( this->filter ( lst[i] ) )
 				out.push_back ( lst[i] );
 		}
-		//printfd("filterList: %d -> %d\n", lst.size(), out.size() );
+		if (verbose)
+			printfd("filterList: %d -> %d\n", lst.size(), out.size() );
 		return out;
 	}
 
+	std::vector<cperm> filterListJ2last ( const std::vector<cperm> &lst ) const {
+		std::vector<cperm> out;
+		for ( size_t i=0; i<lst.size(); i++ ) {
+			if ( this->filterJ2last ( lst[i] ) )
+				out.push_back ( lst[i] );
+		}
+		//printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
+		return out;
+	
+	}
+	
 	/// filter a list of cperms using the filterZero method
 	std::vector<cperm> filterListZero ( const std::vector<cperm> &lst ) const {
 		std::vector<cperm> out;
@@ -599,6 +616,10 @@ public:
 	/// return True of the candidate extension satisfies the J2 check
 	bool filterJ2 ( const cperm &c ) const {
 		return ipcheck ( c, als, 0 );
+	}
+	/// return True of the candidate extension satisfies the J2 check for the last column of the array checked against
+	bool filterJ2last ( const cperm &c ) const {
+		return ipcheck ( c, als, als.n_columns-1 );
 	}
 	/// return True of the candidate extension satisfies the zero
 	bool filterZero ( const cperm &c ) const {

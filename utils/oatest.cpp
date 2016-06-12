@@ -191,6 +191,32 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	if (1) {
+		arraylist_t ll = readarrayfile ( "dummy-24-4.oa" );
+		array_link al=ll[0];
+		al.show();
+
+int N=al.n_rows;		
+				conference_t ctype(N, N);
+
+
+			array_link al2 = ctype.create_root();
+	array_link al3 = ctype.create_root_three();
+
+	
+	int extcol=6;
+	cperm_list ee= generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );
+	printf("generated %d\n", (int)ee.size() );
+
+	 ee= generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1 );
+	printf("generated %d\n", (int)ee.size() );
+		
+	DconferenceFilter filter(al, 0,1,0);
+	
+	filter.filterList(ee,1);
+	
+	exit(0);	
+	}
 
 	if ( 1 ) {
 
@@ -216,7 +242,7 @@ int main ( int argc, char* argv[] )
 		conference_t ct(N, 2*N);
 		CandidateGeneratorDouble cgenerator(array_link() , ct);
 		cgenerator.verbose=1;
-		cgenerator.showDoubleCandidates();
+		cgenerator.showCandidates();
 
 double t0;
 if (0) {
@@ -252,7 +278,7 @@ t0=get_time_ms();
 			int nc2=cc2.size();
 			
 		printf("%d: number of candidates: %d/%d\n", (int)i, nc1, nc2);	
-		cgenerator.showDoubleCandidates();
+		cgenerator.showCandidates();
 		
 		if(i==52 && 0) {
 			printf("cc1: \n");
