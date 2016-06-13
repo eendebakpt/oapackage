@@ -345,7 +345,7 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 /** Extend a list of conference designs with a single column.
  *
  */
-arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose );
+arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes = 0 );
 
 /** Extend a list of conference designs with a single column */
 arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose );

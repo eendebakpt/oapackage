@@ -169,7 +169,7 @@ int main ( int argc, char* argv[] )
 				break;
 
 			case CONFERENCE_ISOMORPHISM:
-				outlist = extend_conference ( inputarrays, ctype,  verbose );
+				outlist = extend_conference ( inputarrays, ctype,  verbose, select );
 				break;
 			default
 					:
@@ -184,7 +184,6 @@ int main ( int argc, char* argv[] )
 		}
 
 		if ( select ) {
-			//cprintf(verbose>=2, "start of selectConferenceIsomorpismClasses\n");
 			outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
 		}
 		sort ( outlist.begin(), outlist.end(), compareLMC0 );
