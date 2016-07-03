@@ -1605,13 +1605,13 @@ public:
 	bool ascending; /// ordering of elements
 
 public:
-	symmetry_group ( const std::vector<int> vals, bool ascending = true, int verbose=0 );
-	symmetry_group ( const std::vector<double> vals, bool ascending = true,int verbose=0 );
-	symmetry_group ( const std::vector<float> vals, bool ascending = true,int verbose=0 );
-	symmetry_group ( const std::vector<short int> vals, bool ascending = true,int verbose=0 );
-	symmetry_group ( const std::vector<unsigned int> vals, bool ascending = true,int verbose=0 );
-	symmetry_group ( const std::vector<mvalue_t<double> > vals, bool ascending = true,int verbose=0 );
-	symmetry_group ( const std::vector<mvalue_t<int> > vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<int> &vals, bool ascending = true, int verbose=0 );
+	symmetry_group ( const std::vector<double> &vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<float> &vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<short int> &vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<unsigned int> &vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<mvalue_t<double> > &vals, bool ascending = true,int verbose=0 );
+	symmetry_group ( const std::vector<mvalue_t<int> > &vals, bool ascending = true,int verbose=0 );
 	symmetry_group ( const symmetry_group &sgx ); /// copy constructor
 	symmetry_group ( ); /// default constructor
 
@@ -1620,6 +1620,8 @@ private:
 	template<class Type>
 	void init ( const std::vector<Type> vals, bool ascending = true, int verbose=0 );
 public:
+
+		symmetry_group& operator= ( const symmetry_group &sgx ); /// copy assignment
 
 #ifdef FULLPACKAGE
 	

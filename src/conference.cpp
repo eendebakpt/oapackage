@@ -196,6 +196,7 @@ conference_t::conference_t ( int N, int k )
 	this->ncols = k;
 	this->ctype = CONFERENCE_NORMAL;
 	this->itype = CONFERENCE_ISOMORPHISM;
+	this->j1zero = 1;
 	this->j3zero = 0;
 }
 
@@ -746,11 +747,21 @@ int innerprod ( const cperm &a, const cperm &b )
 	return ip;
 }
 
+/// helper function
+inline int check_symm_zero ( const cperm &c, const std::vector<int>  & check_indices, int i )
+{
+	if ( check_indices[i] ) {
+		if ( ( ( unsigned char ) c[i-1] ) > ( ( unsigned char ) c[i] ) ) {
+			// discard
+			return false;
+		}
+	}
+	return true;
+}
+
 /// helper function, return true if a candidate extensions satisfies the symmetry test
 int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
 {
-	//return true; // hack
-//	int k = sd.rowvalue.n_columns-1;
 
 	for ( int i=rowstart+1; i<rowend; i++ ) {
 		if ( check_indices[i] ) {
@@ -763,6 +774,37 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
 	// accept
 	return true;
 }
+
+/// helper function
+int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
+{
+	for ( int i=rowstart+1; i<rowend; i++ ) {
+		if ( check_indices[i] ) {
+			if ( ( ( unsigned char ) c[i-1] ) > ( ( unsigned char ) c[i] ) ) {
+				// hack
+				if ( c[i-1]!=0 && c[i]!=0 ) {
+					// discard
+
+					cperm xx ( c.begin() +rowstart, c.begin() +rowend ) ;
+					printf ( "# fix_symm: input %d: ", i );
+					print_cperm ( xx );
+					printf ( "\n" );
+
+
+					std::swap ( c[i-1], c[i] );
+					cperm xx2 ( c.begin() +rowstart, c.begin() +rowend ) ;
+					printf ( "# fix_symm: output %d: ", i );
+					print_cperm ( xx2 );
+					printf ( "\n" );
+					return false;
+				}
+			}
+		}
+	}
+	// accept
+	return true;
+}
+
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
 int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart )
@@ -1200,7 +1242,7 @@ indexsort rowsorter ( const array_link &al )
 struct branch_t {
 	int row;
 	int rval;
-	int nvals[3];	/// number of 0, 1, and -1
+	int nvals[3];	/// number of 0, 1, and -1 remaining
 };
 
 const int bvals[3] = {0,1,-1}; // these are ordered
@@ -1241,6 +1283,181 @@ public:
 	}
 };
 
+/// add new branches to a stack of branches
+inline void branch ( lightstack_t<branch_t> &branches, branch_t &b, const int * const ( &bvals ), int istart = 0, int iend = 3 )
+{
+	for ( int i=istart; i<iend; i++ ) {
+
+		if ( b.nvals[i]==0 )
+			continue;
+
+		branch_t bnew ( b );
+		bnew.row++;
+		bnew.rval = bvals[i];
+		bnew.nvals[i]--;
+		branches.push ( bnew );
+	}
+}
+
+template <class NumType>
+size_t countvalues ( const std::vector<NumType> &c, size_t start, size_t end, NumType value )
+{
+	size_t n=0;
+	for ( size_t i=start; i<end; i++ ) {
+		if ( c[i]==value )
+			n++;
+	}
+	return n;
+}
+
+void debug_candidate ( const cperm &candidate, const std::vector<int> &check_indices, const char *str )
+{
+	printfd ( "%s:\n", str ) ;
+	printf ( " : perm " );
+	print_cperm ( candidate );
+	printf ( "\n" );
+	cperm xx ( check_indices.begin() , check_indices.end() ) ;
+	printf ( " : chec " );
+	print_cperm ( xx );
+	printf ( "\n" );
+}
+
+
+std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices )
+{
+	std::vector<cperm> cc;
+	unsigned long iter=0;
+	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
+	unsigned long nbc=0;
+	do {
+		const int showd=0;
+
+		// FIXME: for larger block sizes do not use naive generation
+		if ( block<=4 && blocksize>1 && showd ) {
+			cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
+			//printf ( "  block %d, blocksize %d, iter %ld (k? %d): perm ", block, blocksize, iter, al.n_columns );
+			print_cperm ( xx );
+			printf ( "\n" );
+			cperm xxc ( check_indices.begin() +gstart, check_indices.begin() +gend );
+			cperm tmp ( check_indices.begin() +gstart, check_indices.begin() +gend );
+
+			printf ( "    : check: " );
+			print_cperm ( xxc );
+			printf ( " ---> %d\n",  satisfy_symm ( candidate, check_indices, gstart, gend ) );
+			//if (blocksize>20)
+			//	exit(0);
+		}
+		//cout << s1 << endl;
+		iter++;
+
+		// TODO: smart symmetry generation
+		if ( satisfy_symm ( candidate, check_indices, gstart, gend ) ) {
+			nbc++;
+			cc.push_back ( candidate );
+			//inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+		} else {
+			if ( 0 ) {
+				/// if large blocksize, then sort within block....
+				int tmp =true;
+				tmp= fix_symm ( candidate, check_indices, gstart, gend );
+				if ( tmp==false ) {
+					if ( showd ) {
+						printf ( " fix_symm: tmp %d, block %d, iter %ld: %d %d \n", tmp, block, ( long ) iter, gstart, gend );
+						cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
+						printf ( "                                    new : perm " );
+						print_cperm ( xx );
+						printf ( "\n" );
+					}
+					//goto mylabel;
+				}
+				if ( showd ) {
+					printf ( "# iter %ld\n", long ( iter ) );
+				}
+			}
+		}
+		// TODO: run inline filter
+	} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
+
+	if ( blocksize>10 ) {
+		printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
+		debug_candidate ( candidate, check_indices, "..." );
+	}
+	return cc;
+}
+std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices )
+{
+	std::vector<cperm> cc;
+	
+	printf("#### debug_branch: range %d %d\n", gstart, gend);
+debug_candidate(candidate, check_indices, "debug_branch");
+	const int showd = 1; // show debugging output
+	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
+	cperm candidatetmp ( candidate.begin(), candidate.end() );
+
+	const int N = gend-gstart;
+	// special construction for larger blocksizes
+	lightstack_t<branch_t> branches ( 3* ( gend-gstart+2 ) );
+
+	if ( showd )
+		printfd ( "inflation of large block: block %d, blocksize %d\n", block, blocksize );
+
+	// count items;
+	// push initial branches
+	branch_t b1 = {-1, -1, {-1,-1,-1} };
+	b1.nvals[0] = countvalues<signed char> ( candidate, gstart, gend, bvals[0] );
+	b1.nvals[1] = countvalues<signed char> ( candidate, gstart, gend, bvals[1] );
+	b1.nvals[2] = countvalues<signed char> ( candidate, gstart, gend, bvals[2] );
+
+	printf("  counts 1: %d 0: %d -1: %d\n", b1.nvals[0], b1.nvals[1], b1.nvals[2]);
+	branches.push ( b1 );
+
+		for ( int x=gstart; x<gend; x++ ) {
+		candidatetmp[x]=-9;
+	}
+
+	double t0=get_time_ms();
+
+	long n=0;
+	do {
+
+		branch_t b = branches.top();
+
+		branches.pop();
+		if ( b.row>=0 ) { // special check for dummy first branch element...
+			candidatetmp[b.row+gstart]=b.rval;
+		}
+
+		if ( b.row>=0 ) { // special check for dummy first branch element...
+			if ( check_symm_zero ( candidatetmp, check_indices, b.row+gstart ) ) {
+				// all good
+				debug_candidate ( candidatetmp, check_indices, printfstring ( "good    based on symmetry: block %d, row %d, range %d %d", block, b.row+gstart, gstart, gend ).c_str() );
+			} else {
+				// discard branch
+
+				debug_candidate ( candidatetmp, check_indices, printfstring ( "discard based on symmetry: block %d, row %d", block, b.row+gstart ).c_str() );
+				continue;
+			}
+		}
+		if ( b.row==N-1 ) {
+			n++;
+			// call the inflate function
+			//inflateCandidateExtensionHelper ( list, basecandidate, candidatetmp, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+			cc.push_back ( candidatetmp );
+			continue;
+		}
+
+		// perform branching
+		branch ( branches, b, bvals, 0, 3 );
+
+	} while ( ! branches.empty() );
+	if ( showd ) {
+		printfd ( "inflation of large block: blocksize %d: %d branch calls\n", blocksize, n );
+	}
+	return cc;
+}
+
+
+
 
 void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al,
                                        const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
@@ -1257,7 +1474,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		// TODO: make this loop in n-1 case?
 
 		ntotal++;
-		// TODO: this can probably be a restricted filter
+		// TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm check)
 		if ( filter.filter ( candidate ) ) {
 			list.push_back ( candidate );
 		}
@@ -1284,37 +1501,149 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		printf ( "\n" );
 	}
 
-	unsigned long iter=0;
-	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
-	do {
-		// FIXME: for larger block sizes do not use naive generation
-		if ( block<=4 && blocksize>1 && 0 ) {
-			cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
-			printf ( "  block %d, blocksize %d, iter %ld (k? %d)", block, blocksize, iter, al.n_columns );
-			print_cperm ( xx );
-			printf ( "\n" );
-		}
-		//cout << s1 << endl;
-		iter++;
+			if ( 0 ) {
 
-		// TODO: smart symmetry generation
-		if ( satisfy_symm ( candidate, check_indices, gstart, gend ) ) {
-			inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
-		}
-		// TODO: run inline filter
-	} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
+			std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices );
+			std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices );
 
+
+			printfd ( "## debug branching %ld -> %ld\n",(long) cc.size(), ( long ) ccd.size() );
+
+			printf ( " ---> orig list\n" );
+			showCandidates ( cc );
+			printf ( " ---> debug list\n" );
+			showCandidates ( ccd );
+			exit(0);
+		}
+
+	if ( blocksize<-1 || block >100 || 0 ) {
+		unsigned long iter=0;
+		std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
+		unsigned long nbc=0;
+		do {
+			const int showd=0;
+
+			// FIXME: for larger block sizes do not use naive generation
+			if ( block<=4 && blocksize>1 && showd ) {
+				cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
+				printf ( "  block %d, blocksize %d, iter %ld (k? %d): perm ", block, blocksize, iter, al.n_columns );
+				print_cperm ( xx );
+				printf ( "\n" );
+				cperm xxc ( check_indices.begin() +gstart, check_indices.begin() +gend );
+				cperm tmp ( check_indices.begin() +gstart, check_indices.begin() +gend );
+
+				printf ( "    : check: " );
+				print_cperm ( xxc );
+				printf ( " ---> %d\n",  satisfy_symm ( candidate, check_indices, gstart, gend ) );
+				//if (blocksize>20)
+				//	exit(0);
+			}
+			//cout << s1 << endl;
+			iter++;
+
+			// TODO: smart symmetry generation
+			if ( satisfy_symm ( candidate, check_indices, gstart, gend ) ) {
+				nbc++;
+				inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+			} else {
+				if ( 0 ) {
+					/// if large blocksize, then sort within block....
+					int tmp =true;
+					tmp= fix_symm ( candidate, check_indices, gstart, gend );
+					if ( tmp==false ) {
+						if ( showd ) {
+							printf ( " fix_symm: tmp %d, block %d, iter %ld: %d %d \n", tmp, block, ( long ) iter, gstart, gend );
+							cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
+							printf ( "                                    new : perm " );
+							print_cperm ( xx );
+							printf ( "\n" );
+						}
+						//goto mylabel;
+					}
+					if ( showd ) {
+						printf ( "# iter %ld\n", long ( iter ) );
+					}
+				}
+			}
+			// TODO: run inline filter
+		} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
+
+		if ( blocksize>10 && 0 ) {
+			printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
+			debug_candidate ( candidate, check_indices, "..." );
+		}
+
+	} else {
+		const int showd = 0; // show debugging output
+		std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
+		cperm candidatetmp ( candidate.begin(), candidate.end() );
+
+		for ( int x=gstart; x<gend; x++ ) {
+			candidatetmp[x]=-9;
+		}
+		const int N = gend-gstart;
+		// special construction for larger blocksizes
+		lightstack_t<branch_t> branches ( 3* ( gend-gstart+2 ) );
+
+		if ( showd )
+			printfd ( "inflation of large block: block %d, blocksize %d\n", block, blocksize );
+
+		// count items;
+		// push initial branches
+		branch_t b1 = {-1, -1, {-1,-1,-1} };
+	b1.nvals[0] = countvalues<signed char> ( candidate, gstart, gend, bvals[0] );
+	b1.nvals[1] = countvalues<signed char> ( candidate, gstart, gend, bvals[1] );
+	b1.nvals[2] = countvalues<signed char> ( candidate, gstart, gend, bvals[2] );
+
+	//printf("  counts 1: %d 0: %d -1: %d\n", b1.nvals[0], b1.nvals[1], b1.nvals[2]);
+
+	
+		branches.push ( b1 );
+
+		double t0=get_time_ms();
+
+		long n=0;
+		do {
+
+			branch_t b = branches.top();
+
+			branches.pop();
+			if ( b.row>=0 ) { // special check for dummy first branch element...
+				candidatetmp[b.row+gstart]=b.rval;
+			}
+
+			if ( b.row>=0 ) { // special check for dummy first branch element...
+				if ( check_symm_zero ( candidatetmp, check_indices, b.row+gstart ) ) {
+					// all good
+					//debug_candidate ( candidatetmp, check_indices, printfstring ( "good    based on symmetry: block %d, row %d, range %d %d", block, b.row+gstart, gstart, gend ).c_str() );
+				} else {
+					// discard branch
+
+					//debug_candidate ( candidatetmp, check_indices, printfstring ( "discard based on symmetry: block %d, row %d", block, b.row+gstart ).c_str() );
+					continue;
+				}
+			}
+			if ( b.row==N-1 ) {
+				n++;
+				// call the inflate function
+				inflateCandidateExtensionHelper ( list, basecandidate, candidatetmp, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
+				continue;
+			}
+
+			// perform branching
+			branch ( branches, b, bvals, 0, 3 );
+
+		} while ( ! branches.empty() );
+		if ( showd ) {
+			printfd ( "inflation of large block: blocksize %d: %d branch calls\n", blocksize, n );
+		}
+	}
 }
 
-std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const array_link &alx, const conference_t & ct, int verbose , const DconferenceFilter &filter )
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter )
 {
 	long ntotal=0;
 
-	// FIXME: cache this value!
-	symmetry_group alsg = als.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
-	symmetry_group alxsg = alx.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
-
-	const std::vector<int> check_indices = alxsg.checkIndices();
 
 	//printf ( "inflateCandidateExtension: symmetry group\n" ); alsg.show();
 
@@ -1346,7 +1675,6 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 	std::vector<cperm> cc;
 	cperm c ( al.n_rows );
 
-	//std::stack <branch_t> branches;
 	lightstack_t<branch_t> branches ( 3*N );
 
 	c[0]=1;
@@ -1385,6 +1713,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		if ( b.row==dfilter.inline_row && filterj3 ) {
 			// FIXME: inline_row can be one earlier?
 			if ( ! dfilter.filterJ3inline ( c ) )
+				// discard branch
 				continue;
 		}
 		if ( b.row==N-1 ) {
@@ -1413,17 +1742,9 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 			if ( c[b.row]==-1 ) {
 				istart=2;
 
-				if ( verbose>=3 ) {
-					printfd ( "symmetry: istart %d\n", istart );
-
-					printf ( "row %d: ", b.row );
-					print_cperm ( c );
-					printf ( "\n" );
-				}
 			}
 			if ( c[b.row]==1 && 1 ) {
 				istart=1;
-				//printfd("symmetry: istart %d\n", istart);
 			}
 		}
 		for ( int i=istart; i<iend; i++ ) {
@@ -1431,12 +1752,10 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 			if ( b.nvals[i]==0 )
 				continue;
 
-
 			//c[b.row]= bvals[i];
 			// checks
 			if ( ! ( 1 ) )
 				continue;
-
 
 			branch_t bnew ( b );
 			bnew.row++;
@@ -1464,7 +1783,6 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		//al.show();
 		//al.transposed().showarray(); showCandidates ( cc );
 	}
-
 	return cc;
 }
 
@@ -1867,7 +2185,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 	// TODO: cache candidate extensions
 	arraylist_t outlist;
 	if ( verbose>=2 ) {
-		printfd ( "extend_double_conference: start %d\n", ( int ) lst.size() );
+		printfd ( "extend_double_conference: start with %d arrays\n", ( int ) lst.size() );
 	}
 
 	int vb=std::max ( 0, verbose-1 );
@@ -1890,7 +2208,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
 		if ( verbose>=2 || ( verbose>=1 && ( i%200==0 || i==lst.size()-1 ) ) ) {
-			printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
+			printf ( "extend_conference: extended array %d/%d to %d/%d arrays\n", ( int ) i, ( int ) lst.size(), nn, ( int ) outlist.size() );
 			fflush ( 0 );
 		}
 	}
@@ -2078,10 +2396,9 @@ public:
 		this->nadd=0;
 
 	}
-	
-	size_t size() const
-	{
-	return candidates.size();	
+
+	size_t size() const {
+		return candidates.size();
 	}
 
 	void add ( const arraylist_t &lst ) {
@@ -2113,8 +2430,8 @@ public:
 				}
 				candidates=tmp;
 				reductions=tmpr;
-				if (verbose)
-					printf ( "  reduce ... %ld -> %ld \n", nstart, (long) candidates.size() );
+				if ( verbose )
+					printf ( "  reduce ... %ld -> %ld \n", nstart, ( long ) candidates.size() );
 
 			}
 		}
@@ -2131,6 +2448,7 @@ public:
 
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
 {
+	double t0=get_time_ms();
 	arraylist_t outlist;
 
 	if ( verbose>=2 ) {
@@ -2174,7 +2492,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 		//outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
 		if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
-			printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld)\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size() );
+			printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size(), get_time_ms()-t0 );
 			fflush ( 0 );
 		}
 	}
@@ -2204,7 +2522,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 			printf ( "selectConferenceIsomorpismClasses: reduce %d/%d\n", i, ( int ) lst.size() );
 		//array_link alx;
 
-		array_link alx = reduceMatrix ( lst[i], itype, verbose );
+		array_link alx = reduceMatrix ( lst[i], itype, 2* ( verbose>=3 ) );
 
 
 		lstr.push_back ( alx );
@@ -2377,13 +2695,19 @@ std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, cons
 	std::vector<cperm> cci;
 	std::vector<cperm> cc;
 	// loop over all candidinates with k columns and inflate to (k+1)-column candidates
+
+		symmetry_group alfullsg = alfull.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
+
+	const std::vector<int> check_indices = alfullsg.checkIndices();
+	symmetry_group alsg = als.row_symmetry_group(); //filter.sd.rowvalue.selectColumns(col));
+
 	for ( size_t i=0; i<ccX.size(); i++ ) {
 		cperm basecandidate = ccX[i];
 
 		if ( verbose>=2 )
 			printf ( "### inflate candidate:" );
 		//printf(" "); print_cperm( basecandidate); printf("\n");
-		cc=  inflateCandidateExtension ( basecandidate, als, alfull, ct, verbose, filter );
+		cc=  inflateCandidateExtension ( basecandidate, als, alsg, check_indices, ct, verbose, filter );
 
 		if ( verbose>2 ) {
 			printf ( "inflate: array %d/%d: generated %ld candidates\n", ( int ) i, ( int ) ccX.size(), ( long ) cc.size() );

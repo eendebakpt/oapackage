@@ -1462,10 +1462,16 @@ symmetry_group array_link::row_symmetry_group() const
 {
 
 	std::vector<mvalue_t<int> > rr;
+	const int nc = this->n_columns;
+	
 	for ( int i=0; i<this->n_rows; i++ ) {
 		mvalue_t<int> m;
-		for ( int k=0; k<this->n_columns; k++ )
-			m.v.push_back ( this->at ( i, k ) );
+		m.v.resize(nc);
+
+		for ( int k=0; k<nc; k++ ) {
+		//	m.v.push_back ( this->at ( i, k ) );
+			m.v[k]= this->atfast ( i, k );
+		}
 		rr.push_back ( m );
 	}
 	symmetry_group sg ( rr, true, 0 );

@@ -162,7 +162,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		arraylist_t kk;
 		array_link al = ctype.create_root();
 		kk.push_back ( al );
-
+		
 		for ( int extcol=2; extcol<N; extcol++ ) {
 			kk = extend_conference ( kk, ctype,  0 );
 		}

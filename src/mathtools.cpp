@@ -112,40 +112,51 @@ void symmetry_group::init ( const std::vector<Type> vals, bool ascendingx, int v
 	gsize[nsg]=0;
 }
 
-symmetry_group::symmetry_group ( const std::vector<float> vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<float> &vals, bool ascending, int verbose )
 {
 	this->init<float> ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector<double> vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<double> &vals, bool ascending, int verbose )
 {
 	this->init<double> ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector<short int> vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<short int> &vals, bool ascending, int verbose )
 {
 	this->init ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector<unsigned int> vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<unsigned int> &vals, bool ascending, int verbose )
 {
 	this->init ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector<int> vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<int> &vals, bool ascending, int verbose )
 {
 	this->init<int> ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector< mvalue_t<double> > vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector< mvalue_t<double> > &vals, bool ascending, int verbose )
 {
 	this->init ( vals, ascending, verbose );
 }
 
-symmetry_group::symmetry_group ( const std::vector<mvalue_t<int> > vals, bool ascending, int verbose )
+symmetry_group::symmetry_group ( const std::vector<mvalue_t<int> > &vals, bool ascending, int verbose )
 {
 	//printf("symmetry_group::symmetry_group: type <mvalue_t<int>: %zu, %zu\n", vals.size(), vals[0].size() );
 	this->init ( vals, ascending, verbose );
+}
+
+symmetry_group& symmetry_group::operator= ( const symmetry_group &sgx ) {
+	gidx = sgx.gidx;
+	gstart = sgx.gstart;
+	gsize = sgx.gsize;
+	ngroups = sgx.ngroups;
+	n = sgx.n;
+	ascending = sgx.ascending;
+	
+	return *this;
 }
 
 symmetry_group::symmetry_group ( const symmetry_group &sgx )
