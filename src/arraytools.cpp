@@ -1461,18 +1461,18 @@ array_link array_link::reduceLMC() const
 symmetry_group array_link::row_symmetry_group() const
 {
 
-	std::vector<mvalue_t<int> > rr;
 	const int nc = this->n_columns;
 	
+	std::vector<mvalue_t<int> > rr(this->n_rows);
 	for ( int i=0; i<this->n_rows; i++ ) {
-		mvalue_t<int> m;
+		//mvalue_t<int> m;
+		mvalue_t<int> &m = rr[i];
 		m.v.resize(nc);
 
 		for ( int k=0; k<nc; k++ ) {
-		//	m.v.push_back ( this->at ( i, k ) );
 			m.v[k]= this->atfast ( i, k );
 		}
-		rr.push_back ( m );
+		//rr.push_back ( m );
 	}
 	symmetry_group sg ( rr, true, 0 );
 	return sg;
