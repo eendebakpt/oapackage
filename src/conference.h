@@ -355,10 +355,10 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
 
 /// select representatives for the isomorphism classes of a list of conference arrays
-arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t list, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
+arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
-std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
+std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
 /** Generate candidate extensions
  *
@@ -535,10 +535,10 @@ public:
 		return true;
 	}
 	/// return True of the extension satisfies all J-characteristic checks
-	bool filterJ ( const cperm &c ) const {
+	bool filterJ ( const cperm &c, int j2start=0 ) const {
 		if ( filterj2 ) {
 			// perform inner product check for all columns
-			if ( ! ipcheck ( c, als, 0 ) ) {
+			if ( ! ipcheck ( c, als, j2start ) ) {
 				return false;
 			}
 		}

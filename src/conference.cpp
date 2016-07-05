@@ -1472,8 +1472,9 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		// TODO: make this loop in n-1 case?
 
 		ntotal++;
+		const int j2start=std::max(0, al.n_columns-2);
 		// TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm check)
-		if ( filter.filterJ ( candidate ) ) {
+		if ( filter.filterJ ( candidate, j2start ) ) {
 			list.push_back ( candidate );
 		}
 		return;
@@ -1517,7 +1518,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 			exit(0);
 		}
 
-	if ( blocksize<-1 || block >100 || 0 ) {
+	if ( blocksize<3 || block >1 || 1 ) {
 		unsigned long iter=0;
 		std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
 		unsigned long nbc=0;
@@ -2274,6 +2275,7 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
 
 
 /// FIXME: name
+/// FIXME: reduce to more compact format
 array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int verbose )
 {
 	array_link alx;
@@ -2487,11 +2489,12 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	//return outlist;
 }
 
-std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t lst, int verbose, matrix_isomorphism_t itype )
+std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
 {
 	const int nn = lst.size();
 
 	arraylist_t lstr;
+	double t0=get_time_ms();
 
 	// safety check
 	if ( lst.size() >0 ) {
@@ -2543,46 +2546,29 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 		cidx[i]=ci;
 	}
 
-	if ( verbose )
-		myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d\n", ( int ) lst.size(), ( int ) lstgood.size() );
-
+	if ( verbose ) {
+		double dt=get_time_ms()-t0;
+		myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d (%.1f kArrays/h)\n", ( int ) lst.size(), ( int ) lstgood.size(), 3600*1e-3*double(lst.size() ) /dt );
+	}
 	return std::pair<arraylist_t, std::vector<int> > ( lstgood, cidx );
 }
 
 
 
-std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t lst, int verbose,  matrix_isomorphism_t itype )
+std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype )
 {
 
 	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose, itype ) ;
 	return pp.second;
 }
 
-arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t lst, int verbose, matrix_isomorphism_t itype )
+arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
 {
 
 	std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose , itype ) ;
 	return pp.first;
 }
-/*
-bool compareLMC0x ( const array_link &alL, const array_link &alR )
-{
-	array_link L = alL;
-	array_link R = alR;
 
-	assert ( alL.n_rows==alR.n_rows );
-	assert ( alL.n_columns==alR.n_columns );
-
-	size_t nn = alL.n_columns*alL.n_rows;
-	for ( size_t i=0; i<nn; i++ ) {
-		if ( L.array[i]==0 )
-			L.array[i]=-100;
-		if ( R.array[i]==0 )
-			R.array[i]=-100;
-	}
-	return L < R;
-}
-*/
 
 /// return true of alL is smaller than alR in LMC-0 ordering
 bool compareLMC0 ( const array_link &alL, const array_link &alR )
