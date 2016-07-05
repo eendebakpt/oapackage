@@ -202,8 +202,8 @@ int main ( int argc, char* argv[] )
 			if ( outlist.size() < 20000 )
 				writearrayfile ( outfile.c_str(),outlist );
 			else {
-				FIXME: implement binary file for -1,0,1
-				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
+				writearrayfile ( outfile.c_str(),outlist, ABINARY);
+				//writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
 			}
 		}
 

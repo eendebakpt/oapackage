@@ -1323,14 +1323,13 @@ void debug_candidate ( const cperm &candidate, const std::vector<int> &check_ind
 }
 
 
-std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices )
+std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices , int showd)
 {
 	std::vector<cperm> cc;
 	unsigned long iter=0;
 	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
 	unsigned long nbc=0;
 	do {
-		const int showd=0;
 
 		// FIXME: for larger block sizes do not use naive generation
 		if ( block<=4 && blocksize>1 && showd ) {
@@ -1384,13 +1383,12 @@ std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int bl
 	}
 	return cc;
 }
-std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices )
+std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices, int showd )
 {
 	std::vector<cperm> cc;
 	
 	printf("#### debug_branch: range %d %d\n", gstart, gend);
 debug_candidate(candidate, check_indices, "debug_branch");
-	const int showd = 1; // show debugging output
 	std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
 	cperm candidatetmp ( candidate.begin(), candidate.end() );
 
@@ -1475,7 +1473,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 
 		ntotal++;
 		// TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm check)
-		if ( filter.filter ( candidate ) ) {
+		if ( filter.filterJ ( candidate ) ) {
 			list.push_back ( candidate );
 		}
 		return;
@@ -1501,13 +1499,16 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		printf ( "\n" );
 	}
 
-			if ( 0 ) {
+			if ( blocksize>8 && 0) {
 
-			std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices );
-			std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices );
+				double tx0=get_time_ms();
+			std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
+				double tx1=get_time_ms();
+			std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
+				double tx2=get_time_ms();
 
 
-			printfd ( "## debug branching %ld -> %ld\n",(long) cc.size(), ( long ) ccd.size() );
+			printfd ( "## debug branching %ld -> %ld (%.3f %.3f)\n",(long) cc.size(), ( long ) ccd.size(), tx1-tx0, tx2-tx1 );
 
 			printf ( " ---> orig list\n" );
 			showCandidates ( cc );
@@ -1546,24 +1547,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 				nbc++;
 				inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
 			} else {
-				if ( 0 ) {
-					/// if large blocksize, then sort within block....
-					int tmp =true;
-					tmp= fix_symm ( candidate, check_indices, gstart, gend );
-					if ( tmp==false ) {
-						if ( showd ) {
-							printf ( " fix_symm: tmp %d, block %d, iter %ld: %d %d \n", tmp, block, ( long ) iter, gstart, gend );
-							cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
-							printf ( "                                    new : perm " );
-							print_cperm ( xx );
-							printf ( "\n" );
-						}
-						//goto mylabel;
-					}
-					if ( showd ) {
-						printf ( "# iter %ld\n", long ( iter ) );
-					}
-				}
+			
 			}
 			// TODO: run inline filter
 		} while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );

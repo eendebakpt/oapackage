@@ -534,6 +534,23 @@ public:
 		ngood++;
 		return true;
 	}
+	/// return True of the extension satisfies all J-characteristic checks
+	bool filterJ ( const cperm &c ) const {
+		if ( filterj2 ) {
+			// perform inner product check for all columns
+			if ( ! ipcheck ( c, als, 0 ) ) {
+				return false;
+			}
+		}
+		if ( filterj3 ) {
+			// perform inner product check for all columns
+			if ( ! this->filterJ3 ( c ) ) {
+				return false;
+			}
+		}
+		ngood++;
+		return true;
+	}
 	/// return True of the extension satisfies all checks
 	bool filterReason ( const cperm &c ) const {
 		if ( filterfirst ) {
