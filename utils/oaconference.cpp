@@ -201,8 +201,10 @@ int main ( int argc, char* argv[] )
 
 			if ( outlist.size() < 20000 )
 				writearrayfile ( outfile.c_str(),outlist );
-			else
+			else {
+				FIXME: implement binary file for -1,0,1
 				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
+			}
 		}
 
 		printf ( "oaconference: extend column %d: generated %d non-isomorphic arrays (%.1f [s])\n", extcol, ( int ) outlist.size(),  get_time_ms(t0) );

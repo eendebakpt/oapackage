@@ -2187,6 +2187,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 	if ( verbose>=2 ) {
 		printfd ( "extend_double_conference: start with %d arrays\n", ( int ) lst.size() );
 	}
+double t0=get_time_ms();
 
 	int vb=std::max ( 0, verbose-1 );
 
@@ -2208,7 +2209,8 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 		outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
 		if ( verbose>=2 || ( verbose>=1 && ( i%200==0 || i==lst.size()-1 ) ) ) {
-			printf ( "extend_conference: extended array %d/%d to %d/%d arrays\n", ( int ) i, ( int ) lst.size(), nn, ( int ) outlist.size() );
+			double dt = get_time_ms() - t0;
+			printf ( "extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( int ) outlist.size(), dt );
 			fflush ( 0 );
 		}
 	}
@@ -2275,7 +2277,7 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
 		if ( al!=prev ) {
 			// new isomorphism class
 			ci++;
-			if ( verbose>=2 )
+			if ( verbose>=3 )
 				printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", ( int ) ci, ( int ) idx[i] );
 			ridx.push_back ( idx[i] );
 			//lstgood.push_back (	lst[idx[i]] );
@@ -2547,7 +2549,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 		array_link al=lstr[idx[i]];
 		if ( al!=prev ) {
 			// new isomorphism class
-			if ( verbose>=2 )
+			if ( verbose>=3 )
 				printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", ( int ) lstgood.size(), ( int ) idx[i] );
 
 			lstgood.push_back (	lst[idx[i]] );

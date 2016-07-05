@@ -203,6 +203,7 @@ int N=al.n_rows;
 			array_link al2 = ctype.create_root();
 	array_link al3 = ctype.create_root_three();
 
+	//arraylist_t lst; lst.push_back(al3); writearrayfile("test.oa", lst, arrayfile::ABINARY);
 	
 	int extcol=6;
 	cperm_list ee= generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );

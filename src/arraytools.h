@@ -1775,11 +1775,14 @@ public:
 
 	/// return number of bits necessary to store an array
 	static int arrayNbits ( const array_link &A ) {
-		int m=0;
-		for ( int i=0; i<A.n_columns*A.n_rows; ++i ) {
-			if ( A.array[i]>m )
-				m = A.array[i];
-		}
+		int m=A.max();
+                               int amin = A.min();
+                               m = std::max(m, -amin+1);
+		//int m=0;
+		//for ( int i=0; i<A.n_columns*A.n_rows; ++i ) {
+		//	if ( A.array[i]>m )
+		//		m = A.array[i];
+		//}
 		if ( m==1 )
 			return 1;	// bit
 		else
@@ -2090,3 +2093,4 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 #endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+
