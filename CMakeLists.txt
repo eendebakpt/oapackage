@@ -255,6 +255,7 @@ endmacro()
 ############### Programs ################################
   
 set(nautysrc nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c) #  nauty/gtools.c
+include_directories(.)
 include_directories(nauty)
 
 set(graphsrc )
@@ -266,7 +267,7 @@ if(OAEXTEND)
   list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oa_depth_extend oaextendA oaclustergather)
+  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
 endif()
    
 if (WIN32)

@@ -92,8 +92,6 @@ paretomethod_t paretoj5 = (paretomethod_t) opt.getIntValue ( "paretomethod", PAR
 		}
 	calculateParetoEvenOdd ( infiles, outputprefix, verbose, afmode, nr, nc, paretoj5);
 	
-
-	return 0;
 	
 	return 0;
 }

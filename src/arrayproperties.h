@@ -96,7 +96,7 @@ std::vector<double> projectionGWLPvalues ( const array_link &al );
  */
 double CL2discrepancy(const array_link &al);
 
-/// calculate second order interaction matrix for 2-level array
+/// calculate second order interaction matrix for 2-level array (does not include intercept and matrix itself)
 array_link array2secondorder ( const array_link &al );
 
 /// add intercept and second order interactions to a 2-level array
@@ -141,8 +141,8 @@ private:
 
 public:
 		/// constructor
-	rankStructure ( const array_link &al, int nsub =  3 ) {
-		verbose=0;
+	rankStructure ( const array_link &al, int nsub =  3, int verbose=0 ) {
+		this->verbose=verbose;
 		//ks = al.n_columns;
 		ks=0;
 		this->nsub=nsub;
