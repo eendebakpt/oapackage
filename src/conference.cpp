@@ -2002,7 +2002,8 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 	return ce;
 }
 
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos )
+//conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose, int maxzpos )
 {
 	conference_extend_t ce;
 	ce.extensions.resize ( 0 );
