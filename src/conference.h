@@ -4,6 +4,7 @@
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -340,7 +341,7 @@ private:
 conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
 
 /// helper function
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGeneratorDouble &cgenerator );
+conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGeneratorDouble &cgenerator );
 
 /** Extend a list of conference designs with a single column.
  *

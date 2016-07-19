@@ -21,7 +21,6 @@
 
 #include "timsort.hpp"
 
-//#include "oadevelop.h"
 #include "evenodd.h"
 #include "pareto.h"
 
@@ -391,8 +390,6 @@ jcounter.show();
 				printf ( "writing numbers file %s\n", numbersfile );
 			writeStatisticsFile ( numbersfile, jc, 0 );
 		}
-
-
 
 		if ( verbose>=1 ) {
 			printf ( "  total number of arrays: %ld, %.1f Marrays/hour\n", jc.narrays(), double ( 3600./1e6 ) * double ( jc.narrays() ) / ( get_time_ms()-time0 ) );

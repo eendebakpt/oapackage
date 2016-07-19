@@ -46,10 +46,13 @@ For more information please contact Pieter Eendebak, <pieter.eendebak@gmail.com>
 #include "tools.h"
 #include "arrayproperties.h"
 
+#ifdef SWIG
+#else
 #define ORDER_J5_SMALLER >
 #define ORDER_J5_GREATER <
 #define ORDER_J45_SMALLER >
 #define ORDER_J45_GREATER <
+#endif
 
 // forward declaration
 class OAextend;

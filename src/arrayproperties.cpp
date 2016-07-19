@@ -788,7 +788,7 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 
 Eigen::MatrixXd array2xfeigen ( const array_link &al )
 {
-	return arraylink2eigen ( array2xf ( al ) ); // TODO: convert this into single call
+	return arraylink2eigen ( array2xf ( al ) ); // FIXME: convert this into single call
 }
 
 
@@ -797,8 +797,6 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 {
 	int k = al.n_columns;
 	int n = al.n_rows;
-
-	//Eigen::Map<Eigen::MatrixXd> v(al.array,al.n_rows, al.n_columns);
 
 	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
 
@@ -937,6 +935,7 @@ int rankStructure::rankxf ( const array_link &al )
 	if ( verbose>=2 )
 		printfd ( "rankStructure: check 0\n" );
 
+	printf("FIXME: make this faster\n");
 	Eigen::MatrixXd A = array2xfeigen ( al );
 
 	// caculate permutation

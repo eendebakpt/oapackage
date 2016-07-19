@@ -2031,7 +2031,7 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 	return ce;
 }
 
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator )
+conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator )
 {
 	conference_extend_t ce;
 	ce.extensions.resize ( 0 );
@@ -2469,7 +2469,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 	for ( size_t i=0; i<lst.size(); i++ ) {
 		const array_link &al = lst[i];
 		int extcol=al.n_columns;
-		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1, cgenerator );
+		conference_extend_t ce = extend_conference_matrix_generator ( al, ctype, extcol, vb, -1, cgenerator );
 
 		arraylist_t ll = ce.getarrays ( al );
 		const int nn = ll.size();

@@ -141,105 +141,106 @@ int main(int argc, char *argv[])
         //printf("i %d\n", i);
         array_link A = ll[i];
         array_link B = array2xf(A);
-        int r1 = arrayrankSVD(B);
+            int r1 = arrayrankColPivQR(B);
         //printf("i %d: r values %d %d %d\n", (int)i, r1, r2, r3);
         rr[i] = r1;
-        
-        if (verbose>=3) {
-        B.show();
-        int r3 = arrayrankFullPivLU(B);
-        int r2 = arrayrankColPivQR(B);
-        }        
+
+        if (verbose >= 3) {
+            B.show();
+            int r3 = arrayrankFullPivLU(B);
+        int r2 = arrayrankSVD(B);
+        }
     }
+        const array_link al0 = ll[0];
     printf("warm-up complete\n");
 //return 0;
 
-    t0 = get_time_ms();
-    for (size_t i = 0; i < ll.size(); i++) {
-        array_link A = ll[i];
-        array_link B = array2secondorder(A);
-    }
-    dt = get_time_ms() - t0;
-    printf("oaranktest: conversion to second order (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
-
-
-    if (1) {
+    if (0) {
         t0 = get_time_ms();
         for (size_t i = 0; i < ll.size(); i++) {
             array_link A = ll[i];
-            array_link B = array2xf(A);
-            int r = arrayrankSVD(B);
-            if (r != rr[i]) {
-                printfd("i %d, r %d rr[i] %d\n", i, r, rr[i]);
-            }
-            assert(r == rr[i]);
+            array_link B = array2secondorder(A);
         }
         dt = get_time_ms() - t0;
-        printf("oaranktest: rank SVD (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+        printf("oaranktest: conversion to second order (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+
+
+        if (1) {
+            t0 = get_time_ms();
+            for (size_t i = 0; i < ll.size(); i++) {
+                array_link A = ll[i];
+                array_link B = array2xf(A);
+                int r = arrayrankSVD(B);
+                if (r != rr[i]) {
+                    printfd("i %d, r %d rr[i] %d\n", i, r, rr[i]);
+                }
+                assert(r == rr[i]);
+            }
+            dt = get_time_ms() - t0;
+            printf("oaranktest: rank SVD (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+        }
+
+        if (1) {
+
+            t0 = get_time_ms();
+            for (size_t i = 0; i < ll.size(); i++) {
+                array_link A = ll[i];
+                array_link B = array2xf(A);
+                int r = arrayrankFullPivLU(B);
+                //printfd("i %d, r %d rr[i] %d rr[43] %d\n", i, r, rr[i], rr[43]);
+
+                if (r != rr[i]) {
+                    printfd("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
+                }
+                assert(r == rr[i]);
+            }
+            dt = get_time_ms() - t0;
+            printf("oaranktest: rank FullPivLU (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+        }
+
+        if (verbose >= 2) {
+            array2xf(al0).showarray();
+        }
+        if (1) {
+            t0 = get_time_ms();
+            for (size_t i = 0; i < ll.size(); i++) {
+                array_link A = ll[i];
+                array_link B = array2xf(A);
+                int r = arrayrankColPivQR(B);
+                if (r != rr[i]) {
+                    printfd("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
+                }
+                assert(r == rr[i]);
+            }
+            dt = get_time_ms() - t0;
+            printf("oaranktest: rank ColPiv (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+        }
     }
+        int nsub = 2;
+        rankStructure rs(al0.selectFirstColumns(al0.n_columns - nsub), nsub, 0);
+        if (verbose >= 2) {
+            rs.alsub.show();
+            printf("subrank: %d\n", arrayrankFullPivLU(array2xf(rs.alsub)));
+            printf("---\n\n");
+        }
+        //rs.verbose=0;
 
-    if (1) {
-
+        //rs.verbose = 2;
         t0 = get_time_ms();
         for (size_t i = 0; i < ll.size(); i++) {
             array_link A = ll[i];
-            array_link B = array2xf(A);
-            int r = arrayrankFullPivLU(B);
-            //printfd("i %d, r %d rr[i] %d rr[43] %d\n", i, r, rr[i], rr[43]);
-
+            //array_link B = array2xf(A);
+            int r = rs.rankxf(A);
             if (r != rr[i]) {
                 printfd("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
             }
             assert(r == rr[i]);
         }
         dt = get_time_ms() - t0;
-        printf("oaranktest: rank FullPivLU (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
-    }
-
-    array_link al = ll[0];
-    if (verbose >= 2) {
-        array2xf(al).showarray();
-    }
-    if (1) {
-        t0 = get_time_ms();
-        for (size_t i = 0; i < ll.size(); i++) {
-            array_link A = ll[i];
-            array_link B = array2xf(A);
-            int r = arrayrankColPivQR(B);
-            if (r != rr[i]) {
-                printfd("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
-            }
-            assert(r == rr[i]);
-        }
-        dt = get_time_ms() - t0;
-        printf("oaranktest: rank ColPiv (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
-    }
-
-    int nsub = 2;
-    rankStructure rs(al.selectFirstColumns(al.n_columns - nsub), nsub, 0);
-    if (verbose >= 2) {
-        rs.alsub.show();
-        printf("subrank: %d\n", arrayrankFullPivLU(array2xf(rs.alsub)));
-        printf("---\n\n");
-    }    
-    //rs.verbose=0;
-
-    //rs.verbose = 2;
-    t0 = get_time_ms();
-    for (size_t i = 0; i < ll.size(); i++) {
-        array_link A = ll[i];
-        //array_link B = array2xf(A);
-        int r = rs.rankxf(A);
-        if (r != rr[i]) {
-            printfd("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
-        }
-        assert(r == rr[i]);
-    }
-    dt = get_time_ms() - t0;
-    printf("oaranktest: rank ColPivHouseholderQR-cache2 (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
-
+        printf("oaranktest: rank ColPivHouseholderQR-cache2 (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
+    
     nsub = 4;
-    rs = rankStructure(al.selectFirstColumns(al.n_columns - nsub), nsub);
+    rs = rankStructure(al0.selectFirstColumns(al0.n_columns - nsub), nsub);
     t0 = get_time_ms();
     for (size_t i = 0; i < ll.size(); i++) {
         array_link A = ll[i];
@@ -253,8 +254,8 @@ int main(int argc, char *argv[])
     dt = get_time_ms() - t0;
     printf("oaranktest: rank ColPivHouseholderQR-cache (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
 
-        nsub = 3;
-    rs = rankStructure(al.selectFirstColumns(al.n_columns - nsub), nsub);
+    nsub = 3;
+    rs = rankStructure(al0.selectFirstColumns(al0.n_columns - nsub), nsub);
     t0 = get_time_ms();
     for (size_t i = 0; i < ll.size(); i++) {
         array_link A = ll[i];
