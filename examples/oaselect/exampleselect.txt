@@ -1,0 +1,49 @@
+# First create oaconfig.txt with the following content:
+# 
+# runs 24
+# strength 2
+# nfactors 7
+#2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+
+
+oaextendsingle -l 2 --maxk 5
+
+oainfo *oa*
+
+# select designs with double rows
+oa_select.py result-24.2-2-2-2-2.oa selected5.oa -f TEXT -s double
+
+# extend
+oaextendsingle -r selected5.oa --maxk 6 -l 2
+
+# select designs with double rows
+oa_select.py result-24.2-2-2-2-2-2.oa selected6.oa -f TEXT -s double
+
+oaextendsingle -r selected6.oa --maxk 7 -l 2 -f B
+
+# select designs with double rows
+oa_select.py result-24.2-2-2-2-2-2-2.oa selected7.oa -f BINARY -s double
+
+# select 1 in 10 arrays
+oa_select.py selected7.oa selected7sub.oa -f BINARY -s subset --nsubset 10
+
+oaextendsingle -r selected7sub.oa --maxk 8 -l 2 -f B
+
+oa_select.py result-24.2-2-2-2-2-2-2-2.oa selected8.oa -f BINARY -s double
+
+# select 1 in 10 arrays
+oa_select.py selected8.oa selected8sub.oa -f BINARY -s subset --nsubset 10
+
+# extend
+oaextendsingle -r selected8sub.oa --maxk 9 -l 2 -f B
+oa_select.py result-24.2-2-2-2-2-2-2-2-2.oa selected9.oa -f BINARY -s double
+
+# extend
+oaextendsingle -r selected9.oa --maxk 10 -l 2 -f B
+oa_select.py result-24.2-2-2-2-2-2-2-2-2-2.oa selected10.oa -f BINARY -s double
+
+# extend
+oaextendsingle -r selected10.oa --maxk 11 -l 2 -f B
+oa_select.py result-24.2-2-2-2-2-2-2-2-2-2-2.oa selected11.oa -f T -s double
+
+
