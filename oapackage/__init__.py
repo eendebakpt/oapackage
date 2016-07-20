@@ -12,7 +12,6 @@ from oalib import *
 from . oahelper import *
 # import .Doptim
 from . Doptim import *
-# import scanf
 from . import scanf
 
 import numpy as np
