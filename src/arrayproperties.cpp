@@ -786,10 +786,102 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 	return v;
 }
 
-Eigen::MatrixXd array2xfeigen ( const array_link &al )
+Eigen::MatrixXd array2xfeigen2 ( const array_link &al )
 {
-	return arraylink2eigen ( array2xf ( al ) ); // FIXME: convert this into single call
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
+	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
+
+	array_link out ( n, m, array_link::INDEX_DEFAULT );
+
+	// init first column
+	int ww=0;
+	for ( int r=0; r<n; ++r ) {
+		mymatrix ( r, 0 ) =1;
+	}
+
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		//array_t *pout = out.array+ ( ww+c ) *out.n_rows;
+		for ( int r=0; r<n; ++r ) {
+			//pout[r] = al.array[r+ci];
+			mymatrix(r, ww+c) = al.array[r+ci];
+		}
+	}
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2*n;
+
+			const array_t * p1 = al.array+ci;
+			const array_t * p2 = al.array+ci2;
+			array_t *pout = out.array+ww*out.n_rows;
+
+			for ( int r=0; r<n; ++r ) {
+				mymatrix(r,ww) = ( p1[r]+p2[r] ) %2 ;
+			}
+			ww++;
+		}
+	}
+
+
+	mymatrix *= 2;
+	mymatrix.array() -= 1; 
+
+	return mymatrix;
 }
+
+Eigen::MatrixXd array2xfeigen3 ( const array_link &al )
+{
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
+	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,m );
+
+	// init first column
+	int ww=0;
+	//mymatrix.col(0).setConstant(1);
+	for ( int r=0; r<n; ++r ) {
+		mymatrix ( r, 0 ) =1;
+	}
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int r=0; r<n; ++r ) {
+			mymatrix(r, ww+c) = 2*al.array[r+ci]-1;
+		}
+	}
+
+	//	mymatrix.block(0,0, n, k+1).array() -= 1; 
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c+1;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2+1;
+
+			for ( int r=0; r<n; ++r ) {
+				mymatrix(r,ww) = -mymatrix(r, ci)*mymatrix(r,ci2);
+			}
+			ww++;
+		}
+	}
+
+	return mymatrix;
+}
+
+//Eigen::MatrixXd array2xfeigen ( const array_link &al )
+//{
+//	return arraylink2eigen ( array2xf ( al ) ); // FIXME: convert this into single call
+//}
 
 
 /// convert array to Eigen matrix structure
@@ -1128,11 +1220,11 @@ array_link array2xf ( const array_link &al )
 		int ci = c*n;
 		array_t *pout = out.array+ ( ww+c ) *out.n_rows;
 		for ( int r=0; r<n; ++r ) {
-//			out._setvalue  ( r, ww+c,  al.array[r+ci] );
 			pout[r] = al.array[r+ci];
 		}
 	}
 
+	// FIXME: make this faster my using pure multiplication
 	// init interactions
 	ww=k+1;
 	for ( int c=0; c<k; ++c ) {
@@ -1145,7 +1237,6 @@ array_link array2xf ( const array_link &al )
 			array_t *pout = out.array+ww*out.n_rows;
 
 			for ( int r=0; r<n; ++r ) {
-				//out._setvalue(r, ww , ( p1[r]+p2[r] ) %2 );
 				pout[r] = ( p1[r]+p2[r] ) %2 ;
 			}
 			ww++;

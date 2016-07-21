@@ -128,6 +128,46 @@ inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
 	mymatrix.array() -= 1;
 }
 
+Eigen::MatrixXd array2xfeigen3 ( const array_link &al )
+{
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
+	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,m );
+
+	// init first column
+	int ww=0;
+	//mymatrix.col(0).setConstant(1);
+	for ( int r=0; r<n; ++r ) {
+		mymatrix ( r, 0 ) =1;
+	}
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int r=0; r<n; ++r ) {
+			mymatrix(r, ww+c) = 2*al.array[r+ci]-1;
+		}
+	}
+
+	//	mymatrix.block(0,0, n, k+1).array() -= 1; 
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c+1;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2+1;
+
+			for ( int r=0; r<n; ++r ) {
+				mymatrix(r,ww) = -mymatrix(r, ci)*mymatrix(r,ci2);
+			}
+			ww++;
+		}
+	}
+
+	return mymatrix;
+}
 
 
 int main ( int argc, char* argv[] )
@@ -191,6 +231,22 @@ int main ( int argc, char* argv[] )
 
 	setloglevel ( SYSTEM );
 
+	array_link al = exampleArray(2);
+	al.showarray();
+		Eigen::MatrixXd m1 = array2xfeigen ( al);
+	//std::cout << (m1) << std::endl; exit(0);		
+		
+	Eigen::MatrixXd m2 = array2xfeigen3 ( al);
+
+	std::cout << (m1-m2) << std::endl;
+	
+	for(int i=0; i<1000000; i++) {
+	//Eigen::MatrixXd m = array2xfeigen ( al);
+	Eigen::MatrixXd m = array2xfeigen3 ( al);
+	}
+	
+	exit(0);
+	
 	if (1) {
 		arraylist_t ll = readarrayfile ( "dummy-24-4.oa" );
 		array_link al=ll[0];
