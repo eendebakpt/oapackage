@@ -169,6 +169,51 @@ Eigen::MatrixXd array2xfeigen3 ( const array_link &al )
 	return mymatrix;
 }
 
+array_link array2xf2 ( const array_link &al )
+{
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
+	array_link out ( n, m, array_link::INDEX_DEFAULT );
+
+	// init first column
+	int ww=0;
+	for ( int r=0; r<n; ++r ) {
+		out.array[r]=1;
+	}
+
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		array_t *pout = out.array+ ( ww+c ) *out.n_rows;
+		for ( int r=0; r<n; ++r ) {
+			pout[r] = 2*al.array[r+ci]-1;
+		}
+	}
+
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n+n;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2*n+n;
+
+			const array_t * p1 = out.array+ci;
+			const array_t * p2 = out.array+ci2;
+			array_t *pout = out.array+ww*out.n_rows;
+
+			for ( int r=0; r<n; ++r ) {
+				pout[r] = -( p1[r]*p2[r] )  ;
+			}
+			ww++;
+		}
+	}
+
+
+
+	return out;
+}
 
 int main ( int argc, char* argv[] )
 {
@@ -233,16 +278,17 @@ int main ( int argc, char* argv[] )
 
 	array_link al = exampleArray(2);
 	al.showarray();
-		Eigen::MatrixXd m1 = array2xfeigen ( al);
+		Eigen::MatrixXd m1 = arraylink2eigen(array2xf ( al));
 	//std::cout << (m1) << std::endl; exit(0);		
 		
-	Eigen::MatrixXd m2 = array2xfeigen3 ( al);
+	Eigen::MatrixXd m2 = arraylink2eigen( array2xf2 ( al) );
 
 	std::cout << (m1-m2) << std::endl;
 	
 	for(int i=0; i<1000000; i++) {
 	//Eigen::MatrixXd m = array2xfeigen ( al);
-	Eigen::MatrixXd m = array2xfeigen3 ( al);
+	//Eigen::MatrixXd m = arraylink2eigen(array2xf ( al) );
+	Eigen::MatrixXd m = arraylink2eigen(array2xf2( al) );
 	}
 	
 	exit(0);

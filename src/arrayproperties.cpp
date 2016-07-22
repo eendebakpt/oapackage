@@ -786,6 +786,7 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 	return v;
 }
 
+/*
 Eigen::MatrixXd array2xfeigen2 ( const array_link &al )
 {
 	const int k = al.n_columns;
@@ -877,6 +878,7 @@ Eigen::MatrixXd array2xfeigen3 ( const array_link &al )
 
 	return mymatrix;
 }
+*/
 
 //Eigen::MatrixXd array2xfeigen ( const array_link &al )
 //{
@@ -1027,7 +1029,6 @@ int rankStructure::rankxf ( const array_link &al )
 	if ( verbose>=2 )
 		printfd ( "rankStructure: check 0\n" );
 
-	printf("FIXME: make this faster\n");
 	Eigen::MatrixXd A = array2xfeigen ( al );
 
 	// caculate permutation
@@ -1070,55 +1071,48 @@ int rankStructure::rankxf ( const array_link &al )
 }
 
 
-/*
-void ABold(const Eigen::MatrixXd &mymatrix, double &A, double &B, int &rank, int verbose)
+Eigen::MatrixXd array2xfeigen ( const array_link &al )
 {
-    Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp(mymatrix);
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
+	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,m );
 
-    int m = mymatrix.cols();
-    int N= mymatrix.rows();
-    const int n = N;
+	// init first column
+	int ww=0;
+	//mymatrix.col(0).setConstant(1);
+	for ( int r=0; r<n; ++r ) {
+		mymatrix ( r, 0 ) =1;
+	}
+	// init array
+	ww=1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c*n;
+		for ( int r=0; r<n; ++r ) {
+			mymatrix(r, ww+c) = 2*al.array[r+ci]-1;
+		}
+	}
 
-    if (verbose>=4) {
-        std::cout << "Matrix: size " << n << ", "<< m << std::endl;
-        std::cout << mymatrix;
-        std::cout << "\n-----" << std::endl;
+	//	mymatrix.block(0,0, n, k+1).array() -= 1; 
 
-    }
+	// init interactions
+	ww=k+1;
+	for ( int c=0; c<k; ++c ) {
+		int ci = c+1;
+		for ( int c2=0; c2<c; ++c2 ) {
+			int ci2 = c2+1;
 
-    rank= lu_decomp.rank();
+			for ( int r=0; r<n; ++r ) {
+				mymatrix(r,ww) = -mymatrix(r, ci)*mymatrix(r,ci2);
+			}
+			ww++;
+		}
+	}
 
-    if (rank==m) {
-        // full rank!
-
-        Eigen::MatrixXd xxt = mymatrix.transpose()*mymatrix;
-        Eigen::MatrixXd d = xxt.diagonal();
-        Eigen::MatrixXd xtxi = xxt.inverse();
-
-        if (verbose>=3) {
-            std::cout << "Matrix: (x'x) " << std::endl << xxt << std::endl;
-            std::cout << "Matrix: (xtxi) " << std::endl << xtxi << std::endl;
-        }
-
-
-        // numerically more stable
-        Eigen::MatrixXd As=xxt/n;
-        A = pow(As.determinant(), 1./m) ;
-        double s = xtxi.diagonal().sum();
-        //s=0; for(int i=0; i<k; i++) s+= xtxi(i);
-        if (verbose>=2) {
-            printf("n %d, m %d, s %f\n", n, m, s);
-        }
-        B = n * s / m;
-
-
-    } else {
-        // no full rank
-        A=0;
-        B=0;
-    }
+	return mymatrix;
 }
-*/
+
+
 
 /// convert 2-level design to second order interaction matrix
 inline void array2eigenxf ( const array_link &al, Eigen::MatrixXd &mymatrix )
