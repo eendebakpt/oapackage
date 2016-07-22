@@ -107,11 +107,6 @@ public:
 			//std::vector<int> *p = ( std::vector<int> * ) &tmpidx; p->at ( i ) = vj;
 			ndx = vi;
 		}
-		/*
-		if ( nidx!=0 ) {
-			for ( int i=0; i<k; i++ )
-				nidx[i]=tmpidx[i];
-		} */
 	}
 	/// convert a linear index to normal indices
 	inline void linear2idx ( int ndx, std::vector<int> & nidx ) const {
@@ -786,104 +781,6 @@ std::vector<double> projectionGWLPvalues ( const array_link &al )
 	return v;
 }
 
-/*
-Eigen::MatrixXd array2xfeigen2 ( const array_link &al )
-{
-	const int k = al.n_columns;
-	const int n = al.n_rows;
-	const int m = 1 + k + k* ( k-1 ) /2;
-	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
-
-	array_link out ( n, m, array_link::INDEX_DEFAULT );
-
-	// init first column
-	int ww=0;
-	for ( int r=0; r<n; ++r ) {
-		mymatrix ( r, 0 ) =1;
-	}
-
-	// init array
-	ww=1;
-	for ( int c=0; c<k; ++c ) {
-		int ci = c*n;
-		//array_t *pout = out.array+ ( ww+c ) *out.n_rows;
-		for ( int r=0; r<n; ++r ) {
-			//pout[r] = al.array[r+ci];
-			mymatrix(r, ww+c) = al.array[r+ci];
-		}
-	}
-
-	// init interactions
-	ww=k+1;
-	for ( int c=0; c<k; ++c ) {
-		int ci = c*n;
-		for ( int c2=0; c2<c; ++c2 ) {
-			int ci2 = c2*n;
-
-			const array_t * p1 = al.array+ci;
-			const array_t * p2 = al.array+ci2;
-			array_t *pout = out.array+ww*out.n_rows;
-
-			for ( int r=0; r<n; ++r ) {
-				mymatrix(r,ww) = ( p1[r]+p2[r] ) %2 ;
-			}
-			ww++;
-		}
-	}
-
-
-	mymatrix *= 2;
-	mymatrix.array() -= 1; 
-
-	return mymatrix;
-}
-
-Eigen::MatrixXd array2xfeigen3 ( const array_link &al )
-{
-	const int k = al.n_columns;
-	const int n = al.n_rows;
-	const int m = 1 + k + k* ( k-1 ) /2;
-	Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,m );
-
-	// init first column
-	int ww=0;
-	//mymatrix.col(0).setConstant(1);
-	for ( int r=0; r<n; ++r ) {
-		mymatrix ( r, 0 ) =1;
-	}
-	// init array
-	ww=1;
-	for ( int c=0; c<k; ++c ) {
-		int ci = c*n;
-		for ( int r=0; r<n; ++r ) {
-			mymatrix(r, ww+c) = 2*al.array[r+ci]-1;
-		}
-	}
-
-	//	mymatrix.block(0,0, n, k+1).array() -= 1; 
-
-	// init interactions
-	ww=k+1;
-	for ( int c=0; c<k; ++c ) {
-		int ci = c+1;
-		for ( int c2=0; c2<c; ++c2 ) {
-			int ci2 = c2+1;
-
-			for ( int r=0; r<n; ++r ) {
-				mymatrix(r,ww) = -mymatrix(r, ci)*mymatrix(r,ci2);
-			}
-			ww++;
-		}
-	}
-
-	return mymatrix;
-}
-*/
-
-//Eigen::MatrixXd array2xfeigen ( const array_link &al )
-//{
-//	return arraylink2eigen ( array2xf ( al ) ); // FIXME: convert this into single call
-//}
 
 
 /// convert array to Eigen matrix structure
@@ -985,18 +882,6 @@ Eigen::MatrixXi permM ( int ks, int k, const Eigen::MatrixXi subperm, int verbos
 		pm ( i ) =ww[i];
 	for ( int i=0; i< ( m-msub ); i++ )
 		pm ( msub+i ) =idxrem[i];
-
-	/*
-	if ( verbose ) {
-		printf ( "permM: subperm:\n" );
-		std::cout << subperm.transpose() << std::endl;
-		printf ( "permM: idxsub (size %d):\n", ( int ) idxsub.size() );
-		print_perm ( idxsub );
-		printf ( "\n" );
-		printf ( "permM: pm:\n" );
-		std::cout << pm.transpose()  << std::endl;
-	}
-	*/
 
 	return pm;
 }
@@ -1197,9 +1082,9 @@ array_link array2secondorder ( const array_link &al )
 
 array_link array2xf ( const array_link &al )
 {
-	int k = al.n_columns;
-	int n = al.n_rows;
-	int m = 1 + k + k* ( k-1 ) /2;
+	const int k = al.n_columns;
+	const int n = al.n_rows;
+	const int m = 1 + k + k* ( k-1 ) /2;
 	array_link out ( n, m, array_link::INDEX_DEFAULT );
 
 	// init first column
@@ -1214,33 +1099,27 @@ array_link array2xf ( const array_link &al )
 		int ci = c*n;
 		array_t *pout = out.array+ ( ww+c ) *out.n_rows;
 		for ( int r=0; r<n; ++r ) {
-			pout[r] = al.array[r+ci];
+			pout[r] = 2*al.array[r+ci]-1;
 		}
 	}
 
-	// FIXME: make this faster my using pure multiplication
 	// init interactions
 	ww=k+1;
 	for ( int c=0; c<k; ++c ) {
-		int ci = c*n;
+		int ci = c*n+n;
 		for ( int c2=0; c2<c; ++c2 ) {
-			int ci2 = c2*n;
+			int ci2 = c2*n+n;
 
-			const array_t * p1 = al.array+ci;
-			const array_t * p2 = al.array+ci2;
+			const array_t * p1 = out.array+ci;
+			const array_t * p2 = out.array+ci2;
 			array_t *pout = out.array+ww*out.n_rows;
 
 			for ( int r=0; r<n; ++r ) {
-				pout[r] = ( p1[r]+p2[r] ) %2 ;
+				pout[r] = -( p1[r]*p2[r] )  ;
 			}
 			ww++;
 		}
 	}
-
-
-	out *= 2;
-	out -= 1;
-
 	return out;
 }
 

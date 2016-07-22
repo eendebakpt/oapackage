@@ -209,9 +209,6 @@ array_link array2xf2 ( const array_link &al )
 			ww++;
 		}
 	}
-
-
-
 	return out;
 }
 

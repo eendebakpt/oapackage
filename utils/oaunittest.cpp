@@ -23,6 +23,8 @@ Copyright: See LICENSE.txt file that comes with this distribution
 
 #include "graphtools.h"
 
+#include "Eigen/Dense"
+
 #ifdef HAVE_BOOST
 #include <string>
 #include <boost/filesystem.hpp>
@@ -151,6 +153,22 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 	initncombscache ( 20 );
 
+		/* constructors */
+	{
+		cprintf ( verbose,"%s: interaction matrices\n", bstr );
+
+		array_link al = exampleArray(2);
+		Eigen::MatrixXd m1 = array2xfeigen ( al );
+		Eigen::MatrixXd m2 = arraylink2eigen( array2xf ( al) );
+
+		Eigen::MatrixXd dm = m1-m2;
+		int sum = dm.sum();
+		
+		myassert ( sum==0, "unittest error: construction of interaction matrices\n" );
+
+		
+	}
+
 #ifdef OADEV
 	/* conference matrices */
 	{
@@ -267,13 +285,24 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 	{
 		cprintf ( verbose, "%s: rank \n", bstr );
+	
+		const int idx[10]={0, 1, 2, 3, 4, 6, 7, 8, 9};
+		const int rr[10]= {4,11,13,18,16, 4, 4,29,29};
+		for ( int ii=0; ii<9; ii++ ) {
+			array_link al = exampleArray ( idx[ii], 0 );
+			myassert(al.is2level(), "unittest error: input array is not 2-level\n");
+			
+			int r = arrayrankColPiv ( array2xf ( al ) ); 
 
-		int rr[10]= {4,11,13,18,16,14,4,4,29,29};
-		for ( int ii=0; ii<10; ii++ ) {
-			array_link al = exampleArray ( ii, 0 );
-			int r = arrayrankColPiv ( array2xf ( al ) );
-			if ( verbose>=2 )
-				printf ( "unittest: rank %d: %d\n", ii, r );
+			int r3 =  ( array2xf ( al ) ).rank();
+			myassert(r==r3, "unittest error: rank of array");
+			
+			if ( verbose>=2 ) {
+				al.showarray();
+				printf ( "unittest: rank of array %d: %d\n", idx[ii], r );
+			}
+
+			//array2xf ( al ) .showarray();
 			myassert ( rr[ii]==r, "unittest error: rank of example matrix\n" );
 		}
 

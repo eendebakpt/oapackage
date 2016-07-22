@@ -2086,8 +2086,10 @@ MatrixFloat array2eigenX1 ( const array_link &al, int intercept=1 );
 MatrixFloat array2eigenModelMatrix ( const array_link &al );
 
 
+/// convert array to model matrix in Eigen format 
 MatrixFloat array2eigenME ( const array_link &al, int verbose = 1 );
 
+/// create first and second order model matrix for mixed-level array
 std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_link &al, int verbose = 1 );
 
 #endif

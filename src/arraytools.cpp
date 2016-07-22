@@ -1850,9 +1850,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 	std::vector<int> s = arrayclass.getS();
 
 	std::vector<int> df = s;
-	//myprintf("df: %d\n", df.size() );
 	std::transform ( df.begin(), df.end(),  df.begin(), std::bind2nd ( std::minus<int>(), 1.0 ) );
-	//myprintf("df: %d\n", df.size() );
 
 	if ( verbose>=2 ) {
 		arrayclass.show();
@@ -1933,8 +1931,6 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
 			//eigenInfo ( tmp, "denom" );
 			ME.col ( meoffset+ii ) =sqrt ( double ( N ) ) *Z.col ( ii+1 ) / sqrt ( double ( tmp ( 0,0 ) ) );
-//			ME{jj}(:,ii)=sqrt(N)*Z{jj}(:,ii+1)/sqrt(Z{jj}(:,ii+1)'*Z{jj}(:,ii+1));
-
 		}
 
 #ifdef FULLPACKAGE
@@ -2061,9 +2057,6 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 	if ( n*k>0 ) {
 		assert ( *std::max_element ( al.array, al.array+al.n_columns*al.n_rows ) <2 );
 	}
-
-	//MatrixFloat mymatrix = MatrixFloat::Zero ( n,m );
-	//eigenFloat *data = mymatrix.data();
 
 	// create data in integer type (we are working with 2-level arrays, convert them later */
 	Eigen::MatrixXi mymatrix = Eigen::MatrixXi::Zero ( n,m );
