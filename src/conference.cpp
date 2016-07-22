@@ -1,4 +1,4 @@
-/** \file conference.cpp
+f/** \file conference.cpp
 
  Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2015
 
@@ -833,7 +833,6 @@ int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
 		printf ( "satisfy_symm: sd: " );
 		sd.show();
 	}
-	//return true; // hack
 	int k = sd.rowvalue.n_columns-1;
 
 	if ( verbose ) {
@@ -842,7 +841,7 @@ int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
 		printf ( "\n" );
 	}
 	for ( size_t i=rowstart; i<c.size()-1; i++ ) {
-		// FIXME: use the sd.checkIdx() for this
+		// TODO: use the sd.checkIdx() for this
 		if ( sd.rowvalue.atfast ( i, k ) ==sd.rowvalue.atfast ( i+1, k ) ) {
 			//if ( c[i]<c[i+1] && c[i]!=0 && c[i+1]!=0 ) {
 			//printf("c[i] %d, (char)c[i] %d\n", c[i], (unsigned char)c[i]);
@@ -1331,7 +1330,7 @@ std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int bl
 	unsigned long nbc=0;
 	do {
 
-		// FIXME: for larger block sizes do not use naive generation
+		// NOTE: for larger block sizes do not use naive generation
 		if ( block<=4 && blocksize>1 && showd ) {
 			cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
 			//printf ( "  block %d, blocksize %d, iter %ld (k? %d): perm ", block, blocksize, iter, al.n_columns );
@@ -1525,7 +1524,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		do {
 			const int showd=0;
 
-			// FIXME: for larger block sizes do not use naive generation
+			// NOTE: for larger block sizes do not use naive generation
 			if ( block<=4 && blocksize>1 && showd ) {
 				cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
 				printf ( "  block %d, blocksize %d, iter %ld (k? %d): perm ", block, blocksize, iter, al.n_columns );
@@ -1675,7 +1674,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 	std::vector<long> nb ( N+1 );
 #endif
 
-	// FIXME: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
+	// TODO: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
 	long n=0;
 	do {
 
@@ -1683,7 +1682,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 #ifdef OADEBUG
 		nb[b.row]++;
 #endif
-		branches.pop(); // FIXME: use reference and pop later
+		branches.pop(); // TODO: use reference and pop later
 		if ( verbose>=3 && 0 ) {
 			printf ( "branch: row %d, val %d, nums %d %d %d\n", b.row, b.rval, b.nvals[0], b.nvals[1],b.nvals[2] );
 			for ( int x=b.row+1; x<N; x++ )
@@ -1696,7 +1695,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 		c[b.row]=b.rval;
 
 		if ( b.row==dfilter.inline_row && filterj3 ) {
-			// FIXME: inline_row can be one earlier?
+			// TODO: inline_row can be one earlier?
 			if ( ! dfilter.filterJ3inline ( c ) )
 				// discard branch
 				continue;
@@ -1747,8 +1746,8 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 			bnew.rval = bvals[i];
 			bnew.nvals[i]--;
 			//printf("push new branch: i %d\n", i);
-			// FIXME: make direct push possible
-			// FIXME: can we eliminate the branches object altogether?
+			// NOTE: make direct push possible
+			// NOTE: can we eliminate the branches object altogether?
 			branches.push ( bnew );
 		}
 
@@ -1879,7 +1878,7 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
 
 	// now get candidate columns for the normal case, afterwards convert then using the rowsorter and row negations
 
-	printfd ( "FIXME: factor next block into a function (also in the other function)\n" );
+	printfd ( "TODO: factor next block into a function (also in the other function)\n" );
 
 	// loop over all possible first combinations
 	std::vector<cperm> ff = get_first ( N, kz, verbose );
