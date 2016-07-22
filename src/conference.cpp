@@ -1,4 +1,4 @@
-f/** \file conference.cpp
+/** \file conference.cpp
 
  Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2015
 
