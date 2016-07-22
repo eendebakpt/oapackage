@@ -1998,7 +1998,7 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 		print_perm ( comb, 5 );
 	}
 
-	// FIXME: replace this block with functions
+	// TODO: replace this block with functions
 
 	/* calculate the J4 values */
 	colindex_t lc[4];
@@ -2347,7 +2347,7 @@ lmc_t LMCcheckj5 ( array_link const &al, arraydata_t const &adin, LMCreduction_t
 	for ( int i=0; i<nc; i++ ) {
 
 		// determine the J-characteristic for the selected combination
-		int j5val=abs ( jvaluefast ( array, ad.N, jj, firstcolcomb ) ); // FIXME: this can be made faster by caching sub results...
+		int j5val=abs ( jvaluefast ( array, ad.N, jj, firstcolcomb ) ); // TODO: this can be made faster by caching sub results...
 
 		if ( dverbose>=2 ) {
 			printf ( "   LMCcheckj5 column comb %d/%d (jj=%d): j5val %d, jbase %d\n", i, nc, jj, j5val, jbase );
@@ -2662,7 +2662,7 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 				adfix.show_colgroups();
 			}
 
-			// FIXME: allow non-proper initialization of array
+			// NOTE: allow non-proper initialization of array
 			//reduction.mode=LMC_REDUCE_INIT;
 			reduction.mode=OA_TEST;
 
@@ -2939,11 +2939,6 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 	//printfd("oaextend.getAlgorithm() %d, MODE_ORIGINAL %d\n", oaextend.getAlgorithm(),MODE_ORIGINAL );
 	switch ( oaextend.getAlgorithm() ) {
 	case MODE_ORIGINAL: {
-		if ( 0 ) {
-			#pragma omp critical(test)
-			printfd ( "FIXME: does not work for oaextendA !?!\n" );
-			fflush ( stdout );			
-		}
 		lmc = LMCreduce ( array, array, &ad, &dynd, &reduction , oaextend );
 
 	}
@@ -2998,7 +2993,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 			//reductionsub.symms.show();
 			//vector<symmetryset> vs = reduction.symmetries.get();
 
-			// FIXME: copy symmetries, but extend with new columns as well!
+			// NOTE: copy symmetries, but extend with new columns as well!
 			reductionsub.symms = reduction.symms;
 			//symmetries = reduction.symmetries;
 			//reductionsub.colperms = reduction.colperms;

@@ -3090,14 +3090,11 @@ int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *
 
 	//colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
 
-	//FIXME2: implement cache system
 	// OPTIMIZE: change order of loops (with cache for tmp variable)
 	for ( rowindex_t r=0; r<N; r++ ) {
 		array_t tmp=0;
 		for ( int i=0; i<J; i++ ) {
-			//tmp+=array[r+ ppN[i]];
 			tmp+=cp[i][r]; //+ ppN[i]];
-			//tmp+= *(cp[i]++); //+ ppN[i]];
 		}
 		tmp %= 2;
 		//    tmp *=2;
@@ -3105,7 +3102,6 @@ int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *
 		jval += tmp;
 	}
 	jval = 2*jval-N;
-	//delete [] cp;
 	return ( jval );
 }
 
@@ -3122,11 +3118,9 @@ int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex
 #endif
 
 	std::fill_n ( tmpval, N, 0 );
-	//	memset(tmpval, 0, N*sizeof(array_t));
 	fastJupdate ( array, N, J, pp, tmpval );
 	int jval=0;
 	for ( rowindex_t r=0; r<N; r++ ) {
-		//tmpval[r] %= 2; jval += tmpval[r];
 		jval += tmpval[r] % 2;
 	}
 	jval = 2*jval-N;
@@ -3140,8 +3134,6 @@ int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex
  */
 vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbose, const int jj )
 {
-	//vector<jstruct_t> results(arraylist.size());
-
 	if ( verbose ) {
 		myprintf ( "analyseArrays (j-values): %ld arrays, jj %d\n", ( long ) arraylist.size(), jj );
 	}
@@ -3154,10 +3146,8 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
 	for ( unsigned int ii=0; ii<arraylist.size(); ii++ ) {
 
 		const array_link ll = arraylist.at ( ii );
-		//const int k=ll.n_columns;
 
 		int *pp = new_perm_init<int> ( jj );
-		//int ncolcombs = ncombs ( k, jj );
 
 		js = new jstruct_t ( ll, jj );
 
@@ -3177,7 +3167,6 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
 		//delete [] js;
 
 		results.push_back ( *js );
-		///results[ii]=*js; printf("assign\n");
 		delete js;
 	}
 
@@ -3512,7 +3501,6 @@ size_t arrayfile_t::afread ( void * ptr, size_t sz, size_t cnt )
 	} else {
 		r=fread ( ptr, sz, cnt, this->nfid );
 	}
-	//myprintf( "r: %d,, n %d\n", r, n);
 	if ( r==0 ) {
 		//myprintf("could not read from file");
 	}
@@ -3752,7 +3740,6 @@ int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols )
 			index=0;
 		}
 
-		//printf("arrayfile_t::read_array: index 2 %d\n", index);
 		this->read_array_binary ( array, nrows, ncols );
 	}
 	break;
@@ -3902,9 +3889,6 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
 		( *setrows ) = afile->nrows;
 	if ( setbits!=0 )
 		( *setbits ) = afile->nbits;
-
-	//if ( verbose )
-	//   log_print ( NORMAL, "init_restart: number of columns: %i, number of rows: %i, number of arrays: %i\n", afile->ncols, afile->nrows, afile->narrays );
 
 	if ( ! afile->isopen() ) {
 		if ( verbose ) {
@@ -4309,26 +4293,6 @@ void arrayfile_t::closefile()
 
 	// for a binary file update the number of arrays stored
 	updatenumbers();
-
-	/*
-	if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
-		if ( verbose>=2 )
-			myprintf ( "arrayfile_t: closing binary file, updating numbers %d->%d\n", narrays, narraycounter );
-		if ( verbose>=3 )
-			myprintf ( "arrayfile_t: nfid %ld\n", long ( nfid ) );
-		if ( nfid != 0 ) {
-			long pos = ftell ( nfid );
-			//myprintfd("seek to from %ld to 4\n", pos);
-			int r = fseek ( nfid, 4*sizeof ( int32_t ), SEEK_SET );
-			//printfd("seek result %d\n", r);
-			r = this->afwrite ( &narraycounter, sizeof ( int32_t ), 1 );
-			if ( verbose>=2 )
-				myprintf ( "   arrayfile_t::closefile: result of write: %d\n", ( int ) r );
-			fseek ( nfid, pos, SEEK_SET ); // place back pointer
-		}
-
-	}
-	*/
 
 	// close file handles
 	if ( this->nfid!=0 ) {
