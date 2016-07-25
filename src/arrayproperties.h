@@ -129,7 +129,9 @@ public:
 	int verbose; /// verbosity level
 	int ks;	/// number of columns of subarray in cache
 
-	int nsub;
+	int nsub; /// number of columns to subtract from array when updating cache
+
+		int id; /// used for debugging
 
 private:
 	/// decomposition of subarray
@@ -137,24 +139,23 @@ private:
 	Eigen::MatrixXd Qi;
 	
 	/// internal structure
-	int ncalc, nupdate;
+	long ncalc, nupdate;
 
 public:
 		/// constructor
 	rankStructure ( const array_link &al, int nsub =  3, int verbose=0 ) {
 		this->verbose=verbose;
-		//ks = al.n_columns;
 		ks=0;
 		this->nsub=nsub;
 		ncalc=0; nupdate=0;
 		updateStructure(al);
 	}
 	/// constructor
-	rankStructure ( int nsub =  3 ) {
+	rankStructure ( int nsub =  3, int id = -1 ) {
 		verbose=0;
-		//ks = al.n_columns;
 		ks=0;
 		this->nsub=nsub;
+		this->id=id;
 		ncalc=0; nupdate=0;
 
 		array_link al =exampleArray(1);
@@ -172,7 +173,6 @@ public:
 		this->alsub=al;
 		this->ks=al.n_columns;
 		Eigen::MatrixXd A = array2xf ( al ).getEigenMatrix();
-		//printfd("here...\n");
 		decomp.compute ( A );
 
 		this->Qi = decomp.matrixQ().inverse();

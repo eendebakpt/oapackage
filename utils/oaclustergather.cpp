@@ -458,11 +458,13 @@ jcounter.show();
 
 
 				if ( b ) {
-					printf ( "  --> nasub[%d]=%ld\n", k, nasub[k] );
+					if (verbose>=3)
+						printf ( "  --> nasub[%d]=%ld\n", k, nasub[k] );
 
 					if ( nasub[k]<0 ) {
 						long nnarrays = nArrays ( afile.c_str() );
-						printfd ( "   --> adding %ld arrays\n" , nnarrays );
+						if (verbose>=3)
+							printfd ( "   --> adding %ld arrays\n" , nnarrays );
 						//nasub[k]=nnarrays;
 						na[k] += nnarrays;
 					} else {
