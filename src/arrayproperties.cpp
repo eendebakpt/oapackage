@@ -898,7 +898,10 @@ int rankStructure::rankxf ( const array_link &al )
 	const int msub = 1+ks+ks* ( ks-1 ) /2;
 	const int N=al.n_rows;
 
-	assert(al.n_columns==alsub.n_columns+nsub);
+	if (verbose) {
+	if(al.n_columns!=alsub.n_columns+nsub)
+		printf ( "rankStructure: rankxf: alsub %d, al %d (nsub %d, ks %d, id %d)\n", alsub.n_columns, al.n_columns, nsub, ks, this->id );
+}
 	if ( verbose )
 		printf ( "rankStructure: rankxf: alsub %d, al %d (ks %d)\n", alsub.n_columns, al.n_columns, ks );
 	if ( al.selectFirstColumns ( ks ) == this->alsub ) {

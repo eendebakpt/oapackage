@@ -645,9 +645,10 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
 
 	// allocate for fast rank calculations
 	rankStructure rs[25];
-	for ( size_t i=0; i<25; i++ )
+	for ( size_t i=0; i<25; i++ ) {
 		rs[i].nsub=3;
-
+		rs[i].id=i;
+}
 	if ( verbose>=2 ) {
 		printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
 	}
