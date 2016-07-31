@@ -74,3 +74,4 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
 int unittest_nautynormalform(const array_link &al, int verbose=1);
 
+
