@@ -19,33 +19,33 @@
 /// print a candidate extension
 inline void print_cperm ( const cperm &c )
 {
-	for ( size_t i=0; i<c.size(); i++ ) {
-		printf ( "%3d", c[i] );
-	}
+    for ( size_t i=0; i<c.size(); i++ ) {
+        printf ( "%3d", c[i] );
+    }
 }
 
 /// show a list of candidate extensions
 inline void showCandidates ( const std::vector<cperm> &cc )
 {
-	for ( size_t i=0; i<cc.size(); i++ ) {
-		printf ( "%d: ", ( int ) i );
-		print_cperm ( cc[i] );
-		printf ( "\n" );
-	}
+    for ( size_t i=0; i<cc.size(); i++ ) {
+        printf ( "%d: ", ( int ) i );
+        print_cperm ( cc[i] );
+        printf ( "\n" );
+    }
 }
 
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
 public:
-	std::vector<std::vector<cperm> > ce;
+    std::vector<std::vector<cperm> > ce;
 
-	void info ( int verbose=1 ) const {
-		for ( int i=2; i< ( int ) ce.size(); i++ ) {
-			if ( verbose ) {
-				printf ( "generateCandidateExtensions: k %d: %d candinates\n", i, ( int ) ce[i].size() );
-			}
-		}
-	}
+    void info ( int verbose=1 ) const {
+        for ( int i=2; i< ( int ) ce.size(); i++ ) {
+            if ( verbose ) {
+                printf ( "generateCandidateExtensions: k %d: %d candinates\n", i, ( int ) ce[i].size() );
+            }
+        }
+    }
 };
 
 
@@ -53,102 +53,105 @@ public:
 class conference_t
 {
 public:
-	rowindex_t N;	/** number of runs */
-	colindex_t ncols;	/** total number of columns (factors) in the design */
+    rowindex_t N;	/** number of runs */
+    colindex_t ncols;	/** total number of columns (factors) in the design */
 
-	enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
-	conference_type ctype;
-	matrix_isomorphism_t itype;
+    enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
+    conference_type ctype;
+    matrix_isomorphism_t itype;
 
-	bool j3zero;
-	bool j1zero; /// for the double conference type matrices
+    bool j3zero;
+    bool j1zero; /// for the double conference type matrices
 
 public:
-	/// create new conference_t object
-	conference_t ( int N, int k );
-	conference_t ( const conference_t &rhs );
+    /// create new conference_t object
+    conference_t ( int N, int k );
+    conference_t ( const conference_t &rhs );
 
-	/// create the unique representative of the 2 column design (for conference matrices)
-	array_link create_root ( ) const;
+    /// create the unique representative of the 2 column design (for conference matrices)
+    array_link create_root ( ) const;
 
-	/// create the unique representative of the 3 column design
-	array_link create_root_three ( ) const;
+    /// create the unique representative of the 3 column design
+    array_link create_root_three ( ) const;
 
-	arraylist_t createDconferenceRootArrays ( ) const {
+    arraylist_t createDconferenceRootArrays ( ) const {
 
-		arraylist_t lst;
-		array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-		if ( j1zero ) {
-			al.setconstant ( -1 );
-			al.at ( 0,0 ) =0;
-			al.at ( 1,0 ) =0;
-			for ( int k=2; k<N/2+1; k++ )
-				al.at ( k,0 ) =1;
-			lst.push_back ( al );
+        arraylist_t lst;
+        array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+        if ( j1zero ) {
+            al.setconstant ( -1 );
+            al.at ( 0,0 ) =0;
+            al.at ( 1,0 ) =0;
+            for ( int k=2; k<N/2+1; k++ ) {
+                al.at ( k,0 ) =1;
+            }
+            lst.push_back ( al );
 
-		} else {
-			for ( int i=N/2+1; i<=N; i++ ) {
-				al.setconstant ( -1 );
-				al.at ( 0,0 ) =0;
-				al.at ( 1,0 ) =0;
-				for ( int k=2; k<i; k++ )
-					al.at ( k,0 ) =1;
-				lst.push_back ( al );
-			}
-		}
-		return lst;
-	}
+        } else {
+            for ( int i=N/2+1; i<=N; i++ ) {
+                al.setconstant ( -1 );
+                al.at ( 0,0 ) =0;
+                al.at ( 1,0 ) =0;
+                for ( int k=2; k<i; k++ ) {
+                    al.at ( k,0 ) =1;
+                }
+                lst.push_back ( al );
+            }
+        }
+        return lst;
+    }
 
-	void addRootArrays ( arraylist_t &lst ) const {
-		switch ( this->ctype ) {
-		case CONFERENCE_NORMAL:
-		case CONFERENCE_DIAGONAL:
-			switch ( this->itype ) {
-			case CONFERENCE_ISOMORPHISM:
-				lst.push_back ( this->create_root() );
-				break;
-			case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-				array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-				for ( int i=N/2+1; i<=N; i++ ) {
-					al.setconstant ( -1 );
-					al.at ( 0,0 ) =0;
-					for ( int k=1; k<i; k++ )
-						al.at ( k,0 ) =1;
-					lst.push_back ( al );
-				}
-			}
-			break;
-			default
-					:
-				printfd ( "not implemented (itype %d)\n", this->itype );
-			}
-			break; //
-		case DCONFERENCE: {
-			switch ( this->itype ) {
-			case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-				//const int j1zero=1;
-				arraylist_t tmp = this->createDconferenceRootArrays ( );
-				lst.insert ( lst.end(), tmp.begin(), tmp.end() );
-			}
-			break;
-			case CONFERENCE_ISOMORPHISM:
-			default
-					:
-				printfd ( "not implemented (itype %d)\n", this->itype );
-			}
-		}
-		}
-		if ( 0 ) {
-			for ( size_t i=0; i<lst.size(); i++ ) {
-				printf ( "root array %d:\n", int ( i ) );
-				lst[i].showarray();
-			}
-		}
-	}
+    void addRootArrays ( arraylist_t &lst ) const {
+        switch ( this->ctype ) {
+        case CONFERENCE_NORMAL:
+        case CONFERENCE_DIAGONAL:
+            switch ( this->itype ) {
+            case CONFERENCE_ISOMORPHISM:
+                lst.push_back ( this->create_root() );
+                break;
+            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+                array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+                for ( int i=N/2+1; i<=N; i++ ) {
+                    al.setconstant ( -1 );
+                    al.at ( 0,0 ) =0;
+                    for ( int k=1; k<i; k++ ) {
+                        al.at ( k,0 ) =1;
+                    }
+                    lst.push_back ( al );
+                }
+            }
+            break;
+            default
+                    :
+                printfd ( "not implemented (itype %d)\n", this->itype );
+            }
+            break; //
+        case DCONFERENCE: {
+            switch ( this->itype ) {
+            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+                //const int j1zero=1;
+                arraylist_t tmp = this->createDconferenceRootArrays ( );
+                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+            }
+            break;
+            case CONFERENCE_ISOMORPHISM:
+            default
+                    :
+                printfd ( "not implemented (itype %d)\n", this->itype );
+            }
+        }
+        }
+        if ( 0 ) {
+            for ( size_t i=0; i<lst.size(); i++ ) {
+                printf ( "root array %d:\n", int ( i ) );
+                lst[i].showarray();
+            }
+        }
+    }
 /// return string representation of the object
-	std::string __repr__() const {
-		return printfstring ( "conference type: N %d, ncols %d", this->N, this->ncols );
-	}
+    std::string __repr__() const {
+        return printfstring ( "conference type: N %d, ncols %d", this->N, this->ncols );
+    }
 
 };
 
@@ -162,114 +165,114 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 
 /// Helper structure
 struct conference_extend_t {
-	std::vector<cperm> first;
-	std::vector<cperm> second;
-	std::vector<cperm> extensions;
+    std::vector<cperm> first;
+    std::vector<cperm> second;
+    std::vector<cperm> extensions;
 
 public:
 
-	// combine first and second section into a single column
-	cperm combine ( int i, int j ) const {
-		cperm c =vstack ( this->first[i], this->second[j] );
-		return c;
-	}
+    // combine first and second section into a single column
+    cperm combine ( int i, int j ) const {
+        cperm c =vstack ( this->first[i], this->second[j] );
+        return c;
+    }
 
-	size_t nExtensions() const {
-		return this->extensions.size();
-	}
+    size_t nExtensions() const {
+        return this->extensions.size();
+    }
 
-	arraylist_t getarrays ( const array_link al ) const {
-		arraylist_t ll;
+    arraylist_t getarrays ( const array_link al ) const {
+        arraylist_t ll;
 
-		for ( size_t i=0; i<this->extensions.size(); i++ ) {
-			array_link alx = hstack ( al, extensions[i] );
-			ll.push_back ( alx );
-		}
-		return ll;
-	}
+        for ( size_t i=0; i<this->extensions.size(); i++ ) {
+            array_link alx = hstack ( al, extensions[i] );
+            ll.push_back ( alx );
+        }
+        return ll;
+    }
 };
 
 struct conference_options {
-	int maxzpos;
+    int maxzpos;
 
-	//conference_options() { maxzpos=-1; };
-	conference_options ( int maxpos = -1 ); // { maxzpos=-1; };
+    //conference_options() { maxzpos=-1; };
+    conference_options ( int maxpos = -1 ); // { maxzpos=-1; };
 } ;
 
 /// Class to generate candidate extensions with caching
 class CandidateGenerator
 {
 public:
-	conference_t ct;
-	int verbose;
-	
-	// legacy structure
-		conf_candidates_t cande;
+    conference_t ct;
+    int verbose;
 
-	mutable std::vector<array_link> alz;
+    // legacy structure
+    conf_candidates_t cande;
+
+    mutable std::vector<array_link> alz;
 
 private:
 
-	/// candidate_list_conf[kz][k] are the valid candidates with a zero at position kz and at column index k
-	mutable std::vector< std::vector<cperm_list > > candidate_list_conf;
-	/// index of last valid entry in cache
-			mutable std::vector<int> last_valid_conf;
+    /// candidate_list_conf[kz][k] are the valid candidates with a zero at position kz and at column index k
+    mutable std::vector< std::vector<cperm_list > > candidate_list_conf;
+    /// index of last valid entry in cache
+    mutable std::vector<int> last_valid_conf;
 
 public:
 
-	CandidateGenerator ( const array_link &al, const conference_t &ct );
+    CandidateGenerator ( const array_link &al, const conference_t &ct );
 
-	/** generate candidates with caching
-	 * this method uses j2 filtering
-	 */
-	const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const;
+    /** generate candidates with caching
+     * this method uses j2 filtering
+     */
+    const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const;
 
-	void showCandidates() const {
-		
-		printf ( "CandidateGenerator: N %d\n", this->ct.N );
-		for(int kz=0; kz<this->ct.N;kz++) {
-		for ( int i =2; i<=this->last_valid_conf[kz]; i++ ) {
-			printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_conf[kz][i].size() );
-		}
-		}
-	}
+    void showCandidates() const {
 
-	void updateLastValid(int lv) const {
-		// special case: if the data is invalid for one value of kz, we make all entries invalid
-		// not efficient in general, but efficient for our orderly generation
-		for(size_t i=0; i<this->last_valid_conf.size(); i++) {
-		this->last_valid_conf[i]=std::min(this->last_valid_conf[i], lv);	
-		}
-	}
+        printf ( "CandidateGenerator: N %d\n", this->ct.N );
+        for ( int kz=0; kz<this->ct.N; kz++ ) {
+            for ( int i =2; i<=this->last_valid_conf[kz]; i++ ) {
+                printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_conf[kz][i].size() );
+            }
+        }
+    }
+
+    void updateLastValid ( int lv ) const {
+        // special case: if the data is invalid for one value of kz, we make all entries invalid
+        // not efficient in general, but efficient for our orderly generation
+        for ( size_t i=0; i<this->last_valid_conf.size(); i++ ) {
+            this->last_valid_conf[i]=std::min ( this->last_valid_conf[i], lv );
+        }
+    }
 private:
-	/** find the starting column for the extension
-	 *
-	 * Startcol is the index of the first column with valid elements, if corresponds to
-	 * startcol=k the elements in candidate_list_conf[kz][k] are valid
-	 */
-	int startColumn ( const array_link &alx, int kz, int verbose=0 ) const {
-		if ( this->alz[kz].n_columns!=alx.n_columns ) {
-			int startcol=-1;
-			//printfd(" ### reset because of column diff!\n");
-			return startcol;
-		}
-		int startcol = alz[kz].firstColumnDifference ( alx );
+    /** find the starting column for the extension
+     *
+     * Startcol is the index of the first column with valid elements, if corresponds to
+     * startcol=k the elements in candidate_list_conf[kz][k] are valid
+     */
+    int startColumn ( const array_link &alx, int kz, int verbose=0 ) const {
+        if ( this->alz[kz].n_columns!=alx.n_columns ) {
+            int startcol=-1;
+            //printfd(" ### reset because of column diff!\n");
+            return startcol;
+        }
+        int startcol = alz[kz].firstColumnDifference ( alx );
 
-		startcol = std::min ( startcol, last_valid_conf[kz] );
-		if ( startcol<2 ) {
-			startcol=-1;
-		}
-		
-		if (verbose || startcol==-2) {
-				printfd("startColumn: startcol %d\n", startcol);
-				printf("-- cache --\n");
-				this->alz[kz].transposed().showarray();
-				printf("-- new --\n");
-				alx.transposed().showarray();
-		}
-		
-		return startcol;
-	}
+        startcol = std::min ( startcol, last_valid_conf[kz] );
+        if ( startcol<2 ) {
+            startcol=-1;
+        }
+
+        if ( verbose || startcol==-2 ) {
+            printfd ( "startColumn: startcol %d\n", startcol );
+            printf ( "-- cache --\n" );
+            this->alz[kz].transposed().showarray();
+            printf ( "-- new --\n" );
+            alx.transposed().showarray();
+        }
+
+        return startcol;
+    }
 
 };
 
@@ -278,61 +281,62 @@ private:
 class CandidateGeneratorDouble
 {
 public:
-	conference_t ct;
-	int verbose;
-	
+    conference_t ct;
+    int verbose;
 
-	mutable array_link al;
-			mutable int last_valid;
+
+    mutable array_link al;
+    mutable int last_valid;
 
 private:
-	mutable std::vector< cperm_list > candidate_list_double;
+    mutable std::vector< cperm_list > candidate_list_double;
 
 
 public:
 
-	CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
+    CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
 
-	/** generate candidates with caching
-	 * this method uses symmetry inflation
-	 */
-	const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
+    /** generate candidates with caching
+     * this method uses symmetry inflation
+     */
+    const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
 
-	void showCandidates() const {
-		printf ( "CandidateGenerator: N %d\n", this->ct.N );
-		for ( int i =2; i<=last_valid; i++ ) {
-			printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
-		}
-	}
-	static const  int START_COL = 2;
+    void showCandidates() const {
+        printf ( "CandidateGenerator: N %d\n", this->ct.N );
+        for ( int i =2; i<=last_valid; i++ ) {
+            printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
+        }
+    }
+    static const  int START_COL = 2;
 private:
 
-	/** find the starting column for the extension
-	 *
-	 * For startcol k the elements in candidate_list[k] are valid
-	 */
-	int startColumn ( const array_link &alx ) const {
-		if ( this->al.n_columns!=alx.n_columns ) {
-			int startcol=-1;
-			return startcol;
-		}
-		int startcol = al.firstColumnDifference ( alx );
+    /** find the starting column for the extension
+     *
+     * For startcol k the elements in candidate_list[k] are valid
+     */
+    int startColumn ( const array_link &alx ) const {
+        if ( this->al.n_columns!=alx.n_columns ) {
+            int startcol=-1;
+            return startcol;
+        }
+        int startcol = al.firstColumnDifference ( alx );
 
 
-		if ( 0 ) {
-			int rx, ry;
-			al.firstDiff ( alx, rx, ry, 1 );
-			printfd ( " ---> startcol %d, last_valid %d\n", startcol, last_valid );
-			printf ( " ---> cache array\n" );
-			this->al.showarray();
-			printf ( " --->alx\n" );
-			alx.showarray();
-		}
-		startcol = std::min ( startcol, last_valid );
-		if ( startcol<2 )
-			startcol=-1;
-		return startcol;
-	}
+        if ( 0 ) {
+            int rx, ry;
+            al.firstDiff ( alx, rx, ry, 1 );
+            printfd ( " ---> startcol %d, last_valid %d\n", startcol, last_valid );
+            printf ( " ---> cache array\n" );
+            this->al.showarray();
+            printf ( " --->alx\n" );
+            alx.showarray();
+        }
+        startcol = std::min ( startcol, last_valid );
+        if ( startcol<2 ) {
+            startcol=-1;
+        }
+        return startcol;
+    }
 };
 
 
@@ -414,242 +418,249 @@ int minz ( const array_link &al, int k );
 class DconferenceFilter
 {
 public:
-	array_link als;
-	int filtersymm; // filter based on symmetry
-	int filterj2; /// filter based on j2 value
-	int filterj3; /// filter based on j3 value
-	int filterfirst; /// filter only columns with first value >=0
-	int filterzero; /// filter based on first occurence of zero in a column
+    array_link als;
+    int filtersymm; // filter based on symmetry
+    int filterj2; /// filter based on j2 value
+    int filterj3; /// filter based on j3 value
+    int filterfirst; /// filter only columns with first value >=0
+    int filterzero; /// filter based on first occurence of zero in a column
 
-	mutable long ngood;
+    mutable long ngood;
 private:
-	array_link dtable; /// table of J2 vectors for J3 filter
-	array_link inline_dtable; /// table of J2 vectors for inline J3 filter
+    array_link dtable; /// table of J2 vectors for J3 filter
+    array_link inline_dtable; /// table of J2 vectors for inline J3 filter
 
-	/// indices to check for symmetry check
-	std::vector<int> check_indices;
-	/// used for filtering based on zero
-	int minzvalue;
+    /// indices to check for symmetry check
+    std::vector<int> check_indices;
+    /// used for filtering based on zero
+    int minzvalue;
 public:
-	int inline_row;
-	symmdata sd;
+    int inline_row;
+    symmdata sd;
 
 public:
-	DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero ( 0 ), ngood ( 0 ), sd ( als ) {
-		//sd = symmdata( als );
+    DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero ( 0 ), ngood ( 0 ), sd ( als ) {
+        //sd = symmdata( als );
 
-		check_indices = sd.checkIdx();
+        check_indices = sd.checkIdx();
 
-		dtable = createJ2tableConference ( als );
+        dtable = createJ2tableConference ( als );
 
-		if ( als.n_columns>=2 ) {
-			inline_dtable = als.selectColumns ( 0 )-als.selectColumns ( 1 ); // createJ2tableConference ( als.selectFirstColumns(2) );
-			inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) +1 );
-			inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) *als.selectColumns ( 0 )-1 );
-			inline_dtable = hstack ( inline_dtable, als.selectColumns ( 1 ) *als.selectColumns ( 1 )-1 );
+        if ( als.n_columns>=2 ) {
+            inline_dtable = als.selectColumns ( 0 )-als.selectColumns ( 1 ); // createJ2tableConference ( als.selectFirstColumns(2) );
+            inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) +1 );
+            inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) *als.selectColumns ( 0 )-1 );
+            inline_dtable = hstack ( inline_dtable, als.selectColumns ( 1 ) *als.selectColumns ( 1 )-1 );
 
-			//inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
-			//inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
-
-
-			minzvalue = minz ( als, als.n_columns-1 );
-
-			inline_row = als.n_rows;
-			int br=0;
-			for ( int i=als.n_rows-1; i>=0; i-- ) {
-				for ( int c=0; c<als.n_columns; c++ ) {
-					if ( inline_dtable.at ( i,0 ) !=0 ) {
-						br=1;
-						break;
-					}
-				}
-				if ( br ) {
-					break;
-				}
-				inline_row=i;
-			}
-			//inline_dtable.showarray();
-			//printfd("  inline J3 check: inline_row %d\n", inline_row);
-		} else {
-			inline_row=-1;
-		}
-	}
-
-	/// filter a list of cperms using the filter method
-	std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const {
-		std::vector<cperm> out;
-		for ( size_t i=0; i<lst.size(); i++ ) {
-			if ( this->filter ( lst[i] ) )
-				out.push_back ( lst[i] );
-		}
-		if (verbose)
-			printfd("filterList: %d -> %d\n", lst.size(), out.size() );
-		return out;
-	}
-
-	std::vector<cperm> filterListJ2last ( const std::vector<cperm> &lst ) const {
-		std::vector<cperm> out;
-		for ( size_t i=0; i<lst.size(); i++ ) {
-			if ( this->filterJ2last ( lst[i] ) )
-				out.push_back ( lst[i] );
-		}
-		//printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
-		return out;
-	
-	}
-	
-	/// filter a list of cperms using the filterZero method
-	std::vector<cperm> filterListZero ( const std::vector<cperm> &lst ) const {
-		std::vector<cperm> out;
-		for ( size_t i=0; i<lst.size(); i++ ) {
-			if ( this->filterZero ( lst[i] ) )
-				out.push_back ( lst[i] );
-		}
-		//printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
-		return out;
-	}
-
-	/// return True of the extension satisfies all checks
-	bool filter ( const cperm &c ) const {
-		if ( filterfirst ) {
-			if ( c[0]<0 ) {
-				return false;
-			}
-		}
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
-				return false;
-			}
-		}
-		if ( filterj2 ) {
-			// perform inner product check for all columns
-			if ( ! ipcheck ( c, als, 0 ) ) {
-				return false;
-			}
-		}
-		if ( filterj3 ) {
-			// perform inner product check for all columns
-			if ( ! this->filterJ3 ( c ) ) {
-				return false;
-			}
-		}
-		ngood++;
-		return true;
-	}
-	/// return True of the extension satisfies all J-characteristic checks
-	bool filterJ ( const cperm &c, int j2start=0 ) const {
-		if ( filterj2 ) {
-			// perform inner product check for all columns
-			if ( ! ipcheck ( c, als, j2start ) ) {
-				return false;
-			}
-		}
-		if ( filterj3 ) {
-			// perform inner product check for all columns
-			if ( ! this->filterJ3 ( c ) ) {
-				return false;
-			}
-		}
-		ngood++;
-		return true;
-	}
-	/// return True of the extension satisfies all checks
-	bool filterReason ( const cperm &c ) const {
-		if ( filterfirst ) {
-			if ( c[0]<0 ) {
-				printf ( "filterfirst\n" );
-				return false;
-			}
-		}
-		if ( filtersymm ) {
-			if ( ! satisfy_symm ( c, sd, 0 ) ) {
-				printf ( "symmetry\n" );
-				return false;
-			}
-		}
-		if ( filterj2 ) {
-			// perform inner product check for all columns
-			if ( ! ipcheck ( c, als, 0 ) ) {
-				printf ( "j2\n" );
-				return false;
-			}
-		}
-		if ( filterj3 ) {
-			// perform inner product check for all columns
-			if ( ! this->filterJ3 ( c ) ) {
-				printf ( "j3\n" );
-				return false;
-			}
-		}
-		ngood++;
-		printf ( "filter check good\n" );
-
-		return true;
-	}
-
-	/// return True of the candidate satisfies the J3 check
-	bool filterJ3 ( const cperm &c ) const {
-		const int nc = dtable.n_columns;
-		const int N = als.n_rows;
-		int jv=0;
-		for ( int idx1=0; idx1<nc; idx1++ ) {
-			jv=0;
-
-			const array_t *o1 = dtable.array+dtable.n_rows*idx1;
-			for ( int xr=0; xr<N; xr++ ) {
-
-				jv += ( o1[xr] ) * ( c[xr] );
-			}
-
-			if ( jv!=0 )
-				return false;
-		}
-		return true;
-	}
-
-	/// return True of the candidate satisfies the J3 check
-	bool filterJ3inline ( const cperm &c ) const {
-		const int nc = inline_dtable.n_columns;
-		const int N = als.n_rows;
-		int jv=0;
-		for ( int idx1=0; idx1<nc; idx1++ ) {
-			jv=0;
-
-			const array_t *o1 = inline_dtable.array+inline_dtable.n_rows*idx1;
-			for ( int xr=0; xr<N; xr++ ) {
-
-				jv += ( o1[xr] ) * ( c[xr] );
-			}
-
-			if ( jv!=0 )
-				return false;
-		}
-		return true;
-	}
+            //inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
+            //inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
 
 
-	/// return True of the candidate satisfies the symmetry check
-	bool filterSymmetry ( const cperm &c ) const {
-		return  satisfy_symm ( c, check_indices, 0 );
-	}
-	/// return True of the candidate extension satisfies the J2 check
-	bool filterJ2 ( const cperm &c ) const {
-		return ipcheck ( c, als, 0 );
-	}
-	/// return True of the candidate extension satisfies the J2 check for the last column of the array checked against
-	bool filterJ2last ( const cperm &c ) const {
-		return ipcheck ( c, als, als.n_columns-1 );
-	}
-	/// return True of the candidate extension satisfies the zero
-	bool filterZero ( const cperm &c ) const {
-		// TODO: minzvalue-1?
-		for ( int i=0; i<minzvalue-1; i++ ) {
-			if ( c[i]==0 )
-				return false;
-		}
-		return true;
+            minzvalue = minz ( als, als.n_columns-1 );
 
-	}
+            inline_row = als.n_rows;
+            int br=0;
+            for ( int i=als.n_rows-1; i>=0; i-- ) {
+                for ( int c=0; c<als.n_columns; c++ ) {
+                    if ( inline_dtable.at ( i,0 ) !=0 ) {
+                        br=1;
+                        break;
+                    }
+                }
+                if ( br ) {
+                    break;
+                }
+                inline_row=i;
+            }
+            //inline_dtable.showarray();
+            //printfd("  inline J3 check: inline_row %d\n", inline_row);
+        } else {
+            inline_row=-1;
+        }
+    }
+
+    /// filter a list of cperms using the filter method
+    std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const {
+        std::vector<cperm> out;
+        for ( size_t i=0; i<lst.size(); i++ ) {
+            if ( this->filter ( lst[i] ) ) {
+                out.push_back ( lst[i] );
+            }
+        }
+        if ( verbose ) {
+            printfd ( "filterList: %d -> %d\n", lst.size(), out.size() );
+        }
+        return out;
+    }
+
+    std::vector<cperm> filterListJ2last ( const std::vector<cperm> &lst ) const {
+        std::vector<cperm> out;
+        for ( size_t i=0; i<lst.size(); i++ ) {
+            if ( this->filterJ2last ( lst[i] ) ) {
+                out.push_back ( lst[i] );
+            }
+        }
+        //printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
+        return out;
+
+    }
+
+    /// filter a list of cperms using the filterZero method
+    std::vector<cperm> filterListZero ( const std::vector<cperm> &lst ) const {
+        std::vector<cperm> out;
+        for ( size_t i=0; i<lst.size(); i++ ) {
+            if ( this->filterZero ( lst[i] ) ) {
+                out.push_back ( lst[i] );
+            }
+        }
+        //printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
+        return out;
+    }
+
+    /// return True of the extension satisfies all checks
+    bool filter ( const cperm &c ) const {
+        if ( filterfirst ) {
+            if ( c[0]<0 ) {
+                return false;
+            }
+        }
+        if ( filtersymm ) {
+            if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
+                return false;
+            }
+        }
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, 0 ) ) {
+                return false;
+            }
+        }
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3 ( c ) ) {
+                return false;
+            }
+        }
+        ngood++;
+        return true;
+    }
+    /// return True of the extension satisfies all J-characteristic checks
+    bool filterJ ( const cperm &c, int j2start=0 ) const {
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, j2start ) ) {
+                return false;
+            }
+        }
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3 ( c ) ) {
+                return false;
+            }
+        }
+        ngood++;
+        return true;
+    }
+    /// return True of the extension satisfies all checks
+    bool filterReason ( const cperm &c ) const {
+        if ( filterfirst ) {
+            if ( c[0]<0 ) {
+                printf ( "filterfirst\n" );
+                return false;
+            }
+        }
+        if ( filtersymm ) {
+            if ( ! satisfy_symm ( c, sd, 0 ) ) {
+                printf ( "symmetry\n" );
+                return false;
+            }
+        }
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, 0 ) ) {
+                printf ( "j2\n" );
+                return false;
+            }
+        }
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3 ( c ) ) {
+                printf ( "j3\n" );
+                return false;
+            }
+        }
+        ngood++;
+        printf ( "filter check good\n" );
+
+        return true;
+    }
+
+    /// return True of the candidate satisfies the J3 check
+    bool filterJ3 ( const cperm &c ) const {
+        const int nc = dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=0; idx1<nc; idx1++ ) {
+            jv=0;
+
+            const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// return True of the candidate satisfies the J3 check
+    bool filterJ3inline ( const cperm &c ) const {
+        const int nc = inline_dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=0; idx1<nc; idx1++ ) {
+            jv=0;
+
+            const array_t *o1 = inline_dtable.array+inline_dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /// return True of the candidate satisfies the symmetry check
+    bool filterSymmetry ( const cperm &c ) const {
+        return  satisfy_symm ( c, check_indices, 0 );
+    }
+    /// return True of the candidate extension satisfies the J2 check
+    bool filterJ2 ( const cperm &c ) const {
+        return ipcheck ( c, als, 0 );
+    }
+    /// return True of the candidate extension satisfies the J2 check for the last column of the array checked against
+    bool filterJ2last ( const cperm &c ) const {
+        return ipcheck ( c, als, als.n_columns-1 );
+    }
+    /// return True of the candidate extension satisfies the zero
+    bool filterZero ( const cperm &c ) const {
+        // TODO: minzvalue-1?
+        for ( int i=0; i<minzvalue-1; i++ ) {
+            if ( c[i]==0 ) {
+                return false;
+            }
+        }
+        return true;
+
+    }
 
 private:
 
@@ -663,4 +674,4 @@ std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  cons
 
 
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;
