@@ -695,7 +695,8 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
 		if ( verbose ) {
 			printfd ( "problem with file %s\n", afile.filename.c_str() );
 		}
-		return 0;
+		Jcounter jc;
+		return jc;
 	}
 
 	if (verbose>=2) {
