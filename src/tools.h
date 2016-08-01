@@ -81,11 +81,11 @@ inline void printfd_handler ( const char *file, const char* func, int line, cons
 
 /* these macros are not used at the moment */
 #ifdef GCC
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+//#define likely(x)	__builtin_expect(!!(x), 1)
+//#define unlikely(x)	__builtin_expect(!!(x), 0)
 #else
-#define likely(x)	x
-#define unlikely(x)	x
+//#define likely(x)	x
+//#define unlikely(x)	x
 #endif
 
 /* do these work with recent GCC? */

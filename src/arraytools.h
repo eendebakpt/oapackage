@@ -1271,7 +1271,7 @@ array_link::operator= (const array_link & rhs)
 #ifdef CLEAN_ARRAY_LINK
   return deepcopy (rhs);
 #else
-  return shallowcopy (rhs);
+  not implemented
 #endif
 }
 

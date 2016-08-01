@@ -1364,7 +1364,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 	const int cg = ad->get_col_group ( dyndata->col );	/* current column group */
 	/* number of columns remaining in this group */
 	const int ncolsremgroup = ad->colgroupsize[cg]+ad->colgroupindex[cg]-dyndata->col;
-	//printf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg], ad->colgroupindex[cg]);
 
 #ifdef OADEBUG
 	myassertdebug ( dyndata->col!=ad->ncols, "LMC_non_root this code should not be reached!  dyndata->col!=ad->ncols\n" );
@@ -1384,9 +1383,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 		// keep track of applied column permutation
 		copy_perm ( dyndata->colperm, dyndatacpy->colperm, ad->ncols );
 		perform_inv_perm<colindex_t> ( dyndata->colperm+col, dyndatacpy->colperm+col, remsize, colpermloop );
-
-		//printf("full colperm: "); print_perm(dyndatacpy->colperm, ad->ncols);	//
-		// show_array(original, ad->ncols, ad->N);
 
 		// OPTIMIZE: this yields too many level perms, we can reduce it by pre-selecting the first row
 		// OPTIMIZE: even better: if there are no row symmetries any more, we can just select the best permutation
@@ -1433,7 +1429,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 //                     			  cpy_dyndata_rowsort ( dyndata, dyndatacpy );
 						//    ret =  LMC_check_col ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy );
 					} else {
-						//printf("xxx\n");
 						ret =  LMC_check_col ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy );
 					}
 					dyndatacpy->col = dyndata->col;  // TODO: needed?

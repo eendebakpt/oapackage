@@ -2828,8 +2828,7 @@ idx++;
 array_link createJdtable ( const array_link &al )
 {
 	const int nr = al.n_rows;
-const int nc = al.n_columns*al.n_columns;
-//const int nc = (al.n_columns+1)*al.n_columns/2;
+	const int nc = al.n_columns*al.n_columns;
 
 	// fill double column table
 	array_link dtable ( nr, nc, -1 );
@@ -2847,7 +2846,6 @@ const int nc = al.n_columns*al.n_columns;
 			for ( int x=0; x<nr; x++ ) {
 				//pout[x] = p1[x]+p2[x];
 				pout[x] = p1[x] ^ p2[x];
-				//dtable.array[x+idx*dtable.n_rows] = al.array[x+al.n_rows*i] + al.array[x+al.n_rows*j];
 			}
 idx++;
 		}
@@ -3719,8 +3717,6 @@ int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols )
 	if ( ncols!=this->ncols )
 		myprintf ( "arrayfile_t::read_array: ncols unequal\n" );
 
-	//myprintf("arrayfile_t::read_array: mode %d\n", this->mode);
-
 	switch ( this->mode ) {
 	case arrayfile::ATEXT: {
 		int r = fscanf ( nfid, "%d\n", &index );
@@ -3773,8 +3769,6 @@ void arrayfile_t::writeheader()
 		fwrite ( ( const void* ) & this->narrays,sizeof ( int ),1,this->nfid );
 
 		if ( this->mode == arrayfile::ABINARY )
-
-
 			reserved=1001;
 		else {
 			if ( this->mode == arrayfile::ABINARY_DIFF )
@@ -3815,7 +3809,6 @@ arraydata_t* readConfigFile ( const char *file )
 	inFile.open ( file );
 	if ( !inFile ) {
 		myprintf ( "readConfigFile: unable to open file %s\n", file );
-		//throw -1; // throw error
 		return 0;
 		//exit(1); // terminate with error
 	}
