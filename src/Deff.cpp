@@ -541,9 +541,7 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
 		myprintf ( "optimDeff: final score %.4f, final D-efficiency %.4f\n",  dn, dd[0] );
 	}
 
-	//myprintf("nx %d\n", nx);
 	return A;
-//      return std::pair<array_link, std::vector<double> >(A, dd);
 }
 
 #include <algorithm>
@@ -621,7 +619,6 @@ std::vector<double> dd = best.Defficiencies();
 		}
 
 		return best.Defficiency();
-
 	}
 
 } // extern "C"

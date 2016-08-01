@@ -39,17 +39,6 @@ extend_data_t::extend_data_t ( const arraydata_t *ad, colindex_t extcol ) : adat
 	es->r_index = create_reverse_colcombs_fixed ( ncolcombs );
 	es->ncolcombs = ncolcombs;
 
-#ifdef FULLPACKAGE
-	/*
-	if ( checkloglevel ( DEBUG ) ) {
-		for ( int x=0; x<ncolcombs; x++ ) {
-			std::cout << "colcomb " << x << " ";
-			print_perm ( es->colcombs[x], es->adata->strength );
-		}
-	}
-	*/
-#endif
-
 	// allocate table for frequency count
 	this->freqtable = new_strength_freq_table ( es->ncolcombs, es->nvalues, this->freqtablesize );
 	log_print ( DEBUG, "Allocated freq table of size %d\n", this->freqtablesize );
@@ -534,13 +523,6 @@ bool strength_check ( const arraydata_t &ad, const array_link &al,  int verbose 
 		strengthcheck.print_frequencies ( );
 	}
 //   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
-//   myprintf ( "  strength %d: %d\n", ad.strength, val );
-
-
-	
-	// old method
-	//array_t **arraycol = new array_t* [ad.strength];
-	//int *sss =  new int[ad.strength];
 
 	for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
 		//myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
@@ -676,7 +658,6 @@ colindex_t **set_colcombs_fixed ( int*& xlambda, int*& nvalues, int &ncolcombs, 
 
 	return colcombs;
 }
-
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

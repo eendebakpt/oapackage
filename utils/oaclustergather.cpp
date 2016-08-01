@@ -311,8 +311,7 @@ int main(int argc, char *argv[])
     if (verbose) {
 	std::string splittag = splitTag(lvls);
 
-	printf
-	    ("oaclustergather: basedir %s, kmin %d, kmax %d, verbose %d, method %d\n",
+	printf("oaclustergather: basedir %s, kmin %d, kmax %d, verbose %d, method %d\n",
 	     basedir.c_str(), kmin, kmax, verbose, method);
 #ifdef DOOPENMP
 	printf
@@ -498,7 +497,7 @@ int main(int argc, char *argv[])
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
 		    "numbers-" + splitTag(tovec(lvls, jj)) + ".txt";
-		std::string nfilesub =
+		std::string nfilesub = 
 		    basedir + filesep + subdir + filesep + nfilesub0;
 		std::vector < long >nasub(kmax + 1);
 		std::vector < long >nparetosub(kmax + 1);
@@ -507,7 +506,7 @@ int main(int argc, char *argv[])
 				    kmin, kmax);
 
 		if (verbose >= 2) {
-		    if (b) {
+		    if (b) { 
 			printf("   --> read numbers file %s\n",
 			       nfilesub.c_str());
 		    } else {

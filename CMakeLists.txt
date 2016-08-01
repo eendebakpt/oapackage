@@ -33,8 +33,7 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-#find_package(MPI QUIET)	# Needed for legacy code and OpenMP functionality
-find_package(MPI)	# Needed for legacy code and OpenMP functionality
+#find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
@@ -83,7 +82,7 @@ set(OUTPUTDIR ${CMAKE_SOURCE_DIR})
 
 if(OADEV)
   # if development code, try to use openmp
-find_package(OpenMP )
+  find_package(OpenMP )
 
 if (0)
 set(OPENMP_FOUND False)

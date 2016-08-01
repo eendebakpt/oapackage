@@ -18,11 +18,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include <vector>
-//#ifdef _WIN32
-//#include <msstdint.h>
-//#else
-//#include <stdint.h>
-//#endif
+
 
 #include <string.h>
 #include <deque>
@@ -53,10 +49,6 @@ inline double round ( double x )
 //%ignore    mvalue_t::operator<<;
 //%rename(Complex_add_dc) operator+(double, const Complex &);
 //%ignore    mvalue_t::operator<<( std::ostream& stream, const mvalue_t<W>& mval );
-
-//    template <class W>
-//    friend std::ostream& operator<< ( std::ostream& stream, const mvalue_t<W>& mval );
-
 #endif
 
 #include <queue>
@@ -861,7 +853,6 @@ void next_perm ( permutationType *s, const int len )
 
 	if ( i==0 ) {
 		// last permutation reached!
-		//printf("last permutation reached\n");
 		return;
 	}
 

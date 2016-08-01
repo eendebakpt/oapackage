@@ -1263,4 +1263,3 @@ arraylist_t runExtendRoot (  arraydata_t adata, int nmax, int verbose )
 	     return sols;
 
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
