@@ -12,7 +12,7 @@
 
 #include "arraytools.h"
 #include "graphtools.h"
-#include "lmc.h"
+//#include "lmc.h"
 #include "arrayproperties.h"
 
 

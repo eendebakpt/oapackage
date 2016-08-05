@@ -10,122 +10,14 @@
 //#define DOOPENMP
 #endif
 
+#include <algorithm>
 #include <map>
 
 #include "arraytools.h"
-//#include "arrayproperties.h"
 #include "lmc.h"
 #include "extend.h"
 
 
-/// structure to write arrays to disk, thread safe
-struct arraywriter_t {
-public:
-
-    // since depth_extend is a depth first approach we need to store arrays with a different number of columns
-    std::vector < arrayfile_t * >afiles;
-
-    bool writearrays;
-
-    /// number of arrays written to disk
-    int nwritten;
-    // long narraysmax;
-
-    int verbose;
-
-public:
-    arraywriter_t () {
-        writearrays = true;
-        verbose = 1;
-    };
-
-    ~arraywriter_t () {
-        flush ();
-        closeafiles ();
-    }
-
-    void flush () {
-        //printf("arraywriter_t: flush()\n");
-        for ( size_t i = 0; i < afiles.size (); i++ ) {
-            arrayfile_t *af = afiles[i];
-            if ( af != 0 ) {
-                //printf("arraywriter_t: flush() %d\n", i);
-                #pragma omp critical
-                af->updatenumbers ();
-                af->flush ();
-            }
-        }
-    }
-    // write array to disk
-    void writeArray ( const array_link & A ) {
-
-        // writing arrays with multiple threads at the same time is not supported
-#ifdef DOOPENMP
-        #pragma omp critical
-#endif
-        {
-            size_t i = A.n_columns;
-            if ( writearrays ) {
-                if ( i < afiles.size () ) {
-                    afiles[i]->append_array ( A );
-                } else {
-                    fprintf ( stderr,
-                    "depth_extend_t: writeArray: problem: array file for %d columns was not opened\n",
-                    ( int ) i );
-                }
-                nwritten++;
-            }
-        }
-    }
-
-    // write a list of arrays to disk
-    void writeArray ( const arraylist_t & lst ) {
-        // NOTE: for slow filesystems we might want to cache these results
-
-//#pragma omp critical
-        {
-            for ( size_t j = 0; j < lst.size (); j++ ) {
-                const array_link & A = lst[j];
-                writeArray ( A );
-            }
-        }
-    }
-
-    // initialize the result files
-    void initArrayFiles ( const arraydata_t & ad, int kstart,
-                          const std::string prefix, arrayfilemode_t mode =
-                              ABINARY_DIFF ) {
-        afiles.clear ();
-        afiles.resize ( ad.ncols + 1 );
-        nwritten = 0;
-
-        for ( size_t i = kstart; i <= ( size_t ) ad.ncols; i++ ) {
-            arraydata_t ad0 ( &ad, i );
-            std::string afile = prefix + "-" + ad0.idstr () + ".oa";
-            if ( verbose >= 3 )
-                printf ( "depth_extend_t: creating output file %s\n",
-                         afile.c_str () );
-
-            int nb = arrayfile_t::arrayNbits ( ad );
-            afiles[i] = new arrayfile_t ( afile, ad.N, i, -1, mode, nb );
-        }
-    }
-
-    /// return the total number arrays
-    int nArraysWritten () const {
-        return nwritten;
-    }
-
-public:
-    void closeafiles () {
-        for ( size_t i = 0; i < afiles.size (); i++ ) {
-            delete afiles[i];
-        }
-        afiles.clear ();
-
-    }
-
-};
 
 
 /// structure containing current position in search tree
@@ -226,17 +118,12 @@ struct counter_t {
         }
     }
 
-
     /// show information about the number of arrays found
     inline void showcountscompact () const {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
         {
-            //printf("depth_extend: counts ");
-            //for ( size_t i=ad->strength; i<= ( size_t ) ad->ncols; i++ ) {
-            //   printf ( " %d\n", this->nfound[i] );
-            // }
             printf ( "depth_extend: counts " );
             display_vector ( this->nfound );
             printf ( "\n" );
@@ -259,8 +146,6 @@ struct counter_t {
         }
     }
 };
-
-
 
 
 
@@ -300,7 +185,7 @@ public:
         return lmctype.size ();
     }
 
-    std::vector < int >updateExtensionPointers ( int extcol ) {
+    std::vector < int > updateExtensionPointers ( int extcol ) {
         if ( verbose >= 3 )
             printf
             ( "updateExtensionPointers: determine extensions that can be used at the next stage\n" );
@@ -316,9 +201,6 @@ public:
                     // good candidate
                     //      printf("  %d %d \n", lastcol[i], extcol);
                     pointers.push_back ( valididx[i] );
-                } else {
-                    // printf("##  %d %d \n", lastcol[i], extcol);
-
                 }
             }
         }
@@ -328,11 +210,11 @@ public:
         return pointers;
     }
 
-/// initialize the new list of extension columns
+    /// initialize the new list of extension columns
     arraylist_t initialize ( const arraylist_t & alist, const arraydata_t & adf,
                              const OAextend & oaextend );
 
-/// select the arrays with are LMC and hence need to be written to disk
+    /// select the arrays with are LMC and hence need to be written to disk
     inline arraylist_t selectArraysZ ( const arraylist_t & alist ) const {
         if ( verbose >= 2 )
             printf
@@ -346,10 +228,6 @@ public:
                 ( "  depth_extend_sub_t.selectArraysZ: array %ld: lmctype %d\n", i,
                   lmctype[i] );
             if ( lmctype[i] >= LMC_EQUAL ) {
-                //if (i>valididx.size())
-                //  printf("  error: i %zu size %zu\n", i, valididx.size() );
-                //if (valididx[i]>(int) alist.size())
-                //  printf("  error: validx[i] %d alist size %zu\n",  valididx[i], alist.size());
                 array_link ee = alist[i];
 
                 ga.push_back ( ee );
@@ -689,14 +567,16 @@ calculateArrayParetoJ5Cache ( const array_link & al, int verbose,
     return p;
 }
 
-#include <algorithm>
 
 /// add arrays to set of Pareto results
 void addArraysToPareto ( Pareto < mvalue_t < long >, array_link > &pset,
                          pareto_cb_cache paretofunction,
                          const arraylist_t & arraylist, int jj, int verbose );
 
-/// helper class for indexing statistics for a certain number of columns
+/** helper class for indexing statistics of designs
+ *
+ * The index consists of the number of columns and the value for the J-characteristic
+ */
 struct jindex_t {
     int k;			// number of columns
     int j;			// J-value
@@ -721,6 +601,8 @@ public:
     }
 };
 
+
+/// object to hold counts of maximum J_k-values
 class Jcounter
 {
 public:
