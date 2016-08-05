@@ -142,8 +142,7 @@ Eigen::MatrixXd dummy2 ();
 #endif
 
 extern
-"C"
-{
+"C" {
 }
 
 //typedef int int32_t;
@@ -290,7 +289,8 @@ public:
     std::vector < int >calculateF ( int strength = 3 ) const;
 
     // calculate aberration value
-    void calculateAberration () {
+    void calculateAberration ()
+    {
         // TODO: find reference
         jstruct_t *js = this;
         js->A = 0;
@@ -306,7 +306,8 @@ public:
     std::string showstr ();
 
     /// return 1 if all vals are zero
-    int allzero () {
+    int allzero ()
+    {
         for ( int i = 0; i < this->nc; ++i ) {
             if ( this->vals[i] != 0 ) {
                 return 0;
@@ -391,7 +392,8 @@ public:
     void writeConfigFile ( const char *filename ) const;
 
     /// @brief assignment operator
-    inline arraydata_t & operator= ( const arraydata_t & ad2 ) {
+    inline arraydata_t & operator= ( const arraydata_t & ad2 )
+    {
         this->N = ad2.N;
         this->strength = ad2.strength;
         this->ncols = ad2.ncols;
@@ -409,7 +411,8 @@ public:
     }
 
     /// @brief Comparison operator
-    inline int operator== ( const arraydata_t & ad2 ) {
+    inline int operator== ( const arraydata_t & ad2 )
+    {
         if ( this->N != ad2.N ) {
             return 0;
         }
@@ -440,7 +443,8 @@ public:
     std::string latexstr ( int cmd = 0, int series = 0 ) const;
 
 public:
-    arraydata_t reduceColumns ( int k ) {
+    arraydata_t reduceColumns ( int k )
+    {
         arraydata_t adata ( this, k );
         return adata;
     }
@@ -460,14 +464,16 @@ public:
     void set_colgroups_jj ( const symmetry_group & sg, int jj );
     /// set column group equal to that of a symmetry group
     void set_colgroups ( const symmetry_group & sg );
-    void show_colgroups () const {
+    void show_colgroups () const
+    {
         myprintf ( "arraydata_t: colgroups: " );
         print_perm ( this->colgroupindex, this->ncolgroups );
         myprintf ( "                  size: " );
         print_perm ( this->colgroupsize, this->ncolgroups );
     }
 
-    void calcoaindex ( colindex_t strength ) {
+    void calcoaindex ( colindex_t strength )
+    {
         int combs = 1;
         for ( int i = 0; i < this->strength; i++ ) {
             combs *= this->s[i];
@@ -483,7 +489,8 @@ public:
     /// return the root array for the class
     array_link create_root () const;
 
-    int getfactorlevel ( int idx ) const {
+    int getfactorlevel ( int idx ) const
+    {
         if ( idx < 0 ) {
             return -1;
         }
@@ -493,7 +500,8 @@ public:
         return this->s[idx];
     }
 
-    std::vector < int >getS () const {
+    std::vector < int >getS () const
+    {
         std::vector < int >s ( this->ncols );
         for ( int i = 0; i < this->ncols; i++ ) {
             s[i] = this->s[i];
@@ -505,7 +513,8 @@ public:
      * @brief Reset strength of arraydata
      * @param t
      */
-    void reset_strength ( colindex_t t ) {
+    void reset_strength ( colindex_t t )
+    {
         strength = t;
         delete[]colgroupindex;
         delete[]colgroupsize;
@@ -513,7 +522,8 @@ public:
     }
 
     /// Return index of the column group for a column
-    colindex_t get_col_group ( const colindex_t col ) const {
+    colindex_t get_col_group ( const colindex_t col ) const
+    {
         colindex_t j = 0;
         for ( colindex_t i = 0; i < ncolgroups; i++ ) {
             if ( colgroupindex[i] <= col ) {
@@ -775,10 +785,12 @@ public:
     //void setColumnX(int c, const std::vector<numtype> v) {
     //              std::copy(this->array+c*this->n_rows, this->array+(c+1)*this->n_rows, v.begin() );
     //}
-    void setColumn ( int c, const std::vector < int >v ) {
+    void setColumn ( int c, const std::vector < int >v )
+    {
         std::copy ( v.begin (), v.end (), this->array + c * this->n_rows );
     }
-    void setColumn ( int c, const std::vector < signed char >v ) {
+    void setColumn ( int c, const std::vector < signed char >v )
+    {
         std::copy ( v.begin (), v.end (), this->array + c * this->n_rows );
     }
 
@@ -862,7 +874,8 @@ public:
     int operator< ( const array_link & rhs ) const;
     int operator> ( const array_link & rhs ) const;
 
-    int equalsize ( const array_link & rhs ) const {
+    int equalsize ( const array_link & rhs ) const
+    {
         return ( this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns );
     }
 
@@ -874,7 +887,8 @@ public:
     /// elementwise multiplication
     array_link operator * ( const array_link & rhs ) const;
 
-    array_link operator * ( array_t val ) const {
+    array_link operator * ( array_t val ) const
+    {
         array_link al ( *this );
         int NN = this->n_rows * this->n_columns;
         for ( int i = 0; i < NN; i++ ) {
@@ -883,7 +897,8 @@ public:
         return al;
     }
 
-    array_link operator *= ( array_t val ) {
+    array_link operator *= ( array_t val )
+    {
         int NN = this->n_rows * this->n_columns;
         for ( int i = 0; i < NN; i++ ) {
             this->array[i] *= val;
@@ -891,7 +906,8 @@ public:
         return *this;
     }
 
-    array_link operator += ( array_t val ) {
+    array_link operator += ( array_t val )
+    {
         int NN = this->n_rows * this->n_columns;
         for ( int i = 0; i < NN; i++ ) {
             this->array[i] += val;
@@ -900,7 +916,8 @@ public:
 
 
     }
-    array_link operator -= ( array_t val ) {
+    array_link operator -= ( array_t val )
+    {
         int NN = this->n_rows * this->n_columns;
         for ( int i = 0; i < NN; i++ ) {
             this->array[i] -= val;
@@ -909,11 +926,13 @@ public:
     }
 
     /// get element from array, no error checking, inline version
-    inline const array_t & atfast ( const rowindex_t r, const colindex_t c ) const {
+    inline const array_t & atfast ( const rowindex_t r, const colindex_t c ) const
+    {
         return this->array[r + this->n_rows * c];
     }
     /// get element from array, no error checking, inline version
-    inline array_t & atfast ( const rowindex_t r, const colindex_t c ) {
+    inline array_t & atfast ( const rowindex_t r, const colindex_t c )
+    {
         return this->array[r + this->n_rows * c];
     }
     array_t _at ( const rowindex_t, const colindex_t ) const;	/// get element at specified position, no error checking
@@ -933,17 +952,20 @@ public:
     void _setvalue ( int row, int col, int val );	/// set value of an array, no error checking!
 
     /// multiply a row by -1
-    void negateRow ( rowindex_t r ) {
+    void negateRow ( rowindex_t r )
+    {
         for ( int c = 0; c < this->n_columns; c++ ) {
             this->atfast ( r, c ) *= -1;
         }
     }
     /// print information about array
-    void show () const {
+    void show () const
+    {
         myprintf ( "index: %d, (%d, %d), array %p\n", index, n_rows, n_columns,
                    ( void * ) array );
     }
-    std::string showstr () const {
+    std::string showstr () const
+    {
         std::stringstream s;
         s << "array_link: " << n_rows << ", " << n_columns << "";
         std::string rs = s.str ();
@@ -960,7 +982,8 @@ public:
      *
      * The difference is according to the column-major ordering.
      */
-    bool firstDiff ( const array_link & A, int &r, int &c, int verbose = 1 ) const {
+    bool firstDiff ( const array_link & A, int &r, int &c, int verbose = 1 ) const
+    {
         r = 0;
         c = 0;
         for ( c = 0; c < this->n_columns; c++ ) {
@@ -982,17 +1005,20 @@ public:
     double nonzero_fraction () const;
 
     /// fill array with zeros
-    void clear () {
+    void clear ()
+    {
         std::fill ( array, array + n_rows * n_columns, 0 );
     };
 
     // getarraydata (Python interface). this needs to be of type int32 (default python int type)
-    void getarraydata ( int *pymat1, int n ) {
+    void getarraydata ( int *pymat1, int n )
+    {
         std::copy ( this->array, this->array + n, pymat1 );
     }
 
     /// internal function
-    template < class numtype > void setarraydata ( const numtype * tmp, int n ) {
+    template < class numtype > void setarraydata ( const numtype * tmp, int n )
+    {
         //for(size_t i=0; i<n; i++) {
         //    this->array[i]=tmp[i];
         //}
@@ -1003,16 +1029,19 @@ public:
         std::copy ( tmp, tmp + n, this->array );
     }
     /// special method for SWIG interface
-    void setarraydata ( std::vector < int >tmp, int n ) {
+    void setarraydata ( std::vector < int >tmp, int n )
+    {
         std::copy ( tmp.begin (), tmp.begin () + n, this->array );
     }
     /// internal function
     template < class numtype > void
-    setarraydata ( std::vector < numtype > tmp, int n ) {
+    setarraydata ( std::vector < numtype > tmp, int n )
+    {
         std::copy ( tmp.begin (), tmp.begin () + n, this->array );
     }
 
-    array_t maxelement () const {
+    array_t maxelement () const
+    {
         array_t maxelem = 0;
         for ( int i = 0; i < this->n_rows * this->n_columns; i++ ) {
             if ( this->array[i] > maxelem ) {
@@ -1023,7 +1052,8 @@ public:
     }
 
     /// set column to values
-    void setcolumn ( int c, const array_link & al, int sc = 0 ) {
+    void setcolumn ( int c, const array_link & al, int sc = 0 )
+    {
         assert ( c >= 0 );
         assert ( c <= this->n_columns );
         assert ( this->n_rows == al.n_rows );
@@ -1056,7 +1086,8 @@ public:
 #endif
 
     /// return the array as an Eigen matrix
-    inline MatrixFloat getEigenMatrix () const {
+    inline MatrixFloat getEigenMatrix () const
+    {
         int k = this->n_columns;
         int n = this->n_rows;
         MatrixFloat mymatrix = MatrixFloat::Zero ( n, k );
@@ -1072,7 +1103,8 @@ public:
     }
 
     /// return true of specified column is smaller than column in another array
-    inline int columnGreater ( int c1, const array_link & rhs, int c2 ) const {
+    inline int columnGreater ( int c1, const array_link & rhs, int c2 ) const
+    {
 
 #ifdef OADEBUG
         if ( ( this->n_rows != rhs.n_rows ) || c1 < 0 || c2 < 0
@@ -1133,20 +1165,18 @@ inline cperm vstack ( const cperm & A, const cperm & B )
 
 /// perform column permutation for an array
 void perform_column_permutation ( const array_link source, array_link & target,
-                             const std::vector < int >perm );
+                                  const std::vector < int >perm );
 
 /// perform row permutation for an array
 void perform_row_permutation ( const array_link source, array_link & target,
-                          const std::vector < int >perm );
+                               const std::vector < int >perm );
 
 /// create arraydata_t structure from array
 arraydata_t arraylink2arraydata ( const array_link & al, int extracols = 0, int strength =  2 );
 
 
 /// container with arrays
-typedef
-std::deque <
-array_link > arraylist_t;
+typedef std::deque <array_link > arraylist_t;
 /* // //typedef std::vector<array_link> arraylist_t; */
 
 /// add a constant value to all arrays in a list
@@ -1163,16 +1193,14 @@ addConstant ( const arraylist_t & lst, int v )
 }
 
 /** Return number of arrays with j_{2n+1}=0 for n<m */
-std::vector < int >
-getJcounts ( arraylist_t * arraylist, int N, int k, int verbose = 1 );
+std::vector < int > getJcounts ( arraylist_t * arraylist, int N, int k, int verbose = 1 );
 
 
 /** @brief Predict j4(1,2,3,k) using the theorem from Deng
  * This works only for 2-level arrays. The 0 corresponds to a +
  *
  */
-inline int
-predictJ ( const array_t * array, const int N, const int k )
+inline int predictJ ( const array_t * array, const int N, const int k )
 {
     int t = N / 4;
     int tt = t / 2;
@@ -1227,8 +1255,7 @@ array_link::shallowcopy ( const array_link & rhs )
 }
 
 
-inline array_link &
-array_link::deepcopy ( const array_link & rhs )
+inline array_link & array_link::deepcopy ( const array_link & rhs )
 {
     this->n_rows = rhs.n_rows;
     this->n_columns = rhs.n_columns;
@@ -1265,7 +1292,6 @@ array_link::operator< ( const array_link & rhs ) const
     return std::lexicographical_compare ( array, array + n_rows * n_columns,
                                           rhs.array,
                                           rhs.array + n_rows * n_columns );
-    //return memcmp(this->array, rhs.array, sizeof(array_t)*this->n_rows*this->n_columns) < 0;
 }
 
 /**
@@ -1428,13 +1454,15 @@ public:
     void randomizerowperm ();
 
     /// apply transformation to an array_link object
-    array_link apply ( const array_link & al ) const {
+    array_link apply ( const array_link & al ) const
+    {
         array_link trx ( al );
         this->apply ( al.array, trx.array );
         return trx;
     }
     /// apply transformation to an array_link object
-    array_link applygeneric ( const array_link & al ) const {
+    array_link applygeneric ( const array_link & al ) const
+    {
 
         // find level transformation
 
@@ -1449,7 +1477,8 @@ public:
     }
 
     /// composition operator. the transformations are applied from the left
-    array_transformation_t operator* ( const array_transformation_t b ) {
+    array_transformation_t operator* ( const array_transformation_t b )
+    {
 
         array_transformation_t c ( this->ad );
 
@@ -1486,7 +1515,8 @@ public:
     void apply ( array_t * sourcetarget );
 
     /// apply transformation to an array
-    void apply ( const array_t * source, array_t * target ) const {
+    void apply ( const array_t * source, array_t * target ) const
+    {
 
         array_t *tmp = create_array ( ad );
 
@@ -1580,7 +1610,8 @@ public:
     array_link apply ( const array_link & al ) const;
 
     /// composition operator. the transformations are applied from the left
-    conference_transformation_t operator* ( const conference_transformation_t b ) {
+    conference_transformation_t operator* ( const conference_transformation_t b )
+    {
         const int N = this->nrows;
         const int ncols = this->ncols;
 
@@ -1618,10 +1649,12 @@ public:
 
     //void show ( std::ostream &out ) const;
 
-    void setrowperm ( std::vector < int >rp ) {
+    void setrowperm ( std::vector < int >rp )
+    {
         rperm = rp;
     };
-    void setcolperm ( std::vector < int >cp ) {
+    void setcolperm ( std::vector < int >cp )
+    {
         cperm = cp;
     };
 
@@ -1720,7 +1753,8 @@ public:
     /// append a single array to the file
     void append_array ( const array_link & a, int specialindex = -1 );
 
-    int swigcheck () const {
+    int swigcheck () const
+    {
 #ifdef SWIGCODE
         if ( sizeof ( int ) != 4 ) {
             fprintf ( stderr, "arrayfile_t: error int is not 32-bit?!\n" );
@@ -1731,7 +1765,8 @@ public:
 #endif
     }
 
-    std::string showstr () const {
+    std::string showstr () const
+    {
         if ( this->isopen () ) {
             std::string modestr;
             switch ( mode ) {
@@ -1776,11 +1811,13 @@ public:
         }
     }
 
-    size_t pos () const {
+    size_t pos () const
+    {
         return narraycounter;
     }
     /// return true of the file format has random access mode
-    bool hasrandomaccess () const {
+    bool hasrandomaccess () const
+    {
         return ( this->mode == ABINARY );
     }
 
@@ -1801,11 +1838,13 @@ private:
     array_link diffarray;
 
     /// return header size for binary format array
-    int headersize () const {
+    int headersize () const
+    {
         return 8 * sizeof ( int32_t );
     };
     /// return size of bit array
-    int barraysize () const {
+    int barraysize () const
+    {
         int num = sizeof ( int32_t );
 
         switch ( this->nbits ) {
@@ -1829,7 +1868,8 @@ private:
     };
 
     /// wrapper function for fwrite or gzwrite
-    size_t afwrite ( void *ptr, size_t t, size_t n ) {
+    size_t afwrite ( void *ptr, size_t t, size_t n )
+    {
         if ( this->nfid == 0 ) {
             myprintf
             ( "afwrite: not implemented, we cannot write compressed files\n" );
@@ -1850,14 +1890,16 @@ public:
     /// read array and return index
     int read_array ( array_t * array, const int nrows, const int ncols );
 
-    void finisharrayfile () {
+    void finisharrayfile ()
+    {
         if ( this->mode == ATEXT ) {
             fprintf ( this->nfid, "-1\n" );
         }
         this->closefile ();	//afile);
     }
 
-    void setVerbose ( int v ) {
+    void setVerbose ( int v )
+    {
         this->verbose = v;
     }
 
@@ -1870,13 +1912,15 @@ private:
     void write_array_binary_diffzero ( const array_link & A );
 
 public:
-    int getnbits () {
+    int getnbits ()
+    {
         return nbits;
     }
 
     /// parse string to determine the file mode
     static arrayfile::arrayfilemode_t parseModeString ( const std::
-            string format ) {
+            string format )
+    {
         arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
         if ( format == "BINARY" || format == "B" ) {
             mode = arrayfile::ABINARY;
@@ -1895,7 +1939,8 @@ public:
     }
 
     /// return number of bits necessary to store an array
-    static int arrayNbits ( const arraydata_t & ad ) {
+    static int arrayNbits ( const arraydata_t & ad )
+    {
         int m = 0;
         for ( int i = 0; i < ad.ncols; ++i ) {
             //myprintf("s[i]: %d\n", ad.s[i]);
@@ -1914,7 +1959,8 @@ public:
     }
 
     /// return number of bits necessary to store an array
-    static int arrayNbits ( const array_link & A ) {
+    static int arrayNbits ( const array_link & A )
+    {
         int m = A.max ();
         int amin = A.min ();
         m = std::max ( m, -amin + 1 );
@@ -2174,17 +2220,20 @@ public:
     int verbose; /// verbosity level
 
 public:
-    arraywriter_t () {
+    arraywriter_t ()
+    {
         writearrays = true;
         verbose = 1;
     };
 
-    ~arraywriter_t () {
+    ~arraywriter_t ()
+    {
         flush ();
         closeafiles ();
     }
 
-    void flush () {
+    void flush ()
+    {
         //printf("arraywriter_t: flush()\n");
         for ( size_t i = 0; i < afiles.size (); i++ ) {
             arrayfile_t *af = afiles[i];
@@ -2198,20 +2247,22 @@ public:
     }
 
     /// write a single array to disk
-    void writeArray ( const array_link & A ) {
+    void writeArray ( const array_link & A )
+    {
         // writing arrays with multiple threads at the same time is not supported
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
         {
             size_t i = A.n_columns;
-            if ( writearrays ) {
+            if ( writearrays )
+            {
                 if ( i < afiles.size () && i>=0 ) {
                     afiles[i]->append_array ( A );
                 } else {
                     fprintf ( stderr,
-                              "depth_extend_t: writeArray: problem: array file for %d columns was not opened\n",
-                              ( int ) i );
+                    "depth_extend_t: writeArray: problem: array file for %d columns was not opened\n",
+                    ( int ) i );
                 }
                 nwritten++;
             }
@@ -2219,7 +2270,8 @@ public:
     }
 
     // write a list of arrays to disk
-    void writeArray ( const arraylist_t & lst ) {
+    void writeArray ( const arraylist_t & lst )
+    {
         for ( size_t j = 0; j < lst.size (); j++ ) {
             const array_link & A = lst[j];
             writeArray ( A );
@@ -2229,7 +2281,8 @@ public:
     // initialize the result files
     void initArrayFiles ( const arraydata_t & ad, int kstart,
                           const std::string prefix, arrayfilemode_t mode =
-                              ABINARY_DIFF ) {
+                              ABINARY_DIFF )
+    {
         afiles.clear ();
         afiles.resize ( ad.ncols + 1 );
         nwritten = 0;
@@ -2247,12 +2300,14 @@ public:
     }
 
     /// return the total number arrays written to disk
-    int nArraysWritten () const {
+    int nArraysWritten () const
+    {
         return nwritten;
     }
 
 public:
-    void closeafiles () {
+    void closeafiles ()
+    {
         for ( size_t i = 0; i < afiles.size (); i++ ) {
             delete afiles[i];
         }
@@ -2384,3 +2439,5 @@ std::pair < MatrixFloat,
 #endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;
+
+

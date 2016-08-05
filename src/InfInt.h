@@ -115,7 +115,7 @@ private:
 };
 
 InfIntException::InfIntException(const std::string& txt) throw () :
-std::exception(), txt(txt)
+    std::exception(), txt(txt)
 {
 }
 
@@ -246,12 +246,10 @@ inline InfInt::InfInt(const std::string& s)
 
 inline InfInt::InfInt(int l) : pos(l >= 0)
 {
-    if (!pos)
-    {
+    if (!pos) {
         l = -l;
     }
-    do
-    {
+    do {
         div_t dt = div(l, BASE);
         val.push_back((ELEM_TYPE) dt.rem);
         l = dt.quot;
@@ -260,12 +258,10 @@ inline InfInt::InfInt(int l) : pos(l >= 0)
 
 inline InfInt::InfInt(long l) : pos(l >= 0)
 {
-    if (!pos)
-    {
+    if (!pos) {
         l = -l;
     }
-    do
-    {
+    do {
         ldiv_t dt = ldiv(l, BASE);
         val.push_back((ELEM_TYPE) dt.rem);
         l = dt.quot;
@@ -295,8 +291,7 @@ inline InfInt::InfInt(long long l) : pos(l >= 0)
 
 inline InfInt::InfInt(unsigned int l) : pos(true)
 {
-    do
-    {
+    do {
         val.push_back((ELEM_TYPE) (l % BASE));
         l = l / BASE;
     } while (l > 0);
@@ -304,8 +299,7 @@ inline InfInt::InfInt(unsigned int l) : pos(true)
 
 inline InfInt::InfInt(unsigned long l) : pos(true)
 {
-    do
-    {
+    do {
         val.push_back((ELEM_TYPE) (l % BASE));
         l = l / BASE;
     } while (l > 0);
@@ -337,12 +331,10 @@ inline const InfInt& InfInt::operator=(int l)
 {
     pos = l >= 0;
     val.clear();
-    if (!pos)
-    {
+    if (!pos) {
         l = -l;
     }
-    do
-    {
+    do {
         div_t dt = div(l, BASE);
         val.push_back((ELEM_TYPE) dt.rem);
         l = dt.quot;
@@ -354,12 +346,10 @@ inline const InfInt& InfInt::operator=(long l)
 {
     pos = l >= 0;
     val.clear();
-    if (!pos)
-    {
+    if (!pos) {
         l = -l;
     }
-    do
-    {
+    do {
         ldiv_t dt = ldiv(l, BASE);
         val.push_back((ELEM_TYPE) dt.rem);
         l = dt.quot;
@@ -395,8 +385,7 @@ inline const InfInt& InfInt::operator=(unsigned int l)
 {
     pos = true;
     val.clear();
-    do
-    {
+    do {
         val.push_back((ELEM_TYPE) (l % BASE));
         l = l / BASE;
     } while (l > 0);
@@ -407,8 +396,7 @@ inline const InfInt& InfInt::operator=(unsigned long l)
 {
     pos = true;
     val.clear();
-    do
-    {
+    do {
         val.push_back((ELEM_TYPE) (l % BASE));
         l = l / BASE;
     } while (l > 0);
@@ -459,12 +447,10 @@ inline InfInt InfInt::operator--(int)
 
 inline const InfInt& InfInt::operator+=(const InfInt& rhs)
 {
-    if (rhs.val.size() > val.size())
-    {
+    if (rhs.val.size() > val.size()) {
         val.resize(rhs.val.size(), 0);
     }
-    for (size_t i = 0; i < val.size(); ++i)
-    {
+    for (size_t i = 0; i < val.size(); ++i) {
         val[i] = (pos ? val[i] : -val[i]) + (i < rhs.val.size() ? (rhs.pos ? rhs.val[i] : -rhs.val[i]) : 0);
     }
     correct();
@@ -473,12 +459,10 @@ inline const InfInt& InfInt::operator+=(const InfInt& rhs)
 
 inline const InfInt& InfInt::operator-=(const InfInt& rhs)
 {
-    if (rhs.val.size() > val.size())
-    {
+    if (rhs.val.size() > val.size()) {
         val.resize(rhs.val.size(), 0);
     }
-    for (size_t i = 0; i < val.size(); ++i)
-    {
+    for (size_t i = 0; i < val.size(); ++i) {
         val[i] = (pos ? val[i] : -val[i]) - (i < rhs.val.size() ? (rhs.pos ? rhs.val[i] : -rhs.val[i]) : 0);
     }
     correct();
@@ -494,8 +478,7 @@ inline const InfInt& InfInt::operator*=(const InfInt& rhs)
 
 inline const InfInt& InfInt::operator/=(const InfInt& rhs)
 {
-    if (rhs == zero)
-    {
+    if (rhs == zero) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("division by zero");
 #else
@@ -507,8 +490,7 @@ inline const InfInt& InfInt::operator/=(const InfInt& rhs)
     bool oldpos = pos;
     val.clear();
     val.resize(N.val.size(), 0);
-    for (int i = (int) N.val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) N.val.size() - 1; i >= 0; --i) {
         R.val.insert(R.val.begin(), (ELEM_TYPE) 0);
         R.val[0] = N.val[i];
         R.correct(true);
@@ -523,8 +505,7 @@ inline const InfInt& InfInt::operator/=(const InfInt& rhs)
 
 inline const InfInt& InfInt::operator%=(const InfInt& rhs)
 {
-    if (rhs == zero)
-    {
+    if (rhs == zero) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("division by zero");
 #else
@@ -535,8 +516,7 @@ inline const InfInt& InfInt::operator%=(const InfInt& rhs)
     InfInt D = (rhs.pos ? rhs : -rhs), N = (pos ? *this : -*this);
     bool oldpos = pos;
     val.clear();
-    for (int i = (int) N.val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) N.val.size() - 1; i >= 0; --i) {
         val.insert(val.begin(), (ELEM_TYPE) 0);
         val[0] = N.val[i];
         correct(true);
@@ -558,18 +538,19 @@ inline const InfInt& InfInt::operator*=(ELEM_TYPE rhs)
 }
 
 inline InfInt InfInt::operator-() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt result = *this;
     result.pos = !pos;
     return result;
 }
 
 inline InfInt InfInt::operator+(const InfInt& rhs) const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt result;
     result.val.resize(val.size() > rhs.val.size() ? val.size() : rhs.val.size(), 0);
-    for (size_t i = 0; i < val.size() || i < rhs.val.size(); ++i)
-    {
+    for (size_t i = 0; i < val.size() || i < rhs.val.size(); ++i) {
         result.val[i] = (i < val.size() ? (pos ? val[i] : -val[i]) : 0) + (i < rhs.val.size() ? (rhs.pos ? rhs.val[i] : -rhs.val[i]) : 0);
     }
     result.correct();
@@ -577,11 +558,11 @@ inline InfInt InfInt::operator+(const InfInt& rhs) const
 }
 
 inline InfInt InfInt::operator-(const InfInt& rhs) const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt result;
     result.val.resize(val.size() > rhs.val.size() ? val.size() : rhs.val.size(), 0);
-    for (size_t i = 0; i < val.size() || i < rhs.val.size(); ++i)
-    {
+    for (size_t i = 0; i < val.size() || i < rhs.val.size(); ++i) {
         result.val[i] = (i < val.size() ? (pos ? val[i] : -val[i]) : 0) - (i < rhs.val.size() ? (rhs.pos ? rhs.val[i] : -rhs.val[i]) : 0);
     }
     result.correct();
@@ -589,13 +570,14 @@ inline InfInt InfInt::operator-(const InfInt& rhs) const
 }
 
 inline InfInt InfInt::operator*(const InfInt& rhs) const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt result;
     result.val.resize(val.size() + rhs.val.size(), 0);
     PRODUCT_TYPE carry = 0;
     size_t digit = 0;
-    for (;; ++digit)
-    {//PROFILED_SCOPE
+    for (;; ++digit) {
+        //PROFILED_SCOPE
         //result.val[digit] = (ELEM_TYPE) (carry % BASE);
         //carry /= BASE;
 
@@ -604,11 +586,11 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
         result.val[digit] = (ELEM_TYPE) (oldcarry - carry * BASE);
 
         bool found = false;
-        for (size_t i = digit < rhs.val.size() ? 0 : digit - rhs.val.size() + 1; i < val.size() && i <= digit; ++i)
-        {//PROFILED_SCOPE
+        for (size_t i = digit < rhs.val.size() ? 0 : digit - rhs.val.size() + 1; i < val.size() && i <= digit; ++i) {
+            //PROFILED_SCOPE
             PRODUCT_TYPE pval = result.val[digit] + val[i] * (PRODUCT_TYPE) rhs.val[digit - i];
-            if (pval >= BASE || pval <= -BASE)
-            {//PROFILED_SCOPE
+            if (pval >= BASE || pval <= -BASE) {
+                //PROFILED_SCOPE
                 //carry += pval / BASE;
                 //pval %= BASE;
 
@@ -619,13 +601,13 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
             result.val[digit] = (ELEM_TYPE) pval;
             found = true;
         }
-        if (!found)
-        {//PROFILED_SCOPE
+        if (!found) {
+            //PROFILED_SCOPE
             break;
         }
     }
-    for (; carry > 0; ++digit)
-    {//PROFILED_SCOPE
+    for (; carry > 0; ++digit) {
+        //PROFILED_SCOPE
         result.val[digit] = (ELEM_TYPE) (carry % BASE);
         carry /= BASE;
     }
@@ -635,9 +617,9 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
 }
 
 inline InfInt InfInt::operator/(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (rhs == zero)
-    {
+{
+    //PROFILED_SCOPE
+    if (rhs == zero) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("division by zero");
 #else
@@ -647,8 +629,8 @@ inline InfInt InfInt::operator/(const InfInt& rhs) const
     }
     InfInt Q, R, D = (rhs.pos ? rhs : -rhs), N = (pos ? *this : -*this);
     Q.val.resize(N.val.size(), 0);
-    for (int i = (int) N.val.size() - 1; i >= 0; --i)
-    {//PROFILED_SCOPE
+    for (int i = (int) N.val.size() - 1; i >= 0; --i) {
+        //PROFILED_SCOPE
         R.val.insert(R.val.begin(), (ELEM_TYPE) 0);
         R.val[0] = N.val[i];
         R.correct(true);
@@ -662,9 +644,9 @@ inline InfInt InfInt::operator/(const InfInt& rhs) const
 }
 
 inline InfInt InfInt::operator%(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (rhs == zero)
-    {
+{
+    //PROFILED_SCOPE
+    if (rhs == zero) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("division by zero");
 #else
@@ -673,8 +655,7 @@ inline InfInt InfInt::operator%(const InfInt& rhs) const
 #endif
     }
     InfInt R, D = (rhs.pos ? rhs : -rhs), N = (pos ? *this : -*this);
-    for (int i = (int) N.val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) N.val.size() - 1; i >= 0; --i) {
         R.val.insert(R.val.begin(), (ELEM_TYPE) 0);
         R.val[0] = N.val[i];
         R.correct(true);
@@ -686,7 +667,8 @@ inline InfInt InfInt::operator%(const InfInt& rhs) const
 }
 
 inline InfInt InfInt::operator*(ELEM_TYPE rhs) const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt result = *this;
     ELEM_TYPE factor = rhs < 0 ? -rhs : rhs;
     multiplyByDigit(factor, result.val);
@@ -696,15 +678,13 @@ inline InfInt InfInt::operator*(ELEM_TYPE rhs) const
 }
 
 inline bool InfInt::operator==(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos != rhs.pos || val.size() != rhs.val.size())
-    {
+{
+    //PROFILED_SCOPE
+    if (pos != rhs.pos || val.size() != rhs.val.size()) {
         return false;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] != rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] != rhs.val[i]) {
             return false;
         }
     }
@@ -712,15 +692,13 @@ inline bool InfInt::operator==(const InfInt& rhs) const
 }
 
 inline bool InfInt::operator!=(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos != rhs.pos || val.size() != rhs.val.size())
-    {
+{
+    //PROFILED_SCOPE
+    if (pos != rhs.pos || val.size() != rhs.val.size()) {
         return true;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] != rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] != rhs.val[i]) {
             return true;
         }
     }
@@ -728,31 +706,25 @@ inline bool InfInt::operator!=(const InfInt& rhs) const
 }
 
 inline bool InfInt::operator<(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos && !rhs.pos)
-    {
+{
+    //PROFILED_SCOPE
+    if (pos && !rhs.pos) {
         return false;
     }
-    if (!pos && rhs.pos)
-    {
+    if (!pos && rhs.pos) {
         return true;
     }
-    if (val.size() > rhs.val.size())
-    {
+    if (val.size() > rhs.val.size()) {
         return pos ? false : true;
     }
-    if (val.size() < rhs.val.size())
-    {
+    if (val.size() < rhs.val.size()) {
         return pos ? true : false;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] < rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] < rhs.val[i]) {
             return pos ? true : false;
         }
-        if (val[i] > rhs.val[i])
-        {
+        if (val[i] > rhs.val[i]) {
             return pos ? false : true;
         }
     }
@@ -760,31 +732,25 @@ inline bool InfInt::operator<(const InfInt& rhs) const
 }
 
 inline bool InfInt::operator<=(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos && !rhs.pos)
-    {
+{
+    //PROFILED_SCOPE
+    if (pos && !rhs.pos) {
         return false;
     }
-    if (!pos && rhs.pos)
-    {
+    if (!pos && rhs.pos) {
         return true;
     }
-    if (val.size() > rhs.val.size())
-    {
+    if (val.size() > rhs.val.size()) {
         return pos ? false : true;
     }
-    if (val.size() < rhs.val.size())
-    {
+    if (val.size() < rhs.val.size()) {
         return pos ? true : false;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] < rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] < rhs.val[i]) {
             return pos ? true : false;
         }
-        if (val[i] > rhs.val[i])
-        {
+        if (val[i] > rhs.val[i]) {
             return pos ? false : true;
         }
     }
@@ -792,31 +758,25 @@ inline bool InfInt::operator<=(const InfInt& rhs) const
 }
 
 inline bool InfInt::operator>(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos && !rhs.pos)
-    {
+{
+    //PROFILED_SCOPE
+    if (pos && !rhs.pos) {
         return true;
     }
-    if (!pos && rhs.pos)
-    {
+    if (!pos && rhs.pos) {
         return false;
     }
-    if (val.size() > rhs.val.size())
-    {
+    if (val.size() > rhs.val.size()) {
         return pos ? true : false;
     }
-    if (val.size() < rhs.val.size())
-    {
+    if (val.size() < rhs.val.size()) {
         return pos ? false : true;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] < rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] < rhs.val[i]) {
             return pos ? false : true;
         }
-        if (val[i] > rhs.val[i])
-        {
+        if (val[i] > rhs.val[i]) {
             return pos ? true : false;
         }
     }
@@ -824,31 +784,25 @@ inline bool InfInt::operator>(const InfInt& rhs) const
 }
 
 inline bool InfInt::operator>=(const InfInt& rhs) const
-{//PROFILED_SCOPE
-    if (pos && !rhs.pos)
-    {
+{
+    //PROFILED_SCOPE
+    if (pos && !rhs.pos) {
         return true;
     }
-    if (!pos && rhs.pos)
-    {
+    if (!pos && rhs.pos) {
         return false;
     }
-    if (val.size() > rhs.val.size())
-    {
+    if (val.size() > rhs.val.size()) {
         return pos ? true : false;
     }
-    if (val.size() < rhs.val.size())
-    {
+    if (val.size() < rhs.val.size()) {
         return pos ? false : true;
     }
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
-        if (val[i] < rhs.val[i])
-        {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
+        if (val[i] < rhs.val[i]) {
             return pos ? false : true;
         }
-        if (val[i] > rhs.val[i])
-        {
+        if (val[i] > rhs.val[i]) {
             return pos ? true : false;
         }
     }
@@ -856,27 +810,25 @@ inline bool InfInt::operator>=(const InfInt& rhs) const
 }
 
 inline void InfInt::optimizeSqrtSearchBounds(InfInt& lo, InfInt& hi) const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     InfInt hdn = one;
-    for (int i = (int) this->numberOfDigits() / 2; i >= 2; --i)
-    {
+    for (int i = (int) this->numberOfDigits() / 2; i >= 2; --i) {
         hdn *= 10;
     }
-    if (lo < hdn)
-    {
+    if (lo < hdn) {
         lo = hdn;
     }
     hdn *= 100;
-    if (hi > hdn)
-    {
+    if (hi > hdn) {
         hi = hdn;
     }
 }
 
 inline InfInt InfInt::intSqrt() const
-{//PROFILED_SCOPE
-    if (*this <= zero)
-    {
+{
+    //PROFILED_SCOPE
+    if (*this <= zero) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("intSqrt called for non-positive integer");
 #else
@@ -886,21 +838,15 @@ inline InfInt InfInt::intSqrt() const
     }
     InfInt hi = *this / two + one, lo = zero, mid, mid2;
     optimizeSqrtSearchBounds(lo, hi);
-    do
-    {
+    do {
         mid = (hi + lo) / two; // 8 factor
         mid2 = mid * mid; // 1 factor
-        if (mid2 == *this)
-        {
+        if (mid2 == *this) {
             lo = mid;
             break;
-        }
-        else if (mid2 < *this)
-        {
+        } else if (mid2 < *this) {
             lo = mid;
-        }
-        else
-        {
+        } else {
             hi = mid;
         }
     } while (lo < hi - one && mid2 != *this);
@@ -908,9 +854,9 @@ inline InfInt InfInt::intSqrt() const
 }
 
 inline char InfInt::digitAt(size_t i) const
-{//PROFILED_SCOPE
-    if (numberOfDigits() <= i)
-    {
+{
+    //PROFILED_SCOPE
+    if (numberOfDigits() <= i) {
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("invalid digit index");
 #else
@@ -922,55 +868,58 @@ inline char InfInt::digitAt(size_t i) const
 }
 
 inline size_t InfInt::numberOfDigits() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     return (val.size() - 1) * DIGIT_COUNT
 #ifdef INFINT_USE_SHORT_BASE
-    + (val.back() > 999 ? 4 : (val.back() > 99 ? 3 : (val.back() > 9 ? 2 : 1)));
+           + (val.back() > 999 ? 4 : (val.back() > 99 ? 3 : (val.back() > 9 ? 2 : 1)));
 #else
-    + (val.back() > 99999999 ? 9 : (val.back() > 9999999 ? 8 : (val.back() > 999999 ? 7 : (val.back() > 99999 ? 6 :
-                                                                                           (val.back() > 9999 ? 5 : (val.back() > 999 ? 4 : (val.back() > 99 ? 3 : (val.back() > 9 ? 2 : 1))))))));
+           + (val.back() > 99999999 ? 9 : (val.back() > 9999999 ? 8 : (val.back() > 999999 ? 7 : (val.back() > 99999 ? 6 :
+                                           (val.back() > 9999 ? 5 : (val.back() > 999 ? 4 : (val.back() > 99 ? 3 : (val.back() > 9 ? 2 : 1))))))));
 #endif
 }
 
 inline std::string InfInt::toString() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     std::ostringstream oss;
     oss << *this;
     return oss.str();
 }
 
 inline size_t InfInt::size() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     return val.size() * sizeof(ELEM_TYPE) + sizeof(bool);
 }
 
 inline int InfInt::toInt() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     if (*this > INT_MAX || *this < INT_MIN)
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("out of bounds");
 #else
-    std::cerr << "Out of INT bounds: " << *this << std::endl;
+        std::cerr << "Out of INT bounds: " << *this << std::endl;
 #endif
     int result = 0;
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
         result = result * BASE + val[i];
     }
     return pos ? result : -result;
 }
 
 inline long InfInt::toLong() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     if (*this > LONG_MAX || *this < LONG_MIN)
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("out of bounds");
 #else
-    std::cerr << "Out of LONG bounds: " << *this << std::endl;
+        std::cerr << "Out of LONG bounds: " << *this << std::endl;
 #endif
     long result = 0;
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
         result = result * BASE + val[i];
     }
     return pos ? result : -result;
@@ -995,16 +944,16 @@ inline long long InfInt::toLongLong() const
 */
 
 inline unsigned int InfInt::toUnsignedInt() const
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     if (!pos || *this > UINT_MAX)
 #ifdef INFINT_USE_EXCEPTIONS
         throw InfIntException("out of bounds");
 #else
-    std::cerr << "Out of UINT bounds: " << *this << std::endl;
+        std::cerr << "Out of UINT bounds: " << *this << std::endl;
 #endif
     unsigned int result = 0;
-    for (int i = (int) val.size() - 1; i >= 0; --i)
-    {
+    for (int i = (int) val.size() - 1; i >= 0; --i) {
         result = result * BASE + val[i];
     }
     return result;
@@ -1046,19 +995,18 @@ inline unsigned long long InfInt::toUnsignedLongLong() const
 */
 
 inline void InfInt::truncateToBase()
-{//PROFILED_SCOPE
-    for (size_t i = 0; i < val.size(); ++i) // truncate each
-    {
-        if (val[i] >= BASE || val[i] <= -BASE)
-        {//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
+    for (size_t i = 0; i < val.size(); ++i) { // truncate each
+        if (val[i] >= BASE || val[i] <= -BASE) {
+            //PROFILED_SCOPE
             div_t dt = div(val[i], BASE);
             val[i] = dt.rem;
-            if (i + 1 >= val.size())
-            {//PROFILED_SCOPE
+            if (i + 1 >= val.size()) {
+                //PROFILED_SCOPE
                 val.push_back(dt.quot);
-            }
-            else
-            {//PROFILED_SCOPE
+            } else {
+                //PROFILED_SCOPE
                 val[i + 1] += dt.quot;
             }
         }
@@ -1066,127 +1014,107 @@ inline void InfInt::truncateToBase()
 }
 
 inline bool InfInt::equalizeSigns()
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     bool isPositive = true;
     int i = (int) ((val.size())) - 1;
-    for (; i >= 0; --i)
-    {
-        if (val[i] != 0)
-        {
+    for (; i >= 0; --i) {
+        if (val[i] != 0) {
             isPositive = val[i--] > 0;
             break;
         }
     }
 
-    if (isPositive)
-    {
-        for (; i >= 0; --i)
-        {
-            if (val[i] < 0)
-            {
+    if (isPositive) {
+        for (; i >= 0; --i) {
+            if (val[i] < 0) {
                 int k = 0, index = i + 1;
-                for (; (size_t)(index) < val.size() && val[index] == 0; ++k, ++index); // count adjacent zeros on left 
-		;
+                for (; (size_t)(index) < val.size() && val[index] == 0; ++k, ++index); // count adjacent zeros on left
+                ;
                 //if ((size_t)(index) < val.size() && val[index] > 0)
-                { // number on the left is positive
+                {
+                    // number on the left is positive
                     val[index] -= 1;
                     val[i] += BASE;
-                    for (; k > 0; --k)
-                    {
+                    for (; k > 0; --k) {
                         val[i + k] = UPPER_BOUND;
                     }
                 }
             }
         }
-    }
-    else
-    {
-        for (; i >= 0; --i)
-        {
-            if (val[i] > 0)
-            {
+    } else {
+        for (; i >= 0; --i) {
+            if (val[i] > 0) {
                 int k = 0, index = i + 1;
                 for (; (size_t)(index) < val.size() && val[index] == 0; ++k, ++index); // count adjacent zeros on right
-		;	// silence CLANG warning
+                ;	// silence CLANG warning
                 //if ((size_t)(index) < val.size() && val[index] < 0)
-                { // number on the left is negative
+                {
+                    // number on the left is negative
                     val[index] += 1;
                     val[i] -= BASE;
-                    for (; k > 0; --k)
-                    {
+                    for (; k > 0; --k) {
                         val[i + k] = -UPPER_BOUND;
                     }
                 }
             }
         }
     }
-    
+
     return isPositive;
 }
 
 inline void InfInt::removeLeadingZeros()
-{//PROFILED_SCOPE
-    for (int i = (int) (val.size()) - 1; i > 0; --i) // remove leading 0's
-    {
-        if (val[i] != 0)
-        {
+{
+    //PROFILED_SCOPE
+    for (int i = (int) (val.size()) - 1; i > 0; --i) { // remove leading 0's
+        if (val[i] != 0) {
             return;
-        }
-        else
-        {
+        } else {
             val.erase(val.begin() + i);
         }
     }
 }
 
 inline void InfInt::correct(bool justCheckLeadingZeros, bool hasValidSign)
-{//PROFILED_SCOPE
-    if (!justCheckLeadingZeros)
-    {
+{
+    //PROFILED_SCOPE
+    if (!justCheckLeadingZeros) {
         truncateToBase();
-        
-        if (equalizeSigns())
-        {
+
+        if (equalizeSigns()) {
             pos = ((val.size() == 1 && val[0] == 0) || !hasValidSign) ? true : pos;
-        }
-        else
-        {
+        } else {
             pos = hasValidSign ? !pos : false;
-            for (size_t i = 0; i < val.size(); ++i)
-            {
+            for (size_t i = 0; i < val.size(); ++i) {
                 val[i] = abs(val[i]);
             }
         }
     }
-    
+
     removeLeadingZeros();
 }
 
 inline void InfInt::fromString(const std::string& s)
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     pos = true;
     val.clear();
     // TODO use resize
     val.reserve(s.size() / DIGIT_COUNT + 1);
     int i = (int) s.size() - DIGIT_COUNT;
-    for (; i >= 0; i -= DIGIT_COUNT)
-    {
+    for (; i >= 0; i -= DIGIT_COUNT) {
         val.push_back(atoi(s.substr(i, DIGIT_COUNT).c_str()));
     }
-    if (i > -DIGIT_COUNT)
-    {
+    if (i > -DIGIT_COUNT) {
         std::string ss = s.substr(0, i + DIGIT_COUNT);
-        if (ss.size() == 1 && ss[0] == '-')
-        {
+        if (ss.size() == 1 && ss[0] == '-') {
             pos = false;
-        }
-        else
-        {
+        } else {
             val.push_back(atoi(ss.c_str()));
         }
     }
-    if (val.back() < 0)
-    {
+    if (val.back() < 0) {
         val.back() = -val.back();
         pos = false;
     }
@@ -1194,26 +1122,24 @@ inline void InfInt::fromString(const std::string& s)
 }
 
 inline ELEM_TYPE InfInt::dInR(const InfInt& R, const InfInt& D)
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     ELEM_TYPE min = 0, max = UPPER_BOUND;
-    while (max - min > 0)
-    {
+    while (max - min > 0) {
         ELEM_TYPE avg = max + min;
         //div_t dt = div(avg, 2);
         //avg = dt.rem ? (dt.quot + 1) : dt.quot;
         ELEM_TYPE havg = avg / 2;
         avg = (avg - havg * 2) ? (havg + 1) : havg;
         InfInt prod = D * avg;
-        if (R == prod)
-        {//PROFILED_SCOPE
+        if (R == prod) {
+            //PROFILED_SCOPE
             return avg;
-        }
-        else if (R > prod)
-        {//PROFILED_SCOPE
+        } else if (R > prod) {
+            //PROFILED_SCOPE
             min = avg;
-        }
-        else
-        {//PROFILED_SCOPE
+        } else {
+            //PROFILED_SCOPE
             max = avg - 1;
         }
     }
@@ -1221,27 +1147,23 @@ inline ELEM_TYPE InfInt::dInR(const InfInt& R, const InfInt& D)
 }
 
 inline void InfInt::multiplyByDigit(ELEM_TYPE factor, std::vector<ELEM_TYPE>& val)
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     ELEM_TYPE carry = 0;
-    for (size_t i = 0; i < val.size(); ++i)
-    {
+    for (size_t i = 0; i < val.size(); ++i) {
         PRODUCT_TYPE pval = val[i] * (PRODUCT_TYPE) factor + carry;
-        if (pval >= BASE || pval <= -BASE)
-        {
+        if (pval >= BASE || pval <= -BASE) {
             //carry = (ELEM_TYPE) (pval / BASE);
             //pval %= BASE;
 
             carry = (ELEM_TYPE) (pval / BASE);
             pval -= carry * BASE;
-        }
-        else
-        {
+        } else {
             carry = 0;
         }
         val[i] = (ELEM_TYPE) pval;
     }
-    if (carry > 0)
-    {
+    if (carry > 0) {
         val.push_back(carry);
     }
 }
@@ -1251,7 +1173,8 @@ inline void InfInt::multiplyByDigit(ELEM_TYPE factor, std::vector<ELEM_TYPE>& va
 /**************************************************************/
 
 inline std::istream& operator>>(std::istream &s, InfInt &n)
-{//PROFILED_SCOPE
+{
+    //PROFILED_SCOPE
     std::string str;
     s >> str;
     n.fromString(str);
@@ -1259,21 +1182,17 @@ inline std::istream& operator>>(std::istream &s, InfInt &n)
 }
 
 inline std::ostream& operator<<(std::ostream &s, const InfInt &n)
-{//PROFILED_SCOPE
-    if (!n.pos)
-    {
+{
+    //PROFILED_SCOPE
+    if (!n.pos) {
         s << '-';
     }
     bool first = true;
-    for (int i = (int) n.val.size() - 1; i >= 0; --i)
-    {
-        if (first)
-        {
+    for (int i = (int) n.val.size() - 1; i >= 0; --i) {
+        if (first) {
             s << n.val[i];
             first = false;
-        }
-        else
-        {
+        } else {
             s << std::setfill('0') << std::setw(DIGIT_COUNT) << n.val[i];
         }
     }

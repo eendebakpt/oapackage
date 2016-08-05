@@ -32,10 +32,10 @@ array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arraycla
  *
  */
 struct DoptimReturn {
-	std::vector<std::vector<double> > dds;	/// scores generated
-	arraylist_t designs;	/// designs generated
-	int nrestarts;	/// final number of restarts performed
-	int nimproved;
+    std::vector<std::vector<double> > dds;	/// scores generated
+    arraylist_t designs;	/// designs generated
+    int nrestarts;	/// final number of restarts performed
+    int nimproved;
 };
 
 
@@ -50,4 +50,4 @@ DoptimReturn DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arraycla
 
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

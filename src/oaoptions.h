@@ -1,5 +1,5 @@
 /*! \file oaoptions.h
-	\brief Contains options for the oa algorithm 
+	\brief Contains options for the oa algorithm
 
 	These options are compiled into the program. Making them a run-time option would be inefficient.
 */
@@ -51,10 +51,10 @@ const int HACK = 0;
 //#define SAFELPERM 1
 
 /* apply strength 1 check to speed up calculations */
-//#define 
+//#define
 
 /* frequency element cache using row, value pairs */
-#define FREQELEM 1	
+#define FREQELEM 1
 
 /* in the extending column increase at most by current max plus 1 */
 #define USE_SMALLSTEP
@@ -82,7 +82,7 @@ const int HACK = 0;
  */
 std::string compile_information();
 
-/// Print version 
+/// Print version
 std::string version();
 
 /// Print copyright statement
@@ -103,9 +103,15 @@ int globalHackOption(int, int = -1);
 #endif
 
 #ifdef OADEV
-inline int oadevelop() { return 1; }
+inline int oadevelop()
+{
+    return 1;
+}
 #else
-inline int oadevelop() { return 0; }
+inline int oadevelop()
+{
+    return 0;
+}
 #endif
 
 #endif
