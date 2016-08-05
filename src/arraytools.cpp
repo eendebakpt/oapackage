@@ -3428,14 +3428,9 @@ int arrayfile_t::isopen() const
 
 int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx )
 {
-    arraylist_t::const_iterator	it;
-
     assert ( this->nfid );
 
-    for ( it = arrays.begin(); it != arrays.end(); it++ ) {
-
-        //cout << "writing arrays in mode " << afile->mode << endl;
-
+    for ( arraylist_t::const_iterator it = arrays.begin(); it != arrays.end(); it++ ) {
         this->append_array ( *it, startidx );
         startidx++;
     }
@@ -3731,7 +3726,7 @@ void arrayfile_t::writeheader()
         int32_t reserved=0;
 
         if ( this->mode == arrayfile::ABINARY_DIFFZERO ) {
-            // TODO: why this check?
+            // TODO: is this check necessary?
             assert ( this->nbits==1 );
         }
         fwrite ( ( const void* ) & magic,sizeof ( int ),1,this->nfid );
@@ -4373,6 +4368,8 @@ void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int
 
 /**
  * @brief Write an array in binary mode to a file
+ * 
+ * We only write the section of columns of the array that differs from the previous array.
  * @param fid
  * @param array
  * @param nrows
@@ -4388,17 +4385,6 @@ void arrayfile_t::write_array_binary_diff ( const array_link &A )
 
     rowindex_t N = this->nrows;
     const int num=N*sizeof ( array_t );
-
-    if ( 0 ) {
-        diffarray.show();
-        diffarray.showarray();
-        myprintf ( "-------------\n" );
-    }
-    if ( 0 ) {
-        A.show();
-        A.showarray();
-        myprintf ( "-------------\n" );
-    }
 
     for ( int i=0; i<diffarray.n_columns; i++ ) {
 // printf("write_array_binary_diff: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i, num));

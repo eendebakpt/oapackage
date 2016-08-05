@@ -199,11 +199,11 @@ int main ( int argc, char* argv[] )
 			std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
 			printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
 
-			if ( outlist.size() < 20000 )
+			if ( outlist.size() < 10000 )
 				writearrayfile ( outfile.c_str(),outlist );
 			else {
 				//writearrayfile ( outfile.c_str(),outlist, ABINARY);
-				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
+				writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFF );
 			}
 		}
 
