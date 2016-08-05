@@ -176,9 +176,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     /* sort the resulting list of arrays, the first element is then a LMC representative */
     // sort ( hlist.begin(), hlist.end() );
 
-    // array_link dom = hlist[0];
-//  int r =  dom>dom;
-//     indexsort hlistsortx(indices );  hlistsortx.show(); printf("\n");
 
     indexsort hlistsort(hlist );
     int findex = hlistsort.indices[0];
@@ -211,8 +208,7 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     arraylist_t::iterator it = find ( classlist->begin(),  classlist->end(), hlist[findex] );
     cout << "Index of " << i << "  is " << ( it-classlist->begin() ) << "/" << classlist->size() << " (hcol " << findex << ")" << endl;
 
-    //delete_perm(indices);
-    free_sols ( hlist );
+    hlist.clear();
 }
 
 void mydebug2(array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=1)

@@ -452,7 +452,6 @@ else {
     }
 
     /* free allocated structures */
-    free_sols ( *arraylist );
     delete arraylist;
 
 

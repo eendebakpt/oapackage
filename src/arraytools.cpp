@@ -3086,8 +3086,6 @@ int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *
     for ( int i=0; i<J; i++ )
         cp[i]=array+N*pp[i];
 
-    //colindex_t ppN[J]; for ( int i=0; i<J; i++ )  ppN[i]=N*pp[i];
-
     // OPTIMIZE: change order of loops (with cache for tmp variable)
     for ( rowindex_t r=0; r<N; r++ ) {
         array_t tmp=0;
@@ -3095,8 +3093,6 @@ int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *
             tmp+=cp[i][r]; //+ ppN[i]];
         }
         tmp %= 2;
-        //    tmp *=2;
-        //   tmp--;
         jval += tmp;
     }
     jval = 2*jval-N;
@@ -3127,7 +3123,7 @@ int jvaluefast ( const array_t *array, rowindex_t N, const int J, const colindex
 
 /** Analyse a list of arrays
  *
- * Currently only j-values are calculated
+ * For each array the j-values are calculated
  *
  */
 vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbose, const int jj )
@@ -3140,7 +3136,6 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
     results.reserve ( arraylist.size() );
     jstruct_t *js ;
 
-    //myprintf("analyseArrays: start\n");
     for ( unsigned int ii=0; ii<arraylist.size(); ii++ ) {
 
         const array_link ll = arraylist.at ( ii );
@@ -3162,7 +3157,6 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
         }
 #endif
         delete_perm ( pp );
-        //delete [] js;
 
         results.push_back ( *js );
         delete js;
@@ -3235,27 +3229,6 @@ void write_array_latex ( FILE *fid, carray_t *array, const int nrows, const int 
 
 
 
-
-/**
- * @brief Free all the arrays in a list of arrays
- *
- * The memory allocation by the arrays is not freed in the default destructor for efficiency reasons.
- *
- * @param solutions
- * @return
- */
-int free_sols ( arraylist_t &solutions )
-{
-    arraylist_t::iterator	it;
-
-    log_print ( DEBUG, "Freeing %d solutions\n", solutions.size() );
-    for ( it = solutions.begin(); it != solutions.end(); it++ ) {
-        destroy_array ( it->array );
-        it->array = NULL;
-    }
-    solutions.clear();
-    return 0;
-}
 
 
 int append_arrays ( FILE *fid, arraylist_t &arrays, int startidx = 0 )
@@ -3341,9 +3314,6 @@ void read_array ( FILE *fid, array_t *array, const int nrows, const int ncols )
 }
 
 
-#ifdef HAVE_BOOST
-#include "boost/filesystem.hpp"
-#endif
 
 bool file_exists ( const std::string filename )
 {
@@ -3367,6 +3337,10 @@ bool oa_file_exists ( const std::string filename )
     }
     return false;
 }
+
+#ifdef HAVE_BOOST
+#include "boost/filesystem.hpp"
+#endif
 
 /// return true if the specified file exists
 bool file_exists ( const char *filename )
@@ -3422,7 +3396,6 @@ void arrayfile_t::append_array ( const array_link &a, int specialindex )
         if ( r!=sizeof ( int32_t ) *1 ) {
             printfd ( "error during write to file\n" );
         }
-        //printf("   %d %d\n", a.n_rows, a.n_columns);
         afile->write_array_binary ( a.array, a.n_rows, a.n_columns );
         break;
     }
@@ -3432,7 +3405,6 @@ void arrayfile_t::append_array ( const array_link &a, int specialindex )
         break;
     }
     case arrayfile::ABINARY_DIFFZERO: {
-        //fwrite ( &index, 1, sizeof ( int32_t ), afile->nfid );
         afile->write_array_binary_diffzero ( a );
         break;
     }
@@ -4030,7 +4002,6 @@ void arrayfile_t::createfile ( const std::string fname, int nrows, int ncols, in
 
 arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 {
-
     int warngz = verbose>=1;
 #ifdef SWIG
     swigcheck();
@@ -4253,7 +4224,6 @@ int save_arrays ( arraylist_t &solutions, const arraydata_t *ad, const int n_arr
     string fname = resultprefix;
     fname += "-" + oafilestring ( ad );
 
-
     int nb = arrayfile_t::arrayNbits ( *ad );
     //myprintf(" save_arrays nb: %d\n", nb);
     arrayfile_t *afile = new arrayfile_t ( fname.c_str(), ad->N, ad->ncols, n_arrays, mode, nb );
@@ -4332,7 +4302,6 @@ arrayfile_t::~arrayfile_t()
     if ( verbose>=2 )
         myprintf ( "arrayfile_t: destructor: filename %s, nfid %ld, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narraycounter, this->rwmode );
 
-
     closefile();
 }
 
@@ -4362,9 +4331,7 @@ arrayfile_t* create_arrayfile ( const char *fname, int rows, int cols, int narra
  */
 void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int ncols )
 {
-//	  myprintf("  arrayfile_t::read_array_binary: gr %d\n", this->nbits);
     switch ( this->nbits ) {
-
     case 1: {
 
         // construct bit array
@@ -4379,9 +4346,6 @@ void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int
             array[i] = bit_array_get_bit_nocheck ( bitarr, i );
         }
         bit_array_free ( bitarr );
-
-        //myprintf("1-bit read not implemented yet\n");
-
         break;
     }
     case 8:
@@ -4446,14 +4410,13 @@ void arrayfile_t::write_array_binary_diff ( const array_link &A )
     }
 
     int32_t nwrite=A.n_columns-ngood;
-    //printf("write_array_binary_diff: %d good columns, writing %d to disk\n", ngood, nwrite);
     array_link rest = A.selectLastColumns ( nwrite );
 
     int n = fwrite ( ( const void* ) &nwrite,sizeof ( int32_t ),1, nfid );
 
     this->write_array_binary ( rest );
 
-// update with previous array
+	// update with previous array
     this->diffarray = A;
 }
 
@@ -4482,8 +4445,6 @@ void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
     }
 
     int16_t nwrite=A.n_columns-ngood;
-    //printf("write_array_binary_diffzero: nwrite %d, ngood %d\n", nwrite, ngood);
-    //A.show();
     array_link rest = A.selectLastColumns ( nwrite );
 
     int n = fwrite ( ( const void* ) &nwrite,sizeof ( int16_t ),1, nfid );
@@ -4496,7 +4457,6 @@ void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
         for ( int i=0; i<z.n_columns*z.n_rows; i++ )
             z.array[i] = ( 2+z.array[i] ) % 2;
 
-        //printf("write_array_binary_diffzero: writing array: "); z.show();
         this->write_array_binary ( z );
     } else {
         array_link z = rest;
@@ -4534,9 +4494,6 @@ void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const i
     }
 #endif
 
-//printf("arrayfile_t::write_array_binary: nbits %d\n", this->nbits);
-
-    // TODO: the type of array should be taken into account?
     if ( sizeof ( array_t ) ==sizeof ( int32_t ) && this->nbits==32 )
         int n = fwrite ( ( const void* ) array,sizeof ( int32_t ),nrows*ncols,nfid );
     else {
@@ -4548,8 +4505,6 @@ void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const i
             writeblob<array_t, int32_t> ( array, nrows*ncols, nfid );
             break;
         case 1: {
-            //printf("writing array in binary mode\n");
-
             // construct bit array
             BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
             // fill bit array
@@ -4648,8 +4603,6 @@ int appendarrayfile ( const char *fname, const array_link al )
     }
 
     int i = afile->append_arrays ( arraylist,1 ); // append_arrays ( afile, *arraylist, 1 );
-    //printf("after append: afile->narrays %d, narraycounter %d\n", afile->narrays, afile->narraycounter);
-    //printf("afile state: %s\n", afile->showstr().c_str() );
     afile->narrays=-1;
     afile->rwmode=READWRITE;
 
@@ -4674,7 +4627,6 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
     } else {
         // check whether list is sorted
         indexsort vv ( idx );
-        //vv.sortdescending(idx);
 
         if ( vv.issorted() ) {
             int cpos=0;
@@ -4684,7 +4636,6 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                     printf ( "selectArrays: idx %d, cpos %d\n", pos, cpos );
                 if ( pos<cpos ) {
                     printf ( "selectArrays: arrayfile in text mode and negative seek, aborting!!! %d %d\n", pos, cpos );
-                    // TODO: implement this
                     return;
                 }
                 int nsk=pos-cpos;
