@@ -80,16 +80,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
         reduction.setArray ( alist[k] );
         lmc_t rx = LMC_EQUAL;
         reduction.updateSDpointer ( alist[k] );
-        /*
-        if ( 0 ) { // IDEA: enable this?
-        	reduction.updateSDpointer ( alist[k] );
-        	int col=alist[k].n_columns-1;
-        	rx = LMC_check_col_rowsymm ( alist[k].array+alist[k].n_rows* ( alist[k].n_columns-1 ), &ad,  *reduction.sd.get(),col, 0 );
-        	printf ( "\n%s: rx %d\n", __FUNCTION__, rx );
 
-        	printf ( "col: " );
-        	print_perm ( alist[k].array+alist[k].n_rows* ( alist[k].n_columns-1 ), ad.N );
-        } */
 
         lmc_t lmc =  LMCcheck ( alist[k].array, ad, oaextend, reduction );
         int lc=reduction.lastcol;
@@ -122,9 +113,6 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
         if ( b1!=b2 ) {
             printf ( "oadevelop:initialize: huh? b1 %d b2 %d, lmctype[k] %d, lastcol[k] %d, col %d\n", b1, b2, lmctype[k], lastcol[k], ncolsx );
             oaextend.info();
-            //writearrayfile("/home/eendebakpt/tmp/tmp.oa", alist[k]);
-            //exit(0);
-
         }
 
         if ( this->lastcol[k]>=ncolsx-1 || this->lastcol[k]==-1 ) {
@@ -180,7 +168,6 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
 #else
         depth_extend ( goodarrays, dextend, dextendsub, extensioncol, 1 );
 #endif
-        //printf("depth_extend_array: calling depth_extend:done\n");
 
         break;
     case DEPTH_DIRECT: {
@@ -347,7 +334,7 @@ void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const a
         depthalg = DEPTH_EXTENSIONS;
 
         /// extend the arrays without using the row symmetry property
-
+/*
         if ( 0 ) {
             setloglevel ( NORMAL );
             oaextendx.use_row_symmetry=0;
@@ -355,7 +342,7 @@ void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const a
             extend_array ( al.array,  &adfull, extensioncol, extensions0, oaextendx );
             oaextendx.use_row_symmetry=1;
         }
-
+*/
         {
             // OPTIMIZE: use row_symmtry=1 and then add missing extensions
             extend_array ( al.array,  &adfull, extensioncol, extensions0, oaextendx );
@@ -547,7 +534,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
                 LMCreduction_t reduction ( &adlocal ); // TODO: place outside loop (only if needed)
                 LMCreduction_t tmp = reduction;
 
-
                 // make sure code is thread safe
                 reduction.initStatic();
 
@@ -577,7 +563,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
                 dlocal.lmctype[j]=LMC_LESS;
             }
         } // end of omp parallel for
-        //printfd("end of omp for loop\n");
 
         std::vector<int> localvalididx = dlocal.updateExtensionPointers ( extcol );
 
@@ -658,7 +643,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 /// add arrays to set of Pareto results
 void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
 {
-
     // allocate for fast rank calculations
     rankStructure rs[25];
     for ( size_t i=0; i<25; i++ ) {
@@ -670,17 +654,11 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
     }
 
     #pragma omp parallel for
-//#pragma omp parallel for num_threads(4)
-//	#pragma omp parallel for dynamic
-//	#pragma omp parallel for schedule(static, 10000)
     for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
         if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
             printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
             printf ( "  " );
             pset.show ( 1 );
-//#ifdef OPENMP
-            //printf(" openmp: %d\n",  omp_get_num_threads() );
-//#endif
         }
 
         const array_link &al = arraylist.at ( i );
@@ -780,7 +758,6 @@ Jcounter& Jcounter::operator += ( Jcounter &jc )
 /// read statistics object from disk
 Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 {
-
     FILE *fid = fopen ( numbersfile, "rt" );
 
     int N=-1;
@@ -830,7 +807,6 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
         }
     }
     fclose ( fid );
-
 
     return jc;
 }

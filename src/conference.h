@@ -12,7 +12,6 @@
 
 #include "arraytools.h"
 #include "graphtools.h"
-//#include "lmc.h"
 #include "arrayproperties.h"
 
 
@@ -465,10 +464,6 @@ public:
             inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) *als.selectColumns ( 0 )-1 );
             inline_dtable = hstack ( inline_dtable, als.selectColumns ( 1 ) *als.selectColumns ( 1 )-1 );
 
-            //inline_dtable = als.selectColumns(0)*als.selectColumns(0)-1;
-            //inline_dtable = als.selectColumns(0)+1; // createJ2tableConference ( als.selectFirstColumns(2) );
-
-
             minzvalue = minz ( als, als.n_columns-1 );
 
             inline_row = als.n_rows;
@@ -693,10 +688,8 @@ private:
 
 std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart=2 );
 
-// inflate candindate column: FIXME: documentation
+// inflate candindate column: TODO: documentation
 std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter );
-//std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als, const array_link &alx, const conference_t & ct, int verbose , const DconferenceFilter &filter );
-
 
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;
