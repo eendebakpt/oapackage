@@ -45,13 +45,6 @@ int main(int argc, char* argv[])
     opt.addUsage( " -f [FORMAT]					Output format (TEXT, BINARY (default), D (binary difference) ) " );
     opt.addUsage( " -o [FILE] --output [FILE]	Output prefix (default: standard output) " );
     opt.processCommandArgs(argc, argv);
-
-    //printf("%f\n", 0);
-    //double x=0;
-    //double mx=-1*0;
-    //printf("%f, %f\n", x, mx);
-    //if (mx==x)
-    //  printf("mz\n");
     
     print_copyright();
 
@@ -117,7 +110,7 @@ int main(int argc, char* argv[])
     }
 
     /* free allocated structures */
-    free_sols(*arraylist);
+    //free_sols(*arraylist);
     delete arraylist;
 
     return 0;

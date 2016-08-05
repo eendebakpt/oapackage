@@ -339,12 +339,7 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
         }
     }
 
-    // make symmetryic
-    /*
-    for ( int i=0; i<nn; i++ )
-    	for ( int j=i; j<nn; j++ )
-    		G.atfast ( j,i ) =G.atfast ( i, j );
-    */
+    // make array symmetryic
     const int nrg = G.n_rows;
     for ( int i=0; i<nn; i++ ) {
 
@@ -380,8 +375,6 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
         display_vector ( tr2 );
         printf ( "\n" );
     }
-
-    // ...
 
     // define conference matrix transformation object....
     conference_transformation_t t ( al );
@@ -422,136 +415,7 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 
 array_link reduceConference ( const array_link &al, int verbose )
 {
-    const int nr = al.n_rows;
-    const int nc=al.n_columns;
-    const int nn = 2* ( nr+nc );
-    /// create graph
-    array_link G ( 2* ( nr+nc ), 2* ( nr+nc ), array_link::INDEX_DEFAULT );
-    G.setconstant ( 0 );
-
-    if ( verbose )
-        printf ( "reduceConference: %d, %d\n", nr, nc );
-
-    std::vector<int> colors ( 2* ( nr+nc ) );
-
-    const int roffset0=0;
-    const int roffset1=nr;
-    const int coffset0=2*nr;
-    const int coffset1=2*nr+nc;
-
-    /*
-    Add edges as follows:
-    (1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
-    (2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
-    (3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
-    Zeros in A don't cause any edges.
-    */
-
-    // set colors
-    for ( int i=0; i<coffset0; i++ )
-        colors[i]=0;
-    for ( int i=coffset0; i<coffset0+2*nc; i++ )
-        colors[i]=1;
-
-    // (1)
-    for ( int i=0; i<nr; i++ )
-        G.atfast ( roffset0+i, i+roffset1 ) =1;
-    for ( int i=0; i<nc; i++ )
-        G.atfast ( coffset0+i, i+coffset1 ) =1;
-
-    // (2), (3)
-    for ( int r=0; r<nr; r++ ) {
-        for ( int c=0; c<nc; c++ ) {
-            if ( al.atfast ( r,c ) ==1 ) {
-                G.atfast ( roffset0+r, coffset0+c ) =1;
-                G.atfast ( roffset1+r, coffset1+c ) =1;
-            }
-            if ( al.atfast ( r,c ) ==-1 ) {
-                G.atfast ( roffset0+r, coffset1+c ) =1;
-                G.atfast ( roffset1+r, coffset0+c ) =1;
-                //G.atfast ( coffset0+c, roffset1+r ) =1;
-            }
-        }
-    }
-
-    // make symmetryic
-    /*
-    for ( int i=0; i<nn; i++ )
-    	for ( int j=i; j<nn; j++ )
-    		G.atfast ( j,i ) =G.atfast ( i, j );
-    */
-    const int nrg = G.n_rows;
-    for ( int i=0; i<nn; i++ ) {
-
-        array_t *x = G.array+i*nrg; // offset to column
-        for ( int j=i; j<nn; j++ ) {
-            x[j] =G.array[i+j*nrg];
-        }
-    }
-
-    if ( verbose>=3 ) {
-        printf ( "reduceConference: incidence graph:\n" );
-        printf ( "   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2*nr, nc, 2*nc );
-        G.showarray();
-    }
-    /// call nauty
-    const std::vector<int> tr = nauty::reduceNauty ( G, colors, verbose>=2 );
-    const std::vector<int> tri = invert_permutation ( tr );
-    const std::vector<int> trx=tri;
-
-    // extract transformation
-    if ( verbose>=2 ) {
-        if ( verbose>=3 ) {
-            array_link Gx = transformGraph ( G, tri, 0 );
-            printfd ( "transformed graph\n" );
-            Gx.showarray();
-        }
-        std::vector<int> tr1 = std::vector<int> ( trx.begin () , trx.begin () + 2*nr );
-        std::vector<int> tr2 = std::vector<int> ( trx.begin () +coffset0, trx.end() );
-        printf ( "  row vertex transformations: " );
-        display_vector ( tr1 );
-        printf ( "\n" );
-        printf ( "  col vertex transformations: " );
-        display_vector ( tr2 );
-        printf ( "\n" );
-    }
-
-    // ...
-
-    // define conference matrix transformation object....
-    conference_transformation_t t ( al );
-
-    // extract transformation
-    std::vector<int> rr ( nr );
-    for ( int i=0; i<nr; i++ ) {
-        rr[i] = std::min ( trx[i], trx[i+nr] );
-    }
-
-    if ( verbose>=2 ) {
-        printf ( "rr: " );
-        print_perm ( rr );
-    }
-
-    t.rperm = invert_permutation ( argsort ( rr ) );
-
-    for ( int i=0; i<nr; i++ ) {
-        t.rswitch[ t.rperm[i]] = 2* ( trx[i]<trx[i+nr] )-1;
-    }
-
-    std::vector<int> cc ( nc );
-    for ( int i=0; i<nc; i++ ) {
-        cc[i] = std::min ( trx[coffset0+i], trx[coffset0+i+nc] );
-    }
-    t.cperm = invert_permutation ( argsort ( cc ) );
-
-    for ( int i=0; i<nc; i++ ) {
-        t.cswitch[ t.cperm[i]] = 2* ( trx[coffset0+i]< trx[coffset0+i+nc] ) -1;
-    }
-
-    if ( verbose>=2 ) {
-        printf ( "transform: \n" );
-        t.show();
-    }
+	conference_transformation_t t = reduceConferenceTransformation ( al, verbose );
     array_link alx = t.apply ( al );
     return alx;
 
@@ -621,10 +485,7 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
     if ( haszero ) {
 
         n1=q-1;
-        //k1=n1/2;
     } else {
-        //printf ( "conference array: extcol %d, N %d, n1 %d, not implemented...\n", extcol, N, n1 );
-        //k1 = n1/2;
         n1=q;
     }
 
@@ -673,10 +534,8 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
         printf ( "get_second: extcol: %d, q %d, haszero %d\n", extcol, q, haszero );
 
     if ( haszero ) {
-        //k1=n1/2;
         n1=q-1;
     } else {
-        //k1 = n1- ( n1-target ) /2;
         n1=q;
     }
     int qx=q2;
@@ -697,7 +556,6 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 
         if ( haszero ) {
             get_comb ( c, n1, -1, 1, ccx );
-            //cc=insertzero ( ccx, extcol- ( q+2 ) );
             insertzero ( cc, ccx, extcol- ( q+2 ) );
         } else {
             //cc =get_comb ( c, n1, -1, 1 );
@@ -789,7 +647,6 @@ int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, 
                     printf ( "# fix_symm: input %d: ", i );
                     print_cperm ( xx );
                     printf ( "\n" );
-
 
                     std::swap ( c[i-1], c[i] );
                     cperm xx2 ( c.begin() +rowstart, c.begin() +rowend ) ;
@@ -1328,66 +1185,6 @@ void debug_candidate ( const cperm &candidate, const std::vector<int> &check_ind
 }
 
 
-std::vector<cperm> debug_branch0 ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices , int showd)
-{
-    std::vector<cperm> cc;
-    unsigned long iter=0;
-    std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
-    unsigned long nbc=0;
-    do {
-
-        // NOTE: for larger block sizes do not use naive generation
-        if ( block<=4 && blocksize>1 && showd ) {
-            cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
-            //printf ( "  block %d, blocksize %d, iter %ld (k? %d): perm ", block, blocksize, iter, al.n_columns );
-            print_cperm ( xx );
-            printf ( "\n" );
-            cperm xxc ( check_indices.begin() +gstart, check_indices.begin() +gend );
-            cperm tmp ( check_indices.begin() +gstart, check_indices.begin() +gend );
-
-            printf ( "    : check: " );
-            print_cperm ( xxc );
-            printf ( " ---> %d\n",  satisfy_symm ( candidate, check_indices, gstart, gend ) );
-            //if (blocksize>20)
-            //	exit(0);
-        }
-        //cout << s1 << endl;
-        iter++;
-
-        // TODO: smart symmetry generation
-        if ( satisfy_symm ( candidate, check_indices, gstart, gend ) ) {
-            nbc++;
-            cc.push_back ( candidate );
-            //inflateCandidateExtensionHelper ( list, basecandidate, candidate, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
-        } else {
-            if ( 0 ) {
-                /// if large blocksize, then sort within block....
-                int tmp =true;
-                tmp= fix_symm ( candidate, check_indices, gstart, gend );
-                if ( tmp==false ) {
-                    if ( showd ) {
-                        printf ( " fix_symm: tmp %d, block %d, iter %ld: %d %d \n", tmp, block, ( long ) iter, gstart, gend );
-                        cperm xx ( candidate.begin() +gstart, candidate.begin() +gend ) ;
-                        printf ( "                                    new : perm " );
-                        print_cperm ( xx );
-                        printf ( "\n" );
-                    }
-                    //goto mylabel;
-                }
-                if ( showd ) {
-                    printf ( "# iter %ld\n", long ( iter ) );
-                }
-            }
-        }
-        // TODO: run inline filter
-    } while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
-
-    if ( blocksize>10 ) {
-        printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
-        debug_candidate ( candidate, check_indices, "..." );
-    }
-    return cc;
-}
 std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices, int showd )
 {
     std::vector<cperm> cc;
@@ -1504,7 +1301,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         print_cperm ( tmp );
         printf ( "\n" );
     }
-
+/*
     if ( blocksize>8 && 0) {
 
         double tx0=get_time_ms();
@@ -1522,7 +1319,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         showCandidates ( ccd );
         exit(0);
     }
-
+*/
     if ( blocksize<3 || block >1 || 1 ) {
         unsigned long iter=0;
         std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
@@ -1633,9 +1430,6 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter )
 {
     long ntotal=0;
-
-
-    //printf ( "inflateCandidateExtension: symmetry group\n" ); alsg.show();
 
     cperm candidate = basecandidate;
     int block=0;

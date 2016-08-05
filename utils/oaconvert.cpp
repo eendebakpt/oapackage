@@ -30,8 +30,6 @@ int main(int argc, char* argv[])
     /* parse command line options */
     opt.setFlag(  "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
     opt.setOption("output", 'o');
-    // opt.setFlag("sort", 's');
-//    opt.setFlag("latex", 'l');
     opt.setOption("format", 'f');
     opt.setOption("verbose", 'v');
 
@@ -41,7 +39,6 @@ int main(int argc, char* argv[])
     opt.addUsage( " -h --help  			Prints this help " );
     //opt.addUsage( " -s --sort			Sort the arrays " );
     opt.addUsage( " -f [FORMAT]					Output format (default: TEXT, or BINARY) " );
-    //opt.addUsage( " -o [FILE] --output [FILE]	Output prefix (default: standard output) " );
     opt.processCommandArgs(argc, argv);
 
     int verbose =  opt.getIntValue("verbose", 2);
@@ -56,7 +53,6 @@ int main(int argc, char* argv[])
     }
 
     const std::string outputprefix = opt.getStringValue('o', "");
-    bool sortarrays = opt.getFlag('s');
     std::string format = opt.getStringValue('f', "BINARY");
 
     arrayfile::arrayfilemode_t mode = arrayfile_t::parseModeString(format);
@@ -83,6 +79,7 @@ int main(int argc, char* argv[])
 	  printf("oaconvert: output mode %d, nr %d nc %d\n", mode, nr, nc);
 	
     if (0) {
+	bool sortarrays = opt.getFlag('s');
         /* read in the arrays */
         arraylist_t *arraylist = new arraylist_t;
         if (verbose)
@@ -106,13 +103,12 @@ int main(int argc, char* argv[])
         writearrayfile(outfile.c_str(), arraylist, mode, nr, nc);
 
         /* free allocated structures */
-        free_sols(*arraylist);
         delete arraylist;
     } else {
 		// streaming mode
 		
         int narrays=af.narrays;
-        int nb=8; // FIXME: improve this
+        int nb=8; // TODO: we have not read any arrays so far, so nb is hard to predict
         if(mode==ABINARY_DIFFZERO)
 		  nb=1;
 
@@ -138,7 +134,6 @@ int main(int argc, char* argv[])
                 printf("   oaconvert: read_array returned index %d, end of file\n", g);
                 break;
             }
-			//	printf("oaconvert: index %d\n", g);
 
             afout.append_array(al);
         }
