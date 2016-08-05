@@ -691,7 +691,6 @@ public:
         }
 
         return r;
-
     }
 
     /// show statistics of the object
@@ -780,9 +779,7 @@ private:
 /// read statistics object from disk
 Jcounter readStatisticsFile ( const char *numbersfile, int verbose );
 /// write statistics object to disk
-void writeStatisticsFile ( const char *numbersfile, const Jcounter & jc,
-                           int verbose );
-
+void writeStatisticsFile ( const char *numbersfile, const Jcounter & jc, int verbose );
 
 
 /// calculate J-value statistics

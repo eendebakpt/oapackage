@@ -1828,9 +1828,9 @@ private:
     int read_array_binary_zero ( array_link & a );
     void write_array_binary ( carray_t * array, const int nrows,
                               const int ncols );
-    void write_array_binary ( const array_link & A );
-    void write_array_binary_diff ( const array_link & A );
-    void write_array_binary_diffzero ( const array_link & A );
+    void write_array_binary ( const array_link & A );           // write an array in binary mode to a file
+    void write_array_binary_diff ( const array_link & A );  // write an array in binary mode to a file
+    void write_array_binary_diffzero ( const array_link & A ); // write an array in binary mode to a file
 
 public:
     int getnbits () {
@@ -1881,14 +1881,9 @@ public:
         int m = A.max ();
         int amin = A.min ();
         m = std::max ( m, -amin + 1 );
-        //int m=0;
-        //for ( int i=0; i<A.n_columns*A.n_rows; ++i ) {
-        //      if ( A.array[i]>m )
-        //              m = A.array[i];
-        //}
         if ( m == 1 ) {
             return 1;    // bit
-        } else if ( m < 120 ) {
+        } else if ( m < 124 ) {
             return 8;    // char
         } else {
             return 32;    // int32_t
