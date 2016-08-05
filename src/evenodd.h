@@ -18,8 +18,6 @@
 #include "extend.h"
 
 
-
-
 /// structure containing current position in search tree
 struct depth_path_t {
     std::vector < int >ncurr;	// vector with current position
