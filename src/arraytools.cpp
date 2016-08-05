@@ -2838,7 +2838,6 @@ array_link createJdtable ( const array_link &al )
 	for ( int i=0; i<al.n_columns; i++ ) {
 		for ( int j=0; j<al.n_columns; j++ ) {
 			//printfd("dtable: size %d: idx %d\n", nc, idx);
-			//int idx=i+j*al.n_columns;
 			// loop over all rows of original array
 			const array_t *p1 = al.array+al.n_rows*i;
 			const array_t *p2 = al.array+al.n_rows*j;
@@ -2847,7 +2846,7 @@ array_link createJdtable ( const array_link &al )
 				//pout[x] = p1[x]+p2[x];
 				pout[x] = p1[x] ^ p2[x];
 			}
-idx++;
+			idx++;
 		}
 	}
 

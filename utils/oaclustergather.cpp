@@ -347,9 +347,8 @@ int main(int argc, char *argv[])
 	    std::string subdir = splitDir(tovec(lvls, jj));
 
 	    if (verbose >= 1) {
-		printf
-		    (" \n#### oaclustergather: block %d (time %.1f [s])\n",
-		     jj, get_time_ms() - time0);
+		if (verbose >= 2) printf("\n");
+		printf(" #### oaclustergather: block %d (time %.1f [s])\n", jj, get_time_ms() - time0);
 		fflush(0);
 	    }
 
