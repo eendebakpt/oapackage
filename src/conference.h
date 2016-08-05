@@ -39,7 +39,8 @@ struct conf_candidates_t {
 public:
     std::vector<std::vector<cperm> > ce;
 
-    void info ( int verbose=1 ) const {
+    void info ( int verbose=1 ) const
+    {
         for ( int i=2; i< ( int ) ce.size(); i++ ) {
             if ( verbose ) {
                 printf ( "generateCandidateExtensions: k %d: %d candinates\n", i, ( int ) ce[i].size() );
@@ -74,7 +75,8 @@ public:
     /// create the unique representative of the 3 column design
     array_link create_root_three ( ) const;
 
-    arraylist_t createDconferenceRootArrays ( ) const {
+    arraylist_t createDconferenceRootArrays ( ) const
+    {
 
         arraylist_t lst;
         array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
@@ -101,7 +103,8 @@ public:
         return lst;
     }
 
-    void addRootArrays ( arraylist_t &lst ) const {
+    void addRootArrays ( arraylist_t &lst ) const
+    {
         switch ( this->ctype ) {
         case CONFERENCE_NORMAL:
         case CONFERENCE_DIAGONAL:
@@ -149,7 +152,8 @@ public:
         }
     }
 /// return string representation of the object
-    std::string __repr__() const {
+    std::string __repr__() const
+    {
         return printfstring ( "conference type: N %d, ncols %d", this->N, this->ncols );
     }
 
@@ -172,16 +176,19 @@ struct conference_extend_t {
 public:
 
     // combine first and second section into a single column
-    cperm combine ( int i, int j ) const {
+    cperm combine ( int i, int j ) const
+    {
         cperm c =vstack ( this->first[i], this->second[j] );
         return c;
     }
 
-    size_t nExtensions() const {
+    size_t nExtensions() const
+    {
         return this->extensions.size();
     }
 
-    arraylist_t getarrays ( const array_link al ) const {
+    arraylist_t getarrays ( const array_link al ) const
+    {
         arraylist_t ll;
 
         for ( size_t i=0; i<this->extensions.size(); i++ ) {
@@ -227,7 +234,8 @@ public:
      */
     const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const;
 
-    void showCandidates() const {
+    void showCandidates() const
+    {
 
         printf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int kz=0; kz<this->ct.N; kz++ ) {
@@ -237,7 +245,8 @@ public:
         }
     }
 
-    void updateLastValid ( int lv ) const {
+    void updateLastValid ( int lv ) const
+    {
         // special case: if the data is invalid for one value of kz, we make all entries invalid
         // not efficient in general, but efficient for our orderly generation
         for ( size_t i=0; i<this->last_valid_conf.size(); i++ ) {
@@ -250,7 +259,8 @@ private:
      * Startcol is the index of the first column with valid elements, if corresponds to
      * startcol=k the elements in candidate_list_conf[kz][k] are valid
      */
-    int startColumn ( const array_link &alx, int kz, int verbose=0 ) const {
+    int startColumn ( const array_link &alx, int kz, int verbose=0 ) const
+    {
         if ( this->alz[kz].n_columns!=alx.n_columns ) {
             int startcol=-1;
             //printfd(" ### reset because of column diff!\n");
@@ -301,7 +311,8 @@ public:
      */
     const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
 
-    void showCandidates() const {
+    void showCandidates() const
+    {
         printf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
             printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
@@ -314,7 +325,8 @@ private:
      *
      * For startcol k the elements in candidate_list[k] are valid
      */
-    int startColumn ( const array_link &alx ) const {
+    int startColumn ( const array_link &alx ) const
+    {
         if ( this->al.n_columns!=alx.n_columns ) {
             int startcol=-1;
             return startcol;
@@ -439,7 +451,8 @@ public:
     symmdata sd;
 
 public:
-    DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero ( 0 ), ngood ( 0 ), sd ( als ) {
+    DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero ( 0 ), ngood ( 0 ), sd ( als )
+    {
         //sd = symmdata( als );
 
         check_indices = sd.checkIdx();
@@ -480,7 +493,8 @@ public:
     }
 
     /// filter a list of cperms using the filter method
-    std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const {
+    std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const
+    {
         std::vector<cperm> out;
         for ( size_t i=0; i<lst.size(); i++ ) {
             if ( this->filter ( lst[i] ) ) {
@@ -493,7 +507,8 @@ public:
         return out;
     }
 
-    std::vector<cperm> filterListJ2last ( const std::vector<cperm> &lst ) const {
+    std::vector<cperm> filterListJ2last ( const std::vector<cperm> &lst ) const
+    {
         std::vector<cperm> out;
         for ( size_t i=0; i<lst.size(); i++ ) {
             if ( this->filterJ2last ( lst[i] ) ) {
@@ -506,7 +521,8 @@ public:
     }
 
     /// filter a list of cperms using the filterZero method
-    std::vector<cperm> filterListZero ( const std::vector<cperm> &lst ) const {
+    std::vector<cperm> filterListZero ( const std::vector<cperm> &lst ) const
+    {
         std::vector<cperm> out;
         for ( size_t i=0; i<lst.size(); i++ ) {
             if ( this->filterZero ( lst[i] ) ) {
@@ -518,7 +534,8 @@ public:
     }
 
     /// return True of the extension satisfies all checks
-    bool filter ( const cperm &c ) const {
+    bool filter ( const cperm &c ) const
+    {
         if ( filterfirst ) {
             if ( c[0]<0 ) {
                 return false;
@@ -545,7 +562,8 @@ public:
         return true;
     }
     /// return True of the extension satisfies all J-characteristic checks
-    bool filterJ ( const cperm &c, int j2start=0 ) const {
+    bool filterJ ( const cperm &c, int j2start=0 ) const
+    {
         if ( filterj2 ) {
             // perform inner product check for all columns
             if ( ! ipcheck ( c, als, j2start ) ) {
@@ -562,7 +580,8 @@ public:
         return true;
     }
     /// return True of the extension satisfies all checks
-    bool filterReason ( const cperm &c ) const {
+    bool filterReason ( const cperm &c ) const
+    {
         if ( filterfirst ) {
             if ( c[0]<0 ) {
                 printf ( "filterfirst\n" );
@@ -596,7 +615,8 @@ public:
     }
 
     /// return True of the candidate satisfies the J3 check
-    bool filterJ3 ( const cperm &c ) const {
+    bool filterJ3 ( const cperm &c ) const
+    {
         const int nc = dtable.n_columns;
         const int N = als.n_rows;
         int jv=0;
@@ -617,7 +637,8 @@ public:
     }
 
     /// return True of the candidate satisfies the J3 check
-    bool filterJ3inline ( const cperm &c ) const {
+    bool filterJ3inline ( const cperm &c ) const
+    {
         const int nc = inline_dtable.n_columns;
         const int N = als.n_rows;
         int jv=0;
@@ -639,19 +660,23 @@ public:
 
 
     /// return True of the candidate satisfies the symmetry check
-    bool filterSymmetry ( const cperm &c ) const {
+    bool filterSymmetry ( const cperm &c ) const
+    {
         return  satisfy_symm ( c, check_indices, 0 );
     }
     /// return True of the candidate extension satisfies the J2 check
-    bool filterJ2 ( const cperm &c ) const {
+    bool filterJ2 ( const cperm &c ) const
+    {
         return ipcheck ( c, als, 0 );
     }
     /// return True of the candidate extension satisfies the J2 check for the last column of the array checked against
-    bool filterJ2last ( const cperm &c ) const {
+    bool filterJ2last ( const cperm &c ) const
+    {
         return ipcheck ( c, als, als.n_columns-1 );
     }
     /// return True of the candidate extension satisfies the zero
-    bool filterZero ( const cperm &c ) const {
+    bool filterZero ( const cperm &c ) const
+    {
         // TODO: minzvalue-1?
         for ( int i=0; i<minzvalue-1; i++ ) {
             if ( c[i]==0 ) {

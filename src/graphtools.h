@@ -16,7 +16,7 @@
 
 
 /** Isomorphism types for matrices
- * 
+ *
  * Isotopy: permute rows, columns and symbols
  * Matrix isomorphism: permute rows and columns
  * Conference isomorphism: permute rows, columns and to row and column negations (values in 0, +1, -1)
@@ -35,14 +35,14 @@ namespace nauty
 {
 #include "nauty.h"
 /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
-	
+
 /** reduce a colored graph to Nauty minimal form
- * 
+ *
  * The transformation returned is from the normal form to the specified graph.
- * 
+ *
  */
 std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int verbose=0 );
-	
+
 } // end of nauty namespace
 
 /// apply a vertex permutation to a graph

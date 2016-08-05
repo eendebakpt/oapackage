@@ -1,5 +1,5 @@
 /** \file md5.h
- * 
+ *
  * \brief Contains functions to calculate MD5 sums
  */
 #pragma once

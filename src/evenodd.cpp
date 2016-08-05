@@ -40,7 +40,8 @@ double  depth_extend_t::tp=0;
 
 
 /// helper function
-std::string depth_extend_logstring ( int n ) {
+std::string depth_extend_logstring ( int n )
+{
     std::string sp="";
     for ( int i=0; i<n; i++ ) {
         sp+="   ";
@@ -49,7 +50,8 @@ std::string depth_extend_logstring ( int n ) {
     return sp;
 }
 /// initialize the new list of extension columns
-arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arraydata_t &adf, const OAextend &oaextend ) {
+arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arraydata_t &adf, const OAextend &oaextend )
+{
     myassert ( alist.size() == lmctype.size() , "depth_extend_t: update" );
 
     int ncolsx=0;
@@ -152,13 +154,15 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
     return v;
 }
 
-void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int extcol, int verbose ) {
+void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int extcol, int verbose )
+{
     printfd ( "use depth_extend_omp instead...\n" );
     return;
 }
 
 
-void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t &dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int verbose ) {
+void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t &dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int verbose )
+{
     //if (goodarrays.size()>0 ) 		printfd(": start: goodarrays[0].ncols %d\n", goodarrays[0].n_columns );
 
     depth_extend_sub_t dextendsub=dextendsublight;
@@ -202,7 +206,8 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
 }
 
 
-void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose ) {
+void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose )
+{
 
     std::string sp = depth_extend_logstring ( extcol-dextend.loglevelcol );
     if ( extcol>=dextend.ad->ncols ) {
@@ -249,7 +254,8 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
 }
 
 
-void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose ) {
+void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, int extcol, const OAextend &oaextendx, int verbose )
+{
     std::string sp = depth_extend_logstring ( extcol-dextend.loglevelcol );
     if ( extcol>=dextend.ad->ncols ) {
         return;
@@ -300,7 +306,8 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
     }
 }
 
-void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const arraydata_t &adfull,  int verbose, depth_extensions_storage_t *ds, int dsidx ) {
+void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const arraydata_t &adfull,  int verbose, depth_extensions_storage_t *ds, int dsidx )
+{
     OAextend oaextendx = dextend.oaextend;
 
     int extensioncol = al.n_columns;
@@ -406,7 +413,8 @@ void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const a
 
 
 /// helper function
-void depth_extend_log ( int i, const arraylist_t &alist, int nn, depth_extend_t &dextend, int extcol, int verbose ) {
+void depth_extend_log ( int i, const arraylist_t &alist, int nn, depth_extend_t &dextend, int extcol, int verbose )
+{
     //printfd("depth_extend_log: verbose %d, dextend.loglevelcol %d\n", verbose, dextend.loglevelcol);
 
     std::string sp = depth_extend_logstring ( extcol-dextend.loglevelcol );
@@ -432,7 +440,8 @@ void depth_extend_log ( int i, const arraylist_t &alist, int nn, depth_extend_t 
 }
 
 /// variation of depth_extend in which OpenMP is used
-void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, depth_extend_sub_t &dextendsub, int extcol, int verbose, int nomp ) {
+void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, depth_extend_sub_t &dextendsub, int extcol, int verbose, int nomp )
+{
 
     const int dv=0;
     cprintf ( dv>=1, "depth_extend_omp! extcol %d\n", extcol );
@@ -647,7 +656,8 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 }
 
 /// add arrays to set of Pareto results
-void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose ) {
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
+{
 
     // allocate for fast rank calculations
     rankStructure rs[25];
@@ -692,7 +702,8 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
     }
 }
 
-Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose ) {
+Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
+{
     // blocked read of arrays
     const long narraymax = 100000; // max number of arrays to read in a block
     arrayfile_t afile ( inputfile, 0 );
@@ -742,14 +753,16 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose ) {
 }
 
 /// add list of arrays to object
-void Jcounter::addArrays ( const arraylist_t &arraylist, int verbose ) {
+void Jcounter::addArrays ( const arraylist_t &arraylist, int verbose )
+{
     #pragma omp parallel for schedule(dynamic,1)
     for ( size_t i=0; i<arraylist.size(); i++ ) {
         this->addArray ( arraylist[i] );
     }
 }
 
-Jcounter& Jcounter::operator += ( Jcounter &jc ) {
+Jcounter& Jcounter::operator += ( Jcounter &jc )
+{
     assert ( this->N==jc.N );
     assert ( this->jj==jc.jj );
 
@@ -765,7 +778,8 @@ Jcounter& Jcounter::operator += ( Jcounter &jc ) {
 }
 
 /// read statistics object from disk
-Jcounter readStatisticsFile ( const char *numbersfile, int verbose ) {
+Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
+{
 
     FILE *fid = fopen ( numbersfile, "rt" );
 
@@ -823,7 +837,8 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose ) {
 
 
 /// write statistics object to disk
-void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verbose ) {
+void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verbose )
+{
 
     FILE *fid = fopen ( numbersfile, "wt" );
 
@@ -837,4 +852,4 @@ void writeStatisticsFile ( const char *numbersfile, const Jcounter &jc, int verb
     fclose ( fid );
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

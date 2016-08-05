@@ -85,7 +85,8 @@ enum lmc_t {LMC_LESS, LMC_EQUAL, LMC_MORE, LMC_NONSENSE};
 enum algorithm_t { MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_INVALID, MODE_AUTOSELECT, MODE_LMC_SYMMETRY, MODE_LMC_2LEVEL, MODE_LMC_DEBUG, MODE_J5ORDERXFAST};
 #define MODE_LMC MODE_ORIGINAL
 
-inline std::string algorithm_t_list() {
+inline std::string algorithm_t_list()
+{
     std::string ss = printfstring("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (j5 order dominant), %d (MODE_J5ORDERXFAST)", MODE_AUTOSELECT,
                                   MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDERXFAST);
     ss+= printfstring(", %d (MODE_LMC_SYMMETRY), %d (MODE_LMC_2LEVEL)", MODE_LMC_SYMMETRY, MODE_LMC_2LEVEL);
@@ -112,8 +113,7 @@ typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
 /*!
  * @brief structure to perform row sorting
  */
-struct rowsort_t
-{
+struct rowsort_t {
     //! index of row
     rowindex_t r;
     //! value of row
@@ -195,7 +195,8 @@ public:
 
 #ifdef OADEBUG
     std::string ref;
-    inline void setRef(const std::string s) {
+    inline void setRef(const std::string s)
+    {
         ref=s;
         printf("LMC_static_struct_t: set ref %s\n", ref.c_str() );
     }
@@ -206,7 +207,8 @@ public:
     LMC_static_struct_t();
     ~LMC_static_struct_t();
 
-    void show(int verbose=1) const {
+    void show(int verbose=1) const
+    {
         printf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", long(this->ad), LMC_non_root_init );
     }
 
@@ -222,7 +224,8 @@ public:
 
 
 /// Static initialization of root row permutations
-    void init_rootrowperms ( int &totalperms, rowperm_t * &rootrowperms, levelperm_t * &lperm_p ) {
+    void init_rootrowperms ( int &totalperms, rowperm_t * &rootrowperms, levelperm_t * &lperm_p )
+    {
         /* no static update, we assume this has been done already */
 
         totalperms = this->nrootrowperms;
@@ -234,7 +237,8 @@ public:
 
     /** @brief Static initialization of root row permutations (full group)
      */
-    void init_rootrowperms_full ( int &totalperms, rowperm_t * &rootrowperms, levelperm_t * &lperm_p ) {
+    void init_rootrowperms_full ( int &totalperms, rowperm_t * &rootrowperms, levelperm_t * &lperm_p )
+    {
         /* no static update, we assume this has been done already */
 
         totalperms = this->nrootrowperms_full;
@@ -301,10 +305,12 @@ public:
     }
 
 
-    int N() const {
+    int N() const
+    {
         return rowperm->size();
     }
-    void show() const {
+    void show() const
+    {
         printf("arraysymmetry: rowperm ");
         print_perm<rowindex_t>(*rowperm, 24);
         printf("             : colperm ");
@@ -323,37 +329,39 @@ public:
     array_link ft;
 
     symmdata(const array_link  &al, int minlen=1);
-    void show(int verbose=1) const {
+    void show(int verbose=1) const
+    {
         printf("symmdata: rowvalues\n");
         this->rowvalue.showarray();
-	if (verbose>=2) {
-	  printf("symmdata: ft:"); this->ft.show();
-	 this->ft.showarray(); 
-	}
+        if (verbose>=2) {
+            printf("symmdata: ft:");
+            this->ft.show();
+            this->ft.showarray();
+        }
     }
-    
+
     /// list with indices set to check for symmetry reductions
-    std::vector<int> checkIdx(int col=-1) const    
+    std::vector<int> checkIdx(int col=-1) const
     {
-      const int N = this->orig.n_rows;
-      if (col<0) 
-	col = orig.n_columns-1;
-	
-      std::vector<int> idx(N);
-      
-      // never check first index
-      for (int row=1; row<N; row++ )	
-      {
-	if (this->rowvalue._at(row, col)==this->rowvalue._at(row-1, col) )
-	  idx[row]=1;
-      }
-      return idx;
+        const int N = this->orig.n_rows;
+        if (col<0)
+            col = orig.n_columns-1;
+
+        std::vector<int> idx(N);
+
+        // never check first index
+        for (int row=1; row<N; row++ ) {
+            if (this->rowvalue._at(row, col)==this->rowvalue._at(row-1, col) )
+                idx[row]=1;
+        }
+        return idx;
     }
 };
 
 
 /// helper function
-inline array_link rootPlus(const arraydata_t &ad) {
+inline array_link rootPlus(const arraydata_t &ad)
+{
     array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
     al.create_root(ad);
     for(int i=ad.strength; i<ad.ncols; i++) {
@@ -379,13 +387,13 @@ inline array_link rootPlus(const arraydata_t &ad) {
 #ifdef SDSMART
 #ifdef WIN32
 
-   #include <memory>
-   typedef std::shared_ptr<symmdata> symmdataPointer;
-   //typedef std::shared_ptr<symmdata> symmdataPointer;
+#include <memory>
+typedef std::shared_ptr<symmdata> symmdataPointer;
+//typedef std::shared_ptr<symmdata> symmdataPointer;
 #else
-   #include <tr1/memory>
-   typedef std::tr1::shared_ptr<symmdata> symmdataPointer;
-   //typedef std::shared_ptr<symmdata> symmdataPointer;
+#include <tr1/memory>
+typedef std::tr1::shared_ptr<symmdata> symmdataPointer;
+//typedef std::shared_ptr<symmdata> symmdataPointer;
 #endif
 
 #else
@@ -402,13 +410,11 @@ enum INIT_STATE {INIT_STATE_INVALID, COPY, INIT, SETROOT};
 template <class Type>
 void insertUnique(std::vector<Type> &cp, const Type &cpv)
 {
-    if (cp.size()>0)
-    {
+    if (cp.size()>0) {
         if(! (cp.back()==cpv) )
             //cp.emplace_back(cpv);
             cp.push_back(cpv);
-    }
-    else {
+    } else {
         cp.push_back(cpv);
     }
 }
@@ -445,7 +451,8 @@ struct LMCreduction_t {
 
     //! store column permutations from array symmetry group
     //std::vector< std::vector< std::vector<int> > > colperms;
-    class symm_t {
+    class symm_t
+    {
     public:
         int store;
         int ncols;
@@ -453,17 +460,19 @@ struct LMCreduction_t {
         std::vector< colpermset > colcombs;
         std::vector< symmetryset > symmetries;
 
-        symm_t() {
+        symm_t()
+        {
             ncols = -1;
         }
-        void show(int verbose=1) const {
+        void show(int verbose=1) const
+        {
             long ns=0, ncp=0, ncc=0;
             for(size_t i=0; i<symmetries.size(); i++) {
-	      if (verbose>=2) {
-            printf("  symm_t: k %ld: symms %ld\n", (long)i, (long)symmetries[i].size() );
-	      }
+                if (verbose>=2) {
+                    printf("  symm_t: k %ld: symms %ld\n", (long)i, (long)symmetries[i].size() );
+                }
                 ns+=symmetries[i].size();
-	    }
+            }
             for(size_t i=0; i<colperms.size(); i++)
                 ncp+=colperms[i].size();
             for(size_t i=0; i<colcombs.size(); i++)
@@ -495,22 +504,26 @@ struct LMCreduction_t {
 
         }
 
-        void storeColumnCombination(colpermtype cpv) {
+        void storeColumnCombination(colpermtype cpv)
+        {
             if (store<2) return;
             int n=cpv.size();
             insertUnique(colcombs[n], cpv);
         }
-        void storeColumnCombination(const colperm_t cp, int n) {
+        void storeColumnCombination(const colperm_t cp, int n)
+        {
             if (store<2) return;
             colpermtype cpv = array2vector<int, colindex_t>(cp, n);
             insertUnique(colcombs[n], cpv);
         }
-        void storeColumnPermutation(const colperm_t cp, int n) {
+        void storeColumnPermutation(const colperm_t cp, int n)
+        {
             if (store<2) return;
             colpermtype cpv = array2vector<int, colindex_t>(cp, n);
             insertUnique(colperms[n], cpv);
         }
-        void showColperms(int verbose=1) const {
+        void showColperms(int verbose=1) const
+        {
             for(size_t i=0; i<=(size_t)ncols; i++) {
                 printf("LMCreduction: column permutations with %d cols: %ld/%ld\n", (int)i, (long)colperms[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
@@ -520,8 +533,9 @@ struct LMCreduction_t {
                 }
             }
         }
-	
-        void showColcombs(int verbose=1) const {
+
+        void showColcombs(int verbose=1) const
+        {
             for(size_t i=0; i<=(size_t)ncols; i++) {
                 printf("LMCreduction: column combinations with %d cols: %d/%ld\n", (int)i, (int)colcombs[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2) {
@@ -531,7 +545,8 @@ struct LMCreduction_t {
                 }
             }
         }
-        void showSymmetries(int verbose=1) const {
+        void showSymmetries(int verbose=1) const
+        {
             for(size_t i=0; i<(size_t)symmetries.size() ; i++) {
                 printf("LMCreduction: symmetries with %ld cols: %ld/%ld\n", (long)i, (long)symmetries[i].size(), ncombs<long>(ncols, i) );
                 if (verbose>=2 || (i==60 )) {
@@ -577,56 +592,59 @@ public:
     }
 
 
-        void updateSDpointer(const array_link al, bool cache=false)
-	{
-	          //reduction.sd = symmdataPointer(new symmdata(al) );
+    void updateSDpointer(const array_link al, bool cache=false)
+    {
+        //reduction.sd = symmdataPointer(new symmdata(al) );
 #ifdef SDSMART
-		symmdata *sdp = this->sd.get();
+        symmdata *sdp = this->sd.get();
 #else
-		symmdata *sdp = sd;
+        symmdata *sdp = sd;
 #endif
         if (sdp!=0 && cache ) { //&& (reduction.sd->orig == al) ) {
             //do nothing
             //  printf("using cached symmdata!\n");
-        }
-        else {
+        } else {
             // update symmetry data
             this->sd = symmdataPointer(new symmdata(al, 1) );
         }
-	}
+    }
 
     void clearSymmetries();
 
-    void releaseStatic() {
-      if(this->staticdata!=0) {
-     releaseGlobalStatic(this->staticdata);
-     this->staticdata=0;
-      }
+    void releaseStatic()
+    {
+        if(this->staticdata!=0) {
+            releaseGlobalStatic(this->staticdata);
+            this->staticdata=0;
+        }
     }
 
     /// acquire a reference to a LMC_static_struct_t object
-        void initStatic() {
-	  if(this->staticdata==0) {
-	   // printfd("staticdata==0, allocating new structure\n");
-	this->staticdata=getGlobalStatic();
-	  }
+    void initStatic()
+    {
+        if(this->staticdata==0) {
+            // printfd("staticdata==0, allocating new structure\n");
+            this->staticdata=getGlobalStatic();
+        }
     }
-    
+
     /// return a reference to a LMC_static_struct_t object
-    LMC_static_struct_t & getStaticReference() {
-	  if(this->staticdata==0) {
-	   // printfd("problem! getStaticReference() calls getGlobalStaticOne!\n");
-	  return getGlobalStaticOne();
-	  } else {
-	    //printfd("return internal pointer...\n");
-	    return *(this->staticdata);
-	  }
+    LMC_static_struct_t & getStaticReference()
+    {
+        if(this->staticdata==0) {
+            // printfd("problem! getStaticReference() calls getGlobalStaticOne!\n");
+            return getGlobalStaticOne();
+        } else {
+            //printfd("return internal pointer...\n");
+            return *(this->staticdata);
+        }
     }
-    
+
 /// reset the reduction: clears the symmetries and sets the transformation to zero
     void reset();
 
-    void show ( int verbose=2 ) const {
+    void show ( int verbose=2 ) const
+    {
         printf ( "LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state %d, lastcol %d\n", this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state, this->lastcol );
         if ( verbose>=1 ) {
             printf ( "LMCreduction_t: nred %ld\n", nred );
@@ -636,9 +654,10 @@ public:
             this->transformation->show();
     }
 
-    std::string __repr__() const {
+    std::string __repr__() const
+    {
         std::string ss = printfstring ( "LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state %d, lastcol %d\n", this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state, this->lastcol );
-      return ss;
+        return ss;
     }
 
     /// called whenever we find a reduction
@@ -681,8 +700,7 @@ private:
  *  - colperm: changes at all levels
  * @sa arraydata_t
  */
-struct dyndata_t
-{
+struct dyndata_t {
     //! active column
     colindex_t col;
     //! number of rows
@@ -705,21 +723,25 @@ public:
     void show() const;
 
     void reset();
-    void setColperm(const colperm_t perm, int n) {
+    void setColperm(const colperm_t perm, int n)
+    {
         copy_perm ( perm, this->colperm, n );
     }
-    void setColperm(const larray<colindex_t> &perm ) {
+    void setColperm(const larray<colindex_t> &perm )
+    {
         // todo: make check on size
         std::copy(perm.d, perm.d+perm.n, this->colperm);
     }
 
-    void setColperm(const std::vector<colindex_t> &perm ) {
+    void setColperm(const std::vector<colindex_t> &perm )
+    {
         // todo: make check on size
         std::copy(perm.begin(), perm.end(), this->colperm);
     }
 
     /// initialize the rowsort structure from an arraysymmetry object
-    void initsymmetry(const arraysymmetry &arraysymm, const symmdata &sd, int ncols) {
+    void initsymmetry(const arraysymmetry &arraysymm, const symmdata &sd, int ncols)
+    {
 
         const array_t *w = sd.rowvalue.array+(ncols-1)*N;
         for(int i=0; i<N; i++) {
@@ -734,67 +756,75 @@ public:
 
 
     /// set lightweight row permutation
-    void getRowperm(rowpermtypelight &rp) const {
+    void getRowperm(rowpermtypelight &rp) const
+    {
         rp.resize(this->N);
-	if(this->rowsortl==0) {
-        for(int i=0; i<this->N; i++) 
-            rp[i]=this->rowsort[i].r;
-	} else {
-        for(int i=0; i<this->N; i++)
-            rp[i]=this->rowsortl[i];
-	}
+        if(this->rowsortl==0) {
+            for(int i=0; i<this->N; i++)
+                rp[i]=this->rowsort[i].r;
+        } else {
+            for(int i=0; i<this->N; i++)
+                rp[i]=this->rowsortl[i];
+        }
     }
-    
+
     /// get row permutation
-    void getRowperm(rowperm_t &rperm) const {
-	if(this->rowsortl==0) {
-	  for ( rowindex_t x=0; x<this->N; x++ )
-	    rperm[x] = this->rowsort[x].r;
-	} else {
-	  for ( rowindex_t x=0; x<this->N; x++ )
-	    rperm[x] = this->rowsortl[x];	  
-	}
-     // printfd("getRowperm: after "); print_perm(rperm, this->N);
+    void getRowperm(rowperm_t &rperm) const
+    {
+        if(this->rowsortl==0) {
+            for ( rowindex_t x=0; x<this->N; x++ )
+                rperm[x] = this->rowsort[x].r;
+        } else {
+            for ( rowindex_t x=0; x<this->N; x++ )
+                rperm[x] = this->rowsortl[x];
+        }
+        // printfd("getRowperm: after "); print_perm(rperm, this->N);
     }
 
     /// return lightweight row permutation
-    rowpermtypelight getRowperm() const {
+    rowpermtypelight getRowperm() const
+    {
         rowpermtypelight rp(this->N);
-	this->getRowperm(rp);
+        this->getRowperm(rp);
         return rp;
     }
 
-    
+
     /// return column permutation
-    colpermtypelight getColperm() const {
+    colpermtypelight getColperm() const
+    {
         colpermtypelight cp(this->colperm, this->col+1);
         //  printf("created colpermtypelight: cp.n %d\n", cp.n);
         return cp;
     }
     /// set column permutation
-    void getColperm(colpermtypelight &cp) const {
+    void getColperm(colpermtypelight &cp) const
+    {
         cp.resize(this->col+1);
         std::copy(this->colperm, this->colperm+this->col+1, cp.d);
 
     }
 
     /// allocate lightweight rowsort structure
-    void allocrowsortl() {
+    void allocrowsortl()
+    {
         if(this->rowsortl==0) {
             this->rowsortl=new_perm<rowindex_t>(this->N);
         }
     }
-    
-    void deleterowsortl() {
-       if(this->rowsortl!=0) {
-	 delete_perm(this->rowsortl);
-	 //delete [] this->rowsortl;
-	 this->rowsortl=0;
-       }
-       
+
+    void deleterowsortl()
+    {
+        if(this->rowsortl!=0) {
+            delete_perm(this->rowsortl);
+            //delete [] this->rowsortl;
+            this->rowsortl=0;
+        }
+
     }
-    void initrowsortl() {
-        if(this->rowsortl!=0) { 
+    void initrowsortl()
+    {
+        if(this->rowsortl!=0) {
             //delete [] this->rowsortl;
             for(int i=0; i<this->N; i++) {
                 this->rowsortl[i]=this->rowsort[i].r;
@@ -808,9 +838,10 @@ public:
     }
 
     /// helper function
-        void rowsortl2rowsort() {
-            for(int i=0; i<this->N; i++) {
-                this->rowsort[i].r=this->rowsortl[i];
+    void rowsortl2rowsort()
+    {
+        for(int i=0; i<this->N; i++) {
+            this->rowsort[i].r=this->rowsortl[i];
         }
     }
 
@@ -900,7 +931,8 @@ lmc_t LMCcheck ( const array_t *array, const arraydata_t &ad,  const OAextend &o
 //lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad,  const OAextend &oaextend,LMCreduction_t &reduction );
 
 /// generic LMCcheck function
-inline lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction ) {
+inline lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction )
+{
     myassert(ad.N==al.n_rows, "LMCcheck: wrong number of rows");
     mycheck(ad.ncols<=al.n_columns, "LMCcheck: wrong number of columns al %d, adata %d", al.n_columns, ad.ncols);
 

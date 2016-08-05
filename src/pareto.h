@@ -41,11 +41,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace detail
 {
-   template <class atype>
-   /// generic function to print a std::vector
-   void display_vector ( const std::vector<atype> &v, const char *sep = " " ) {
-      std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
-   }
+template <class atype>
+/// generic function to print a std::vector
+void display_vector ( const std::vector<atype> &v, const char *sep = " " )
+{
+    std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
+}
 }
 
 
@@ -54,166 +55,178 @@ template <class ValueType, class IndexType>
 /// helper class for the Pareto class
 struct pareto_element {
 
-   typedef std::vector<ValueType> pValue;
+    typedef std::vector<ValueType> pValue;
 
-   pValue value;
-   std::vector<IndexType> indices;
+    pValue value;
+    std::vector<IndexType> indices;
 
-   /// return true of the argument element dominates this value
-   bool dominates ( pValue v ) {
-      for ( size_t i=0; i<v.size(); i++ ) {
-         if ( value[i] < v[i] )
-            return false;
-      }
-      return true;
-   }
-   bool isdominated ( pValue v ) {
-      for ( size_t i=0; i<v.size(); i++ ) {
-         if ( value[i] > v[i] )
-            return false;
-      }
-      return true;
-   }
-   /// return true of the argument element is equal to this element
-   bool equal ( pValue v ) {
-      for ( size_t i=0; i<v.size(); i++ ) {
-         if ( value[i] != v[i] )
-            return false;
-      }
-      return true;
-   }
+    /// return true of the argument element dominates this value
+    bool dominates ( pValue v )
+    {
+        for ( size_t i=0; i<v.size(); i++ ) {
+            if ( value[i] < v[i] )
+                return false;
+        }
+        return true;
+    }
+    bool isdominated ( pValue v )
+    {
+        for ( size_t i=0; i<v.size(); i++ ) {
+            if ( value[i] > v[i] )
+                return false;
+        }
+        return true;
+    }
+    /// return true of the argument element is equal to this element
+    bool equal ( pValue v )
+    {
+        for ( size_t i=0; i<v.size(); i++ ) {
+            if ( value[i] != v[i] )
+                return false;
+        }
+        return true;
+    }
 
 };
 
 template <class ValueType, class IndexType>
 /** @brief Class to the calculate Pareto optimal elements.
- * 
+ *
  * The class is templated by the type of values to be compared and an index type. The index type is used to index the elements.
- * 
+ *
  */
 class Pareto
 {
-   public:
-      typedef std::vector<ValueType> pValue;
-      typedef pareto_element<ValueType, IndexType> pElement;
+public:
+    typedef std::vector<ValueType> pValue;
+    typedef pareto_element<ValueType, IndexType> pElement;
 
-      int verbose;
-	  /// contains a list of all Pareto optimal elements
-      std::deque<pareto_element<ValueType, IndexType> > elements;
+    int verbose;
+    /// contains a list of all Pareto optimal elements
+    std::deque<pareto_element<ValueType, IndexType> > elements;
 
-      /// constructor
-      Pareto() : verbose ( 1 ) {};
-      ~Pareto() {};
+    /// constructor
+    Pareto() : verbose ( 1 ) {};
+    ~Pareto() {};
 
-      /// return the total number of Pareto optimal values
-      int number() const {
-         return elements.size();
-      }
-      /// return the toal number Pareto optimal objects
-      int numberindices() const {
-         int t=0;
-         for ( size_t i=0; i<elements.size(); i++ ) {
+    /// return the total number of Pareto optimal values
+    int number() const
+    {
+        return elements.size();
+    }
+    /// return the toal number Pareto optimal objects
+    int numberindices() const
+    {
+        int t=0;
+        for ( size_t i=0; i<elements.size(); i++ ) {
             t+= elements[i].indices.size() ;
-         }
-         return t;
-      }
+        }
+        return t;
+    }
 
-      std::string __repr__() const {
-         std::string ss = printfstring ( "Pareto: %zu optimal values\n", elements.size() );
-	return ss;
-      }
-      
-      static void showvalue(pValue p) {
-               detail::display_vector ( p, "; " );
-	
-      }
-      /// show the current set of Pareto optimal elements
-      void show ( int verbose=1 ) {
-         if ( verbose==0 )
+    std::string __repr__() const
+    {
+        std::string ss = printfstring ( "Pareto: %zu optimal values\n", elements.size() );
+        return ss;
+    }
+
+    static void showvalue(pValue p)
+    {
+        detail::display_vector ( p, "; " );
+
+    }
+    /// show the current set of Pareto optimal elements
+    void show ( int verbose=1 )
+    {
+        if ( verbose==0 )
             return;
-         printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
-         if ( verbose>=2 ) {
+        printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
+        if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
-               printf ( "value %d: ", (int)i );
-               detail::display_vector ( elements[i].value, "; " );
-               printf ( "\n" );
-               if ( verbose>=3 ) {
-                  printf ( "  indices: " );
-                  detail::display_vector ( elements[i].indices, ", " );
-                  printf ( "\n" );
-               }
+                printf ( "value %d: ", (int)i );
+                detail::display_vector ( elements[i].value, "; " );
+                printf ( "\n" );
+                if ( verbose>=3 ) {
+                    printf ( "  indices: " );
+                    detail::display_vector ( elements[i].indices, ", " );
+                    printf ( "\n" );
+                }
             }
-         }
-      }
+        }
+    }
 
-      /// return all indices of the Pareto optimal elements as a std::deque
-      std::deque<IndexType> allindicesdeque() const {
-         std::deque<IndexType> lst;
-         for ( size_t i=0; i<elements.size(); i++ ) {
+    /// return all indices of the Pareto optimal elements as a std::deque
+    std::deque<IndexType> allindicesdeque() const
+    {
+        std::deque<IndexType> lst;
+        for ( size_t i=0; i<elements.size(); i++ ) {
             lst.insert ( lst.end(), elements[i].indices.begin(), elements[i].indices.end() );
-         }
-         return lst;
-      }
+        }
+        return lst;
+    }
 
-      /// return all indices of the Pareto optimal elements
-      std::vector<IndexType> allindices() const {
-         std::vector<IndexType> lst;
-         for ( size_t i=0; i<elements.size(); i++ ) {
+    /// return all indices of the Pareto optimal elements
+    std::vector<IndexType> allindices() const
+    {
+        std::vector<IndexType> lst;
+        for ( size_t i=0; i<elements.size(); i++ ) {
             lst.insert ( lst.end(), elements[i].indices.begin(), elements[i].indices.end() );
-         }
-         return lst;
-      }
+        }
+        return lst;
+    }
 
-            /// return all Paretop optimal elements
-      std::vector<pValue> allvalues() const {
-         std::vector<pValue> lst;
-         for ( size_t i=0; i<this->elements.size(); i++ ) {
+    /// return all Paretop optimal elements
+    std::vector<pValue> allvalues() const
+    {
+        std::vector<pValue> lst;
+        for ( size_t i=0; i<this->elements.size(); i++ ) {
             lst.push_back(this->elements[i].value);
-         }
-         return lst;
-      }
+        }
+        return lst;
+    }
 
-      
-      /// add a new element
-      bool addvalue ( pValue val, IndexType idx ) {
-         size_t ii=0;
-         while ( ii<elements.size() ) {
-                  if ( verbose>=3 )
-                     printf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
+
+    /// add a new element
+    bool addvalue ( pValue val, IndexType idx )
+    {
+        size_t ii=0;
+        while ( ii<elements.size() ) {
+            if ( verbose>=3 )
+                printf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
             if ( elements[ii].dominates ( val ) ) {
-               if ( elements[ii].equal ( val ) ) {
-                  elements[ii].indices.push_back ( idx );
-                  if ( verbose>=3 )
-                     printf ( "Pareto::addvalue: new pareto item\n" );
-                  return true;
-               } else {
-                  // not a pareto element, so continue
-                  if ( verbose>=3 )
-                     printf ( "addvalue: not pareto\n" );
-                  return false;
-               }
+                if ( elements[ii].equal ( val ) ) {
+                    elements[ii].indices.push_back ( idx );
+                    if ( verbose>=3 )
+                        printf ( "Pareto::addvalue: new pareto item\n" );
+                    return true;
+                } else {
+                    // not a pareto element, so continue
+                    if ( verbose>=3 )
+                        printf ( "addvalue: not pareto\n" );
+                    return false;
+                }
             }
             if ( elements[ii].isdominated ( val ) ) {
-               // element ii is dominated by the new element, we remove element ii
-               if ( verbose>=2 )
-                  printf ( "addvalue: removing element\n" );
-               elements.erase ( elements.begin() +ii );
+                // element ii is dominated by the new element, we remove element ii
+                if ( verbose>=2 )
+                    printf ( "addvalue: removing element\n" );
+                elements.erase ( elements.begin() +ii );
             } else {
-               if ( verbose>=3 )
-                  printf ( "Pareto:addvalue: ii++\n" );
-               ii++;
+                if ( verbose>=3 )
+                    printf ( "Pareto:addvalue: ii++\n" );
+                ii++;
             }
-         }
- 
-         // we have a new pareto element: add it to the current set
-         pElement p;
-         p.value = val;
-         p.indices.push_back ( idx );
-         this->elements.push_back ( p );
-         if ( verbose>=2 )
+        }
+
+        // we have a new pareto element: add it to the current set
+        pElement p;
+        p.value = val;
+        p.indices.push_back ( idx );
+        this->elements.push_back ( p );
+        if ( verbose>=2 )
             printf ( "Pareto: addvalue: new elem, total is %ld\n", (long)this->elements.size() );
-         return true;
-      }
+        return true;
+    }
 };
 
 

@@ -286,8 +286,7 @@ public:
                 MD5Transform (context.state, &input[i]);
 
             index = 0;
-        }
-        else
+        } else
             i = 0;
 
         /* Buffer remaining input */
@@ -353,8 +352,7 @@ public:
 
         if( (file = fopen (filename, "rb")) == NULL )
             printf( "%s can't be opened\n", filename ) ;
-        else
-        {
+        else {
             while( ( len = fread( buffer, 1, 1024, file ) ) )
                 Update( buffer, len ) ;
             Final();
@@ -388,16 +386,16 @@ public:
 
 std::string md5(void *data, int len)
 {
-  MD5 m;
-  char *str = m.digestMemory((unsigned char *)data, len);  
-  std::string s = str;
-  return s;
+    MD5 m;
+    char *str = m.digestMemory((unsigned char *)data, len);
+    std::string s = str;
+    return s;
 }
 
 std::string md5(const std::string filename)
 {
-  MD5 m;
-  char *str = m.digestFile(filename.c_str());  
-  std::string s = str;
-  return s;
+    MD5 m;
+    char *str = m.digestFile(filename.c_str());
+    std::string s = str;
+    return s;
 }
