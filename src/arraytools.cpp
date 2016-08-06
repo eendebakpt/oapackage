@@ -2219,10 +2219,67 @@ std::vector<double> array_link::PECsequence() const
 }
 #endif
 
+/** Calculate J-characteristics of matrix (the values are signed)
+ * 
+ * The actual calculation depends on the type of array (2-level or conference)
+ */
 std::vector<int> array_link::Jcharacteristics ( int jj ) const
 {
-    return ::Jcharacteristics ( *this, jj, 0 );
+	if ( this->is2level() ) {
+		return ::Jcharacteristics ( *this, jj, 0 );
+	}
+	else {
+		if( this->min()==-1 && this->max()==1 ) {
+			/// assume design is conference matrix
+			return ::Jcharacteristics_conference(*this, jj, 0);
+		}
+		else {
+			printf("not implemented\n");
+			return std::vector<int>();
+		}
+	}
 }
+
+/// helper function
+int jvalue_conference ( const array_link &ar,const int J, const int *pp )
+{
+    int jval=0;
+
+    for ( rowindex_t r=0; r<ar.n_rows; r++ ) {
+        int tmp=1;
+        for ( int i=0; i<J; i++ ) {
+            tmp*=ar.atfast ( r,pp[i] );
+        }
+        jval += tmp;
+    }
+    return ( jval );
+}
+
+
+/// calculate J-characteristics for a conference design
+std::vector<int> Jcharacteristics_conference( const array_link &al, int jj, int verbose )
+{
+    assert ( al.max()==1 && al.min()==-1 );
+
+	const int k = al.n_columns;
+	const int nc = ncombs ( k, jj );
+std::vector<int> vals( nc );
+
+
+	int *pp = new_perm_init<int> ( jj );
+
+    for ( int x=0; x<nc; x++ ) {
+        int jv = jvalue_conference ( al, jj, pp ); // slow version
+        vals[x]=jv;
+        next_comb_s ( pp, jj, k );
+    }
+
+    delete_perm ( pp );
+	
+return vals;	
+}
+
+
 
 int array_link::rank() const
 {
@@ -2773,11 +2830,8 @@ std::vector<int> jstruct_t::calculateF ( int strength ) const
 
     for ( int i=0; i<nc; i++ ) {
         int fi = ( N-abs ( vals[i] ) ) /x;
-        //if (fi>=nn)
-        //  myprintf("  k %d, val %d, x %d, fi %d\n",  k, vals[i], x, fi);
         F[fi]++;
     }
-//		myprintf("  x\n");
     return F;
 }
 
@@ -2802,7 +2856,6 @@ array_link createJ2tableConference ( const array_link &confmatrix )
 {
     const int nr = confmatrix.n_rows;
     const int nc = (confmatrix.n_columns+1)*confmatrix.n_columns/2;
-//const int nc = confmatrix.n_columns*confmatrix.n_columns;
     // fill double column table
     array_link dtable ( nr, nc, -1 );
 
@@ -2881,11 +2934,9 @@ void jstruct_t::calcj4 ( const array_link &al )
                 //printf(" tmp %d (%d %d)\n", tmp, o1[xr], o2[xr]);
                 jv += tmp;
             }
-//			jv %= 2;
         }
         jv = 2*jv-N;
         this->vals[x]=jv;
-        //myprintf(" val %d -> %d\n", jvalue ( al, jj, pp ), jv); myprintf("  perm "); print_perm(pp, jj);
 
         next_comb_s ( pp, jj, k );
     }
@@ -3056,7 +3107,7 @@ void jstruct_t::showdata()
 int jvalue ( const array_link &ar,const int J, const int *pp )
 {
     int jval=0;
-
+ 
     for ( rowindex_t r=0; r<ar.n_rows; r++ ) {
         int tmp=0;
         for ( int i=0; i<J; i++ ) {
@@ -3071,7 +3122,7 @@ int jvalue ( const array_link &ar,const int J, const int *pp )
 }
 
 
-/** @brief Calculate J-characteristic for a column combination
+/** @brief Calculate J-characteristic of a 2-level array for a column combination
 *
 * We assume the array has values 0 and 1
 */
