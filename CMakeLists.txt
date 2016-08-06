@@ -1,6 +1,5 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-#cmake_policy(SET CMP0015 NEW)
 
 PROJECT(OApackage)
 
@@ -23,6 +22,9 @@ if (0)
 endif()
 
 find_package(ZLIB)	# Needed for Python modules
+if(ZLIB_FOUND)
+  include_directories(${ZLIB_INCLUDE_DIRS})
+endif()
 #message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
 #message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
 #message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
@@ -320,7 +322,10 @@ if (OAEXTEND)
   set_target_properties(oaextendmpi PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_MULTICORE;NEWINTERFACE" )
 
 #  list(APPEND extendprogs oaextendmpi) 
-   if (WIN32) 
+   if (WIN32)
+    if(ZLIB_FOUND)
+      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
+    endif()
    else()
       TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
    endif()
@@ -339,6 +344,9 @@ ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc}
   TARGET_LINK_LIBRARIES(oagraph oalib)
 
   if (WIN32) 
+      if(ZLIB_FOUND)
+      TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
+    endif()
    #	message(STATUS "Win32 build: ${item}")
   else()
 	TARGET_LINK_LIBRARIES(oagraph m ${ZLIB_LIBRARIES})
@@ -352,7 +360,9 @@ foreach(item ${progs})
   TARGET_LINK_LIBRARIES(${item} oalib)
 
   if (WIN32) 
-   #	message(STATUS "Win32 build: ${item}")
+    if(ZLIB_FOUND)
+      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
+    endif()
   else()
 	TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES})
   endif()
@@ -373,23 +383,6 @@ if(Boost_FOUND)
 endforeach()
 endif()
 
-## special cases
-if(OPENMP_FOUND)
-#   message(STATUS "OpenMP found: OpenMP_C_FLAGS ${OpenMP_C_FLAGS}, OpenMP_EXE_LINKER_FLAGS ${OpenMP_EXE_LINKER_FLAGS}")
-
- #  set_target_properties(oaclustergather PROPERTIES COMPILE_FLAGS "${COPTS} ${OpenMP_CXX_FLAGS}" )
- #  set_target_properties(oaclustergather PROPERTIES LINK_FLAGS "${LINKOPTS} ${OpenMP_EXE_LINKER_FLAGS}" )
-
-   #  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-   #  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  #   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-else()
-endif()
-
-
-#include(PrecompiledHeader.cmake)
-#add_precompiled_header(oapareto src/pareto.h src/mathtools.h)
-#add_precompiled_header(oapareto src/mathtools.h)
 
 ##### R test
 site_name(HOSTNAME)
@@ -398,9 +391,6 @@ site_name(HOSTNAME)
 if("$ENV{USER}" STREQUAL "eendebakpt" AND "${HOSTNAME}" STREQUAL "marmot")
   set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/mathtools.h src/oaoptions.h src/tools.h)
   set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
-
-  #set(headersR src/tools.h)
-  #set(srcsR src/tools.cpp)
   
   add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
   set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE  -Isrc -I/usr/share/R/include") # ${COPTS}
@@ -426,13 +416,11 @@ if(MATLAB_FOUND)
   ADD_EXECUTABLE(Doptimbin EXCLUDE_FROM_ALL mex/Doptim.cpp) #  ${srcs} ${srcsextend})
 	      set_target_properties(${item} PROPERTIES COMPILE_FLAGS "-DMATLAB_MEX_FILE ${COPTS} -DMAINMEX")
   list(APPEND Ditems Doptimbin)
-  #ADD_EXECUTABLE(Doptim mex/Doptim.cpp ${srcs} ${srcsextend})
-
 	
-	message(STATUS "libs ${MATLAB_LIBRARIES}")
+    message(STATUS "libs ${MATLAB_LIBRARIES}")
 
-	    foreach(item  ${Ditems})
-message(STATUS "adding ${item}")
+    foreach(item  ${Ditems})
+      message(STATUS "adding ${item}")
 	    if(WIN32)
 	      TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES} )
 	    endif()
@@ -603,36 +591,6 @@ add_custom_command(
 endif(DOPYTHON)
 
 
-
-set(SWIGP 0)
-if (SWIGP)
-  # Build Python using SWIG package
-  FIND_PACKAGE(SWIG)
-  if(SWIG_FOUND AND NOT WIN32)
-
-  INCLUDE(${SWIG_USE_FILE})
-
-  FIND_PACKAGE(PythonLibs)
-  INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
-  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
-  #-w503,401,362
-  #-DNEWINTERFACE
-  SET(CMAKE_SWIG_FLAGS "-DNEWINTERFACE")
-
-  SET_SOURCE_FILES_PROPERTIES(oalib.i PROPERTIES CPLUSPLUS ON)
-  #SET_SOURCE_FILES_PROPERTIES(oalib.i PROPERTIES SWIG_FLAGS "-includeall")
-  SET_SOURCE_FILES_PROPERTIES(oalib.i PROPERTIES SWIG_FLAGS "-w503,401,362")
-  SET_SOURCE_FILES_PROPERTIES(oalib.i PROPERTIES SWIG_FLAGS "-DNEWINTERFACE")
-  SWIG_ADD_MODULE(oalibx python oalib.i ${PSRCS})
-  SWIG_LINK_LIBRARIES(oalibx ${PYTHON_LIBRARIES})
-
-  # see: http://www.cmake.org/pipermail/cmake/2006-November/011823.html
-
-  #install (TARGETS _oalibx DESTINATION bin)
-endif(SWIGP)
-
-endif()
 
 
 add_custom_target( doc )
