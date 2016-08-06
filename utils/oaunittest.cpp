@@ -328,6 +328,25 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		cprintf ( verbose, "%s: Doptimize time %.3f [s] \n", bstr, get_time_ms() - t00 );
 	}
 
+	
+	{
+		cprintf ( verbose, "%s: J-characteristics for conference matrix\n", bstr );
+
+		array_link al = exampleArray(19, 0);
+		std::vector<int> j2 = Jcharacteristics_conference( al, 2 );
+		std::vector<int> j3 = Jcharacteristics_conference( al, 3 );
+
+			myassert ( j2[0]==0, "j2 value incorrect");
+			myassert ( j2[1]==0, "j2 value incorrect");
+			myassert ( std::abs(j3[0])==1, "j3 value incorrect");
+		
+			if (verbose>=2) {
+		al.showarray();
+		printf("j2: "); display_vector(j2); printf("\n");
+		printf("j3: "); display_vector(j3); printf("\n");
+			}
+	}
+
 	{
 // test PEC sequence
 		cprintf ( verbose, "%s: PEC sequence\n", bstr );

@@ -703,6 +703,8 @@ perform_inv_row_permutation ( const array_t * source, array_t * target,
 /** Return example array */
 array_link exampleArray ( int idx = 0, int verbose = 0 );
 
+/// calculate J-characteristics for a conference design
+std::vector<int> Jcharacteristics_conference( const array_link &al, int jj, int verbose = 0 );
 
 /*! \brief Wrapper class for an array
 
@@ -770,10 +772,7 @@ public:
     /// select single column from an array
     array_link selectColumns ( int c ) const;
 
-    //template <class numtype>
-    //void setColumnX(int c, const std::vector<numtype> v) {
-    //              std::copy(this->array+c*this->n_rows, this->array+(c+1)*this->n_rows, v.begin() );
-    //}
+    /// set a column of the array to the given vector
     void setColumn ( int c, const std::vector < int >v ) {
         std::copy ( v.begin (), v.end (), this->array + c * this->n_rows );
     }
@@ -1329,7 +1328,7 @@ int array_cmp ( carray_p A, carray_p B, const rowindex_t r,
 
 /* analyse arrays */
 
-/// helper function
+/// helper function to calculate J-values
 inline int fastJupdateValue ( rowindex_t N, carray_t * tmpval )
 {
     int jval = 0;
@@ -1340,7 +1339,7 @@ inline int fastJupdateValue ( rowindex_t N, carray_t * tmpval )
     return ( jval );
 }
 
-/// helper function
+/// helper function to calculate J-values
 inline void fastJupdate ( const array_t * array, rowindex_t N, const int J, const colindex_t * pp, array_t * tmp )
 {
     //int jval=0;
@@ -1354,11 +1353,12 @@ inline void fastJupdate ( const array_t * array, rowindex_t N, const int J, cons
     return;
 }
 
-/** Calculate J-value for an array
+
+/** Calculate J-value for a 2-level array
  */
 int jvalue ( const array_link & ar, const int J, const int *pp );
 
-/// calculate J-value for an array
+/// calculate J-value for a 2-level array
 int jvaluefast ( const array_t * array, rowindex_t N, const int J, const colindex_t * pp );
 
 /// Analyse a list of arrays
