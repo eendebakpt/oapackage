@@ -24,8 +24,11 @@ endif()
 
 find_package(ZLIB)	# Needed for Python modules
 #message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
-#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
-#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+if(ZLIB_FOUND)
+	#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
+	#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+	include_directories(${ZLIB_INCLUDE_DIRS})
+endif()
 
 find_package(SWIG)	# Needed for Python modules
 find_package(NumPy QUIET)	# Needed for Python modules
@@ -33,8 +36,7 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-#find_package(MPI QUIET)	# Needed for legacy code and OpenMP functionality
-find_package(MPI)	# Needed for legacy code and OpenMP functionality
+#find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
@@ -83,7 +85,7 @@ set(OUTPUTDIR ${CMAKE_SOURCE_DIR})
 
 if(OADEV)
   # if development code, try to use openmp
-find_package(OpenMP )
+  find_package(OpenMP )
 
 if (0)
 set(OPENMP_FOUND False)
@@ -177,7 +179,6 @@ if(OADEV)
   if(WIN32)
   else()
     set(LINKOPTS "${LINKOPTS}")
-#    set(LINKOPTS "${LINKOPTS} -s")
   endif()
 else()
   if(WIN32)
@@ -196,7 +197,6 @@ if (MSVC)
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
   #set ( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} /NODEFAULTLIB:MSVCRT /EHsc /W0 /MT /verbose" )
  # SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
- #  SET( CMAKE_STATIC_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
 endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
@@ -273,15 +273,24 @@ endif()
 if (WIN32)
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
-  add_library(oalibshared SHARED ${srcsextend} ${headersextend})
+  add_library(oalibshared SHARED ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalibshared)
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(oalib ${ZLIB_LIBRARIES})
+	TARGET_LINK_LIBRARIES(oalibshared ${ZLIB_LIBRARIES})
+  endif()
+
 else()
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
-  add_library(oalibshared SHARED ${srcsextend} ${headersextend})
+  add_library(oalibshared SHARED ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
-    TARGET_LINK_LIBRARIES(oalib m ${ZLIB_LIBRARIES})
-    TARGET_LINK_LIBRARIES(oalibshared m ${ZLIB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(oalib m)
+    TARGET_LINK_LIBRARIES(oalibshared m)
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(oalib ${ZLIB_LIBRARIES})
+	TARGET_LINK_LIBRARIES(oalibshared ${ZLIB_LIBRARIES})
+  endif()
 
 endif()
 
@@ -320,11 +329,14 @@ if (OAEXTEND)
   #TARGET_LINK_LIBRARIES(oaextendmpi /usr/lib/mpich2/lib/libmpichcxx)
   set_target_properties(oaextendmpi PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_MULTICORE;NEWINTERFACE" )
 
-#  list(APPEND extendprogs oaextendmpi) 
-   if (WIN32) 
-   else()
-      TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
-   endif()
+  if (WIN32) 
+  else()
+	TARGET_LINK_LIBRARIES(oaextendmpi m)
+  endif()
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
+  endif()
+
   
 endif(MPI_FOUND AND NOT WIN32 AND 1)
 
@@ -340,9 +352,11 @@ ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc}
   TARGET_LINK_LIBRARIES(oagraph oalib)
 
   if (WIN32) 
-   #	message(STATUS "Win32 build: ${item}")
   else()
-	TARGET_LINK_LIBRARIES(oagraph m ${ZLIB_LIBRARIES})
+	TARGET_LINK_LIBRARIES(oagraph m)
+  endif()
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
   endif()
 
 ###############
@@ -353,9 +367,11 @@ foreach(item ${progs})
   TARGET_LINK_LIBRARIES(${item} oalib)
 
   if (WIN32) 
-   #	message(STATUS "Win32 build: ${item}")
   else()
-	TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${item} m)
+  endif()
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(${item} ${ZLIB_LIBRARIES})
   endif()
 endforeach()
 
@@ -363,8 +379,12 @@ foreach(item ${extendprogs})
   if (WIN32) 
   else()
     set_target_properties(${item} PROPERTIES COMPILE_FLAGS "${COPTS}" )
-    TARGET_LINK_LIBRARIES(${item} m ${ZLIB_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${item} m)
   endif()
+  if(ZLIB_FOUND)
+	TARGET_LINK_LIBRARIES(${item} ${ZLIB_LIBRARIES})
+  endif()
+
   set_target_properties(${item} PROPERTIES LINK_FLAGS "${LINKOPTS}" )
 endforeach()
 
