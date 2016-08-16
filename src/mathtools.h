@@ -1325,7 +1325,17 @@ inline void perform_level_perm ( const numtype *const src, numtype *const target
     }
 }
 
-
+template <class numtype>
+/**
+ * Initialiaze a permutation
+ * @param perm
+ * @param len
+ */
+void init_perm ( std::vector<numtype> &perm)
+{
+    for ( size_t i=0; i<perm.size(); i++ )
+        perm[i]=i;
+}
 
 template <class numtype>
 /**
