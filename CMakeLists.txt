@@ -374,7 +374,7 @@ foreach(item ${progs})
 
   if (WIN32) 
     if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
+      TARGET_LINK_LIBRARIES(${item} ${ZLIB_LIBRARIES})
     endif()
   else()
 	TARGET_LINK_LIBRARIES(${item} m)
