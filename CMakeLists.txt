@@ -268,7 +268,7 @@ if(OAEXTEND)
   list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
+  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather oaconfcheck)
 endif()
    
 if (WIN32)
