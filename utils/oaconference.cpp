@@ -169,7 +169,8 @@ int main ( int argc, char* argv[] )
 				break;
 
 			case CONFERENCE_ISOMORPHISM:
-				outlist = extend_conference ( inputarrays, ctype,  verbose, select );
+				outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select );
+				//outlist = extend_conference ( inputarrays, ctype,  verbose, select );
 				break;
 			default
 					:
