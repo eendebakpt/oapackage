@@ -241,35 +241,21 @@ int main(int argc, char *argv[])
     opt.addUsage("Usage: oaclustergather [OPTIONS] ");
     opt.addUsage("");
     opt.addUsage(" -h --help  			Prints this help ");
-    opt.addUsage
-	(" -v --verbose  			Verbose level (default: 1) ");
-    opt.addUsage
-	(" -b --basedir [DIR]  			Base calculation dir ");
-    opt.addUsage
-	(" -c --config [CONFIGFILE]  		Config file to use ");
-    opt.addUsage
-	(" -f [FORMAT]					Output format (TEXT, or default:BINARY) ");
-    opt.addUsage
-	(" --method [METHOD]				Default: 0 (Pareto). Other options: 1 (J-statistics)");
-    opt.addUsage
-	(" --numbersfile [FILENAME] 	Output name of number of arrays ");
-    opt.addUsage
-	(" --cleanrun [INTEGER]		If set to 1 abort when not all files are found. If set to zero generate partial results (default: 1)");
-    opt.addUsage
-	(" --nsplit0 [NUMBER]		Number of split files at level 0");
-    opt.addUsage
-	(" --nsplit1 [NUMBER]		Number of split files at level 1");
-    opt.addUsage
-	(" --nsplit2 [NUMBER]		Number of split files at level 2");
-    opt.addUsage
-	(" --nsplit3 [NUMBER]		Number of split files at level 3");
+    opt.addUsage(" -v --verbose  			Verbose level (default: 1) ");
+    opt.addUsage(" -b --basedir [DIR]  			Base calculation dir ");
+    opt.addUsage(" -c --config [CONFIGFILE]  		Config file to use ");
+    opt.addUsage(" -f [FORMAT]					Output format (TEXT, or default:BINARY) ");
+    opt.addUsage(" --method [METHOD]				Default: 0 (Pareto). Other options: 1 (J-statistics)");
+    opt.addUsage(" --numbersfile [FILENAME] 	Output name of number of arrays ");
+    opt.addUsage(" --cleanrun [INTEGER]		If set to 1 abort when not all files are found. If set to zero generate partial results (default: 1)");
+    opt.addUsage(" --nsplit0 [NUMBER]		Number of split files at level 0");
+    opt.addUsage(" --nsplit1 [NUMBER]		Number of split files at level 1");
+    opt.addUsage(" --nsplit2 [NUMBER]		Number of split files at level 2");
+    opt.addUsage(" --nsplit3 [NUMBER]		Number of split files at level 3");
     opt.addUsage(" --split[x] [NUMBER]		Split index at level [x]");
-    opt.addUsage
-	(" --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process");
-    opt.addUsage
-	(" --paretomethod [0, 1]		If 1 add J5 to Pareto criterium");
-    opt.addUsage
-	(" -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) ");
+    opt.addUsage(" --kmin [NUMBER] --kmax [NUMBER]	Min and max number of columns (inclusive) to process");
+    opt.addUsage(" --paretomethod [0, 1]		If 1 add J5 to Pareto criterium");
+    opt.addUsage(" -o [FILE] --output [FILE]	Output prefix for filtered arrays (default: no output) ");
     opt.addUsage("");
     opt.addUsage("Returns zero output code on succesfull run.");
     opt.processCommandArgs(argc, argv);
