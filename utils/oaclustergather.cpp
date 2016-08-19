@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
 
 	    if (verbose >= 1) {
 		if (verbose >= 2) printf("\n");
-		printf(" #### oaclustergather: block %d (time %.1f [s])\n", jj, get_time_ms() - time0);
+		printf("#### oaclustergather: block %d (time %.1f [s])\n", jj, get_time_ms() - time0);
 		fflush(0);
 	    }
 
@@ -473,9 +473,9 @@ int main(int argc, char *argv[])
 	for (int k = kmin; k <= kmax; k++) {
 	    int cleanrunK = 1;	/// indicates whether all necessary files for k columns have been found
 
+	    if (verbose >= 2) printf("\n");
 	    if (verbose >= 2)
-		printf
-		    (" \n#### oaclustergather: %d columns (time %.1f [s])\n",
+		printf("#### oaclustergather: %d columns (time %.1f [s])\n",
 		     k, get_time_ms() - time0);
 	    Pareto < mvalue_t < long >, array_link > pset;
 
