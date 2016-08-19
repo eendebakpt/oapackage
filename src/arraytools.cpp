@@ -3126,6 +3126,17 @@ void jstruct_t::show()
 #endif
 }
 
+void jstruct_t::showdata()
+{
+#ifdef FULLPACKAGE
+
+    for ( size_t x=0; x<this->values.size(); x++ ) {
+        std::cout << printfstring ( " %d", values[x] );
+    }
+    std::cout << std::endl;
+#endif
+}
+
 std::string jstructbase_t::showstr()
 {
     std::string s=  "jstruct_t: " +  printfstring ( "jj %d, values ", jj );
