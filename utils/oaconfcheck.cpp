@@ -22,7 +22,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "extend.h"
 
 #include "evenodd.h"
-#include "oadevelop.h"
+//#include "oadevelop.h"
 #include "lmc.h"
 
 #include "conference.h"
@@ -197,7 +197,7 @@ int main ( int argc, char* argv[] ) {
         } else        printf ( "  minimal form check: %d (should be %d)\n", r, LMC_LESS );
 
     }
-    
+
     printf("### read from file\n");
 
     arraylist_t ll= readarrayfile ( input );
@@ -217,4 +217,4 @@ int main ( int argc, char* argv[] ) {
 
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

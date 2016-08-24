@@ -262,14 +262,14 @@ include_directories(nauty)
 
 set(graphsrc )
 
-set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference)
+set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
 if(OAEXTEND)
   list(APPEND progs oacheck oastreaming oaunittest)
 endif()
 if(OADEV)
-  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather oaconfcheck)
+  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
 endif()
    
 if (WIN32)
