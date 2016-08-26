@@ -1388,7 +1388,7 @@ double Eefficiency ( const array_link &al, int verbose )
 std::vector<int> Jcharacteristics ( const array_link &al, int jj, int verbose )
 {
     jstruct_t js ( al, jj );
-    return js.vals;
+    return js.values;
 }
 
 /// calculate determinant of X^T X by using the SVD

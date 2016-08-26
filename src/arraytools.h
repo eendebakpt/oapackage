@@ -226,7 +226,7 @@ struct array_link;
 struct arraydata_t;
 
 
-/// possible values for J-values
+/// possible values for J-values of 2-level design
 inline
 std::vector < int >
 Fval ( int N, int strength )
@@ -241,81 +241,6 @@ Fval ( int N, int strength )
 }
 
 
-/**
- * @brief struct to hold data of an array, e.g. J-characteristic, rank
- *
- * See papers: Minimum G2-aberration properties of two-level foldover designs, Butler, 2004
- *  Design Selection and Classification for Hadamard Matrices Using Generalized Minimum Aberration Criteria, Deng and Tang
- *
- */
-class jstruct_t
-{
-public:
-    /// number of rows
-    int N;
-    int k;
-    int jj;
-    int nc;
-    std::vector < int >vals;
-    double A;			// abberation
-
-public:
-    jstruct_t ();
-    jstruct_t ( const int N, const int K, const int jj = 4 );
-    jstruct_t ( const jstruct_t & js );
-    jstruct_t ( const array_link & al, int jj = 4 );
-    ~jstruct_t ();
-
-private:
-    /// init data structures
-    void init ( int N, int k, int jj );
-    /// calculate J-characteristics of a 2-level array
-    void calc ( const array_link & al );
-    /// calculate J-characteristics of a 2-level array, special function for jj=4
-    void calcj4 ( const array_link & al );
-    /// calculate J-characteristics of a 2-level array, special function for jj=5
-    void calcj5 ( const array_link & al );
-
-public:
-    jstruct_t & operator= ( const jstruct_t & rhs );	// assignment
-
-    /// calculate maximum J value
-    int maxJ () const;
-
-    /// calculate possible values in F vector
-    std::vector < int >Fval ( int strength = 3 ) const;
-
-    /// calculate histogram of J values for a 2-level array
-    std::vector < int >calculateF ( int strength = 3 ) const;
-
-    // calculate aberration value
-    void calculateAberration () {
-        // TODO: find reference
-        jstruct_t *js = this;
-        js->A = 0;
-        for ( int i = 0; i < js->nc; i++ ) {
-            //printf("   i %d: %d\n", i, js->vals[i]*js->vals[i]);
-            js->A += js->vals[i] * js->vals[i];
-        }
-        js->A /= N * N;
-    }
-    /// Show contents of structure
-    void show ();
-    void showdata ();
-    std::string showstr ();
-
-    /// return 1 if all vals are zero
-    int allzero () {
-        for ( int i = 0; i < this->nc; ++i ) {
-            if ( this->vals[i] != 0 ) {
-                return 0;
-            }
-
-        }
-        return 1;
-
-    }
-};
 
 /// return true if the specified file exists
 bool file_exists ( const std::string filename );
@@ -751,6 +676,10 @@ public:
 
     /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
     bool is2level () const;
+    
+    /// return true if the array is a +1,0, -1 valued array
+    bool is_conference () const;
+
 
     // manipulation of arrays
 
@@ -806,8 +735,11 @@ public:
     /// calculate E-efficiency
     double Eefficiency () const;
 
-    /// Calculate F-values of a matrix
+    /// Calculate F-values of a 2-level matrix
     std::vector < int >Fvalues ( int jj ) const;
+
+        /// Calculate F-values of a conference design
+    std::vector < int >FvaluesConference ( int jj ) const;
 
     /// Calculate J-characteristics of matrix (the values are signed)
     std::vector < int >Jcharacteristics ( int jj = 4 ) const;
@@ -1188,6 +1120,156 @@ inline int predictJ ( const array_t * array, const int N, const int k )
     return 8 * x1 - N;
 }
 
+#include <map>
+
+/**
+ * @brief struct to hold data of an array, e.g. J-characteristic. Abstract base class
+ *
+ */
+class jstructbase_t
+{
+public:
+    std::vector < int > values; // calculated J-characteristics
+    std::vector < int > jvalues; // possible values for J-characteristics
+    std::map < int, int > jvalue2index; // map from j-value to index
+    int jj;
+    
+public:
+private:
+
+public:
+    /// calculate maximum J value
+    int maxJ () const;
+
+    /// calculate possible values in F vector
+    std::vector < int > Jvalues ( ) const { return this->jvalues; }
+
+    /// calculate histogram of J values
+    std::vector < int >calculateF () const;
+
+    virtual void calc ( const array_link & al ) = 0;
+
+    /// Show contents of structure
+    void show ();
+    void showdata ();
+    std::string showstr ();
+
+    /// return 1 if all vals are zero
+    int allzero () {
+        for ( size_t i = 0; i < this->jvalues.size(); ++i ) {
+            if ( this->jvalues[i] != 0 ) {
+                return 0;
+            }
+        }
+        return 1;
+
+    }
+};
+
+
+/**
+ * @brief struct to hold data of an array, e.g. J-characteristic, rank
+ *
+ * See papers: Minimum G2-aberration properties of two-level foldover designs, Butler, 2004
+ *  Design Selection and Classification for Hadamard Matrices Using Generalized Minimum Aberration Criteria, Deng and Tang
+ *
+ */
+class jstruct_t
+{
+public:
+    /// number of rows
+    int N;
+    int k;
+    int jj;
+    int nc;
+    std::vector < int >values;
+    double A;                   // abberation
+
+public:
+    jstruct_t ();
+    jstruct_t ( const int N, const int K, const int jj = 4 );
+    jstruct_t ( const jstruct_t & js );
+    jstruct_t ( const array_link & al, int jj = 4 );
+    ~jstruct_t ();
+
+private: 
+    /// init data structures
+    void init ( int N, int k, int jj );
+    /// calculate J-characteristics of a 2-level array
+    void calc ( const array_link & al );
+    /// calculate J-characteristics of a 2-level array, special function for jj=4
+    void calcj4 ( const array_link & al );
+    /// calculate J-characteristics of a 2-level array, special function for jj=5
+    void calcj5 ( const array_link & al );
+
+public:
+    jstruct_t & operator= ( const jstruct_t & rhs );    // assignment
+
+    /// calculate maximum J value
+    int maxJ () const;
+
+    /// calculate possible values in F vector
+    std::vector < int >Fval ( int strength = 3 ) const;
+
+    /// calculate histogram of J values for a 2-level array
+    std::vector < int >calculateF ( int strength = 3 ) const;
+
+    // calculate aberration value
+    void calculateAberration () {
+        // TODO: find reference
+        jstruct_t *js = this;
+        js->A = 0;
+        for ( int i = 0; i < js->nc; i++ ) {
+            js->A += js->values[i] * js->values[i];
+        }
+        js->A /= N * N;
+    }
+    /// Show contents of structure
+    void show ();
+    void showdata ();
+    std::string showstr ();
+
+    /// return 1 if all vals are zero
+    int allzero () {
+        for ( int i = 0; i < this->nc; ++i ) {
+            if ( this->values[i] != 0 ) {
+                return 0;
+            }
+
+        }
+        return 1;
+
+    }
+};
+
+class jstructconference_t : public jstructbase_t
+{
+public:
+    jstructconference_t ( int N, int jj = 4 ) {
+        this->jj = jj;
+     calcJvalues(N, 4);   
+    }
+    jstructconference_t ( const array_link & al, int jj = 4 ) {
+        this->jj = jj;
+        const int N = al.n_rows;
+     calcJvalues(N, 4);   
+        calc ( al );
+    }
+    //~jstruct_t ();
+private:
+    void calcJvalues(int N, int jj) {
+        assert(jj==4);
+        int nn = floor( (N-jj)/4);
+        this->jvalues = std::vector<int>(nn);
+        for(size_t i=0; i<jvalues.size(); i++) {
+                jvalues[i] = (N-jj) - i*4;
+        }
+    }
+
+    void calc(const array_link &al) {
+        values = Jcharacteristics_conference(al, this->jj);
+    }
+};
 
 
 /// set first columns of an array to root form

@@ -1952,7 +1952,7 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
         //printf("al3:\n"); al3.showarray();
 
         if ( ( long ) vectorsizeof ( ee ) > ( long ( 1 ) *1024*1024*1024 ) / ( long ) ctype.N ) {
-            printfd ( "generateCandidateExtensions: set of generated candidates too large, aborting" );
+            printfd ( "generateCandidateExtensions: set of generated candidates too large, aborting (root %d, extcol %d)", root, extcol );
             assert ( 0 );
             exit ( 0 );
         }
@@ -2169,7 +2169,7 @@ class ConferenceIsomorphismSelector
 public:
     matrix_isomorphism_t itype;
     int verbose;
-    int select_isomorphism_classes;
+    int select_isomorphism_classes; /// if true then select only a single representative for each isomorphism class
 
     arraylist_t candidates;
     arraylist_t reductions;
@@ -2236,6 +2236,43 @@ public:
 };
 
 
+arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
+{
+    double t0=get_time_ms();
+    arraylist_t outlist;
+
+    if ( verbose>=2 ) {
+        printfd ( "extend_conference: start %d\n", ( int ) lst.size() );
+    }
+
+    int vb=std::max ( 0, verbose-1 );
+
+    int ncstart=3;
+    if ( lst.size() >0 )
+        ncstart=lst[0].n_columns+1;
+
+    ConferenceIsomorphismSelector selector ( ctype.itype, verbose>=2, select_isomorphism_classes );
+
+    for ( size_t i=0; i<lst.size(); i++ ) {
+        const array_link &al = lst[i];
+        int extcol=al.n_columns;
+		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1 );
+		
+        
+        arraylist_t ll = ce.getarrays ( al );
+        const int nn = ll.size();
+
+        selector.add ( ll );
+
+        if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
+            printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size(), get_time_ms()-t0 );
+            fflush ( 0 );
+        }
+    }
+
+    return selector.candidates;
+    //return outlist;
+}
 
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
 {

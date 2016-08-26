@@ -374,7 +374,7 @@ foreach(item ${progs})
 
   if (WIN32) 
     if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
+      TARGET_LINK_LIBRARIES(${item} ${ZLIB_LIBRARIES})
     endif()
   else()
 	TARGET_LINK_LIBRARIES(${item} m)
@@ -450,8 +450,7 @@ if(MATLAB_FOUND)
 	    GET_TARGET_PROPERTY(itemtype ${item} TYPE)
 
 	    if(WIN32)
-	    set(MEXEXTX ".mexw${BITNESS}")
-
+		  set(MEXEXTX ".mexw${BITNESS}")
 		  if (${itemtype} MATCHES "EXECUTABLE")
 			  SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX "")
 		  else()
@@ -482,108 +481,36 @@ if(MATLAB_FOUND)
 	endforeach()
 endif()
 
-#  matlab -nojvm -r "Doptim; exit"
+# > matlab -nojvm -r "Doptim; exit"
 
 
-####### Python support ##########################
-
-add_custom_target( swig )
-
-if(WIN32)
- add_custom_command(
-	TARGET swig PRE_BUILD 
-	COMMAND swig -c++  -DOADEV -w503,401,362 -python -Idev/ -Isrc/ -o oalib_wrap_dev.cxx oalib.i
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
-  else()
- add_custom_command(
-	TARGET swig PRE_BUILD 
-	COMMAND swig -c++ -DWIN32 -D_WIN32 -DOADEV -w503,401,362 -python -Idev/ -Isrc/ -o oalib_wrap_dev.cxx oalib.i
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
-  endif()
-
-if (WIN32)
-  set(DOPYTHON 0)
-  message(STATUS "Platform Windows: not building Python module")
-  message(STATUS "  see the documentation for details")
-else()
-  if(SWIG_FOUND)
-  set(DOPYTHON 1)
-else()
-  message(STATUS "SWIG not found: not building Python module")
-endif()
-endif()
-
-add_custom_target( Rswig )
-add_custom_target( R2 )
-
-add_custom_command(
-  TARGET Rswig POST_BUILD
-  COMMAND swig -c++ -DOADEV -Idev/ -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  DEPENDS 
-)
-
-add_custom_command(
-  TARGET R2 POST_BUILD
-  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  DEPENDS 
-)
+####### Python and R support ##########################
 
 
+#add_custom_target( Rswig )
+#add_custom_target( R2 )
+#
+#add_custom_command(
+#  TARGET Rswig POST_BUILD
+#  COMMAND swig -c++ -DOADEV -Idev/ -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
+#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#  DEPENDS 
+#)
+#
+#add_custom_command(
+#  TARGET R2 POST_BUILD
+#  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
+#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#  DEPENDS 
+#)
+#
 #R CMD SHLIB  -o example.so oalib_wrapR.cpp liboalib.a-d
 #Rscript example.r
 
-if (DOPYTHON) 
-   message(STATUS "Creating python interface")
-	  
-  add_custom_target( python )
-  add_custom_target( python3 )	# target for python 3 installation
-  add_custom_target( pythonswig )
-  if(OADEV)
-     message(STATUS "Building python module with development code")
-     # --inplace
-      add_custom_command(
-	TARGET python POST_BUILD
-	COMMAND swig -c++ -w503,401,362 -python -Isrc/ oalib.i\; swig -c++ -DOADEV  -w503,401,362 -python -o oalib_wrap_dev.cxx -Isrc/ oalib.i\; python setup.py build_ext 
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	DEPENDS pythonswig
-      )
 
-add_custom_command(
-  TARGET python3 POST_BUILD
-  COMMAND swig -c++ -DOADEV  -w503,401,362 -python -py3 -o oalib_wrap_dev.cxx -Isrc/ oalib.i\; python3 setup.py build_ext 
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  DEPENDS 
-)
-else()
-add_custom_command(
-  TARGET python POST_BUILD
-  COMMAND swig   -c++ -w503,401,362 -python -Isrc/ oalib.i\; python setup.py build_ext 
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
-add_custom_command(
-  TARGET python3 POST_BUILD
-  COMMAND swig -c++  -w503,401,362 -python -Isrc/ oalib.i\; python3 setup.py build_ext 
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
-endif()
-
-
-if (0)
-add_custom_target( pythoncheck )
-add_custom_command(
-  TARGET pythoncheck
-  POST_BUILD
-  COMMAND python python/example_python_testing.py
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
-endif()
 
 #add_dependencies(pythoncheck python)
-	
+if(DOPYTHON)	
 add_custom_target( pythondoc )
 add_custom_command(
   TARGET pythondoc POST_BUILD
@@ -600,17 +527,8 @@ add_custom_command(
 #  COMMAND sudo python setup.py install
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
-add_custom_target( pinstall3 )
-add_custom_command(
-  TARGET pinstall3
-  POST_BUILD
-  COMMAND python3 setup.py install --user
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
 
 endif(DOPYTHON)
-
-
 
 
 add_custom_target( doc )
@@ -653,7 +571,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "2")
-SET(CPACK_PACKAGE_VERSION_PATCH "6")
+SET(CPACK_PACKAGE_VERSION_PATCH "10")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 

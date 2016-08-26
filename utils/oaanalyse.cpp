@@ -82,7 +82,7 @@ bool testarray ( const jstruct_t &js, int maxj )
     //bool ret=1;
     for ( int x=0; x<js.nc; x++ ) {
         // printf("test array %d %d\n", maxj, js.vals[x]);
-        if ( js.vals[x]>maxj )
+        if ( js.values[x]>maxj )
             return false;
     }
     return true;
@@ -404,9 +404,9 @@ else {
                 //int *vv = results[i].vals[j];
                 for ( int j=0; j<results[i].nc; j++ ) {
                     if ( j==results[i].nc-1 )
-                        fprintf ( fid, "%d", results[i].vals[j] );
+                        fprintf ( fid, "%d", results[i].values[j] );
                     else
-                        fprintf ( fid, "%d,", results[i].vals[j] );
+                        fprintf ( fid, "%d,", results[i].values[j] );
                 }
                 fprintf ( fid, "\n" );
 

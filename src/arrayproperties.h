@@ -274,7 +274,7 @@ A3A4 (const array_link & al)
     return wm;
 }
 
-/// calculate F4 value for array
+/// calculate F4 value for 2-level array
 inline mvalue_t < long >
 F4 (const array_link & al, int verbose = 1)
 {

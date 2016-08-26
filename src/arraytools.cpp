@@ -451,7 +451,7 @@ void foldtest ( jstruct_t &js, const array_link &al, int jj, int verbose )
         }
         jval = - ( 2*jval - N );
 
-        js.vals[x]=jval;
+        js.values[x]=jval;
         fold = next_combination_fold ( pp, jj, k );
         cb=fold;
 
@@ -1490,6 +1490,14 @@ double array_link::nonzero_fraction() const
     return nz/nn;
 }
 
+bool array_link::is_conference () const
+{
+		int m = this->min();
+		if (m<-1) return false;
+		if (this->max() > 1 ) return false;
+		return true;
+}
+
 bool array_link::is2level() const
 {
     int N = this->n_rows;
@@ -2212,6 +2220,16 @@ std::vector<int> array_link::Fvalues ( int jj ) const
     return FF;
 }
 
+std::vector<int> array_link::FvaluesConference ( int jj ) const
+{
+	assert(this->is_conference() );
+	
+	const int N = this->n_rows;
+    jstruct_t js ( *this, jj );
+    std::vector<int> FF=js.calculateF();
+    return FF;
+}
+
 #ifdef FULLPACKAGE
 std::vector<double> array_link::PECsequence() const
 {
@@ -2787,6 +2805,32 @@ void arraydata_t::complete_arraydata_fixlast()
     }
 }
 
+int jstructbase_t::maxJ ( ) const
+{
+    int vmax = 0;
+    for (size_t i=0; i< this->values.size(); i++) {
+        int v = abs(this->values[i]);
+        if (v>vmax)
+            vmax=v;
+    }
+    return vmax;
+}
+
+
+std::vector<int> jstructbase_t::calculateF ( ) const
+{
+    int nn = this->jvalues.size(); // floor ( ( double ) N/x ) +1;
+    std::vector<int> F ( nn );
+
+    for ( size_t i=0; i<this->values.size(); i++ ) {
+        int fi = values[i];
+		int idx = jvalue2index.find(fi)->second;
+		//int idx = jvalue2index.at(fi);
+        F[idx]++;
+    }
+    return F;
+}
+
 
 /* analyse arrays */
 
@@ -2800,13 +2844,12 @@ jstruct_t::jstruct_t()
 int jstruct_t::maxJ ( ) const
 {
     int vmax = 0;
-    for (size_t i=0; i< this->vals.size(); i++) {
-        int v = abs(this->vals[i]);
+    for (size_t i=0; i< this->values.size(); i++) {
+        int v = abs(this->values[i]);
         if (v>vmax)
             vmax=v;
     }
     return vmax;
-
 }
 
 std::vector<int> jstruct_t::Fval ( int strength ) const
@@ -2829,7 +2872,7 @@ std::vector<int> jstruct_t::calculateF ( int strength ) const
     std::vector<int> F ( nn );
 
     for ( int i=0; i<nc; i++ ) {
-        int fi = ( N-abs ( vals[i] ) ) /x;
+        int fi = ( N-abs ( values[i] ) ) /x;
         F[fi]++;
     }
     return F;
@@ -2844,7 +2887,7 @@ void jstruct_t::calc ( const array_link &al )
     for ( int x=0; x<this->nc; x++ ) {
         //int jv = jvalue ( al, jj, pp ); // slow version
         int jv = jvaluefast ( al.array, al.n_rows, jj, pp );
-        this->vals[x]=jv;
+        this->values[x]=jv;
         next_comb_s ( pp, jj, k );
     }
 
@@ -2936,7 +2979,7 @@ void jstruct_t::calcj4 ( const array_link &al )
             }
         }
         jv = 2*jv-N;
-        this->vals[x]=jv;
+        this->values[x]=jv;
 
         next_comb_s ( pp, jj, k );
     }
@@ -2976,7 +3019,7 @@ void jstruct_t::calcj5 ( const array_link &al )
 //			jv %= 2;
         }
         jv = 2*jv-N;
-        this->vals[x]=jv;
+        this->values[x]=jv;
         //myprintf(" val %d -> %d\n", jvalue ( al, jj, pp ), jv); myprintf("  perm "); print_perm(pp, jj);
 
         next_comb_s ( pp, jj, k );
@@ -3026,7 +3069,7 @@ void jstruct_t::init ( int N_, int k_, int jj_ )
     }
 
     this->nc = ncombs ( k_, jj_ );
-    vals = std::vector<int> ( nc );
+    values = std::vector<int> ( nc );
 //  myprintf("jstruct_t(N,k,jj): vals %d\n", this->vals);
     this->A=-1;
 }
@@ -3038,8 +3081,8 @@ jstruct_t::jstruct_t ( const jstruct_t &js )
     jj = js.jj;
     nc = js.nc;
     A=js.A;
-    vals = std::vector<int> ( nc );
-    std::copy ( js.vals.begin(), js.vals.begin() +nc, vals.begin() );
+    values = std::vector<int> ( nc );
+    std::copy ( js.values.begin(), js.values.begin() +nc, values.begin() );
     // myprintf("jstruct_t(): copy constructor: js.vals %d, new %d\n", js.vals, vals);
 }
 
@@ -3052,8 +3095,8 @@ jstruct_t &jstruct_t::operator= ( const jstruct_t &rhs )
     this->nc = rhs.nc;
 
     this->A = rhs.A;
-    vals = std::vector<int> ( nc );
-    std::copy ( rhs.vals.begin(), rhs.vals.begin() +nc, vals.begin() );
+    values = std::vector<int> ( nc );
+    std::copy ( rhs.values.begin(), rhs.values.begin() +nc, values.begin() );
     // myprintf("jstruct_t(): copy constructor: js.vals %d, new %d\n", js.vals, vals);
 
     return *this;
@@ -3077,7 +3120,7 @@ void jstruct_t::show()
 #ifdef FULLPACKAGE
     cout << "jstruct_t: " << printfstring ( "N %d, jj %d, values ", N, jj );
     for ( int x=0; x<this->nc; x++ ) {
-        cout << printfstring ( " %d", vals[x] );
+        cout << printfstring ( " %d", values[x] );
     }
     cout << std::endl;
 #endif
@@ -3087,8 +3130,35 @@ void jstruct_t::showdata()
 {
 #ifdef FULLPACKAGE
 
-    for ( int x=0; x<this->nc; x++ ) {
-        std::cout << printfstring ( " %d", vals[x] );
+    for ( size_t x=0; x<this->values.size(); x++ ) {
+        std::cout << printfstring ( " %d", values[x] );
+    }
+    std::cout << std::endl;
+#endif
+}
+
+std::string jstructbase_t::showstr()
+{
+    std::string s=  "jstruct_t: " +  printfstring ( "jj %d, values ", jj );
+		return s;
+}
+void jstructbase_t::show()
+{
+#ifdef FULLPACKAGE
+    cout << "jstruct_t: " << printfstring ( "jj %d, values ", jj );
+    for ( size_t x=0; x<this->values.size(); x++ ) {
+        std::cout << printfstring ( " %d", values[x] );
+    }
+    std::cout << std::endl;
+#endif
+}
+
+void jstructbase_t::showdata()
+{
+#ifdef FULLPACKAGE
+
+    for ( size_t x=0; x<this->values.size(); x++ ) {
+        std::cout << printfstring ( " %d", values[x] );
     }
     std::cout << std::endl;
 #endif
@@ -3198,7 +3268,7 @@ vector<jstruct_t> analyseArrays ( const arraylist_t &arraylist,  const int verbo
 #ifdef FULLPACKAGE
         if ( verbose>=3 ) {
             cout << printfstring ( "array %d: abberation %.3f j-values ", ii, js->A );
-            print_perm ( cout, js->vals, js->nc );
+            print_perm ( cout, js->values, js->nc );
         }
         if ( verbose>=2 ) {
             std::vector<int> FF=js->calculateF();

@@ -272,6 +272,22 @@ int main ( int argc, char* argv[] )
 	}
 
 	setloglevel ( SYSTEM );
+	{
+		array_link al = exampleArray(23, 1);
+		{
+		jstructconference_t js(al.n_rows, 4);		
+		js.show();		
+		js.showdata();
+	}
+		jstructconference_t js(al, 4);		
+		js.show();		
+		js.showdata();
+
+		
+		printf("size %d\n", js.values.size() );
+		
+		return 0;
+}
 
 	array_link al = exampleArray(2);
 	al.showarray();

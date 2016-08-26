@@ -357,12 +357,14 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 
 /// helper function
 conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator );
-//conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGeneratorDouble &cgenerator );
 
 /** Extend a list of conference designs with a single column.
  *
  */
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes = 0 );
+
+/// plain version without caching
+arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes = 0 );
 
 /** Extend a list of conference designs with a single column */
 arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose );
