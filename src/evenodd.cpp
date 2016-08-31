@@ -758,14 +758,18 @@ Jcounter& Jcounter::operator += ( Jcounter &jc )
 /// read statistics object from disk
 Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 {
+    Jcounter jc;
+
     FILE *fid = fopen ( numbersfile, "rt" );
 
+    if(fid==0) {
+     return jc;   
+    }
     int N=-1;
     int jj=-1;
 
     char line[512];
 
-    Jcounter jc;
 
     if ( fid==0 ) {
         return jc;

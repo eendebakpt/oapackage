@@ -26,26 +26,22 @@ struct depth_path_t {
     std::vector < int >ngecols;	// number of good extension columns
     int depthstart;
 
-    depth_path_t ()
-    {
+    depth_path_t () {
     }
 
-    void updatePositionGEC ( int k, int goodextensioncols )
-    {
+    void updatePositionGEC ( int k, int goodextensioncols ) {
         ngecols[k] = goodextensioncols;
 
     }
     void updatePosition ( int k, int c, int m, int extensioncols,
-                          int goodextensioncols )
-    {
+                          int goodextensioncols ) {
         ncurr[k] = c;
         nmax[k] = m;
         necols[k] = extensioncols;
         ngecols[k] = goodextensioncols;
 
     }
-    void show ( int depth, int maxentries = 8 ) const
-    {
+    void show ( int depth, int maxentries = 8 ) const {
         for ( int i = depthstart; i <= depth; i++ ) {
 
             if ( ( i - depthstart ) == maxentries ) {
@@ -59,8 +55,7 @@ struct depth_path_t {
         printf ( "\n" );
 
     }
-    void init ( int ncols, int _depthstart = 9 )
-    {
+    void init ( int ncols, int _depthstart = 9 ) {
         ncurr.resize ( ncols + 1 );
         nmax.resize ( ncols + 1 );
         necols.resize ( ncols + 1 );
@@ -74,27 +69,23 @@ struct counter_t {
 
     std::vector < int >nfound;	// vector with number of arrays found
 
-    counter_t ( int n )
-    {
+    counter_t ( int n ) {
         nfound.resize ( n + 1 );
     }
 
-    void addNfound ( int col, int num )
-    {
+    void addNfound ( int col, int num ) {
 #ifdef DOOPENMP
         #pragma omp atomic
 #endif
         this->nfound[col] += num;
     }
 
-    long nArrays () const
-    {
+    long nArrays () const {
         long na =
             std::accumulate ( this->nfound.begin (), this->nfound.end (), 0 );;
         return na;
     }
-    void addNumberFound ( int n, int k )
-    {
+    void addNumberFound ( int n, int k ) {
 #ifdef DOOMP
         #pragma omp critical (DEXTEND_NFOUND)
 #endif
@@ -103,35 +94,30 @@ struct counter_t {
         }
     }
 
-    void clearNumberFound ()
-    {
+    void clearNumberFound () {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
         {
-            for ( size_t k = 0; k < this->nfound.size (); k++ )
-            {
+            for ( size_t k = 0; k < this->nfound.size (); k++ ) {
                 this->nfound[k] = 0;
             }
         }
     }
 
-    void addNumberFound ( const counter_t & de )
-    {
+    void addNumberFound ( const counter_t & de ) {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
         {
-            for ( size_t k = 0; k < this->nfound.size (); k++ )
-            {
+            for ( size_t k = 0; k < this->nfound.size (); k++ ) {
                 this->nfound[k] += de.nfound[k];
             }
         }
     }
 
     /// show information about the number of arrays found
-    inline void showcountscompact () const
-    {
+    inline void showcountscompact () const {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
@@ -143,8 +129,7 @@ struct counter_t {
     }
 
     /// show information about the number of arrays found
-    inline void showcounts ( const arraydata_t & ad ) const
-    {
+    inline void showcounts ( const arraydata_t & ad ) const {
         printf ( "--results--\n" );
         for ( size_t i = ad.strength; i <= ( size_t ) ad.ncols; i++ ) {
             printf ( "depth_extend: column %ld: found %d\n", i, this->nfound[i] );
@@ -152,8 +137,7 @@ struct counter_t {
     }
 
     /// show information about the number of arrays found
-    inline void showcounts ( const char *str, int first, int last ) const
-    {
+    inline void showcounts ( const char *str, int first, int last ) const {
         printf ( "--results--\n" );
         for ( size_t i = first; i <= ( size_t ) last; i++ ) {
             printf ( "%s: column %ld: found %d\n", str, i, this->nfound[i] );
@@ -180,13 +164,11 @@ public:
     int verbose;
 
 
-    depth_extend_sub_t ( int nn = 0 ) :verbose ( 0 )
-    {
+    depth_extend_sub_t ( int nn = 0 ) :verbose ( 0 ) {
         resize ( nn );
     };
 
-    void resize ( int nn )
-    {
+    void resize ( int nn ) {
         this->lmctype.resize ( nn );
         this->lastcol.resize ( nn );
         this->strengthcheck.resize ( nn );
@@ -197,13 +179,11 @@ public:
     }
 
 
-    inline size_t n () const
-    {
+    inline size_t n () const {
         return lmctype.size ();
     }
 
-    std::vector < int > updateExtensionPointers ( int extcol )
-    {
+    std::vector < int > updateExtensionPointers ( int extcol ) {
         if ( verbose >= 3 )
             printf
             ( "updateExtensionPointers: determine extensions that can be used at the next stage\n" );
@@ -233,8 +213,7 @@ public:
                              const OAextend & oaextend );
 
     /// select the arrays with are LMC and hence need to be written to disk
-    inline arraylist_t selectArraysZ ( const arraylist_t & alist ) const
-    {
+    inline arraylist_t selectArraysZ ( const arraylist_t & alist ) const {
         if ( verbose >= 2 )
             printf
             ( "depth_extend_sub_t: selectArrays: alist.size() %ld, lmctype %ld\n",
@@ -260,8 +239,7 @@ public:
     }
 
     inline arraylist_t selectArraysXX ( const array_link & al,
-                                        const arraylist_t & elist ) const
-    {
+                                        const arraylist_t & elist ) const {
         if ( verbose >= 2 )
             printf
             ( "depth_extend_sub_t: selectArraysXX: alist.size() %ld, lmctype %ld\n",
@@ -283,8 +261,7 @@ public:
         return ga;
     }
 
-    inline void info () const
-    {
+    inline void info () const {
         size_t nl = 0;
         for ( size_t t = 0; t < lmctype.size (); t++ ) {
             nl += ( lmctype[t] > +LMC_EQUAL );
@@ -341,8 +318,7 @@ public:
     // constructure function
     depth_extend_t ( const arraydata_t * ad_, double _logtime = 10000000, int _discardJ5 = -1 ) :verbose ( 1 ), ad ( ad_ ),
         discardJ5
-        ( _discardJ5 )
-    {
+        ( _discardJ5 ) {
         loglevelcol = -1;
         t0 = get_time_ms ();
         tp = get_time_ms ();
@@ -363,8 +339,7 @@ public:
         searchpath.init ( ad->ncols );
     };
 
-    depth_extend_t ( const depth_extend_t & de )
-    {
+    depth_extend_t ( const depth_extend_t & de ) {
         //printf("depth_extend_t: copy constructor\n"); printf(" searchpath: "); de.searchpath.show(16);
         verbose = de.verbose;
         oaextend = de.oaextend;
@@ -382,27 +357,23 @@ public:
 
         counter = de.counter;
     }
-    ~depth_extend_t ()
-    {
+    ~depth_extend_t () {
         //closeafiles();
     }
 
 
 public:
 
-    void show ()
-    {
+    void show () {
         printf ( "depth_extend_t: logtime %.1f [s]\n", logtime );
     }
 
-    void setNarraysMax ( long n )
-    {
+    void setNarraysMax ( long n ) {
         this->narraysmax = n;
     }
 
     // helper function, thread safe
-    void maxArrayCheck ()
-    {
+    void maxArrayCheck () {
         if ( arraywriter == 0 ) {
             return;
         }
@@ -427,14 +398,12 @@ public:
 
 public:
 
-    void showsearchpath ( int depth ) const
-    {
+    void showsearchpath ( int depth ) const {
         searchpath.show ( depth );
     }
 
     /// show information about the progress of the loop
-    bool showprogress ( int showtime = 1, int depth = 0, int forcelog = 0 )
-    {
+    bool showprogress ( int showtime = 1, int depth = 0, int forcelog = 0 ) {
         {
             double currenttime = get_time_ms ();
             double dt = currenttime - tp;
@@ -470,8 +439,7 @@ public:
             }
         }
     }
-    inline void info () const
-    {
+    inline void info () const {
         printf ( "depth_extend: " );
         ad->show ();
     }
@@ -479,8 +447,7 @@ public:
 
     /// set the position in the dextend structure
     void setposition ( int k, int c, int m, int extensioncols =
-                           -1, int goodextensioncols = -1 )
-    {
+                           -1, int goodextensioncols = -1 ) {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
@@ -489,8 +456,7 @@ public:
         }
     }
     /// set the position in the dextend structure
-    void setpositionGEC ( int k, int goodextensioncols )
-    {
+    void setpositionGEC ( int k, int goodextensioncols ) {
 #ifdef DOOPENMP
         #pragma omp critical
 #endif
@@ -507,8 +473,7 @@ enum depth_alg_t
 /// Helper structure for the even-odd depth extension
 struct depth_extensions_storage_t {
 
-    void resize ( size_t s )
-    {
+    void resize ( size_t s ) {
         columnextensionsList.resize ( s );
         goodarrayslist.resize ( s );
         depthalglist.resize ( s );
@@ -517,8 +482,7 @@ struct depth_extensions_storage_t {
 
     void set ( int ai, const arraylist_t & goodarrays,
                const arraylist_t & extension_column_list, depth_alg_t depthalg,
-               const depth_extend_sub_t & dextendsub )
-    {
+               const depth_extend_sub_t & dextendsub ) {
         this->goodarrayslist[ai] = ( goodarrays );
         this->columnextensionsList[ai] = ( extension_column_list );
         this->depthalglist[ai] = ( depthalg );
@@ -615,14 +579,12 @@ struct jindex_t {
     int k;			// number of columns
     int j;			// J-value
 
-    jindex_t ( int colindex, int jvalue ) :k ( colindex ), j ( jvalue )
-    {
+    jindex_t ( int colindex, int jvalue ) :k ( colindex ), j ( jvalue ) {
     }
 
 public:
 
-    bool operator< ( const jindex_t & rhs ) const
-    {
+    bool operator< ( const jindex_t & rhs ) const {
         if ( this->k < rhs.k ) {
             return true;
         }
@@ -632,8 +594,7 @@ public:
 
         return ( this->j < rhs.j );
     }
-    std::string toString () const
-    {
+    std::string toString () const {
         return printfstring ( "k%d-j%d", this->k, this->j );
     }
 };
@@ -649,19 +610,16 @@ public:
     std::map < jindex_t, long >maxJcounts;
     double dt;			/// time needed for calculation
 
-    Jcounter () :N ( -1 ), jj ( -1 )
-    {
+    Jcounter () :N ( -1 ), jj ( -1 ) {
     }
 
-    Jcounter ( int N, int jj = 5, int k = -1 )
-    {
+    Jcounter ( int N, int jj = 5, int k = -1 ) {
         this->init ( N, jj, k );
 
     }
 
     /// return true if specified column is in the data
-    bool hasColumn ( int col ) const
-    {
+    bool hasColumn ( int col ) const {
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
                 it != maxJcounts.end (); ++it ) {
 
@@ -672,17 +630,14 @@ public:
         return false;
     }
 
-    bool isOpen () const
-    {
+    bool isOpen () const {
         return N > 0;
     }
-    void showPerformance () const
-    {
+    void showPerformance () const {
         myprintf ( "Jcounter: %.1f Marrays/h\n",
                    ( 1e-6 * 3600. ) * double ( narrays () ) / this->dt );
     }
-    long narrays () const
-    {
+    long narrays () const {
 
         long r = 0;
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
@@ -694,8 +649,7 @@ public:
     }
 
     /// show statistics of the object
-    void show () const
-    {
+    void show () const {
 
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
                 it != maxJcounts.end (); ++it ) {
@@ -703,9 +657,32 @@ public:
                        it->first.j, it->second );
         }
     }
+
+    int maxCols() const {
+        int kmax=-1;
+        for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
+                it != maxJcounts.end (); ++it ) {
+            kmax=std::max ( kmax,  it->first.k );
+        }
+
+        return kmax;
+    }
+    std::vector<long> getTotals() const {
+        int nmax=maxCols();
+        std::vector<long> k ( nmax+1 );
+
+        for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
+                it != maxJcounts.end (); ++it ) {
+            if ( it->second<0 ) {
+                printf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
+            } else {
+                k[it->first.k] += it->second;
+            }
+        }
+        return k;
+    }
     /// show statistics of the object
-    void showcompact () const
-    {
+    void showcompact () const {
 
         int kprev = -1;
         long nt = 0;
@@ -734,8 +711,7 @@ public:
     void addArrays ( const arraylist_t & arraylist, int verbose = 0 );
 
     /// add single array to statistics object
-    void addArray ( const array_link & al, int verbose = 0 )
-    {
+    void addArray ( const array_link & al, int verbose = 0 ) {
         //jstruct_t js ( al, this->jj );
         jstruct_t js ( al.selectFirstColumns ( 5 ), this->jj );
 
@@ -756,8 +732,7 @@ public:
     }
 
 private:
-    void init ( int N, int jj, int k = -1 )
-    {
+    void init ( int N, int jj, int k = -1 ) {
         this->N = N;
         this->jj = jj;
         this->fvals = Fval ( N, 3 );
@@ -785,4 +760,4 @@ void writeStatisticsFile ( const char *numbersfile, const Jcounter & jc, int ver
 /// calculate J-value statistics
 Jcounter calculateJstatistics ( const char *afile, int jj = 5, int verbose =
                                     1 );
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
