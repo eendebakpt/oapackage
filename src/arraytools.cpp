@@ -3191,6 +3191,63 @@ int jvalue ( const array_link &ar,const int J, const int *pp )
     return ( jval );
 }
 
+symmdata::symmdata ( const array_link  &al, int minlen )
+{
+    orig=al;
+    rowvalue=al;
+    const int N = al.n_rows;
+
+    for ( int c=0; c<al.n_columns; c++ ) {
+        array_t *rvc = rowvalue.array+c*N;
+        rvc[0]=0;
+        for ( int r=1; r<al.n_rows; r++ ) {
+            if ( al.atfast ( r,c ) !=al.atfast ( r-1,c ) ) {
+                rvc[r]=rvc[r-1]+1;;
+            } else {
+                if ( c>0 ) {
+                    if ( rowvalue.atfast ( r,c-1 ) !=rowvalue.atfast ( r-1,c-1 ) ) {
+                        rvc[r]=rvc[r-1]+1;
+                    } else  {
+                        rvc[r]=rvc[r-1];
+                    }
+                } else {
+                    rvc[r]=rvc[r-1];
+                }
+            }
+        }
+    }
+
+    // TODO: make this into one-pass algoritm
+    ft=array_link ( 2*al.n_rows+2, al.n_columns,-1 );	// TODO: reduce size of ft array
+    ft.setconstant ( 0 );
+    //printf("symmdata::symmdata: ft " ); ft.show();
+    size_t nfrow=ft.n_rows-1;
+    for ( int c=0; c<al.n_columns; c++ ) {
+        array_t v = rowvalue.at ( 0,c );
+        int nf=0;
+        int prevr=0;
+        carray_t *rvc = rowvalue.array+c*N;
+
+        for ( int r=1; r<al.n_rows; r++ ) {
+            //  printf(" r %d, c %d\n", r, c);
+            if ( rvc[r]!=v ) {
+
+                // printf(" set ft: %d, %d (r %d, c %d)\n", 2*nf, c, r, c);
+                if ( ( r-prevr ) >=minlen ) {
+                    ft.atfast ( 2*nf,c ) =prevr;
+                    ft.atfast ( 2*nf+1,c ) =r;
+                    nf++;
+                }
+                prevr=r;
+                v=rvc[r];
+            }
+        }
+        ft.atfast ( 2*nf,c ) =prevr;
+        ft.atfast ( 2*nf+1,c ) =al.n_rows;
+        nf++;
+        ft.atfast ( nfrow,c ) =nf;
+    }
+}
 
 /** @brief Calculate J-characteristic of a 2-level array for a column combination
 *

@@ -320,43 +320,6 @@ public:
 
 
 
-/// structure containing data related to the frequency table
-struct symmdata {
-public:
-    array_link rowvalue;
-    array_link orig;
-
-    array_link ft;
-
-    symmdata(const array_link  &al, int minlen=1);
-    void show(int verbose=1) const
-    {
-        printf("symmdata: rowvalues\n");
-        this->rowvalue.showarray();
-        if (verbose>=2) {
-            printf("symmdata: ft:");
-            this->ft.show();
-            this->ft.showarray();
-        }
-    }
-
-    /// list with indices set to check for symmetry reductions
-    std::vector<int> checkIdx(int col=-1) const
-    {
-        const int N = this->orig.n_rows;
-        if (col<0)
-            col = orig.n_columns-1;
-
-        std::vector<int> idx(N);
-
-        // never check first index
-        for (int row=1; row<N; row++ ) {
-            if (this->rowvalue._at(row, col)==this->rowvalue._at(row-1, col) )
-                idx[row]=1;
-        }
-        return idx;
-    }
-};
 
 
 /// helper function
