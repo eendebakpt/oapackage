@@ -2049,7 +2049,6 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
     std::vector<int> cidx ( nn );
     std::vector<int> ridx;
 
-    //arraylist_t lstgood;
     array_link prev;
 
     if ( lstr.size() >0 )
@@ -2065,7 +2064,6 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
             if ( verbose>=3 )
                 printf ( "selectConferenceIsomorpismClasses: representative %d: index %d\n", ( int ) ci, ( int ) idx[i] );
             ridx.push_back ( idx[i] );
-            //lstgood.push_back (	lst[idx[i]] );
             prev=al;
         }
         cidx[i]=ci;
@@ -2099,68 +2097,7 @@ array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int 
     return alx;
 }
 
-/*
-template<typename T>
-T vector_select ( const std::vector<T>& vector, const std::size_t index )
-{
-	assert ( index < vector.size() );
-	return vector[index];
-}
 
-template<typename T>
-T vector_select ( const std::deque<T>& vector, const std::size_t index )
-{
-	assert ( index < vector.size() );
-	return vector[index];
-}
-
-
-template<typename T>
-class VectorSelector
-{
-public:
-	VectorSelector ( const std::vector<T>& v ) : _v ( &v ) { }
-	T operator() ( const std::size_t index ) {
-		return vector_select ( *_v, index );
-	}
-private:
-	const std::vector<T>* _v;
-
-};
-template<typename T>
-class DequeSelector
-{
-public:
-	DequeSelector ( const std::vector<T>& v ) : _v ( &v ) { }
-	T operator() ( const std::size_t index ) {
-		return vector_select ( *_v, index );
-	}
-private:
-	const std::vector<T>* _v;
-
-};
-template<typename T>
-std::vector<T> vector_select ( const std::vector<T>& vector,
-                               const std::vector<std::size_t>& index )
-{
-	assert ( *std::max_element ( index.begin(), index.end() ) < vector.size() );
-	std::vector<T> out ( index.size() );
-	std::transform ( index.begin(), index.end(), out.begin(),
-	                 VectorSelector<T> ( vector ) );
-	return out;
-}
-template<typename T>
-std::deque<T> vector_select ( const std::deque<T>& vector,
-                              const std::deque<int>& index )
-{
-	assert ( *std::max_element ( index.begin(), index.end() ) < vector.size() );
-	std::deque<T> out ( index.size() );
-	std::transform ( index.begin(), index.end(), out.begin(),
-	                 VectorSelector<T> ( vector ) );
-	return out;
-}
-
-*/
 
 class ConferenceIsomorphismSelector
 {
@@ -2271,7 +2208,6 @@ arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t 
     }
 
     return selector.candidates;
-    //return outlist;
 }
 
 arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
@@ -2314,10 +2250,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
         arraylist_t ll = ce.getarrays ( al );
         const int nn = ll.size();
 
-        //selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
-
         selector.add ( ll );
-        //outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
         if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
             printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size(), get_time_ms()-t0 );
@@ -2326,7 +2259,6 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
     }
 
     return selector.candidates;
-    //return outlist;
 }
 
 std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
@@ -2397,14 +2329,12 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 
 std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype )
 {
-
     std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose, itype ) ;
     return pp.second;
 }
 
 arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
 {
-
     std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose , itype ) ;
     return pp.first;
 }
@@ -2481,7 +2411,7 @@ bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
 arraylist_t sortLMC0 ( const arraylist_t &lst )
 {
     arraylist_t outlist = lst;
-    sort ( outlist.begin(), outlist.end(), compareLMC0 );
+    std::sort ( outlist.begin(), outlist.end(), compareLMC0 );
     return outlist;
 }
 
@@ -2503,7 +2433,6 @@ std::vector<cperm> conferenceInflate ( const std::vector<cperm> &ccX, const arra
 
 std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
 {
-    //verbose=2;
     std::vector<cperm> cci;
     std::vector<cperm> cc;
     // loop over all candidinates with k columns and inflate to (k+1)-column candidates
@@ -2569,8 +2498,6 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
     return cci;
 }
 
-//const int CandidateGenerator::START_COL = 2;
-
 CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ) // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
 {
     this->verbose=1;
@@ -2593,7 +2520,6 @@ CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const
     this->candidate_list_double.clear();
     this->candidate_list_double.resize ( ct.N+1 ); // set a safe max
     this->al = al;
-//	this->filter = ;
 }
 
 
@@ -2674,8 +2600,6 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
         }
     }
 
-    // FIXME: used indices to lists
-
     for ( int kx=kstart; kx<kfinal; kx++ ) {
         // generates candidates for column index kx+1?
 
@@ -2690,13 +2614,11 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
         size_t nprev=ccX.size();
 
         ccX = conferenceInflate ( ccX, alx, alx, filter, ct, verbose>=2 );
-        //ccX=cci;
 
         if ( verbose >=2 ) {
             printf ( "## %s: at %d columns: total inflated: %ld->%ld\n",tag,  kx+1, ccX.size(), ( long ) nprev );
             printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
         }
-
 
         this->candidate_list_conf[kz][kx+1] = ccX;
         this->last_valid_conf[kz]=kx+1;
@@ -2707,7 +2629,7 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
 
     this->alz[kz] = al;
 
-    // FIXME: consistency check
+    // NOTE: consistency check
     if ( 0 ) {
         conf_candidates_t tmp = generateCandidateExtensions ( ct, 0, kz+1, kz+1 );
         cperm_list cctmp=tmp.ce[kz];
@@ -2718,12 +2640,8 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
             printf ( "DIFF: direct %d -> cached %d\n", ( int )	cctmp.size(), ( int ) this->candidate_list_conf[kz][ncfinal].size() );
         }
     }
-//	std::vector<cperm> CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const
-
 
     return 	this->candidate_list_conf[kz][kfinal];
-
-    //return cx;
 }
 
 const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidates ( const array_link &al ) const
@@ -2759,18 +2677,15 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
 
         double t0=get_time_ms();
         ccX = generateDoubleConferenceExtensions ( als, ct, averbose, 1, filterj2, filterj3 );
-        //printf("    set this->candidate_list[%d] = %d\n", START_COL+1, (int)ccX.size() );
         this->candidate_list_double[START_COL+1] = ccX;
         last_valid= START_COL+1;
         kstart=startcol-1;
     } else {
-        // FIXME: check this bound is sharp
+        // TODO: check this bound is sharp
         ccX = this->candidate_list_double[startcol];
         last_valid=startcol;
-        kstart=startcol-1; // ??
+        kstart=startcol-1; 
     }
-
-
 
     array_link als;
 
@@ -2800,16 +2715,7 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
     if ( verbose>=2 )
         printf ( "CandidateGenerator::%s: generated %d candidates with %d columns\n",tag,	( int ) this->candidate_list_double[ncfinal].size(), ncfinal );
 
-    if ( 0 ) {
-        printf ( "lastcol:\n" );
-        array_link ax = al.selectLastColumns ( 1 ); // .transposed();
-        cperm tmp ( ax.array, ax.array+ax.n_rows );
-        printf ( "   " );
-        print_cperm ( tmp );
-        printf ( "\n" );
-        printf ( "generated candidates:\n" );
-        ::showCandidates ( this->candidate_list_double[ncfinal] );
-    }
+
     this->al = al;
     return 	this->candidate_list_double[ncfinal];
 }

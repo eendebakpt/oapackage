@@ -201,8 +201,7 @@ public:
 struct conference_options {
     int maxzpos;
 
-    //conference_options() { maxzpos=-1; };
-    conference_options ( int maxpos = -1 ); // { maxzpos=-1; };
+    conference_options ( int maxpos = -1 ); 
 } ;
 
 /// Class to generate candidate extensions with caching
@@ -332,16 +331,6 @@ private:
         }
         int startcol = al.firstColumnDifference ( alx );
 
-
-        if ( 0 ) {
-            int rx, ry;
-            al.firstDiff ( alx, rx, ry, 1 );
-            printfd ( " ---> startcol %d, last_valid %d\n", startcol, last_valid );
-            printf ( " ---> cache array\n" );
-            this->al.showarray();
-            printf ( " --->alx\n" );
-            alx.showarray();
-        }
         startcol = std::min ( startcol, last_valid );
         if ( startcol<2 ) {
             startcol=-1;
