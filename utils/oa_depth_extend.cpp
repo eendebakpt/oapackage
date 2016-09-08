@@ -78,7 +78,7 @@ int main ( int argc, char* argv[] )
 	opt.addUsage ( " -K --maxK [n] " );
 
 	opt.addUsage ( " -Q [time] 			Logging time (in seconds)" );
-	opt.addUsage ( " --j5structure [VALUE] 			..." );
+	opt.addUsage ( printfstring(" --j5structure [VALUE] 			Integer, can be J5_ORIGINAL (%d) or J5_45 (%d)", J5_ORIGINAL, J5_45).c_str() );
 	std::string ss = printfstring ( " -m [MODE]			Algorithm (" ) + algorithm_t_list() + ")\n" ;
 	opt.addUsage ( ss.c_str() );
 	opt.processCommandArgs ( argc, argv );

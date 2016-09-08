@@ -1,3 +1,4 @@
+
 /** \file oatest.cpp
 
 C++ program: oatest
@@ -260,7 +261,33 @@ int main ( int argc, char* argv[] )
 		srand ( randvalseed );
 	}
 
+	if (1)
+{
+	array_link  al = exampleArray(22, 1);
+	al.show();
+	if (1) {
+	printf("## 3\n"); 
+	std::vector<int> f3 = al.FvaluesConference(3);
+	display_vector(f3); printf("\n"); 
+	}
+	const int N = al.n_rows;
+	jstructconference_t js(N, 4);
+	jstructconference_t js2(al, 4);
+	js2.showdata(2);
 
+	printf("## 4\n"); 
+	std::vector<int> f4 = al.FvaluesConference(4);
+	std::vector<int> j4 = js.Jvalues();
+	
+	for(int i=0; i<(int)js2.jvalues.size();  i++) {
+	printf("i %d: %d -> %d\n", i, js2.jvalues[i], js2.jvalue2index.find ( js2.jvalues[i] )->second );	
+	}
+	
+	//printf("j4.size %d\n" , (int) j4.size() );
+	display_vector(j4); printf("\n"); 
+	display_vector(f4); printf("\n"); 
+exit(0);
+}	
 	print_copyright();
 	//cout << system_uname();
 	setloglevel ( NORMAL );

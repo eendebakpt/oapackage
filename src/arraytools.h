@@ -1151,7 +1151,7 @@ public:
 
     /// Show contents of structure
     void show ();
-    void showdata ();
+    void showdata (int verbose=1);
     std::string showstr ();
 
     /// return 1 if all vals are zero
@@ -1296,10 +1296,13 @@ public:
 private:
     void calcJvalues(int N, int jj) {
         assert(jj==4);
-        int nn = floor( (N-jj)/4);
+        int nn = floor( (N-jj+1)/4)+1;
         this->jvalues = std::vector<int>(nn);
+        this->jvalue2index.clear();
         for(size_t i=0; i<jvalues.size(); i++) {
-                jvalues[i] = (N-jj) - i*4;
+                int jval=(N-jj) - i*4;
+                jvalues[i] = jval;
+                jvalue2index[jval] = i; 
         }
     }
 
