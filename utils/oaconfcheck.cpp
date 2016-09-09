@@ -214,7 +214,6 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
  */
 lmc_t LMC0check ( const array_link &al ) {
     /*0. Initialize data */
-
     // & implies a pointer, thus al is a pointer
     // the * is used to access to the variable sotred at the pointer
     lmc_t result = LMC_MORE;
@@ -238,16 +237,18 @@ lmc_t LMC0check ( const array_link &al ) {
         rowsort[i].val = i;
     } //print_rowsort(rowsort, nrows);
 
-    for (int sel_col = 0; sel_col < ncols; sel_col++){ /*1. Select the first column */
+    for (int sel_col = 0; sel_col < ncols; sel_col++){
+        /*1. Select the first (sel_col) column */
         // make this column the first in the array
-        int first_col = colperm[0]; // copy current first column index
-        colperm[0]=colperm[sel_col]; // assign to be the first one
-        colperm[sel_col]=first_col; // finish the swap
+        int first_col = colperm[ 0 ]; // copy current first column index
+        colperm[ 0 ] = colperm[ sel_col ]; // assign to be the first one
+        colperm[ sel_col ] = first_col; // finish the swap
 
         /*2. Find row-level permutation such that the first column only contains ones */
         rowlevel_permutation ( al, rowsort, colperm, rowsignperm, colsignperm, nrows, 0 ); //print_perm(rowsignperm);
         /* 3. Find permutation to sort the array*/
         LMC0_sortrows( al, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols ); //print_rowsort(rowsort, nrows);
+        int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
         /* 4. Select one of two possible sign permutations for the first row */
         for (int r_sign = 0; r_sign < 2; r_sign++){
 
@@ -257,13 +258,19 @@ lmc_t LMC0check ( const array_link &al ) {
             /* 5. Select the next column */
             lmc_t result = LMC0_columns (al, rowperm, colperm, 0, rowsignperm, colsignperm, ncols, nrows );
             if ( result==LMC_LESS ) {
+            /* FINISH TEST */
             // we already know the array is not in minimal form
-                break;
+                break; // FINISH TEST
 
             } // end if
+            /* RESTORE  values for colsignperm, colperm, and sort rows*/
         } // end for
-        // Restore current values
+        // restore value of the first_row
+        rowsignperm[ rowsort[0].val ] = value_rowsign_firstrow;
 
+        // swap back column. Restore column permutation
+        colperm[ sel_col ] = colperm[ 0 ];
+        colperm[ 0 ] = first_col;
 
     }
     // call the recursive part starting at column 0
