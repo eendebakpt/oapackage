@@ -372,8 +372,21 @@ int main(int argc, char *argv[])
 		const std::string afile =
 		    basedir + filesep + subdir + filesep + subfile0;
 
+		bool existfile = file_exists(afile.c_str() );
+		if ( jck.hasColumn ( k ) && (!existfile) ) {
+		    if (verbose >= 2) {
+			    printfd("statistics file has data and no file, continuing\n");   
+		    }
+		    continue;
+		}
 
+		    if ( jck.hasColumn ( k ) && (existfile) ) {
+		    if (verbose >= 2) {
+			    printfd("statistics file has data and file exists, raising error\n");   
+		    }
 
+		    }
+		    
 		// get numbers of arrays from array file
 		int nnarrays = nArrays(afile.c_str());
 		if ((!b) && (nnarrays < 0)) {
@@ -398,6 +411,11 @@ int main(int argc, char *argv[])
 		Jcounter jcounter =
 		    calculateJstatistics(afile.c_str(), jjval,
 					 verbose >= 2);
+		if (! jcounter.validData() ) {
+			printfd("could not read statistics on file %s\n", afile.c_str() );
+			printfd("b %d, nnarrays: %d\n", b, nnarrays);
+			exit(1);
+		}
 		if (verbose >= 2)
 		    jcounter.show();
 
@@ -446,7 +464,7 @@ int main(int argc, char *argv[])
 
 	arrayfile::arrayfilemode_t arrayfilemode =
 	    arrayfile_t::parseModeString(opt.
-					 getStringValue('f', "BINARY"));
+					 getStringValue('f', "TEXT"));
 
 
 	std::vector < long >na(kmax + 1);	/// number of arrays
