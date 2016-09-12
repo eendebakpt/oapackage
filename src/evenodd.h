@@ -618,6 +618,12 @@ public:
 
     }
 
+    bool validData() {
+     if (N==-1 && jj==-1) 
+         return false;
+     else return true;
+    }
+    
     /// return true if specified column is in the data
     bool hasColumn ( int col ) const {
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();

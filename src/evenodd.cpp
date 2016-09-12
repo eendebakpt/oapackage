@@ -626,8 +626,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
                     depth_extend_t dextendloop ( dextend );
                     dextendloop.setposition ( extcol+1, i, alocal.size(), dextendsub.valididx.size(), -1 );
 
-                    //if (i==0)	printf ( "depth %d: array %zu/%d: thread %d/%d, omp_get_level() %d, omp_get_nested() %d\n", extcol, i, (int)alocalsize , omp_get_thread_num(), omp_get_num_threads(), omp_get_level(), omp_get_nested() );
-
                     depth_extend_omp ( alocalt,  dextendloop, dlocal2, extcol+1, verbose, nomp+1 );
                 }
             }
@@ -690,6 +688,7 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
             printfd ( "problem with file %s\n", afile.filename.c_str() );
         }
         Jcounter jc;
+        //printfd("jc.validData() %d\n", jc.validData() );
         return jc;
     }
 
