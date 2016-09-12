@@ -260,6 +260,7 @@ array_link conference_t::create_root ( ) const
 
 bool isConferenceFoldover ( const array_link &al, int verbose )
 {
+	// FIXME: implement reduce to conference matrix
 
     array_link alt = al.transposed();
     array_link alt2 = alt*-1;
