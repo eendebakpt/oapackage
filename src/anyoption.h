@@ -208,6 +208,7 @@ public: /* the public interface */
      */
     void printUsage();
     void printAutoUsage();
+    void addUsage( const std::string line );
     void addUsage( const char *line );
     void printHelp();
     /* print auto usage printing for unknown options or flag */
