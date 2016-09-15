@@ -6,6 +6,8 @@ oatest: tool for testing new algorithms
 
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
 
+Algorithms: Alan Vazquez <alanrvazquez@gmail.com>
+
 Copyright: See LICENSE.txt file that comes with this distribution
 */
 
@@ -54,22 +56,16 @@ column: the column to find the permutation, int
 n_rows: number of rows, n_rows, index
 */
 //template<class NumType, class NumTypeIn>
-void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, int column ) {
+void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
 
     //std::vector<NumType> rowsignone ( nrows );
     //init_signperm ( rowsignone );
     //see what level-permutation we need to get a column with all ones and one zero
     // We don't copy the array but use the current modifications given by the rowsignperm, colperm, and rowperm
     for ( rowindex_t r=0; r < n_rows; r++ ) {
-        if ( ( (rowsignperm[rowperm[r].val]*colsignperm[colperm[column]]) * al.atfast( rowperm[r].val, colperm[column] )) < 0 )
+        if ( ( (rowsignperm[rowperm[r].val]) * al.atfast( rowperm[r].val, colperm[column] )) < 0 )
             rowsignperm[ rowperm[r].val ] = -1; // assign new values to the rowsignperm vector
     }
-
-}
-
-int LMC0check_firstrow ( const array_link &al, std::vector<int> &colperm,  int ci ) {
-    printf ( "not implemented...\n" );
-    return LMC_LESS;
 
 }
 
@@ -81,14 +77,14 @@ n_cols: number of columns of the array, int
 */
 indexsort calc_rowsort(const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols)
 {
-    // Find
+    // Find.. Test stand alone
     std::vector<mvalue_t<int> > rr;
     for ( int i=0; i < n_rows; i++ ) {
         mvalue_t<int> m;
         for ( int k=0; k < n_cols; k++ )
             // We transform the elements (0,1,-1) to (0,1,2)
             // To perform the sort. We use tha transformations of the array
-            m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[rowperm[i].val])*al.at( rowperm[i].val, colperm[k] ) )+3) % 3 );
+            m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
         rr.push_back ( m );
     }
     indexsort is ( rr );
@@ -113,11 +109,10 @@ void LMC0_sortrows ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
 
 }
 
-lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, int column, std::vector<int> &rowsignperm, std::vector<int> &colsignperm ) {
+lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
     const int nrows=al.n_rows;
     // Compare columns with respect to the current column permutation and row ordering
     // We also include the current rowsign permutation
-    //printf("compare_columns: source %d, target %d\n", column, colperm[column]);
     /* Compare the two columns according to the LMC0 ordering*/
     for ( int r=0; r<nrows; r++ ) {
     // Auxiliar variable to store the current value of the array
@@ -130,9 +125,8 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
     return LMC_EQUAL;
 }
 
-lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, int column, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const int ncols, const int nrows, int verbose=0 ) {
-    //const int ncols = al.n_columns;
-    //const int nrows = al.n_rows;
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, int verbose=0 ) {
+
     lmc_t r = LMC_NONSENSE;
 
     if ( verbose ) {
@@ -145,9 +139,10 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         int col = colperm[c];
         colperm[c]=colperm[column];
         colperm[column]=col;
+
         /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
         // Current value in the X(1,k) position
-        int current_sign_col = colsignperm[colperm[column]]; // save current sign
+        int current_sign_col = colsignperm[colperm[column]]; // save current sign of column
         int current_val_firstrow = (rowsignperm[rowperm[0].val]*current_sign_col)*(al.at(rowperm[0].val, colperm[column]));
         // Assign correct column sign permutation
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
@@ -163,11 +158,22 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
             // columns are equal, so go one column deeper
             // keep column permutation, and column sign permutation
             if ( verbose>=2 )
-                printf ( "LMC0_columns: go to col %d\n", column+1 );
-            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm );
+                printf ( "EQUAL: LMC0_columns: go to col %d\n", column+1 );
+            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows );
         }
         if ( r==LMC_LESS ) {
             // we already know the array is not in minimal form
+
+            printf ( "LMC_0 form found in column %d\n", column );
+            printf(" Column level permutation ");
+            print_perm( colsignperm );
+            printf(" Row level permutation ");
+            print_perm( rowsignperm );
+            printf(" Column permutation ");
+            print_perm( colperm );
+            printf(" Row order ");
+            print_rowsort( rowperm, nrows );
+
             break;
         }
 
@@ -175,11 +181,10 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         // restore column sign permutation for the first row
         colsignperm[ colperm[column] ] = current_sign_col;
         // swap back column. Restore column permutation
-        colperm[c]=col;
-        colperm[column]=colperm[col];
-        // restore column sign permutation for the first row
-        colsignperm[ colperm[column] ] = current_sign_col;
-    }
+        colperm[ column ] = colperm[ c ];
+        colperm[ c ] = col;
+
+    } // end for
     return r;
 }
 
@@ -212,10 +217,8 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
  *
  *
  */
-lmc_t LMC0check ( const array_link &al ) {
+int LMC0check ( const array_link &al ) {
     /*0. Initialize data */
-    // & implies a pointer, thus al is a pointer
-    // the * is used to access to the variable sotred at the pointer
     lmc_t result = LMC_MORE;
     // Get size of the array
     const int ncols = al.n_columns; // number of columns, rowindex_t
@@ -237,44 +240,51 @@ lmc_t LMC0check ( const array_link &al ) {
         rowsort[i].val = i;
     } //print_rowsort(rowsort, nrows);
 
+
     for (int sel_col = 0; sel_col < ncols; sel_col++){
+
         /*1. Select the first (sel_col) column */
+        //printf("Sel_col %d   ", sel_col);
         // make this column the first in the array
         int first_col = colperm[ 0 ]; // copy current first column index
         colperm[ 0 ] = colperm[ sel_col ]; // assign to be the first one
         colperm[ sel_col ] = first_col; // finish the swap
 
         /*2. Find row-level permutation such that the first column only contains ones */
-        rowlevel_permutation ( al, rowsort, colperm, rowsignperm, colsignperm, nrows, 0 ); //print_perm(rowsignperm);
+        rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
+
         /* 3. Find permutation to sort the array*/
-        LMC0_sortrows( al, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols ); //print_rowsort(rowsort, nrows);
-        int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
+        LMC0_sortrows( al, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols );//
+
         /* 4. Select one of two possible sign permutations for the first row */
+        int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
         for (int r_sign = 0; r_sign < 2; r_sign++){
 
             // replace the element k by the possible sign permutation
             rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
 
             /* 5. Select the next column */
-            lmc_t result = LMC0_columns (al, rowperm, colperm, 0, rowsignperm, colsignperm, ncols, nrows );
+            // call the recursive part starting at column 1
+            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, 0 );
             if ( result==LMC_LESS ) {
-            /* FINISH TEST */
-            // we already know the array is not in minimal form
-                break; // FINISH TEST
+                /* FINISH TEST */
+                // we already know the array is not in minimal form
+                return result;
 
             } // end if
-            /* RESTORE  values for colsignperm, colperm, and sort rows*/
+
         } // end for
+
         // restore value of the first_row
         rowsignperm[ rowsort[0].val ] = value_rowsign_firstrow;
 
-        // swap back column. Restore column permutation
+        // swap back column. Restore column permutation and sign permutations
         colperm[ sel_col ] = colperm[ 0 ];
         colperm[ 0 ] = first_col;
+        init_signperm ( rowsignperm );
+
 
     }
-    // call the recursive part starting at column 0
-    //lmc_t r = LMC0_columns ( al, colperm, 0 );
 
     return result;
 }
@@ -313,7 +323,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="test.oa";
+        input="cdesign-18-14.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -361,9 +371,9 @@ int main ( int argc, char* argv[] ) {
 
         //al = al.randomrowperm();
         //al = al.randomcolperm();
-        //cout << al; print array
-        lmc_t r = LMC0check ( al );
-        printf ( "array %d: result %d\n", (int) i, ( int ) r );
+        al.showarray(); // print array
+        int r = LMC0check ( al );
+        printf ( "array %d: result %d\n (should be %d)\n", (int) i, ( int ) r, LMC_MORE );
     }
 
 
@@ -372,4 +382,3 @@ int main ( int argc, char* argv[] ) {
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;
-
