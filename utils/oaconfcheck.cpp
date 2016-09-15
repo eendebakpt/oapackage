@@ -108,12 +108,21 @@ void LMC0_sortrows ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
     }
 
 }
+/* Function to get the position of the zero element in the transformed array*/
+int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ){
+    int position_zero;
+    for ( int r = 0; r < nrows; r++){
+        if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0){
+            position_zero = rowperm[r].r;
+        }
+    }
 
-lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
-    const int nrows=al.n_rows;
-    // Compare columns with respect to the current column permutation and row ordering
-    // We also include the current rowsign permutation
-    /* Compare the two columns according to the LMC0 ordering*/
+    return position_zero;
+}
+
+/* Compare two columns with the zero element in the same position */
+lmc_t compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ){
+
     for ( int r=0; r<nrows; r++ ) {
     // Auxiliar variable to store the current value of the array
         int value_cdesign_trans = (colsignperm[colperm[column]]*rowsignperm[rowperm[r].val]) * al.atfast ( rowperm[r].val, colperm[column] );
@@ -123,6 +132,29 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
             return LMC_LESS;
     }
     return LMC_EQUAL;
+}
+
+/* Compare the two columns according to the LMC0 ordering*/
+lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
+
+    const int nrows=al.n_rows;
+    // Compare columns with respect to the current column permutation and row ordering
+    // We also include the current rowsign permutation
+
+    /* Check position of zeros */
+    int position_zero = get_zero_position( al, rowperm, colperm, column, nrows);
+
+    if ( position_zero > column ) {
+        return LMC_MORE;
+    }
+    else if ( position_zero < column ) {
+        return LMC_LESS;
+    }
+    else { // If zeros are on the same positions then compare columns
+        lmc_t comparison = compare_columns( al, rowperm, colperm, column, rowsignperm, colsignperm, nrows );
+        return comparison;
+    }
+
 }
 
 lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, int verbose=0 ) {
@@ -163,16 +195,18 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         }
         if ( r==LMC_LESS ) {
             // we already know the array is not in minimal form
+            if ( verbose >= 2 ){
+                printf ( "LMC_0 form found in column %d\n", column );
+                printf(" Column level permutation ");
+                print_perm( colsignperm );
+                printf(" Row level permutation ");
+                print_perm( rowsignperm );
+                printf(" Column permutation ");
+                print_perm( colperm );
+                printf(" Row order ");
+                print_rowsort( rowperm, nrows );
 
-            printf ( "LMC_0 form found in column %d\n", column );
-            printf(" Column level permutation ");
-            print_perm( colsignperm );
-            printf(" Row level permutation ");
-            print_perm( rowsignperm );
-            printf(" Column permutation ");
-            print_perm( colperm );
-            printf(" Row order ");
-            print_rowsort( rowperm, nrows );
+            }
 
             break;
         }
@@ -217,7 +251,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
  *
  *
  */
-int LMC0check ( const array_link &al ) {
+lmc_t LMC0check ( const array_link &al ) {
     /*0. Initialize data */
     lmc_t result = LMC_MORE;
     // Get size of the array
@@ -323,7 +357,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="cdesign-18-14.oa";
+        input="cdesign-18-18.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -343,25 +377,6 @@ int main ( int argc, char* argv[] ) {
 
     setloglevel ( SYSTEM );
 
-    /* test on known set of arrays */
-    /*
-    printf("### test code on known array\n");
-    array_link al = exampleArray ( 2 );
-    lmc_t r=LMC0check ( al );
-    printf ( "minimal form check result: %d (should be %d)\n", r, LMC_MORE );
-
-    for ( int i=0; i<3; i++ ) {
-        printf ( "round %d: apply random transformation to the array\n", i );
-        array_link altmp =  al.randomcolperm();
-        lmc_t r=LMC0check ( altmp );
-
-        if ( altmp==al ) {
-            printf ( "  minimal form check: %d (should be %d)\n", r, LMC_MORE );
-        } else        printf ( "  minimal form check: %d (should be %d)\n", r, LMC_LESS );
-
-    }
-    */
-
     printf("### read from file\n");
 
     arraylist_t ll= readarrayfile ( input );
@@ -372,8 +387,17 @@ int main ( int argc, char* argv[] ) {
         //al = al.randomrowperm();
         //al = al.randomcolperm();
         al.showarray(); // print array
-        int r = LMC0check ( al );
-        printf ( "array %d: result %d\n (should be %d)\n", (int) i, ( int ) r, LMC_MORE );
+        lmc_t r = LMC0check ( al );
+        printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
+        /* Apply random transformation */
+        conference_transformation_t T1(al);
+        T1.randomize();
+        T1.show();
+        array_link al1 = T1.apply ( al );
+        al1.showarray(); // Show transformed array
+        lmc_t a = LMC0check ( al1 );
+        printf ( "array %d: result %d\n (should be, possibly, %d)\n", (int) i, a, LMC_LESS );
+
     }
 
 
