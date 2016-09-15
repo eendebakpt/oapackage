@@ -123,14 +123,6 @@ int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<in
 /* Compare two columns with the zero element in the same position */
 lmc_t compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ){
 
-<<<<<<< HEAD
-lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
-    const int nrows=al.n_rows;
-    // Compare columns with respect to the current column permutation and row ordering
-    // We also include the current rowsign permutation
-    /* Compare the two columns according to the LMC0 ordering*/
-=======
->>>>>>> experimental
     for ( int r=0; r<nrows; r++ ) {
     // Auxiliar variable to store the current value of the array
         int value_cdesign_trans = (colsignperm[colperm[column]]*rowsignperm[rowperm[r].val]) * al.atfast ( rowperm[r].val, colperm[column] );
@@ -142,8 +134,6 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
     return LMC_EQUAL;
 }
 
-<<<<<<< HEAD
-=======
 /* Compare the two columns according to the LMC0 ordering*/
 lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
 
@@ -167,7 +157,6 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 
 }
 
->>>>>>> experimental
 lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, int verbose=0 ) {
 
     lmc_t r = LMC_NONSENSE;
@@ -206,18 +195,6 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         }
         if ( r==LMC_LESS ) {
             // we already know the array is not in minimal form
-<<<<<<< HEAD
-
-            printf ( "LMC_0 form found in column %d\n", column );
-            printf(" Column level permutation ");
-            print_perm( colsignperm );
-            printf(" Row level permutation ");
-            print_perm( rowsignperm );
-            printf(" Column permutation ");
-            print_perm( colperm );
-            printf(" Row order ");
-            print_rowsort( rowperm, nrows );
-=======
             if ( verbose >= 2 ){
                 printf ( "LMC_0 form found in column %d\n", column );
                 printf(" Column level permutation ");
@@ -230,7 +207,6 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
                 print_rowsort( rowperm, nrows );
 
             }
->>>>>>> experimental
 
             break;
         }
@@ -275,7 +251,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
  *
  *
  */
-int LMC0check ( const array_link &al ) {
+lmc_t LMC0check ( const array_link &al ) {
     /*0. Initialize data */
     lmc_t result = LMC_MORE;
     // Get size of the array
@@ -381,11 +357,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-<<<<<<< HEAD
-        input="cdesign-18-14.oa";
-=======
         input="cdesign-18-18.oa";
->>>>>>> experimental
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -415,10 +387,6 @@ int main ( int argc, char* argv[] ) {
         //al = al.randomrowperm();
         //al = al.randomcolperm();
         al.showarray(); // print array
-<<<<<<< HEAD
-        int r = LMC0check ( al );
-        printf ( "array %d: result %d\n (should be %d)\n", (int) i, ( int ) r, LMC_MORE );
-=======
         lmc_t r = LMC0check ( al );
         printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
         /* Apply random transformation */
@@ -430,7 +398,6 @@ int main ( int argc, char* argv[] ) {
         lmc_t a = LMC0check ( al1 );
         printf ( "array %d: result %d\n (should be, possibly, %d)\n", (int) i, a, LMC_LESS );
 
->>>>>>> experimental
     }
 
 
