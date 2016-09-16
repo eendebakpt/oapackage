@@ -673,9 +673,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         }
 
     }
+    
 #ifdef HAVE_BOOST
-
-
     if ( writetests ) {
         cprintf ( verbose,"OA unittest: reading and writing of files\n" );
 
@@ -701,9 +700,25 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         std::cout << "  "<<  af.showstr() << std::endl;
         af.closefile();
 
-        // TODO: implement writing of binary files...
+        // check read/write of binary file
+        
+        arraylist_t ll0; ll0.push_back(exampleArray(22)); ll0.push_back(exampleArray(22).randomperm() );
+        writearrayfile(tempstr.c_str(), ll0, ABINARY );
+        arraylist_t ll = readarrayfile(tempstr.c_str() );
+        myassert(ll0.size()==ll.size(), "read and write of arrays: size of list");
+        for(size_t i=0; i<ll0.size(); i++ )
+        {
+            myassert(ll0[i]==ll[i], "read and write of arrays: array unequal");
+        }
 
-        //      oainfo(tempstr.c_str() );
+        ll0.resize(0); ll0.push_back(exampleArray(24));
+        writearrayfile(tempstr.c_str(), ll0, ABINARY_DIFFZERO );
+         ll = readarrayfile(tempstr.c_str() );
+        myassert(ll0.size()==ll.size(), "read and write of arrays: size of list");
+        for(size_t i=0; i<ll0.size(); i++ )
+        {
+            myassert(ll0[i]==ll[i], "read and write of arrays: array unequal");
+        }
     }
 
 #endif
