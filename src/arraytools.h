@@ -629,7 +629,7 @@ perform_inv_row_permutation ( const array_t * source, array_t * target,
 array_link exampleArray ( int idx = 0, int verbose = 0 );
 
 /// calculate J-characteristics for a conference design
-std::vector<int> Jcharacteristics_conference( const array_link &al, int jj, int verbose = 0 );
+std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
 /*! \brief Wrapper class for an array
 
@@ -676,7 +676,7 @@ public:
 
     /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
     bool is2level () const;
-    
+
     /// return true if the array is a +1,0, -1 valued array
     bool is_conference () const;
 
@@ -738,7 +738,7 @@ public:
     /// Calculate F-values of a 2-level matrix
     std::vector < int >Fvalues ( int jj ) const;
 
-        /// Calculate F-values of a conference design
+    /// Calculate F-values of a conference design
     std::vector < int >FvaluesConference ( int jj ) const;
 
     /// Calculate J-characteristics of matrix (the values are signed)
@@ -1133,7 +1133,7 @@ public:
     std::vector < int > jvalues; // possible values for J-characteristics
     std::map < int, int > jvalue2index; // map from j-value to index
     int jj;
-    
+
 public:
 private:
 
@@ -1142,7 +1142,9 @@ public:
     int maxJ () const;
 
     /// calculate possible values in F vector
-    std::vector < int > Jvalues ( ) const { return this->jvalues; }
+    std::vector < int > Jvalues ( ) const {
+        return this->jvalues;
+    }
 
     /// calculate histogram of J values
     std::vector < int >calculateF () const;
@@ -1151,7 +1153,7 @@ public:
 
     /// Show contents of structure
     void show ();
-    void showdata (int verbose=1);
+    void showdata ( int verbose=1 );
     std::string showstr ();
 
     /// return 1 if all vals are zero
@@ -1175,31 +1177,31 @@ public:
 
     array_link ft;
 
-    symmdata(const array_link  &al, int minlen=1);
-    void show(int verbose=1) const
-    {
-        printf("symmdata: rowvalues\n");
+    symmdata ( const array_link  &al, int minlen=1 );
+    void show ( int verbose=1 ) const {
+        printf ( "symmdata: rowvalues\n" );
         this->rowvalue.showarray();
-        if (verbose>=2) {
-            printf("symmdata: ft:");
+        if ( verbose>=2 ) {
+            printf ( "symmdata: ft:" );
             this->ft.show();
             this->ft.showarray();
         }
     }
 
     /// list with indices set to check for symmetry reductions
-    std::vector<int> checkIdx(int col=-1) const
-    {
+    std::vector<int> checkIdx ( int col=-1 ) const {
         const int N = this->orig.n_rows;
-        if (col<0)
+        if ( col<0 ) {
             col = orig.n_columns-1;
+        }
 
-        std::vector<int> idx(N);
+        std::vector<int> idx ( N );
 
         // never check first index
-        for (int row=1; row<N; row++ ) {
-            if (this->rowvalue._at(row, col)==this->rowvalue._at(row-1, col) )
+        for ( int row=1; row<N; row++ ) {
+            if ( this->rowvalue._at ( row, col ) ==this->rowvalue._at ( row-1, col ) ) {
                 idx[row]=1;
+            }
         }
         return idx;
     }
@@ -1229,7 +1231,7 @@ public:
     jstruct_t ( const array_link & al, int jj = 4 );
     ~jstruct_t ();
 
-private: 
+private:
     /// init data structures
     void init ( int N, int k, int jj );
     /// calculate J-characteristics of a 2-level array
@@ -1284,30 +1286,30 @@ class jstructconference_t : public jstructbase_t
 public:
     jstructconference_t ( int N, int jj = 4 ) {
         this->jj = jj;
-     calcJvalues(N, 4);   
+        calcJvalues ( N, 4 );
     }
     jstructconference_t ( const array_link & al, int jj = 4 ) {
         this->jj = jj;
         const int N = al.n_rows;
-     calcJvalues(N, 4);   
+        calcJvalues ( N, 4 );
         calc ( al );
     }
     //~jstruct_t ();
 private:
-    void calcJvalues(int N, int jj) {
-        assert(jj==4);
-        int nn = floor( (N-jj+1)/4)+1;
-        this->jvalues = std::vector<int>(nn);
+    void calcJvalues ( int N, int jj ) {
+        assert ( jj==4 );
+        int nn = floor ( ( N-jj+1 ) /4 ) +1;
+        this->jvalues = std::vector<int> ( nn );
         this->jvalue2index.clear();
-        for(size_t i=0; i<jvalues.size(); i++) {
-                int jval=(N-jj) - i*4;
-                jvalues[i] = jval;
-                jvalue2index[jval] = i; 
+        for ( size_t i=0; i<jvalues.size(); i++ ) {
+            int jval= ( N-jj ) - i*4;
+            jvalues[i] = jval;
+            jvalue2index[jval] = i;
         }
     }
 
-    void calc(const array_link &al) {
-        values = Jcharacteristics_conference(al, this->jj);
+    void calc ( const array_link &al ) {
+        values = Jcharacteristics_conference ( al, this->jj );
     }
 };
 
@@ -2460,6 +2462,13 @@ MatrixFloat array2eigenME ( const array_link & al, int verbose = 1 );
 std::pair < MatrixFloat,
     MatrixFloat > array2eigenModelMatrixMixed ( const array_link & al,
             int verbose = 1 );
+
+
+/// return index of specified array in a file. returns -1 if array is not found
+int arrayInFile ( const array_link &al, const char *afile, int verbose=1 );
+
+/// return index of specified array in a list. returns -1 if array is not found
+int arrayInList ( const array_link &al, const arraylist_t &ll, int verbose=1 );
 
 #endif
 

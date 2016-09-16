@@ -185,7 +185,6 @@ public:
         return lst;
     }
 
-
     /// add a new element
     bool addvalue ( pValue val, IndexType idx )
     {

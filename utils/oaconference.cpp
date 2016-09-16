@@ -265,10 +265,15 @@ int main ( int argc, char* argv[] ) {
         sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
         if ( ctype.ctype==conference_t::DCONFERENCE ) {
+            long nevenodd=0;
             for ( size_t i=0; i<outlist.size(); i++ ) {
-                if ( ! isConferenceFoldover ( outlist[i] ) )
-                    printfd ( "#### found an even-odd conference matrix!!!\n" );
+                if ( ! isConferenceFoldover ( outlist[i] ) ) {
+                 if (verbose>=2)
+                     printfd ( "#### found an even-odd conference matrix!!!\n" );
+                nevenodd++;
+                }
             }
+            printfd("## found %ld/%ld designs to be even-odd\n", nevenodd, outlist.size() );
         }
 
         if ( output.length() >=1 ) {
@@ -278,11 +283,7 @@ int main ( int argc, char* argv[] ) {
             if ( outlist.size() < 1000 )
                 writearrayfile ( outfile.c_str(),outlist, arrayfile::ATEXT, N, extcol+1  );
             else {
-                if ( outlist.size() < 10000 )
                     writearrayfile ( outfile.c_str(),outlist, arrayfile::ABINARY, N, extcol+1 );
-                else {                
-                    writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFFZERO );
-                }
             }
         }
 

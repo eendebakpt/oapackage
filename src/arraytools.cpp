@@ -158,8 +158,9 @@ void array_transformation_t::reset() {
     init_perm ( this->rperm, this->ad->N );
     init_perm<colindex_t> ( this->cperm, ad->ncols );
 
-    for ( colindex_t c=0; c<ad->ncols; c++ )
+    for ( colindex_t c=0; c<ad->ncols; c++ ) {
         init_perm ( lperms[c], ad->s[c] );
+    }
 
 }
 
@@ -169,13 +170,15 @@ void array_transformation_t::init() {
     cperm = new_perm_init<colindex_t> ( ad->ncols );
 
     lperms = new levelperm_t [ad->ncols];
-    for ( colindex_t c=0; c<ad->ncols; c++ )
+    for ( colindex_t c=0; c<ad->ncols; c++ ) {
         lperms[c] = new_perm_init<array_t> ( ad->s[c] );
+    }
 }
 
 void array_transformation_t::free() {
-    if ( ad==0 )
+    if ( ad==0 ) {
         return;
+    }
 
 //printf("array_transformation_t::free\n");
     delete_perm ( rperm );
@@ -188,8 +191,9 @@ void array_transformation_t::free() {
     delete [] lperms;
 
 //myprintf("array_transformation_t::free: delete ad\n");
-    if ( ad!=0 )
+    if ( ad!=0 ) {
         delete ad;
+    }
 }
 
 /// Assignment operator
@@ -337,8 +341,9 @@ void get_factors ( array_t *s, carray_t *array, const rowindex_t N, const colind
     for ( colindex_t i = 0; i < ncols; i++ ) {
         max = 0;
         for ( rowindex_t j = 0; j < N; j++ )
-            if ( array[count++] > max )
+            if ( array[count++] > max ) {
                 max = array[count - 1];
+            }
         s[i] = max + 1;
     }
 }
@@ -369,12 +374,14 @@ arraydata_t arraylink2arraydata ( const array_link &al, int extracols, int stren
                 myprintf ( "arraylink2arraydata: column %d: input array should have elements ranging from 0 to s-1\n", ik );
             }
         }
-        for ( int ik=ncols0; ik<ncols; ik++ )
-            s[ik]=ss; // repeat last factor value
+        for ( int ik=ncols0; ik<ncols; ik++ ) {
+            s[ik]=ss;    // repeat last factor value
+        }
     }
 
-    if ( strength<0 )
+    if ( strength<0 ) {
         strength = al.strength();
+    }
     arraydata_t ad ( s, al.n_rows, strength, ncols );
     if ( verbose ) {
         myprintf ( "arraylink2arraydata: " );
@@ -446,8 +453,9 @@ std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose 
     for ( int i=0; i< ( int ) arraylist->size(); i++ ) {
 #ifdef FULLPACKAGE
         if ( verbose ) {
-            if ( i<100 || i%1000 == 0 )
+            if ( i<100 || i%1000 == 0 ) {
                 std::cout << "## analyzing array " << i << "/" << arraylist->size() << std::endl;
+            }
         }
 #endif
         array_link al = arraylist->at ( i );
@@ -475,13 +483,15 @@ std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose 
                 }
 
                 aa[jl]++;
-                if ( verbose>=3 )
+                if ( verbose>=3 ) {
                     js.show();
+                }
                 break;
             }
             jl+=2;
-            if ( verbose>=2 )
+            if ( verbose>=2 ) {
                 myprintf ( "  jl %d\n", jl );
+            }
         }
         if ( jl>al.n_columns ) {
             aa[0]++;
@@ -531,10 +541,11 @@ array_link::array_link ( const array_link &rhs, const std::vector<int> &colperm 
  * @brief Element access
  */
 array_t array_link::at ( const int index ) const {
-    if ( index<0 || index>this->n_rows*this->n_columns-1 )
+    if ( index<0 || index>this->n_rows*this->n_columns-1 ) {
         return -1;
-    else
+    } else {
         return this->array[index];
+    }
 }
 
 array_t array_link::_at ( const int index ) const {
@@ -729,8 +740,9 @@ array_link array_link::selectFirstRows ( int nrows ) const {
     mycheck ( nrows>=0, "array_link::selectFirstColumn: nrows<0\n" );
     mycheck ( nrows<=this->n_rows, "array_link::selectFirstRows: nrows %d too large\n", nrows );
     array_link d ( nrows, this->n_columns, -1 );
-    for ( int i=0; i<this->n_columns; i++ )
+    for ( int i=0; i<this->n_columns; i++ ) {
         std::copy ( this->array+i*this->n_rows, this->array+ ( i ) *this->n_rows+nrows, d.array+i*nrows );
+    }
     return d;
 }
 
@@ -738,8 +750,9 @@ array_link array_link::selectFirstColumns ( int ncols ) const {
     mycheck ( ncols>=0, "array_link::selectFirstColumn: ncols<0\n" );
     mycheck ( ncols<=this->n_columns, "array_link::selectFirstColumn: ncols %d too large\n", ncols );
     array_link d ( this->n_rows, ncols, -1 );
-    for ( int i=0; i<ncols; i++ )
+    for ( int i=0; i<ncols; i++ ) {
         std::copy ( this->array+i*this->n_rows, this->array+ ( i+1 ) *this->n_rows, d.array+i*this->n_rows );
+    }
     return d;
 }
 
@@ -776,12 +789,15 @@ array_link array_link::selectColumns ( std::vector<int> c ) const {
 array_link array_link::deleteColumn ( int index ) const {
     mycheck ( this->n_columns>=2, "array_link::deleteColumn: array has <2 columns\n" );
     array_link d ( this->n_rows, this->n_columns-1, -1 );
-    if ( index<0 )
+    if ( index<0 ) {
         index=this->n_columns-1;
-    for ( int i=0; i<index; i++ )
+    }
+    for ( int i=0; i<index; i++ ) {
         std::copy ( this->array+i*this->n_rows, this->array+ ( i+1 ) *this->n_rows, d.array+i*this->n_rows );
-    for ( int i=index+1; i<this->n_columns; i++ )
+    }
+    for ( int i=index+1; i<this->n_columns; i++ ) {
         std::copy ( this->array+i*this->n_rows, this->array+ ( i+1 ) *this->n_rows, d.array+ ( i-1 ) *this->n_rows );
+    }
     return d;
 }
 
@@ -789,8 +805,9 @@ array_link array_link::deleteColumn ( int index ) const {
 array_link array_link::transposed() const {
     array_link d ( this->n_columns, this->n_rows, -1 );
     for ( int i=0; i<this->n_columns; i++ )
-        for ( int j=0; j<this->n_rows; j++ )
+        for ( int j=0; j<this->n_rows; j++ ) {
             d.array[i+j*d.n_rows] = 	this->array[j+i*this->n_rows];
+        }
 
     return d;
 }
@@ -828,8 +845,9 @@ array_link exampleArray ( int idx, int verbose ) {
         return array_link();
     case 0: {
         dstr ="array in OA(8,2, 2^2)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         array_link al ( 8,2, 0 );
         std::vector<int> s;
         s.push_back ( 2 );
@@ -842,8 +860,9 @@ array_link exampleArray ( int idx, int verbose ) {
     case 1: {
         // array 3 in OA(16, 2, 2^5)
         dstr = "array 3 in OA(16, 2, 2^5)" ;
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         array_link al ( 16,5, 0 );
         int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
                      1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0,
@@ -856,8 +875,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 2: {
         dstr="array 6 in OA(16, 2, 2^6)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
         array_link al ( 16,6, 0 );
         int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
@@ -872,8 +892,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 3: {
         dstr="array ? in OA(32, 3, 2^7)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
         array_link al ( 32,7, 0 );
         int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
@@ -896,8 +917,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 4: {
         dstr="array 4 in OA(16, 2, 2^7)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
 
         // array 4 in OA(16, 2, 2^7)
@@ -914,8 +936,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 5: {
         dstr="array 0 in OA(24, 2, 4 3 2^a)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
         // array 0 in OA(24, 2, 4 3 2^a)
         array_link al ( 24,5, 0 );
@@ -934,8 +957,9 @@ array_link exampleArray ( int idx, int verbose ) {
     case 6: {
 
         dstr="array in OA(4, 2, 2^a)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         // array in OA(4, 2, 2^a)
         array_link al ( 4,3, 0 );
         int tmp[] = { 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1 };
@@ -945,8 +969,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 7: {
         dstr="array 0 in OA(4, 2, 2^a)?";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 4,3, 0 );
         int tmp[] = { 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0 };
@@ -956,8 +981,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 8: {
         dstr="array in OA(40, 3, 2^7)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 40,7, 0 );
         int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
@@ -982,8 +1008,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 9: {
         dstr="array in OA(40, 2^7), D-optimal";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
 
         //
@@ -1008,8 +1035,9 @@ array_link exampleArray ( int idx, int verbose ) {
         break;
     }
     case 10: {
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: array in OA(9, 3^2)\n" );
+        }
 
         //
         array_link al ( 9,3, 0 );
@@ -1020,8 +1048,9 @@ array_link exampleArray ( int idx, int verbose ) {
         break;
     }
     case 11: {
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: D-optimal array in OA(44, 2^8)\n" );
+        }
 
         //
         array_link al ( 44,8, 0 );
@@ -1049,8 +1078,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
 
     case 12: {
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: even-odd array OA(64, 2^13)\n" );
+        }
 
         //
         array_link al ( 64, 13, 0 );
@@ -1100,8 +1130,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 13: {
         dstr="array in OA(25, 2^5)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
 
         //
@@ -1123,8 +1154,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 14: {
         dstr= "design in D(28, 2^5), D-efficiency is low" ;
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
         array_link al ( 28,5, 0 );
         int tmp[] = 	{1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1,
@@ -1143,8 +1175,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 15: {
         dstr= "design in D(56, 2^10), D-efficiency is low" ;
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
 
         array_link al ( 56,10, 0 );
         int tmp[] = 	{0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0,
@@ -1184,8 +1217,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 16: {
         dstr="array in OA(32, 2, 2^5)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 32,5, 0 );
         int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
@@ -1203,8 +1237,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 17: {
         dstr="unique array in OA(64, 4, 2^7)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 64,7, 0 );
         int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1236,8 +1271,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 18: {
         dstr="conference matrix of size 16, 7";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 7,16, 0 );
         int tmp[] = 	{0,  1,  1,  1,  1,  1,  1,  1,  0, -1, -1, -1, -1, -1,  1,  1,  0,
@@ -1257,8 +1293,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 19: {
         dstr="conference matrix of size 4, 3";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 3, 4, 0 );
         int tmp[] = 	{0,  1,  1,  1,  0, -1,  1,  1,  0,  1, -1,  1 };
@@ -1271,8 +1308,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 20: {
         dstr="first LMC-0 double conference matrix in DC(24,3)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 24,3, 0 );
         int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1,
@@ -1290,8 +1328,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 21: {
         dstr="second LMC-0 double conference matrix in DC(16,4)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 16, 4, 0 );
         int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1,  1,
@@ -1307,8 +1346,9 @@ array_link exampleArray ( int idx, int verbose ) {
     }
     case 22: {
         dstr="LMC-0 double conference matrix in DC(32,4)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 32, 4, 0 );
         int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1329,8 +1369,9 @@ array_link exampleArray ( int idx, int verbose ) {
 
     case 23: {
         dstr="LMC-0 double conference matrix in DC(32,6)";
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
         //
         array_link al ( 32, 6, 0 );
         int tmp[] = 	{0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1352,7 +1393,21 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
+    case 24: {
+        dstr="design in OA(64, 3, 2^16) (even-odd)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        //
+        array_link al ( 64, 16, 0 );
+        int tmp[] =     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0
+                        };
 
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        //al=al.transposed();
+        return al;
+        break;
+    }
     } // end of switch
 
     return array_link ( 1,1,-1 );
@@ -1417,15 +1472,20 @@ double array_link::nonzero_fraction() const {
     double nz=0;
     long nn=this->n_columns*this->n_rows;
     for ( int i=0; i<nn; i++ )
-        if ( this->array[i]!=0 )
+        if ( this->array[i]!=0 ) {
             nz++;
+        }
     return nz/nn;
 }
 
 bool array_link::is_conference () const {
     int m = this->min();
-    if ( m<-1 ) return false;
-    if ( this->max() > 1 ) return false;
+    if ( m<-1 ) {
+        return false;
+    }
+    if ( this->max() > 1 ) {
+        return false;
+    }
     return true;
 }
 
@@ -1433,10 +1493,12 @@ bool array_link::is2level() const {
     int N = this->n_rows;
     for ( int r=0; r<this->n_rows; r++ ) {
         for ( int c=0; c<this->n_columns; c++ ) {
-            if ( this->array[r+c*N]<0 )
+            if ( this->array[r+c*N]<0 ) {
                 return false;
-            if ( this->array[r+c*N]>1 )
+            }
+            if ( this->array[r+c*N]>1 ) {
                 return false;
+            }
         }
     }
     return true;
@@ -1508,8 +1570,9 @@ void perform_row_permutation ( const array_link source, array_link &target, cons
     int ncols=source.n_columns;
     int nrows = source.n_rows;
     for ( int i = 0; i < ncols; i++ )
-        for ( int j=0; j<nrows; j++ )
+        for ( int j=0; j<nrows; j++ ) {
             target.array[nrows*i+perm[j]]=source.array[nrows*i+j];
+        }
 }
 
 
@@ -1552,8 +1615,9 @@ void create_root ( array_t *array, const arraydata_t *ad ) {
                 array[coloffset + j + k] = l;
             }
             l++;
-            if ( l == ad->s[i] )
-                l = 0;	//reset value, it has looped
+            if ( l == ad->s[i] ) {
+                l = 0;    //reset value, it has looped
+            }
         }
     }
     //    myprintf("create_root: done\n");
@@ -1617,8 +1681,9 @@ MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const {
     intcpt.setConstant ( 1 );
 
     if ( order==2 ) {
-        if ( verbose>=2 )
+        if ( verbose>=2 ) {
             myprintf ( "array_link::getModelMatrix %d+%d+%d\n", np[0], np[1], np[2] );
+        }
     }
     if ( order==0 ) {
         return intcpt;
@@ -1649,21 +1714,24 @@ double array_link::CL2discrepancy() const {
 }
 
 array_t array_link::max() const {
-    if ( this->n_rows*this->n_columns==0 )
+    if ( this->n_rows*this->n_columns==0 ) {
         return 0;
+    }
     return *std::max_element ( this->array, this->array+this->n_rows*this->n_columns );
 }
 array_t array_link::min() const {
-    if ( this->n_rows*this->n_columns==0 )
+    if ( this->n_rows*this->n_columns==0 ) {
         return 0;
+    }
     return *std::min_element ( this->array, this->array+this->n_rows*this->n_columns );
 }
 
 bool  array_link::foldover() const {
     std::vector< double > g = this->GWLP();
     for ( size_t i=1; i<g.size(); i+=2 ) {
-        if ( g[i]!=0 )
+        if ( g[i]!=0 ) {
             return false;
+        }
     }
     return true;
 }
@@ -1733,17 +1801,21 @@ void eigen2numpyHelper ( double* pymat1, int n, const Eigen::MatrixXd &m ) {
 }
 
 void eigenInfo ( const MatrixFloat m, const char *str, int verbose ) {
-    if ( verbose==1 )
+    if ( verbose==1 ) {
         myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
-    if ( verbose==2 )
+    }
+    if ( verbose==2 ) {
         myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+    }
 
 }
 void eigenInfoF ( const Eigen::MatrixXf m, const char *str, int verbose ) {
-    if ( verbose==1 )
+    if ( verbose==1 ) {
         myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
-    if ( verbose==2 )
+    }
+    if ( verbose==2 ) {
         myprintf ( "%s: %dx%d\n", str, ( int ) m.rows(), ( int ) m.cols() );
+    }
 
 }
 
@@ -1756,8 +1828,9 @@ MatrixFloat array2eigenME ( const array_link &al, int verbose ) {
 // code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_link &al, int verbose ) {
     //verbose=2;
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "array2eigenModelMatrixMixed: start" );
+    }
 
     int N = al.n_rows;
     int k =  al.n_columns;
@@ -1778,8 +1851,9 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
     MatrixFloat  AA = al.getEigenMatrix();
 
     /* main effect contrasts */
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         printfd ( "main effects\n" );
+    }
 
     int mesize = std::accumulate ( df.begin(),df.end(),0 );
 
@@ -1805,10 +1879,12 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
             if ( v>0 ) {
                 Z ( r, v ) =v;
             }
-            for ( int q=1; q<v; q++ )
+            for ( int q=1; q<v; q++ ) {
                 Z ( r,q ) =0;
-            for ( int q=v+1; q<md+1; q++ )
+            }
+            for ( int q=v+1; q<md+1; q++ ) {
                 Z ( r,q ) =-1;
+            }
 
         }
 
@@ -1858,13 +1934,15 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
     }
 
     /* 2fi */
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "2fi\n" );
+    }
 
     MatrixFloat tfi = MatrixFloat::Zero ( N, np[2] );
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         printfd ( "create 2fi\n" );
+    }
     int tel=0;
     int n = al.n_columns;
     int po=0, qo=0; // offsets
@@ -1877,8 +1955,9 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
             qo = std::accumulate ( df.begin(), df.begin() +jj,0 );
 
-            if ( verbose>=3 )
+            if ( verbose>=3 ) {
                 printfd ( "create 2fi: p0=o %d, qo %d\n", po, qo );
+            }
 
             for ( int pp=0; pp<n1; pp++ ) {
                 for ( int qq=0; qq<n2; qq++ ) {
@@ -1894,8 +1973,9 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
     }
 
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "done\n" );
+    }
 
 
     return std::pair<MatrixFloat,MatrixFloat> ( ME, tfi );
@@ -2044,20 +2124,23 @@ double array_link::DsEfficiency ( int verbose ) const {
     double f2 = ( X2.transpose() *X2/n ).determinant();
     double Ds = 0;
     if ( fabs ( f1 ) <1e-15 ) {
-        if ( verbose )
+        if ( verbose ) {
             myprintf ( "DsEfficiency: f1 < 1e-15, setting Ds to zero\n" );
+        }
     } else {
         Ds=pow ( ( f1/f2 ), 1./k1 );
     }
-    if ( verbose )
+    if ( verbose ) {
         myprintf ( "f1 %e, f2 %e, Ds %f\n", f1, f2, Ds );
+    }
 #else
     MatrixFloat tmp = ( X.transpose() *X );
     double f1 = tmp.determinant();
     double f2 = ( X2.transpose() *X2 ).determinant();
     double Ds = pow ( ( f1/f2 ), 1./k1 ) /n;
-    if ( verbose )
+    if ( verbose ) {
         myprintf ( "scale after: f1 %f, f2 %f, Ds %f\n", f1, f2, Ds );
+    }
 #endif
 
     return Ds;
@@ -2197,10 +2280,11 @@ int array_link::strength() const {
     for ( int i=0; i<=this->n_columns; i++ ) {
         int b = strength_check ( *this, i );
         // myprintf("strength_check %d->%d\n", i, b);
-        if ( b )
+        if ( b ) {
             t=i;
-        else
+        } else {
             break;
+        }
     }
     return t;
 }
@@ -2271,8 +2355,9 @@ arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t n
         myprintf ( "arraydata_t: level factors should be > 0 and < 100\n" );
     }
     s = new array_t[nc];
-    for ( int i=0; i<nc; i++ )
+    for ( int i=0; i<nc; i++ ) {
         s[i]=s_;
+    }
     complete_arraydata();
 }
 
@@ -2297,8 +2382,9 @@ arraydata_t::arraydata_t ( const arraydata_t *adp, colindex_t newncols ) {
     if ( ncols>adp->ncols ) {
         myprintf ( "arraydata_t: warning: number of columns %d is too large (object %d cols)\n", ncols, adp->ncols );
         s = new array_t[ncols];
-        for ( size_t i=0; i< ( size_t ) ncols; i++ )
+        for ( size_t i=0; i< ( size_t ) ncols; i++ ) {
             s[i]=2;
+        }
         memcpy ( s, adp->s, sizeof ( array_t ) *adp->ncols );
     } else {
         s = new array_t[ncols];
@@ -2317,10 +2403,12 @@ arraydata_t::arraydata_t ( const arraydata_t &adp ) : N ( adp.N ), ncols ( adp.n
 }
 arraydata_t::~arraydata_t() {
 #ifdef OADEBUG
-    if ( s==0 )
+    if ( s==0 ) {
         printfd ( "s is zero\n" );
-    if ( colgroupindex==0 )
+    }
+    if ( colgroupindex==0 ) {
         printfd ( "colgroupindex is zero\n" );
+    }
 #endif
     delete [] s;
     delete [] colgroupindex;
@@ -2349,10 +2437,11 @@ void arraydata_t::writeConfigFile ( const char *file ) const {
 
     for ( int j = 0; j < ncols; j++ ) {
         outFile << ad.s[j];
-        if ( j<ncols-1 )
+        if ( j<ncols-1 ) {
             outFile << " ";
-        else
+        } else {
             outFile << std::endl;
+        }
     }
     outFile.close();
 }
@@ -2391,8 +2480,9 @@ std::string arraydata_t::latexstr ( int cmd, int series ) const {
     if ( cmd ) {
         //ss << printfstring ( "\\OA(%d, %d, ", this->N, this->strength );
         ss << printfstring ( "\\oadesign{%d}{%d}{", this->N, this->strength );
-    } else
+    } else {
         ss << printfstring ( "\\mathrm{OA}(%d, %d, ", this->N, this->strength );
+    }
 
     for ( int i=0; i<this->ncolgroups; ++i ) {
         //int s = this->s[this->colgroupindex[i]];
@@ -2405,10 +2495,11 @@ std::string arraydata_t::latexstr ( int cmd, int series ) const {
             ss << printfstring ( "%d^{%d}", s, this->colgroupsize[i] );
         }
     }
-    if ( cmd )
+    if ( cmd ) {
         ss << printfstring ( "}" );
-    else
+    } else {
         ss << printfstring ( ")" );
+    }
     return ss.str();
 }
 
@@ -2424,10 +2515,11 @@ std::string arraydata_t::idstrseriesfull() const {
     for ( int i=0; i<this->ncolgroups; ++i ) {
         int cgi=this->colgroupindex[i];
         int s=this->s[cgi];
-        if ( i==0 )
+        if ( i==0 ) {
             fname += '.';
-        else
+        } else {
             fname += '-';
+        }
         if ( i==this->ncolgroups-1 &&  this->colgroupsize[i]>1 ) {
             fname += printfstring ( "%da", s );
         } else {
@@ -2440,10 +2532,11 @@ std::string arraydata_t::idstrseriesfull() const {
 
 /// return full identifier string
 std::string arraydata_t::fullidstr ( int series ) const {
-    if ( series )
-        return this->idstrseriesfull(); // + "-t" + printfstring ( "%d", this->strength );
-    else
+    if ( series ) {
+        return this->idstrseriesfull();    // + "-t" + printfstring ( "%d", this->strength );
+    } else {
         return this->idstr() + "-t" + printfstring ( "%d", this->strength );
+    }
 }
 
 /**
@@ -2454,10 +2547,11 @@ std::string arraydata_t::idstr() const {
     fname += itos ( N );
 
     for ( int i = 0; i < ncols; i++ ) {
-        if ( i==0 )
+        if ( i==0 ) {
             fname += '.';
-        else
+        } else {
             fname += '-';
+        }
         fname += itos ( s[i] );
     }
     return fname;
@@ -2472,8 +2566,9 @@ void arraydata_t::complete_arraydata() {
 
     if ( verbose ) {
         myprintf ( "complete_arraydata: strength %d\n", this->strength );
-        for ( int i=0; i<this->ncols; i++ )
+        for ( int i=0; i<this->ncols; i++ ) {
             myprintf ( "complete_arraydata: k %d, s %d\n", i, s[i] );
+        }
     }
     if ( this->strength>this->ncols ) {
         myprintf ( "arraydata_t: warning strength %d > ncols %d, reducing strength\n", this->strength, this->ncols );
@@ -2507,8 +2602,9 @@ void arraydata_t::complete_arraydata() {
     int nbits = 8*sizeof ( rowsort_value_t );
     rowsort_value_t val=1;
     for ( int i=0; i<ad->ncols; i++ ) {
-        if ( ad->s[i]==0 )
+        if ( ad->s[i]==0 ) {
             continue;
+        }
         if ( val != 0 && ( std::numeric_limits<rowsort_value_t>::max() / ( rowsort_value_t ) ad->s[i] ) < val ) {
             // multiplication would exceed range of unsigned
             myprintf ( "error: LMC checks for %d columns would lead to integer overflow\n", i );
@@ -2523,8 +2619,9 @@ void arraydata_t::complete_arraydata() {
 }
 
 array_link arraydata_t::randomarray ( int strength, int ncols ) const {
-    if ( ncols==-1 )
+    if ( ncols==-1 ) {
         ncols=this->ncols;
+    }
     array_link al ( this->N, this->ncols, -1 );
     al.setconstant ( 0 );
 
@@ -2557,8 +2654,9 @@ array_link arraydata_t::create_root() const {
 
 bool arraydata_t::is2level() const {
     for ( int i=0; i<this->ncols; i++ ) {
-        if ( this->s[i] != 2 )
+        if ( this->s[i] != 2 ) {
             return false;
+        }
     }
     return true;
 }
@@ -2566,8 +2664,9 @@ bool arraydata_t::is2level() const {
 bool arraydata_t::ismixed() const {
     colindex_t s=this->s[0];
     for ( int i=0; i<this->ncols; i++ ) {
-        if ( s!= this->s[i] )
+        if ( s!= this->s[i] ) {
             return true;
+        }
     }
     return false;
 }
@@ -2596,8 +2695,9 @@ void arraydata_t::set_colgroups ( const std::vector<int> splits ) {
     this->colgroupindex = new colindex_t[this->ncolgroups+1];
     std::copy ( splits.begin(), splits.end(), this->colgroupindex );
     this->colgroupsize = new colindex_t[this->ncolgroups+1];
-    for ( int j=0; j< ( ncolgroups-1 ); j++ )
+    for ( int j=0; j< ( ncolgroups-1 ); j++ ) {
         this->colgroupsize[j]=this->colgroupindex[j+1]-this->colgroupindex[j];
+    }
     this->colgroupsize[ncolgroups-1]=this->ncols-this->colgroupindex[ncolgroups-1];
 }
 
@@ -2630,8 +2730,9 @@ void arraydata_t::complete_arraydata_splitn ( int ns ) {
 
     arraydata_t *ad = this;
     int combs = 1;
-    for ( int i=0; i<ad->strength; i++ )
+    for ( int i=0; i<ad->strength; i++ ) {
         combs *= ad->s[i];
+    }
     ad->oaindex = ad->N/combs;
     ad->ncolgroups=2;
 
@@ -2670,8 +2771,9 @@ int jstructbase_t::maxJ ( ) const {
     int vmax = 0;
     for ( size_t i=0; i< this->values.size(); i++ ) {
         int v = abs ( this->values[i] );
-        if ( v>vmax )
+        if ( v>vmax ) {
             vmax=v;
+        }
     }
     return vmax;
 }
@@ -2703,8 +2805,9 @@ int jstruct_t::maxJ ( ) const {
     int vmax = 0;
     for ( size_t i=0; i< this->values.size(); i++ ) {
         int v = abs ( this->values[i] );
-        if ( v>vmax )
+        if ( v>vmax ) {
             vmax=v;
+        }
     }
     return vmax;
 }
@@ -2885,13 +2988,14 @@ jstruct_t::jstruct_t ( const array_link &al, int jj ) {
 
 
     this->init ( N, k, jj );
-    if ( jj==4 && 1 )
+    if ( jj==4 && 1 ) {
         this->calcj4 ( al );
-    else {
-        if ( jj==5 && 1 )
+    } else {
+        if ( jj==5 && 1 ) {
             this->calcj5 ( al );
-        else
+        } else {
             this->calc ( al );
+        }
     }
     // calculate A value
     this->calculateAberration();
@@ -2992,7 +3096,7 @@ void jstructbase_t::show() {
 #endif
 }
 
-void jstructbase_t::showdata(int verbose) {
+void jstructbase_t::showdata ( int verbose ) {
 #ifdef FULLPACKAGE
 
     for ( size_t x=0; x<this->values.size(); x++ ) {
@@ -3000,15 +3104,14 @@ void jstructbase_t::showdata(int verbose) {
     }
     std::cout << std::endl;
 
-    
-    if (verbose>=2)
-{
-typedef std::map<int, int>::const_iterator it_type;
-for(it_type iterator = this->jvalue2index.begin(); iterator != this->jvalue2index.end(); iterator++) {
-   printf("this->jvalue2index[%d]=%d\n", iterator->first, iterator->second);
-}
-}
-    #endif
+
+    if ( verbose>=2 ) {
+        typedef std::map<int, int>::const_iterator it_type;
+        for ( it_type iterator = this->jvalue2index.begin(); iterator != this->jvalue2index.end(); iterator++ ) {
+            printf ( "this->jvalue2index[%d]=%d\n", iterator->first, iterator->second );
+        }
+    }
+#endif
 }
 
 
@@ -3104,8 +3207,9 @@ int fastjX ( const array_t *array, rowindex_t N, const int J, const colindex_t *
     //const array_t **cp = new const array_t* [J];
     const array_t* cp[MAXCOLS];
 
-    for ( int i=0; i<J; i++ )
+    for ( int i=0; i<J; i++ ) {
         cp[i]=array+N*pp[i];
+    }
 
     // OPTIMIZE: change order of loops (with cache for tmp variable)
     for ( rowindex_t r=0; r<N; r++ ) {
@@ -3227,8 +3331,9 @@ void write_array_latex ( FILE *fid, carray_t *array, const int nrows, const int 
 
 
     ss << "\\begin{tabular}{";
-    for ( int x=0; x<ncols; x++ )
+    for ( int x=0; x<ncols; x++ ) {
         ss << 'c';
+    }
     ss << "}" << endl;
 
     for ( int j = 0; j < nrows; j++ ) {
@@ -3279,8 +3384,9 @@ void readblob ( TypeOut *dst, int n, FILE *fid ) {
     TypeIn *src = new TypeIn [n];
     int r = fread ( ( void * ) src, sizeof ( TypeIn ), n, fid );
 
-    for ( int i=0; i<n; i++ )
+    for ( int i=0; i<n; i++ ) {
         dst[i] = src[i];
+    }
 
     delete [] src;
 }
@@ -3291,8 +3397,9 @@ void readblob ( TypeOut *dst, int n, gzFile gzfid ) {
     TypeIn *src = new TypeIn [n];
     gzread ( gzfid, src, sizeof ( TypeIn ) *n );
 
-    for ( int i=0; i<n; i++ )
+    for ( int i=0; i<n; i++ ) {
         dst[i] = src[i];
+    }
 
     delete [] src;
 }
@@ -3357,9 +3464,9 @@ bool file_exists ( const char *filename ) {
     return boost::filesystem::exists ( filename );
 #else
     FILE *fid = fopen ( filename, "r" );
-    if ( fid==0 )
+    if ( fid==0 ) {
         return false;
-    else {
+    } else {
         fclose ( fid );
         return true;
     }
@@ -3383,10 +3490,11 @@ void arrayfile_t::append_array ( const array_link &a, int specialindex ) {
 
     arrayfile_t *afile = this;
     int index;
-    if ( specialindex==-1 )
+    if ( specialindex==-1 ) {
         index=a.index;
-    else
+    } else {
         index=specialindex;
+    }
 
     switch ( afile->mode ) {
     case arrayfile::ATEXT:
@@ -3490,11 +3598,13 @@ int arrayfile_t::seek ( int pos ) {
         myprintf ( "error: position specified is invalid\n" );
         return -1;
     }
-    if ( nfid )
+    if ( nfid ) {
         fseek ( nfid, this->headersize() + this->barraysize() *pos, SEEK_SET );
+    }
 #ifdef USEZLIB
-    if ( gzfid )
+    if ( gzfid ) {
         gzseek ( gzfid, this->headersize() + this->barraysize() *pos, SEEK_SET );
+    }
 #endif
 
     narraycounter = pos;
@@ -3510,16 +3620,18 @@ int arrayfile_t::read_array_binary_zero ( array_link &a ) {
     a.index=array_link::INDEX_NONE;
     int index=array_link::INDEX_NONE;
 
-    if ( dbg )
+    if ( dbg ) {
         myprintf ( " arrayfile_t::read_array_binary_zero: gp\n" );
+    }
 
     if ( a.n_columns!=diffarray.n_columns && diffarray.n_columns!=-1 && diffarray.n_columns!=0 ) {
         myprintf ( "arrayfile_t::read_array_binary_zero: error different number of columns %d %d\n", diffarray.n_columns, a.n_columns );
         return array_link::INDEX_ERROR;
     }
 
-    if ( dbg )
+    if ( dbg ) {
         myprintf ( " arrayfile_t::read_array_binary_zero: reading nrest\n" );
+    }
 
     int16_t nrest;
     int result = afread ( &nrest, sizeof ( int16_t ), 1 );
@@ -3546,8 +3658,9 @@ int arrayfile_t::read_array_binary_zero ( array_link &a ) {
     } else {
         // diffarray not initialized yet...
     }
-    if ( dbg )
+    if ( dbg ) {
         myprintf ( "arrayfile_t::read_array: nrows %d, ncols %d,  nrest %d, ngood %d\n", nrows, ncols, nrest, ngood );
+    }
     this->read_array_binary ( a.array+nrows*ngood, nrows, nrest );
 
     if ( dbg ) {
@@ -3556,8 +3669,9 @@ int arrayfile_t::read_array_binary_zero ( array_link &a ) {
     }
     if ( a.n_columns==diffarray.n_columns ) {
         // update array
-        if ( dbg )
+        if ( dbg ) {
             myprintf ( "  here: %d\n", a.n_columns );
+        }
 
         int N = a.n_rows;
         for ( int i=0; i<nrest; i++ ) {
@@ -3567,13 +3681,15 @@ int arrayfile_t::read_array_binary_zero ( array_link &a ) {
                 a.array[idx] = a.array[idx] % 2;
             }
         }
-        if ( dbg )
+        if ( dbg ) {
             myprintf ( "  here: %ld %ld\n", ( long ) diffarray.array, ( long ) a.array );
+        }
 
     }
     diffarray=a;
-    if ( dbg )
+    if ( dbg ) {
         myprintf ( "  arrayfile_t::read_array:read_array_binary_zero: xxx\n" );
+    }
     return index;
 }
 
@@ -3591,8 +3707,9 @@ arraylist_t  arrayfile_t::readarrays ( int nmax, int verbose ) {
     for ( int i=0; i<nmax; i++ ) {
 
         array_link x = this->readnext();
-        if ( x.index==array_link::INDEX_ERROR )
+        if ( x.index==array_link::INDEX_ERROR ) {
             break;
+        }
         ll.push_back ( x );
     }
     return ll;
@@ -3605,8 +3722,9 @@ array_link arrayfile_t::readnext() {
 }
 
 void arrayfile_t::flush() {
-    if ( this->nfid !=0 )
+    if ( this->nfid !=0 ) {
         fflush ( nfid );
+    }
 #ifdef USEZLIB
     if ( this->gzfid !=0 ) {
         //gzflush(gzfid, Z_SYNC_FLUSH);
@@ -3656,8 +3774,9 @@ int arrayfile_t::read_array ( array_link &a ) {
         copy_array ( diffarray.array, a.array, nrows, ngood );
         //a=diffarray;
 
-        if ( 0 )
+        if ( 0 ) {
             myprintf ( "arrayfile_t::read_array: nrows %d, ncols %d,  nrest %d, ngood %d\n", nrows, ncols, nrest, ngood );
+        }
         this->read_array_binary ( a.array+nrows*ngood, nrows, nrest );
         a.index=index;
         diffarray=a;
@@ -3674,10 +3793,12 @@ int arrayfile_t::read_array ( array_link &a ) {
 
 int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols ) {
     int index=-10;
-    if ( nrows!=this->nrows )
+    if ( nrows!=this->nrows ) {
         myprintf ( "arrayfile_t::read_array: nrows unequal %d %d\n", nrows, this->nrows );
-    if ( ncols!=this->ncols )
+    }
+    if ( ncols!=this->ncols ) {
         myprintf ( "arrayfile_t::read_array: ncols unequal\n" );
+    }
 
     switch ( this->mode ) {
     case arrayfile::ATEXT: {
@@ -3720,7 +3841,8 @@ void arrayfile_t::writeheader() {
         int32_t reserved=0;
 
         if ( this->mode == arrayfile::ABINARY_DIFFZERO ) {
-            // TODO: is this check necessary?
+            // NOTE: needed because in ABINARY_DIFFZERO we diff modulo 2
+            if(this->nbits!=1) printf("not implemented...!\n");
             assert ( this->nbits==1 );
         }
         fwrite ( ( const void* ) & magic,sizeof ( int ),1,this->nfid );
@@ -3729,13 +3851,14 @@ void arrayfile_t::writeheader() {
         fwrite ( ( const void* ) & this->ncols,sizeof ( int ),1,this->nfid );
         fwrite ( ( const void* ) & this->narrays,sizeof ( int ),1,this->nfid );
 
-        if ( this->mode == arrayfile::ABINARY )
+        if ( this->mode == arrayfile::ABINARY ) {
             reserved=1001;
-        else {
-            if ( this->mode == arrayfile::ABINARY_DIFF )
+        } else {
+            if ( this->mode == arrayfile::ABINARY_DIFF ) {
                 reserved=1002;
-            else
+            } else {
                 reserved=1003;
+            }
         }
         fwrite ( ( const void* ) & reserved,sizeof ( int ),1,this->nfid );
         reserved=9999;
@@ -3828,16 +3951,20 @@ arraylist_t  readarrayfile ( const char *fname, int verbose, int *setcols ) {
  */
 int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, colindex_t *setcols, rowindex_t *setrows, int *setbits ) {
     //verbose=3;
-    if ( arraylist==0 )
+    if ( arraylist==0 ) {
         arraylist = new arraylist_t;
+    }
 
     arrayfile_t *afile = new arrayfile_t ( fname, verbose );
-    if ( setcols!=0 )
+    if ( setcols!=0 ) {
         ( *setcols ) = afile->ncols;
-    if ( setrows!=0 )
+    }
+    if ( setrows!=0 ) {
         ( *setrows ) = afile->nrows;
-    if ( setbits!=0 )
+    }
+    if ( setbits!=0 ) {
         ( *setbits ) = afile->nbits;
+    }
 
     if ( ! afile->isopen() ) {
         if ( verbose ) {
@@ -3849,8 +3976,9 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
     }
 
     int narrays = afile->narrays;
-    if ( afile->narrays<0 )
+    if ( afile->narrays<0 ) {
         narrays = arrayfile_t::NARRAYS_MAX;
+    }
 
     array_link *alink;
     long i;
@@ -3861,8 +3989,9 @@ int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose, col
             log_print ( QUIET, "readarrayfile: loading arrays: %d/%d\n", i, afile->narrays );
         }
 
-        if ( verbose>=3 )
+        if ( verbose>=3 ) {
             myprintf ( "readarrayfile: i %ld\n", i );
+        }
         alink = new array_link ( afile->nrows, afile->ncols, i+1 );
         index=afile->read_array ( *alink );
 
@@ -3904,8 +4033,9 @@ int writearrayfile ( const char *fname, const arraylist_t *arraylist, arrayfile:
             // special case: diffzero should always have 1 bit files
             nb=1;
         }
-        if ( nrows<=0 )
+        if ( nrows<=0 ) {
             myprintf ( "writearrayfile: warning: empty list, using nrows %d, ncols %d\n", nrows, ncols );
+        }
     } else {
         nrows=arraylist->at ( 0 ).n_rows;
         ncols = arraylist->at ( 0 ).n_columns;
@@ -3995,8 +4125,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
     this->filename = fname;
     this->narrays=-1;	// initialize to -1
 
-    if ( verbose>=3 )
+    if ( verbose>=3 ) {
         printfd ( "start\n" );
+    }
 
     std::string gzname = fname+".gz";
     //myprintf("arrayfile_t::arrayfile_t: %s -> %s\n", fname.c_str(), gzname.c_str() );
@@ -4010,14 +4141,16 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
 
 #ifdef USEZLIB
     // simple check for compressed files
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         printfd ( "zlib file %s\n", fname.c_str() );
+    }
     if ( fname.substr ( fname.find_last_of ( "." ) + 1 ) == "gz" ) {
         this->iscompressed=1;
         this->gzfid = gzopen ( fname.c_str(), "rb" );
         this->nfid=0;
-        if ( verbose>=2 )
+        if ( verbose>=2 ) {
             myprintf ( "   opened file |%s| in compressed mode: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
+        }
     } else {
         this->iscompressed=0;
         this->nfid = fopen ( fname.c_str(), "r+b" );
@@ -4029,8 +4162,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
             printfd ( "written %d bytes...\n", r );
         }
         this->gzfid=0;
-        if ( verbose>=2 )
+        if ( verbose>=2 ) {
             myprintf ( "   opened file |%s|: nfid %ld, gzfid %ld\n", fname.c_str(), ( long ) this->nfid, ( long ) this->gzfid );
+        }
     }
 #else
     this->iscompressed=0;
@@ -4039,8 +4173,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
     this->gzfid=0;
 #endif
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( " nfid %ld, gzfid %ld, isopen %d \n", ( long ) nfid, ( long ) gzfid, this->isopen() );
+    }
 
     if ( ! this->isopen() ) {
         if ( verbose ) {
@@ -4066,8 +4201,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
     }
 #endif
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "arrayfile_t: reading array file %s, magic %d\n", fname.c_str(), magic );
+    }
 
 
 // read the header
@@ -4132,8 +4268,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
             return;
         }
 
-        if ( result!=1 )
+        if ( result!=1 ) {
             myprintf ( "open binary file: wrong count in afread! %d\n", result );
+        }
     } else {
         if ( iscompressed ) {
             if ( verbose ) {
@@ -4154,8 +4291,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
         int r = fread ( buf, sizeof ( char ), 1, this->nfid );
         if ( buf[0] < 48 || buf[0] > 57 || r<0 ) {
             // myprintf("   read char %d\n", int(buf[0]));
-            if ( verbose>=1 )
+            if ( verbose>=1 ) {
                 myprintf ( "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+            }
             this->closefile();
             return;
 
@@ -4169,8 +4307,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
             myprintf ( "arrayfile_t: text mode: header %d %d %d\n",  this->ncols, this->nrows, this->narrays );
         }
         if ( this->nrows<0 || this->nrows>20000 || this->ncols<0 || this->ncols>10000 || this->narrays<0 ) {
-            if ( verbose>=1 )
+            if ( verbose>=1 ) {
                 myprintf ( "   problem opening file %s (iscompressed %d)\n", fname.c_str(), this->iscompressed );
+            }
             this->nfid=0;
             this->gzfid=0;
         }
@@ -4180,8 +4319,9 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose ) {
 
     narraycounter=0;
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "   arrayfile_t::arrayfile_t: mode %d, nrows %d, ncols %d, narrays %d\n", mode, this->nrows, this->ncols, this->narrays );
+    }
 
 }
 
@@ -4215,12 +4355,14 @@ int save_arrays ( arraylist_t &solutions, const arraydata_t *ad, const int n_arr
 
 
 void arrayfile_t::closefile() {
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "arrayfile_t::closefile(): nfid %ld\n", ( long ) nfid ) ;
+    }
 
     if ( ! this->isopen() ) {
-        if ( verbose>=2 )
+        if ( verbose>=2 ) {
             myprintf ( "arrayfile_t::closefile(): file already closed\n" ) ;
+        }
         return;
     }
     //   myprintf ( "arrayfile_t: closefile(): filename %s, nfid %ld, narrays %d, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narrays, narraycounter, this->rwmode );
@@ -4250,18 +4392,21 @@ void arrayfile_t::closefile() {
 
 void arrayfile_t::updatenumbers() {
     if ( narraycounter>=0 && narrays==-1 && ( this->rwmode==WRITE || this->rwmode==READWRITE ) && this->isbinary() ) {
-        if ( verbose>=2 )
+        if ( verbose>=2 ) {
             myprintf ( "arrayfile_t: updating numbers %d->%d\n", narrays, narraycounter );
-        if ( verbose>=3 )
+        }
+        if ( verbose>=3 ) {
             myprintf ( "arrayfile_t: nfid %ld\n", long ( nfid ) );
+        }
         if ( nfid != 0 ) {
             long pos = ftell ( nfid );
             //myprintfd("seek to from %ld to 4\n", pos);
             int r = fseek ( nfid, 4*sizeof ( int32_t ), SEEK_SET );
             //printfd("seek result %d\n", r);
             r = this->afwrite ( &narraycounter, sizeof ( int32_t ), 1 );
-            if ( verbose>=2 )
+            if ( verbose>=2 ) {
                 myprintf ( "   arrayfile_t::updatenumbers: result of write: %d\n", ( int ) r );
+            }
             fseek ( nfid, pos, SEEK_SET ); // place back pointer
         }
 
@@ -4274,8 +4419,9 @@ arrayfile_t::~arrayfile_t() {
     swigcheck();
 #endif
 
-    if ( verbose>=2 )
+    if ( verbose>=2 ) {
         myprintf ( "arrayfile_t: destructor: filename %s, nfid %ld, narraycounter %d, this->rwmode %d\n", filename.c_str(), ( long ) nfid, narraycounter, this->rwmode );
+    }
 
     closefile();
 }
@@ -4323,17 +4469,17 @@ void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int
     }
     case 8:
 #ifdef USEZLIB
-        if ( this->iscompressed )
+        if ( this->iscompressed ) {
             readblob<char, array_t> ( array, nrows*ncols, this->gzfid );
-        else
+        } else
 #endif
             readblob<char, array_t> ( array, nrows*ncols, this->nfid );
         break;
     case 32:
 #ifdef USEZLIB
-        if ( this->iscompressed )
+        if ( this->iscompressed ) {
             readblob<int32_t, array_t> ( array, nrows*ncols, this->gzfid );
-        else
+        } else
 #endif
             readblob<int32_t, array_t> ( array, nrows*ncols, this->nfid );
         break;
@@ -4368,8 +4514,9 @@ void arrayfile_t::write_array_binary_diff ( const array_link &A ) {
         if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
             ngood++;
 
-        } else
+        } else {
             break;
+        }
     }
 
     int32_t nwrite=A.n_columns-ngood;
@@ -4402,8 +4549,9 @@ void arrayfile_t::write_array_binary_diffzero ( const array_link &A ) {
         if ( ! memcmp ( this->diffarray.array+N*i, A.array+N*i, num ) ) {
             ngood++;
 
-        } else
+        } else {
             break;
+        }
     }
 
     int16_t nwrite=A.n_columns-ngood;
@@ -4416,8 +4564,9 @@ void arrayfile_t::write_array_binary_diffzero ( const array_link &A ) {
         array_link diffrest = this->diffarray.selectLastColumns ( nwrite );
 
         array_link z = rest-diffrest;
-        for ( int i=0; i<z.n_columns*z.n_rows; i++ )
+        for ( int i=0; i<z.n_columns*z.n_rows; i++ ) {
             z.array[i] = ( 2+z.array[i] ) % 2;
+        }
 
         this->write_array_binary ( z );
     } else {
@@ -4446,17 +4595,19 @@ void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const i
 #ifdef OADEBUG
     int m=0;
     for ( int i=0; i<nrows*ncols; ++i )
-        if ( array[i]>m )
+        if ( array[i]>m ) {
             m=array[i];
+        }
     if ( this->nbits==1 ) {
-        if ( m>1 )
+        if ( m>1 ) {
             myprintf ( "arrayfile_t::write_array_binary: ERROR!\n" );
+        }
     }
 #endif
 
-    if ( sizeof ( array_t ) ==sizeof ( int32_t ) && this->nbits==32 )
+    if ( sizeof ( array_t ) ==sizeof ( int32_t ) && this->nbits==32 ) {
         int n = fwrite ( ( const void* ) array,sizeof ( int32_t ),nrows*ncols,nfid );
-    else {
+    } else {
         switch ( this->nbits ) {
         case 8:
             writeblob<array_t, char> ( array, nrows*ncols,nfid );
@@ -4469,10 +4620,11 @@ void arrayfile_t::write_array_binary ( carray_t *array, const int nrows, const i
             BIT_ARRAY* bitarr = bit_array_create ( nrows*ncols );
             // fill bit array
             for ( int i=0; i<nrows*ncols; i++ ) {
-                if ( array[i] )
+                if ( array[i] ) {
                     bit_array_set_bit ( bitarr, i );
-                else
+                } else {
                     bit_array_clear_bit ( bitarr, i );
+                }
             }
             word_addr_t num_of_words = nwords ( nrows*ncols ); //printf("num_of_words: %d\n", (int)num_of_words);
 
@@ -4511,8 +4663,9 @@ int appendarrayfile ( const char *fname, const array_link al ) {
 
     arrayfile_t *afile = new arrayfile_t ( fname );
 
-    if ( dverbose )
+    if ( dverbose ) {
         printf ( "\n### appendarrayfile: opened array file: %s\n", afile->showstr().c_str() );
+    }
 
     if ( ! afile->isopen() ) {
         printf ( "appendarrayfile: creating new array file %s\n", fname );
@@ -4575,8 +4728,9 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
     array_link al ( af.nrows, af.ncols, -1 );
     if ( af.mode==ABINARY ) {
         for ( std::vector<int>::iterator it = idx.begin(); it<idx.end(); ++it ) {
-            if ( verbose )
+            if ( verbose ) {
                 printf ( "selectArrays: idx %d\n", *it );
+            }
             af.seek ( *it );
             af.read_array ( al );
             rl.push_back ( al );
@@ -4589,15 +4743,17 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
             int cpos=0;
             for ( std::vector<int>::iterator it = idx.begin(); it<idx.end(); ++it ) {
                 int pos =  *it;
-                if ( verbose )
+                if ( verbose ) {
                     printf ( "selectArrays: idx %d, cpos %d\n", pos, cpos );
+                }
                 if ( pos<cpos ) {
                     printf ( "selectArrays: arrayfile in text mode and negative seek, aborting!!! %d %d\n", pos, cpos );
                     return;
                 }
                 int nsk=pos-cpos;
-                if ( verbose )
+                if ( verbose ) {
                     printf ( "selectArrays: skipping %d arrays\n", nsk );
+                }
                 for ( int j=0; j< ( nsk ); j++ )  {
                     af.read_array ( al );
                     if ( verbose>=3 ) {
@@ -4613,10 +4769,12 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                 rl.push_back ( al );
             }
         } else {
-            if ( verbose>=2 )
+            if ( verbose>=2 ) {
                 printf ( "selectArrays: text file with unsorted indices, UNTESTED CODE!\n" );
-            if ( verbose )
+            }
+            if ( verbose ) {
                 printf ( "selectArrays: no sorted indices!\n" );
+            }
             if ( verbose>=2 ) {
                 cout << "idx: ";
                 display_vector<int> ( idx );
@@ -4661,8 +4819,9 @@ array_link selectArrays ( const std::string filename, int ii ) {
         af.seek ( ii );
         af.read_array ( al );
     } else {
-        for ( int i=0; i<ii; i++ )
+        for ( int i=0; i<ii; i++ ) {
             af.read_array ( al );
+        }
         af.read_array ( al );
     }
     return al;
@@ -4678,9 +4837,9 @@ void  selectArrays ( const arraylist_t &al,   std::vector<int> &idx, arraylist_t
 }
 void  selectArrays ( const arraylist_t &al,   std::vector<long> &idx, arraylist_t &rl ) {
     for ( std::vector<long>::iterator it = idx.begin(); it<idx.end(); it++ ) {
-        if ( ( *it ) >=0 && ( ( *it ) < ( int ) al.size() ) )
+        if ( ( *it ) >=0 && ( ( *it ) < ( int ) al.size() ) ) {
             rl.push_back ( al.at ( *it ) );
-        else {
+        } else {
             myprintf ( "selectArrays: index %ld out of bounds!\n", *it );
         }
     }
@@ -4690,10 +4849,11 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<int> &idx ) {
     arraylist_t rl;
     for ( std::vector<int>::iterator it = idx.begin(); it<idx.end(); ++it ) {
         int val = *it;
-        if ( val>=0 && val<= ( int ) al.size() )
+        if ( val>=0 && val<= ( int ) al.size() ) {
             rl.push_back ( al.at ( val ) );
-        else
+        } else {
             myprintf ( "selectArrays: error: index out of bounds: index %d, size %d\n", val, ( int ) al.size() );
+        }
     }
     return rl;
 }
@@ -4702,48 +4862,54 @@ arraylist_t  selectArrays ( const arraylist_t &al,   std::vector<long> &idx ) {
     arraylist_t rl;
     for ( std::vector<long>::iterator it = idx.begin(); it<idx.end(); ++it ) {
         int val = *it;
-        if ( val>=0 && val<= ( int ) al.size() )
+        if ( val>=0 && val<= ( int ) al.size() ) {
             rl.push_back ( al.at ( val ) );
-        else
+        } else {
             myprintf ( "selectArrays: error: index out of bounds: index %d, size %ld\n", val, ( long ) al.size() );
+        }
     }
     return rl;
 }
 
 array_link array_link::operator+ ( array_t v ) const {
     array_link tmp = ( *this );
-    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ ) {
         tmp.array[i] += v;
+    }
     return tmp;
 }
 array_link array_link::operator- ( array_t v ) const {
     array_link tmp = ( *this );
-    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ ) {
         tmp.array[i] -= v;
+    }
     return tmp;
 }
 
 array_link array_link::operator+ ( const array_link &b ) const {
     assert ( this->equalsize ( b ) );
     array_link tmp = ( *this );
-    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ ) {
         tmp.array[i] += b.array[i];
+    }
     return tmp;
 }
 
 array_link array_link::operator- ( const array_link &b ) const {
     assert ( this->equalsize ( b ) );
     array_link tmp = ( *this );
-    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ ) {
         tmp.array[i] -= b.array[i];
+    }
     return tmp;
 }
 
 array_link array_link::operator* ( const array_link &rhs ) const {
     assert ( this->equalsize ( rhs ) );
     array_link tmp = ( *this );
-    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ )
+    for ( int i=0; i<tmp.n_columns*tmp.n_rows; i++ ) {
         tmp.array[i] *= rhs.array[i];
+    }
     return tmp;
 }
 
@@ -4847,10 +5013,12 @@ void conference_transformation_t::init ( int nr, int nc ) {
     reset();
 }
 void conference_transformation_t::reset() {
-    for ( size_t i=0; i<rperm.size(); i++ )
+    for ( size_t i=0; i<rperm.size(); i++ ) {
         rperm[i]=i;
-    for ( size_t i=0; i<cperm.size(); i++ )
+    }
+    for ( size_t i=0; i<cperm.size(); i++ ) {
         cperm[i]=i;
+    }
     std::fill ( rswitch.begin(), rswitch.end(), 1 );
     std::fill ( cswitch.begin(), cswitch.end(), 1 );
 }
@@ -4883,12 +5051,14 @@ bool conference_transformation_t::isIdentity() const {
     }
     //	myprintf("isIdentity: rows good\n");
     for ( int c=0; c<ncols; ++c ) {
-        if ( cswitch[c]!=1 )
+        if ( cswitch[c]!=1 ) {
             return 0;
+        }
     }
     for ( int c=0; c<nrows; ++c ) {
-        if ( rswitch[c]!=1 )
+        if ( rswitch[c]!=1 ) {
             return 0;
+        }
     }
     //	myprintf("isIdentity: yes\n");
     return 1;
@@ -4905,13 +5075,15 @@ void conference_transformation_t::randomizerowperm() {
 }
 
 void conference_transformation_t::randomizecolflips() {
-    for ( size_t i=0; i<this->cswitch.size(); i++ )
+    for ( size_t i=0; i<this->cswitch.size(); i++ ) {
         this->cswitch[i] = 2* ( rand() %2 )-1;
+    }
 }
 
 void conference_transformation_t::randomizerowflips() {
-    for ( size_t i=0; i<this->rswitch.size(); i++ )
+    for ( size_t i=0; i<this->rswitch.size(); i++ ) {
         this->rswitch[i] = 2* ( rand() %2 )-1;
+    }
 }
 
 
@@ -4929,5 +5101,46 @@ void conference_transformation_t::randomize() {
         cswitch[x] = 2* ( rand() % 2 ) -1;
     }
 }
+
+int arrayInList ( const array_link &al, const arraylist_t &ll, int verbose ) {
+    for ( size_t jj=0; jj<ll.size(); jj++ ) {
+        const array_link & alx = ll[jj];
+        if ( alx==al.selectFirstColumns ( alx.n_columns ) ) {
+            if ( verbose ) {
+                myprintf ( "arrayInList: found array at position %ld\n", jj );
+            }
+            return jj;
+        }
+    }
+    return -1;
+}
+
+int arrayInFile ( const array_link &al, const char *afile, int verbose ) {
+    bool found=false;
+    arrayfile_t af ( afile );
+    long aidx=-1;
+    for ( long jj=0; jj<af.narrays; jj++ ) {
+
+        array_link alx = af.readnext();
+        if ( alx==al.selectFirstColumns ( alx.n_columns ) ) {
+            if ( verbose ) {
+                myprintf ( "arrayInFile: found array at position %ld\n", jj );
+            }
+            found=true;
+            aidx=jj;
+            break;
+        }
+    }
+    if ( found ) {
+        return aidx;
+    } else {
+        if ( verbose ) {
+            myprintf ( "arrayInFile: could not find array\n" );
+        }
+        return -1;
+    }
+    return -1;
+}
+
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

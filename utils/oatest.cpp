@@ -38,6 +38,11 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "arraytools.h"
 #include "strength.h"
 
+#ifdef HAVE_BOOST
+#include <string>
+#include <boost/filesystem.hpp>
+#endif
+
 using namespace Eigen;
 
 
@@ -213,6 +218,33 @@ array_link array2xf2 ( const array_link &al )
 	return out;
 }
 
+array_link sortrows(const array_link &al)  
+	{
+    const int nc = al.n_columns;
+
+    std::vector<mvalue_t<int> > rr ( al.n_rows );
+    for ( int i=0; i<al.n_rows; i++ ) {
+        mvalue_t<int> &m = rr[i];
+        m.v.resize ( nc );
+
+        for ( int k=0; k<nc; k++ ) {
+            m.v[k]= al.atfast ( i, k );
+        }
+    }
+    indexsort sorter(rr);
+	sorter.show();
+	
+	array_link out(al.n_rows, al.n_columns, 0);
+	for(int r=0; r<al.n_rows; r++) {
+		for (int i=0; i<al.n_columns; i++ ) {
+			int newrow= sorter.indices[r];
+			out._setvalue(r,i,  al.atfast ( newrow,i ) );
+		}			
+	}
+	return out;
+}
+
+
 int main ( int argc, char* argv[] )
 {
 	AnyOption opt;
@@ -261,9 +293,17 @@ int main ( int argc, char* argv[] )
 		srand ( randvalseed );
 	}
 
+	
+
+    
 	if (1)
 {
-	array_link  al = exampleArray(22, 1);
+	array_link  al = exampleArray(2, 1); al=al.randomrowperm();
+	//array_link  al = exampleArray(22, 1);
+	array_link out = sortrows(al);
+	al.showarray();
+	out.showarray();
+	exit(0);
 	al.show();
 	if (1) {
 	printf("## 3\n"); 

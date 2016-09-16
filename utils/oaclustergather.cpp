@@ -236,6 +236,7 @@ int main(int argc, char *argv[])
     opt.setOption("kmin");
     opt.setOption("kmax");
     opt.setOption("format", 'f');
+    opt.setOption("debug");
 
     opt.addUsage("Orthonal Array Cluster Gather: special tool");
     opt.addUsage("Usage: oaclustergather [OPTIONS] ");
@@ -280,6 +281,7 @@ int main(int argc, char *argv[])
     const char *configfile = opt.getStringValue("config", "oaconfig.txt");
     int verbose = opt.getIntValue('v', 1);
     int method = opt.getIntValue("method", 0);
+    int debug = opt.getIntValue("debug", 0);
     int needcleanrun = opt.getIntValue("cleanrun", 1);
     int paretomethod = opt.getIntValue("paretomethod", 0);
     int allowparetodiff = opt.getIntValue("nparetodiff", 0);
@@ -497,6 +499,10 @@ int main(int argc, char *argv[])
 	    }
 	    // loop over all subsections
 	    for (int jj = 0; jj < nsplit[level]; jj++) {
+		if (debug) {
+		// if(jj<560) continue;   
+		 //if(jj>700) continue;   
+		}
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
 		    "numbers-" + splitTag(tovec(lvls, jj)) + ".txt";
@@ -617,7 +623,17 @@ int main(int argc, char *argv[])
 			continue;
 		    }
 		}
+		
 
+		if (debug) {
+		if ( arrayInFile(exampleArray(24), psourcefile.c_str() )>=0 ) {
+		    myprintf("found array! break...\n");
+		    pset.show(2);
+		    debug=10;
+		    //exit(0);
+	    }
+		}
+		
 		long naread = 0;	// number of arrays read
 		{
 		    // blocked read of arrays
@@ -658,6 +674,17 @@ int main(int argc, char *argv[])
 			naread += arraylist.size();
 			loop++;
 		    }
+		}
+		if (debug==10) {
+		    pset.show(2);
+		    
+		     std::vector<array_link> llx = pset.allindices();
+		     arraylist_t ll(llx.begin(), llx.end() );
+		     int jx=arrayInList(exampleArray(24), ll);
+		    myprintf("after merge...jj %d, index in pareto list %d\n", jj, jx);
+		     if(jx<0) {	    
+		    exit(0);
+		     }
 		}
 
 		if (verbose >= 3
@@ -738,6 +765,8 @@ int main(int argc, char *argv[])
 		   double (3600. / 1e6) * double (natotal) /
 		   (get_time_ms() - time0));
 	}
+	
+
     }
 
     if (verbose) {
@@ -753,10 +782,13 @@ int main(int argc, char *argv[])
     /* free allocated structures */
     delete adata;
 
+
+    
     if (cleanrun)
 	return 0;
     else
 	return 1;
+    
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 8; ;
