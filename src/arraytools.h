@@ -371,6 +371,10 @@ public:
     std::string showstr () const;
     void show ( int verbose = 1 ) const;
     void complete_arraydata ();
+    
+    /// check whether the LMC calculation will overflow
+    void lmc_overflow_check () const;
+    
     // complete arraydata but split the column groups at the last column
     void complete_arraydata_fixlast ();
 

@@ -2584,7 +2584,6 @@ void arraydata_t::complete_arraydata() {
     this->calcoaindex ( ad->strength );
 
     /* calculate column group structure */
-//    colindex_t *dummy;
     std::vector<int> xx ( ad->s, ad->s+ad->ncols );
 
     symmetry_group sg ( xx, 0 );
@@ -2597,7 +2596,10 @@ void arraydata_t::complete_arraydata() {
     ad->colgroupsize = new colindex_t[ad->ncolgroups+1];
     std::copy ( sg.gsize.begin(), sg.gsize.end(), ad->colgroupsize );
 
-// check
+}
+
+void arraydata_t::lmc_overflow_check () const {
+    const arraydata_t *ad = this;
 #ifdef FULLPACKAGE
     int nbits = 8*sizeof ( rowsort_value_t );
     rowsort_value_t val=1;
@@ -2607,7 +2609,7 @@ void arraydata_t::complete_arraydata() {
         }
         if ( val != 0 && ( std::numeric_limits<rowsort_value_t>::max() / ( rowsort_value_t ) ad->s[i] ) < val ) {
             // multiplication would exceed range of unsigned
-            myprintf ( "error: LMC checks for %d columns would lead to integer overflow\n", i );
+            printfd ( "error: LMC checks for %d columns would lead to integer overflow\n", i );
             std::cout << "  column: "<< i << ": max rowsort value " << val << printfstring ( " (ncols %d, nbits %d)", ad->ncols, nbits ) << std::endl;
             std::cout << printfstring ( "      (ncols %d, nbits %d, ad->s[i] %d)", ad->ncols, nbits, ad->s[i] ) <<  std::endl;
 
@@ -3926,6 +3928,7 @@ arraydata_t* readConfigFile ( const char *file ) {
     inFile.close();
 
     arraydata_t *ad = new arraydata_t ( s, N, strength, ncols );
+    ad->lmc_overflow_check();
     free ( s );
     return ad;
 }

@@ -211,47 +211,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     hlist.clear();
 }
 
-void mydebug2(array_link al, arraydata_t &adata, OAextend &oaextend, int dverbose=1)
-{
-    lmc_t r=LMC_MORE;
-    int niter=1;
-    if (dverbose<0) {
-        niter=10;
-        dverbose=0 ;
-    }
-    printf("mydebug2! al %d %d\n", al.n_rows, al.n_columns);
-oaextend.setAlgorithm(MODE_J5ORDERX, &adata);
-
-double t0=get_time_ms(), dt;
-
-    LMCreduction_t reduction(&adata);
-
-                   oaextend.setAlgorithm(MODE_J5ORDERX, &adata);
-
-    // pre-compute
-    LMCreduction_t reductionsub = calculateSymmetryGroups( al.deleteColumn(-1), adata,  oaextend);
-
-    dt =get_time_ms()-t0;
-    printf("pre-compute: time: %.3f [ms]\n", 1e3*dt);
-
-    //reductionsub.showColperms(1);
-    if (dverbose) {
-        reductionsub.symms.showColcombs(1);
-        reductionsub.symms.showSymmetries(1);
-    }
-
-    printf("running LMCcheckXX: ");
-    adata.show();
-    lmc_t rn = r;
-    t0 =get_time_ms();
-    for(int ix=0; ix<niter; ix++) {
-        copy_array(al.array, reduction.array, adata.N, adata.ncols); // hack?
-        rn = LMCcheckSymmetryMethod(al, adata, oaextend, reduction, reductionsub, dverbose) ;
-    }
-    dt =get_time_ms()-t0;
-    printf("new lmt_t %d: time: %.3f [ms]\n", rn, 1e3*dt);
-
-}
 
 /**
  * @brief Read in a list of array and check for each of the arrays whether they are in LMC form or not
@@ -349,8 +308,6 @@ int main ( int argc, char* argv[] ) {
         exit ( 1 );
     }
 
-
-
     logstream ( NORMAL ) << "Check mode: " << mode << " (" << modeString ( mode ) << ")" << endl;
 
 
@@ -370,6 +327,8 @@ int main ( int argc, char* argv[] ) {
         array_t *array=al.array;
 
         arraydata_t ad = arraylink2arraydata(al, 0,strength);
+	ad.lmc_overflow_check();
+	
         dyndata_t dynd = dyndata_t ( ad.N );
         OAextend oaextend;
 //		oaextend.setAlgorithm(algmethod, &ad);
