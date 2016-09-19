@@ -1755,7 +1755,7 @@ public:
     /// number of bits used when storing an array
     int nbits;
 
-    /// file mode, can be ATEXT or ABINARY
+    /// file mode, can be ATEXT or ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO
     arrayfilemode_t mode;
     /// file opened for reading or writing
     afilerw_t rwmode;

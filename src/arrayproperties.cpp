@@ -1888,6 +1888,26 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
     return pset;
 }
 
+void addArray(Pareto < mvalue_t < long >, long > &pset, const array_link &al, int idx, int verbose, paretomethod_t paretomethod )
+{
+    pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
+    switch ( paretomethod ) {
+    case PARETOFUNCTION_J5:
+        paretofunction = calculateArrayParetoJ5<array_link>;
+        break;
+    default
+            :
+        break;
+    }
+        Pareto<mvalue_t<long>, long>::pValue p = paretofunction ( al, verbose );
+    pset.addvalue(p, idx);
+}
+
+template  Pareto < mvalue_t < long >, array_link >::pValue calculateArrayParetoJ5<array_link> (const array_link & al, int verbose);
+template  Pareto < mvalue_t < long >, int >::pValue calculateArrayParetoJ5<int> (const array_link & al, int verbose);
+template  Pareto < mvalue_t < long >, long >::pValue calculateArrayParetoJ5<long> (const array_link & al, int verbose);
+
+
 #endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

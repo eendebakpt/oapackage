@@ -5120,7 +5120,7 @@ int arrayInList ( const array_link &al, const arraylist_t &ll, int verbose ) {
 
 int arrayInFile ( const array_link &al, const char *afile, int verbose ) {
     bool found=false;
-    arrayfile_t af ( afile );
+    arrayfile_t af ( afile, 1 );
     long aidx=-1;
     for ( long jj=0; jj<af.narrays; jj++ ) {
 

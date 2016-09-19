@@ -197,6 +197,28 @@ std::vector < int >getLevels(AnyOption & opt)
     return lvls;
 }
 
+void paretoInfo(const array_link alx)
+{
+        std::vector < int >j5 = alx.Jcharacteristics (5);
+    int j5max = vectormax (j5, 0);
+
+    int v1 = (j5max == alx.n_rows);
+    int v2 = 1 - v1;
+
+    int N = alx.n_rows;
+  int rank = array2xf(alx).rank(); 
+  std::vector<int> F4 = alx.Fvalues(4);
+  std::vector<double> gwlp = alx.GWLP();
+printf("pareto data: %d ; ", rank); 
+printf(" %d ", (int)(N*N*gwlp[4]) );
+printf(" ; ");
+display_vector(F4);
+printf(" ; ");
+printf(" %d ; %d", v1, v2);
+printf("\n");
+
+}
+
 const std::string filesep = "/";
 
 /**
@@ -237,6 +259,7 @@ int main(int argc, char *argv[])
     opt.setOption("kmax");
     opt.setOption("format", 'f');
     opt.setOption("debug");
+    opt.setOption("hm"); opt.setOption("lm");
 
     opt.addUsage("Orthonal Array Cluster Gather: special tool");
     opt.addUsage("Usage: oaclustergather [OPTIONS] ");
@@ -500,8 +523,10 @@ int main(int argc, char *argv[])
 	    // loop over all subsections
 	    for (int jj = 0; jj < nsplit[level]; jj++) {
 		if (debug) {
-		// if(jj<560) continue;   
-		 //if(jj>700) continue;   
+		    int hm = opt.getIntValue("hm", 569);
+		    int lm = opt.getIntValue("lm", 568);
+		 if(jj<lm) continue;   
+		 if(jj>hm) continue;   
 		}
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
@@ -626,9 +651,17 @@ int main(int argc, char *argv[])
 		
 
 		if (debug) {
-		if ( arrayInFile(exampleArray(24), psourcefile.c_str() )>=0 ) {
-		    myprintf("found array! break...\n");
+		int apos = arrayInFile(exampleArray(24), psourcefile.c_str() );
+		
+		if ( apos>=0 ) {
+		    myprintf("found array in source file! setting debug to 10...\n");
+		    arraylist_t ll = readarrayfile(psourcefile.c_str());
+		    for(size_t ij=0; ij<ll.size(); ij++) {
+			array_link alx = ll[ij];
+			printf("array %d: ", ij); paretoInfo(alx);
+		}
 		    pset.show(2);
+		    pset.verbose=3;
 		    debug=10;
 		    //exit(0);
 	    }
@@ -709,6 +742,13 @@ int main(int argc, char *argv[])
 	    // write pareto set to disk
 
 	    arraylist_t pp = pset.allindicesdeque();
+	    if (debug) {
+		printf("---\n");
+		arrayInList(exampleArray(24), pp);
+		     std::vector<array_link> llx = pset.allindices();
+		     arraylist_t ll(llx.begin(), llx.end() );
+		     int jx=arrayInList(exampleArray(24), ll);
+	    }
 	    npareto[k] = pset.numberindices();
 
 	    //printfd("cleanrunK %d needcleanrun %d, outputprefix %s\n", cleanrunK,needcleanrun ,outputprefix );
@@ -733,6 +773,10 @@ int main(int argc, char *argv[])
 			   (long) na[k]);
 		writearrayfile(pfile.c_str(), &pp, arrayfilemode, adata->N,
 			       k);
+		if (debug) {
+		    
+		
+	}
 		//fflush ( 0 );
 	    }
 

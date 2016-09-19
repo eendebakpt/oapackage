@@ -252,6 +252,9 @@ Pareto < mvalue_t < long >, long >parsePareto (const arraylist_t & arraylist,
         paretomethod_t paretomethod =
             PARETOFUNCTION_DEFAULT);
 
+//void addArray(Pareto < mvalue_t < long >, long > pset, const array_link &al, int verbose, paretomethod_t paretomethod = PARETOFUNCTION_DEFAULT);
+
+
 /// calculate A3 and A4 value for array
 inline mvalue_t < long >
 A3A4 (const array_link & al)
@@ -311,7 +314,6 @@ inline typename Pareto < mvalue_t < long >, IndexType >::pValue
 calculateArrayParetoRankFA (const array_link & al, int verbose)
 {
     int N = al.n_rows;
-    //int k = al.n_columns;
 
     mvalue_t < long >wm = A3A4 (al);
 
@@ -322,9 +324,6 @@ calculateArrayParetoRankFA (const array_link & al, int verbose)
 
     mvalue_t < long >v = F4 (al);
 
-    // add the 3 values to the combined value
-    //int r = array2xf(al).rank();
-    //int r = arrayrankColPiv(array2xf(al));
 
     int r = arrayrankColPiv (array2secondorder (al)) + 1 + al.n_columns;	// valid of 2-level arrays of strength at least 1
 
@@ -337,6 +336,7 @@ calculateArrayParetoRankFA (const array_link & al, int verbose)
     }
 #endif
 
+    // add the 3 values to the combined value
     typename Pareto < mvalue_t < long >, IndexType >::pValue p;
     p.push_back (r);		// rank of second order interaction matrix
     p.push_back (wm);		// A4
@@ -356,7 +356,6 @@ addJmax (const array_link & al, typename Pareto < mvalue_t < long >,
          IndexType >::pValue & p, int verbose = 1)
 {
     std::vector < int >j5 = al.Jcharacteristics (5);
-
     int j5max = vectormax (j5, 0);
 
     int v1 = (j5max == al.n_rows);
@@ -371,8 +370,7 @@ addJmax (const array_link & al, typename Pareto < mvalue_t < long >,
 }
 
 template < class IndexType >
-inline typename Pareto < mvalue_t < long >, IndexType >::pValue
-calculateArrayParetoJ5 (const array_link & al, int verbose)
+typename Pareto < mvalue_t < long >, IndexType >::pValue calculateArrayParetoJ5 (const array_link & al, int verbose)
 {
     typename Pareto < mvalue_t < long >, IndexType >::pValue p =
         calculateArrayParetoRankFA < IndexType > (al, verbose);
