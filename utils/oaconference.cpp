@@ -278,12 +278,21 @@ int main ( int argc, char* argv[] ) {
 
         if ( output.length() >=1 ) {
             std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
-            printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
+            if (verbose)
+                printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
 
-            if ( outlist.size() < 1000 )
+            if ( outlist.size() < 1000 ) {
+                // small files in text format for easy reading
                 writearrayfile ( outfile.c_str(),outlist, arrayfile::ATEXT, N, extcol+1  );
+            }
             else {
+                // larger files in binary format
+                if ( outlist.size() < 5000 ) {   
                     writearrayfile ( outfile.c_str(),outlist, arrayfile::ABINARY, N, extcol+1 );
+            } else {
+                  writearrayfile ( outfile.c_str(),outlist, arrayfile::ABINARY_DIFF, N, extcol+1 );
+                    
+                }
             }
         }
 
