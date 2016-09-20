@@ -580,6 +580,19 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
     return ff;
 }
 
+/// calculate inner product between partial two permutations
+int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax )
+{
+    int ip=0;
+    size_t nn = a.size();
+    const array_t *b = al.array+col*al.n_rows;
+
+    for ( int i=0; i<rmax; i++ ) {
+        ip+= a[i] * b[i];
+    }
+    return ip;
+}
+
 /// calculate inner product between two permutations
 int innerprod ( const cperm &a, const array_link &al, int col )
 {
@@ -1271,21 +1284,36 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
     int nblocks = alsg.ngroups;
 
 
+
     if ( block==nblocks ) {
         // TODO: make this loop in n-1 case?
 
         ntotal++;
         const int j2start=std::max(0, al.n_columns-2);
         // TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm check)
-        if ( filter.filterJ ( candidate, j2start ) ) {
+        if ( filter.filterJlast ( candidate, j2start ) ) {
             list.push_back ( candidate );
         }
         return;
     }
 
+        const int blocksize = alsg.gsize[block];
 
+		// FIXME: test this feature
+	if (block>nblocks-8 && blocksize>1 && 1) {
+		int r =   alsg.gstart[block]-1;
+
+		bool check = filter.filterJpartial(candidate, r);
+		if (verbose>=2) {
+		int j = partial_inner_product(candidate, filter.als, filter.als.n_columns-1, r);
+			printfd("partial check: block %d/%d:  r %d, j %d, check %d\n", block,nblocks, r, j, check);
+	}		
+		if (!check)
+			return;
+}
     //printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
-    const int blocksize = alsg.gsize[block];
+		if (verbose>=2)
+	printfd("inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size(), blocksize); 
 
     if ( blocksize==1 ) {
         // easy case
@@ -1321,7 +1349,10 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         exit(0);
     }
 */
-    if ( blocksize<3 || block >1 || 1 ) {
+	// FIXME: enable the other branch!!!!!!!
+		if (verbose>=2)
+	printfd("  split\n");
+    if ( blocksize<3 || (block >1 && 0 ) ) {
         unsigned long iter=0;
         std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
         unsigned long nbc=0;
@@ -1355,6 +1386,8 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
             }
             // TODO: run inline filter
         } while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
+		if (verbose>=2)
+			printfd("nbc block %d: %d/%ld\n", block, nbc, iter);
 
         if ( blocksize>10 && 0 ) {
             printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
@@ -1390,7 +1423,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 
         double t0=get_time_ms();
 
-        long n=0;
+        long nbc=0;
         do {
 
             branch_t b = branches.top();
@@ -1412,7 +1445,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
                 }
             }
             if ( b.row==N-1 ) {
-                n++;
+                nbc++;
                 // call the inflate function
                 inflateCandidateExtensionHelper ( list, basecandidate, candidatetmp, block+1, al, alsg, check_indices, ct, verbose, filter,ntotal );
                 continue;
@@ -1422,8 +1455,11 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
             branch ( branches, b, bvals, 0, 3 );
 
         } while ( ! branches.empty() );
+		if (verbose>=2)
+			printfd("nbc block %d: %d/%ld\n", block, nbc, nbc);
+
         if ( showd ) {
-            printfd ( "inflation of large block: blocksize %d: %d branch calls\n", blocksize, n );
+            printfd ( "inflation of large block: blocksize %d: %d branch calls\n", blocksize, nbc );
         }
     }
 }
@@ -1437,8 +1473,8 @@ std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  cons
     std::vector<cperm> cc;
     inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, als, alsg, check_indices, ct, verbose, filter, ntotal );
 
-    if ( verbose>=2 ) {
-        printfd ( "generated %ld/%ld candidates \n", ( long ) cc.size(), ntotal );
+    if ( verbose>=2 || 0) {
+        printfd ( "inflateCandidateExtension: generated %ld/%ld candidates (k %d)\n", ( long ) cc.size(), ntotal, als.n_columns );
     }
     return cc;
 }
@@ -2698,7 +2734,7 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
         if ( verbose >=2 )
             printf ( "## %s: at %d columns: start with %d extensions, to generate extensions for column %d (%d column array)\n", tag, kx+1, ( int ) ccX.size(), kx+1 , kx+2 );
 
-        cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, verbose>=2 );
+        cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, (verbose>=2)*(verbose-1) );
 
         cci = filter.filterListZero ( cci );
 

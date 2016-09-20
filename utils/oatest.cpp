@@ -16,6 +16,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include <algorithm>
 #include <map>
 
+#include "graphtools.h"
 #include "arraytools.h"
 #include "arrayproperties.h"
 #include "anyoption.h"
@@ -293,7 +294,22 @@ int main ( int argc, char* argv[] )
 		srand ( randvalseed );
 	}
 
-	
+{
+
+		arraylist_t ll = readarrayfile("x.oa");
+		array_link al = ll[0];
+		//int ctype=2;
+		conference_t ctype(al.n_rows, al.n_rows);
+		ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
+		ctype.ctype=conference_t::DCONFERENCE;
+		
+	    CandidateGeneratorDouble cgenerator ( array_link() , ctype );
+		cgenerator.verbose=verbose;
+
+       std::vector<cperm> cc = cgenerator.generateDoubleConfCandidates ( al );
+	printfd("generated %d\n", cc.size() );
+		exit(0);
+}
 
     
 	if (1)

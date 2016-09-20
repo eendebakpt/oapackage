@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <algorithm>
 
+
 #include "arraytools.h"
 #include "graphtools.h"
 #include "arrayproperties.h"
@@ -22,6 +23,10 @@ inline void print_cperm ( const cperm &c )
         printf ( "%3d", c[i] );
     }
 }
+
+/// partial inner product
+int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax ) ;
+
 
 /// show a list of candidate extensions
 inline void showCandidates ( const std::vector<cperm> &cc )
@@ -546,6 +551,16 @@ public:
         ngood++;
         return true;
     }
+    
+    /// filter on partial column (only last col)
+    // r the number of rows that are valid
+    bool filterJpartial(const cperm &c, int r ) const {
+        const int N = als.n_rows;
+        int j = partial_inner_product(c, this->als, als.n_columns-1, r);
+        if (std::fabs(j)> (N-r) )
+            return false;
+        else return true;
+    }
     /// return True of the extension satisfies all J-characteristic checks
     bool filterJ ( const cperm &c, int j2start=0 ) const
     {
@@ -558,6 +573,26 @@ public:
         if ( filterj3 ) {
             // perform inner product check for all columns
             if ( ! this->filterJ3 ( c ) ) {
+                return false;
+            }
+        }
+        ngood++;
+        return true;
+    }
+
+        /// return True of the extension satisfies all J-characteristic checks for the last columns 
+    bool filterJlast ( const cperm &c, int j2start=0 ) const
+    {
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, j2start ) ) {
+                return false;
+            }
+        }
+        int startidx = this->dtable.n_columns-this->als.n_columns;
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3s( c, startidx ) ) {
                 return false;
             }
         }
@@ -621,6 +656,48 @@ public:
         return true;
     }
 
+        /// return True of the candidate satisfies the J3 check for specified pairs
+    bool filterJ3s ( const cperm &c, int idxstart ) const
+    {
+        const int nc = dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=nc-1; idx1>=idxstart; idx1-- ) {
+            jv=0;
+
+            const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+        /// return True of the candidate satisfies the J3 check
+    bool filterJ3r ( const cperm &c ) const
+    {
+        const int nc = dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=nc-1; idx1>=0; idx1-- ) {
+            jv=0;
+
+            const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
     /// return True of the candidate satisfies the J3 check
     bool filterJ3inline ( const cperm &c ) const
     {
