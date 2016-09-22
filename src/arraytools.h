@@ -887,6 +887,9 @@ public:
     /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
     std::string md5 () const;
 
+    /// return true if two columns are equal
+    bool columnEqual(int rl, const array_link &rhs, int rr) const;
+    
     /// return index of first different column
     int firstColumnDifference ( const array_link & A ) const;
 

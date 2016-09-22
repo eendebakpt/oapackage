@@ -688,6 +688,24 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
     this->setarraydata ( data, nrows*ncols );
 }
 
+bool array_link::columnEqual(int cl, const array_link &rhs, int cr) const
+{
+   if (this->n_rows!=rhs.n_rows)
+       return false;
+    assert(cl>=0); assert(cl<this->n_columns);
+    assert(cr>=0); assert(cr<rhs.n_columns);
+   const array_t *pl=this->array+this->n_rows*cl;
+   const array_t *pr=rhs.array+this->n_rows*cr;
+   
+    for ( int r = 0; r < this->n_rows; r++ ) {
+            if (pl[r]!=pr[r]) {
+            //if ( this->atfast ( r, cl ) != rhs.atfast ( r, cr ) ) {            
+                return false;
+            }
+        }
+    return true;
+}
+
 int array_link::firstColumnDifference ( const array_link &A ) const {
     int r=-1, c=-1;
     this->firstDiff ( A, r, c, 0 );

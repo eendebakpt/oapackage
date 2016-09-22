@@ -298,6 +298,15 @@ int main ( int argc, char* argv[] )
 
 		arraylist_t ll = readarrayfile("x.oa");
 		array_link al = ll[0];
+
+		if (1) {
+		printf("test conf foldover\n");
+		for(int i=0; i<(int) ll.size(); i++) {
+			isConferenceFoldover(ll[i]);
+			
+		}
+		exit(0);
+		}
 		//int ctype=2;
 		conference_t ctype(al.n_rows, al.n_rows);
 		ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
@@ -306,8 +315,10 @@ int main ( int argc, char* argv[] )
 	    CandidateGeneratorDouble cgenerator ( array_link() , ctype );
 		cgenerator.verbose=verbose;
 
-       std::vector<cperm> cc = cgenerator.generateDoubleConfCandidates ( al );
+		for(int i=0; i<(int) ll.size(); i++) {
+       std::vector<cperm> cc = cgenerator.generateDoubleConfCandidates ( ll[i] );
 	printfd("generated %d\n", cc.size() );
+		}
 		exit(0);
 }
 

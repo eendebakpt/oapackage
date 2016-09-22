@@ -271,13 +271,15 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
     for ( int i=0; i<al.n_rows; i++ ) {
 		if (ri[i]>-1)
 			continue;
-        array_link alx = alt.selectColumns ( i );
+        //array_link alx = alt.selectColumns ( i );
         int foundcol=0;
-        for ( int j=i; j<al.n_rows; j++ ) {
+        for ( int j=i+1; j<al.n_rows; j++ ) {
 			if (ri[j]>-1 )
 				continue;
-            array_link alx2 = alt2.selectColumns ( j );
-            if ( alx==alx2 ) {
+            //array_link alx2 = alt2.selectColumns ( j ); 
+            //assert ( alt.columnEqual(i, alt2, j)==(alx==alx2) );
+			if (alt.columnEqual(i, alt2, j) ) {
+			//if ( alx==alx2 ) {
                 foundcol=1;
 				ri[i]=j;
 				ri[j]=i;
