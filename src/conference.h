@@ -62,8 +62,8 @@ public:
     colindex_t ncols;	/** total number of columns (factors) in the design */
 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
-    conference_type ctype;
-    matrix_isomorphism_t itype;
+    conference_type ctype; /// defines the type of matrices
+    matrix_isomorphism_t itype; /// defines the isomorphism type 
 
     bool j3zero;
     bool j1zero; /// for the double conference type matrices
@@ -81,6 +81,7 @@ public:
 
     arraylist_t createDconferenceRootArrays ( ) const
     {
+        //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
 
         arraylist_t lst;
         array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
@@ -136,15 +137,29 @@ public:
         case DCONFERENCE: {
             switch ( this->itype ) {
             case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                //const int j1zero=1;
                 arraylist_t tmp = this->createDconferenceRootArrays ( );
                 lst.insert ( lst.end(), tmp.begin(), tmp.end() );
             }
             break;
             case CONFERENCE_ISOMORPHISM:
+            {
+                if (this->j1zero) {
+                 printfd("ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n");   
+                }
+                if (this->j3zero) {
+                 printfd("ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n");   
+                }
+                assert(this->j1zero==0);
+                assert(this->j3zero==0);
+                arraylist_t tmp = this->createDconferenceRootArrays ( );
+                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+            }
+            break;
             default
                     :
-                printfd ( "not implemented (itype %d)\n", this->itype );
+                
+                printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
+                exit(0);
             }
         }
         }
@@ -310,7 +325,7 @@ public:
     CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
 
     /** generate candidates with caching
-     * this method uses symmetry inflation
+     * this method uses symmetry inflation, assumes j1=0 and j2=0
      */
     const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
 
@@ -383,6 +398,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
 
+// TODO: refactor arguments
 std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0, int filtersymminline = 1 );
 
 

@@ -349,6 +349,7 @@ message(STATUS "Progs: ${progs}")
 
 ###############
 #message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
+if (0)
 ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc} 
   add_compile_flags(oagraph)
   TARGET_LINK_LIBRARIES(oagraph oalib)
@@ -364,6 +365,7 @@ ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc}
   if(ZLIB_FOUND)
 	TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
   endif()
+endif()
 
 ###############
 

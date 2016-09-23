@@ -141,7 +141,8 @@ int main ( int argc, char* argv[] ) {
     opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
     opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
     opt.addUsage ( printfstring ( " --ctype [TYPE]				Zero for normal type, %d for diagonal, %d for double conference type ",conference_t::CONFERENCE_DIAGONAL, conference_t::DCONFERENCE ).c_str() );
-    opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM ).c_str() );
+    opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM ).c_str() );
+    opt.addUsage ( " --j1zero [INT]             Restrict designs to J1=0" );
     opt.addUsage ( " --j3zero [INT]		Restrict designs to J3=0" );
     opt.processCommandArgs ( argc, argv );
 
@@ -210,7 +211,8 @@ int main ( int argc, char* argv[] ) {
     }
 
     if ( ctype.ctype==conference_t::DCONFERENCE ) {
-        kmax=std::min ( ( int ) ( ceil ( N/2 ) +2 ), kmax );
+        if (ctype.j1zero==1)
+            kmax=std::min ( ( int ) ( ceil ( N/2 ) +2 ), kmax );
     }
 
     if ( verbose ) {

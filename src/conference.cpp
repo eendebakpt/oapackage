@@ -1495,6 +1495,8 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 {
     printf ( "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n", filtersymm, filtersymminline, filterj2, filterj3 );
 
+	assert(ct.j1zero==1);
+	
     const int N = al.n_rows;
     DconferenceFilter dfilter ( al, filtersymm, filterj2 );
 
@@ -1618,10 +1620,14 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
     return cc;
 }
 
-
-std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip, int filterj3 )
+/** generate double conference matrices
+ * 
+ * Old vesion that still can handle the j1zero=0 case
+ * 
+ **/
+std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
 {
-    assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM );
+    assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM  || ct.itype==CONFERENCE_ISOMORPHISM);
 
     int j1zero = ct.j1zero;
 
@@ -1630,12 +1636,16 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
     const int N = ct.N;
     cperm c ( N );
 
+	
     DconferenceFilter dfilter ( al, filtersymm, filterip );
     dfilter.filterfirst=1;
-    dfilter.filterj3=filterj3;
+    dfilter.filterj3=ct.j3zero;
     unsigned long n=0;
     for ( int i=0; i<N-2; i++ ) {
-        // fill initial permutation
+        if ( j1zero && i!= ( N-2 ) /2 )
+            continue;
+
+		// fill initial permutation
         std::fill ( c.begin(), c.end(), -1 );
         c[0]=0;
         c[1]=0;
@@ -1644,8 +1654,6 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
 
         std::sort ( c.begin(), c.end() );
 
-        if ( j1zero && i!= ( N-2 ) /2 )
-            continue;
 
         do {
             //cout << s1 << endl;
@@ -1659,7 +1667,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
 
     //printfd ( "generateDoubleConferenceExtensions: before filter generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
     //cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
-    if ( verbose || 1 ) {
+    if ( verbose || 0 ) {
         printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
         //al.show();
         //al.transposed().showarray(); showCandidates ( cc );
@@ -1726,8 +1734,6 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
 
     // now get candidate columns for the normal case, afterwards convert then using the rowsorter and row negations
 
-    printfd ( "TODO: factor next block into a function (also in the other function)\n" );
-
     // loop over all possible first combinations
     std::vector<cperm> ff = get_first ( N, kz, verbose );
 
@@ -1774,7 +1780,6 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
         printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
 
     // perform row symmetry check
-
     std::vector<cperm> e2 = filterCandidates ( extensions, al,  filtersymm,  filterip,  verbose );
 
     if ( verbose>=1 )
@@ -1822,21 +1827,27 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
     if ( verbose )
         printf ( "--- extend_double_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype );
 
+	//ct.j1zero
+	
     int filterip=1;
     int filtersymm=1;
     std::vector<cperm> cc;
 
     //cgenerator.generateDoubleConferenceExtensions(al, ct, verbose, filterip, 1);
 
-    if ( k>=3 && filtersymm && filterip && 1 ) {
+    if ( k>=3 && filtersymm && filterip && ct.j1zero==1 && 1 ) {
         //cgenerator.last_valid=0;
         // FIXME: for large symmetry blocks start with k higher!
         cc = cgenerator.generateDoubleConfCandidates ( al );
     } else {
-        if ( k>3 ) {
+        if ( k>3 && ct.j1zero==1 ) {
             cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1 );
-        } else
-            cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
+        } else {
+         if (ct.j1zero==1)
+			 cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
+		 else
+			 cc= generateDoubleConferenceExtensions2 ( al, ct, verbose, filtersymm, filterip );
+		}
     }
 
     if ( ct.j3zero ) {
@@ -2697,7 +2708,8 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
 
     const char *tag = "generateDoubleConfCandidates (cache)";
     const int filterj2=1;
-    const int filterj3=1;
+	assert(ct.j1zero==1);
+    const int filterj3=ct.j3zero;
     double t00=get_time_ms();
 
     int startcol = this->startColumn ( al );
