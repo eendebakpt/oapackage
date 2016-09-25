@@ -400,7 +400,7 @@ foreach(item ${extendprogs})
 endforeach()
 
 if(Boost_FOUND)
-  foreach(item ${progs} ${extendprogs} oagraph)
+  foreach(item ${progs} ${extendprogs})
     target_link_libraries(${item} ${Boost_LIBRARIES})
   endforeach()
 endif()

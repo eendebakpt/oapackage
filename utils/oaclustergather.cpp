@@ -523,15 +523,10 @@ int main(int argc, char *argv[])
 	    // loop over all subsections
 	    for (int jj = 0; jj < nsplit[level]; jj++) {
 		if (debug) {
-<<<<<<< cbe98590ac30c016a2463eff8db318d66e753539
 		    int hm = opt.getIntValue("hm", 569);
 		    int lm = opt.getIntValue("lm", 568);
 		 if(jj<lm) continue;   
 		 if(jj>hm) continue;   
-=======
-		    if(jj<lm) continue;   
-		    if(jj>hm) continue;   
->>>>>>> add example aray
 		}
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
@@ -665,7 +660,7 @@ int main(int argc, char *argv[])
 		    arraylist_t ll = readarrayfile(psourcefile.c_str());
 		    for(size_t ij=0; ij<ll.size(); ij++) {
 			array_link alx = ll[ij];
-			printf("array %d: ", ij); paretoInfo(alx);
+			printf("array %d: ", (int) ij); paretoInfo(alx);
 		}
 		    pset.show(2);
 		    pset.verbose=3;
