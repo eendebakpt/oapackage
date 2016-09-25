@@ -523,10 +523,15 @@ int main(int argc, char *argv[])
 	    // loop over all subsections
 	    for (int jj = 0; jj < nsplit[level]; jj++) {
 		if (debug) {
+<<<<<<< cbe98590ac30c016a2463eff8db318d66e753539
 		    int hm = opt.getIntValue("hm", 569);
 		    int lm = opt.getIntValue("lm", 568);
 		 if(jj<lm) continue;   
 		 if(jj>hm) continue;   
+=======
+		    if(jj<lm) continue;   
+		    if(jj>hm) continue;   
+>>>>>>> add example aray
 		}
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
@@ -642,8 +647,10 @@ int main(int argc, char *argv[])
 		    }
 		    cleanrun = 0;
 		    cleanrunK = 0;
-		    if (needcleanrun)
+		    if (needcleanrun) {
+			printfd("found an error, aborting the program...\n");
 			exit(1);
+		    }
 		    else {
 			continue;
 		    }
@@ -767,10 +774,12 @@ int main(int argc, char *argv[])
 		}
 		std::string pfile = basedir + "/" + cdir + pfile0;
 
-		if (verbose)
+		if (verbose) {
 		    printf("  writing pareto file %s (%ld/%ld arrays)\n",
-			   pfile0.c_str(), (long) npareto[k],
-			   (long) na[k]);
+			   pfile0.c_str(), (long) npareto[k], (long) na[k]);
+		    if (verbose>=2)
+			printfd("pfile %s\n", pfile.c_str() );
+		}
 		writearrayfile(pfile.c_str(), &pp, arrayfilemode, adata->N,
 			       k);
 		if (debug) {
