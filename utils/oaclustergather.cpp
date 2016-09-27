@@ -197,25 +197,24 @@ std::vector < int >getLevels(AnyOption & opt)
     return lvls;
 }
 
-void paretoInfo(const array_link alx)
-{
-        std::vector < int >j5 = alx.Jcharacteristics (5);
-    int j5max = vectormax (j5, 0);
+void paretoInfo ( const array_link alx ) {
+    std::vector < int >j5 = alx.Jcharacteristics ( 5 );
+    int j5max = vectormax ( j5, 0 );
 
-    int v1 = (j5max == alx.n_rows);
+    int v1 = ( j5max == alx.n_rows );
     int v2 = 1 - v1;
 
     int N = alx.n_rows;
-  int rank = array2xf(alx).rank(); 
-  std::vector<int> F4 = alx.Fvalues(4);
-  std::vector<double> gwlp = alx.GWLP();
-printf("pareto data: %d ; ", rank); 
-printf(" %d ", (int)(N*N*gwlp[4]) );
-printf(" ; ");
-display_vector(F4);
-printf(" ; ");
-printf(" %d ; %d", v1, v2);
-printf("\n");
+    int rank = array2xf ( alx ).rank();
+    std::vector<int> F4 = alx.Fvalues ( 4 );
+    std::vector<double> gwlp = alx.GWLP();
+    printf ( "pareto data: %d ; ", rank );
+    printf ( " %d ", ( int ) ( N*N*gwlp[4] ) );
+    printf ( " ; " );
+    display_vector ( F4 );
+    printf ( " ; " );
+    printf ( " %d ; %d", v1, v2 );
+    printf ( "\n" );
 
 }
 
