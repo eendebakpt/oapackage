@@ -406,6 +406,8 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 /// sort list of arrays according to LMC-0 ordering
 arraylist_t sortLMC0 ( const arraylist_t &lst );
 
+/// check if array is in LM0 form
+lmc_t LMC0check ( const array_link &al );
 
 /// return true if the design is a foldover array
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
