@@ -490,6 +490,28 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     }
 
     {
+            cprintf ( verbose, "%s: rank calculation using rankStructure\n", bstr );
+
+            for ( int i=0; i<27; i++ ) {
+            array_link al = exampleArray ( i,0 );
+            if ( al.n_columns<5 )
+                continue;
+            al = exampleArray ( i,1 );
+
+            rankStructure rs;
+            rs.verbose=0;
+            int r = array2xf ( al ).rank();
+            int rc = rs.rankxf ( al );
+            if ( verbose>=2 ) {
+                printf ( "rank of example array %d: %d %d\n", i, r, rc );
+            if ( verbose>=3 ) {
+                al.showproperties();
+            }
+            }
+            myassert ( r==rc, "rank calculations" );
+        }
+}
+    {
         cprintf ( verbose, "%s: test dtable creation\n", bstr );
         double t0x=get_time_ms();
 
