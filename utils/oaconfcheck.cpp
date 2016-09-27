@@ -72,16 +72,18 @@ void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std:
 /* calc_rowsort: Helper function to sort rows of a conference array
 al: link to the array, pointer
 colperm: current column permutation of the array, pointer
+sutk_col: sort up to k column
 n_rows: number of rows of the array, int
 n_cols: number of columns of the array, int
 */
-indexsort calc_rowsort(const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols)
+// MOST TIME IS SPENT HERE
+indexsort calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols)
 {
     // Find.. Test stand alone
     std::vector<mvalue_t<int> > rr;
     for ( int i=0; i < n_rows; i++ ) {
         mvalue_t<int> m;
-        for ( int k=0; k < n_cols; k++ )
+        for ( int k=0; k < min(n_cols,sutk_col); k++ )
             // We transform the elements (0,1,-1) to (0,1,2)
             // To perform the sort. We use tha transformations of the array
             m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
@@ -95,13 +97,14 @@ indexsort calc_rowsort(const array_link &al, rowsort_t *rowperm, std::vector<int
 LMC0_sortrows: Compute the new row sort for the array
 \brief Calculate the new order and assign it to the existing
 al: link to the array, pointer
+sutk_col: sort up to column k
 colperm: current column permutation of the array, pointer
 n_rows: number of rows of the array, int
 n_cols: number of columns of the array, int
 */
-void LMC0_sortrows ( const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols )
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols )
 {
-    indexsort aa = calc_rowsort(al, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols);
+    indexsort aa = calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols);
     // Assign the new sorting of the rows
     for (rowindex_t j = 0; j < n_rows; j++){
         rowperm[j].val = aa.indices[j];
@@ -180,7 +183,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
-        LMC0_sortrows ( al, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols );
+        LMC0_sortrows ( al, column+1, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols );
 
         // compare the current pair of columns
         r = lmc0_compare_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm );
@@ -288,7 +291,7 @@ lmc_t LMC0check ( const array_link &al ) {
         rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
 
         /* 3. Find permutation to sort the array*/
-        LMC0_sortrows( al, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols );//
+        LMC0_sortrows( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols );//
 
         /* 4. Select one of two possible sign permutations for the first row */
         int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
