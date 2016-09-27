@@ -22,28 +22,12 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
+#include "mathtools.h"
 
 #include "evenodd.h"
-//<<<<<<< HEAD
-//#include "oadevelop.h"
-//=======
-//>>>>>>> upstream/master
 #include "lmc.h"
 
 #include "conference.h"
-
-/* Define functions that might be in the mathtools.h  file */
-template <class numtype>
-/**
- * Initialiaze a permutation
- * @param perm
- * @param len
- */
-void init_signperm ( std::vector<numtype> &signperm)
-{
-    for ( size_t i=0; i<signperm.size(); i++ )
-        signperm[i]=1;
-}
 
 /* Start the real functions*/
 /*
@@ -55,6 +39,7 @@ rowsignperm: current rowsign permutation, pointer
 column: the column to find the permutation, int
 n_rows: number of rows, n_rows, index
 */
+
 //template<class NumType, class NumTypeIn>
 void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
 
@@ -75,19 +60,25 @@ colperm: current column permutation of the array, pointer
 sutk_col: sort up to k column
 n_rows: number of rows of the array, int
 n_cols: number of columns of the array, int
+rr: Auxiliary variable to save the results of the function
+
+Improvements:
+- Don't sort the whole array each time but sort up to column stuk_col
+- Pass variable rr by reference
 */
 // MOST TIME IS SPENT HERE
-indexsort calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols)
+indexsort calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr)
 {
     // Find.. Test stand alone
-    std::vector<mvalue_t<int> > rr;
+    //std::vector<mvalue_t<int> > rr;
     for ( int i=0; i < n_rows; i++ ) {
         mvalue_t<int> m;
         for ( int k=0; k < min(n_cols,sutk_col); k++ )
             // We transform the elements (0,1,-1) to (0,1,2)
             // To perform the sort. We use tha transformations of the array
             m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
-        rr.push_back ( m );
+        //rr.push_back ( m );
+        rr[ i ] = m; // pass by reference
     }
     indexsort is ( rr );
     return rr;
@@ -102,9 +93,9 @@ colperm: current column permutation of the array, pointer
 n_rows: number of rows of the array, int
 n_cols: number of columns of the array, int
 */
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols )
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr )
 {
-    indexsort aa = calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols);
+    indexsort aa = calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr);
     // Assign the new sorting of the rows
     for (rowindex_t j = 0; j < n_rows; j++){
         rowperm[j].val = aa.indices[j];
@@ -160,7 +151,7 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 
 }
 
-lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, int verbose=0 ) {
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr, int verbose=0 ) {
 
     lmc_t r = LMC_NONSENSE;
 
@@ -183,7 +174,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
-        LMC0_sortrows ( al, column+1, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols );
+        LMC0_sortrows ( al, column+1, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
 
         // compare the current pair of columns
         r = lmc0_compare_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm );
@@ -194,7 +185,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
             // keep column permutation, and column sign permutation
             if ( verbose>=2 )
                 printf ( "EQUAL: LMC0_columns: go to col %d\n", column+1 );
-            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows );
+            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, rr );
         }
         if ( r==LMC_LESS ) {
             // we already know the array is not in minimal form
@@ -249,11 +240,6 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
  * When sorting the rows to do not sort the rows, but use a rowsort_t structure to keep track of the order of rows
  **/
 
-/**
- * Dummy algorithm: only allow column permutations
- *
- *
- */
 lmc_t LMC0check ( const array_link &al ) {
     /*0. Initialize data */
     lmc_t result = LMC_MORE;
@@ -273,10 +259,12 @@ lmc_t LMC0check ( const array_link &al ) {
     // Initialize row order
     dyndata_t rowperm_data = dyndata_t ( nrows );//rowperm_data.show();
     rowsort_t *rowsort = rowperm_data.rowsort;
+
     for (rowindex_t i = 0; i < nrows; i++){
         rowsort[i].val = i;
     } //print_rowsort(rowsort, nrows);
-
+    // Initialize vector to save the results from the rowsort function
+    std::vector<mvalue_t<int> > rr ( nrows );
 
     for (int sel_col = 0; sel_col < ncols; sel_col++){
 
@@ -291,7 +279,7 @@ lmc_t LMC0check ( const array_link &al ) {
         rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
 
         /* 3. Find permutation to sort the array*/
-        LMC0_sortrows( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols );//
+        LMC0_sortrows( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );//
 
         /* 4. Select one of two possible sign permutations for the first row */
         int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
@@ -302,7 +290,7 @@ lmc_t LMC0check ( const array_link &al ) {
 
             /* 5. Select the next column */
             // call the recursive part starting at column 1
-            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, 0 );
+            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr);
             if ( result==LMC_LESS ) {
                 /* FINISH TEST */
                 // we already know the array is not in minimal form
@@ -319,7 +307,6 @@ lmc_t LMC0check ( const array_link &al ) {
         colperm[ sel_col ] = colperm[ 0 ];
         colperm[ 0 ] = first_col;
         init_signperm ( rowsignperm );
-
 
     }
 
