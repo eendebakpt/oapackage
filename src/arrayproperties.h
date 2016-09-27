@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
-//#include <Eigen/Dense>
+#include <Eigen/Dense>
 
 #include "oaoptions.h"
 #include "arraytools.h"
@@ -117,7 +117,7 @@ array_link array2xf (const array_link & al);
 /// add intercept and second order interactions to an array
 Eigen::MatrixXd array2xfeigen (const array_link & al);
 
-/// return rank of an array based on Eigen::ColPivHouseholderQR
+/// return rank of an array based on EigenDecomp (defined at compile time)
 int arrayrankColPiv (const array_link & al);
 
 /// calculate the rank of an array
@@ -135,6 +135,9 @@ Eigen::MatrixXd arraylink2eigen (const array_link & al);
  **/
 class rankStructure
 {
+        typedef Eigen::FullPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
+        //typedef Eigen::ColPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
+
 public:
     array_link alsub;
     int r;
@@ -147,7 +150,7 @@ public:
 
 private:
     /// decomposition of subarray
-    Eigen::ColPivHouseholderQR < Eigen::MatrixXd > decomp;
+    EigenDecomp decomp;
     Eigen::MatrixXd Qi;
 
     /// internal structure
@@ -160,6 +163,7 @@ public:
         this->verbose = verbose;
         ks = 0;
         this->nsub = nsub;
+        this->id = -1;
         ncalc = 0;
         nupdate = 0;
         updateStructure (al);
@@ -167,7 +171,7 @@ public:
     /// constructor
     rankStructure (int nsub = 3, int id = -1)
     {
-        verbose = 0;
+        this->verbose = 0;
         ks = 0;
         this->nsub = nsub;
         this->id = id;
@@ -190,9 +194,10 @@ public:
     {
         this->alsub = al;
         this->ks = al.n_columns;
-        Eigen::MatrixXd A = array2xf (al).getEigenMatrix ();
+        Eigen::MatrixXd A = array2xf(al).getEigenMatrix ();
         decomp.compute (A);
 
+        //Eigen::MatrixXd tmp = decomp.matrixQ (); this->Qi = tmp.inverse();
         this->Qi = decomp.matrixQ ().inverse ();
         //this->Qi = decomp.matrixQ().transpose();
 
@@ -204,7 +209,7 @@ public:
     }
 
     /// helper function
-    Eigen::ColPivHouseholderQR < Eigen::MatrixXd >::PermutationType matrixP ()const
+    EigenDecomp::PermutationType matrixP ()const
     {
         return decomp.colsPermutation ();
     }
@@ -212,7 +217,10 @@ public:
     /// calculate the rank of an array directly
     int rankdirect (const Eigen::MatrixXd & A) const
     {
-        Eigen::ColPivHouseholderQR < Eigen::MatrixXd > lu_decomp (A);
+        EigenDecomp lu_decomp (A);
+        if (0){
+          printf("rankdirect: threshold: %e, rank %d\n", lu_decomp.threshold() , (int) lu_decomp.rank () );
+    }
         int rank = lu_decomp.rank ();
         return rank;
     }
