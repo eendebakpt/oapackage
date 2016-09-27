@@ -306,5 +306,4 @@ long ncombscache(int n, int k)
     return ncombsdata[n][k];
 }
 
-
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
