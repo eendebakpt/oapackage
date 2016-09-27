@@ -554,14 +554,25 @@ calculateArrayParetoJ5Cache ( const array_link & al, int verbose,
     const int N = al.n_rows;
     int r = rs.rankxf ( al );
     mvalue_t < long >wm = A3A4 ( al );
-    mvalue_t < long >v = F4 ( al );
+    mvalue_t < long >f4 = F4 ( al );
 
     typename Pareto < mvalue_t < long >, IndexType >::pValue p;
     p.push_back ( r );		// rank of second order interaction matrix
     p.push_back ( wm );		// A4
-    p.push_back ( v );		// F
+    p.push_back ( f4 );		// F
     addJmax < IndexType > ( al, p, verbose );
 
+    if (0) {
+        printf ( "calculateArrayParetoJ5Cache: %d ; ", r );
+        wm.show_integer();
+        printf ( " ; " );
+        f4.show_integer();
+        printf ( " ; " );
+        p[3].show_integer();
+        printf ( " ; " );
+        p[4].show_integer();
+        printf ( "\n" );
+    }
     return p;
 }
 
