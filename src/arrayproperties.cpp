@@ -818,8 +818,10 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 int arrayrankFullPivQR ( const array_link &al )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    Eigen::FullPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
-    int rank = lu_decomp.rank();
+	FullPivHouseholderQR<Eigen::MatrixXd> qr_decomp(mymatrix.rows(), mymatrix.cols());
+	qr_decomp.compute(mymatrix);
+	qr_decomp.setThreshold(1e-12);
+    int rank = qr_decomp.rank();
     return rank;
 }
 
@@ -842,17 +844,13 @@ int arrayrank ( const array_link &al )
     return rank;
 }
 
-/// return rank of an array based on Eigen::FullPivLU
-int arrayrankInfo ( const array_link &al, int verbose )
-{
-    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    int rank = arrayrankInfo( mymatrix, verbose );
-    return rank;
-}
 
 /// return rank, maxPivot etc.
 int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
 {
+    if (verbose) {
+	printfd("arrayrankInfo\n");
+	}
     Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
     int rank = lu_decomp.rank();
     if (verbose) {
@@ -862,13 +860,45 @@ int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
     Eigen::FullPivHouseholderQR<Eigen::MatrixXd> qr_decomp ( mymatrix );
     int rank2 = qr_decomp.rank();
     if (verbose) {
+		Eigen::MatrixXd qr = qr_decomp.matrixQR();
+		qr_decomp.colsPermutation();
+		
+		Eigen::FullPivHouseholderQR<Eigen::MatrixXd>::PermutationType P = qr_decomp.colsPermutation();
+		 
+		Eigen::MatrixXd R = qr_decomp.matrixQ().inverse() * mymatrix * P;
+		if (verbose>=3) {
+		eigenInfo(R, "arrayrankInfo: R ");
+		std::cout << R << std::endl;
+		std::cout << R.diagonal() << std::endl;
+		}
+		Eigen::VectorXd d = R.diagonal();
+		
+		double dmin = qr_decomp.maxPivot();
+		double dfalse = 0;
+		for(int i=0; i<d.size(); i++) 
+		{
+				double q = std::fabs((double)d(i));
+				//printf("i %d, q %e\n", i, q);
+				if (q<dmin && q > qr_decomp.threshold())
+					dmin=q;
+				if (q>dfalse && q < qr_decomp.threshold())
+					dfalse=q;
+		}
 		double p = qr_decomp.maxPivot();
-        printfd("arrayrankInfo: FullPivHouseholderQR: rank %d, threshold %e, max pivot %e\n", rank, qr_decomp.threshold(), p );
+        printfd("arrayrankInfo: FullPivHouseholderQR: rank %d, threshold %e, max pivot %e, min non-zero pivot %e, false pivot %e\n", rank, qr_decomp.threshold(), p, dmin, dfalse );
     }
 
     return rank;
 }
 
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankInfo ( const array_link &al, int verbose )
+{
+	printfd("xxx\n"); al.show(); fflush(stdout);
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    int rank = arrayrankInfo( mymatrix, verbose );
+    return rank;
+}
 
 /* Helper functions for rankStructure */
 

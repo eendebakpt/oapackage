@@ -226,10 +226,14 @@ int main ( int argc, char* argv[] ) {
         srand ( randvalseed );
     }
 
+    if (0)
         {
             int ei=26;
      
         array_link al = exampleArray ( ei,1 );
+        arrayrankInfo(array2xf(al));
+        exit(0);
+        
         rankStructure rs;
         rs.verbose=r;
         int r = array2xf ( al ).rank();
@@ -250,16 +254,20 @@ int main ( int argc, char* argv[] ) {
     {
         arraylist_t lst = readarrayfile(input);
             rankStructure rs;
-            
-            int r, rc;
+            rs.verbose = r;
+            int r, rc; 
         for ( int i=0; i<(int)lst.size(); i++ ) {
             array_link al = lst[i];
-            //r=arrayrankColPiv( array2xf ( al ) );
             printf("-\n");
+            // arrayrankInfo(array2xf(al));
+               // arrayrankInfo(array2secondorder(al));
+       
+            //r=arrayrankColPiv( array2xf ( al ) );
              r = arrayrank( array2xf ( al ) );
-             rc = arrayrank( array2secondorder( al ) ) + 1 + al.n_columns;
+             //rc = arrayrank( array2secondorder( al ) ) + 1 + al.n_columns;
              //rc = array2secondorder ( al ).rank() + 1 + al.n_columns;
-             //rc = rs.rankxf ( al );
+             rc = rs.rankxf ( al );
+             printf("r %d, rc %d\n", r, rc);
            // myassert ( r==rc, "rank calculations" );
             
         }

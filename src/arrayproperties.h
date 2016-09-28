@@ -126,6 +126,8 @@ int arrayrankColPivQR ( const array_link & al );
 /// calculate the rank of an array
 int arrayrank ( const array_link & al );
 
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankInfo ( const Eigen::MatrixXd &, int verbose = 1 );
 
 /// print information related to rank calculations
 int arrayrankInfo ( const array_link &al, int verbose=1 );
@@ -216,13 +218,15 @@ public:
         return decomp.colsPermutation ();
     }
 
-    /// calculate the rank of an array directly
+    /// calculate the rank of an array directly, uses special threshold
     int rankdirect ( const Eigen::MatrixXd & A ) const {
-        EigenDecomp lu_decomp ( A );
+        EigenDecomp decomp ( A );
+        decomp.setThreshold(1e-12);
+
         if ( 0 ) {
-            printf ( "rankdirect: threshold: %e, rank %d\n", lu_decomp.threshold() , ( int ) lu_decomp.rank () );
+            printf ( "rankdirect: threshold: %e, rank %d\n", decomp.threshold() , ( int ) decomp.rank () );
         }
-        int rank = lu_decomp.rank ();
+        int rank = decomp.rank ();
         return rank;
     }
 
