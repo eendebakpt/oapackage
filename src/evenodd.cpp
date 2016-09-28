@@ -639,6 +639,39 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 }
 
 /// add arrays to set of Pareto results
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose )
+{
+    if ( verbose>=2 ) {
+        printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
+    }
+
+    #pragma omp parallel for schedule(dynamic,1)
+    for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
+        if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
+            printf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+            printf ( "  " );
+            pset.show ( 1 );
+        }
+
+        const array_link &al = arraylist.at ( i );
+
+        /* obtain thread number */
+#ifdef DOOPENMP
+        int tid = omp_get_thread_num();
+#else
+        int tid=0;
+#endif
+        Pareto<mvalue_t<long>, array_link >::pValue p = paretofunction ( al, verbose>=3 );
+
+        #pragma omp critical
+        {
+            // add the new tuple to the Pareto set
+            pset.addvalue ( p, al );
+        }
+    }
+}
+
+/// add arrays to set of Pareto results
 void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose )
 {
     // allocate for fast rank calculations

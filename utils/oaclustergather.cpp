@@ -478,12 +478,13 @@ int main(int argc, char *argv[])
     if (method == 0) {
 	methodtag = "pareto";
 
-	pareto_cb_cache paretofunction =
-	    calculateArrayParetoJ5Cache < array_link >;
-
+	{
+	pareto_cb_cache paretofunction = calculateArrayParetoJ5Cache < array_link >;
 	if (paretomethod)
 	    paretofunction = calculateArrayParetoJ5Cache < array_link >;
-
+	    assert(paretomethod == 1);	// other methods not implemented at this moment...
+        }
+	pareto_cb paretofunction = calculateArrayParetoJ5 < array_link >;
 	assert(paretomethod == 1);	// other methods not implemented at this moment...
 
 	arrayfile::arrayfilemode_t arrayfilemode =
@@ -703,8 +704,7 @@ int main(int argc, char *argv[])
 				 narrays);
 			if (arraylist.size() <= 0)
 			    break;
-			addArraysToPareto(pset, paretofunction, arraylist,
-					  jj, verbose);
+			addArraysToPareto(pset, paretofunction, arraylist, jj, verbose);
 			naread += arraylist.size();
 			loop++;
 		    }

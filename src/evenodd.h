@@ -578,9 +578,9 @@ calculateArrayParetoJ5Cache ( const array_link & al, int verbose,
 
 
 /// add arrays to set of Pareto results
-void addArraysToPareto ( Pareto < mvalue_t < long >, array_link > &pset,
-                         pareto_cb_cache paretofunction,
-                         const arraylist_t & arraylist, int jj, int verbose );
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose );
+/// add arrays to set of Pareto results
+void addArraysToPareto ( Pareto < mvalue_t < long >, array_link > &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose );
 
 /** helper class for indexing statistics of designs
  *

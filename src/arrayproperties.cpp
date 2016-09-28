@@ -815,7 +815,16 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 }
 
 /// return rank of an array based on Eigen::ColPivHouseholderQR
-int arrayrankColPiv ( const array_link &al )
+int arrayrankFullPivQR ( const array_link &al )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::FullPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
+    int rank = lu_decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::ColPivHouseholderQR
+int arrayrankColPivQR ( const array_link &al )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
@@ -828,9 +837,38 @@ int arrayrank ( const array_link &al )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
+	//printfd("threshold %e\n", lu_decomp.threshold() );
     int rank = lu_decomp.rank();
     return rank;
 }
+
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankInfo ( const array_link &al, int verbose )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    int rank = arrayrankInfo( mymatrix, verbose );
+    return rank;
+}
+
+/// return rank, maxPivot etc.
+int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
+{
+    Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
+    int rank = lu_decomp.rank();
+    if (verbose) {
+		double p = lu_decomp.maxPivot();
+        printfd("arrayrankInfo: FullPivLU: rank %d, threshold %e, max pivot %e\n", rank, lu_decomp.threshold(), p );
+    }
+    Eigen::FullPivHouseholderQR<Eigen::MatrixXd> qr_decomp ( mymatrix );
+    int rank2 = qr_decomp.rank();
+    if (verbose) {
+		double p = qr_decomp.maxPivot();
+        printfd("arrayrankInfo: FullPivHouseholderQR: rank %d, threshold %e, max pivot %e\n", rank, qr_decomp.threshold(), p );
+    }
+
+    return rank;
+}
+
 
 /* Helper functions for rankStructure */
 
@@ -899,6 +937,13 @@ Eigen::MatrixXi permM ( int ks, int k, const Eigen::MatrixXi subperm, int verbos
     return pm;
 }
 
+/// return the condition number of a matrix
+double conditionNumber ( const array_link &M ) {
+    Eigen::MatrixXd A = arraylink2eigen ( M );
+    Eigen::JacobiSVD<Eigen::Matrix<double,-1,-1> > svd ( A );
+    double cond = svd.singularValues() ( 0 ) / svd.singularValues() ( svd.singularValues().size()-1 );
+    return cond;
+}
 
 /// calculate the rank of the second order interaction matrix of an array using the cache system
 int rankStructure::rankxf ( const array_link &al )
@@ -931,8 +976,11 @@ int rankStructure::rankxf ( const array_link &al )
         printfd ( "rankStructure: rank0 %d\n", rank0 );
 
 	// special case: the same matrix!
-	if (ks==al.n_columns)
+	if (ks==al.n_columns) {
+		if (verbose)
+			printfd("special case: k==al.n_columns\n");
 		return decomp.rank();
+	}
     Eigen::MatrixXd A = array2xfeigen ( al );
 
     // caculate permutation
@@ -965,6 +1013,9 @@ int rankStructure::rankxf ( const array_link &al )
     if ( verbose>=2 ) {
         printfd ( "rankStructure: ZxSub\n" );
         eigenInfo ( ZxSub );
+		
+		arrayrankInfo(ZxSub, 1);
+		
 		if (verbose>=3) {
 			fflush(stdout);
 			printf("ZxSub\n");

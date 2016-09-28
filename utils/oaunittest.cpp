@@ -317,7 +317,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             array_link al = exampleArray ( idx[ii], 0 );
             myassert ( al.is2level(), "unittest error: input array is not 2-level\n" );
 
-            int r = arrayrankColPiv ( array2xf ( al ) );
+            int r = arrayrankColPivQR ( array2xf ( al ) );
 
             int r3 = ( array2xf ( al ) ).rank();
             myassert ( r==r3, "unittest error: rank of array" );
