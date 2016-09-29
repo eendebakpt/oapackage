@@ -801,6 +801,7 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 {
     int k = al.n_columns;
     int n = al.n_rows;
+	assert(n>=0); assert(k>=0);
 
     Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
 
@@ -1221,7 +1222,10 @@ array_link array2xf ( const array_link &al )
     const int k = al.n_columns;
     const int n = al.n_rows;
     const int m = 1 + k + k* ( k-1 ) /2;
-    array_link out ( n, m, array_link::INDEX_DEFAULT );
+	//assert(k>=0);
+	//assert(n>=0);
+
+	array_link out ( n, m, array_link::INDEX_DEFAULT );
 
     // init first column
     int ww=0;
