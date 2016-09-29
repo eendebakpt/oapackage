@@ -829,8 +829,26 @@ int arrayrankFullPivQR ( const array_link &al )
 int arrayrankColPivQR ( const array_link &al )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
-    int rank = lu_decomp.rank();
+    Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp ( mymatrix );
+    int rank = decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankFullPivLU ( const array_link &al )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::FullPivLU<Eigen::MatrixXd> decomp ( mymatrix );
+    int rank = decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::JacobiSVD
+int arrayrankSVD ( const array_link &al )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::JacobiSVD<Eigen::MatrixXd> decomp ( mymatrix );
+    int rank = decomp.rank();
     return rank;
 }
 

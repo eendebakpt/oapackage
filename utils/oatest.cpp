@@ -226,14 +226,13 @@ int main ( int argc, char* argv[] ) {
         srand ( randvalseed );
     }
 
-    if (0)
-        {
-            int ei=26;
-     
+    if ( 0 ) {
+        int ei=26;
+
         array_link al = exampleArray ( ei,1 );
-        arrayrankInfo(array2xf(al));
-        exit(0);
-        
+        arrayrankInfo ( array2xf ( al ) );
+        exit ( 0 );
+
         rankStructure rs;
         rs.verbose=r;
         int r = array2xf ( al ).rank();
@@ -241,38 +240,76 @@ int main ( int argc, char* argv[] ) {
         printf ( "rank of array %d: %d %d\n", ei, r, rc );
         exit ( 0 );
     }
-    
-    if (0)
-    {
-    array_link al= exampleArray(22,1);
-    al.showarray();
-    symmdata sd(al);
-    sd.show();
-    exit(0);
-}
 
-    {
-        arraylist_t lst = readarrayfile(input);
-            rankStructure rs;
-            rs.verbose = r;
-            int r, rc; 
-        for ( int i=0; i<(int)lst.size(); i++ ) {
-            array_link al = lst[i];
-            printf("-\n");
-            // arrayrankInfo(array2xf(al));
-               // arrayrankInfo(array2secondorder(al));
-       
-            //r=arrayrankColPiv( array2xf ( al ) );
-             r = arrayrank( array2xf ( al ) );
-             //rc = arrayrank( array2secondorder( al ) ) + 1 + al.n_columns;
-             //rc = array2secondorder ( al ).rank() + 1 + al.n_columns;
-             rc = rs.rankxf ( al );
-             printf("r %d, rc %d\n", r, rc);
-           // myassert ( r==rc, "rank calculations" );
-            
-        }
+    if ( 0 ) {
+        array_link al= exampleArray ( 22,1 );
+        al.showarray();
+        symmdata sd ( al );
+        sd.show();
+        exit ( 0 );
+    }
+
+        {
+        /// test performance if different rank algorithms
         
-        exit(0);
+        arraylist_t lst = readarrayfile ( input );
+        rankStructure rs;
+        rs.verbose = r;
+        int r, rc;
+        printf ( "test eigenvalues\n" );
+        for ( int i=0; i< ( int ) lst.size(); i++ ) {
+            array_link al = lst[i];
+            if (verbose>=2)
+                printf ( "-\n" );
+            // arrayrankInfo(array2xf(al));
+            // arrayrankInfo(array2secondorder(al));
+
+
+
+            r = arrayrank ( array2xf ( al ) );
+            //rc = arrayrank( array2secondorder( al ) ) + 1 + al.n_columns;
+            //rc = array2secondorder ( al ).rank() + 1 + al.n_columns;
+            rc = rs.rankxf ( al );
+            //printf ( "r %d, rc %d\n", r, rc );
+            // myassert ( r==rc, "rank calculations" );
+        }
+            printfd("done\n");
+
+        exit ( 0 );
+    }
+    {
+        /// test performance if different rank algorithms
+        
+        arraylist_t lst = readarrayfile ( input );
+        rankStructure rs;
+        rs.verbose = r;
+        int r, rc;
+        printf ( "test performance\n" );
+        for ( int i=0; i< ( int ) lst.size(); i++ ) {
+            array_link al = lst[i];
+            if (verbose>=2)
+                printf ( "-\n" );
+
+            switch ( jj ) {
+            case 0:
+                r=arrayrankColPivQR ( array2xf ( al ) );
+                break;
+            case 1:
+                r=arrayrankFullPivQR ( array2xf ( al ) );
+                break;
+            case 2:
+                r=arrayrankSVD ( array2xf ( al ) );
+                break;
+            case 3:
+                r=arrayrankFullPivLU ( array2xf ( al ) );
+                break;
+
+            }
+
+        }
+            printfd("done\n");
+
+        exit ( 0 );
     }
     {
         for ( int i=0; i<27; i++ ) {
@@ -287,9 +324,9 @@ int main ( int argc, char* argv[] ) {
             int rc = rs.rankxf ( al );
             if ( verbose>=2 ) {
                 printf ( "rank of example array %d: %d %d\n", i, r, rc );
-            if ( verbose>=3 ) {
-                al.showproperties();
-            }
+                if ( verbose>=3 ) {
+                    al.showproperties();
+                }
             }
             myassert ( r==rc, "rank calculations" );
         }
