@@ -63,7 +63,7 @@ public:
 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
     conference_type ctype; /// defines the type of matrices
-    matrix_isomorphism_t itype; /// defines the isomorphism type 
+    matrix_isomorphism_t itype; /// defines the isomorphism type
 
     bool j3zero;
     bool j1zero; /// for the double conference type matrices
@@ -144,10 +144,10 @@ public:
             case CONFERENCE_ISOMORPHISM:
             {
                 if (this->j1zero) {
-                 printfd("ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n");   
+                 printfd("ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
                 }
                 if (this->j3zero) {
-                 printfd("ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n");   
+                 printfd("ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
                 }
                 assert(this->j1zero==0);
                 assert(this->j3zero==0);
@@ -157,7 +157,7 @@ public:
             break;
             default
                     :
-                
+
                 printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
                 exit(0);
             }
@@ -221,7 +221,7 @@ public:
 struct conference_options {
     int maxzpos;
 
-    conference_options ( int maxpos = -1 ); 
+    conference_options ( int maxpos = -1 );
 } ;
 
 /// Class to generate candidate extensions with caching
@@ -416,12 +416,9 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 /// sort list of arrays according to LMC-0 ordering
 arraylist_t sortLMC0 ( const arraylist_t &lst );
 
-<<<<<<< HEAD
 /// check if array is in LM0 form
 lmc_t LMC0check ( const array_link &al );
 
-=======
->>>>>>> 0019c2ab85111f901159982b3686d30e2c5f93ad
 /// return true if the design is a foldover array
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
 
@@ -573,7 +570,7 @@ public:
         ngood++;
         return true;
     }
-    
+
     /// filter on partial column (only last col)
     // r the number of rows that are valid
     bool filterJpartial(const cperm &c, int r ) const {
@@ -602,7 +599,7 @@ public:
         return true;
     }
 
-        /// return True of the extension satisfies all J-characteristic checks for the last columns 
+        /// return True of the extension satisfies all J-characteristic checks for the last columns
     bool filterJlast ( const cperm &c, int j2start=0 ) const
     {
         if ( filterj2 ) {

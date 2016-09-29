@@ -92,6 +92,8 @@ int main ( int argc, char* argv[] ) {
         //al = al.randomrowperm();
         //al = al.randomcolperm();
         al.showarray();
+        symmdata sd(al);
+        sd.show();
         lmc_t r = LMC0check ( al );
         printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
         /* Apply random transformation */
