@@ -443,6 +443,14 @@ public:
         return ! rhs.operator< ( *this );
     }
 
+    void show_integer() const {
+		for(size_t i=0; i<this->v.size(); i++) {
+			printf("%ld", (long)this->v[i] );
+			if (i<this->v.size()-1 )
+				printf(",");
+		}
+	}
+	
     template <class W>
     friend std::ostream& operator<< ( std::ostream& stream, const mvalue_t<W>& mval );
 

@@ -1133,6 +1133,11 @@ AnyOption::printUsage()
     }
 }
 
+void
+AnyOption::addUsage( const std::string line )
+{
+ this->addUsage(line.c_str() ); 
+}
 
 void
 AnyOption::addUsage( const char *line )

@@ -11,17 +11,6 @@
 
 #define NEWINTERFACE
 
-//%feature("shadow") array_link::getarray() %{
-//def getarray(self, *args):
-//  print('getting array: size %d %d' % (self.n_rows, self.n_columns))
-//  x=self.getarraydata(self.n_rows*self.n_columns)
-//  return x.reshape((self.n_columns, self.n_rows)).transpose()
-//  #$action
-//%}
-
-//%template(_int_list) std::vector< int >;
-
-
 //%feature("pythonprepend") array_link::clear() %{
 //  print('gr')
 //%}
@@ -83,9 +72,6 @@ import_array();
 %}
 
 /* Instantiate a few different versions of the template */
-//%template(EigenMatrix2) std::vector<float>;
-//%template(EigenMatrix) Eigen::Matrix<double, Dynamic, Dynamic>;
-
 //%template(EigenMatrix) Eigen::MatrixXd;
 
 /*
@@ -204,15 +190,6 @@ def transformGraphMatrix(G, tr, verbose=1):
 
 
 
-//%pythonappend array_link::initswig() %{
-//   #do something after C++ call
-//   self.__array_interface__ = dict()
-//   self.__array_interface__['version']=3
-//   self.__array_interface__['shape']=(self.n_rows, self.n_columns)
-//   self.__array_interface__['typestr']='<i4'
-//   self.__array_interface__['data']=self.array
-//   print('initswig: Python side: done')
-//%} */ 
 
 %extend array_link {
 %insert("python") %{
@@ -325,6 +302,7 @@ namespace std {
    %template(stringVector) std::vector<std::string>;
    
    %template(map_int_long) std::map<int, long>;
+   
 };
 
 
@@ -365,7 +343,6 @@ import numpy
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
 %template(pairGraphColors) std::pair< array_link  , std::vector<int>  >;
-//%template(intVector) std::vector<int>;
 
 %template(mvalue_t_long) mvalue_t<long>;
 %template(mvalue_t_double) mvalue_t<double>;
@@ -376,11 +353,15 @@ import numpy
 %template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
 %template(mvalueVector) std::vector<mvalue_t<long> >;
 %template(DequeParetoElementLong) std::deque<pareto_element<mvalue_t<long>,long> >;
-//%template(DequeParetoLong) std::deque< Pareto< mvalue_t< long >,long >;
 //%template(GWLPvalueVector2) std::vector<GWLPvalue>; 
 %template(GWLPvalueVector) std::vector< mvalue_t<double> >;
 
 %template(cpermVector) std::vector< cperm >;
+
+%template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
+%template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
+%template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
+
 
 %template(vector_vector_double) std::vector< std::vector<double> >;
 

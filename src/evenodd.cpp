@@ -626,8 +626,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
                     depth_extend_t dextendloop ( dextend );
                     dextendloop.setposition ( extcol+1, i, alocal.size(), dextendsub.valididx.size(), -1 );
 
-                    //if (i==0)	printf ( "depth %d: array %zu/%d: thread %d/%d, omp_get_level() %d, omp_get_nested() %d\n", extcol, i, (int)alocalsize , omp_get_thread_num(), omp_get_num_threads(), omp_get_level(), omp_get_nested() );
-
                     depth_extend_omp ( alocalt,  dextendloop, dlocal2, extcol+1, verbose, nomp+1 );
                 }
             }
@@ -653,10 +651,10 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
         printfd ( "addArraysToPareto: %d arrays\n", ( int ) arraylist.size() );
     }
 
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic,1)
     for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
         if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
-            printf ( "oaclustergather: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+            printf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
             printf ( "  " );
             pset.show ( 1 );
         }
@@ -690,6 +688,7 @@ Jcounter calculateJstatistics ( const char *inputfile, int jj, int verbose )
             printfd ( "problem with file %s\n", afile.filename.c_str() );
         }
         Jcounter jc;
+        //printfd("jc.validData() %d\n", jc.validData() );
         return jc;
     }
 
@@ -758,14 +757,18 @@ Jcounter& Jcounter::operator += ( Jcounter &jc )
 /// read statistics object from disk
 Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 {
+    Jcounter jc;
+
     FILE *fid = fopen ( numbersfile, "rt" );
 
+    if(fid==0) {
+     return jc;   
+    }
     int N=-1;
     int jj=-1;
 
     char line[512];
 
-    Jcounter jc;
 
     if ( fid==0 ) {
         return jc;

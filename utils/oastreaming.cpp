@@ -97,7 +97,6 @@ AnyOption * parseOptions ( int argc, char* argv[], algorithm_t &algorithm )
 		algorithm = ( algorithm_t ) vv;
 	} else
 		algorithm = MODE_AUTOSELECT;
-//  printf("Setting algorithm to %d (val %s -> %d )\n", algorithm, opt->getValue("mode"), algorithm);
 
 	return opt;
 
@@ -114,9 +113,6 @@ AnyOption * parseOptions ( int argc, char* argv[], algorithm_t &algorithm )
   */
 int init_restart ( const char *fname, colindex_t &cols, arraylist_t &solutions )
 {
-//	array_link        *sols;
-//	int index;
-
 	int narrays = readarrayfile ( fname, &solutions, 1, &cols );
 	log_print ( NORMAL, "init_restart: number of arrays: %i\n",narrays );
 
@@ -232,15 +228,10 @@ int main ( int argc, char* argv[] )
 		exit ( 1 );
 	}
 
-	//std::cout << "## inputarrays: " << inputarrays.showstr() << std::endl;
-	//array_link a;
-	//inputarrays.read_array(a);
-	//a.show();
 	colindex_t col_start = inputarrays.ncols;
 	int current_col=col_start;
 	printf ( "## oastreaming: extension of %d arrays from %d to %d columns\n", inputarrays.narrays, col_start+1, col_start+2 );
 	time_t seconds;
-//printf("## current_col %d\n", current_col);
 
 	fflush ( stdout );
 	arraydata_t *adcol = new arraydata_t ( ad, current_col+1 );
@@ -251,7 +242,6 @@ int main ( int argc, char* argv[] )
 	logstream ( NORMAL ) << "oaextend: streaming mode: create file " << fname << std::endl;
 	int nb = arrayfile_t::arrayNbits ( *ad );
 	oaextend.storefile.createfile ( fname, adcol->N, adcol->ncols, -1, mode, nb );
-//printf("## storefile: "); std::cout << oaextend.storefile.showstr() << std::endl;
 
 
 	log_print ( SYSTEM, "Starting with column %d (total time: %.2f [s])\n", current_col + 1, get_time_ms()-Tstart );
@@ -261,9 +251,7 @@ int main ( int argc, char* argv[] )
 	arraylist_t extensionsdummy;
 	for ( int i=0; i<inputarrays.narrays; i++ ) {
 		array_link a ( inputarrays.nrows, inputarrays.ncols, i );
-		//inputarrays.setVerbose(2);
 		inputarrays.read_array ( a );
-		//a.show(); // HACK
 
 		long nextensions = oaextend.storefile.narraycounter;
 		print_progress ( csol, inputarrays.narrays, nextensions, Tstart, current_col );
@@ -272,13 +260,10 @@ int main ( int argc, char* argv[] )
 		csol++;	/* increase current solution */
 	}
 
-
 	long nextensions = oaextend.storefile.narraycounter;
-
 	log_print ( SYSTEM, "Done with column %i, total of %i solutions (time %.2f s))\n", current_col+1, ( int ) nextensions, get_time_ms()-Tstart );
 
 	oaextend.storefile.closefile();
-
 
 	/* report time */
 	time ( &seconds );
@@ -290,11 +275,7 @@ int main ( int argc, char* argv[] )
 
 	delete adcol;
 	delete ad;
-
-
-
 	delete opt;
-
 
 	return 0;
 }

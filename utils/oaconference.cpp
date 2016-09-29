@@ -78,22 +78,30 @@ T2 subvector ( const T2& full, const T& ind ) {
     return target;
 }
 
+enum selection_method {SELECT_RANDOM, SELECT_FIRST};
 
-arraylist_t selectArraysMax ( const arraylist_t &lst, int nmax ) {
+arraylist_t selectArraysMax ( const arraylist_t &lst, int nmax, selection_method method = SELECT_RANDOM, int verbose=0 ) {
     nmax = std::min ( nmax, ( int ) lst.size() );
 
     if ( nmax<0 )
         return lst;
 
+    if (method==SELECT_FIRST) {
+    arraylist_t out(lst.begin(), lst.begin()+nmax);
+    return out;
+        
+    }
     std::vector<size_t> indices ( lst.size() );
     generate ( indices.begin(), indices.end(), rangegenerator ( 0 ) );
-
     std::random_shuffle ( indices.begin(), indices.end() ); // TODO: more efficient with Fischer-Yates shuffle
-    indices.resize ( nmax );
+    indices.resize ( nmax );    
     std::sort ( indices.begin(), indices.end() );
+    
+    if (verbose) {
     printfd ( "indices: generated " );
     display_vector ( indices );
     printf ( "\n" );
+    }
     arraylist_t out = subvector ( lst, indices );
 
     return out;
@@ -105,13 +113,14 @@ int main ( int argc, char* argv[] ) {
     opt.setFlag ( "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
     opt.setOption ( "output", 'o' );
     opt.setOption ( "verbose", 'v' );
-    opt.setOption ( "rr", 'r' );
+    opt.setOption ( "randseed", 'r' );
     opt.setOption ( "kmax", 'k' );
     opt.setOption ( "itype" );
     opt.setOption ( "j1zero" );
     opt.setOption ( "j3zero" );
     opt.setOption ( "rows", 'N' );
     opt.setOption ( "nmax" );
+    opt.setOption ( "nmaxmethod" );
     opt.setOption ( "select", 's' );
     opt.setOption ( "cols" );
     opt.setOption ( "oaconfig", 'c' ); /* file that specifies the design */
@@ -127,11 +136,13 @@ int main ( int argc, char* argv[] ) {
     opt.addUsage ( " -N --rows  			Number of rows " );
     opt.addUsage ( " -k --kmax  			Max number of columns " );
     opt.addUsage ( " --nmax  			Max number of designs to sample for the next stage " );
+    opt.addUsage ( printfstring(" --nmaxmethod [INT]         Method (FIRST %d, RANDOM %d) ", SELECT_FIRST, SELECT_RANDOM).c_str() );
     opt.addUsage ( " -v --verbose [INT] 			Verbosity level " );
     opt.addUsage ( " -i --input [FILENAME]		Input file to use" );
     opt.addUsage ( " -o --output [FILEBASE]		Output file to use" );
     opt.addUsage ( printfstring ( " --ctype [TYPE]				Zero for normal type, %d for diagonal, %d for double conference type ",conference_t::CONFERENCE_DIAGONAL, conference_t::DCONFERENCE ).c_str() );
-    opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM ).c_str() );
+    opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM ).c_str() );
+    opt.addUsage ( " --j1zero [INT]             Restrict designs to J1=0" );
     opt.addUsage ( " --j3zero [INT]		Restrict designs to J3=0" );
     opt.processCommandArgs ( argc, argv );
 
@@ -147,6 +158,7 @@ int main ( int argc, char* argv[] ) {
     int N = opt.getIntValue ( 'N', 10 );
     int kmax = opt.getIntValue ( 'k', N );
     int nmax = opt.getIntValue ( "nmax", -1 );
+    selection_method nmaxmethod = (selection_method)opt.getIntValue ( "nmaxmethod", SELECT_FIRST );
     int select = opt.getIntValue ( 's', 1 );
     const conference_t::conference_type ctx = ( conference_t::conference_type ) opt.getIntValue ( "ctype", 0 );
     const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
@@ -199,7 +211,8 @@ int main ( int argc, char* argv[] ) {
     }
 
     if ( ctype.ctype==conference_t::DCONFERENCE ) {
-        kmax=std::min ( ( int ) ( ceil ( N/2 ) +2 ), kmax );
+        if (ctype.j1zero==1)
+            kmax=std::min ( ( int ) ( ceil ( N/2 ) +2 ), kmax );
     }
 
     if ( verbose ) {
@@ -254,21 +267,34 @@ int main ( int argc, char* argv[] ) {
         sort ( outlist.begin(), outlist.end(), compareLMC0 );
 
         if ( ctype.ctype==conference_t::DCONFERENCE ) {
+            long nevenodd=0;
             for ( size_t i=0; i<outlist.size(); i++ ) {
-                if ( ! isConferenceFoldover ( outlist[i] ) )
-                    printfd ( "#### found an even-odd conference matrix!!!\n" );
+                if ( ! isConferenceFoldover ( outlist[i] ) ) {
+                 if (verbose>=2)
+                     printfd ( "#### found an even-odd conference matrix!!!\n" );
+                nevenodd++;
+                }
             }
+            printfd("## found %ld/%ld designs to be even-odd\n", nevenodd, outlist.size() );
         }
 
         if ( output.length() >=1 ) {
             std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
-            printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
+            if (verbose)
+                printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
 
-            if ( outlist.size() < 10000 )
-                writearrayfile ( outfile.c_str(),outlist );
+            if ( outlist.size() < 1000 ) {
+                // small files in text format for easy reading
+                writearrayfile ( outfile.c_str(),outlist, arrayfile::ATEXT, N, extcol+1  );
+            }
             else {
-                //writearrayfile ( outfile.c_str(),outlist, ABINARY);
-                writearrayfile ( outfile.c_str(),outlist, ABINARY_DIFF );
+                // larger files in binary format
+                if ( outlist.size() < 5000 ) {   
+                    writearrayfile ( outfile.c_str(),outlist, arrayfile::ABINARY, N, extcol+1 );
+            } else {
+                  writearrayfile ( outfile.c_str(),outlist, arrayfile::ABINARY_DIFF, N, extcol+1 );
+                    
+                }
             }
         }
 
@@ -276,7 +302,7 @@ int main ( int argc, char* argv[] ) {
 
         if ( nmax>=0 ) {
             // select arrays
-            outlist = selectArraysMax ( outlist, nmax );
+            outlist = selectArraysMax ( outlist, nmax, nmaxmethod );
 		}else {
         }
 

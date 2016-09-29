@@ -591,26 +591,6 @@ lmc_t LMC_check_col_ft_2level_rowsymm ( const array_t *originalcol, const array_
 
 }
 
-lmc_t LMC_check_col_ft_2level_3 ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose )
-{
-    return LMC_check_col_ft_2level ( originalcol,arraycol, lperm,ad,dd, sd,  dverbose );
-}
-lmc_t LMC_check_col_ft_2level_4 ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose )
-{
-    return LMC_check_col_ft_2level ( originalcol,arraycol, lperm,ad,dd, sd,  dverbose );
-}
-lmc_t LMC_check_col_ft_2level_5 ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose )
-{
-    return LMC_check_col_ft_2level ( originalcol,arraycol, lperm,ad,dd, sd,  dverbose );
-}
-lmc_t LMC_check_col_ft_2level_6 ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose )
-{
-    return LMC_check_col_ft_2level ( originalcol,arraycol, lperm,ad,dd, sd,  dverbose );
-}
-lmc_t LMC_check_col_ft_2level_7 ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose )
-{
-    return LMC_check_col_ft_2level ( originalcol,arraycol, lperm,ad,dd, sd,  dverbose );
-}
 
 /** check 2-level column in fast mode
  *
@@ -1559,9 +1539,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
     for ( int i=0; i<ncolsremgroup; i++ ) {
         //if (i==0) printfd(" col %d: ncolsremgroup %d\n", dyndata->col, ncolsremgroup);
 
-        //std::swap ( colpermloopXX[0], colpermloopXX[i] );	// swap 2 columns, we swap them back at the end of the loop so we do not need to initialize each time
         // keep track of applied column permutation
-        //perform_inv_perm<colindex_t> ( dyndata->colperm+col, dyndatacpy->colperm+col, remsize, colpermloop );
         std::swap ( dyndatacpy->colperm[col], dyndatacpy->colperm[col+i] );
 
         //printf("full colperm: "); print_perm(dyndatacpy->colperm, ad->ncols);	//
@@ -1579,10 +1557,8 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
             cpy_dyndata_rowsortl ( dyndata, dyndatacpy );  //NOTE: not for col_ft!?
 
             dyndatacpy->col = dyndata->col;  // TODO: needed?
-            //   if(dyndatacpy->col!=dyndata->col) {  printf("dyndata->col %d, dyndatacpy->col %d\n", dyndata->col, dyndatacpy->col);  }
 
             /* LMC_check_col performs level permutations, updates the sorting structure and compares with the original array on blocks of oaindex */
-            // prefetch(reduction->array);
 
             if ( reduction->mode>=OA_REDUCE ) {
                 printf ( "LMCreduce_non_root_2level: mode OA_REDUCE not implemented\n" );
@@ -1600,31 +1576,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
                     } else {
 
 //#define OADEBUGL
-#ifdef OADEBUGL
-                        switch ( col ) {
-                        case 3:
-                            ret =  LMC_check_col_ft_2level_3 ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        case 4:
-                            ret =  LMC_check_col_ft_2level_4 ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        case 5:
-                            ret =  LMC_check_col_ft_2level_5 ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        case 6:
-                            ret =  LMC_check_col_ft_2level_6 ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        case 7:
-                            ret =  LMC_check_col_ft_2level_7 ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        default
-                                :
-                            ret =  LMC_check_col_ft_2level ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                            break;
-                        }
-#else
                         ret =  LMC_check_col_ft_2level ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-#endif
                     }
                     dyndatacpy->col = dyndata->col;  // TODO: needed?
 

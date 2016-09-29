@@ -13,8 +13,8 @@ if(WIN32)
 	#set(CMAKE_BUILD_TYPE Release CACHE STRING)
 endif()
 
-if (0)
-  find_package(Boost QUIET COMPONENTS  )
+if (NOT WIN32)
+  find_package(Boost QUIET COMPONENTS system filesystem  )
   message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
   if (Boost_FOUND)
     message(STATUS "Boost was found")
@@ -349,6 +349,7 @@ message(STATUS "Progs: ${progs}")
 
 ###############
 #message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
+if (0)
 ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc} 
   add_compile_flags(oagraph)
   TARGET_LINK_LIBRARIES(oagraph oalib)
@@ -364,6 +365,7 @@ ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc}
   if(ZLIB_FOUND)
 	TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
   endif()
+endif()
 
 ###############
 
@@ -399,8 +401,8 @@ endforeach()
 
 if(Boost_FOUND)
   foreach(item ${progs} ${extendprogs})
-  target_link_libraries(${item} ${Boost_LIBRARIES})
-endforeach()
+    target_link_libraries(${item} ${Boost_LIBRARIES})
+  endforeach()
 endif()
 
 

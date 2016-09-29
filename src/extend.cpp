@@ -13,7 +13,6 @@
 
 #ifdef _WIN32
 #include <math.h>
-//#define isnan(x) _isnan(x)
 #else
 #include <stdbool.h>
 #include <unistd.h>
@@ -38,16 +37,6 @@ std::vector<int> dextend_t::filterArrays ( const array_link &al, const arraylist
     int ngc=0;
     for ( int i=0; i<nn; i++ ) {
         ctype[i]=dextend.filter[i]* ( dextend.lmctype[i]==LMC_MORE );
-
-
-        /* if ( verbose>=3 ) {
-             if ( ctype[i] ) {
-                 double Dthr = Cvalue2Dvalue ( Cfinal, kn );
-                 double DthrMulti = Cvalue2Dvalue ( CthrMulti, kn );
-                 printf ( "array %d(%d): keep with D %.3f (Dthr %.3f/%.3f)\n", i, ngc++, dextend.Deff[i], Dthr, DthrMulti );
-                 fflush ( stdout );
-             }
-         } */
     }
 
     int ngoodcombined =std::accumulate ( ctype.begin(),ctype.end(),0 );
@@ -64,11 +53,7 @@ std::vector<int> dextend_t::filterArrays ( const array_link &al, const arraylist
         if ( ctype[idx] ) {
             tmparray.setcolumn ( lastcolx, earrays[idx] );
             earraysout.push_back ( tmparray );
-            //std::vector<double> w; w.push_back(dextend.Deff[idx]); w.push_back(Lmax);
-            //edata.push_back(w);
         }
-        //      }
-        //selectArraysMask(earrays, ctype, earraysout);
     }
 
     return ctype;
@@ -109,12 +94,6 @@ void dextend_t::DefficiencyFilter ( double Dfinal, int k, int kfinal, double Lma
         if ( dextend.lmctype[ii]==LMC_MORE ) {
             //	printf("dextend.filtermode %d, chk %d: %.10e %.10e %e %e - %d %f\n", dextend.filtermode, chk, Ci, Cfinal, Cfinalmulti, pow(Lmax, kfinal-kn), kfinal-kn, Lmax);
 //	 printf("      chk: Lmax"); printdoubleasbits(Lmax);
-//	 printf("      chk: pow(Lmax, kfinal-kn): "); printdoubleasbits(pow(Lmax, kfinal-kn));
-            //printf("      chk: Lmax < 0: %d\n", Lmax<0 );
-//      printf("      chk: 0 : %e ",  pow( (double)0.0, 1)); printdoubleasbits( pow((double)0., 1) );
-            //    printf("      chk: 0 : %e ",  pow(Lmax, 1)); printdoubleasbits( pow(Lmax, 1) );
-            //printf("      chk: -0: "); printdoubleasbits(-(0.0));
-
         }
     }
 
@@ -172,7 +151,6 @@ void OAextend::setAlgorithmAuto ( arraydata_t *ad )
         return;
     }
     algorithm_t x = OAextend::getPreferredAlgorithm ( *ad );
-    // 	printf("setAlgorithmAuto: x\n");
 
     this->setAlgorithm ( x, ad );
 }
@@ -268,12 +246,10 @@ int compare_array_block ( carray_p A, carray_p B, rowindex_t N, rowindex_t rs1, 
                 return -1;
             }
             if ( A[x+rs1+coloffset] > B[x+rs2+coloffset] ) {
-                //printf("compare_array_block: more at %d, %d\n", x+rs1, cs+y);
                 return 1;
             }
         }
     }
-    //			printf("compare_array_block: equal\n");
     return 0;
 }
 
@@ -297,8 +273,6 @@ int check_block_exchange ( carray_p array, rowindex_t N, int blocksize, int bidx
     colindex_t ncols = clast-cs+1;
     if ( compare_array_block ( array, array, N, rs1, rs2, blocksize, cs, ncols ) > 0 ) {
         logstream ( DEBUG+1 ) << "check_block_exchange: found exchange" << printfstring ( " block %d, %d", bidx1, bidx2 ) << endl;
-
-        //print_array(array, N, ncols+1);
         return 1;
     }
     return 0;
@@ -960,16 +934,10 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
         jmax = abs ( jvalue ( array_link ( array, N, p->col+1, 0 ), 4, pp ) );
     }
 #endif
-//printf("jmax: %d\n", jmax);
 
     LMCreduction_t reduction ( ad );
     reduction.init_state=COPY;
     reduction.initStatic();	// needed to make the extend code thread safe
-
-#ifdef OADEBUG
-    //int gid = getGlobalStaticNumber(reduction.staticdata);
-    //printfd("extend_array: initialized static to id %d (%ld)\n", gid, (long) reduction.staticdata);
-#endif
 
     do {
         showLoopProgress ( array, col_offset, N, node_rank, nlmcarrays );
@@ -1112,14 +1080,9 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             }
 
             lmc_t lmc;
-            // TODO: get this out of the loop, introduce LMCreduction_t->reset() if necessary
-            //LMCreduction_t *reduction = new LMCreduction_t(ad);
 
             reduction.reset();
             reduction.mode = OA_TEST;
-
-            //array_transformation_t tmptransformation(ad);
-            // quicktransformtest(array, tmparray, reduction, tmptransformation, ad);
 
 
             if ( oaextend.checkarrays==0 )
