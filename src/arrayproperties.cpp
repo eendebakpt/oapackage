@@ -815,39 +815,50 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 }
 
 /// return rank of an array based on Eigen::ColPivHouseholderQR
-int arrayrankFullPivQR ( const array_link &al )
+int arrayrankFullPivQR ( const array_link &al, double threshold )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-	FullPivHouseholderQR<Eigen::MatrixXd> qr_decomp(mymatrix.rows(), mymatrix.cols());
-	qr_decomp.compute(mymatrix);
-	qr_decomp.setThreshold(1e-12);
-    int rank = qr_decomp.rank();
+	FullPivHouseholderQR<Eigen::MatrixXd> decomp(mymatrix.rows(), mymatrix.cols());
+	decomp.compute(mymatrix);
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
+    int rank = decomp.rank();
     return rank;
 }
 
 /// return rank of an array based on Eigen::ColPivHouseholderQR
-int arrayrankColPivQR ( const array_link &al )
+int arrayrankColPivQR ( const array_link &al, double threshold  )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
     int rank = decomp.rank();
     return rank;
 }
 
 /// return rank of an array based on Eigen::FullPivLU
-int arrayrankFullPivLU ( const array_link &al )
+int arrayrankFullPivLU ( const array_link &al, double threshold  )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::FullPivLU<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
     int rank = decomp.rank();
     return rank;
 }
 
 /// return rank of an array based on Eigen::JacobiSVD
-int arrayrankSVD ( const array_link &al )
+int arrayrankSVD ( const array_link &al, double threshold  )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::JacobiSVD<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
     int rank = decomp.rank();
     return rank;
 }

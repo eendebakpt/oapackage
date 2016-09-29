@@ -256,7 +256,7 @@ int main ( int argc, char* argv[] ) {
         rankStructure rs;
         rs.verbose = r;
         int r, rc;
-        printf ( "test eigenvalues\n" );
+        printf ( "test singular values\n" );
         for ( int i=0; i< ( int ) lst.size(); i++ ) {
             array_link al = lst[i];
             if (verbose>=2)

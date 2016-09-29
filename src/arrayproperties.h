@@ -118,13 +118,13 @@ array_link array2xf ( const array_link & al );
 Eigen::MatrixXd array2xfeigen ( const array_link & al );
 
 /// return rank of an array based on FullPivHouseholderQR (defined at compile time)
-int arrayrankFullPivQR ( const array_link &al );
+int arrayrankFullPivQR ( const array_link &al, double threshold = -1 );
 
 /// return rank of an array based on ColPivHouseholderQR (defined at compile time)
-int arrayrankColPivQR ( const array_link & al );
+int arrayrankColPivQR ( const array_link & al, double threshold = -1 );
 
-int arrayrankFullPivLU ( const array_link &al );
-int arrayrankSVD ( const array_link &al );
+int arrayrankFullPivLU ( const array_link &al, double threshold = -1 );
+int arrayrankSVD ( const array_link &al, double threshold = -1 );
 
 
 /// calculate the rank of an array
@@ -148,9 +148,9 @@ Eigen::MatrixXd arraylink2eigen ( const array_link & al );
  **/
 class rankStructure
 {
+public:
      typedef Eigen::FullPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
     //typedef Eigen::ColPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
-    //typedef Eigen::FullPivLU<Eigen::MatrixXd> EigenDecomp;
 
 public:
     array_link alsub;
@@ -338,8 +338,8 @@ inline typename Pareto < mvalue_t < long >, IndexType >::pValue
 calculateArrayParetoRankFA ( const array_link & al, int verbose )
 {
     int N = al.n_rows;
-    //int r = arrayrankFullPivQR ( array2secondorder ( al ) ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
-    int r = arrayrankFullPivLU ( array2secondorder ( al ) ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
+    //int r = arrayrankFullPivQR ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
+    int r = arrayrankFullPivLU ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
     mvalue_t < long >wm = A3A4 ( al );
     mvalue_t < long >f4 = F4 ( al );
 
