@@ -1304,215 +1304,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     }
 }
 
-/*
-Test sorting algorithm for conference designs
-*/
-
-/* calc_rowsort: Helper function to sort rows of a conference array
-al: link to the array, pointer
-colperm: current column permutation of the array, pointer
-n_rows: number of rows of the array, int
-n_cols: number of columns of the array, int
-*/
-indexsort calc_rowsort(const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols)
-{
-    // Find.. Test stand alone
-    std::vector<mvalue_t<int> > rr;
-    for ( int i=0; i < n_rows; i++ ) {
-        mvalue_t<int> m;
-        for ( int k=0; k < n_cols; k++ )
-            // We transform the elements (0,1,-1) to (0,1,2)
-            // To perform the sort. We use tha transformations of the array
-            //(colsignperm[colperm[k]]*rowsignperm[rowperm[i].val])
-            m.v.push_back ( ( ( al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
-        rr.push_back ( m );
-    }
-    indexsort is ( rr );
-    return rr;
-}
-
-/*
-LMC0_sortrows: Compute the new row sort for the array
-\brief Calculate the new order and assign it to the existing
-al: link to the array, pointer
-colperm: current column permutation of the array, pointer
-n_rows: number of rows of the array, int
-n_cols: number of columns of the array, int
-*/
-void LMC0_sortrows ( const array_link &al, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols )
-{
-    indexsort aa = calc_rowsort(al, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols);
-    // Assign the new sorting of the rows
-    for (rowindex_t j = 0; j < n_rows; j++){
-        rowperm[j].val = aa.indices[j];//rowperm[ aa.indices[j] ].val = rowperm[j].r;
-    }
-
-}
-
-template <class numtype>
-/**
- * Initialiaze a permutation
- * @param perm
- * @param len
- */
-void init_signperm ( std::vector<numtype> &signperm)
-{
-    for ( size_t i=0; i<signperm.size(); i++ )
-        signperm[i]=1;
-}
-template <class numtype>
-void init_index ( std::vector<numtype> &index)
-{
-    int ni = index.size();
-    for ( size_t i=0; i < ni; i++ )
-        index[i] = pow( (double) 2, (ni - i)); // weights for each of the column
-}
-
-/*
-* @brief Returns the value of (part of) a row
-* @param array
-* @param start_idx
-* @param end_idx
-* @param n_rows
-* @param index Value index for each of the columns of the array
-* @return
-*/
-static inline int lmc0_row_rank ( const carray_t *array, rowindex_t n_rows, const std::vector<int> &index, const std::vector<int> &colsignperm,
-                                  colindex_t start_idx, colindex_t end_idx, const std::vector<int> &colperm, rowindex_t row, const int sign_row )
-{
-int	sum = 0;
-const array_t *ar = array+row;
-for ( colindex_t i = start_idx; i < end_idx; i++ ) {
-//sum += index[i] * ar[n_rows*colperm[i]]; // for Orthogonal arrays
-    int sel_element = (colsignperm[colperm[i]]*sign_row) * ar[n_rows*colperm[i]]; // Transform from (0, 1, -1) to (1, 2, 0)
-    sum += index[i] * ( (sel_element+3) % 3) ; // for conference designs, Transform from (1, 2, 0) to (0, 1, 2)
-}
-return sum;
-}
-
-/**
-* @brief Sort an array LMC0
-* @param array My array
-* @param ad Root array NO ROOT ARRAY
-* @param dyndata Contains information about current transformation of the array
-* @param rowsort
-*/
-inline void LMC0_sort ( const carray_t *array, const std::vector<int> &valueindex, rowsort_t *rowperm, const std::vector<int> &colperm,
-                         const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const rowindex_t n_rows,
-                        const colindex_t n_cols )
-{
-    //vindex_t *valueindex = new_valueindex<vindex_t> ( ad->s, ad->strength );	// OPTIMIZE: make static allocation?
-
-    //rowsort_t *rowsort = dyndata->rowsort;
-    /* perform initial sort, after the initial sort we can sort using pre-calculated structures */
-    /* Assign rank to each row*/
-
-    for ( rowindex_t j = 0; j < n_rows; j++ ) {
-        int sign_row = rowsignperm[j];
-        rowperm[j].val = lmc0_row_rank ( array,	 n_rows, valueindex, colsignperm, ( colindex_t ) 0, n_cols, colperm, j, sign_row );
-    }
-    //delete [] valueindex;
-
-    // OPTIMIZE: select best sort (stable_sort, sort, oacolSort)
-    std::stable_sort ( rowperm, rowperm+n_rows );
-}
-
-/* Start the real functions*/
-/*
-rowlevel_permutation: find the row-level permutation of a column
-al: array link, pointer
-rowperm: current row permutation, pointer, rowsort_t
-colperm: current column permutation, pointer
-rowsignperm: current rowsign permutation, pointer
-column: the column to find the permutation, int
-n_rows: number of rows, n_rows, index
-*/
-//template<class NumType, class NumTypeIn>
-void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
-
-    //std::vector<NumType> rowsignone ( nrows );
-    //init_signperm ( rowsignone );
-    //see what level-permutation we need to get a column with all ones and one zero
-    // We don't copy the array but use the current modifications given by the rowsignperm, colperm, and rowperm
-    for ( rowindex_t r=0; r < n_rows; r++ ) {
-        if ( ( (rowsignperm[rowperm[r].val]) * al.atfast( rowperm[r].val, colperm[column] )) < 0 )
-            rowsignperm[ rowperm[r].val ] = -1; // assign new values to the rowsignperm vector
-    }
-
-}
-
-/* Sort test */
-int cdes_sort_test ( const array_link &al ){
-
-    // Get size of the array
-    const int ncols = al.n_columns; // number of columns, rowindex_t
-    const int nrows = al.n_rows; // number of rows, colindex_t
-    int matrix[ nrows ][ ncols ];
-
-    // Initialize the column permutation
-    std::vector<int> colperm ( ncols ); // create pointer for the column permutations
-    init_perm ( colperm );
-    //initialize column level permutation
-    std::vector<int> colsignperm ( ncols );
-    init_signperm ( colsignperm );
-    //initialize row-level permutation
-    std::vector<int> rowsignperm ( nrows );
-    init_signperm ( rowsignperm );
-    // Initialize row order
-    dyndata_t rowperm_data = dyndata_t ( nrows );//rowperm_data.show();
-    rowsort_t *rowsortone = rowperm_data.rowsort;
-    rowsort_t *rowsorttwo = rowperm_data.rowsort;
-    int myints[] = {0, 9, 6, 1, 4, 7, 3, 8, 5, 2};
-    std::vector<int> myvec(myints, myints + sizeof(myints));
-    for (rowindex_t i = 0; i < nrows; i++){
-        rowsortone[i].val = myvec[i];
-        rowsorttwo[i].val = myvec[i];
-    }
-    print_rowsort(rowsortone, nrows);
-    // Define index for sort
-    std::vector<int> weights_index( ncols, 0 );
-    for (colindex_t i = 0; i < ncols; i++){
-        weights_index[ i ] = pow( (double) 2, (ncols - i));
-    }
-        // Swap first two column
-    int first_col = colperm[ 0 ]; // copy current first column index
-    colperm[ 0 ] = colperm[ 1 ]; // assign to be the first one
-    colperm[ 1 ] = first_col; // finish the swap
-    rowlevel_permutation ( al, rowsortone, colperm, rowsignperm, nrows, 0 );//
-
-    std::cout <<  "Transformed Array " << std::endl;
-    for (int r = 0; r < nrows; r++){
-        for (int col = 0; col < ncols; col++){
-            matrix[r][col] = (colsignperm[colperm[col]]*rowsignperm[rowsortone[r].val]) * al.atfast ( rowsortone[r].val, colperm[col] );
-            std::cout << matrix[r][col] << "    ";
-        }
-        std::cout << std::endl;
-    }
-
-
-    std::cout <<  "My Sort " << std::endl;
-    LMC0_sortrows( al, rowsortone, colperm, rowsignperm, colsignperm, nrows, ncols );
-    printf ( "Row order-sort  " );
-    print_rowsort(rowsortone, nrows);
-    //al.array is a pointer where the array is located
-
-    /*
-    std::cout <<  "Sorted array C++ " << std::endl;
-    for (int r = 0; r < nrows; r++){
-        for (int col = 0; col < ncols; col++){
-            matrix[r][col] = (colsignperm[colperm[col]]*rowsignperm[rowsort[r].val]) * al.atfast ( rowsort[r].val, colperm[col] );
-            std::cout << matrix[r][col] << " ";
-        }
-        std::cout << std::endl;
-    }
-    */
-    //Now we get all the data from the matrix into a vector.
-    //smat = sort_matrix(matrix, nrows, ncols);
-    //print_matrix(smat, nrows, ncols);
-    return 0;
-
-}
-
 
 /**
 * @brief Read in files with arrays and join them into a single file
@@ -1560,10 +1351,11 @@ int main ( int argc, char* argv[] ) {
     arraylist_t ll= readarrayfile ( input );
 
 
-    for ( size_t i=0; i<ll.size(); i++ ) {
+    for ( size_t i=0; i<ll.size(); i++ )/*
+    */
         array_link al = ll[i];
         al.showarray();
-        cdes_sort_test ( al );
+        //cdes_sort_test ( al );
         for (int trans = 0; trans < 1; trans++){
                 /* Transform the array */
             conference_transformation_t T1(al);
@@ -1571,7 +1363,7 @@ int main ( int argc, char* argv[] ) {
 	        //T1.show();
 	        array_link al1 = T1.apply ( al );
 	        al1.showarray(); // Show transformed array
-	        cdes_sort_test ( al1 );
+	        //cdes_sort_test ( al1 );
 
         }
 
