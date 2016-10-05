@@ -2817,31 +2817,62 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
 void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
 
     for ( rowindex_t r=0; r < n_rows; r++ ) {
-        if ( ( (rowsignperm[rowperm[r].val]) * al.atfast( rowperm[r].val, colperm[column] )) < 0 )
-            rowsignperm[ rowperm[r].val ] = -1;
+        if (  al.atfast( r, colperm[column] ) < 0 )
+            rowsignperm[ r ] = -1;
     }
 
 }
 
-indexsort conf_calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr)
+void init_lmc0_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr)
 {
+    int lastcol = std::min(n_cols,sutk_col);
+
     for ( int i=0; i < n_rows; i++ ) {
         mvalue_t<int> m;
-        for ( int k=0; k < std::min(n_cols,sutk_col); k++ )
+
+        for ( int k=0; k < lastcol; k++ ){
             m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
+        }
+
         rr[ i ] = m;
     }
     indexsort is ( rr );
-    return rr;
-}
-
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr )
-{
-    indexsort aa = conf_calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr);
+    indexsort aa = rr;
     for (rowindex_t j = 0; j < n_rows; j++){
         rowperm[j].val = aa.indices[j];
     }
 
+}
+
+indexsort conf_calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
+{
+    int lastcol = std::min(n_cols,sutk_col);
+
+    for ( int i=0; i < n_rows; i++ ) {
+
+        int rval = rowperm[i].val;
+        int current_val = ((colsignperm[colperm[lastcol]]*rowsignperm[ rval ])*al.at( rval, colperm[lastcol]));
+
+        rr[ i ] = ( 10*sd.rowvalue.at( i, lastcol-1) ) + ((current_val+3) % 3);;
+    }
+    indexsort is ( rr );
+
+    return rr;
+}
+
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
+{
+    indexsort aa = conf_calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr, sd);
+    std::vector<int> order_rsort ( n_rows );
+
+    for (rowindex_t j = 0; j < n_rows; j++){
+        int s_ev = aa.indices[j];
+        order_rsort[ s_ev ] = rowperm[j].val;
+    }
+
+    for (rowindex_t j = 0; j < n_rows; j++){
+        rowperm[j].val = order_rsort[ j ];
+    }
 }
 
 /* Function to get the position of the zero element in the transformed array*/
@@ -2888,7 +2919,7 @@ lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 
 }
 
-lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr) {
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr, const symmdata &sd) {
 
     lmc_t r = LMC_NONSENSE;
 
@@ -2904,12 +2935,12 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
-        LMC0_sortrows ( al, column+1, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
+        LMC0_sortrows ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols, rr, sd );
 
         r = lmc0_compare_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm );
 
         if ( r==LMC_EQUAL ) {
-            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, rr );
+            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, rr, sd );
         }
         if ( r==LMC_LESS ) {
             break; // array is not minimal form
@@ -2947,6 +2978,7 @@ lmc_t LMC0check ( const array_link &al ) {
     }
 
     std::vector<mvalue_t<int> > rr ( nrows );
+    symmdata sd( al );
 
     for (int sel_col = 0; sel_col < ncols; sel_col++){
 
@@ -2959,7 +2991,7 @@ lmc_t LMC0check ( const array_link &al ) {
         rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
 
         /* 3. Find permutation to sort the array*/
-        LMC0_sortrows( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );//
+        init_lmc0_rowsort( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
 
         /* 4. Select one of two possible sign permutations for the first row */
         int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
@@ -2967,7 +2999,7 @@ lmc_t LMC0check ( const array_link &al ) {
             rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
 
             /* 5. Select the next column */
-            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr);
+            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr, sd);
             if ( result==LMC_LESS ) {
                 return result;
 
