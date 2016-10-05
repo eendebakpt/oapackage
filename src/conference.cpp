@@ -2977,6 +2977,7 @@ lmc_t LMC0check ( const array_link &al ) {
         rowsort[i].val = i;
     }
 
+    //std::vector<mvalue_t<int> > rr ( nrows );
     std::vector<mvalue_t<int> > rr ( nrows );
     symmdata sd( al );
 
