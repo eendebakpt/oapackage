@@ -202,17 +202,12 @@ carray_p;			/** point to constant array */
 
 //#define XX
 #ifdef XX
-typedef
-std::vector < int >
-rowperm_t;				/** type of row permutation */
+  typedef std::vector < int > rowperm_t;				/** type of row permutation */
 #else
-typedef rowindex_t *
-rowperm_t;			/** type of row permutation */
+  typedef rowindex_t * rowperm_t;			/** type of row permutation */
 #endif
-typedef colindex_t *
-colperm_t;		       /** type of column permutation */
-typedef array_t *
-levelperm_t;		       /** type of level permutation */
+typedef colindex_t * colperm_t;		       /** type of column permutation */
+typedef array_t * levelperm_t;		       /** type of level permutation */
 
 
 // used to calculate the value (index) of values in a column combination
@@ -239,7 +234,6 @@ Fval ( int N, int strength )
     }
     return Fv;
 }
-
 
 
 /// return true if the specified file exists

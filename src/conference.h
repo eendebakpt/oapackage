@@ -388,6 +388,10 @@ arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int ve
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
 std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
+
+arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype );
+
+
 /** Generate candidate extensions
  *
  * \param al design to be extended
