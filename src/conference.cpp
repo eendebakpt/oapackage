@@ -2843,7 +2843,7 @@ void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std
 
 /* Function to get the position of the zero element in the transformed array*/
 int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ){
-    int position_zero;
+    int position_zero = -1;
     for ( int r = 0; r < nrows; r++){
         if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0){
             position_zero = rowperm[r].r;
