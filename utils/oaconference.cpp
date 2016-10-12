@@ -169,7 +169,7 @@ int main ( int argc, char* argv[] ) {
     const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
     const int j1zero = opt.getIntValue ( "j1zero", 0 );
     const int j3zero = opt.getIntValue ( "j3zero", 0 );
-    const reduction_method reduction = opt.getIntValue ( "reduction", NAUTY );
+    const reduction_method reduction = (reduction_method) opt.getIntValue ( "reduction", NAUTY );
 
     const std::string output = opt.getStringValue ( 'o', "" );
     const std::string input = opt.getStringValue ( 'i', "" );
