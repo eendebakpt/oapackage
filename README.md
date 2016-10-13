@@ -42,6 +42,7 @@ The code was written by:
 Ideas contributed by:
 
 * Eric Schoen <eric.schoen@tno.nl>
+* Alan Vazquez <alanrvazquez@gmail.com>
 
 See the file LICENSE for copyright details.
 
