@@ -267,7 +267,7 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
 
 	std::vector<int> ri(al.n_rows);
 	std::fill(ri.begin(), ri.end(), -1);
-	
+
     for ( int i=0; i<al.n_rows; i++ ) {
 		if (ri[i]>-1)
 			continue;
@@ -276,7 +276,7 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
         for ( int j=i+1; j<al.n_rows; j++ ) {
 			if (ri[j]>-1 )
 				continue;
-            //array_link alx2 = alt2.selectColumns ( j ); 
+            //array_link alx2 = alt2.selectColumns ( j );
             //assert ( alt.columnEqual(i, alt2, j)==(alx==alx2) );
 			if (alt.columnEqual(i, alt2, j) ) {
 			//if ( alx==alx2 ) {
@@ -1318,13 +1318,13 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
 		if (verbose>=2) {
 		int j = partial_inner_product(candidate, filter.als, filter.als.n_columns-1, r);
 			printfd("partial check: block %d/%d:  r %d, j %d, check %d\n", block,nblocks, r, j, check);
-	}		
+	}
 		if (!check)
 			return;
 }
     //printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
 		if (verbose>=2)
-	printfd("inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size(), blocksize); 
+	printfd("inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size(), blocksize);
 
     if ( blocksize==1 ) {
         // easy case
@@ -1496,7 +1496,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
     printf ( "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n", filtersymm, filtersymminline, filterj2, filterj3 );
 
 	assert(ct.j1zero==1);
-	
+
     const int N = al.n_rows;
     DconferenceFilter dfilter ( al, filtersymm, filterj2 );
 
@@ -1621,9 +1621,9 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 }
 
 /** generate double conference matrices
- * 
+ *
  * Old vesion that still can handle the j1zero=0 case
- * 
+ *
  **/
 std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
 {
@@ -1636,7 +1636,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
     const int N = ct.N;
     cperm c ( N );
 
-	
+
     DconferenceFilter dfilter ( al, filtersymm, filterip );
     dfilter.filterfirst=1;
     dfilter.filterj3=ct.j3zero;
@@ -1828,7 +1828,7 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
         printf ( "--- extend_double_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype );
 
 	//ct.j1zero
-	
+
     int filterip=1;
     int filtersymm=1;
     std::vector<cperm> cc;
@@ -2253,8 +2253,8 @@ arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t 
         const array_link &al = lst[i];
         int extcol=al.n_columns;
 		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1 );
-		
-        
+
+
         arraylist_t ll = ce.getarrays ( al );
         const int nn = ll.size();
 
@@ -2761,7 +2761,7 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
         // TODO: check this bound is sharp
         ccX = this->candidate_list_double[startcol];
         last_valid=startcol;
-        kstart=startcol-1; 
+        kstart=startcol-1;
     }
 
     array_link als;
@@ -2796,5 +2796,212 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
     this->al = al;
     return 	this->candidate_list_double[ncfinal];
 }
+
+void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
+
+    for ( rowindex_t r=0; r < n_rows; r++ ) {
+        if (  al.atfast( r, colperm[column] ) < 0 )
+            rowsignperm[ r ] = -1;
+    }
+
+}
+
+void init_lmc0_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr)
+{
+    int lastcol = std::min(n_cols,sutk_col);
+
+    for ( int i=0; i < n_rows; i++ ) {
+        mvalue_t<int> m;
+
+        for ( int k=0; k < lastcol; k++ ){
+            m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
+        }
+
+        rr[ i ] = m;
+    }
+    indexsort is ( rr );
+    indexsort aa = rr;
+    for (rowindex_t j = 0; j < n_rows; j++){
+        rowperm[j].val = aa.indices[j];
+    }
+
+}
+
+indexsort conf_calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
+{
+    int lastcol = std::min(n_cols,sutk_col);
+
+    for ( int i=0; i < n_rows; i++ ) {
+
+        int rval = rowperm[i].val;
+        int current_val = ((colsignperm[colperm[lastcol]]*rowsignperm[ rval ])*al.at( rval, colperm[lastcol]));
+
+        rr[ i ] = ( 10*sd.rowvalue.at( i, lastcol-1) ) + ((current_val+3) % 3);
+    }
+    indexsort is ( rr );
+
+    return rr;
+}
+
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
+{
+    indexsort aa = conf_calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr, sd);
+    std::vector<int> order_rsort ( n_rows );
+
+    for (rowindex_t j = 0; j < n_rows; j++){
+        int s_ev = aa.indices[j];
+        order_rsort[ s_ev ] = rowperm[j].val;
+    }
+
+    for (rowindex_t j = 0; j < n_rows; j++){
+        rowperm[j].val = order_rsort[ j ];
+    }
+}
+
+/* Function to get the position of the zero element in the transformed array*/
+int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ){
+    int position_zero;
+    for ( int r = 0; r < nrows; r++){
+        if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0){
+            position_zero = rowperm[r].r;
+        }
+    }
+    return position_zero;
+}
+
+/* Compare two columns with the zero element in the same position */
+lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ){
+
+    for ( int r=0; r<nrows; r++ ) {
+        int value_cdesign_trans = (colsignperm[colperm[column]]*rowsignperm[rowperm[r].val]) * al.atfast ( rowperm[r].val, colperm[column] );
+        if ( ((al.atfast ( r, column )+3) % 3) <  ( (value_cdesign_trans+3) % 3) ) // Transform the elements from (0, 1, -1) to (0, 1, 2)
+            return LMC_MORE;
+        if ( ((al.atfast ( r, column )+3) % 3) >  ( (value_cdesign_trans+3) % 3) )
+            return LMC_LESS;
+    }
+    return LMC_EQUAL;
+}
+
+/* Compare the two columns according to the LMC0 ordering*/
+lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
+
+    const int nrows=al.n_rows;
+    /* Check position of zeros */
+    int position_zero = get_zero_position( al, rowperm, colperm, column, nrows);
+
+    if ( position_zero > column ) {
+        return LMC_MORE;
+    }
+    else if ( position_zero < column ) {
+        return LMC_LESS;
+    }
+    else { // If zeros are on the same positions then compare columns
+        lmc_t comparison = compare_conf_columns( al, rowperm, colperm, column, rowsignperm, colsignperm, nrows );
+        return comparison;
+    }
+
+}
+
+
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr, const symmdata &sd) {
+
+    lmc_t r = LMC_NONSENSE;
+
+    for ( int c=column; c<ncols ; c++ ) {
+
+        int col = colperm[c];
+        colperm[c]=colperm[column];
+        colperm[column]=col;
+
+        /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
+        int current_sign_col = colsignperm[colperm[column]];
+        int current_val_firstrow = (rowsignperm[rowperm[0].val]*current_sign_col)*(al.at(rowperm[0].val, colperm[column]));
+        colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
+
+        /* ii. Sort rows using the ordering 0, 1, -1 */
+        LMC0_sortrows ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols, rr, sd );
+
+        r = lmc0_compare_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm );
+
+        if ( r==LMC_EQUAL ) {
+            r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, rr, sd );
+        }
+        if ( r==LMC_LESS ) {
+            break; // array is not minimal form
+        }
+
+        colsignperm[ colperm[column] ] = current_sign_col;
+        colperm[ column ] = colperm[ c ];
+        colperm[ c ] = col;
+
+    }
+    return r;
+}
+
+lmc_t LMC0check ( const array_link &al ) {
+    /*0. Initialize data */
+    lmc_t result = LMC_MORE;
+
+    const int ncols = al.n_columns;
+    const int nrows = al.n_rows;
+
+    std::vector<int> colperm ( ncols );
+    init_perm ( colperm );
+
+    std::vector<int> colsignperm ( ncols );
+    init_signperm ( colsignperm );
+
+    std::vector<int> rowsignperm ( nrows );
+    init_signperm ( rowsignperm );
+
+    dyndata_t rowperm_data = dyndata_t ( nrows );
+    rowsort_t *rowsort = rowperm_data.rowsort;
+
+    for (rowindex_t i = 0; i < nrows; i++){
+        rowsort[i].val = i;
+    }
+
+    //std::vector<mvalue_t<int> > rr ( nrows );
+    std::vector<mvalue_t<int> > rr ( nrows );
+    symmdata sd(al);
+
+    for (int sel_col = 0; sel_col < ncols; sel_col++){
+
+        /*1. Select the first (sel_col) column */
+        int first_col = colperm[ 0 ];
+        colperm[ 0 ] = colperm[ sel_col ];
+        colperm[ sel_col ] = first_col;
+
+        /*2. Find row-level permutation such that the first column only contains ones */
+        rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
+
+        /* 3. Find permutation to sort the array*/
+        init_lmc0_rowsort( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
+
+        /* 4. Select one of two possible sign permutations for the first row */
+        int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
+        for (int r_sign = 0; r_sign < 2; r_sign++){
+            rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
+
+            /* 5. Select the next column */
+            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr, sd);
+            if ( result==LMC_LESS ) {
+                return result;
+
+            }
+
+        }
+
+        rowsignperm[ rowsort[0].val ] = value_rowsign_firstrow;
+        colperm[ sel_col ] = colperm[ 0 ];
+        colperm[ 0 ] = first_col;
+        init_signperm ( rowsignperm );
+
+    }
+
+    return result;
+}
+
+
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
