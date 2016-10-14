@@ -46,6 +46,57 @@ Copyright: See LICENSE.txt file that comes with this distribution
 
 using namespace Eigen;
 
+void speedcheck_conf ( const char *input, int verbose ) {
+    double t0;
+    arraylist_t ll= readarrayfile ( input );
+    printf ( "### speedcheck: read from file (%d arrays)\n", ( int ) ll.size() );
+
+    t0=get_time_ms();
+    for ( size_t i=0; i<ll.size(); i++ ) {
+        array_link al = ll[i];
+
+        //al = al.randomrowperm();
+        //al = al.randomcolperm();
+        if ( verbose>=2 )
+            al.showarray(); // print array
+        lmc_t r = LMC0check ( al );
+        if ( verbose>=2 )
+            printf ( "array %d: result %d\n (should be %d)\n", ( int ) i, r, ( int ) LMC_MORE );
+        if ( 0 ) {
+            /* Apply random transformation */
+            conference_transformation_t T1 ( al );
+            T1.randomize();
+            T1.show();
+            array_link al1 = T1.apply ( al );
+            if ( verbose>=2 ) {
+                al1.showarray(); // Show transformed array
+            }
+            if ( 0 ) {
+                lmc_t a = LMC0check ( al1 );
+                if ( verbose )
+                    printf ( "array %d: result %d\n (should be %d most of the time)\n", ( int ) i, a, ( int ) LMC_LESS );
+            }
+        }
+    }
+    printf ( "dt lmc0  %.3f \n", get_time_ms()-t0 );
+
+    {
+        double t0=get_time_ms();
+        arraylist_t  out= selectConferenceIsomorpismClasses ( ll, 0,CONFERENCE_ISOMORPHISM );
+
+
+        for ( size_t i=0; i<ll.size(); i++ ) {
+            array_link al = ll[i];
+
+        }
+        printf ( "dt nauty %.3f \n", get_time_ms()-t0 );
+    }
+
+
+    return ;
+
+}
+
 
 //std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
 
@@ -226,6 +277,10 @@ int main ( int argc, char* argv[] ) {
         srand ( randvalseed );
     }
 
+    {
+        speedcheck_conf ( input, verbose );
+        exit ( 0 );
+    }
     if ( 0 ) {
         int ei=26;
 
@@ -249,9 +304,9 @@ int main ( int argc, char* argv[] ) {
         exit ( 0 );
     }
 
-        {
+    {
         /// test performance if different rank algorithms
-        
+
         arraylist_t lst = readarrayfile ( input );
         rankStructure rs;
         rs.verbose = r;
@@ -259,7 +314,7 @@ int main ( int argc, char* argv[] ) {
         printf ( "test singular values\n" );
         for ( int i=0; i< ( int ) lst.size(); i++ ) {
             array_link al = lst[i];
-            if (verbose>=2)
+            if ( verbose>=2 )
                 printf ( "-\n" );
             // arrayrankInfo(array2xf(al));
             // arrayrankInfo(array2secondorder(al));
@@ -273,13 +328,13 @@ int main ( int argc, char* argv[] ) {
             //printf ( "r %d, rc %d\n", r, rc );
             // myassert ( r==rc, "rank calculations" );
         }
-            printfd("done\n");
+        printfd ( "done\n" );
 
         exit ( 0 );
     }
     {
         /// test performance if different rank algorithms
-        
+
         arraylist_t lst = readarrayfile ( input );
         rankStructure rs;
         rs.verbose = r;
@@ -287,7 +342,7 @@ int main ( int argc, char* argv[] ) {
         printf ( "test performance\n" );
         for ( int i=0; i< ( int ) lst.size(); i++ ) {
             array_link al = lst[i];
-            if (verbose>=2)
+            if ( verbose>=2 )
                 printf ( "-\n" );
 
             switch ( jj ) {
@@ -307,7 +362,7 @@ int main ( int argc, char* argv[] ) {
             }
 
         }
-            printfd("done\n");
+        printfd ( "done\n" );
 
         exit ( 0 );
     }
