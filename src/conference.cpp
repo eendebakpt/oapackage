@@ -2398,6 +2398,23 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verb
     return pp.first;
 }
 
+arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype )
+{
+
+arraylist_t out ;
+for(size_t i=0; i<list.size(); i++) {
+	lmc_t r = LMC_LESS;
+//lmc_t r=LMC0check(list[i]);
+if (r==LMC_LESS) {
+		// pass, array is not in LMC0 format
+} else  {
+out.push_back(list[i]);	
+}
+}
+return out;
+	
+}
+
 
 /// return true of alL is smaller than alR in LMC-0 ordering
 bool compareLMC0 ( const array_link &alL, const array_link &alR )

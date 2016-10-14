@@ -20,8 +20,6 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "anyoption.h"
 #include "tools.h"
 
-#include "conference.h"
-
 
 #include <Eigen/SVD>
 #include <Eigen/Dense>
@@ -34,34 +32,6 @@ Copyright: See LICENSE.txt file that comes with this distribution
 
 using namespace Eigen;
 
-
-/// return rank of an array based on Eigen::FullPivLU
-int arrayrankColPivQR ( const array_link &al ) {
-    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp ( mymatrix );
-    //Eigen::ColPivHouseholderQR<><Eigen::MatrixXd> decomp ( mymatrix );
-    int rank = decomp.rank();
-    return rank;
-}
-
-
-/// return rank of an array based on Eigen::FullPivLU
-int arrayrankFullPivLU ( const array_link &al ) {
-    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
-    int rank = lu_decomp.rank();
-    return rank;
-}
-
-int arrayrankSVD ( const array_link &al ) {
-    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-
-    JacobiSVD<Eigen::MatrixXd> svd ( mymatrix );
-
-    int rank = svd.rank();
-    return rank;
-
-}
 
 
 int main ( int argc, char *argv[] ) {

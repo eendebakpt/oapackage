@@ -190,31 +190,37 @@ public:
     {
         size_t ii=0;
         while ( ii<elements.size() ) {
-            if ( verbose>=3 )
+            if ( verbose>=4 )
                 printf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
             if ( elements[ii].dominates ( val ) ) {
                 if ( elements[ii].equal ( val ) ) {
                     elements[ii].indices.push_back ( idx );
                     if ( verbose>=3 )
-                        printf ( "Pareto::addvalue: new pareto item\n" );
+                        printf ( "Pareto::addvalue: new pareto item (same value)\n" );
                     return true;
                 } else {
                     // not a pareto element, so continue
                     if ( verbose>=3 ) {
                         printf ( "Pareto::addvalue: not pareto\n" );
-			printf("            : "); this->showvalue(val); printf("\n");
-			printf("dominated by: "); this->showvalue(elements[ii].value); printf("\n");
+			printf(" new elememnt : "); this->showvalue(val); printf("\n");
+			printf("  dominated by: "); this->showvalue(elements[ii].value); printf("\n");
 		    }
                     return false;
                 }
             }
             if ( elements[ii].isdominated ( val ) ) {
                 // element ii is dominated by the new element, we remove element ii
-                if ( verbose>=2 )
+                if ( verbose>=2 ) {
                     printf ( "Pareto::addvalue: removing element\n" );
+	      if ( verbose>=3 ) {
+			printf("  new element : "); this->showvalue(val); printf("\n");
+			printf("removing %3d : ", (int)ii); this->showvalue(elements[ii].value); printf("\n");
+		    }
+
+	    }
                 elements.erase ( elements.begin() +ii );
             } else {
-                if ( verbose>=3 )
+                if ( verbose>=4 )
                     printf ( "Pareto:addvalue: ii++\n" );
                 ii++;
             }
@@ -226,7 +232,7 @@ public:
         p.indices.push_back ( idx );
         this->elements.push_back ( p );
         if ( verbose>=2 )
-            printf ( "Pareto: addvalue: new elem, total is %ld\n", (long)this->elements.size() );
+            printf ( "Pareto: addvalue: new pareto item (new value), total is %ld\n", (long)this->elements.size() );
         return true;
     }
 };

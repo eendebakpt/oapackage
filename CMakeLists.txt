@@ -513,22 +513,21 @@ endif()
 
 #add_dependencies(pythoncheck python)
 if(DOPYTHON)	
-add_custom_target( pythondoc )
-add_custom_command(
-  TARGET pythondoc POST_BUILD
-  COMMAND cd xml; xsltproc ../swig.xsl index.xml > swig_doc.i; cd ..
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
+	add_custom_target( pythondoc )
+	add_custom_command(
+	  TARGET pythondoc POST_BUILD
+	  COMMAND cd xml; xsltproc ../swig.xsl index.xml > swig_doc.i; cd ..
+	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	)
 
-
-add_custom_target( pinstall )
-add_custom_command(
-  TARGET pinstall
-  POST_BUILD
-  COMMAND python setup.py install --user
-#  COMMAND sudo python setup.py install
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-)
+	add_custom_target( pinstall )
+	add_custom_command(
+	  TARGET pinstall
+	  POST_BUILD
+	  COMMAND python setup.py install --user
+	#  COMMAND sudo python setup.py install
+	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	)
 
 endif(DOPYTHON)
 
@@ -541,10 +540,6 @@ add_custom_command(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
-#add_custom_target( complete )
-#add_dependencies(complete all python python check)
-
-
 
 ################ INSTALLATION OPTIONS ###########################
 
@@ -555,25 +550,17 @@ foreach(prog ${extendprogs})
 	install (TARGETS ${prog} DESTINATION bin)
 endforeach()
 install (TARGETS oalib DESTINATION lib)
-
-
 install (FILES README.md FORMAT.txt LICENSE DESTINATION doc)
 install (FILES oaconfig.txt DESTINATION bin)
-if(DOPYTHON AND 0)
-#  install (FILES python/example_python_testing.py DESTINATION python)
-  install (FILES oapackage/oahelper.py DESTINATION oapackage)
-  install (FILES oapackage/markup.py DESTINATION oapackage)
-  install (FILES scripts/example_python_testing.py DESTINATION scripts)
-  install (FILES scripts/example_python_testing2.py DESTINATION scripts)
-endif()
+
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Program to calculate orthogonal arrays")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "2")
-SET(CPACK_PACKAGE_VERSION_PATCH "10")
+SET(CPACK_PACKAGE_VERSION_MINOR "3")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 

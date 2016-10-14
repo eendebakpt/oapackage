@@ -801,6 +801,7 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 {
     int k = al.n_columns;
     int n = al.n_rows;
+	assert(n>=0); assert(k>=0);
 
     Eigen::MatrixXd mymatrix = Eigen::MatrixXd::Zero ( n,k );
 
@@ -815,11 +816,51 @@ Eigen::MatrixXd arraylink2eigen ( const array_link &al )
 }
 
 /// return rank of an array based on Eigen::ColPivHouseholderQR
-int arrayrankColPiv ( const array_link &al )
+int arrayrankFullPivQR ( const array_link &al, double threshold )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
-    Eigen::ColPivHouseholderQR<Eigen::MatrixXd> lu_decomp ( mymatrix );
-    int rank = lu_decomp.rank();
+	FullPivHouseholderQR<Eigen::MatrixXd> decomp(mymatrix.rows(), mymatrix.cols());
+	decomp.compute(mymatrix);
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
+    int rank = decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::ColPivHouseholderQR
+int arrayrankColPivQR ( const array_link &al, double threshold  )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::ColPivHouseholderQR<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
+    int rank = decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankFullPivLU ( const array_link &al, double threshold  )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::FullPivLU<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
+    int rank = decomp.rank();
+    return rank;
+}
+
+/// return rank of an array based on Eigen::JacobiSVD
+int arrayrankSVD ( const array_link &al, double threshold  )
+{
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    Eigen::JacobiSVD<Eigen::MatrixXd> decomp ( mymatrix );
+	if (threshold>0) {
+		decomp.setThreshold(threshold);	
+	}
+    int rank = decomp.rank();
     return rank;
 }
 
@@ -828,7 +869,64 @@ int arrayrank ( const array_link &al )
 {
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
+	//printfd("threshold %e\n", lu_decomp.threshold() );
     int rank = lu_decomp.rank();
+    return rank;
+}
+
+
+/// return rank, maxPivot etc.
+int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
+{
+    if (verbose) {
+	printfd("arrayrankInfo\n");
+	}
+    Eigen::FullPivLU<Eigen::MatrixXd> lu_decomp ( mymatrix );
+    int rank = lu_decomp.rank();
+    if (verbose) {
+		double p = lu_decomp.maxPivot();
+        printfd("arrayrankInfo: FullPivLU: rank %d, threshold %e, max pivot %e\n", rank, lu_decomp.threshold(), p );
+    }
+    Eigen::FullPivHouseholderQR<Eigen::MatrixXd> qr_decomp ( mymatrix );
+    int rank2 = qr_decomp.rank();
+    if (verbose) {
+		Eigen::MatrixXd qr = qr_decomp.matrixQR();
+		qr_decomp.colsPermutation();
+		
+		Eigen::FullPivHouseholderQR<Eigen::MatrixXd>::PermutationType P = qr_decomp.colsPermutation();
+		 
+		Eigen::MatrixXd R = qr_decomp.matrixQ().inverse() * mymatrix * P;
+		if (verbose>=3) {
+		eigenInfo(R, "arrayrankInfo: R ");
+		std::cout << R << std::endl;
+		std::cout << R.diagonal() << std::endl;
+		}
+		Eigen::VectorXd d = R.diagonal();
+		
+		double dmin = qr_decomp.maxPivot();
+		double dfalse = 0;
+		for(int i=0; i<d.size(); i++) 
+		{
+				double q = std::fabs((double)d(i));
+				//printf("i %d, q %e\n", i, q);
+				if (q<dmin && q > qr_decomp.threshold())
+					dmin=q;
+				if (q>dfalse && q < qr_decomp.threshold())
+					dfalse=q;
+		}
+		double p = qr_decomp.maxPivot();
+        printfd("arrayrankInfo: FullPivHouseholderQR: rank %d, threshold %e, max pivot %e, min non-zero pivot %e, false pivot %e\n", rank, qr_decomp.threshold(), p, dmin, dfalse );
+    }
+
+    return rank;
+}
+
+/// return rank of an array based on Eigen::FullPivLU
+int arrayrankInfo ( const array_link &al, int verbose )
+{
+	printfd("xxx\n"); al.show(); fflush(stdout);
+    Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
+    int rank = arrayrankInfo( mymatrix, verbose );
     return rank;
 }
 
@@ -899,6 +997,13 @@ Eigen::MatrixXi permM ( int ks, int k, const Eigen::MatrixXi subperm, int verbos
     return pm;
 }
 
+/// return the condition number of a matrix
+double conditionNumber ( const array_link &M ) {
+    Eigen::MatrixXd A = arraylink2eigen ( M );
+    Eigen::JacobiSVD<Eigen::Matrix<double,-1,-1> > svd ( A );
+    double cond = svd.singularValues() ( 0 ) / svd.singularValues() ( svd.singularValues().size()-1 );
+    return cond;
+}
 
 /// calculate the rank of the second order interaction matrix of an array using the cache system
 int rankStructure::rankxf ( const array_link &al )
@@ -931,8 +1036,11 @@ int rankStructure::rankxf ( const array_link &al )
         printfd ( "rankStructure: rank0 %d\n", rank0 );
 
 	// special case: the same matrix!
-	if (ks==al.n_columns)
+	if (ks==al.n_columns) {
+		if (verbose)
+			printfd("special case: k==al.n_columns\n");
 		return decomp.rank();
+	}
     Eigen::MatrixXd A = array2xfeigen ( al );
 
     // caculate permutation
@@ -965,6 +1073,9 @@ int rankStructure::rankxf ( const array_link &al )
     if ( verbose>=2 ) {
         printfd ( "rankStructure: ZxSub\n" );
         eigenInfo ( ZxSub );
+		
+		arrayrankInfo(ZxSub, 1);
+		
 		if (verbose>=3) {
 			fflush(stdout);
 			printf("ZxSub\n");
@@ -1111,7 +1222,10 @@ array_link array2xf ( const array_link &al )
     const int k = al.n_columns;
     const int n = al.n_rows;
     const int m = 1 + k + k* ( k-1 ) /2;
-    array_link out ( n, m, array_link::INDEX_DEFAULT );
+	//assert(k>=0);
+	//assert(n>=0);
+
+	array_link out ( n, m, array_link::INDEX_DEFAULT );
 
     // init first column
     int ww=0;
