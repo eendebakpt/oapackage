@@ -197,11 +197,11 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         jstructconference_t js ( N, 4 );
         std::vector<int> f4 = al.FvaluesConference ( 4 );
         std::vector<int> j4 = js.Jvalues();
-        
+
         myassert ( j4[0]==28, "unittest error: conference matricex F values: j4[0]\n" );
         myassert ( f4[0]==0, "unittest error: conference matricex F values: f4[0] \n" );
         myassert ( f4[1]==0, "unittest error: conference matricex F values: j4[1]\n" );
-        
+
         if ( verbose>=2 ) {
             printf ( "j4: " );
             display_vector ( j4 );
@@ -440,6 +440,27 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     }
 
 
+    {
+        cprintf ( verbose, "%s: test LMC check\n", bstr );
+
+        array_link al = exampleArray ( 1, 1 );
+                
+        lmc_t r = LMCcheckOriginal ( al );
+        //printfd("r %d, strength %d\n", r, strength);
+        
+        myassert(r!=LMC_LESS, "LMC check of array in normal form");
+        
+        for ( int i=0; i<20; i++ ) {
+            array_link alx = al.randomperm();
+            if ( alx==al )
+                continue;
+            lmc_t r = LMCcheckOriginal ( alx );
+            //printfd("r %d\n", r);
+
+            myassert ( r==LMC_LESS, "randomized array cannot be in minimal form" );
+        }
+        //exit(0);
+    }
 
     {
         /** Test dof **/
@@ -490,9 +511,9 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     }
 
     {
-            cprintf ( verbose, "%s: rank calculation using rankStructure\n", bstr );
+        cprintf ( verbose, "%s: rank calculation using rankStructure\n", bstr );
 
-            for ( int i=0; i<27; i++ ) {
+        for ( int i=0; i<27; i++ ) {
             array_link al = exampleArray ( i,0 );
             if ( al.n_columns<5 )
                 continue;
@@ -504,13 +525,13 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             int rc = rs.rankxf ( al );
             if ( verbose>=2 ) {
                 printf ( "rank of example array %d: %d %d\n", i, r, rc );
-            if ( verbose>=3 ) {
-                al.showproperties();
-            }
+                if ( verbose>=3 ) {
+                    al.showproperties();
+                }
             }
             myassert ( r==rc, "rank calculations" );
         }
-}
+    }
     {
         cprintf ( verbose, "%s: test dtable creation\n", bstr );
         double t0x=get_time_ms();
@@ -695,7 +716,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         }
 
     }
-    
+
 #ifdef HAVE_BOOST
     if ( writetests ) {
         cprintf ( verbose,"OA unittest: reading and writing of files\n" );
@@ -723,23 +744,24 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         af.closefile();
 
         // check read/write of binary file
-        
-        arraylist_t ll0; ll0.push_back(exampleArray(22)); ll0.push_back(exampleArray(22).randomperm() );
-        writearrayfile(tempstr.c_str(), ll0, ABINARY );
-        arraylist_t ll = readarrayfile(tempstr.c_str() );
-        myassert(ll0.size()==ll.size(), "read and write of arrays: size of list");
-        for(size_t i=0; i<ll0.size(); i++ )
-        {
-            myassert(ll0[i]==ll[i], "read and write of arrays: array unequal");
+
+        arraylist_t ll0;
+        ll0.push_back ( exampleArray ( 22 ) );
+        ll0.push_back ( exampleArray ( 22 ).randomperm() );
+        writearrayfile ( tempstr.c_str(), ll0, ABINARY );
+        arraylist_t ll = readarrayfile ( tempstr.c_str() );
+        myassert ( ll0.size() ==ll.size(), "read and write of arrays: size of list" );
+        for ( size_t i=0; i<ll0.size(); i++ ) {
+            myassert ( ll0[i]==ll[i], "read and write of arrays: array unequal" );
         }
 
-        ll0.resize(0); ll0.push_back(exampleArray(24));
-        writearrayfile(tempstr.c_str(), ll0, ABINARY_DIFFZERO );
-         ll = readarrayfile(tempstr.c_str() );
-        myassert(ll0.size()==ll.size(), "read and write of arrays: size of list");
-        for(size_t i=0; i<ll0.size(); i++ )
-        {
-            myassert(ll0[i]==ll[i], "read and write of arrays: array unequal");
+        ll0.resize ( 0 );
+        ll0.push_back ( exampleArray ( 24 ) );
+        writearrayfile ( tempstr.c_str(), ll0, ABINARY_DIFFZERO );
+        ll = readarrayfile ( tempstr.c_str() );
+        myassert ( ll0.size() ==ll.size(), "read and write of arrays: size of list" );
+        for ( size_t i=0; i<ll0.size(); i++ ) {
+            myassert ( ll0[i]==ll[i], "read and write of arrays: array unequal" );
         }
     }
 
