@@ -1357,6 +1357,21 @@ void init_perm ( numtype *perm, int len )
         perm[i]=i;
 }
 
+// Initialize sign permutation
+template <class numtype>
+/**
+ * Initialiaze a permutation
+ * @param perm
+ * @param len
+ */
+
+void init_signperm ( std::vector<numtype> &signperm)
+{
+    for ( size_t i=0; i<signperm.size(); i++ )
+        signperm[i]=1;
+}
+
+
 template <class numtype>
 bool compare_perm ( const numtype *permA, const numtype *permB, int len )
 {

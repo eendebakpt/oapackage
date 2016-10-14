@@ -6,6 +6,8 @@ oatest: tool for testing new algorithms
 
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
 
+Algorithms: Alan Vazquez <alanrvazquez@gmail.com>
+
 Copyright: See LICENSE.txt file that comes with this distribution
 */
 
@@ -20,112 +22,12 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
+#include "mathtools.h"
 
 #include "evenodd.h"
 #include "lmc.h"
 
 #include "conference.h"
-
-int LMC0check_firstrow ( const array_link &al, std::vector<int> &colperm,  int ci ) {
-    printf ( "not implemented...\n" );
-    return LMC_LESS;
-
-}
-
-lmc_t compare_columns ( const array_link &al, std::vector<int> &colperm, int column ) {
-    const int nrows=al.n_rows;
-
-    //printf("compare_columns: source %d, target %d\n", column, colperm[column]);
-    for ( int r=0; r<nrows; r++ ) {
-        if ( al.atfast ( r, column ) < al.atfast ( r, colperm[column] ) )
-            return LMC_MORE;
-        if ( al.atfast ( r, column ) > al.atfast ( r, colperm[column] ) )
-            return LMC_LESS;
-    }
-    return LMC_EQUAL;
-}
-
-lmc_t LMC0_columns ( const array_link &al, std::vector<int> &colperm, int column, int verbose=0 ) {
-    const int ncols = al.n_columns;
-    lmc_t r = LMC_NONSENSE;
-
-    if ( verbose ) {
-        printf ( "LMC0_columns: column %d, colperm ", column );
-        display_vector ( colperm );
-        printf ( "\n" );
-    }
-    for ( int c=column; c<ncols ; c++ ) {
-        // select first column
-        int col = colperm[c];
-        colperm[c]=colperm[column];
-        colperm[column]=col;
-
-        // compare the current pair of columns
-        r = compare_columns ( al, colperm, column );
-
-
-        //printf("LMC0_columns: column comparison at %d: %d\n", column, r);
-        if ( r==LMC_EQUAL ) {
-            // columns are equal, so go one column deeper
-            if ( verbose>=2 )
-                printf ( "LMC0_columns: go to col %d\n", column+1 );
-            r = LMC0_columns ( al, colperm, column+1 );
-        }
-        if ( r==LMC_LESS ) {
-            // we already know the array is not in minimal form
-            break;
-        }
-
-        // result is LMC_MORE, continue with the calculation
-
-        // swap back column
-        colperm[c]=col;
-        colperm[column]=colperm[col];
-    }
-    return r;
-}
-
-/** Algorithm: check an array X for LMC0 form
- *
- * The tag [B] indicates branching
- *
- *
- *
- * 1. Select the first column [B]
- * 2. Apply row level permutations such that the first column only contains ones (and a single zero)
- * 3. Sort the rows of the design
- * 4. Select one of two possible sign permutations for the first row [B]
- * 5. Select the next column k [B]
- * 6. With the selected column:
- *    i. Apply the correct column level permutation to make the element X(1, k) equal to 1
- *    ii. Sort the rows using the ordering 0, 1, -1
- *    iii. Compare the column the the original column k of the design. If less, then abort with LMC_LESS, if more, continue to 5, if equal then go to 5 with k+1
- * 7. Return LMC_MORE
- *
- *
- * When selecting columns we use a std::vector to keep track of selected indices
- * When sorting the rows to do not sort the rows, but use a rowsort_t structure to keep track of the order of rows
- **/
-
-/**
- * Dummy algorithm: only allow column permutations
- *
- *
- */
-lmc_t LMC0check ( const array_link &al ) {
-
-    const int ncols = al.n_columns;
-
-    // initialize the column permutation
-    std::vector<int> colperm ( ncols ); // create pointer for the column permutations
-    init_perm ( colperm );
-
-    // call the recursive part starting at column 0
-    lmc_t r = LMC0_columns ( al, colperm, 0 );
-
-    return r;
-}
-
 
 
 int main ( int argc, char* argv[] ) {
@@ -160,7 +62,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="test.oa";
+        input="cdesign-18-18.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -180,23 +82,6 @@ int main ( int argc, char* argv[] ) {
 
     setloglevel ( SYSTEM );
 
-    /* test on known set of arrays */
-    printf("### test code on known array\n");
-    array_link al = exampleArray ( 2 );
-    lmc_t r=LMC0check ( al );
-    printf ( "minimal form check result: %d (should be %d)\n", r, LMC_MORE );
-
-    for ( int i=0; i<3; i++ ) {
-        printf ( "round %d: apply random transformation to the array\n", i );
-        array_link altmp =  al.randomcolperm();
-        lmc_t r=LMC0check ( altmp );
-
-        if ( altmp==al ) {
-            printf ( "  minimal form check: %d (should be %d)\n", r, LMC_MORE );
-        } else        printf ( "  minimal form check: %d (should be %d)\n", r, LMC_LESS );
-
-    }
-    
     printf("### read from file\n");
 
     arraylist_t ll= readarrayfile ( input );
@@ -206,9 +91,17 @@ int main ( int argc, char* argv[] ) {
 
         //al = al.randomrowperm();
         //al = al.randomcolperm();
-
+        al.showarray();
         lmc_t r = LMC0check ( al );
-        printf ( "array %d: result %d\n", (int) i, ( int ) r );
+        printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
+        /* Apply random transformation */
+        conference_transformation_t T1(al);
+        T1.randomize();
+        T1.show();
+        array_link al1 = T1.apply ( al );
+        al1.showarray();
+        lmc_t a = LMC0check ( al1 );
+        printf ( "array %d: result %d\n (should be, possibly, %d)\n", (int) i, a, LMC_LESS );
     }
 
 
@@ -216,4 +109,4 @@ int main ( int argc, char* argv[] ) {
 
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
