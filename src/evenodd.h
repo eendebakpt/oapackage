@@ -684,6 +684,17 @@ public:
 
         return kmax;
     }
+    
+    long getCount(int k, int j) const {
+        for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
+                it != maxJcounts.end (); ++it ) {
+            if( it->first.j==j && it->first.k==k) {
+                return it->second;
+            }
+        }
+            return -1;
+    }
+    
     std::vector<long> getTotalsJvalue(int jval) const {
         int nmax=maxCols();
         std::vector<long> k ( nmax+1 );
