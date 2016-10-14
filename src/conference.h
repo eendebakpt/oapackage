@@ -572,8 +572,8 @@ public:
     // r the number of rows that are valid
     bool filterJpartial(const cperm &c, int r ) const {
         const int N = als.n_rows;
-        int j = partial_inner_product(c, this->als, als.n_columns-1, r);
-        if (std::fabs(j)> (N-r) )
+        long j = partial_inner_product(c, this->als, als.n_columns-1, r);
+        if (std::abs(j)> (N-r) )
             return false;
         else return true;
     }

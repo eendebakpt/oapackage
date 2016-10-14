@@ -135,6 +135,7 @@ Eigen::MatrixXd arraylink2eigen (const array_link & al);
  **/
 class rankStructure
 {
+public:
         typedef Eigen::FullPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
         //typedef Eigen::ColPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
 
