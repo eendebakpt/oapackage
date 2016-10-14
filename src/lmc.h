@@ -902,6 +902,10 @@ inline lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAext
     return LMCcheck ( al.array, ad,  oaextend, reduction );
 }
 
+/// direct LMC check using the original LMC check
+lmc_t LMCcheckOriginal ( const array_link &al );
+
+
 /// helper function
 LMCreduction_t calculateSymmetryGroups(const array_link &al, const arraydata_t &adata, const OAextend &oaextend, int verbose=1, int hack=0);
 lmc_t LMCcheckSymmetryMethod(const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction,  LMCreduction_t &reductionsub, int dverbose);
