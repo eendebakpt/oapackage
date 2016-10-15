@@ -455,11 +455,9 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             if ( alx==al )
                 continue;
             lmc_t r = LMCcheckOriginal ( alx );
-            //printfd("r %d\n", r);
 
             myassert ( r==LMC_LESS, "randomized array cannot be in minimal form" );
         }
-        //exit(0);
     }
 
     {

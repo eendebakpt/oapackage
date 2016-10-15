@@ -275,7 +275,6 @@ int main ( int argc, char* argv[] ) {
             break;
                 case LMC0:
             outlist = selectLMC0 ( outlist, verbose, ctype);
-                    printfd("error: selection method %d not implemented\n", (int) select);
             
                 default:
                     printfd("error: selection method %d not implemented\n", (int) select);

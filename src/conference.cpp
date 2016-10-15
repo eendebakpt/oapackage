@@ -2403,8 +2403,7 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
 
 arraylist_t out ;
 for(size_t i=0; i<list.size(); i++) {
-	lmc_t r = LMC_LESS;
-//lmc_t r=LMC0check(list[i]);
+lmc_t r=LMC0check(list[i]);
 if (r==LMC_LESS) {
 		// pass, array is not in LMC0 format
 } else  {
@@ -2830,13 +2829,13 @@ void init_lmc0_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, s
 indexsort conf_calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
 {
     int lastcol = std::min(n_cols,sutk_col);
-
+	const int cp = colperm[lastcol];
     for ( int i=0; i < n_rows; i++ ) {
 
         int rval = rowperm[i].val;
-        int current_val = ((colsignperm[colperm[lastcol]]*rowsignperm[ rval ])*al.at( rval, colperm[lastcol]));
+        int current_val = ((colsignperm[cp]*rowsignperm[ rval ])*al.atfast( rval, cp));
 
-        rr[ i ] = ( 10*sd.rowvalue.at( i, lastcol-1) ) + ((current_val+3) % 3);
+        rr[ i ] = ( 10*sd.rowvalue.atfast( i, lastcol-1) ) + ((current_val+3) % 3);
     }
     indexsort is ( rr );
 
