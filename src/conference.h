@@ -421,7 +421,7 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 arraylist_t sortLMC0 ( const arraylist_t &lst );
 
 /// check if array is in LM0 form
-lmc_t LMC0check ( const array_link &al );
+lmc_t LMC0check ( const array_link &al, int verbose = 0 );
 
 /// return true if the design is a foldover array
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );

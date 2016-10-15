@@ -276,6 +276,19 @@ int main ( int argc, char* argv[] ) {
         printf ( "random seed %d\n", randvalseed );
         srand ( randvalseed );
     }
+    
+        if ( 1 ) {
+        array_link al= exampleArray ( 28,1 );
+        al.showarray();
+        lmc_t r =  LMC0check(al, verbose);
+        printf("result %d\n", r);
+         al= exampleArray ( 29,1 );
+        al.showarray();
+         r =  LMC0check(al, verbose);
+        printf("result %d\n", r);
+        exit ( 0 );
+    }
+    
 
     {
         speedcheck_conf ( input, verbose );

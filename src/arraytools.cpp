@@ -1471,7 +1471,30 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-    //
+       case 28: {
+        dstr="conference design in C(4, 3) in LMC0 form";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        //
+        array_link al ( 4,3, 0 );
+        int tmp[] = { 0, 1, 1, 1, 1, 0, 1, -1, 1, -1, 0, 1 };
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
+       case 29: {
+        dstr="conference design in C(4, 3)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        //
+        array_link al ( 4,3, 0 );
+        int tmp[] = { 0, 1, 1, 1, 1, 0, 1, -1, 1, 1, -1, 0 };
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
     
     } // end of switch
 
