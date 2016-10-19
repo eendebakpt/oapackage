@@ -134,7 +134,7 @@ Eigen::MatrixXd dummy2 ();
 %ignore::write_array;
 %ignore::write_array_latex;
 %ignore::finish_arrayfile;
-%ignore append_arrays;
+//%ignore append_arrays;
 %ignore arrayfile_t::arrayNbits;
 %ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
@@ -1802,8 +1802,8 @@ public:
     /// return true if the file has binary format
     bool isbinary () const;
 
-    /// append arrays to the file
-    int append_arrays ( const arraylist_t & arrays, int startidx );
+    /// append list of arrays to the file
+    int append_arrays ( const arraylist_t & arrays, int startidx = -1 );
 
     /// append a single array to the file
     void append_array ( const array_link & a, int specialindex = -1 );

@@ -3634,7 +3634,8 @@ int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx ) {
 
     for ( arraylist_t::const_iterator it = arrays.begin(); it != arrays.end(); it++ ) {
         this->append_array ( *it, startidx );
-        startidx++;
+        if (startidx>=0)
+            startidx++;
     }
     return 0;
 }
