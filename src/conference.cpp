@@ -2333,7 +2333,7 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
     for ( size_t i=0; i<list.size(); i++ ) {
         lmc_t r=LMC0check ( list[i] );
         list[i].showarray();
-        
+
 		printfd("selectLMC0: i %d, r %d\n", i, r);
         if ( r==LMC_LESS ) {
             // pass, array is not in LMC0 format
@@ -2775,17 +2775,10 @@ void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std
 }
 
 /* Function to get the position of the zero element in the transformed array*/
-<<<<<<< HEAD
-int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ){
-    int position_zero = -1;
-    for ( int r = 0; r < nrows; r++){
-        if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0){
-=======
 int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ) {
     int position_zero = -1;
     for ( int r = 0; r < nrows; r++ ) {
         if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0 ) {
->>>>>>> 339e5b299c0a5c228911abc2bd4f7b77bcfd3f6e
             position_zero = rowperm[r].r;
         }
     }
@@ -2925,4 +2918,4 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
 
 
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
