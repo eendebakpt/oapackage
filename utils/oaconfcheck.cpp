@@ -104,7 +104,6 @@ int main ( int argc, char* argv[] ) {
         printf ( "array %d: result %d\n (should be, possibly, %d)\n", (int) i, a, LMC_LESS );
     }
 
-
     return 0;
 
 }
