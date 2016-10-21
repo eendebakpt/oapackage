@@ -258,7 +258,8 @@ int main(int argc, char *argv[])
     opt.setOption("kmax");
     opt.setOption("format", 'f');
     opt.setOption("debug");
-    opt.setOption("hm"); opt.setOption("lm");
+    // for debugging
+    opt.setOption("hm"); opt.setOption("lm"); opt.setOption("dindex");
 
     opt.addUsage("Orthonal Array Cluster Gather: special tool");
     opt.addUsage("Usage: oaclustergather [OPTIONS] ");
@@ -304,6 +305,8 @@ int main(int argc, char *argv[])
     int verbose = opt.getIntValue('v', 1);
     int method = opt.getIntValue("method", 0);
     int debug = opt.getIntValue("debug", 0);
+    const int dindex = opt.getIntValue("dindex", 24);
+    
     int needcleanrun = opt.getIntValue("cleanrun", 1);
     int paretomethod = opt.getIntValue("paretomethod", 0);
     int allowparetodiff = opt.getIntValue("nparetodiff", 0);
@@ -478,12 +481,13 @@ int main(int argc, char *argv[])
     if (method == 0) {
 	methodtag = "pareto";
 
-	pareto_cb_cache paretofunction =
-	    calculateArrayParetoJ5Cache < array_link >;
-
+	{
+	pareto_cb_cache paretofunction = calculateArrayParetoJ5Cache < array_link >;
 	if (paretomethod)
 	    paretofunction = calculateArrayParetoJ5Cache < array_link >;
-
+	    assert(paretomethod == 1);	// other methods not implemented at this moment...
+        }
+	pareto_cb paretofunction = calculateArrayParetoJ5 < array_link >;
 	assert(paretomethod == 1);	// other methods not implemented at this moment...
 
 	arrayfile::arrayfilemode_t arrayfilemode =
@@ -652,7 +656,7 @@ int main(int argc, char *argv[])
 		
 
 		if (debug) {
-		int apos = arrayInFile(exampleArray(24), psourcefile.c_str() );
+		int apos = arrayInFile(exampleArray(dindex), psourcefile.c_str() );
 		
 		if ( apos>=0 ) {
 		    myprintf("found array in source file! setting debug to 10...\n");
@@ -703,8 +707,7 @@ int main(int argc, char *argv[])
 				 narrays);
 			if (arraylist.size() <= 0)
 			    break;
-			addArraysToPareto(pset, paretofunction, arraylist,
-					  jj, verbose);
+			addArraysToPareto(pset, paretofunction, arraylist, jj, verbose);
 			naread += arraylist.size();
 			loop++;
 		    }
@@ -714,7 +717,7 @@ int main(int argc, char *argv[])
 		    
 		     std::vector<array_link> llx = pset.allindices();
 		     arraylist_t ll(llx.begin(), llx.end() );
-		     int jx=arrayInList(exampleArray(24), ll);
+		     int jx=arrayInList(exampleArray(dindex), ll);
 		    myprintf("after merge...jj %d, index in pareto list %d\n", jj, jx);
 		     if(jx<0) {	    
 		    exit(0);
@@ -745,10 +748,10 @@ int main(int argc, char *argv[])
 	    arraylist_t pp = pset.allindicesdeque();
 	    if (debug) {
 		printf("---\n");
-		arrayInList(exampleArray(24), pp);
+		arrayInList(exampleArray(dindex), pp);
 		     std::vector<array_link> llx = pset.allindices();
 		     arraylist_t ll(llx.begin(), llx.end() );
-		     int jx=arrayInList(exampleArray(24), ll);
+		     int jx=arrayInList(exampleArray(dindex), ll);
 	    }
 	    npareto[k] = pset.numberindices();
 

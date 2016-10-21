@@ -78,9 +78,11 @@ T2 subvector ( const T2& full, const T& ind ) {
     return target;
 }
 
-enum selection_method {SELECT_RANDOM, SELECT_FIRST};
+enum reduction_method {NONE, NAUTY, LMC0};
 
-arraylist_t selectArraysMax ( const arraylist_t &lst, int nmax, selection_method method = SELECT_RANDOM, int verbose=0 ) {
+enum max_selection_method {SELECT_RANDOM, SELECT_FIRST};
+
+arraylist_t selectArraysMax ( const arraylist_t &lst, int nmax, max_selection_method method = SELECT_RANDOM, int verbose=0 ) {
     nmax = std::min ( nmax, ( int ) lst.size() );
 
     if ( nmax<0 )
@@ -129,6 +131,8 @@ int main ( int argc, char* argv[] ) {
     opt.setOption ( "output", 'o' );
     opt.setOption ( "ctype" );
 
+    opt.setOption ( "reduction" );
+
     opt.addUsage ( "Orthonal Array: oaconference: testing platform" );
     opt.addUsage ( "Usage: oaconference [OPTIONS] [FILE]" );
     opt.addUsage ( "" );
@@ -144,6 +148,7 @@ int main ( int argc, char* argv[] ) {
     opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM ).c_str() );
     opt.addUsage ( " --j1zero [INT]             Restrict designs to J1=0" );
     opt.addUsage ( " --j3zero [INT]		Restrict designs to J3=0" );
+    opt.addUsage ( printfstring(" --select [INT]             Method to reduce generated designs (None %d, NAUTY %d, LMC0 %d)", NONE, NAUTY, LMC0).c_str() );
     opt.processCommandArgs ( argc, argv );
 
 
@@ -158,12 +163,13 @@ int main ( int argc, char* argv[] ) {
     int N = opt.getIntValue ( 'N', 10 );
     int kmax = opt.getIntValue ( 'k', N );
     int nmax = opt.getIntValue ( "nmax", -1 );
-    selection_method nmaxmethod = (selection_method)opt.getIntValue ( "nmaxmethod", SELECT_FIRST );
-    int select = opt.getIntValue ( 's', 1 );
+    max_selection_method nmaxmethod = (max_selection_method)opt.getIntValue ( "nmaxmethod", SELECT_FIRST );
+    reduction_method select = (reduction_method) opt.getIntValue ( 's', 1 );
     const conference_t::conference_type ctx = ( conference_t::conference_type ) opt.getIntValue ( "ctype", 0 );
     const matrix_isomorphism_t itype = ( matrix_isomorphism_t ) opt.getIntValue ( "itype", CONFERENCE_ISOMORPHISM );
     const int j1zero = opt.getIntValue ( "j1zero", 0 );
     const int j3zero = opt.getIntValue ( "j3zero", 0 );
+    const reduction_method reduction = (reduction_method) opt.getIntValue ( "reduction", NAUTY );
 
     const std::string output = opt.getStringValue ( 'o', "" );
     const std::string input = opt.getStringValue ( 'i', "" );
@@ -246,7 +252,7 @@ int main ( int argc, char* argv[] ) {
 
             case CONFERENCE_ISOMORPHISM:
                 // TODO: make a version with symmetry inflation
-                outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select );
+                outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select==NAUTY );
                 //outlist = extend_conference ( inputarrays, ctype,  verbose, select );
                 break;
             default
@@ -261,8 +267,19 @@ int main ( int argc, char* argv[] ) {
             break;
         }
 
-        if ( select ) {
+        if ( select != NONE ) {
+            switch (select)
+            {
+                case NAUTY:
             outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
+            break;
+                case LMC0:
+            outlist = selectLMC0 ( outlist, verbose, ctype);
+            break;
+                default:
+                    printfd("error: selection method %d not implemented\n", (int) select);
+                    break;
+            }
         }
         sort ( outlist.begin(), outlist.end(), compareLMC0 );
 

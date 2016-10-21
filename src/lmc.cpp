@@ -2778,6 +2778,24 @@ LMCreduction_t calculateSymmetryGroups ( const array_link &al, const arraydata_t
 
 }
 
+lmc_t LMCcheckOriginal ( const array_link &al ) {
+    assert ( al.is2level() );
+    arraydata_t ad = arraylink2arraydata ( al );
+    int strength = al.strength();
+
+    OAextend oaextend ( ad );
+    LMCreduction_t reduction ( &ad );
+	reduction.init_state=INIT;
+			copy_array(al.array, reduction.array, ad.N, ad.ncols);
+
+	            int changed = check_root_update ( al.array, ad, reduction.array );
+
+	//            reduction->setArray ( array, ad->N, ad->ncols );
+
+	
+    return LMCcheck ( al.array, ad,  oaextend, reduction );
+}
+
 lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction )
 {
     lmc_t lmc = LMC_NONSENSE;
@@ -3155,7 +3173,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
         bool rootform = check_root_form ( reduction->array, *ad );
 
         if ( ! rootform ) {
-            log_print ( SYSTEM, "LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d)\n", reduction->mode, OA_TEST, OA_REDUCE );
+            printfd( "LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d)\n", reduction->mode, OA_TEST, OA_REDUCE );
 
             int changed = check_root_update ( original, *ad, reduction->array );
 
