@@ -143,14 +143,12 @@ v=1
  */
 
 /// return true of the argument is even
-inline bool iseven ( int q )
-{
+inline bool iseven ( int q ) {
     return ( q%2 ) ==0;
 }
 
 /// return parameters of a conference design
-void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
-{
+void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v ) {
     q = ( N-2 ) /2;
 
     if ( k< 2+q ) {
@@ -178,8 +176,7 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
     //printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
 
-conference_t::conference_t ( const conference_t  &rhs )
-{
+conference_t::conference_t ( const conference_t  &rhs ) {
     this->N = rhs.N;
     this->ncols = rhs.ncols;
     this->ctype = rhs.ctype;
@@ -189,8 +186,7 @@ conference_t::conference_t ( const conference_t  &rhs )
     this->j3zero = rhs.j3zero;
 }
 
-conference_t::conference_t ( int N, int k )
-{
+conference_t::conference_t ( int N, int k ) {
 
     this->N = N;
     this->ncols = k;
@@ -200,8 +196,7 @@ conference_t::conference_t ( int N, int k )
     this->j3zero = 0;
 }
 
-array_link conference_t::create_root_three ( ) const
-{
+array_link conference_t::create_root_three ( ) const {
     array_link al ( this->N, 3, 0 ); // c.ncols
 
     al.at ( 0,0 ) =0;
@@ -236,8 +231,7 @@ array_link conference_t::create_root_three ( ) const
 
     return al;
 }
-array_link conference_t::create_root ( ) const
-{
+array_link conference_t::create_root ( ) const {
     array_link al ( this->N, 2, 0 ); // c.ncols
 
     al.at ( 0,0 ) =0;
@@ -258,31 +252,30 @@ array_link conference_t::create_root ( ) const
     return al;
 }
 
-bool isConferenceFoldover ( const array_link &al, int verbose )
-{
-	// FIXME: implement reduce to conference matrix
+bool isConferenceFoldover ( const array_link &al, int verbose ) {
+    // FIXME: implement reduce to conference matrix
 
     array_link alt = al.transposed();
     array_link alt2 = alt*-1;
 
-	std::vector<int> ri(al.n_rows);
-	std::fill(ri.begin(), ri.end(), -1);
+    std::vector<int> ri ( al.n_rows );
+    std::fill ( ri.begin(), ri.end(), -1 );
 
     for ( int i=0; i<al.n_rows; i++ ) {
-		if (ri[i]>-1)
-			continue;
+        if ( ri[i]>-1 )
+            continue;
         //array_link alx = alt.selectColumns ( i );
         int foundcol=0;
         for ( int j=i+1; j<al.n_rows; j++ ) {
-			if (ri[j]>-1 )
-				continue;
+            if ( ri[j]>-1 )
+                continue;
             //array_link alx2 = alt2.selectColumns ( j );
             //assert ( alt.columnEqual(i, alt2, j)==(alx==alx2) );
-			if (alt.columnEqual(i, alt2, j) ) {
-			//if ( alx==alx2 ) {
+            if ( alt.columnEqual ( i, alt2, j ) ) {
+                //if ( alx==alx2 ) {
                 foundcol=1;
-				ri[i]=j;
-				ri[j]=i;
+                ri[i]=j;
+                ri[j]=i;
                 break;
             }
         }
@@ -296,8 +289,7 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
     return true;
 }
 
-conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose )
-{
+conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose ) {
     const int nr = al.n_rows;
     const int nc=al.n_columns;
     const int nn = 2* ( nr+nc );
@@ -425,17 +417,15 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
     return t;
 }
 
-array_link reduceConference ( const array_link &al, int verbose )
-{
-	conference_transformation_t t = reduceConferenceTransformation ( al, verbose );
+array_link reduceConference ( const array_link &al, int verbose ) {
+    conference_transformation_t t = reduceConferenceTransformation ( al, verbose );
     array_link alx = t.apply ( al );
     return alx;
 
 }
 
 // return vector of length n with specified positions set to one
-cperm get_comb ( const cperm p, int n, int zero=0, int one=1 )
-{
+cperm get_comb ( const cperm p, int n, int zero=0, int one=1 ) {
     cperm c ( n, zero );
     //for ( int i=0; i<n ; i++ )
     //	c[i]=zero;
@@ -445,16 +435,14 @@ cperm get_comb ( const cperm p, int n, int zero=0, int one=1 )
 }
 
 // set vector of length n with specified positions set to one
-inline void set_comb ( const cperm &p, cperm &c, int n, int zero=0, int one=1 )
-{
+inline void set_comb ( const cperm &p, cperm &c, int n, int zero=0, int one=1 ) {
     std::fill ( c.begin(), c.begin() +n, zero );
     for ( size_t i=0; i<p.size() ; i++ )
         c[p[i]]=one;
 }
 
 // set vector of length n with specified positions set to one
-inline void get_comb ( const cperm &p, int n, int zero, int one, cperm &c )
-{
+inline void get_comb ( const cperm &p, int n, int zero, int one, cperm &c ) {
     for ( int i=0; i<n ; i++ )
         c[i]=zero;
     for ( size_t i=0; i<p.size() ; i++ )
@@ -462,8 +450,7 @@ inline void get_comb ( const cperm &p, int n, int zero, int one, cperm &c )
 }
 
 /// return copy of vector with zero inserted at specified position
-inline cperm insertzero ( const cperm &c, int pos, int value=0 )
-{
+inline cperm insertzero ( const cperm &c, int pos, int value=0 ) {
     cperm cx ( c.size() +1 );
     std::copy ( c.begin(), c.begin() +pos, cx.begin() );
     cx[pos]=value;
@@ -473,8 +460,7 @@ inline cperm insertzero ( const cperm &c, int pos, int value=0 )
 
 
 /// set vector with zero inserted at specified position, no error checking
-void insertzero ( cperm &target, const cperm &c, int pos, int value=0 )
-{
+void insertzero ( cperm &target, const cperm &c, int pos, int value=0 ) {
     std::copy ( c.begin(), c.begin() +pos, target.begin() );
     target[pos]=value;
     std::copy ( c.begin() +pos, c.end(), target.begin() +pos+1 );
@@ -484,8 +470,7 @@ void insertzero ( cperm &target, const cperm &c, int pos, int value=0 )
  *
  *
  **/
-std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
-{
+std::vector<cperm> get_first ( int N, int extcol, int verbose=1 ) {
     int k1=-1;
     int n1=-1;
     int k = extcol;
@@ -531,8 +516,7 @@ std::vector<cperm> get_first ( int N, int extcol, int verbose=1 )
 }
 
 /** Return all admissible columns (block two) for a conference array in normal form */
-std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
-{
+std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 ) {
     //verbose=2;
     if ( verbose )
         printfd ( "get_second: N %d, extcol %d, target %d\n" );
@@ -592,8 +576,7 @@ std::vector<cperm> get_second ( int N, int extcol, int target, int verbose=0 )
 }
 
 /// calculate inner product between partial two permutations
-int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax )
-{
+int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax ) {
     int ip=0;
     size_t nn = a.size();
     const array_t *b = al.array+col*al.n_rows;
@@ -605,8 +588,7 @@ int partial_inner_product ( const cperm &a, const array_link &al, int col, int r
 }
 
 /// calculate inner product between two permutations
-int innerprod ( const cperm &a, const array_link &al, int col )
-{
+int innerprod ( const cperm &a, const array_link &al, int col ) {
     int ip=0;
     size_t nn = a.size();
     const array_t *b = al.array+col*al.n_rows;
@@ -619,8 +601,7 @@ int innerprod ( const cperm &a, const array_link &al, int col )
 
 
 /// calculate inner product between two permutations
-int innerprod ( const cperm &a, const cperm &b )
-{
+int innerprod ( const cperm &a, const cperm &b ) {
     int ip=0;
     size_t nn = b.size();
     for ( size_t i=0; i<nn; i++ ) {
@@ -631,8 +612,7 @@ int innerprod ( const cperm &a, const cperm &b )
 }
 
 /// helper function
-inline int check_symm_zero ( const cperm &c, const std::vector<int>  & check_indices, int i )
-{
+inline int check_symm_zero ( const cperm &c, const std::vector<int>  & check_indices, int i ) {
     if ( check_indices[i] ) {
         if ( ( ( unsigned char ) c[i-1] ) > ( ( unsigned char ) c[i] ) ) {
             // discard
@@ -643,8 +623,7 @@ inline int check_symm_zero ( const cperm &c, const std::vector<int>  & check_ind
 }
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
-{
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend ) {
 
     for ( int i=rowstart+1; i<rowend; i++ ) {
         if ( check_indices[i] ) {
@@ -659,8 +638,7 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
 }
 
 /// helper function
-int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
-{
+int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend ) {
     for ( int i=rowstart+1; i<rowend; i++ ) {
         if ( check_indices[i] ) {
             if ( ( ( unsigned char ) c[i-1] ) > ( ( unsigned char ) c[i] ) ) {
@@ -689,8 +667,7 @@ int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, 
 
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart )
-{
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart ) {
     //return true; // hack
 //	int k = sd.rowvalue.n_columns-1;
 
@@ -707,8 +684,7 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
 }
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
-{
+int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart ) {
     const int verbose=0;
 
     if ( verbose>=2 ) {
@@ -747,16 +723,14 @@ int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
 }
 
 /// return column of an array in cperm format
-cperm getColumn ( const array_link &al, int c )
-{
+cperm getColumn ( const array_link &al, int c ) {
     cperm cx ( al.n_rows );
     std::copy ( al.array+c*al.n_rows, al.array+ ( c+1 ) *al.n_rows, cx.begin() );
     return cx;
 }
 
 // return true if the extension column satisfies the inner product check
-int ipcheck ( const cperm &col, const array_link &al, int cstart, int verbose )
-{
+int ipcheck ( const cperm &col, const array_link &al, int cstart, int verbose ) {
     for ( int c=cstart; c<al.n_columns; c++ ) {
         if ( innerprod ( col, al, c ) !=0 ) {
             if ( verbose ) {
@@ -769,8 +743,7 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart, int verbose )
 }
 
 
-int minz ( const array_link &al, int k )
-{
+int minz ( const array_link &al, int k ) {
     const int N = al.n_rows;
     int minzidx=-1;
     const int nr=al.n_rows;
@@ -793,8 +766,7 @@ int minz ( const array_link &al, int k )
     return minzidx ;
 }
 
-int maxz ( const array_link &al, int k )
-{
+int maxz ( const array_link &al, int k ) {
     int maxzidx=-1;
     const int nr=al.n_rows;
     if ( k==-1 ) {
@@ -818,8 +790,7 @@ int maxz ( const array_link &al, int k )
 }
 
 /// filter candidate extensions based on symmetry propery
-std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, const array_link &als, int verbose )
-{
+std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, const array_link &als, int verbose ) {
     const int N = als.n_rows;
 
     int mval=0;
@@ -868,8 +839,7 @@ std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, 
 }
 
 /// filter candidate extensions on J3 value (only pairs with extension candidate are checked)
-std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_link &als, int verbose )
-{
+std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_link &als, int verbose ) {
 
     const int N = als.n_rows;
 
@@ -923,8 +893,7 @@ std::vector<cperm> filterJ3 ( const std::vector<cperm> &extensions, const array_
  *
  * Filtering is based in symmetry and ip
  */
-std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
-{
+std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose ) {
 //	symmetry_group rs = als.row_symmetry_group();
     symmdata sd ( als );
     DconferenceFilter dfilter ( als, filtersymm, filterip );
@@ -948,8 +917,7 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
  *
  * Filtering is based in symmetry and ip
  */
-std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
-{
+std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose ) {
     symmetry_group rs = als.row_symmetry_group();
     symmdata sd ( als );
 
@@ -988,8 +956,7 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
     return e2;
 }
 
-std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip )
-{
+std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip ) {
     if ( ct.ctype==conference_t::DCONFERENCE ) {
         return generateDoubleConferenceExtensions ( al, ct, verbose,filtersymm,filterip );
     }
@@ -1095,8 +1062,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 }
 
 /// return number of +1 values in the first column of an array
-int nOnesFirstColumn ( const array_link &al )
-{
+int nOnesFirstColumn ( const array_link &al ) {
     int n=0;
     for ( int i=0; i<al.n_rows; i++ )
         n+= al.atfast ( i,0 ) ==1;
@@ -1104,8 +1070,7 @@ int nOnesFirstColumn ( const array_link &al )
 }
 
 /// helper function to sort rows of an array
-indexsort rowsorter ( const array_link &al )
-{
+indexsort rowsorter ( const array_link &al ) {
     std::vector<mvalue_t<int> > rr;
     for ( int i=0; i<al.n_rows; i++ ) {
         mvalue_t<int> m;
@@ -1130,49 +1095,41 @@ const int bvals[3] = {0,1,-1}; // these are ordered
 
 template<class object_t>
 /// stack object with minimal amount of memory allocations
-class lightstack_t
-{
+class lightstack_t {
     object_t *stack;
 private:
     int size;
     int n;
 public:
 
-    lightstack_t ( int sz ) : size ( sz ), n ( 0 )
-    {
+    lightstack_t ( int sz ) : size ( sz ), n ( 0 ) {
         stack = new object_t[sz];
     }
-    ~lightstack_t()
-    {
+    ~lightstack_t() {
         delete [] stack;
     }
 
-    bool empty() const
-    {
+    bool empty() const {
         return n==0;
     }
-    void push ( const object_t &o )
-    {
+    void push ( const object_t &o ) {
 #ifdef OADEBUG
         assert ( this->n<this->size );
 #endif
         this->stack[n] = o;
         n++;
     }
-    object_t & top() const
-    {
+    object_t & top() const {
         assert ( n>0 );
         return this->stack[n-1];
     }
-    void pop()
-    {
+    void pop() {
         n--;
     }
 };
 
 /// add new branches to a stack of branches
-inline void branch ( lightstack_t<branch_t> &branches, branch_t &b, const int * const ( &bvals ), int istart = 0, int iend = 3 )
-{
+inline void branch ( lightstack_t<branch_t> &branches, branch_t &b, const int * const ( &bvals ), int istart = 0, int iend = 3 ) {
     for ( int i=istart; i<iend; i++ ) {
 
         if ( b.nvals[i]==0 )
@@ -1187,8 +1144,7 @@ inline void branch ( lightstack_t<branch_t> &branches, branch_t &b, const int * 
 }
 
 template <class NumType>
-size_t countvalues ( const std::vector<NumType> &c, size_t start, size_t end, NumType value )
-{
+size_t countvalues ( const std::vector<NumType> &c, size_t start, size_t end, NumType value ) {
     size_t n=0;
     for ( size_t i=start; i<end; i++ ) {
         if ( c[i]==value )
@@ -1197,8 +1153,7 @@ size_t countvalues ( const std::vector<NumType> &c, size_t start, size_t end, Nu
     return n;
 }
 
-void debug_candidate ( const cperm &candidate, const std::vector<int> &check_indices, const char *str )
-{
+void debug_candidate ( const cperm &candidate, const std::vector<int> &check_indices, const char *str ) {
     printfd ( "%s:\n", str ) ;
     printf ( " : perm " );
     print_cperm ( candidate );
@@ -1210,12 +1165,11 @@ void debug_candidate ( const cperm &candidate, const std::vector<int> &check_ind
 }
 
 
-std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices, int showd )
-{
+std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int block, int blocksize, std::vector<int> check_indices, int showd ) {
     std::vector<cperm> cc;
 
-    printf("#### debug_branch: range %d %d\n", gstart, gend);
-    debug_candidate(candidate, check_indices, "debug_branch");
+    printf ( "#### debug_branch: range %d %d\n", gstart, gend );
+    debug_candidate ( candidate, check_indices, "debug_branch" );
     std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
     cperm candidatetmp ( candidate.begin(), candidate.end() );
 
@@ -1233,7 +1187,7 @@ std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int blo
     b1.nvals[1] = countvalues<signed char> ( candidate, gstart, gend, bvals[1] );
     b1.nvals[2] = countvalues<signed char> ( candidate, gstart, gend, bvals[2] );
 
-    printf("  counts 1: %d 0: %d -1: %d\n", b1.nvals[0], b1.nvals[1], b1.nvals[2]);
+    printf ( "  counts 1: %d 0: %d -1: %d\n", b1.nvals[0], b1.nvals[1], b1.nvals[2] );
     branches.push ( b1 );
 
     for ( int x=gstart; x<gend; x++ ) {
@@ -1285,8 +1239,7 @@ std::vector<cperm> debug_branch ( cperm candidate, int gstart, int gend, int blo
 
 
 void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &basecandidate,  cperm &candidate, int block, const array_link &al,
-                                       const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal )
-{
+                                       const symmetry_group &alsg, const std::vector<int> & check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter, long &ntotal ) {
     const symmdata &sd = filter.sd;
 
     //int lastcol = al.n_columns-1;
@@ -1300,7 +1253,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         // TODO: make this loop in n-1 case?
 
         ntotal++;
-        const int j2start=std::max(0, al.n_columns-2);
+        const int j2start=std::max ( 0, al.n_columns-2 );
         // TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm check)
         if ( filter.filterJlast ( candidate, j2start ) ) {
             list.push_back ( candidate );
@@ -1308,23 +1261,23 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         return;
     }
 
-        const int blocksize = alsg.gsize[block];
+    const int blocksize = alsg.gsize[block];
 
-		// FIXME: test this feature
-	if (block>nblocks-8 && blocksize>1 && 1) {
-		int r =   alsg.gstart[block]-1;
+    // FIXME: test this feature
+    if ( block>nblocks-8 && blocksize>1 && 1 ) {
+        int r =   alsg.gstart[block]-1;
 
-		bool check = filter.filterJpartial(candidate, r);
-		if (verbose>=2) {
-		int j = partial_inner_product(candidate, filter.als, filter.als.n_columns-1, r);
-			printfd("partial check: block %d/%d:  r %d, j %d, check %d\n", block,nblocks, r, j, check);
-	}
-		if (!check)
-			return;
-}
+        bool check = filter.filterJpartial ( candidate, r );
+        if ( verbose>=2 ) {
+            int j = partial_inner_product ( candidate, filter.als, filter.als.n_columns-1, r );
+            printfd ( "partial check: block %d/%d:  r %d, j %d, check %d\n", block,nblocks, r, j, check );
+        }
+        if ( !check )
+            return;
+    }
     //printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
-		if (verbose>=2)
-	printfd("inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size(), blocksize);
+    if ( verbose>=2 )
+        printfd ( "inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size(), blocksize );
 
     if ( blocksize==1 ) {
         // easy case
@@ -1341,29 +1294,29 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
         print_cperm ( tmp );
         printf ( "\n" );
     }
-/*
-    if ( blocksize>8 && 0) {
+    /*
+        if ( blocksize>8 && 0) {
 
-        double tx0=get_time_ms();
-        std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
-        double tx1=get_time_ms();
-        std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
-        double tx2=get_time_ms();
+            double tx0=get_time_ms();
+            std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
+            double tx1=get_time_ms();
+            std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
+            double tx2=get_time_ms();
 
 
-        printfd ( "## debug branching %ld -> %ld (%.3f %.3f)\n",(long) cc.size(), ( long ) ccd.size(), tx1-tx0, tx2-tx1 );
+            printfd ( "## debug branching %ld -> %ld (%.3f %.3f)\n",(long) cc.size(), ( long ) ccd.size(), tx1-tx0, tx2-tx1 );
 
-        printf ( " ---> orig list\n" );
-        showCandidates ( cc );
-        printf ( " ---> debug list\n" );
-        showCandidates ( ccd );
-        exit(0);
-    }
-*/
-	// FIXME: enable the other branch!!!!!!!
-		if (verbose>=2)
-	printfd("  split\n");
-    if ( blocksize<3 || (block >1 && 0 ) ) {
+            printf ( " ---> orig list\n" );
+            showCandidates ( cc );
+            printf ( " ---> debug list\n" );
+            showCandidates ( ccd );
+            exit(0);
+        }
+    */
+    // FIXME: enable the other branch!!!!!!!
+    if ( verbose>=2 )
+        printfd ( "  split\n" );
+    if ( blocksize<3 || ( block >1 && 0 ) ) {
         unsigned long iter=0;
         std::sort ( candidate.begin() +gstart, candidate.begin() +gend );
         unsigned long nbc=0;
@@ -1397,8 +1350,8 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
             }
             // TODO: run inline filter
         } while ( std::next_permutation ( candidate.begin() +gstart, candidate.begin() +gend ) );
-		if (verbose>=2)
-			printfd("nbc block %d: %d/%ld\n", block, nbc, iter);
+        if ( verbose>=2 )
+            printfd ( "nbc block %d: %d/%ld\n", block, nbc, iter );
 
         if ( blocksize>10 && 0 ) {
             printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
@@ -1466,8 +1419,8 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
             branch ( branches, b, bvals, 0, 3 );
 
         } while ( ! branches.empty() );
-		if (verbose>=2)
-			printfd("nbc block %d: %d/%ld\n", block, nbc, nbc);
+        if ( verbose>=2 )
+            printfd ( "nbc block %d: %d/%ld\n", block, nbc, nbc );
 
         if ( showd ) {
             printfd ( "inflation of large block: blocksize %d: %d branch calls\n", blocksize, nbc );
@@ -1475,8 +1428,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
     }
 }
 
-std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter )
-{
+std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter ) {
     long ntotal=0;
 
     cperm candidate = basecandidate;
@@ -1484,18 +1436,17 @@ std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  cons
     std::vector<cperm> cc;
     inflateCandidateExtensionHelper ( cc, basecandidate, candidate, block, als, alsg, check_indices, ct, verbose, filter, ntotal );
 
-    if ( verbose>=2 || 0) {
+    if ( verbose>=2 || 0 ) {
         printfd ( "inflateCandidateExtension: generated %ld/%ld candidates (k %d)\n", ( long ) cc.size(), ntotal, als.n_columns );
     }
     return cc;
 }
 
 
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline )
-{
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline ) {
     printf ( "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n", filtersymm, filtersymminline, filterj2, filterj3 );
 
-	assert(ct.j1zero==1);
+    assert ( ct.j1zero==1 );
 
     const int N = al.n_rows;
     DconferenceFilter dfilter ( al, filtersymm, filterj2 );
@@ -1625,9 +1576,8 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
  * Old vesion that still can handle the j1zero=0 case
  *
  **/
-std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip )
-{
-    assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM  || ct.itype==CONFERENCE_ISOMORPHISM);
+std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, const conference_t & ct, int verbose , int filtersymm, int filterip ) {
+    assert ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM  || ct.itype==CONFERENCE_ISOMORPHISM );
 
     int j1zero = ct.j1zero;
 
@@ -1645,7 +1595,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
         if ( j1zero && i!= ( N-2 ) /2 )
             continue;
 
-		// fill initial permutation
+        // fill initial permutation
         std::fill ( c.begin(), c.end(), -1 );
         c[0]=0;
         c[1]=0;
@@ -1675,8 +1625,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
     return cc;
 }
 
-std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip )
-{
+std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip ) {
 
     const int extcol=al.n_columns;
 //const int N = al.n_rows;
@@ -1790,8 +1739,7 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
     return e2;
 }
 
-int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const array_link &al, int extcol )
-{
+int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const array_link &al, int extcol ) {
     if ( maxzpos<0 ) {
         switch ( ctype ) {
         case conference_t::CONFERENCE_NORMAL:
@@ -1815,8 +1763,7 @@ int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const 
     return maxzpos;
 }
 
-conference_extend_t extend_double_conference_matrix ( const array_link &al, const conference_t & ct,  CandidateGeneratorDouble &cgenerator, int extcol, int verbose, int maxzpos )
-{
+conference_extend_t extend_double_conference_matrix ( const array_link &al, const conference_t & ct,  CandidateGeneratorDouble &cgenerator, int extcol, int verbose, int maxzpos ) {
     conference_extend_t ce;
     ce.extensions.resize ( 0 );
 
@@ -1827,7 +1774,7 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
     if ( verbose )
         printf ( "--- extend_double_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype );
 
-	//ct.j1zero
+    //ct.j1zero
 
     int filterip=1;
     int filtersymm=1;
@@ -1843,11 +1790,11 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
         if ( k>3 && ct.j1zero==1 ) {
             cc = generateDoubleConferenceExtensionsInflate ( al, ct, verbose, filterip, 1 );
         } else {
-         if (ct.j1zero==1)
-			 cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
-		 else
-			 cc= generateDoubleConferenceExtensions2 ( al, ct, verbose, filtersymm, filterip );
-		}
+            if ( ct.j1zero==1 )
+                cc= generateDoubleConferenceExtensions ( al, ct, verbose, filtersymm, filterip );
+            else
+                cc= generateDoubleConferenceExtensions2 ( al, ct, verbose, filtersymm, filterip );
+        }
     }
 
     if ( ct.j3zero ) {
@@ -1861,8 +1808,7 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
 }
 
 //conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
-conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose, int maxzpos )
-{
+conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose, int maxzpos ) {
     conference_extend_t ce;
     ce.extensions.resize ( 0 );
 
@@ -1890,8 +1836,7 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
     return ce;
 }
 
-conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator )
-{
+conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator ) {
     conference_extend_t ce;
     ce.extensions.resize ( 0 );
 
@@ -1939,8 +1884,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
 // FIXME: implement partial j2 checking for cached conference matrices
 
 /// sort rows of an array based on the zero elements
-array_link sortrows ( const array_link al )
-{
+array_link sortrows ( const array_link al ) {
     size_t nr=al.n_rows;
     // initialize original index locations
     std::vector<size_t> idx ( nr );
@@ -1959,14 +1903,12 @@ array_link sortrows ( const array_link al )
 
 template<typename T>
 /// return size of std::vector in memory (in bytes)
-size_t vectorsizeof ( const typename std::vector<T>& vec )
-{
+size_t vectorsizeof ( const typename std::vector<T>& vec ) {
     return sizeof ( T ) * vec.size();
 }
 
 
-conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int verbose=1, int ncstart=3, int ncmax=-1, int root = -1 )
-{
+conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int verbose=1, int ncstart=3, int ncmax=-1, int root = -1 ) {
 
     conf_candidates_t cande;
 
@@ -2024,8 +1966,7 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
 
 
 
-arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
-{
+arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_t ctype, int verbose ) {
     // TODO: cache candidate extensions
     arraylist_t outlist;
     if ( verbose>=2 ) {
@@ -2061,8 +2002,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
     return outlist;
 }
 
-arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose )
-{
+arraylist_t extend_conference_restricted ( const arraylist_t &lst, const conference_t ctype, int verbose ) {
     arraylist_t outlist;
 
     if ( verbose>=2 ) {
@@ -2096,8 +2036,7 @@ arraylist_t extend_conference_restricted ( const arraylist_t &lst, const confere
 }
 
 /// select the unique arrays from a list of arrays. the indices of the unique arrays are returned
-std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose )
-{
+std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose ) {
     // perform stable sort
     indexsort sortidx ( lstr );
 
@@ -2133,8 +2072,7 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
 
 /// FIXME: name
 /// FIXME: reduce to more compact format
-array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int verbose )
-{
+array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int verbose ) {
     array_link alx;
     switch ( itype ) {
     case CONFERENCE_ISOMORPHISM: {
@@ -2158,8 +2096,7 @@ array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int 
 
 
 
-class ConferenceIsomorphismSelector
-{
+class ConferenceIsomorphismSelector {
 // OPTIONS: special array_link with reduced size --> factor 4 for char type
 // online adding of single element or batches with isomorphism reduction
 public:
@@ -2173,8 +2110,7 @@ public:
 private:
     int nadd ;
 public:
-    ConferenceIsomorphismSelector ( matrix_isomorphism_t itype, int verbose, int select_isomorphism_classes )
-    {
+    ConferenceIsomorphismSelector ( matrix_isomorphism_t itype, int verbose, int select_isomorphism_classes ) {
         this->itype=itype;
         this->verbose=verbose;
         this->select_isomorphism_classes=select_isomorphism_classes;
@@ -2182,13 +2118,11 @@ public:
 
     }
 
-    size_t size() const
-    {
+    size_t size() const {
         return candidates.size();
     }
 
-    void add ( const arraylist_t &lst )
-    {
+    void add ( const arraylist_t &lst ) {
 
         long nstart = candidates.size();
         long nextra = lst.size();
@@ -2232,8 +2166,7 @@ public:
 };
 
 
-arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
-{
+arraylist_t extend_conference_plain ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes ) {
     double t0=get_time_ms();
     arraylist_t outlist;
 
@@ -2252,7 +2185,7 @@ arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t 
     for ( size_t i=0; i<lst.size(); i++ ) {
         const array_link &al = lst[i];
         int extcol=al.n_columns;
-		conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1 );
+        conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1 );
 
 
         arraylist_t ll = ce.getarrays ( al );
@@ -2269,8 +2202,7 @@ arraylist_t extend_conference_plain( const arraylist_t &lst, const conference_t 
     return selector.candidates;
 }
 
-arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes )
-{
+arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype, int verbose, int select_isomorphism_classes ) {
     double t0=get_time_ms();
     arraylist_t outlist;
 
@@ -2320,8 +2252,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
     return selector.candidates;
 }
 
-std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
-{
+std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype ) {
     const int nn = lst.size();
 
     arraylist_t lstr;
@@ -2379,29 +2310,44 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 
     if ( verbose ) {
         double dt=get_time_ms()-t0;
-        myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d (%.1f kArrays/h)\n", ( int ) lst.size(), ( int ) lstgood.size(), 3600*1e-3*double(lst.size() ) /dt );
+        myprintf ( "selectConferenceIsomorpismClasses: select classes %d->%d (%.1f kArrays/h)\n", ( int ) lst.size(), ( int ) lstgood.size(), 3600*1e-3*double ( lst.size() ) /dt );
     }
     return std::pair<arraylist_t, std::vector<int> > ( lstgood, cidx );
 }
 
 
 
-std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype )
-{
+std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype ) {
     std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose, itype ) ;
     return pp.second;
 }
 
-arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype )
-{
+arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verbose, matrix_isomorphism_t itype ) {
     std::pair<arraylist_t, std::vector<int> > pp = selectConferenceIsomorpismHelper ( lst, verbose , itype ) ;
     return pp.first;
 }
 
+arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype ) {
+
+    arraylist_t out ;
+    for ( size_t i=0; i<list.size(); i++ ) {
+        lmc_t r=LMC0check ( list[i] );
+        list[i].showarray();
+
+		printfd("selectLMC0: i %d, r %d\n", i, r);
+        if ( r==LMC_LESS ) {
+            // pass, array is not in LMC0 format
+        } else  {
+            out.push_back ( list[i] );
+        }
+    }
+    return out;
+
+}
+
 
 /// return true of alL is smaller than alR in LMC-0 ordering
-bool compareLMC0 ( const array_link &alL, const array_link &alR )
-{
+bool compareLMC0 ( const array_link &alL, const array_link &alR ) {
     assert ( alL.n_rows==alR.n_rows );
     assert ( alL.n_columns==alR.n_columns );
 
@@ -2437,8 +2383,7 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
     return false;
 }
 
-bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
-{
+bool compareLMC0_1 ( const array_link &alL, const array_link &alR ) {
     assert ( alL.n_rows==alR.n_rows );
     assert ( alL.n_columns==alR.n_columns );
 
@@ -2467,21 +2412,18 @@ bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
 }
 
 
-arraylist_t sortLMC0 ( const arraylist_t &lst )
-{
+arraylist_t sortLMC0 ( const arraylist_t &lst ) {
     arraylist_t outlist = lst;
     std::sort ( outlist.begin(), outlist.end(), compareLMC0 );
     return outlist;
 }
 
-conference_options::conference_options ( int maxpos )
-{
+conference_options::conference_options ( int maxpos ) {
     maxzpos=-1;
 }
 
 /// FIXME: into generator class??
-std::vector<cperm> conferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
-{
+std::vector<cperm> conferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose ) {
     // FIXME: j2 check only for last pair
     //std::vector<cperm> cci = filter.filterList ( ccX );
     std::vector<cperm> cci = filter.filterListJ2last ( ccX );
@@ -2490,8 +2432,7 @@ std::vector<cperm> conferenceInflate ( const std::vector<cperm> &ccX, const arra
     return cci;
 }
 
-std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
-{
+std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose ) {
     std::vector<cperm> cci;
     std::vector<cperm> cc;
     // loop over all candidinates with k columns and inflate to (k+1)-column candidates
@@ -2516,8 +2457,7 @@ std::vector<cperm> doubleConferenceInflate ( const std::vector<cperm> &ccX, cons
     }
     return cci;
 }
-std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart )
-{
+std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart ) {
     //kstart=1;
     double t00=get_time_ms();
     int kfinal=al.n_columns;
@@ -2557,8 +2497,7 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
     return cci;
 }
 
-CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ) // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
-{
+CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ) { // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
     this->verbose=1;
     this->candidate_list_conf.resize ( ct.N+1 ); // set a safe max
     this->last_valid_conf.resize ( ct.N+1 );
@@ -2572,8 +2511,7 @@ CandidateGenerator::CandidateGenerator ( const array_link &al, const conference_
 }
 
 
-CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ) // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
-{
+CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ ) { // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
     this->verbose=1;
     this->last_valid=0;
     this->candidate_list_double.clear();
@@ -2582,8 +2520,7 @@ CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const
 }
 
 
-const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const
-{
+const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const array_link &al, int kz ) const {
     std::vector<cperm> cx;
 
     assert ( ct.itype==CONFERENCE_ISOMORPHISM );
@@ -2703,12 +2640,11 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
     return 	this->candidate_list_conf[kz][kfinal];
 }
 
-const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidates ( const array_link &al ) const
-{
+const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidates ( const array_link &al ) const {
 
     const char *tag = "generateDoubleConfCandidates (cache)";
     const int filterj2=1;
-	assert(ct.j1zero==1);
+    assert ( ct.j1zero==1 );
     const int filterj3=ct.j3zero;
     double t00=get_time_ms();
 
@@ -2757,7 +2693,7 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
         if ( verbose >=2 )
             printf ( "## %s: at %d columns: start with %d extensions, to generate extensions for column %d (%d column array)\n", tag, kx+1, ( int ) ccX.size(), kx+1 , kx+2 );
 
-        cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, (verbose>=2)*(verbose-1) );
+        cci = doubleConferenceInflate ( ccX, als, alx, filter, ct, ( verbose>=2 ) * ( verbose-1 ) );
 
         cci = filter.filterListZero ( cci );
 
@@ -2783,69 +2719,66 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateDoubleConfCandidate
 void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column ) {
 
     for ( rowindex_t r=0; r < n_rows; r++ ) {
-        if (  al.atfast( r, colperm[column] ) < 0 )
+        if ( al.atfast ( r, colperm[column] ) < 0 )
             rowsignperm[ r ] = -1;
     }
 
 }
 
-void init_lmc0_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr)
-{
-    int lastcol = std::min(n_cols,sutk_col);
+void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr ) {
+    int lastcol = std::min ( n_cols,sutk_col );
 
     for ( int i=0; i < n_rows; i++ ) {
         mvalue_t<int> m;
 
-        for ( int k=0; k < lastcol; k++ ){
-            m.v.push_back ( ( ( (colsignperm[colperm[k]]*rowsignperm[i])*al.at( rowperm[i].r, colperm[k] ) )+3) % 3 );
+        for ( int k=0; k < lastcol; k++ ) {
+            m.v.push_back ( ( ( ( colsignperm[colperm[k]]*rowsignperm[i] ) *al.at ( rowperm[i].r, colperm[k] ) ) +3 ) % 3 );
         }
 
         rr[ i ] = m;
     }
     indexsort is ( rr );
     indexsort aa = rr;
-    for (rowindex_t j = 0; j < n_rows; j++){
+    for ( rowindex_t j = 0; j < n_rows; j++ ) {
         rowperm[j].val = aa.indices[j];
     }
 
 }
 
-indexsort conf_calc_rowsort(const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
-{
-    int lastcol = std::min(n_cols,sutk_col);
-
+indexsort conf_calc_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd ) {
+    int lastcol = std::min ( n_cols,sutk_col );
+    const int cp = colperm[lastcol];
     for ( int i=0; i < n_rows; i++ ) {
 
         int rval = rowperm[i].val;
-        int current_val = ((colsignperm[colperm[lastcol]]*rowsignperm[ rval ])*al.at( rval, colperm[lastcol]));
+        int current_val = ( ( colsignperm[cp]*rowsignperm[ rval ] ) *al.atfast ( rval, cp ) );
 
-        rr[ i ] = ( 10*sd.rowvalue.at( i, lastcol-1) ) + ((current_val+3) % 3);
+        rr[ i ] = ( 10*sd.rowvalue.atfast ( i, lastcol-1 ) ) + ( ( current_val+3 ) % 3 );
     }
     indexsort is ( rr );
 
     return rr;
 }
 
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd)
-{
-    indexsort aa = conf_calc_rowsort(al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr, sd);
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, std::vector<mvalue_t<int> > &rr, const symmdata &sd ) {
+    indexsort aa = conf_calc_rowsort ( al, sutk_col, rowperm, colperm, rowsignperm, colsignperm, n_rows, n_cols, rr, sd );
     std::vector<int> order_rsort ( n_rows );
 
-    for (rowindex_t j = 0; j < n_rows; j++){
+    for ( rowindex_t j = 0; j < n_rows; j++ ) {
         int s_ev = aa.indices[j];
         order_rsort[ s_ev ] = rowperm[j].val;
     }
 
-    for (rowindex_t j = 0; j < n_rows; j++){
+    for ( rowindex_t j = 0; j < n_rows; j++ ) {
         rowperm[j].val = order_rsort[ j ];
     }
 }
 
 /* Function to get the position of the zero element in the transformed array*/
-int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ){
+int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ) {
     int position_zero = -1;
-    for ( int r = 0; r < nrows; r++){
-        if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0){
+    for ( int r = 0; r < nrows; r++ ) {
+        if ( al.atfast ( rowperm[r].val, colperm[column] ) == 0 ) {
             position_zero = rowperm[r].r;
         }
     }
@@ -2853,13 +2786,13 @@ int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<in
 }
 
 /* Compare two columns with the zero element in the same position */
-lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ){
+lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ) {
 
     for ( int r=0; r<nrows; r++ ) {
-        int value_cdesign_trans = (colsignperm[colperm[column]]*rowsignperm[rowperm[r].val]) * al.atfast ( rowperm[r].val, colperm[column] );
-        if ( ((al.atfast ( r, column )+3) % 3) <  ( (value_cdesign_trans+3) % 3) ) // Transform the elements from (0, 1, -1) to (0, 1, 2)
+        int value_cdesign_trans = ( colsignperm[colperm[column]]*rowsignperm[rowperm[r].val] ) * al.atfast ( rowperm[r].val, colperm[column] );
+        if ( ( ( al.atfast ( r, column ) +3 ) % 3 ) < ( ( value_cdesign_trans+3 ) % 3 ) ) // Transform the elements from (0, 1, -1) to (0, 1, 2)
             return LMC_MORE;
-        if ( ((al.atfast ( r, column )+3) % 3) >  ( (value_cdesign_trans+3) % 3) )
+        if ( ( ( al.atfast ( r, column ) +3 ) % 3 ) > ( ( value_cdesign_trans+3 ) % 3 ) )
             return LMC_LESS;
     }
     return LMC_EQUAL;
@@ -2869,24 +2802,29 @@ lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
 
     const int nrows=al.n_rows;
+    /* Get zero position original array */
+    int al_position_zero = -1;
+    for ( int r = 0; r < nrows; r++){
+        if ( al.atfast ( r, column ) == 0){
+            al_position_zero = r;
+        }
+    }
     /* Check position of zeros */
-    int position_zero = get_zero_position( al, rowperm, colperm, column, nrows);
+    int position_zero = get_zero_position ( al, rowperm, colperm, column, nrows );
 
-    if ( position_zero > column ) {
+    if ( position_zero > al_position_zero ) {
         return LMC_MORE;
-    }
-    else if ( position_zero < column ) {
+    } else if ( position_zero < al_position_zero ) {
         return LMC_LESS;
-    }
-    else { // If zeros are on the same positions then compare columns
-        lmc_t comparison = compare_conf_columns( al, rowperm, colperm, column, rowsignperm, colsignperm, nrows );
+    } else { // If zeros are on the same positions then compare columns
+        lmc_t comparison = compare_conf_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm, nrows );
         return comparison;
     }
 
 }
 
 
-lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr, const symmdata &sd) {
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, std::vector<mvalue_t<int> > &rr, const symmdata &sd ) {
 
     lmc_t r = LMC_NONSENSE;
 
@@ -2898,7 +2836,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
 
         /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
         int current_sign_col = colsignperm[colperm[column]];
-        int current_val_firstrow = (rowsignperm[rowperm[0].val]*current_sign_col)*(al.at(rowperm[0].val, colperm[column]));
+        int current_val_firstrow = ( rowsignperm[rowperm[0].val]*current_sign_col ) * ( al.at ( rowperm[0].val, colperm[column] ) );
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
@@ -2921,7 +2859,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
     return r;
 }
 
-lmc_t LMC0check ( const array_link &al ) {
+lmc_t LMC0check ( const array_link &al, int verbose ) {
     /*0. Initialize data */
     lmc_t result = LMC_MORE;
 
@@ -2940,15 +2878,15 @@ lmc_t LMC0check ( const array_link &al ) {
     dyndata_t rowperm_data = dyndata_t ( nrows );
     rowsort_t *rowsort = rowperm_data.rowsort;
 
-    for (rowindex_t i = 0; i < nrows; i++){
+    for ( rowindex_t i = 0; i < nrows; i++ ) {
         rowsort[i].val = i;
     }
 
     //std::vector<mvalue_t<int> > rr ( nrows );
     std::vector<mvalue_t<int> > rr ( nrows );
-    symmdata sd(al);
+    symmdata sd ( al );
 
-    for (int sel_col = 0; sel_col < ncols; sel_col++){
+    for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
 
         /*1. Select the first (sel_col) column */
         int first_col = colperm[ 0 ];
@@ -2959,15 +2897,15 @@ lmc_t LMC0check ( const array_link &al ) {
         rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
 
         /* 3. Find permutation to sort the array*/
-        init_lmc0_rowsort( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
+        init_lmc0_rowsort ( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
 
         /* 4. Select one of two possible sign permutations for the first row */
         int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
-        for (int r_sign = 0; r_sign < 2; r_sign++){
+        for ( int r_sign = 0; r_sign < 2; r_sign++ ) {
             rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
 
             /* 5. Select the next column */
-            result = LMC0_columns (al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr, sd);
+            result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, rr, sd );
             if ( result==LMC_LESS ) {
                 return result;
 
@@ -2987,4 +2925,4 @@ lmc_t LMC0check ( const array_link &al ) {
 
 
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

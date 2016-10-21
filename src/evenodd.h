@@ -578,9 +578,9 @@ calculateArrayParetoJ5Cache ( const array_link & al, int verbose,
 
 
 /// add arrays to set of Pareto results
-void addArraysToPareto ( Pareto < mvalue_t < long >, array_link > &pset,
-                         pareto_cb_cache paretofunction,
-                         const arraylist_t & arraylist, int jj, int verbose );
+void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb paretofunction, const arraylist_t & arraylist, int jj, int verbose );
+/// add arrays to set of Pareto results
+void addArraysToPareto ( Pareto < mvalue_t < long >, array_link > &pset, pareto_cb_cache paretofunction, const arraylist_t & arraylist, int jj, int verbose );
 
 /** helper class for indexing statistics of designs
  *
@@ -683,6 +683,32 @@ public:
         }
 
         return kmax;
+    }
+    
+    long getCount(int k, int j) const {
+        for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
+                it != maxJcounts.end (); ++it ) {
+            if( it->first.j==j && it->first.k==k) {
+                return it->second;
+            }
+        }
+            return -1;
+    }
+    
+    std::vector<long> getTotalsJvalue(int jval) const {
+        int nmax=maxCols();
+        std::vector<long> k ( nmax+1 );
+
+        for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
+                it != maxJcounts.end (); ++it ) {
+            if ( it->second<0 ) {
+                printf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
+            } else {
+                if( it->first.j==jval)
+                    k[it->first.k] += it->second;
+            }
+        }
+        return k;
     }
     std::vector<long> getTotals() const {
         int nmax=maxCols();

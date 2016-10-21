@@ -134,7 +134,7 @@ Eigen::MatrixXd dummy2 ();
 %ignore::write_array;
 %ignore::write_array_latex;
 %ignore::finish_arrayfile;
-%ignore append_arrays;
+//%ignore append_arrays;
 %ignore arrayfile_t::arrayNbits;
 %ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
@@ -202,17 +202,12 @@ carray_p;			/** point to constant array */
 
 //#define XX
 #ifdef XX
-typedef
-std::vector < int >
-rowperm_t;				/** type of row permutation */
+  typedef std::vector < int > rowperm_t;				/** type of row permutation */
 #else
-typedef rowindex_t *
-rowperm_t;			/** type of row permutation */
+  typedef rowindex_t * rowperm_t;			/** type of row permutation */
 #endif
-typedef colindex_t *
-colperm_t;		       /** type of column permutation */
-typedef array_t *
-levelperm_t;		       /** type of level permutation */
+typedef colindex_t * colperm_t;		       /** type of column permutation */
+typedef array_t * levelperm_t;		       /** type of level permutation */
 
 
 // used to calculate the value (index) of values in a column combination
@@ -239,7 +234,6 @@ Fval ( int N, int strength )
     }
     return Fv;
 }
-
 
 
 /// return true if the specified file exists
@@ -1808,8 +1802,8 @@ public:
     /// return true if the file has binary format
     bool isbinary () const;
 
-    /// append arrays to the file
-    int append_arrays ( const arraylist_t & arrays, int startidx );
+    /// append list of arrays to the file
+    int append_arrays ( const arraylist_t & arrays, int startidx = -1 );
 
     /// append a single array to the file
     void append_array ( const array_link & a, int specialindex = -1 );

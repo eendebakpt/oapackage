@@ -388,6 +388,10 @@ arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int ve
 /// select representatives for the isomorphism classes of a list of conference arrays, return indices of classes
 std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
+
+arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype );
+
+
 /** Generate candidate extensions
  *
  * \param al design to be extended
@@ -417,7 +421,7 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 arraylist_t sortLMC0 ( const arraylist_t &lst );
 
 /// check if array is in LM0 form
-lmc_t LMC0check ( const array_link &al );
+lmc_t LMC0check ( const array_link &al, int verbose = 0 );
 
 /// return true if the design is a foldover array
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
@@ -575,8 +579,8 @@ public:
     // r the number of rows that are valid
     bool filterJpartial(const cperm &c, int r ) const {
         const int N = als.n_rows;
-        int j = partial_inner_product(c, this->als, als.n_columns-1, r);
-        if (std::fabs(j)> (N-r) )
+        long j = partial_inner_product(c, this->als, als.n_columns-1, r);
+        if (std::abs(j)> (N-r) )
             return false;
         else return true;
     }
