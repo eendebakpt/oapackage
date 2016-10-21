@@ -16,8 +16,6 @@
 #include "anyoption.h"
 #include "tools.h"
 
-//#include "InfInt.h"
-
 
 /**
  * @brief Read in files with arrays and join them into a single file
@@ -107,13 +105,11 @@ int main(int argc, char* argv[])
 		}
 		
 		}
-                    fclose(fid);
-                
+                fclose(fid);              
 
             }
         }
     }
-
 
     return 0;
 }

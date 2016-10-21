@@ -24,6 +24,8 @@
  */
 enum matrix_isomorphism_t {ISOTOPY, MATRIX_ISOMORPHISM, CONFERENCE_ISOMORPHISM, OA_ISOMORPHISM};
 
+
+/// isomorphism type for column and row permtations and column permutations
 const matrix_isomorphism_t CONFERENCE_RESTRICTED_ISOMORPHISM = OA_ISOMORPHISM;
 
 

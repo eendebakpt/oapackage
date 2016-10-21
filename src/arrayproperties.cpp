@@ -928,14 +928,19 @@ int rankStructure::rankxf ( const array_link &al )
     }
     int rank0 = decomp.rank();
     if ( verbose>=2 )
-        printfd ( "rankStructure: check 0\n" );
+        printfd ( "rankStructure: rank0 %d\n", rank0 );
 
+	// special case: the same matrix!
+	if (ks==al.n_columns)
+		return decomp.rank();
     Eigen::MatrixXd A = array2xfeigen ( al );
 
     // caculate permutation
-    Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType subperm = decomp.colsPermutation ();
+	
+	
+    EigenDecomp::PermutationType subperm = decomp.colsPermutation ();
     MatrixXi perm = permM ( ks, k, subperm.indices(), verbose );
-    Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType ptmp ( perm );
+    EigenDecomp::PermutationType ptmp ( perm );
 
     // transform second order interaction matrix into suitable format
 
@@ -952,21 +957,26 @@ int rankStructure::rankxf ( const array_link &al )
 
 
     if ( verbose>=2 ) {
-        printf ( "k %d, m %d\n", k, m );
+        printf ( "  rankStructure: k %d, m %d\n", k, m );
         //eigenInfo ( Zx, "Zx" );
-        printf ( "msub %d, m %d\n", msub, m );
+        printf ( "  rankStructure: msub %d, m %d\n", msub, m );
     }
 
     if ( verbose>=2 ) {
         printfd ( "rankStructure: ZxSub\n" );
         eigenInfo ( ZxSub );
+		if (verbose>=3) {
+			fflush(stdout);
+			printf("ZxSub\n");
+		std::cout << ZxSub; printf("\n");	
+		}
     }
 
     int rankx=rankdirect ( ZxSub );
     int rank = rank0 + rankx;
 
     if ( verbose ) {
-        printf ( "rankStructure: rank %d + %d = %d (%d)\n", rank0, rankx, rank, rankxfdirect ( A ) );
+        printf ( "rankStructure: rank %d + %d = %d (%d)\n", rank0, rankx, rank, rankxfdirect ( al ) );
     }
     return rank;
 }
@@ -1887,6 +1897,26 @@ Pareto<mvalue_t<long>,long> parsePareto ( const arraylist_t &arraylist, int verb
     }
     return pset;
 }
+
+void addArray(Pareto < mvalue_t < long >, long > &pset, const array_link &al, int idx, int verbose, paretomethod_t paretomethod )
+{
+    pareto_cb paretofunction = calculateArrayParetoRankFA<array_link>;
+    switch ( paretomethod ) {
+    case PARETOFUNCTION_J5:
+        paretofunction = calculateArrayParetoJ5<array_link>;
+        break;
+    default
+            :
+        break;
+    }
+        Pareto<mvalue_t<long>, long>::pValue p = paretofunction ( al, verbose );
+    pset.addvalue(p, idx);
+}
+
+template  Pareto < mvalue_t < long >, array_link >::pValue calculateArrayParetoJ5<array_link> (const array_link & al, int verbose);
+template  Pareto < mvalue_t < long >, int >::pValue calculateArrayParetoJ5<int> (const array_link & al, int verbose);
+template  Pareto < mvalue_t < long >, long >::pValue calculateArrayParetoJ5<long> (const array_link & al, int verbose);
+
 
 #endif
 

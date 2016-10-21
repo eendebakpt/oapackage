@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <algorithm>
 
+
 #include "arraytools.h"
 #include "graphtools.h"
 #include "arrayproperties.h"
@@ -22,6 +23,10 @@ inline void print_cperm ( const cperm &c )
         printf ( "%3d", c[i] );
     }
 }
+
+/// partial inner product
+int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax ) ;
+
 
 /// show a list of candidate extensions
 inline void showCandidates ( const std::vector<cperm> &cc )
@@ -57,8 +62,8 @@ public:
     colindex_t ncols;	/** total number of columns (factors) in the design */
 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
-    conference_type ctype;
-    matrix_isomorphism_t itype;
+    conference_type ctype; /// defines the type of matrices
+    matrix_isomorphism_t itype; /// defines the isomorphism type
 
     bool j3zero;
     bool j1zero; /// for the double conference type matrices
@@ -76,6 +81,7 @@ public:
 
     arraylist_t createDconferenceRootArrays ( ) const
     {
+        //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
 
         arraylist_t lst;
         array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
@@ -131,15 +137,29 @@ public:
         case DCONFERENCE: {
             switch ( this->itype ) {
             case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                //const int j1zero=1;
                 arraylist_t tmp = this->createDconferenceRootArrays ( );
                 lst.insert ( lst.end(), tmp.begin(), tmp.end() );
             }
             break;
             case CONFERENCE_ISOMORPHISM:
+            {
+                if (this->j1zero) {
+                 printfd("ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
+                }
+                if (this->j3zero) {
+                 printfd("ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
+                }
+                assert(this->j1zero==0);
+                assert(this->j3zero==0);
+                arraylist_t tmp = this->createDconferenceRootArrays ( );
+                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+            }
+            break;
             default
                     :
-                printfd ( "not implemented (itype %d)\n", this->itype );
+
+                printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
+                exit(0);
             }
         }
         }
@@ -201,8 +221,7 @@ public:
 struct conference_options {
     int maxzpos;
 
-    //conference_options() { maxzpos=-1; };
-    conference_options ( int maxpos = -1 ); // { maxzpos=-1; };
+    conference_options ( int maxpos = -1 );
 } ;
 
 /// Class to generate candidate extensions with caching
@@ -306,7 +325,7 @@ public:
     CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
 
     /** generate candidates with caching
-     * this method uses symmetry inflation
+     * this method uses symmetry inflation, assumes j1=0 and j2=0
      */
     const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
 
@@ -332,16 +351,6 @@ private:
         }
         int startcol = al.firstColumnDifference ( alx );
 
-
-        if ( 0 ) {
-            int rx, ry;
-            al.firstDiff ( alx, rx, ry, 1 );
-            printfd ( " ---> startcol %d, last_valid %d\n", startcol, last_valid );
-            printf ( " ---> cache array\n" );
-            this->al.showarray();
-            printf ( " --->alx\n" );
-            alx.showarray();
-        }
         startcol = std::min ( startcol, last_valid );
         if ( startcol<2 ) {
             startcol=-1;
@@ -389,6 +398,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
 
+// TODO: refactor arguments
 std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0, int filtersymminline = 1 );
 
 
@@ -560,6 +570,16 @@ public:
         ngood++;
         return true;
     }
+
+    /// filter on partial column (only last col)
+    // r the number of rows that are valid
+    bool filterJpartial(const cperm &c, int r ) const {
+        const int N = als.n_rows;
+        int j = partial_inner_product(c, this->als, als.n_columns-1, r);
+        if (std::fabs(j)> (N-r) )
+            return false;
+        else return true;
+    }
     /// return True of the extension satisfies all J-characteristic checks
     bool filterJ ( const cperm &c, int j2start=0 ) const
     {
@@ -572,6 +592,26 @@ public:
         if ( filterj3 ) {
             // perform inner product check for all columns
             if ( ! this->filterJ3 ( c ) ) {
+                return false;
+            }
+        }
+        ngood++;
+        return true;
+    }
+
+        /// return True of the extension satisfies all J-characteristic checks for the last columns
+    bool filterJlast ( const cperm &c, int j2start=0 ) const
+    {
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, j2start ) ) {
+                return false;
+            }
+        }
+        int startidx = this->dtable.n_columns-this->als.n_columns;
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3s( c, startidx ) ) {
                 return false;
             }
         }
@@ -635,6 +675,48 @@ public:
         return true;
     }
 
+        /// return True of the candidate satisfies the J3 check for specified pairs
+    bool filterJ3s ( const cperm &c, int idxstart ) const
+    {
+        const int nc = dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=nc-1; idx1>=idxstart; idx1-- ) {
+            jv=0;
+
+            const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+        /// return True of the candidate satisfies the J3 check
+    bool filterJ3r ( const cperm &c ) const
+    {
+        const int nc = dtable.n_columns;
+        const int N = als.n_rows;
+        int jv=0;
+        for ( int idx1=nc-1; idx1>=0; idx1-- ) {
+            jv=0;
+
+            const array_t *o1 = dtable.array+dtable.n_rows*idx1;
+            for ( int xr=0; xr<N; xr++ ) {
+
+                jv += ( o1[xr] ) * ( c[xr] );
+            }
+
+            if ( jv!=0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
     /// return True of the candidate satisfies the J3 check
     bool filterJ3inline ( const cperm &c ) const
     {

@@ -126,11 +126,11 @@ public:
 
     std::string __repr__() const
     {
-        std::string ss = printfstring ( "Pareto: %zu optimal values\n", elements.size() );
+        std::string ss = printfstring ( "Pareto: %zu optimal values, %zu elements\n", elements.size(), numberindices() );
         return ss;
     }
 
-    static void showvalue(pValue p)
+    static void showvalue(const pValue p)
     {
         detail::display_vector ( p, "; " );
 
@@ -185,9 +185,8 @@ public:
         return lst;
     }
 
-
     /// add a new element
-    bool addvalue ( pValue val, IndexType idx )
+    bool addvalue ( const pValue val, const IndexType idx )
     {
         size_t ii=0;
         while ( ii<elements.size() ) {
@@ -201,15 +200,18 @@ public:
                     return true;
                 } else {
                     // not a pareto element, so continue
-                    if ( verbose>=3 )
-                        printf ( "addvalue: not pareto\n" );
+                    if ( verbose>=3 ) {
+                        printf ( "Pareto::addvalue: not pareto\n" );
+			printf("            : "); this->showvalue(val); printf("\n");
+			printf("dominated by: "); this->showvalue(elements[ii].value); printf("\n");
+		    }
                     return false;
                 }
             }
             if ( elements[ii].isdominated ( val ) ) {
                 // element ii is dominated by the new element, we remove element ii
                 if ( verbose>=2 )
-                    printf ( "addvalue: removing element\n" );
+                    printf ( "Pareto::addvalue: removing element\n" );
                 elements.erase ( elements.begin() +ii );
             } else {
                 if ( verbose>=3 )

@@ -197,6 +197,27 @@ std::vector < int >getLevels(AnyOption & opt)
     return lvls;
 }
 
+void paretoInfo ( const array_link alx ) {
+    std::vector < int >j5 = alx.Jcharacteristics ( 5 );
+    int j5max = vectormax ( j5, 0 );
+
+    int v1 = ( j5max == alx.n_rows );
+    int v2 = 1 - v1;
+
+    int N = alx.n_rows;
+    int rank = array2xf ( alx ).rank();
+    std::vector<int> F4 = alx.Fvalues ( 4 );
+    std::vector<double> gwlp = alx.GWLP();
+    printf ( "pareto data: %d ; ", rank );
+    printf ( " %d ", ( int ) ( N*N*gwlp[4] ) );
+    printf ( " ; " );
+    display_vector ( F4 );
+    printf ( " ; " );
+    printf ( " %d ; %d", v1, v2 );
+    printf ( "\n" );
+
+}
+
 const std::string filesep = "/";
 
 /**
@@ -236,6 +257,8 @@ int main(int argc, char *argv[])
     opt.setOption("kmin");
     opt.setOption("kmax");
     opt.setOption("format", 'f');
+    opt.setOption("debug");
+    opt.setOption("hm"); opt.setOption("lm");
 
     opt.addUsage("Orthonal Array Cluster Gather: special tool");
     opt.addUsage("Usage: oaclustergather [OPTIONS] ");
@@ -280,6 +303,7 @@ int main(int argc, char *argv[])
     const char *configfile = opt.getStringValue("config", "oaconfig.txt");
     int verbose = opt.getIntValue('v', 1);
     int method = opt.getIntValue("method", 0);
+    int debug = opt.getIntValue("debug", 0);
     int needcleanrun = opt.getIntValue("cleanrun", 1);
     int paretomethod = opt.getIntValue("paretomethod", 0);
     int allowparetodiff = opt.getIntValue("nparetodiff", 0);
@@ -372,8 +396,21 @@ int main(int argc, char *argv[])
 		const std::string afile =
 		    basedir + filesep + subdir + filesep + subfile0;
 
+		bool existfile = file_exists(afile.c_str() );
+		if ( jck.hasColumn ( k ) && (!existfile) ) {
+		    if (verbose >= 2) {
+			    printfd("statistics file has data and no file, continuing\n");   
+		    }
+		    continue;
+		}
 
+		    if ( jck.hasColumn ( k ) && (existfile) ) {
+		    if (verbose >= 2) {
+			    printfd("statistics file has data and file exists, raising error\n");   
+		    }
 
+		    }
+		    
 		// get numbers of arrays from array file
 		int nnarrays = nArrays(afile.c_str());
 		if ((!b) && (nnarrays < 0)) {
@@ -398,6 +435,11 @@ int main(int argc, char *argv[])
 		Jcounter jcounter =
 		    calculateJstatistics(afile.c_str(), jjval,
 					 verbose >= 2);
+		if (! jcounter.validData() ) {
+			printfd("could not read statistics on file %s\n", afile.c_str() );
+			printfd("b %d, nnarrays: %d\n", b, nnarrays);
+			exit(1);
+		}
 		if (verbose >= 2)
 		    jcounter.show();
 
@@ -446,7 +488,7 @@ int main(int argc, char *argv[])
 
 	arrayfile::arrayfilemode_t arrayfilemode =
 	    arrayfile_t::parseModeString(opt.
-					 getStringValue('f', "BINARY"));
+					 getStringValue('f', "TEXT"));
 
 
 	std::vector < long >na(kmax + 1);	/// number of arrays
@@ -479,6 +521,12 @@ int main(int argc, char *argv[])
 	    }
 	    // loop over all subsections
 	    for (int jj = 0; jj < nsplit[level]; jj++) {
+		if (debug) {
+		    int hm = opt.getIntValue("hm", 569);
+		    int lm = opt.getIntValue("lm", 568);
+		 if(jj<lm) continue;   
+		 if(jj>hm) continue;   
+		}
 		std::string subdir = splitDir(tovec(lvls, jj));
 		std::string nfilesub0 =
 		    "numbers-" + splitTag(tovec(lvls, jj)) + ".txt";
@@ -593,13 +641,33 @@ int main(int argc, char *argv[])
 		    }
 		    cleanrun = 0;
 		    cleanrunK = 0;
-		    if (needcleanrun)
+		    if (needcleanrun) {
+			printfd("found an error, aborting the program...\n");
 			exit(1);
+		    }
 		    else {
 			continue;
 		    }
 		}
+		
 
+		if (debug) {
+		int apos = arrayInFile(exampleArray(24), psourcefile.c_str() );
+		
+		if ( apos>=0 ) {
+		    myprintf("found array in source file! setting debug to 10...\n");
+		    arraylist_t ll = readarrayfile(psourcefile.c_str());
+		    for(size_t ij=0; ij<ll.size(); ij++) {
+			array_link alx = ll[ij];
+			printf("array %d: ", (int) ij); paretoInfo(alx);
+		}
+		    pset.show(2);
+		    pset.verbose=3;
+		    debug=10;
+		    //exit(0);
+	    }
+		}
+		
 		long naread = 0;	// number of arrays read
 		{
 		    // blocked read of arrays
@@ -641,6 +709,17 @@ int main(int argc, char *argv[])
 			loop++;
 		    }
 		}
+		if (debug==10) {
+		    pset.show(2);
+		    
+		     std::vector<array_link> llx = pset.allindices();
+		     arraylist_t ll(llx.begin(), llx.end() );
+		     int jx=arrayInList(exampleArray(24), ll);
+		    myprintf("after merge...jj %d, index in pareto list %d\n", jj, jx);
+		     if(jx<0) {	    
+		    exit(0);
+		     }
+		}
 
 		if (verbose >= 3
 		    || ((jj % 60 == 0 || (jj == nsplit[level] - 1))
@@ -664,6 +743,13 @@ int main(int argc, char *argv[])
 	    // write pareto set to disk
 
 	    arraylist_t pp = pset.allindicesdeque();
+	    if (debug) {
+		printf("---\n");
+		arrayInList(exampleArray(24), pp);
+		     std::vector<array_link> llx = pset.allindices();
+		     arraylist_t ll(llx.begin(), llx.end() );
+		     int jx=arrayInList(exampleArray(24), ll);
+	    }
 	    npareto[k] = pset.numberindices();
 
 	    //printfd("cleanrunK %d needcleanrun %d, outputprefix %s\n", cleanrunK,needcleanrun ,outputprefix );
@@ -682,12 +768,18 @@ int main(int argc, char *argv[])
 		}
 		std::string pfile = basedir + "/" + cdir + pfile0;
 
-		if (verbose)
+		if (verbose) {
 		    printf("  writing pareto file %s (%ld/%ld arrays)\n",
-			   pfile0.c_str(), (long) npareto[k],
-			   (long) na[k]);
+			   pfile0.c_str(), (long) npareto[k], (long) na[k]);
+		    if (verbose>=2)
+			printfd("pfile %s\n", pfile.c_str() );
+		}
 		writearrayfile(pfile.c_str(), &pp, arrayfilemode, adata->N,
 			       k);
+		if (debug) {
+		    
+		
+	}
 		//fflush ( 0 );
 	    }
 
@@ -720,6 +812,8 @@ int main(int argc, char *argv[])
 		   double (3600. / 1e6) * double (natotal) /
 		   (get_time_ms() - time0));
 	}
+	
+
     }
 
     if (verbose) {
@@ -735,10 +829,13 @@ int main(int argc, char *argv[])
     /* free allocated structures */
     delete adata;
 
+
+    
     if (cleanrun)
 	return 0;
     else
 	return 1;
+    
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 8; ;

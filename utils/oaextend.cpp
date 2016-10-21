@@ -258,6 +258,8 @@ int main ( int argc, char* argv[] ) {
 
             arraydata_t *ad;
             ad = readConfigFile ( oaconfigfile );
+            ad->lmc_overflow_check();
+
             if ( ad==0 ) {
                 return 1;
             }
