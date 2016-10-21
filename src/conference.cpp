@@ -2802,12 +2802,19 @@ lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
 
     const int nrows=al.n_rows;
+    /* Get zero position original array */
+    int al_position_zero = -1;
+    for ( int r = 0; r < nrows; r++){
+        if ( al.atfast ( r, column ) == 0){
+            al_position_zero = r;
+        }
+    }
     /* Check position of zeros */
     int position_zero = get_zero_position ( al, rowperm, colperm, column, nrows );
 
-    if ( position_zero > column ) {
+    if ( position_zero > al_position_zero ) {
         return LMC_MORE;
-    } else if ( position_zero < column ) {
+    } else if ( position_zero < al_position_zero ) {
         return LMC_LESS;
     } else { // If zeros are on the same positions then compare columns
         lmc_t comparison = compare_conf_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm, nrows );
