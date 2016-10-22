@@ -38,6 +38,7 @@ The code was written by:
 
 * Pieter Eendebak <pieter.eendebak@gmail.com>
 * Vincent Brouerius van Nidek
+* Alan Vazquez-Alcocer
 
 Ideas contributed by:
 
