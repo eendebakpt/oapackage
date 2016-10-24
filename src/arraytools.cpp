@@ -2416,15 +2416,14 @@ arraydata_t::arraydata_t ( const array_t *s_, rowindex_t N_, colindex_t t, colin
     complete_arraydata();
 }
 arraydata_t::arraydata_t ( const std::vector<int> s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 ) {
+    s = new array_t[ncols];
+    assert(s_.size()>0);
     if ( ( int ) s_.size() <nc ) {
-        myprintf ( "arraydata_t: warning: in constructor size s < number of columns nc)\n" );
+        myprintf ( "arraydata_t: warning: in constructor: size s < number of columns nc)\n" );
         nc=s_.size();
+        std::fill(s, s+ncols, s_[s_.size()-1] );
     }
-
-    //myprintf("arraydata_t: construct from std::vector\n");
-    s = new array_t[nc];
-    // for(int i=0; i<nc; i++) s[i]=s_[i];
-    std::copy ( s_.begin(), s_.begin() +nc, s );
+    std::copy ( s_.begin(), s_.end(), s );
     complete_arraydata();
 }
 
@@ -2433,10 +2432,8 @@ template void array_link::setarraydata ( const short int* tmp, int n );
 template void array_link::setarraydata ( const int* tmp, int n );
 template void array_link::setarraydata ( const long* tmp, int n );
 template void array_link::setarraydata ( const std::vector<short int> tmp, int n );
-//template void array_link::setarraydata ( const std::vector<int> tmp, int n );
 template void array_link::setarraydata ( const std::vector<long> tmp, int n );
 
-//   template void func<int>(int param);
 
 arraydata_t::arraydata_t ( array_t s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 ) {
     if ( s_<1 || s_>100 ) {

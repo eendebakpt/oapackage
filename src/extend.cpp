@@ -1170,6 +1170,12 @@ arraylist_t extend_array ( const array_link &al, arraydata_t &fullad )
 }
 
 
+arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &arraydata)
+{
+  OAextend oaextend(arraydata);
+  return extend_arraylist ( alist, arraydata, oaextend ); 
+}
+
 
 //%newobject extend_arraylist;
 arraylist_t extend_arraylist ( const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend )

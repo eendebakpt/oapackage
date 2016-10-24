@@ -2332,12 +2332,12 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
     arraylist_t out ;
     for ( size_t i=0; i<list.size(); i++ ) {
         lmc_t r=LMC0check ( list[i] );
-        list[i].showarray();
 
 		printfd("selectLMC0: i %d, r %d\n", i, r);
         if ( r==LMC_LESS ) {
             // pass, array is not in LMC0 format
         } else  {
+            list[i].showarray();
             out.push_back ( list[i] );
         }
     }
