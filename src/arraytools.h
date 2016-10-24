@@ -1299,7 +1299,7 @@ public:
 private:
     void calcJvalues ( int N, int jj ) {
         assert ( jj==4 );
-        int nn = floor ( int( ( N-jj+1 ) /4 ) ) +1;
+        int nn = floor ( double(  int( ( N-jj+1 ) /4 ) ) ) +1;
         this->jvalues = std::vector<int> ( nn );
         this->jvalue2index.clear();
         for ( size_t i=0; i<jvalues.size(); i++ ) {
