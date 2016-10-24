@@ -111,8 +111,8 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
     static DEFAULTOPTIONS_GRAPH ( options );
     statsblk stats;
 
-    int m,v;
-    set *gv;
+    int m;
+    //set *gv;
 
     /* Default options are set by the DEFAULTOPTIONS_GRAPH macro above.
        Here we change those options that we want to be different from the
@@ -181,9 +181,6 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
         writegroupsize ( stdout,stats.grpsize1,stats.grpsize2 );
         printf ( "\n" );
     }
-
-
-
 
     std::vector<int> tr ( nvertices );
     std::copy ( lab, lab+nvertices, tr.begin() );
