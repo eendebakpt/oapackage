@@ -212,6 +212,24 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         }
     }
 
+     {
+        cprintf ( verbose,"%s: LMC0 check\n", bstr );
+
+        array_link al= exampleArray ( 28,1 );
+        al.showarray();
+        lmc_t r =  LMC0check(al, verbose);
+        if (verbose>=2)
+            printf("LMC0check: result %d\n", r);
+        myassert (r>=LMC_EQUAL, "LMC0 check\n" )   ;
+
+        al= exampleArray ( 29,1 );
+        al.showarray();
+         r =  LMC0check(al, verbose);
+        if (verbose>=2)
+            printf("LMC0check: result %d\n", r);
+        myassert (r==LMC_LESS, "LMC0 check\n" )   ;
+    }
+    
     {
         cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
 
@@ -439,6 +457,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         setloglevel ( QUIET );
     }
 
+    
 
     {
         cprintf ( verbose, "%s: test LMC check\n", bstr );
