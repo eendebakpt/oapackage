@@ -12,6 +12,8 @@ from setuptools.command.test import test as TestCommand
 from codecs import open  # To use a consistent encoding
 from os import path
 import os,sys
+import platform
+
 try:
     import numpy as np
 except ImportError:
@@ -20,10 +22,8 @@ except ImportError:
         "prior to installing OApackage")
         
 npinclude = np.get_include()
-import platform
 
 here = path.abspath(path.dirname(__file__))
-
 
 #%% 
 
@@ -57,7 +57,6 @@ def checkZlib(verbose=0):
         file_name = bin_file_name + '.c'
         
         #print('tmp_dir: %s'  % tmp_dir)
-        #print('xxx: %s'  % file_name)
 
         with open(file_name, 'w') as fp:
             fp.write(c_code)
@@ -119,15 +118,12 @@ def get_version_info(verbose=0):
 #print(get_version_info())
 
 
-
 #%% Hack to remove option for c++ code
 try:
 	# see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
 	from setuptools.py31compat import get_path, get_config_vars
 
 	(opt,) = get_config_vars('OPT')
-
-	#print('OPT %s' % opt)
 
 	if not opt is None:
 		opt = " ".join( flag for flag in opt.split() if flag != '-Wstrict-prototypes' )
@@ -136,7 +132,6 @@ except:
 	import setuptools
 	print('old version of setuptools: %s'  % setuptools.__version__ )
 	pass
-#print('OPT %s' % opt)
 
 
 #%% Test suite
@@ -256,7 +251,6 @@ if checkZlib(verbose=0):
     pass
   else:
     zlibflag='-DUSEZLIB'
-    #zlibflag='-DNOZLIB'
     oalib_module.extra_compile_args += [zlibflag] 
     swig_opts +=  [zlibflag]  
     oalib_module.extra_link_args+=['-lz']
@@ -264,9 +258,6 @@ else:
   zlibflag='-DNOZLIB'
   oalib_module.extra_compile_args += [zlibflag] 
   swig_opts +=  [zlibflag]  
-
-#if platform.system()=='Windows':
-#	oalib_module.extra_compile_args.append('-DWIN32')
 	
 if os.name=='nt':
   oalib_module.extra_compile_args += [];  
@@ -275,6 +266,8 @@ if os.name=='nt':
   #oalib_module.extra_compile_args += ['-fpermissive', '-std=gnu++11' ];  
 else:
   oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
+  oalib_module.extra_compile_args += ['-Wdate-time'];
+
 
 
 
@@ -299,12 +292,6 @@ packages=['oapackage']
 #from distutils.command.build import build
 from setuptools.command.install import install
 
-#class CustomBuild(build):
-#    def run(self):
-#        self.run_command('build_ext')
-#        build.run(self)
-
-
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
@@ -313,11 +300,6 @@ class CustomInstall(install):
         #self.do_egg_install()
 
 
-#setup(
-#    cmdclass={'build': CustomBuild, 'install': CustomInstall},
-#    py_modules=['module1'],
-#    ext_modules=[module1]
-#)
 
 # PyPi does not support markdown....
 try:
@@ -338,14 +320,11 @@ setup (name = 'OApackage',
        author_email='pieter.eendebak@gmail.com',
 	license="BSD",
        url='http://www.pietereendebak.nl/oapackage/index.html',
-#       description = """Python interface to Orthogonal Array library""",
 	keywords=[ "orthogonal arrays, design of experiments"],
        ext_modules = [oalib_module],
        py_modules = ['oalib'],	
       # packages=find_packages(exclude=['oahelper']),
        packages=packages,
-       #packages=['oalib'],
-       #packages=find_packages(exclude=['oahelper']),
         data_files = data_files,
         test_suite = "oapackage.unittest",
     scripts=scripts,
@@ -359,7 +338,6 @@ setup (name = 'OApackage',
 	      'Programming Language :: Python :: 2',
 	      'Programming Language :: Python :: 2.7',
 	      'Programming Language :: Python :: 3',
-	      'Programming Language :: Python :: 3.3',
 	      'Programming Language :: Python :: 3.4', 
 	      'Programming Language :: Python :: 3.5'
 	      ]
