@@ -104,7 +104,7 @@ void OAextend::updateArraydata ( arraydata_t *ad ) const
     if ( ad==0 )
         return;
 
-    // TODO: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be static in more places)
+    // FIXME: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be static in more places)
 
     switch ( this->algmode ) {
     case MODE_LMC_SYMMETRY:
@@ -1172,8 +1172,9 @@ arraylist_t extend_array ( const array_link &al, arraydata_t &fullad )
 
 arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &arraydata)
 {
-  OAextend oaextend(arraydata);
-  return extend_arraylist ( alist, arraydata, oaextend ); 
+  arraydata_t atmp(arraydata); // make a copy so arraydata can be const
+  OAextend oaextend(atmp);
+  return extend_arraylist ( alist, atmp, oaextend ); 
 }
 
 
