@@ -172,7 +172,7 @@ int extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend 
 arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend);
 
 /// extend a list of arrays with default options
-arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad);
+arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &fullad);
 
 /// extend a single array
 arraylist_t extend_array(const array_link &al, arraydata_t &fullad,   OAextend const &oaextend);
