@@ -1645,6 +1645,7 @@ public:
     conference_transformation_t ();	/// default constructor
     conference_transformation_t ( int nrows, int ncols );
     conference_transformation_t ( const array_link & al );
+    conference_transformation_t ( const conference_transformation_t & T );
 
     /// show the array transformation
     void show ( int verbose = 1 ) const;
@@ -1673,34 +1674,33 @@ public:
     /// apply transformation to an array_link object
     array_link apply ( const array_link & al ) const;
 
+    int operator== ( const conference_transformation_t & rhs ) const;
+
     /// composition operator. the transformations are applied from the left
-    conference_transformation_t operator* ( const conference_transformation_t b ) {
+    conference_transformation_t operator* ( const conference_transformation_t &rhs ) const {
         const int N = this->nrows;
         const int ncols = this->ncols;
 
         conference_transformation_t c ( N, ncols );
 
-        const conference_transformation_t & a = *this;
+        const conference_transformation_t & lhs = *this;
 
 
-        // perform the rows permutations
-        //perform_inv_perm ( b.rperm, c.rperm, N, a.rperm );
-        composition_perm ( a.rperm, b.rperm, c.rperm );
-
+        // perform the rows permutations       
+        composition_perm ( rhs.rperm, lhs.rperm, c.rperm );
+        
         // perform the column permutations
-        //perform_inv_perm ( b.cperm, c.cperm, ncols, a.cperm );
-        composition_perm ( a.cperm, b.cperm, c.cperm );
+        composition_perm ( rhs.cperm, lhs.cperm, c.cperm );
 
         /* rowsign switches */
         for ( rowindex_t ri = 0; ri < N; ri++ ) {
-            int rix = b.rperm[ri];
-            c.rswitch[rix] = a.rswitch[ri] * b.rswitch[rix];
+            int rix = c.rperm[ri]; c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[ri];
         }
 
         /* column sign switches */
         for ( colindex_t ci = 0; ci < ncols; ci++ ) {
-            int cix = b.cperm[ci];
-            c.cswitch[cix] = b.cswitch[cix] * a.cswitch[ci];
+            int cix = c.cperm[ci];
+            c.cswitch[cix] =  lhs.cswitch[cix] * rhs.cswitch[rhs.cperm[ci]];
         }
 
         return c;

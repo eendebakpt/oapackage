@@ -861,6 +861,21 @@ array_link exampleArray ( int idx, int verbose ) {
             :
         myprintf ( "exampleArray: no such index %d", idx );
         return array_link();
+        break;
+    case 30: {
+        dstr ="conference design in C(8,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 8,4, 0 );
+        int tmp[] = {0, 1, 1, 1, 1, 1, 1, 1,
+                     1, 0, 1, 1, 1, -1, -1, -1,
+                    1, -1, 0, 1, -1, 1, 1, -1,
+                    1, 1, -1, 1, -1, 0, -1, 1};
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
     case 0: {
         dstr ="array in OA(8,2, 2^2)";
         if ( verbose ) {
@@ -5090,6 +5105,18 @@ array_link conference_transformation_t::apply ( const array_link &al ) const {
     return alx;
 }
 
+    int conference_transformation_t::operator== ( const conference_transformation_t & rhs ) const {
+        if(this->ncols != rhs.ncols) return 0;
+        if(this->nrows != rhs.nrows) return 0;
+     
+        if(this->rperm != rhs.rperm) return 0;
+        if(this->cperm != rhs.cperm) return 0;
+        if(this->rswitch != rhs.rswitch) return 0;
+        if(this->cswitch != rhs.cswitch) return 0;     
+        
+        return 1;
+    }
+
 void conference_transformation_t::init ( int nr, int nc ) {
     this->nrows = nr;
     this->ncols = nc;
@@ -5112,6 +5139,19 @@ void conference_transformation_t::reset() {
     std::fill ( cswitch.begin(), cswitch.end(), 1 );
 }
 
+    conference_transformation_t::conference_transformation_t ( const conference_transformation_t & T )
+    {
+       this->nrows = T.nrows;
+       this->ncols = T.ncols;
+
+       this->rperm = T.rperm;
+    this->rswitch = T.rswitch;
+
+        this->cperm = T.cperm;
+       this->cswitch = T.cswitch;
+    }
+
+    
 conference_transformation_t::conference_transformation_t() {
     init ( 1, 1 );
 }
