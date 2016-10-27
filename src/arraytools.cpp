@@ -870,8 +870,8 @@ array_link exampleArray ( int idx, int verbose ) {
         array_link al ( 8,4, 0 );
         int tmp[] = {0, 1, 1, 1, 1, 1, 1, 1,
                      1, 0, 1, 1, 1, -1, -1, -1,
-                    1, -1, 0, 1, -1, 1, 1, -1,
-                    1, 1, -1, 1, -1, 0, -1, 1};
+                    1, -1,  0, 1, -1, 1, 1, -1,
+                    1, -1,  1, -1, 0, 1, -1, 1};
         al.setarraydata ( tmp, al.n_rows*al.n_columns );
         return al;
         break;
