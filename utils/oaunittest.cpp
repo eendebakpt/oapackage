@@ -61,8 +61,8 @@ int checkConferenceComposition ( const array_link &al, int verbose=0 ) {
 
     conference_transformation_t T3 = T2 * T1;
 
-    array_link al2 = T2.apply ( al );
-    array_link al12 = T1.apply ( al2 );
+    array_link al1 = T1.apply ( al );
+    array_link al1t2 = T2.apply ( al1 );
     array_link al3 = T3.apply ( al );
 
     if ( verbose ) {
@@ -72,12 +72,12 @@ int checkConferenceComposition ( const array_link &al, int verbose=0 ) {
         T3.show();
         printfd ( "checkTransformationComposition: arrays\n" );
         al.showarray();
-        al2.showarray();
-        al12.showarray();
+        al1.showarray();
+        al1t2.showarray();
         al3.showarray();
     }
 
-    myassert ( al3==al12, "unittest error: composition of conference transformations\n" );
+    myassert ( al3==al1t2, "unittest error: composition of conference transformations\n" );
 
     return 0;
 }
@@ -216,14 +216,16 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         cprintf ( verbose,"%s: LMC0 check\n", bstr );
 
         array_link al= exampleArray ( 28,1 );
-        al.showarray();
+        if (verbose>=2)
+            al.showarray();
         lmc_t r =  LMC0check(al, verbose);
         if (verbose>=2)
             printf("LMC0check: result %d\n", r);
         myassert (r>=LMC_EQUAL, "LMC0 check\n" )   ;
 
         al= exampleArray ( 29,1 );
-        al.showarray();
+        if (verbose>=2)
+            al.showarray();
          r =  LMC0check(al, verbose);
         if (verbose>=2)
             printf("LMC0check: result %d\n", r);
@@ -299,7 +301,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         if ( checkTransformationInverse ( al ) )
             allgood=UERROR;
 
-        if ( checkTransformationComposition ( al ) )
+        if ( checkTransformationComposition ( al, verbose>=2 ) )
             allgood=UERROR;
 
         al = exampleArray ( 5, 1 );

@@ -86,14 +86,19 @@ int main ( int argc, char* argv[] ) {
 
     arraylist_t ll= readarrayfile ( input );
 
+    ll=arraylist_t();
+    ll.push_back(exampleArray(30,1));
+    
     for ( size_t i=0; i<ll.size(); i++ ) {
         array_link al = ll[i];
 
         //al = al.randomrowperm();
         //al = al.randomcolperm();
         al.showarray();
-        lmc_t r = LMC0check ( al );
+        lmc_t r = LMC0check ( al, 2);
         printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
+        
+        return 0;
         /* Apply random transformation */
         conference_transformation_t T1(al);
         T1.randomize();
@@ -101,7 +106,7 @@ int main ( int argc, char* argv[] ) {
         array_link al1 = T1.apply ( al );
         al1.showarray();
         lmc_t a = LMC0check ( al1 );
-        printf ( "array %d: result %d\n (should be, possibly, %d)\n", (int) i, a, LMC_LESS );
+        printf ( "array %d: result %d\n (should be %d, or something else)\n", (int) i, a, LMC_LESS );
     }
 
     return 0;

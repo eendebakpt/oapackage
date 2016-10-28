@@ -227,6 +227,47 @@ int arrayInPareto ( const  Pareto < mvalue_t < long >, array_link >  &pset, cons
     return jx;
 }
 
+/// check composition operator. returns 0 if test id good
+int checkConferenceComposition ( const array_link &al, int verbose=0 ) {
+    conference_transformation_t T1 ( al );
+    //T1.randomizecolperm();
+    T1.randomizecolflips();
+    //T1.randomizerowperm();
+    T1.randomizerowflips();
+    T1.randomize();
+
+    conference_transformation_t T2 ( al );
+    //T2.randomize();
+    T2.randomizerowperm();
+    //T2.randomizerowflips();
+    //T2.randomizecolperm();
+    //T2.randomizecolflips();
+    
+    conference_transformation_t T3 = T2 * T1;
+
+    array_link al1 = T1.apply ( al );
+    array_link al1t2 = T2.apply ( al1 );
+    array_link al3 = T3.apply ( al );
+
+    if ( verbose ) {
+        printfd ( "checkTransformationComposition: transforms\n" );
+        printf("-- T1 \n");
+        T1.show();
+        printf("-- T2 \n");
+        T2.show();
+        printf("-- T3 \n");
+        T3.show();
+        printfd ( "checkTransformationComposition: arrays\n" );
+        al.showarray();
+        al1.showarray();
+        al1t2.showarray();
+        al3.showarray();
+    }
+
+    myassert ( al3==al1t2, "unittest error: composition of conference transformations\n" );
+
+    return 0;
+}
 
 
 
@@ -276,7 +317,13 @@ int main ( int argc, char* argv[] ) {
         printf ( "random seed %d\n", randvalseed );
         srand ( randvalseed );
     }
-    
+
+    {
+                array_link al=exampleArray ( 29,0 );
+         checkConferenceComposition ( al, 1 ) ;
+exit(0);   
+        
+    }
         if ( 1 ) {
         array_link al= exampleArray ( 28,1 );
         al.showarray();

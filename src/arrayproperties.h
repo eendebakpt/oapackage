@@ -345,8 +345,8 @@ calculateArrayParetoRankFA ( const array_link & al, int verbose )
 
 #ifdef OADEBUG
     {
-        int r1 = arrayrankColPiv ( array2xf ( al ) );
-        int r2 = arrayrankColPiv ( array2secondorder ( al ) ) + 1 + al.n_columns;
+        int r1 = arrayrankColPivQR ( array2xf ( al ) );
+        int r2 = arrayrankColPivQR ( array2secondorder ( al ) ) + 1 + al.n_columns;
         printfd ( "calculateArrayParetoRankFA: rank check %d %d\n", r1, r2 );
         assert ( r2 == r1 );
     }

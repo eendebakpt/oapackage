@@ -1676,7 +1676,11 @@ public:
 
     int operator== ( const conference_transformation_t & rhs ) const;
 
-    /// composition operator. the transformations are applied from the left
+    /** composition operator. the transformations are applied from the left
+     * 
+     * E.g. (T1*T2)(x) = T1(T2(x))
+     * 
+     */
     conference_transformation_t operator* ( const conference_transformation_t &rhs ) const {
         const int N = this->nrows;
         const int ncols = this->ncols;
@@ -1694,13 +1698,17 @@ public:
 
         /* rowsign switches */
         for ( rowindex_t ri = 0; ri < N; ri++ ) {
-            int rix = c.rperm[ri]; c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[ri];
+            int riz = rhs.rperm[ri];
+            int rix = c.rperm[ri];
+            c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
+            //printf(" ri %d, riz %d, rix %d: lhs.rswitch[rix] %d rhs.rswitch[riz] %d ...\n", ri, riz, rix, lhs.rswitch[rix], rhs.rswitch[riz]);
         }
 
         /* column sign switches */
         for ( colindex_t ci = 0; ci < ncols; ci++ ) {
+            int ciz = rhs.cperm[ci];
             int cix = c.cperm[ci];
-            c.cswitch[cix] =  lhs.cswitch[cix] * rhs.cswitch[rhs.cperm[ci]];
+            c.cswitch[cix] =  lhs.cswitch[cix] * rhs.cswitch[ciz];
         }
 
         return c;

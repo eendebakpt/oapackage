@@ -3143,7 +3143,7 @@ lmc_t LMCreduce ( const array_t* original, const array_t *array, const arraydata
     if ( reduction->staticdata==0 ) {
         tpp = getGlobalStaticOnePointer();
 #ifdef OADEBUG
-        printfd ( "LMCreduce: acquired LMC_static_struct_t from single global object\n" );
+        printfd ( "LMCreduce (debugging): acquired LMC_static_struct_t from single global object\n" );
 #endif
     } else {
         tpp = ( reduction->staticdata );
