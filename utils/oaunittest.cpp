@@ -212,26 +212,47 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         }
     }
 
-     {
-        cprintf ( verbose,"%s: LMC0 check\n", bstr );
+    {
+        cprintf ( verbose,"%s: LMC0 check for arrays in C(4, 3)\n", bstr );
 
         array_link al= exampleArray ( 28,1 );
-        if (verbose>=2)
+        if ( verbose>=2 )
             al.showarray();
-        lmc_t r =  LMC0check(al, verbose);
-        if (verbose>=2)
-            printf("LMC0check: result %d\n", r);
-        myassert (r>=LMC_EQUAL, "LMC0 check\n" )   ;
+        lmc_t r =  LMC0check ( al, verbose );
+        if ( verbose>=2 )
+            printf ( "LMC0check: result %d\n", r );
+        myassert ( r>=LMC_EQUAL, "LMC0 check\n" )   ;
 
         al= exampleArray ( 29,1 );
-        if (verbose>=2)
+        if ( verbose>=2 )
             al.showarray();
-         r =  LMC0check(al, verbose);
-        if (verbose>=2)
-            printf("LMC0check: result %d\n", r);
-        myassert (r==LMC_LESS, "LMC0 check\n" )   ;
+        r =  LMC0check ( al, verbose );
+        if ( verbose>=2 )
+            printf ( "LMC0check: result %d\n", r );
+        myassert ( r==LMC_LESS, "LMC0 check\n" )   ;
     }
-    
+
+    {
+        cprintf ( verbose,"%s: LMC0 check\n", bstr );
+
+        array_link al= exampleArray ( 30,1 );
+        conference_transformation_t T ( al );
+
+        for ( int i=0; i<50; i++ ) {
+            T.randomize();
+            array_link alx = T.apply ( al );
+
+            lmc_t r =  LMC0check ( alx, verbose );
+
+            if ( alx==al )
+                myassert ( r>=LMC_EQUAL, "result should be LMC_MORE\n" );
+            else {
+                myassert ( r==LMC_LESS, "result should be LMC_LESS\n" );
+            }
+        }
+    }
+
+
     {
         cprintf ( verbose,"%s: random transformation for conference matrices\n", bstr );
 
@@ -459,18 +480,18 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         setloglevel ( QUIET );
     }
 
-    
+
 
     {
         cprintf ( verbose, "%s: test LMC check\n", bstr );
 
         array_link al = exampleArray ( 1, 1 );
-                
+
         lmc_t r = LMCcheckOriginal ( al );
         //printfd("r %d, strength %d\n", r, strength);
-        
-        myassert(r!=LMC_LESS, "LMC check of array in normal form");
-        
+
+        myassert ( r!=LMC_LESS, "LMC check of array in normal form" );
+
         for ( int i=0; i<20; i++ ) {
             array_link alx = al.randomperm();
             if ( alx==al )
