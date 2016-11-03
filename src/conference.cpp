@@ -2766,7 +2766,7 @@ void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std
 
     for ( rowindex_t j = 0; j < n_rows; j++ ) {
         int s_ev = aa.indices[j];
-        order_rsort[ s_ev ] = rowperm[j].val;
+        order_rsort[ j ] = rowperm[ s_ev ].val;
     }
 
     for ( rowindex_t j = 0; j < n_rows; j++ ) {
@@ -2900,7 +2900,6 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
         init_lmc0_rowsort ( al, ncols, rowsort, colperm, rowsignperm, colsignperm, nrows, ncols, rr );
 
         /* 4. Select one of two possible sign permutations for the first row */
-        int value_rowsign_firstrow = rowsignperm[ rowsort[0].val ];
         for ( int r_sign = 0; r_sign < 2; r_sign++ ) {
             rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
 
@@ -2913,7 +2912,6 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
 
         }
 
-        rowsignperm[ rowsort[0].val ] = value_rowsign_firstrow;
         colperm[ sel_col ] = colperm[ 0 ];
         colperm[ 0 ] = first_col;
         init_signperm ( rowsignperm );
