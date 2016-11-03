@@ -116,6 +116,10 @@ void print_options ( std::ostream &outx )
     outx <<tabsep << "Compile time options: "; // << std::endl;
     std::string sep = ", ";
 
+#ifdef USEZLIB
+    outx << "USEZLIB" << sep;
+#endif
+	
 #ifdef OAANALYZE
     outx << "OAANALYZE" << sep;
 #endif

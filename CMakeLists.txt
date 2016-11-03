@@ -25,7 +25,7 @@ find_package(ZLIB)	# Needed for Python modules
 if(ZLIB_FOUND)
   include_directories(${ZLIB_INCLUDE_DIRS})
 endif()
-#message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
+message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_FOUND)
 	#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
 	#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
