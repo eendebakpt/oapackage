@@ -2765,7 +2765,7 @@ int get_zero_position ( const array_link &al, rowsort_t *rowperm, const std::vec
 }
 
 /* Compare two columns with the zero element in the same position */
-lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ) {
+lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows ) {
 
     for ( int i=0; i<nrows; i++ ) {
         int cp = colperm[column];
