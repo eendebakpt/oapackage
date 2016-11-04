@@ -2730,10 +2730,8 @@ void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm,
     for ( int i=0; i < n_rows; i++ ) {
 
         int rx = rowperm[i].r;
-        int posit_al = al.at( rx, sutk_col);
-        int trans_val = (rowsignperm[ rx ])*posit_al;
-        int m = ((trans_val+3) % 3);
-        rowperm[ i ].val = m;
+        int trans_val = (rowsignperm[ rx ])*al.at( rx, sutk_col);
+        rowperm[ i ].val = ((trans_val+3) % 3);
 
     }
     std::stable_sort( rowperm, rowperm+al.n_rows );
@@ -2768,7 +2766,8 @@ int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<in
 lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ) {
 
     for ( int i=0; i<nrows; i++ ) {
-        int value_cdesign_trans = ( colsignperm[colperm[column]]*rowsignperm[rowperm[i].r] ) * al.atfast ( rowperm[i].r, colperm[column] );
+        int cp = colperm[column];
+        int value_cdesign_trans = ( colsignperm[cp]*rowsignperm[rowperm[i].r] ) * al.atfast ( rowperm[i].r, cp );
         if ( ( ( al.atfast ( i, column ) +3 ) % 3 ) < ( ( value_cdesign_trans+3 ) % 3 ) ) // Transform the elements from (0, 1, -1) to (0, 1, 2)
             return LMC_MORE;
         if ( ( ( al.atfast ( i, column ) +3 ) % 3 ) > ( ( value_cdesign_trans+3 ) % 3 ) )
@@ -2878,7 +2877,7 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
 
         /* 4. Select one of two possible sign permutations for the first row */
         for ( int r_sign = 0; r_sign < 2; r_sign++ ) {
-            rowsignperm[ rowsort[0].val ] = 2*r_sign - 1;
+            rowsignperm[ rowsort[0].r ] = 2*r_sign - 1;
 
             /* 5. Select the next column */
             result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
