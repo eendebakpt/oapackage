@@ -318,6 +318,7 @@ int main ( int argc, char* argv[] ) {
         srand ( randvalseed );
     }
 
+    if (0)
     {
                 array_link al=exampleArray ( 29,0 );
          checkConferenceComposition ( al, 1 ) ;
@@ -330,6 +331,10 @@ exit(0);
         lmc_t r =  LMC0check(al, verbose);
         printf("result %d\n", r);
          al= exampleArray ( 29,1 );
+        al.showarray();
+         r =  LMC0check(al, verbose);
+        printf("result %d\n", r);
+         al= exampleArray ( 30,1 );
         al.showarray();
          r =  LMC0check(al, verbose);
         printf("result %d\n", r);

@@ -688,21 +688,22 @@ array_link::array_link ( rowindex_t nrows, colindex_t ncols, int index_, carray_
     this->setarraydata ( data, nrows*ncols );
 }
 
-bool array_link::columnEqual(int cl, const array_link &rhs, int cr) const
-{
-   if (this->n_rows!=rhs.n_rows)
-       return false;
-    assert(cl>=0); assert(cl<this->n_columns);
-    assert(cr>=0); assert(cr<rhs.n_columns);
-   const array_t *pl=this->array+this->n_rows*cl;
-   const array_t *pr=rhs.array+this->n_rows*cr;
-   
+bool array_link::columnEqual ( int cl, const array_link &rhs, int cr ) const {
+    if ( this->n_rows!=rhs.n_rows )
+        return false;
+    assert ( cl>=0 );
+    assert ( cl<this->n_columns );
+    assert ( cr>=0 );
+    assert ( cr<rhs.n_columns );
+    const array_t *pl=this->array+this->n_rows*cl;
+    const array_t *pr=rhs.array+this->n_rows*cr;
+
     for ( int r = 0; r < this->n_rows; r++ ) {
-            if (pl[r]!=pr[r]) {
-            //if ( this->atfast ( r, cl ) != rhs.atfast ( r, cr ) ) {            
-                return false;
-            }
+        if ( pl[r]!=pr[r] ) {
+            //if ( this->atfast ( r, cl ) != rhs.atfast ( r, cr ) ) {
+            return false;
         }
+    }
     return true;
 }
 
@@ -862,6 +863,26 @@ array_link exampleArray ( int idx, int verbose ) {
         myprintf ( "exampleArray: no such index %d", idx );
         return array_link();
         break;
+    case 31: {
+        dstr ="conference design in C(8,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 4,8, 0 );
+        int tmp[] = {  0  , 1  , 1  , 1,
+                       1 ,  0,  -1,  -1,
+                       1 ,  1,   0 , -1,
+                       1 ,  1,   1  , 0,
+                       1 ,  1,  -1  , 1,
+                       1 , -1,   1  , 1,
+                       1,  -1,   1  ,-1,
+                       1 , -1 , -1,   1
+                    };
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        al=al.transposed();
+        return al;
+        break;
+    }
     case 30: {
         dstr ="conference design in C(8,4)";
         if ( verbose ) {
@@ -870,8 +891,9 @@ array_link exampleArray ( int idx, int verbose ) {
         array_link al ( 8,4, 0 );
         int tmp[] = {0, 1, 1, 1, 1, 1, 1, 1,
                      1, 0, 1, 1, 1, -1, -1, -1,
-                    1, -1,  0, 1, -1, 1, 1, -1,
-                    1, -1,  1, -1, 0, 1, -1, 1};
+                     1, -1,  0, 1, -1, 1, 1, -1,
+                     1, -1,  1, -1, 0, 1, -1, 1
+                    };
         al.setarraydata ( tmp, al.n_rows*al.n_columns );
         return al;
         break;
@@ -1441,7 +1463,7 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-        case 25: {
+    case 25: {
         dstr="design in OA(64, 3, 2^16) (even-odd)";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
@@ -1456,7 +1478,7 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-       case 26: {
+    case 26: {
         dstr="design in OA(64, 3, 2^16) (even-odd)";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
@@ -1471,22 +1493,22 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-       case 27: {
+    case 27: {
         dstr="design in OA(64, 3, 2^16) (even-odd)";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
         }
         //
         array_link al ( 16, 64, 0 );
-        int tmp[] =     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,1,0,1,0,1,0,1,1,0,1,1,1,1,0,0,0,1,0,1,1,0,0,1,1,1,0,0,0,0,1,0,0,1,0,1,1,1,1,0,0,1,0,1,0,1,0,0,0,1,1,0,0,0,1,1,0,1,0,1,1,0,0,0,0,1,1,0,0,0,1,1,1,0,1,0,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,0,1,0,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,1,0,1,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,1,0,1,0,0,0,0,1,1,1,0,1,0,1,0,0,1,0,1,1,1,0,0,1,1,0,0,1,0,1,0,0,1,1,0,0,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,0,1,0,0,1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,1,0,0,0,1,0,1,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,1,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,1,1,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,1,0,0,0,1,1,1,1,0,0,1,1,0,0,0,1,0,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,1,1,0,1,1,1,1,1,0,0,0,1,0,0,1,1,0,0,1,0,0,0,1,0,1,1,1,0,1,1,0,0,1,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,1,0,0,1,0,0,1,0,0,1,0,1,0,1,1,0,0,0,1,1,0,0,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,1,1,1,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,0,1,0,1,0,0,1,1,1,1,0,0,1,0,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,0,0,1,0,1,0,1,0,1,0,0,0,1,1,0,0,1,1,0,1,1,0,1,0,1,0,0,1,0,0,1,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,0,0,1,1,0,0,1,1,0,1,0,1,0,0,1,0,1,0,0,0,1,1,1,1,0,1,1,1,0,0,1,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1,1,1,1,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,0,1,0,0,1,1,1,1,0,0,1,0,0,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,0,0,1,1,0,1,0,1,0,1,1,1,0,1,1,0,1,1,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0    
-                    };
+        int tmp[] =     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,1,0,1,0,1,0,1,1,0,1,1,1,1,0,0,0,1,0,1,1,0,0,1,1,1,0,0,0,0,1,0,0,1,0,1,1,1,1,0,0,1,0,1,0,1,0,0,0,1,1,0,0,0,1,1,0,1,0,1,1,0,0,0,0,1,1,0,0,0,1,1,1,0,1,0,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,0,1,0,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,1,0,1,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,0,1,0,0,1,0,0,1,1,1,0,1,0,0,0,0,1,1,1,0,1,0,1,0,0,1,0,1,1,1,0,0,1,1,0,0,1,0,1,0,0,1,1,0,0,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,0,1,0,0,1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,0,0,0,1,1,0,0,0,1,0,1,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,1,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,1,1,0,0,1,0,0,1,1,0,0,1,0,1,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,1,0,0,0,1,1,1,1,0,0,1,1,0,0,0,1,0,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,1,1,0,1,1,1,1,1,0,0,0,1,0,0,1,1,0,0,1,0,0,0,1,0,1,1,1,0,1,1,0,0,1,1,1,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,0,0,0,1,1,1,0,0,1,1,1,0,1,0,0,1,0,0,1,0,0,1,0,1,0,1,1,0,0,0,1,1,0,0,1,0,0,1,1,0,1,0,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,1,1,1,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,0,1,0,1,0,0,1,1,1,1,0,0,1,0,0,1,0,1,1,1,0,1,0,0,0,1,0,1,1,0,0,1,0,1,0,1,0,1,0,0,0,1,1,0,0,1,1,0,1,1,0,1,0,1,0,0,1,0,0,1,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,0,0,1,1,0,0,1,1,0,1,0,1,0,0,1,0,1,0,0,0,1,1,1,1,0,1,1,1,0,0,1,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1,1,1,1,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,1,0,1,1,0,0,1,1,0,0,0,1,1,0,0,1,0,1,0,0,1,1,1,1,0,0,1,0,0,0,1,1,1,0,1,0,1,0,1,1,0,1,1,0,0,0,1,1,0,1,0,1,0,1,1,1,0,1,1,0,1,1,0,0,0,1,1,1,1,0,1,1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0
+                        };
 
         al.setarraydata ( tmp, al.n_rows*al.n_columns );
         al=al.transposed();
         return al;
         break;
     }
-       case 28: {
+    case 28: {
         dstr="conference design in C(4, 3) in LMC0 form";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
@@ -1498,7 +1520,7 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-       case 29: {
+    case 29: {
         dstr="conference design in C(4, 3)";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
@@ -1510,7 +1532,7 @@ array_link exampleArray ( int idx, int verbose ) {
         return al;
         break;
     }
-    
+
     } // end of switch
 
     return array_link ( 1,1,-1 );
@@ -2432,11 +2454,11 @@ arraydata_t::arraydata_t ( const array_t *s_, rowindex_t N_, colindex_t t, colin
 }
 arraydata_t::arraydata_t ( const std::vector<int> s_, rowindex_t N_, colindex_t t, colindex_t nc ) : N ( N_ ), ncols ( nc ), strength ( t ), order ( ORDER_LEX ), colgroupindex ( 0 ), colgroupsize ( 0 ) {
     s = new array_t[ncols];
-    assert(s_.size()>0);
+    assert ( s_.size() >0 );
     if ( ( int ) s_.size() <nc ) {
         myprintf ( "arraydata_t: warning: in constructor: size s < number of columns nc)\n" );
         nc=s_.size();
-        std::fill(s, s+ncols, s_[s_.size()-1] );
+        std::fill ( s, s+ncols, s_[s_.size()-1] );
     }
     std::copy ( s_.begin(), s_.end(), s );
     complete_arraydata();
@@ -3646,7 +3668,7 @@ int arrayfile_t::append_arrays ( const arraylist_t& arrays, int startidx ) {
 
     for ( arraylist_t::const_iterator it = arrays.begin(); it != arrays.end(); it++ ) {
         this->append_array ( *it, startidx );
-        if (startidx>=0)
+        if ( startidx>=0 )
             startidx++;
     }
     return 0;
@@ -3945,7 +3967,7 @@ void arrayfile_t::writeheader() {
 
         if ( this->mode == arrayfile::ABINARY_DIFFZERO ) {
             // NOTE: needed because in ABINARY_DIFFZERO we diff modulo 2
-            if(this->nbits!=1) printf("not implemented...!\n");
+            if ( this->nbits!=1 ) printf ( "not implemented...!\n" );
             assert ( this->nbits==1 );
         }
         fwrite ( ( const void* ) & magic,sizeof ( int ),1,this->nfid );
@@ -5105,17 +5127,17 @@ array_link conference_transformation_t::apply ( const array_link &al ) const {
     return alx;
 }
 
-    int conference_transformation_t::operator== ( const conference_transformation_t & rhs ) const {
-        if(this->ncols != rhs.ncols) return 0;
-        if(this->nrows != rhs.nrows) return 0;
-     
-        if(this->rperm != rhs.rperm) return 0;
-        if(this->cperm != rhs.cperm) return 0;
-        if(this->rswitch != rhs.rswitch) return 0;
-        if(this->cswitch != rhs.cswitch) return 0;     
-        
-        return 1;
-    }
+int conference_transformation_t::operator== ( const conference_transformation_t & rhs ) const {
+    if ( this->ncols != rhs.ncols ) return 0;
+    if ( this->nrows != rhs.nrows ) return 0;
+
+    if ( this->rperm != rhs.rperm ) return 0;
+    if ( this->cperm != rhs.cperm ) return 0;
+    if ( this->rswitch != rhs.rswitch ) return 0;
+    if ( this->cswitch != rhs.cswitch ) return 0;
+
+    return 1;
+}
 
 void conference_transformation_t::init ( int nr, int nc ) {
     this->nrows = nr;
@@ -5139,19 +5161,18 @@ void conference_transformation_t::reset() {
     std::fill ( cswitch.begin(), cswitch.end(), 1 );
 }
 
-    conference_transformation_t::conference_transformation_t ( const conference_transformation_t & T )
-    {
-       this->nrows = T.nrows;
-       this->ncols = T.ncols;
+conference_transformation_t::conference_transformation_t ( const conference_transformation_t & T ) {
+    this->nrows = T.nrows;
+    this->ncols = T.ncols;
 
-       this->rperm = T.rperm;
+    this->rperm = T.rperm;
     this->rswitch = T.rswitch;
 
-        this->cperm = T.cperm;
-       this->cswitch = T.cswitch;
-    }
+    this->cperm = T.cperm;
+    this->cswitch = T.cswitch;
+}
 
-    
+
 conference_transformation_t::conference_transformation_t() {
     init ( 1, 1 );
 }

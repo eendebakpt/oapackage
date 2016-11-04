@@ -228,14 +228,16 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             al.showarray();
         r =  LMC0check ( al, verbose );
         if ( verbose>=2 )
-            printf ( "LMC0check: result %d\n", r );
-        myassert ( r==LMC_LESS, "LMC0 check\n" )   ;
+            printf ( "LMC0check: result %d (LMC_LESS %d)\n", r, LMC_LESS );
+        myassert ( r==LMC_LESS, "LMC0 check of example array 29\n" )   ;
     }
 
     {
         cprintf ( verbose,"%s: LMC0 check\n", bstr );
 
-        array_link al= exampleArray ( 30,1 );
+        array_link al= exampleArray ( 31,1 );
+        if ( verbose>=2 )
+            al.showarray();
         conference_transformation_t T ( al );
 
         for ( int i=0; i<50; i++ ) {
@@ -244,6 +246,10 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
 
             lmc_t r =  LMC0check ( alx, verbose );
 
+            if (verbose) {
+                printfd("%d: transformed array: r %d\n", i, r);
+             alx.showarray();   
+            }
             if ( alx==al )
                 myassert ( r>=LMC_EQUAL, "result should be LMC_MORE\n" );
             else {

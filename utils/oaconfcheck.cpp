@@ -62,7 +62,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="cdesign-18-18.oa";
+        input="pexample_two.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -100,6 +100,7 @@ int main ( int argc, char* argv[] ) {
         
         return 0;
         /* Apply random transformation */
+        if (0) {
         conference_transformation_t T1(al);
         T1.randomize();
         T1.show();
@@ -107,6 +108,7 @@ int main ( int argc, char* argv[] ) {
         al1.showarray();
         lmc_t a = LMC0check ( al1 );
         printf ( "array %d: result %d\n (should be %d, or something else)\n", (int) i, a, LMC_LESS );
+        }
     }
 
     return 0;
