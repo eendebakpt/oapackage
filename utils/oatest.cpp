@@ -325,7 +325,7 @@ int main ( int argc, char* argv[] ) {
 exit(0);   
         
     }
-        if ( 1 ) {
+        if (0 ) {
         array_link al= exampleArray ( 28,1 );
         al.showarray();
         lmc_t r =  LMC0check(al, verbose);

@@ -2739,7 +2739,7 @@ void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm,
     std::stable_sort( rowperm, rowperm+al.n_rows );
 }
 
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std::vector<int> &colperm, std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, const symmdata &sd ) {
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, const std::vector<int> &colperm, const std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, const symmdata &sd ) {
     int lastcol = std::min ( n_cols,sutk_col );
     const int cp = colperm[lastcol];
     for ( int i=0; i < n_rows; i++ ) {
@@ -2754,7 +2754,7 @@ void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, std
 }
 
 /* Function to get the position of the zero element in the transformed array*/
-int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const int nrows ) {
+int get_zero_position ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const int nrows ) {
     int position_zero = -1;
     for ( int i = 0; i < nrows; i++ ) {
         if ( al.atfast ( rowperm[i].r, colperm[column] ) == 0 ) {
@@ -2765,7 +2765,7 @@ int get_zero_position ( const array_link &al, rowsort_t *rowperm, std::vector<in
 }
 
 /* Compare two columns with the zero element in the same position */
-lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ) {
+lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int nrows ) {
 
     for ( int i=0; i<nrows; i++ ) {
         int cp = colperm[column];
@@ -2779,7 +2779,7 @@ lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, std::vect
 }
 
 /* Compare the two columns according to the LMC0 ordering*/
-lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm ) {
+lmc_t lmc0_compare_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, std::vector<int> &rowsignperm, const std::vector<int> &colsignperm ) {
 
     const int nrows=al.n_rows;
     /* Get zero position original array */
@@ -2816,7 +2816,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
 
         /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
         int current_sign_col = colsignperm[colperm[column]];
-        int current_val_firstrow = ( rowsignperm[rowperm[0].r]*current_sign_col ) * ( al.at ( rowperm[0].r, colperm[column] ) );
+        int current_val_firstrow = ( rowsignperm[rowperm[0].r]*current_sign_col ) * ( al.atfast ( rowperm[0].r, colperm[column] ) );
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
