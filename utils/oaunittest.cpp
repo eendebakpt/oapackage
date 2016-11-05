@@ -177,7 +177,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         kk.push_back ( al );
 
         for ( int extcol=2; extcol<N; extcol++ ) {
-            printfd("%d\n", ctype.j1zero);
             kk = extend_conference ( kk, ctype,  0 );
         }
         myassert ( kk.size() ==1, "unittest error: conference matrices for N=4\n" );
