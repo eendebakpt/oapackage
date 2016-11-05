@@ -2746,7 +2746,7 @@ void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm,
     std::stable_sort( rowperm, rowperm+al.n_rows );
 }
 
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, const std::vector<int> &colperm, const std::vector<int> &rowsignperm, std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, const symmdata &sd ) {
+void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, const std::vector<int> &colperm, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, const symmdata &sd ) {
     int lastcol = std::min ( n_cols,sutk_col );
     const int cp = colperm[lastcol];
     for ( int i=0; i < n_rows; i++ ) {
@@ -2757,7 +2757,9 @@ void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, con
         rowperm[ i ].val = ( 10*sd.rowvalue.atfast ( i, lastcol-1 ) ) + ( ( current_val+3 ) % 3 );
     }
 
-    std::stable_sort( rowperm, rowperm+al.n_rows ); // and now play with rowperm.rr
+    //flipSort( rowperm, 0, (int)al.n_rows-1); // and now play with rowperm.rr
+    shellSort( rowperm, 0, (int)al.n_rows-1); // and now play with rowperm.rr
+    //std::stable_sort( rowperm, rowperm+al.n_rows ); // and now play with rowperm.rr
 }
 
 /* Function to get the position of the zero element in the transformed array*/

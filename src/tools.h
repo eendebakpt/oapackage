@@ -668,7 +668,10 @@ inline void bubbleSort ( itemType a[], indexType l, indexType r )
 }
 
 template <class itemType, class indexType>
-/// sorting similar to bubblesort but fast for sorted arrays
+/** sorting similar to bubblesort but fast for sorted arrays
+ * 
+ * The indices l and r are inclusive.
+ */
 inline void flipSort ( itemType a[], indexType l, indexType r )
 {
     indexType i, j;
