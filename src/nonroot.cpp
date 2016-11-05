@@ -516,7 +516,6 @@ inline void sortzeroone ( rowsort_t *rs, int low, int high, carray_t *arraycol )
 lmc_t LMC_check_col_rowsymm ( const array_t *arraycol,  const arraydata_t *ad, const symmdata &sd, int col, int dverbose )
 {
     lmc_t ret = LMC_EQUAL;
-    //const int nrows = ad->N;
     const int scol = col-1;
 
     int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
@@ -526,7 +525,6 @@ lmc_t LMC_check_col_rowsymm ( const array_t *arraycol,  const arraydata_t *ad, c
 
     /* we check in blocks determined by the ft */
     for ( int j = 0; j < nb; j++ ) {
-        //int x1 = sd.ft.atfast(2*j, scol); int x2 = sd.ft.atfast(2*j+1, scol);
         int x1 = sdp[2*j];
         int x2 = sdp[2*j+1];
 
@@ -558,9 +556,6 @@ lmc_t LMC_check_col_ft_2level_rowsymm ( const array_t *originalcol, const array_
 
         ret = checkLMChelperSorted ( x1, x2-1, originalcol, arraycol, lperm, ad, rowsort );
 
-        //if(dd->col==9) {
-        // printf("LMC_check_col_ft_2level: col %d: check range %d %d: ret %d\n", dd->col, x1, x2, ret);
-//	}
         if ( ret!=LMC_EQUAL ) {
             return ret;
         }
@@ -612,7 +607,6 @@ lmc_t LMC_check_col_ft_2level ( const array_t *originalcol, const array_t *array
     lmc_t ret = LMC_EQUAL;
     const int scol = dd->col-1;
     rowsortlight_t *rowsort = dd->rowsortl;
-    //rowsort_t *rowsort = dd->rowsortl;
 
     int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
     array_t * sdp=sd.ft.array+scol*sd.ft.n_rows;
@@ -624,9 +618,6 @@ lmc_t LMC_check_col_ft_2level ( const array_t *originalcol, const array_t *array
 
         ret = checkLMChelper ( x1, x2-1, originalcol, arraycol, lperm, ad, rowsort );
 
-        //if(dd->col==9) {
-        // printf("LMC_check_col_ft_2level: col %d: check range %d %d: ret %d\n", dd->col, x1, x2, ret);
-//	}
         if ( ret!=LMC_EQUAL ) {
             return ret;
         }
@@ -661,10 +652,7 @@ lmc_t LMC_check_col_ft_testing ( const array_t *originalcol, carray_t *arraycol,
     //myassert(sd!=0, "LMC_check_col_ft");
 
     lmc_t ret = LMC_EQUAL;
-    //int cur_row, rowp;
-    // const int oaindex = ad->oaindex;
     const int nrows = ad->N;
-    //const int col = dd->col;
     const int scol = dd->col-1;
     rowsort_t *rowsort = dd->rowsort;
 
