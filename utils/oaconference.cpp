@@ -132,6 +132,7 @@ int main ( int argc, char* argv[] ) {
     opt.setOption ( "ctype" );
 
     opt.setOption ( "reduction" );
+    opt.setFlag ( "debug" );
 
     opt.addUsage ( "Orthonal Array: oaconference: testing platform" );
     opt.addUsage ( "Usage: oaconference [OPTIONS] [FILE]" );
@@ -158,6 +159,7 @@ int main ( int argc, char* argv[] ) {
     //cout << system_uname();
     setloglevel ( NORMAL );
 
+    int debug = opt.getIntValue ( "debug", 0 );
     int r = opt.getIntValue ( 'r', 1 );
     int verbose = opt.getIntValue ( 'v', 1 );
     int N = opt.getIntValue ( 'N', 10 );
@@ -205,7 +207,7 @@ int main ( int argc, char* argv[] ) {
         ctype.j3zero=j3zero;
         ctype.j1zero=j1zero;
         kstart=inputarrays[0].n_columns;
-        kmax=inputarrays[0].n_columns+1;
+        //kmax=inputarrays[0].n_columns+1;
     } else {
         ctype.ctype=ctx;
         ctype.itype=itype;
@@ -252,8 +254,10 @@ int main ( int argc, char* argv[] ) {
 
             case CONFERENCE_ISOMORPHISM:
                 // TODO: make a version with symmetry inflation
-                outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select==NAUTY );
-                //outlist = extend_conference ( inputarrays, ctype,  verbose, select );
+                if (debug)
+                    outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select==NAUTY );
+                else
+                    outlist = extend_conference ( inputarrays, ctype,  verbose, select==NAUTY);
                 break;
             default
                     :
@@ -274,7 +278,7 @@ int main ( int argc, char* argv[] ) {
             outlist = selectConferenceIsomorpismClasses ( outlist, verbose, ctype.itype );
             break;
                 case LMC0:
-            outlist = selectLMC0 ( outlist, verbose, ctype);
+            outlist = selectLMC0 ( outlist, verbose>=1, ctype);
             break;
                 default:
                     printfd("error: selection method %d not implemented\n", (int) select);
