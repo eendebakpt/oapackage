@@ -997,15 +997,21 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 
     cperm c0 = getColumn ( al, 0 );
     cperm c1 = getColumn ( al, 1 );
+    
+    std::map<int, std::vector<cperm> > second_cache;
+    std::vector<cperm> ff2;
+    
     for ( size_t i=0; i<ce.first.size(); i++ ) {
         int ip = innerprod ( c0, ce.first[i] );
-        //int ip = innerprod(c1, ce.first[i]);
-        //printf("extend1 %d: inner product %d\n", (int)i, ip);
-
-        // TODO: cache this function call
+        //printfd("extend1 %d: inner product %d\n", (int)i, ip);
         int target = -ip;
 
-        std::vector<cperm> ff2 = get_second ( N, kz, target, verbose>=2 );
+        if (second_cache.count(target)==1)
+            ff2=second_cache.at(target);
+        else {
+            ff2 = get_second ( N, kz, target, verbose>=2 );
+            second_cache.insert( std::pair<int, std::vector<cperm> >( target, ff2) );
+        }
         ce.second=ff2;
 
         //printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
@@ -1046,7 +1052,7 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
         }
     }
 
-    ce.extensions=extensions;
+    //ce.extensions=extensions;
     if ( verbose>=2 )
         printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
     // perform row symmetry check
@@ -2333,12 +2339,13 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
     for ( size_t i=0; i<list.size(); i++ ) {
         lmc_t r=LMC0check ( list[i] );
 
-        if (verbose)
-            printfd("selectLMC0: i %d, r %d\n", i, r);
+        
+        if (verbose>=2 || (verbose && i%10000==0) )
+            printfd("selectLMC0: i %d/%d, r %d, total %d\n", i, list.size(), r, out.size() );
         if ( r==LMC_LESS ) {
             // pass, array is not in LMC0 format
         } else  {
-            if (verbose)
+            if (verbose>=2)
                 list[i].showarray();
             out.push_back ( list[i] );
         }
@@ -2527,7 +2534,7 @@ const std::vector<cperm> & CandidateGenerator::generateConfCandidates ( const ar
 
     assert ( ct.itype==CONFERENCE_ISOMORPHISM );
     assert ( ct.ctype==conference_t::CONFERENCE_DIAGONAL || ct.ctype==conference_t::CONFERENCE_NORMAL );
-    assert ( ct.j1zero );
+    assert ( ct.j1zero==0 );
     assert ( ct.j3zero==0 );
 
     const char *tag = "generateConfCandidates (cache)";
