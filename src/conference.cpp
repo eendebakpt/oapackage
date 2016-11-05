@@ -1999,7 +1999,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
         outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
-        if ( verbose>=2 || ( verbose>=1 && ( i%200==0 || i==lst.size()-1 ) ) ) {
+        if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
             double dt = get_time_ms() - t0;
             printf ( "extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( int ) outlist.size(), dt );
             fflush ( 0 );
@@ -2033,7 +2033,7 @@ arraylist_t extend_conference_restricted ( const arraylist_t &lst, const confere
 
         outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
-        if ( verbose>=2 || ( verbose>=1 && ( i%100==0 || i==lst.size()-1 ) ) ) {
+        if ( verbose>=2 || ( verbose>=1 && ( i%200==0 || i==lst.size()-1 ) ) ) {
             printf ( "extend_conference: extended array %d/%d to %d arrays\n", ( int ) i, ( int ) lst.size(), nn );
             fflush ( 0 );
         }
@@ -2199,7 +2199,7 @@ arraylist_t extend_conference_plain ( const arraylist_t &lst, const conference_t
 
         selector.add ( ll );
 
-        if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
+        if ( verbose>=2 || ( verbose>=1 && ( i%1000==0 || i==lst.size()-1 ) ) ) {
             printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size(), get_time_ms()-t0 );
             fflush ( 0 );
         }
