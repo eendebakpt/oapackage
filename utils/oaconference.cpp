@@ -192,7 +192,7 @@ int main ( int argc, char* argv[] ) {
     setloglevel ( SYSTEM );
 
     int kstart=-1;
-    conference_t ctype ( N, N );
+    conference_t ctype ( N, N, 0 );
 
     arraylist_t inputarrays;
     if ( input.length() >1 ) {
@@ -200,7 +200,7 @@ int main ( int argc, char* argv[] ) {
         //al=kk[0];
 
         if ( inputarrays.size() >0 ) {
-            ctype = conference_t ( N, kstart );
+            ctype = conference_t ( N, kstart, j1zero );
         }
         ctype.ctype=ctx;
         ctype.itype=itype;

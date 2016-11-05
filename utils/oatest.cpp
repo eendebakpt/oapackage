@@ -523,7 +523,7 @@ exit(0);
             exit ( 0 );
         }
         //int ctype=2;
-        conference_t ctype ( al.n_rows, al.n_rows );
+        conference_t ctype ( al.n_rows, al.n_rows , 1);
         ctype.itype=CONFERENCE_RESTRICTED_ISOMORPHISM;
         ctype.ctype=conference_t::DCONFERENCE;
 

@@ -186,13 +186,13 @@ conference_t::conference_t ( const conference_t  &rhs ) {
     this->j3zero = rhs.j3zero;
 }
 
-conference_t::conference_t ( int N, int k ) {
+conference_t::conference_t ( int N, int k, int _j1zero ) {
 
     this->N = N;
     this->ncols = k;
     this->ctype = CONFERENCE_NORMAL;
     this->itype = CONFERENCE_ISOMORPHISM;
-    this->j1zero = 1;
+    this->j1zero = _j1zero;
     this->j3zero = 0;
 }
 

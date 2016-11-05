@@ -70,7 +70,7 @@ public:
 
 public:
     /// create new conference_t object
-    conference_t ( int N, int k );
+    conference_t ( int N, int k, int j1zero  );
     conference_t ( const conference_t &rhs );
 
     /// create the unique representative of the 2 column design (for conference matrices)

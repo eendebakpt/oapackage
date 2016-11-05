@@ -170,13 +170,14 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         cprintf ( verbose,"%s: conference matrices\n", bstr );
 
         int N=4;
-        conference_t ctype ( N, N );
+        conference_t ctype ( N, N, 0 );
 
         arraylist_t kk;
         array_link al = ctype.create_root();
         kk.push_back ( al );
 
         for ( int extcol=2; extcol<N; extcol++ ) {
+            printfd("%d\n", ctype.j1zero);
             kk = extend_conference ( kk, ctype,  0 );
         }
         myassert ( kk.size() ==1, "unittest error: conference matrices for N=4\n" );
