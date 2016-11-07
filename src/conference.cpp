@@ -997,10 +997,10 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
 
     cperm c0 = getColumn ( al, 0 );
     cperm c1 = getColumn ( al, 1 );
-    
+
     std::map<int, std::vector<cperm> > second_cache;
     std::vector<cperm> ff2;
-    
+
     for ( size_t i=0; i<ce.first.size(); i++ ) {
         int ip = innerprod ( c0, ce.first[i] );
         //printfd("extend1 %d: inner product %d\n", (int)i, ip);
@@ -2339,7 +2339,7 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
     for ( size_t i=0; i<list.size(); i++ ) {
         lmc_t r=LMC0check ( list[i] );
 
-        
+
         if (verbose>=2 || (verbose && i%10000==0) )
             printfd("selectLMC0: i %d/%d, r %d, total %d\n", i, list.size(), r, out.size() );
         if ( r==LMC_LESS ) {
@@ -2886,9 +2886,15 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
         /* 3. Find permutation to sort the array*/
         init_lmc0_rowsort( al, sel_col, rowsort, rowsignperm, nrows, ncols );
 
+        /* 3.1 Compare column zero */
+        result = lmc0_compare_columns ( al, rowsort, colperm, 0, rowsignperm, colsignperm );
+        if ( result==LMC_LESS ) {
+            return result;
+        }
+
         //printf("--- sel_col %d\n",sel_col);
         //print_rowsort(rowsort, al.n_rows);
-        
+
         /* 4. Select one of two possible sign permutations for the first row */
         for ( int r_sign = 0; r_sign < 2; r_sign++ ) {
             rowsignperm[ rowsort[0].r ] = 2*r_sign - 1;

@@ -62,7 +62,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="ex_firstcol.oa";
+        input="cdesign-18-18.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
