@@ -2746,20 +2746,24 @@ void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm,
     std::stable_sort( rowperm, rowperm+al.n_rows );
 }
 
-void LMC0_sortrows ( const array_link &al, int sutk_col, rowsort_t *rowperm, const std::vector<int> &colperm, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const rowindex_t n_rows, const colindex_t n_cols, const symmdata &sd ) {
-    int lastcol = std::min ( n_cols,sutk_col );
-    const int cp = colperm[lastcol];
-    for ( int i=0; i < n_rows; i++ ) {
+void LMC0_sortrows ( const array_link &al, int column, rowsort_t *rowperm, const std::vector<int> &colperm, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const rowindex_t n_rows, const symmdata &sd ) {
 
+    const int cp = colperm[column];
+    for ( int i=0; i < n_rows; i++ ) {
         int rx = rowperm[i].r;
         int current_val = ( ( colsignperm[cp]*rowsignperm[ rx ] ) *al.atfast ( rx, cp ) );
-
-        rowperm[ i ].val = ( 10*sd.rowvalue.atfast ( i, lastcol-1 ) ) + ( ( current_val+3 ) % 3 );
+        rowperm[ i ].val =  ( ( current_val+3 ) % 3 );
     }
 
-    //flipSort( rowperm, 0, (int)al.n_rows-1); // and now play with rowperm.rr
-    shellSort( rowperm, 0, (int)al.n_rows-1); // and now play with rowperm.rr
-    //std::stable_sort( rowperm, rowperm+al.n_rows ); // and now play with rowperm.rr
+    /* Sort rows of the array in blocks*/
+    int scol = column - 1;
+    int nb = sd.ft.atfast( sd.ft.n_rows - 1, scol ); // number of blocks
+    /* we check in blocks determined by the ft */
+    for (int j = 0; j < nb; j++){
+        int x1 = sd.ft.at( 2*j, scol);
+        int x2 = sd.ft.at( 2*j+1, scol);
+        std::stable_sort( rowperm+x1, rowperm+x2);
+    }
 }
 
 /* Function to get the position of the zero element in the transformed array*/
@@ -2829,7 +2833,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
         colsignperm[ colperm[column] ] = colsignperm[ colperm[column] ] * current_val_firstrow;
 
         /* ii. Sort rows using the ordering 0, 1, -1 */
-        LMC0_sortrows ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, ncols, sd );
+        LMC0_sortrows ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, sd );
 
         r = lmc0_compare_columns ( al, rowperm, colperm, column, rowsignperm, colsignperm );
 
