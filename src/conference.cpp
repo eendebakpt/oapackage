@@ -2852,6 +2852,10 @@ lmc_t LMC0check ( const array_link &al, int verbose ) {
     /*0. Initialize data */
     lmc_t result = LMC_MORE;
 
+    if(! al.is_conference() ) {
+        printfd("error: input array is not a conference design");
+        return LMC_NONSENSE;
+    }
     const int ncols = al.n_columns;
     const int nrows = al.n_rows;
 
