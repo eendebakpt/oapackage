@@ -62,7 +62,7 @@ int main ( int argc, char* argv[] ) {
 
     char *input = opt.getValue ( 'I' );
     if ( input==0 )
-        input="cdesign-18-18.oa";
+        input="pexample_two.oa";
 
     srand ( randvalseed );
     if ( randvalseed==-1 ) {
@@ -86,8 +86,8 @@ int main ( int argc, char* argv[] ) {
 
     arraylist_t ll= readarrayfile ( input );
 
-    //ll=arraylist_t();
-    //ll.push_back(exampleArray(30,1));
+    ll=arraylist_t();
+    ll.push_back(exampleArray(30,1));
 
     for ( size_t i=0; i<ll.size(); i++ ) {
         array_link al = ll[i];
