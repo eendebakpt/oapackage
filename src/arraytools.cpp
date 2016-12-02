@@ -5082,13 +5082,13 @@ array_link hstacklastcol ( const array_link &al, const array_link &b ) {
 
 void conference_transformation_t::show ( int verbose ) const {
     myprintf ( "row permutation: " );
-    print_perm ( rperm );
+    print_perm_int ( rperm );
     myprintf ( "  row flips: " );
-    print_perm ( rswitch );
+    print_perm_int ( rswitch );
     myprintf ( "column permutation: " );
-    print_perm ( cperm );
+    print_perm_int ( cperm );
     myprintf ( "  col flips: " );
-    print_perm ( cswitch );
+    print_perm_int ( cswitch );
 }
 
 /// helper function to invert a permutation and sign switch
@@ -5187,19 +5187,16 @@ conference_transformation_t::conference_transformation_t ( const array_link &al 
 
 
 bool conference_transformation_t::isIdentity() const {
-    //	myprintf("isIdentity:\n");
     for ( int i=0; i<ncols; ++i ) {
         if ( cperm[i]!=i ) {
             return 0;
         }
     }
-    //	myprintf("isIdentity: cols good\n");
     for ( int i=0; i<nrows; ++i ) {
         if ( rperm[i]!=i ) {
             return 0;
         }
     }
-    //	myprintf("isIdentity: rows good\n");
     for ( int c=0; c<ncols; ++c ) {
         if ( cswitch[c]!=1 ) {
             return 0;

@@ -654,6 +654,32 @@ static void print_perm ( std::ostream &out, const std::vector<permutationType> s
     }
 }
 
+template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
+static void print_perm_int ( const std::vector<permutationType> s, const int maxlen = 256, const bool ret = true )
+{
+    int len = s.size();
+    int plen = std::min ( len, maxlen );
+
+    myprintf("{");
+
+    for ( int i = 0; i < plen-1 ; i++ )
+        myprintf("%d,", s[i]);
+
+    if ( len==0 ) {
+        // corner case
+        myprintf("}");
+
+    } else {
+        if ( plen<len )
+            myprintf("%d,...",  s[plen-1] );
+        else
+            myprintf("%d}",  s[plen-1] );
+    }
+    if ( ret ) {
+		myprintf("\n");
+    }
+}
+
 #ifdef FULLPACKAGE
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
