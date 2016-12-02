@@ -336,15 +336,12 @@ public:
             return 0;
         }
         if ( !std::equal ( this->s, this->s + this->ncols, ad2.s ) ) {
-            //                      myprintf("==: s\n");
             return 0;
         }
         if ( this->strength != ad2.strength ) {
-            //      myprintf("==: strength\n");
             return 0;
         }
         if ( this->order != ad2.order ) {
-            //      myprintf("==: order\n");
             return 0;
         }
 
@@ -1701,7 +1698,7 @@ public:
             int riz = rhs.rperm[ri];
             int rix = c.rperm[ri];
             c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
-            //printf(" ri %d, riz %d, rix %d: lhs.rswitch[rix] %d rhs.rswitch[riz] %d ...\n", ri, riz, rix, lhs.rswitch[rix], rhs.rswitch[riz]);
+            //myprintf(" ri %d, riz %d, rix %d: lhs.rswitch[rix] %d rhs.rswitch[riz] %d ...\n", ri, riz, rix, lhs.rswitch[rix], rhs.rswitch[riz]);
         }
 
         /* column sign switches */
@@ -1912,7 +1909,7 @@ private:
             num += nrows * ncols * 4;
             break;
         case 1: {
-            word_addr_t num_of_words = nwords ( nrows * ncols );	//printf("num_of_words: %d\n", (int)num_of_words);
+            word_addr_t num_of_words = nwords ( nrows * ncols );	//myprintf("num_of_words: %d\n", (int)num_of_words);
             num += sizeof ( word_t ) * num_of_words;
         }
         break;
@@ -2276,11 +2273,9 @@ public:
     }
 
     void flush () {
-        //printf("arraywriter_t: flush()\n");
         for ( size_t i = 0; i < afiles.size (); i++ ) {
             arrayfile_t *af = afiles[i];
             if ( af != 0 ) {
-                //printf("arraywriter_t: flush() %d\n", i);
                 #pragma omp critical
                 af->updatenumbers ();
                 af->flush ();
@@ -2372,7 +2367,6 @@ readbinheader ( FILE * fid, int &nr, int &nc )
 
     // check 2 numbers of the magic header
     if ( nn == 4 && h[0] == 30397995 && h[1] == 12224883 ) {
-        //myprintf("h[0] %f, h[1] %f nn %d\n", h[0], h[1], nn);
         return true;
     }
 
