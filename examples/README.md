@@ -2,7 +2,7 @@ Example notebooks
 ========================
 
 
-* [Calculate properties of designs](example_oapackage.py)
+* [Example usage of the OApackage](example_oapackage.ipynb)
 * [Conference isomorphisms](conference_design_isomorphism.ipynb)
 
 
