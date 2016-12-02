@@ -266,7 +266,7 @@ if os.name=='nt':
   #oalib_module.extra_compile_args += ['-fpermissive', '-std=gnu++11' ];  
 else:
   oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare', '-Wno-return-type' , '-Wno-unused-variable','-Wno-unused-result','-fPIC'];
-  oalib_module.extra_compile_args += ['-Wdate-time'];
+  oalib_module.extra_compile_args += ['-Wno-date-time'];
 
 
 

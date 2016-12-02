@@ -5,7 +5,7 @@
   #include "R_ext/Print.h"
   #define myprintf Rprintf
 #else
-  #ifdef SWIG
+  #ifdef SWIGCODE
 
 #include <Python.h>
 inline void pyprintf ( const char *message, ... )
@@ -15,7 +15,7 @@ inline void pyprintf ( const char *message, ... )
     va_list va;
     va_start ( va, message );
     vsprintf ( buf, message, va );
-    vsnprintf;
+    //vsnprintf;
     
     va_end ( va );
 
@@ -24,9 +24,9 @@ inline void pyprintf ( const char *message, ... )
     printf("error: could not get Python stdout object\n");
    return;
   }
-  PyFile_WriteString(msg, f);
+  PyFile_WriteString(buf, f);
   
-  printf("pyprintf called with |%s|\n", buf);
+//  printf("pyprintf called with |%s|\n", buf);
     return ;
 }
 

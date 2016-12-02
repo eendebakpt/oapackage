@@ -20,7 +20,7 @@
 inline void print_cperm ( const cperm &c )
 {
     for ( size_t i=0; i<c.size(); i++ ) {
-        printf ( "%3d", c[i] );
+        myprintf ( "%3d", c[i] );
     }
 }
 
@@ -32,9 +32,9 @@ int partial_inner_product ( const cperm &a, const array_link &al, int col, int r
 inline void showCandidates ( const std::vector<cperm> &cc )
 {
     for ( size_t i=0; i<cc.size(); i++ ) {
-        printf ( "%d: ", ( int ) i );
+        myprintf ( "%d: ", ( int ) i );
         print_cperm ( cc[i] );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
 }
 
@@ -47,7 +47,7 @@ public:
     {
         for ( int i=2; i< ( int ) ce.size(); i++ ) {
             if ( verbose ) {
-                printf ( "generateCandidateExtensions: k %d: %d candinates\n", i, ( int ) ce[i].size() );
+                myprintf ( "generateCandidateExtensions: k %d: %d candinates\n", i, ( int ) ce[i].size() );
             }
         }
     }
@@ -255,10 +255,10 @@ public:
     void showCandidates() const
     {
 
-        printf ( "CandidateGenerator: N %d\n", this->ct.N );
+        myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int kz=0; kz<this->ct.N; kz++ ) {
             for ( int i =2; i<=this->last_valid_conf[kz]; i++ ) {
-                printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_conf[kz][i].size() );
+                myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_conf[kz][i].size() );
             }
         }
     }
@@ -293,9 +293,9 @@ private:
 
         if ( verbose || startcol==-2 ) {
             printfd ( "startColumn: startcol %d\n", startcol );
-            printf ( "-- cache --\n" );
+            myprintf ( "-- cache --\n" );
             this->alz[kz].transposed().showarray();
-            printf ( "-- new --\n" );
+            myprintf ( "-- new --\n" );
             alx.transposed().showarray();
         }
 
@@ -331,9 +331,9 @@ public:
 
     void showCandidates() const
     {
-        printf ( "CandidateGenerator: N %d\n", this->ct.N );
+        myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
-            printf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
+            myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
         }
     }
     static const  int START_COL = 2;
@@ -627,32 +627,32 @@ public:
     {
         if ( filterfirst ) {
             if ( c[0]<0 ) {
-                printf ( "filterfirst\n" );
+                myprintf ( "filterfirst\n" );
                 return false;
             }
         }
         if ( filtersymm ) {
             if ( ! satisfy_symm ( c, sd, 0 ) ) {
-                printf ( "symmetry\n" );
+                myprintf ( "symmetry\n" );
                 return false;
             }
         }
         if ( filterj2 ) {
             // perform inner product check for all columns
             if ( ! ipcheck ( c, als, 0 ) ) {
-                printf ( "j2\n" );
+                myprintf ( "j2\n" );
                 return false;
             }
         }
         if ( filterj3 ) {
             // perform inner product check for all columns
             if ( ! this->filterJ3 ( c ) ) {
-                printf ( "j3\n" );
+                myprintf ( "j3\n" );
                 return false;
             }
         }
         ngood++;
-        printf ( "filter check good\n" );
+        myprintf ( "filter check good\n" );
 
         return true;
     }

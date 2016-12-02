@@ -53,6 +53,7 @@ import_array();
 #else
 #include <stdint.h>
 #endif
+#include "printfheader.h"
 #include "oaoptions.h"
 #include "mathtools.h"
 #include "arraytools.h"
@@ -325,6 +326,7 @@ import numpy
 %}
 #endif
 
+//%include "printfheader.h"
 %include "oaoptions.h"
 %include "mathtools.h"
 %include "arraytools.h"
