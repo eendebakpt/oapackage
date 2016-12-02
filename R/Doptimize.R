@@ -53,13 +53,13 @@ sz <- dim(A)
 ndim <- length(sz)
 if ( ndim!=2 ) {
 print('Defficiencies: input should be a 2-dimensional array')
-return
+return()
 }
 N = sz[1]
 k = sz[2]
 if ( N > 5000 || k > 5000 ) {
   print('Defficiencies: input array should have dimensions smaller than 5000x5000')
-  return
+  return()
 }
 
 #message('Defficiencies: call')

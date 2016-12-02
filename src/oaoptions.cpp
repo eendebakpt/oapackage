@@ -70,22 +70,17 @@ void print_copyright_light()
 #define __INTEL_COMPILER "none"
 #endif
 
-void print_options()
-{
-#ifdef RPACKAGE
-#else
-    print_options ( std::cout );
-#endif
-}
+
 
 /**
- * Print the compile-time options to output stream.
- * @param out
+ * Print the compile-time options to a string.
  */
-void print_options ( std::ostream &outx )
+std::string print_options_string ( )
 {
     std::string tabsep ="  ";
 
+	std::stringstream outx;
+	
     outx << "Orthogonal Array Package " << version() << std::endl;
 
     outx << "Compile date: " << __DATE__ << " " << __TIME__ << std::endl;
@@ -173,13 +168,36 @@ void print_options ( std::ostream &outx )
 #ifdef OADEV
     outx << "OADEV" << sep;
 #endif
+#ifdef SWIG
+    outx << "SWIG" << sep;
+#endif
     outx << std::endl;
 
     outx << tabsep << "columns sorting method: " << oacolSortName << std::endl;
 
-
+	const std::string s  = outx.str();
+	return s;
 }
 
+void print_options()
+{
+#ifdef RPACKAGE
+#else
+	std::string s = print_options_string();
+	myprintf("%s", s.c_str() );
+#endif
+}
+
+/**
+ * Print the compile-time options to output stream.
+ * @param out
+ */
+void print_options ( std::ostream &out )
+{
+	std::string s = print_options_string();
+	out << s;
+
+}
 
 #ifdef OADEBUG
 int hopts[10]= {0,0,0,0,0,0,0,0,0,0};

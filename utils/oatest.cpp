@@ -319,6 +319,8 @@ int main ( int argc, char* argv[] ) {
         srand ( randvalseed );
     }
 
+    print_options(); exit(0);
+    
     if (0)
     {
                 array_link al=exampleArray ( 29,0 );

@@ -84,6 +84,8 @@ def eigen2numpy(m):
 %}
 */
 
+
+
 %typemap(in) Eigen::MatrixXd (Eigen::MatrixXd inputEigen)
 {
   /* note that Eigen is column-major by default and numpy is row major by default */

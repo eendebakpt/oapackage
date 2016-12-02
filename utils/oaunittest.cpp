@@ -240,15 +240,15 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             al.showarray();
         conference_transformation_t T ( al );
 
-        for ( int i=0; i<50; i++ ) {
+        for ( int i=0; i<80; i++ ) {
             T.randomize();
             array_link alx = T.apply ( al );
 
             lmc_t r =  LMC0check ( alx, verbose );
 
-            if (verbose) {
+            if (verbose>=2) {
                 printfd("%d: transformed array: r %d\n", i, r);
-             alx.showarray();   
+                alx.showarray();   
             }
             if ( alx==al )
                 myassert ( r>=LMC_EQUAL, "result should be LMC_MORE\n" );
