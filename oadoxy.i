@@ -157,6 +157,9 @@ AnyOption::printUsage() ";
 AnyOption::printAutoUsage() ";
 
 %feature("docstring")  AnyOption::addUsage "void
+AnyOption::addUsage(const std::string line) ";
+
+%feature("docstring")  AnyOption::addUsage "void
 AnyOption::addUsage(const char *line) ";
 
 %feature("docstring")  AnyOption::printHelp "void
@@ -226,10 +229,20 @@ array_link::is2level() const
 return true if the arra is a 2-level array (e.g. only contains 0 and
 1) ";
 
+%feature("docstring")  array_link::is_conference "bool
+array_link::is_conference() const
+
+return true if the array is a +1,0, -1 valued array ";
+
 %feature("docstring")  array_link::deleteColumn "array_link
 array_link::deleteColumn(int index) const
 
 return array with selected column removed ";
+
+%feature("docstring")  array_link::selectFirstRows "array_link
+array_link::selectFirstRows(int n) const
+
+return array with first n rows ";
 
 %feature("docstring")  array_link::selectFirstColumns "array_link
 array_link::selectFirstColumns(int n) const
@@ -242,15 +255,22 @@ array_link::selectLastColumns(int n) const
 return array with last n columns selected ";
 
 %feature("docstring")  array_link::selectColumns "array_link
-array_link::selectColumns(const std::vector< int > c) const
+array_link::selectColumns(const std::vector< int >c) const
 
 select columns from an array ";
 
-%feature("docstring")  array_link::setColumn "void
-array_link::setColumn(int c, const std::vector< int > v) ";
+%feature("docstring")  array_link::selectColumns "array_link
+array_link::selectColumns(int c) const
+
+select single column from an array ";
 
 %feature("docstring")  array_link::setColumn "void
-array_link::setColumn(int c, const std::vector< signed char > v) ";
+array_link::setColumn(int c, const std::vector< int >v)
+
+set a column of the array to the given vector ";
+
+%feature("docstring")  array_link::setColumn "void
+array_link::setColumn(int c, const std::vector< signed char >v) ";
 
 %feature("docstring")  array_link::transposed "array_link
 array_link::transposed() const
@@ -267,8 +287,8 @@ array_link::DsEfficiency(int verbose=0) const
 
 calculate main effect robustness (or Ds-optimality) ";
 
-%feature("docstring")  array_link::Defficiencies "std::vector<double>
-array_link::Defficiencies(int verbose=0, int addDs0=0) const
+%feature("docstring")  array_link::Defficiencies "std::vector< double
+> array_link::Defficiencies(int verbose=0, int addDs0=0) const
 
 calculate D-efficiency, calculate main effect robustness (or Ds-
 optimality) and D1-efficiency ";
@@ -286,17 +306,22 @@ array_link::Eefficiency() const
 
 calculate E-efficiency ";
 
-%feature("docstring")  array_link::Fvalues "std::vector<int>
+%feature("docstring")  array_link::Fvalues "std::vector< int >
 array_link::Fvalues(int jj) const
 
-Calculate F-values of a matrix. ";
+Calculate F-values of a 2-level matrix. ";
 
-%feature("docstring")  array_link::Jcharacteristics "std::vector<int>
-array_link::Jcharacteristics(int jj=4) const
+%feature("docstring")  array_link::FvaluesConference "std::vector<
+int > array_link::FvaluesConference(int jj) const
+
+Calculate F-values of a conference design. ";
+
+%feature("docstring")  array_link::Jcharacteristics "std::vector< int
+> array_link::Jcharacteristics(int jj=4) const
 
 Calculate J-characteristics of matrix (the values are signed) ";
 
-%feature("docstring")  array_link::PECsequence "std::vector<double>
+%feature("docstring")  array_link::PECsequence "std::vector< double >
 array_link::PECsequence() const
 
 Calculate the projective estimation capacity sequence. ";
@@ -305,7 +330,7 @@ Calculate the projective estimation capacity sequence. ";
 
 calculate rank of array ";
 
-%feature("docstring")  array_link::GWLP "std::vector<double>
+%feature("docstring")  array_link::GWLP "std::vector< double >
 array_link::GWLP(int truncate=1, int verbose=0) const
 
 calculate generalized wordlength pattern ";
@@ -419,10 +444,15 @@ array_link::_setvalue(int row, int col, int val)
 
 set value of an array ";
 
-%feature("docstring")  array_link::show "void array_link::show()
-const
+%feature("docstring")  array_link::negateRow "void
+array_link::negateRow(rowindex_t r)
 
 set value of an array, no error checking!
+
+multiply a row by -1 ";
+
+%feature("docstring")  array_link::show "void array_link::show()
+const
 
 print information about array ";
 
@@ -435,6 +465,11 @@ const
 return md5 sum of array representation (as represented with 32bit int
 datatype in memory) ";
 
+%feature("docstring")  array_link::columnEqual "bool
+array_link::columnEqual(int rl, const array_link &rhs, int rr) const
+
+return true if two columns are equal ";
+
 %feature("docstring")  array_link::firstColumnDifference "int
 array_link::firstColumnDifference(const array_link &A) const
 
@@ -442,7 +477,11 @@ return index of first different column ";
 
 %feature("docstring")  array_link::firstDiff "bool
 array_link::firstDiff(const array_link &A, int &r, int &c, int
-verbose=1) const ";
+verbose=1) const
+
+calculate row and column index of first difference between two arrays
+
+The difference is according to the column-major ordering. ";
 
 %feature("docstring")  array_link::create_root "void
 array_link::create_root(const arraydata_t &ad)
@@ -465,7 +504,7 @@ array_link::setarraydata(const numtype *tmp, int n)
 internal function ";
 
 %feature("docstring")  array_link::setarraydata "void
-array_link::setarraydata(std::vector< int > tmp, int n)
+array_link::setarraydata(std::vector< int >tmp, int n)
 
 special method for SWIG interface ";
 
@@ -604,6 +643,11 @@ array_transformation_t::apply(const array_link &al) const
 
 apply transformation to an array_link object ";
 
+%feature("docstring")  array_transformation_t::applygeneric "array_link array_transformation_t::applygeneric(const array_link &al)
+const
+
+apply transformation to an array_link object ";
+
 %feature("docstring")  array_transformation_t::apply "void
 array_transformation_t::apply(array_t *sourcetarget)
 
@@ -622,19 +666,26 @@ apply transformation and show resulting array ";
 %feature("docstring")  array_transformation_t::show "void
 array_transformation_t::show(std::ostream &out) const ";
 
-%feature("docstring")  array_transformation_t::rowperm "std::vector<int> array_transformation_t::rowperm() const ";
+%feature("docstring")  array_transformation_t::rowperm "std::vector<
+int > array_transformation_t::rowperm() const ";
 
-%feature("docstring")  array_transformation_t::colperm "std::vector<int> array_transformation_t::colperm() const ";
+%feature("docstring")  array_transformation_t::colperm "std::vector<
+int > array_transformation_t::colperm() const
 
-%feature("docstring")  array_transformation_t::lvlperm "std::vector<int> array_transformation_t::lvlperm(int c) const
+return the row permutation of the transformation ";
+
+%feature("docstring")  array_transformation_t::lvlperm "std::vector<
+int > array_transformation_t::lvlperm(int c) const
 
 return the column permutation of the transformation ";
 
 %feature("docstring")  array_transformation_t::setrowperm "void
-array_transformation_t::setrowperm(std::vector< int >rp) ";
+array_transformation_t::setrowperm(std::vector< int > rp)
+
+return the level permutations of the transformation ";
 
 %feature("docstring")  array_transformation_t::setcolperm "void
-array_transformation_t::setcolperm(std::vector< int >colperm) ";
+array_transformation_t::setcolperm(std::vector< int > colperm) ";
 
 %feature("docstring")  array_transformation_t::setlevelperm "void
 array_transformation_t::setlevelperm(int colindex, std::vector< int >
@@ -655,7 +706,7 @@ colindex_t ncols)
 
 create new arraydata_t object ";
 
-%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const std::vector< int > s, rowindex_t N,
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const std::vector< int >s, rowindex_t N,
 colindex_t strength, colindex_t ncols) ";
 
 %feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t(const array_t *s_, rowindex_t N, colindex_t
@@ -667,9 +718,13 @@ strength, colindex_t ncols) ";
 
 copy constructor ";
 
-%feature("docstring")  arraydata_t::~arraydata_t "arraydata_t::~arraydata_t()
+%feature("docstring")  arraydata_t::arraydata_t "arraydata_t::arraydata_t()
 
 copy constructor ";
+
+%feature("docstring")  arraydata_t::~arraydata_t "arraydata_t::~arraydata_t()
+
+dummy constructor ";
 
 %feature("docstring")  arraydata_t::ismixed "bool
 arraydata_t::ismixed() const
@@ -725,6 +780,11 @@ verbose=1) const ";
 %feature("docstring")  arraydata_t::complete_arraydata "void
 arraydata_t::complete_arraydata() ";
 
+%feature("docstring")  arraydata_t::lmc_overflow_check "void
+arraydata_t::lmc_overflow_check() const
+
+check whether the LMC calculation will overflow ";
+
 %feature("docstring")  arraydata_t::complete_arraydata_fixlast "void
 arraydata_t::complete_arraydata_fixlast() ";
 
@@ -732,7 +792,7 @@ arraydata_t::complete_arraydata_fixlast() ";
 arraydata_t::complete_arraydata_splitn(int ns) ";
 
 %feature("docstring")  arraydata_t::set_colgroups "void
-arraydata_t::set_colgroups(const std::vector< int > splits) ";
+arraydata_t::set_colgroups(const std::vector< int >splits) ";
 
 %feature("docstring")  arraydata_t::set_colgroups_jj "void
 arraydata_t::set_colgroups_jj(const symmetry_group &sg, int jj) ";
@@ -756,7 +816,7 @@ return the root array for the class ";
 %feature("docstring")  arraydata_t::getfactorlevel "int
 arraydata_t::getfactorlevel(int idx) const ";
 
-%feature("docstring")  arraydata_t::getS "std::vector<int>
+%feature("docstring")  arraydata_t::getS "std::vector< int >
 arraydata_t::getS() const ";
 
 %feature("docstring")  arraydata_t::reset_strength "void
@@ -833,6 +893,11 @@ arrayfile::arrayfile_t::readnext()
 
 read next array from the file ";
 
+%feature("docstring")  arrayfile::arrayfile_t::readarrays "arraylist_t arrayfile::arrayfile_t::readarrays(int nmax=NARRAYS_MAX,
+int verbose=1)
+
+read set of array from the file ";
+
 %feature("docstring")  arrayfile::arrayfile_t::flush "void
 arrayfile::arrayfile_t::flush()
 
@@ -845,9 +910,9 @@ return true if the file has binary format ";
 
 %feature("docstring")  arrayfile::arrayfile_t::append_arrays "int
 arrayfile::arrayfile_t::append_arrays(const arraylist_t &arrays, int
-startidx)
+startidx=-1)
 
-append arrays to the file ";
+append list of arrays to the file ";
 
 %feature("docstring")  arrayfile::arrayfile_t::append_array "void
 arrayfile::arrayfile_t::append_array(const array_link &a, int
@@ -915,9 +980,11 @@ arraysymmetry::show() const ";
 
 structure to write arrays to disk, thread safe
 
-C++ includes: evenodd.h ";
+C++ includes: arraytools.h ";
 
-%feature("docstring")  arraywriter_t::arraywriter_t "arraywriter_t::arraywriter_t() ";
+%feature("docstring")  arraywriter_t::arraywriter_t "arraywriter_t::arraywriter_t()
+
+verbosity level ";
 
 %feature("docstring")  arraywriter_t::~arraywriter_t "arraywriter_t::~arraywriter_t() ";
 
@@ -925,7 +992,9 @@ C++ includes: evenodd.h ";
 arraywriter_t::flush() ";
 
 %feature("docstring")  arraywriter_t::writeArray "void
-arraywriter_t::writeArray(const array_link &A) ";
+arraywriter_t::writeArray(const array_link &A)
+
+write a single array to disk ";
 
 %feature("docstring")  arraywriter_t::writeArray "void
 arraywriter_t::writeArray(const arraylist_t &lst) ";
@@ -937,10 +1006,83 @@ std::string prefix, arrayfilemode_t mode=ABINARY_DIFF) ";
 %feature("docstring")  arraywriter_t::nArraysWritten "int
 arraywriter_t::nArraysWritten() const
 
-return the total number arrays ";
+return the total number arrays written to disk ";
 
 %feature("docstring")  arraywriter_t::closeafiles "void
 arraywriter_t::closeafiles() ";
+
+
+// File: classCandidateGenerator.xml
+%feature("docstring") CandidateGenerator "
+
+Class to generate candidate extensions with caching.
+
+C++ includes: conference.h ";
+
+%feature("docstring")  CandidateGenerator::CandidateGenerator "CandidateGenerator::CandidateGenerator(const array_link &al, const
+conference_t &ct) ";
+
+%feature("docstring")  CandidateGenerator::generateConfCandidates "const std::vector<cperm>&
+CandidateGenerator::generateConfCandidates(const array_link &al, int
+kz) const
+
+generate candidates with caching this method uses j2 filtering ";
+
+%feature("docstring")  CandidateGenerator::showCandidates "void
+CandidateGenerator::showCandidates() const ";
+
+%feature("docstring")  CandidateGenerator::updateLastValid "void
+CandidateGenerator::updateLastValid(int lv) const ";
+
+
+// File: classCandidateGeneratorDouble.xml
+%feature("docstring") CandidateGeneratorDouble "
+
+Class to generate candidate extensions with caching.
+
+C++ includes: conference.h ";
+
+%feature("docstring")
+CandidateGeneratorDouble::CandidateGeneratorDouble "CandidateGeneratorDouble::CandidateGeneratorDouble(const array_link
+&al, const conference_t &ct) ";
+
+%feature("docstring")
+CandidateGeneratorDouble::generateDoubleConfCandidates "const
+std::vector<cperm>&
+CandidateGeneratorDouble::generateDoubleConfCandidates(const
+array_link &al) const
+
+generate candidates with caching this method uses symmetry inflation,
+assumes j1=0 and j2=0 ";
+
+%feature("docstring")  CandidateGeneratorDouble::showCandidates "void
+CandidateGeneratorDouble::showCandidates() const ";
+
+
+// File: classgfx_1_1Compare.xml
+%feature("docstring") gfx::Compare "C++ includes: timsort.hpp ";
+
+%feature("docstring")  gfx::Compare::Compare "gfx::Compare< Value,
+LessFunction >::Compare(LessFunction f) ";
+
+%feature("docstring")  gfx::Compare::Compare "gfx::Compare< Value,
+LessFunction >::Compare(const Compare< value_type, func_type > &other)
+";
+
+%feature("docstring")  gfx::Compare::lt "bool gfx::Compare< Value,
+LessFunction >::lt(value_type x, value_type y) ";
+
+%feature("docstring")  gfx::Compare::le "bool gfx::Compare< Value,
+LessFunction >::le(value_type x, value_type y) ";
+
+%feature("docstring")  gfx::Compare::gt "bool gfx::Compare< Value,
+LessFunction >::gt(value_type x, value_type y) ";
+
+%feature("docstring")  gfx::Compare::ge "bool gfx::Compare< Value,
+LessFunction >::ge(value_type x, value_type y) ";
+
+%feature("docstring")  gfx::Compare::less_function "func_type&
+gfx::Compare< Value, LessFunction >::less_function() ";
 
 
 // File: structconf__candidates__t.xml
@@ -985,19 +1127,29 @@ Structure representing the type of conference designs.
 
 C++ includes: conference.h ";
 
-%feature("docstring")  conference_t::conference_t "conference_t::conference_t(int N, int k)
+%feature("docstring")  conference_t::conference_t "conference_t::conference_t(int N, int k, int j1zero)
+
+for the double conference type matrices
 
 create new conference_t object ";
+
+%feature("docstring")  conference_t::conference_t "conference_t::conference_t(const conference_t &rhs) ";
 
 %feature("docstring")  conference_t::create_root "array_link
 conference_t::create_root() const
 
-create the unique representative of the 2 column design ";
+create the unique representative of the 2 column design (for
+conference matrices) ";
 
 %feature("docstring")  conference_t::create_root_three "array_link
 conference_t::create_root_three() const
 
 create the unique representative of the 3 column design ";
+
+%feature("docstring")  conference_t::createDconferenceRootArrays "arraylist_t conference_t::createDconferenceRootArrays() const ";
+
+%feature("docstring")  conference_t::addRootArrays "void
+conference_t::addRootArrays(arraylist_t &lst) const ";
 
 %feature("docstring")  conference_t::__repr__ "std::string
 conference_t::__repr__() const
@@ -1032,6 +1184,10 @@ default constructor ";
 conference_transformation_t::conference_transformation_t "conference_transformation_t::conference_transformation_t(const
 array_link &al) ";
 
+%feature("docstring")
+conference_transformation_t::conference_transformation_t "conference_transformation_t::conference_transformation_t(const
+conference_transformation_t &T) ";
+
 %feature("docstring")  conference_transformation_t::show "void
 conference_transformation_t::show(int verbose=1) const
 
@@ -1064,6 +1220,11 @@ initialize with a random column permutation ";
 %feature("docstring")  conference_transformation_t::randomizerowperm "void conference_transformation_t::randomizerowperm()
 
 initialize with a random row permutation ";
+
+%feature("docstring")  conference_transformation_t::randomizecolflips
+"void conference_transformation_t::randomizecolflips()
+
+initialize with random col switches ";
 
 %feature("docstring")  conference_transformation_t::randomizerowflips
 "void conference_transformation_t::randomizerowflips()
@@ -1124,6 +1285,98 @@ counter_t::showcounts(const char *str, int first, int last) const
 show information about the number of arrays found ";
 
 
+// File: classDconferenceFilter.xml
+%feature("docstring") DconferenceFilter "
+
+class to filter designs
+
+C++ includes: conference.h ";
+
+%feature("docstring")  DconferenceFilter::DconferenceFilter "DconferenceFilter::DconferenceFilter(const array_link &_als, int
+filtersymm_, int filterj2_, int filterj3_=1) ";
+
+%feature("docstring")  DconferenceFilter::filterList "std::vector<cperm> DconferenceFilter::filterList(const std::vector<
+cperm > &lst, int verbose=0) const
+
+filter a list of cperms using the filter method ";
+
+%feature("docstring")  DconferenceFilter::filterListJ2last "std::vector<cperm> DconferenceFilter::filterListJ2last(const
+std::vector< cperm > &lst) const ";
+
+%feature("docstring")  DconferenceFilter::filterListZero "std::vector<cperm> DconferenceFilter::filterListZero(const
+std::vector< cperm > &lst) const
+
+filter a list of cperms using the filterZero method ";
+
+%feature("docstring")  DconferenceFilter::filter "bool
+DconferenceFilter::filter(const cperm &c) const
+
+return True of the extension satisfies all checks ";
+
+%feature("docstring")  DconferenceFilter::filterJpartial "bool
+DconferenceFilter::filterJpartial(const cperm &c, int r) const
+
+filter on partial column (only last col) ";
+
+%feature("docstring")  DconferenceFilter::filterJ "bool
+DconferenceFilter::filterJ(const cperm &c, int j2start=0) const
+
+return True of the extension satisfies all J-characteristic checks ";
+
+%feature("docstring")  DconferenceFilter::filterJlast "bool
+DconferenceFilter::filterJlast(const cperm &c, int j2start=0) const
+
+return True of the extension satisfies all J-characteristic checks for
+the last columns ";
+
+%feature("docstring")  DconferenceFilter::filterReason "bool
+DconferenceFilter::filterReason(const cperm &c) const
+
+return True of the extension satisfies all checks ";
+
+%feature("docstring")  DconferenceFilter::filterJ3 "bool
+DconferenceFilter::filterJ3(const cperm &c) const
+
+return True of the candidate satisfies the J3 check ";
+
+%feature("docstring")  DconferenceFilter::filterJ3s "bool
+DconferenceFilter::filterJ3s(const cperm &c, int idxstart) const
+
+return True of the candidate satisfies the J3 check for specified
+pairs ";
+
+%feature("docstring")  DconferenceFilter::filterJ3r "bool
+DconferenceFilter::filterJ3r(const cperm &c) const
+
+return True of the candidate satisfies the J3 check ";
+
+%feature("docstring")  DconferenceFilter::filterJ3inline "bool
+DconferenceFilter::filterJ3inline(const cperm &c) const
+
+return True of the candidate satisfies the J3 check ";
+
+%feature("docstring")  DconferenceFilter::filterSymmetry "bool
+DconferenceFilter::filterSymmetry(const cperm &c) const
+
+return True of the candidate satisfies the symmetry check ";
+
+%feature("docstring")  DconferenceFilter::filterJ2 "bool
+DconferenceFilter::filterJ2(const cperm &c) const
+
+return True of the candidate extension satisfies the J2 check ";
+
+%feature("docstring")  DconferenceFilter::filterJ2last "bool
+DconferenceFilter::filterJ2last(const cperm &c) const
+
+return True of the candidate extension satisfies the J2 check for the
+last column of the array checked against ";
+
+%feature("docstring")  DconferenceFilter::filterZero "bool
+DconferenceFilter::filterZero(const cperm &c) const
+
+return True of the candidate extension satisfies the zero ";
+
+
 // File: structdepth__extend__sub__t.xml
 %feature("docstring") depth_extend_sub_t "
 
@@ -1141,7 +1394,7 @@ depth_extend_sub_t::resize(int nn) ";
 %feature("docstring")  depth_extend_sub_t::n "size_t
 depth_extend_sub_t::n() const ";
 
-%feature("docstring")  depth_extend_sub_t::updateExtensionPointers "std::vector<int> depth_extend_sub_t::updateExtensionPointers(int
+%feature("docstring")  depth_extend_sub_t::updateExtensionPointers "std::vector< int > depth_extend_sub_t::updateExtensionPointers(int
 extcol) ";
 
 %feature("docstring")  depth_extend_sub_t::initialize "arraylist_t
@@ -1171,7 +1424,7 @@ This structure allows for writing the generated arrays to disk. It
 also contains functions to print progress of the extension.
 
 Multiple copies of this class are made, but they all share the same
-counter_t and arraywriter_t object.
+counter_t and arraywriter_t object. Also t0 and tp are shared
 
 C++ includes: evenodd.h ";
 
@@ -1516,6 +1769,86 @@ InfInt::toString() const ";
 InfInt::toUnsignedInt() const ";
 
 
+// File: classJcounter.xml
+%feature("docstring") Jcounter "
+
+object to hold counts of maximum J_k-values
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  Jcounter::Jcounter "Jcounter::Jcounter()
+
+time needed for calculation ";
+
+%feature("docstring")  Jcounter::Jcounter "Jcounter::Jcounter(int N,
+int jj=5, int k=-1) ";
+
+%feature("docstring")  Jcounter::validData "bool
+Jcounter::validData() ";
+
+%feature("docstring")  Jcounter::hasColumn "bool
+Jcounter::hasColumn(int col) const
+
+return true if specified column is in the data ";
+
+%feature("docstring")  Jcounter::isOpen "bool Jcounter::isOpen()
+const ";
+
+%feature("docstring")  Jcounter::showPerformance "void
+Jcounter::showPerformance() const ";
+
+%feature("docstring")  Jcounter::narrays "long Jcounter::narrays()
+const ";
+
+%feature("docstring")  Jcounter::show "void Jcounter::show() const
+
+show statistics of the object ";
+
+%feature("docstring")  Jcounter::maxCols "int Jcounter::maxCols()
+const ";
+
+%feature("docstring")  Jcounter::getCount "long
+Jcounter::getCount(int k, int j) const ";
+
+%feature("docstring")  Jcounter::getTotalsJvalue "std::vector<long>
+Jcounter::getTotalsJvalue(int jval) const ";
+
+%feature("docstring")  Jcounter::getTotals "std::vector<long>
+Jcounter::getTotals() const ";
+
+%feature("docstring")  Jcounter::showcompact "void
+Jcounter::showcompact() const
+
+show statistics of the object ";
+
+%feature("docstring")  Jcounter::addArrays "void
+Jcounter::addArrays(const arraylist_t &arraylist, int verbose=0)
+
+add list of arrays to object ";
+
+%feature("docstring")  Jcounter::addArray "void
+Jcounter::addArray(const array_link &al, int verbose=0)
+
+add single array to statistics object ";
+
+
+// File: structjindex__t.xml
+%feature("docstring") jindex_t "
+
+helper class for indexing statistics of designs
+
+The index consists of the number of columns and the value for the
+J-characteristic
+
+C++ includes: evenodd.h ";
+
+%feature("docstring")  jindex_t::jindex_t "jindex_t::jindex_t(int
+colindex, int jvalue) ";
+
+%feature("docstring")  jindex_t::toString "std::string
+jindex_t::toString() const ";
+
+
 // File: classjstruct__t.xml
 %feature("docstring") jstruct_t "
 
@@ -1539,11 +1872,19 @@ C++ includes: arraytools.h ";
 %feature("docstring")  jstruct_t::~jstruct_t "jstruct_t::~jstruct_t()
 ";
 
-%feature("docstring")  jstruct_t::Fval "std::vector<int>
-jstruct_t::Fval(int strength=3) const ";
+%feature("docstring")  jstruct_t::maxJ "int jstruct_t::maxJ() const
 
-%feature("docstring")  jstruct_t::calculateF "std::vector<int>
-jstruct_t::calculateF(int strength=3) const ";
+calculate maximum J value ";
+
+%feature("docstring")  jstruct_t::Fval "std::vector< int >
+jstruct_t::Fval(int strength=3) const
+
+calculate possible values in F vector ";
+
+%feature("docstring")  jstruct_t::calculateF "std::vector< int >
+jstruct_t::calculateF(int strength=3) const
+
+calculate histogram of J values for a 2-level array ";
 
 %feature("docstring")  jstruct_t::calculateAberration "void
 jstruct_t::calculateAberration() ";
@@ -1561,6 +1902,59 @@ jstruct_t::showstr() ";
 %feature("docstring")  jstruct_t::allzero "int jstruct_t::allzero()
 
 return 1 if all vals are zero ";
+
+
+// File: classjstructbase__t.xml
+%feature("docstring") jstructbase_t "
+
+struct to hold data of an array, e.g. J-characteristic. Abstract base
+class
+
+C++ includes: arraytools.h ";
+
+%feature("docstring")  jstructbase_t::maxJ "int jstructbase_t::maxJ()
+const
+
+calculate maximum J value ";
+
+%feature("docstring")  jstructbase_t::Jvalues "std::vector< int >
+jstructbase_t::Jvalues() const
+
+calculate possible values in F vector ";
+
+%feature("docstring")  jstructbase_t::calculateF "std::vector< int >
+jstructbase_t::calculateF() const
+
+calculate histogram of J values ";
+
+%feature("docstring")  jstructbase_t::calc "virtual void
+jstructbase_t::calc(const array_link &al)=0 ";
+
+%feature("docstring")  jstructbase_t::show "void
+jstructbase_t::show()
+
+Show contents of structure. ";
+
+%feature("docstring")  jstructbase_t::showdata "void
+jstructbase_t::showdata(int verbose=1) ";
+
+%feature("docstring")  jstructbase_t::showstr "std::string
+jstructbase_t::showstr() ";
+
+%feature("docstring")  jstructbase_t::allzero "int
+jstructbase_t::allzero()
+
+return 1 if all vals are zero ";
+
+
+// File: classjstructconference__t.xml
+%feature("docstring") jstructconference_t "C++ includes: arraytools.h
+";
+
+%feature("docstring")  jstructconference_t::jstructconference_t "jstructconference_t::jstructconference_t(int N, int jj=4) ";
+
+%feature("docstring")  jstructconference_t::jstructconference_t "jstructconference_t::jstructconference_t(const array_link &al, int
+jj=4) ";
 
 
 // File: classlarray.xml
@@ -1761,6 +2155,9 @@ C++ includes: mathtools.h ";
 %feature("docstring")  mvalue_t::size "size_t mvalue_t< NumericType
 >::size() const ";
 
+%feature("docstring")  mvalue_t::show_integer "void mvalue_t<
+NumericType >::show_integer() const ";
+
 
 // File: classOAextend.xml
 %feature("docstring") OAextend "
@@ -1908,7 +2305,7 @@ ValueType, IndexType >::allvalues() const
 return all Paretop optimal elements ";
 
 %feature("docstring")  Pareto::addvalue "bool Pareto< ValueType,
-IndexType >::addvalue(pValue val, IndexType idx)
+IndexType >::addvalue(const pValue val, const IndexType idx)
 
 add a new element ";
 
@@ -1944,11 +2341,12 @@ The input arrays are assumed to be of the form A_i = [A_0 X_i]
 
 C++ includes: arrayproperties.h ";
 
-%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(const array_link &al, int nsub=3)
+%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(const array_link &al, int nsub=3, int
+verbose=0)
 
 constructor ";
 
-%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(int nsub=3)
+%feature("docstring")  rankStructure::rankStructure "rankStructure::rankStructure(int nsub=3, int id=-1)
 
 constructor ";
 
@@ -1960,15 +2358,14 @@ rankStructure::updateStructure(const array_link &al)
 
 update the structure cache with a new array ";
 
-%feature("docstring")  rankStructure::matrixP "Eigen::ColPivHouseholderQR<Eigen::MatrixXd>::PermutationType
-rankStructure::matrixP() const
+%feature("docstring")  rankStructure::matrixP "EigenDecomp::PermutationType rankStructure::matrixP() const
 
 helper function ";
 
 %feature("docstring")  rankStructure::rankdirect "int
 rankStructure::rankdirect(const Eigen::MatrixXd &A) const
 
-calculate the rank of an array directly ";
+calculate the rank of an array directly, uses special threshold ";
 
 %feature("docstring")  rankStructure::rankxfdirect "int
 rankStructure::rankxfdirect(const array_link &al) const
@@ -1981,6 +2378,9 @@ rankStructure::rankxf(const array_link &al)
 
 calculate the rank of the second order interaction matrix of an array
 using the cache system ";
+
+
+// File: structgfx_1_1TimSort_1_1run.xml
 
 
 // File: classsort__indices.xml
@@ -2076,15 +2476,20 @@ LMCreduction_t::symm_t::storeSymmetryPermutation(const dyndata_t
 // File: structsymmdata.xml
 %feature("docstring") symmdata "
 
-structure containing data related to the frequency table
+structure containing data related to symmetries of arrays
 
-C++ includes: lmc.h ";
+C++ includes: arraytools.h ";
 
 %feature("docstring")  symmdata::symmdata "symmdata::symmdata(const
 array_link &al, int minlen=1) ";
 
 %feature("docstring")  symmdata::show "void symmdata::show(int
 verbose=1) const ";
+
+%feature("docstring")  symmdata::checkIdx "std::vector<int>
+symmdata::checkIdx(int col=-1) const
+
+list with indices set to check for symmetry reductions ";
 
 
 // File: classsymmetry__group.xml
@@ -2100,28 +2505,28 @@ Python.
 
 C++ includes: mathtools.h ";
 
-%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< int > vals, bool
+%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< int > &vals, bool
 ascending=true, int verbose=0)
 
 ordering of elements ";
 
-%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< double > vals, bool
+%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< double > &vals, bool
 ascending=true, int verbose=0) ";
 
-%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< float > vals, bool
+%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< float > &vals, bool
 ascending=true, int verbose=0) ";
 
-%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< short int > vals,
+%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< short int > &vals,
 bool ascending=true, int verbose=0) ";
 
-%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< unsigned int > vals,
-bool ascending=true, int verbose=0) ";
+%feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< unsigned int >
+&vals, bool ascending=true, int verbose=0) ";
 
 %feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< mvalue_t< double > >
-vals, bool ascending=true, int verbose=0) ";
+&vals, bool ascending=true, int verbose=0) ";
 
 %feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const std::vector< mvalue_t< int > >
-vals, bool ascending=true, int verbose=0) ";
+&vals, bool ascending=true, int verbose=0) ";
 
 %feature("docstring")  symmetry_group::symmetry_group "symmetry_group::symmetry_group(const symmetry_group &sgx) ";
 
@@ -2140,6 +2545,11 @@ symmetry_group::permsize_large() const
 
 return size of the group of all permutations respecting the symmetry
 ";
+
+%feature("docstring")  symmetry_group::checkIndices "std::vector<int>
+symmetry_group::checkIndices() const
+
+list with indices set to check for symmetry reductions ";
 
 %feature("docstring")  symmetry_group::__repr__ "std::string
 symmetry_group::__repr__() const
@@ -2173,10 +2583,28 @@ symmetry_group_walker::next() ";
 %feature("docstring")  symmetry_group_walker::fullperm "std::vector<int> symmetry_group_walker::fullperm() const ";
 
 
+// File: classgfx_1_1TimSort.xml
+%feature("docstring") gfx::TimSort "C++ includes: timsort.hpp ";
+
+
 // File: namespacearrayfile.xml
 
 
 // File: namespaceEigen.xml
+
+
+// File: namespacegfx.xml
+%feature("docstring")  gfx::timsort "void
+gfx::timsort(RandomAccessIterator const first, RandomAccessIterator
+const last)
+
+Same as std::stable_sort(first, last). ";
+
+%feature("docstring")  gfx::timsort "void
+gfx::timsort(RandomAccessIterator const first, RandomAccessIterator
+const last, LessFunction compare)
+
+Same as std::stable_sort(first, last, c). ";
 
 
 // File: namespacenauty.xml
@@ -2184,7 +2612,7 @@ symmetry_group_walker::next() ";
 nauty::reduceNauty(const array_link &G, std::vector< int > colors, int
 verbose=0)
 
-reduce a colorred graph to Nauty minimal form
+reduce a colored graph to Nauty minimal form
 
 The transformation returned is from the normal form to the specified
 graph. ";
@@ -2228,7 +2656,7 @@ array_link &al, int verbose=0)
 Calculate D-efficiency for a 2-level array using symmetric eigenvalue
 decomposition. ";
 
-%feature("docstring")  Defficiencies "std::vector<double>
+%feature("docstring")  Defficiencies "std::vector< double >
 Defficiencies(const array_link &al, const arraydata_t &arrayclass, int
 verbose=0, int addDs0=0) ";
 
@@ -2247,32 +2675,32 @@ array_link &al, int verbose=0)
 
 Calculate E-efficiency of matrix (1 over the VIF-efficiency) ";
 
-%feature("docstring")  Aefficiencies "std::vector<double>
+%feature("docstring")  Aefficiencies "std::vector< double >
 Aefficiencies(const array_link &al, int verbose=0)
 
 calculate various A-efficiencies ";
 
-%feature("docstring")  projDeff "std::vector<double> projDeff(const
+%feature("docstring")  projDeff "std::vector< double > projDeff(const
 array_link &al, int kp, int verbose)
 
 Return the D-efficiencies for the projection designs. ";
 
-%feature("docstring")  PECsequence "std::vector<double>
+%feature("docstring")  PECsequence "std::vector< double >
 PECsequence(const array_link &al, int verbose=0)
 
 Return the projection estimation capacity sequence of a design. ";
 
-%feature("docstring")  distance_distribution "std::vector<double>
+%feature("docstring")  distance_distribution "std::vector< double >
 distance_distribution(const array_link &al)
 
 Return the distance distribution of a design. ";
 
-%feature("docstring")  Jcharacteristics "std::vector<int>
+%feature("docstring")  Jcharacteristics "std::vector< int >
 Jcharacteristics(const array_link &al, int jj=4, int verbose=0)
 
 Calculate J-characteristics of matrix (the values are signed) ";
 
-%feature("docstring")  GWLP "std::vector<double> GWLP(const
+%feature("docstring")  GWLP "std::vector< double > GWLP(const
 array_link &al, int verbose=0, int truncate=1)
 
 calculate GWLP (generalized wordlength pattern)
@@ -2282,8 +2710,8 @@ The method used for calculation is from Xu and Wu (2001),
 desings\" The non-symmetric arrays see \"Algorithmic Construction of
 Efficient Fractional Factorial Designs With Large Run Sizes\", Xu ";
 
-%feature("docstring")  GWLPmixed "std::vector<double> GWLPmixed(const
-array_link &al, int verbose=0, int truncate=1) ";
+%feature("docstring")  GWLPmixed "std::vector< double >
+GWLPmixed(const array_link &al, int verbose=0, int truncate=1) ";
 
 %feature("docstring")  projectionGWLPs "std::vector< GWLPvalue >
 projectionGWLPs(const array_link &al)
@@ -2294,7 +2722,7 @@ projections ";
 %feature("docstring")  sortGWLP "std::vector< GWLPvalue >
 sortGWLP(std::vector< GWLPvalue >) ";
 
-%feature("docstring")  projectionGWLPvalues "std::vector<double>
+%feature("docstring")  projectionGWLPvalues "std::vector< double >
 projectionGWLPvalues(const array_link &al)
 
 calculate delete-one-factor GWLP (generalized wordlength pattern)
@@ -2312,31 +2740,60 @@ regular fractions of two-level factorials\", Fang and Mukerjee, 2000
 %feature("docstring")  array2secondorder "array_link
 array2secondorder(const array_link &al)
 
-calculate second order interaction matrix for 2-level array ";
+calculate second order interaction matrix for 2-level array (does not
+include intercept and matrix itself) ";
 
 %feature("docstring")  array2xf "array_link array2xf(const array_link
 &al)
 
-add intercept and second order interactions to an array ";
+add intercept and second order interactions to a 2-level array ";
 
 %feature("docstring")  array2xfeigen "Eigen::MatrixXd
 array2xfeigen(const array_link &al)
 
 add intercept and second order interactions to an array ";
 
-%feature("docstring")  arrayrankColPiv "int arrayrankColPiv(const
-array_link &al)
+%feature("docstring")  arrayrankFullPivQR "int
+arrayrankFullPivQR(const array_link &al, double threshold=-1)
 
-return rank of an array based on Eigen::ColPivHouseholderQR ";
+return rank of an array based on FullPivHouseholderQR (defined at
+compile time) ";
+
+%feature("docstring")  arrayrankColPivQR "int arrayrankColPivQR(const
+array_link &al, double threshold=-1)
+
+return rank of an array based on ColPivHouseholderQR (defined at
+compile time) ";
+
+%feature("docstring")  arrayrankFullPivLU "int
+arrayrankFullPivLU(const array_link &al, double threshold=-1) ";
+
+%feature("docstring")  arrayrankSVD "int arrayrankSVD(const
+array_link &al, double threshold=-1) ";
 
 %feature("docstring")  arrayrank "int arrayrank(const array_link &al)
 
 calculate the rank of an array ";
 
+%feature("docstring")  arrayrankInfo "int arrayrankInfo(const
+Eigen::MatrixXd &, int verbose=1)
+
+return rank of an array based on Eigen::FullPivLU ";
+
+%feature("docstring")  arrayrankInfo "int arrayrankInfo(const
+array_link &al, int verbose=1)
+
+print information related to rank calculations ";
+
 %feature("docstring")  arraylink2eigen "Eigen::MatrixXd
 arraylink2eigen(const array_link &al)
 
 convert array_link to Eigen matrix ";
+
+%feature("docstring")  conditionNumber "double conditionNumber(const
+array_link &M)
+
+return the condition number of a matrix ";
 
 %feature("docstring")  calculateParetoEvenOdd "void
 calculateParetoEvenOdd(const std::vector< std::string > infiles, const
@@ -2348,22 +2805,23 @@ Calculate the Pareto optimal arrays from a list of array files
 
 Pareto optimality is calculated according to (rank; A3,A4; F4) ";
 
-%feature("docstring")  parsePareto "Pareto<mvalue_t<long>,long>
+%feature("docstring")  parsePareto "Pareto< mvalue_t < long >, long >
 parsePareto(const arraylist_t &arraylist, int verbose, paretomethod_t
 paretomethod=PARETOFUNCTION_DEFAULT) ";
 
-%feature("docstring")  A3A4 "mvalue_t<long> A3A4(const array_link
+%feature("docstring")  A3A4 "mvalue_t< long > A3A4(const array_link
 &al)
 
 calculate A3 and A4 value for array ";
 
-%feature("docstring")  F4 "mvalue_t<long> F4(const array_link &al,
+%feature("docstring")  F4 "mvalue_t< long > F4(const array_link &al,
 int verbose=1)
 
-calculate F4 value for array ";
+calculate F4 value for 2-level array ";
 
-%feature("docstring")  calculateArrayParetoRankFA "Pareto<mvalue_t<long>,IndexType>::pValue
-calculateArrayParetoRankFA(const array_link &al, int verbose)
+%feature("docstring")  calculateArrayParetoRankFA "Pareto< mvalue_t <
+long >, IndexType >::pValue calculateArrayParetoRankFA(const
+array_link &al, int verbose)
 
 Add array to list of Pareto optimal arrays
 
@@ -2372,7 +2830,7 @@ The values to be optimized are:
 1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (?? is
 better, sum of elements is constant)
 
-Valid for 2-level arrays of strength at least 1 ";
+Valid for 2-level arrays of strength at least 3 ";
 
 %feature("docstring")  addJmax "void addJmax(const array_link &al,
 typename Pareto< mvalue_t< long >, IndexType >::pValue &p, int
@@ -2380,8 +2838,9 @@ verbose=1)
 
 add Jmax criterium to Pareto set ";
 
-%feature("docstring")  calculateArrayParetoJ5 "Pareto<mvalue_t<long>,IndexType>::pValue calculateArrayParetoJ5(const
-array_link &al, int verbose) ";
+%feature("docstring")  calculateArrayParetoJ5 "Pareto< mvalue_t <
+long >, IndexType >::pValue calculateArrayParetoJ5(const array_link
+&al, int verbose) ";
 
 %feature("docstring")  parseArrayPareto "void parseArrayPareto(const
 array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType >
@@ -2423,6 +2882,11 @@ eigen2numpyHelper(double *pymat1, int n, const MatrixFloat &m) ";
 
 %feature("docstring")  Eigen::dummy2 "Eigen::MatrixXd dummy2() ";
 
+%feature("docstring")  Eigen::Fval "std::vector< int > Fval(int N,
+int strength)
+
+possible values for J-values of 2-level design ";
+
 %feature("docstring")  Eigen::file_exists "bool file_exists(const
 std::string filename)
 
@@ -2442,6 +2906,18 @@ return true if the specified oa file exists ";
 oa_file_exists(const std::string filename)
 
 return true if the specified oa file exists ";
+
+%feature("docstring")  Eigen::createJ2tableConference "array_link
+createJ2tableConference(const array_link &confmatrix)
+
+create J2 table as intermediate result for J-characteristic
+calculations for conference matrices ";
+
+%feature("docstring")  Eigen::createJdtable "array_link
+createJdtable(const array_link &al)
+
+create J2 table as intermediate result for J-characteristic
+calculations ";
 
 %feature("docstring")  Eigen::readConfigFile "arraydata_t*
 readConfigFile(const char *file)
@@ -2490,12 +2966,7 @@ ncols:  Number of columns ";
 %feature("docstring")  Eigen::create_array "array_t*
 create_array(const arraydata_t *ad)
 
-Create an array from an arraydata_t structure.
-
-Parameters:
------------
-
-ad:  ";
+Create an array from an arraydata_t structure. ";
 
 %feature("docstring")  Eigen::equal_array_cols "int
 equal_array_cols(carray_t *A, colindex_t col, colindex_t col2,
@@ -2576,6 +3047,11 @@ exampleArray(int idx=0, int verbose=0)
 
 Return example array ";
 
+%feature("docstring")  Eigen::Jcharacteristics_conference "std::vector<int> Jcharacteristics_conference(const array_link &al, int
+jj, int verbose=0)
+
+calculate J-characteristics for a conference design ";
+
 %feature("docstring")  Eigen::hstack "array_link hstack(const
 array_link &al, const array_link &b) ";
 
@@ -2590,13 +3066,13 @@ const cperm &B) ";
 
 %feature("docstring")  Eigen::perform_column_permutation "void
 perform_column_permutation(const array_link source, array_link
-&target, const std::vector< int > perm)
+&target, const std::vector< int >perm)
 
 perform column permutation for an array ";
 
 %feature("docstring")  Eigen::perform_row_permutation "void
 perform_row_permutation(const array_link source, array_link &target,
-const std::vector< int > perm)
+const std::vector< int >perm)
 
 perform row permutation for an array ";
 
@@ -2606,7 +3082,12 @@ strength=2)
 
 create arraydata_t structure from array ";
 
-%feature("docstring")  Eigen::getJcounts "std::vector<int>
+%feature("docstring")  Eigen::addConstant "arraylist_t
+addConstant(const arraylist_t &lst, int v)
+
+add a constant value to all arrays in a list ";
+
+%feature("docstring")  Eigen::getJcounts "std::vector< int >
 getJcounts(arraylist_t *arraylist, int N, int k, int verbose=1)
 
 Return number of arrays with j_{2n+1}=0 for n<m ";
@@ -2639,37 +3120,40 @@ carray_p B, const rowindex_t r, const colindex_t c)
 
 Compare 2 arrays and return 0 if equal. ";
 
-%feature("docstring")  Eigen::free_sols "int free_sols(arraylist_t
-&solutions) ";
-
 %feature("docstring")  Eigen::fastJupdateValue "int
 fastJupdateValue(rowindex_t N, carray_t *tmpval)
 
-helper function ";
+helper function to calculate J-values ";
 
 %feature("docstring")  Eigen::fastJupdate "void fastJupdate(const
 array_t *array, rowindex_t N, const int J, const colindex_t *pp,
 array_t *tmp)
 
-helper function ";
+helper function to calculate J-values ";
 
 %feature("docstring")  Eigen::jvalue "int jvalue(const array_link
 &ar, const int J, const int *pp)
 
-Calculate J-value for an array ";
+Calculate J-value for a 2-level array ";
 
 %feature("docstring")  Eigen::jvaluefast "int jvaluefast(const
 array_t *array, rowindex_t N, const int J, const colindex_t *pp)
 
-calcualte J-value for an array ";
+calculate J-value for a 2-level array ";
 
-%feature("docstring")  Eigen::analyseArrays "std::vector<jstruct_t>
+%feature("docstring")  Eigen::analyseArrays "std::vector< jstruct_t >
 analyseArrays(const arraylist_t &arraylist, const int verbose, const
 int jj=4)
 
 Analyse a list of arrays. ";
 
-%feature("docstring")  Eigen::nArrays "int nArrays(const char *fname)
+%feature("docstring")  Eigen::showArrayList "void showArrayList(const
+arraylist_t &lst)
+
+functions for working with array files ";
+
+%feature("docstring")  Eigen::nArrays "long nArrays(const char
+*fname)
 
 return number of arrays in an array file ";
 
@@ -2822,7 +3306,7 @@ Write a vector of integer elements to file. ";
 
 %feature("docstring")  Eigen::vectorvector2binfile "void
 vectorvector2binfile(const std::string fname, const std::vector<
-std::vector< double > > vals, int writeheader, int na)
+std::vector< double > >vals, int writeheader, int na)
 
 Write a vector of vector elements to binary file. ";
 
@@ -2842,13 +3326,45 @@ convert 2-level array to second order model matrix (intercept, X1, X2)
 ";
 
 %feature("docstring")  Eigen::array2eigenME "MatrixFloat
-array2eigenME(const array_link &al, int verbose=1) ";
+array2eigenME(const array_link &al, int verbose=1)
 
-%feature("docstring")  Eigen::array2eigenModelMatrixMixed "std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed(const
-array_link &al, int verbose=1) ";
+convert array to model matrix in Eigen format ";
+
+%feature("docstring")  Eigen::array2eigenModelMatrixMixed "std::pair<
+MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed(const
+array_link &al, int verbose=1)
+
+create first and second order model matrix for mixed-level array ";
+
+%feature("docstring")  Eigen::arrayInFile "int arrayInFile(const
+array_link &al, const char *afile, int verbose=1)
+
+return index of specified array in a file. returns -1 if array is not
+found ";
+
+%feature("docstring")  Eigen::arrayInList "int arrayInList(const
+array_link &al, const arraylist_t &ll, int verbose=1)
+
+return index of specified array in a list. returns -1 if array is not
+found ";
 
 
 // File: conference_8h.xml
+%feature("docstring")  print_cperm "void print_cperm(const cperm &c)
+
+print a candidate extension ";
+
+%feature("docstring")  partial_inner_product "int
+partial_inner_product(const cperm &a, const array_link &al, int col,
+int rmax)
+
+partial inner product ";
+
+%feature("docstring")  showCandidates "void showCandidates(const
+std::vector< cperm > &cc)
+
+show a list of candidate extensions ";
+
 %feature("docstring")  reduceConference "array_link
 reduceConference(const array_link &, int verbose=0)
 
@@ -2865,29 +3381,49 @@ int extcol, int verbose=1, int maxzpos=-1)
 
 Extend a single conference design with candidate columns ";
 
-%feature("docstring")  extend_conference_matrix "conference_extend_t
-extend_conference_matrix(const array_link &al, const conference_t &ct,
-int extcol, int verbose, int maxzpos, const conf_candidates_t &cande)
+%feature("docstring")  extend_conference_matrix_generator "conference_extend_t extend_conference_matrix_generator(const
+array_link &al, const conference_t &ct, int extcol, int verbose, int
+maxzpos, const CandidateGenerator &cgenerator)
 
 helper function ";
 
 %feature("docstring")  extend_conference "arraylist_t
 extend_conference(const arraylist_t &lst, const conference_t ctype,
-int verbose)
+int verbose, int select_isomorphism_classes=0)
 
 Extend a list of conference designs with a single column. ";
 
+%feature("docstring")  extend_conference_plain "arraylist_t
+extend_conference_plain(const arraylist_t &lst, const conference_t
+ctype, int verbose, int select_isomorphism_classes=0)
+
+plain version without caching ";
+
+%feature("docstring")  extend_conference_restricted "arraylist_t
+extend_conference_restricted(const arraylist_t &lst, const
+conference_t ctype, int verbose)
+
+Extend a list of conference designs with a single column ";
+
+%feature("docstring")  extend_double_conference "arraylist_t
+extend_double_conference(const arraylist_t &lst, const conference_t
+ctype, int verbose) ";
+
 %feature("docstring")  selectConferenceIsomorpismClasses "arraylist_t
-selectConferenceIsomorpismClasses(const arraylist_t list, int verbose)
+selectConferenceIsomorpismClasses(const arraylist_t &list, int
+verbose, matrix_isomorphism_t itype=CONFERENCE_ISOMORPHISM)
 
 select representatives for the isomorphism classes of a list of
 conference arrays ";
 
 %feature("docstring")  selectConferenceIsomorpismIndices "std::vector<int> selectConferenceIsomorpismIndices(const arraylist_t
-lst, int verbose)
+&lst, int verbose, matrix_isomorphism_t itype=CONFERENCE_ISOMORPHISM)
 
 select representatives for the isomorphism classes of a list of
 conference arrays, return indices of classes ";
+
+%feature("docstring")  selectLMC0 "arraylist_t selectLMC0(const
+arraylist_t &list, int verbose, const conference_t &ctype) ";
 
 %feature("docstring")  generateConferenceExtensions "std::vector<cperm> generateConferenceExtensions(const array_link &al,
 const conference_t &ct, int kz, int verbose=1, int filtersymm=1, int
@@ -2901,6 +3437,16 @@ Parameters:
 al:  design to be extended
 
 kz:  index of zero in candidate column ";
+
+%feature("docstring")  generateConferenceRestrictedExtensions "std::vector<cperm> generateConferenceRestrictedExtensions(const
+array_link &al, const conference_t &ct, int kz, int verbose=1, int
+filtersymm=1, int filterip=1)
+
+Generate candidate extensions for restricted isomorphism classes ";
+
+%feature("docstring")  generateDoubleConferenceExtensions "std::vector<cperm> generateDoubleConferenceExtensions(const array_link
+&al, const conference_t &ct, int verbose=1, int filtersymm=1, int
+filterip=1, int filterJ3=0, int filtersymminline=1) ";
 
 %feature("docstring")  maxz "int maxz(const array_link &al, int k=-1)
 
@@ -2918,6 +3464,51 @@ Return true of the array is smaller in LMC-0 ordering ";
 arraylist_t &lst)
 
 sort list of arrays according to LMC-0 ordering ";
+
+%feature("docstring")  LMC0check "lmc_t LMC0check(const array_link
+&al, int verbose=0)
+
+check if array is in LM0 form ";
+
+%feature("docstring")  isConferenceFoldover "bool
+isConferenceFoldover(const array_link &al, int verbose=0)
+
+return true if the design is a foldover array ";
+
+%feature("docstring")  satisfy_symm "int satisfy_symm(const cperm &c,
+const symmdata &sd, int rowstart=2)
+
+helper function, return true if a candidate extensions satisfies the
+symmetry test ";
+
+%feature("docstring")  satisfy_symm "int satisfy_symm(const cperm &c,
+const std::vector< int > &check_indices, int rowstart=2)
+
+helper function, return true if a candidate extensions satisfies the
+symmetry test ";
+
+%feature("docstring")  satisfy_symm "int satisfy_symm(const cperm &c,
+const std::vector< int > &check_indices, int rowstart, int rowend)
+
+helper function, return true if a candidate extensions satisfies the
+symmetry test ";
+
+%feature("docstring")  ipcheck "int ipcheck(const cperm &col, const
+array_link &al, int cstart=2, int verbose=0) ";
+
+%feature("docstring")  minz "int minz(const array_link &al, int k)
+
+return minimal position of zero in design ";
+
+%feature("docstring")  generateDoubleConferenceExtensionsInflate "std::vector<cperm> generateDoubleConferenceExtensionsInflate(const
+array_link &al, const conference_t &ct, int verbose, int filterj2, int
+filterj3, int kstart=2) ";
+
+%feature("docstring")  inflateCandidateExtension "std::vector<cperm>
+inflateCandidateExtension(const cperm &basecandidate, const array_link
+&als, const symmetry_group &alsg, const std::vector< int >
+&check_indices, const conference_t &ct, int verbose, const
+DconferenceFilter &filter) ";
 
 
 // File: Deff_8h.xml
@@ -2953,7 +3544,9 @@ function to generate optimal designs ";
 %feature("docstring")  DoptimizeDebug "DoptimReturn
 DoptimizeDebug(const arraydata_t &arrayclass, int nrestarts, const
 std::vector< double > alpha, int verbose, int method=DOPTIM_AUTOMATIC,
-int niter=300000, double maxtime=100000, int nabort=5000) ";
+int niter=300000, double maxtime=100000, int nabort=5000)
+
+helper function ";
 
 %feature("docstring")  DoptimizeMixed "DoptimReturn
 DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arrayclass,
@@ -2961,6 +3554,85 @@ const std::vector< double > alpha, int verbose=1, int nabort=-1) ";
 
 
 // File: evenodd_8h.xml
+%feature("docstring")  processDepth "void processDepth(const
+arraylist_t &goodarrays, depth_alg_t depthalg, depth_extend_t
+&dextend, depth_extend_sub_t &dextendsublight, int extensioncol, int
+verbose=0)
+
+Extend arrays using a depth-first or breadth-first approach
+
+Parameters:
+-----------
+
+goodarrays:  List of arrays to extend
+
+depthalg:  Extend using depth-first or breadth-first
+
+dextend:  Option structure for the extension
+
+dextendsublight:  Data structure for the extensions
+
+extensioncol:  Column to extend
+
+verbose:  Verbosity level ";
+
+%feature("docstring")  depth_extend_hybrid "void
+depth_extend_hybrid(const arraylist_t &alist, depth_extend_t &dextend,
+int extcol, const OAextend &oaextendx, int verbose)
+
+depth-first extension of arrays. depending on the symmetry group of
+the array to be extended a direct method is used or a method with
+caching of candidate columns ";
+
+%feature("docstring")  depth_extend_direct "void
+depth_extend_direct(const arraylist_t &alist, depth_extend_t &dextend,
+int extcol, const OAextend &oaextendx, int verbose)
+
+variation of depth_extend for arrays with large symmetry groups ";
+
+%feature("docstring")  depth_extend_array "void
+depth_extend_array(const array_link &al, depth_extend_t &dextend,
+const arraydata_t &adfull, int verbose, depth_extensions_storage_t
+*ds=0, int=0)
+
+perform depth-first extension
+
+The arrays generated are pruned by keeping a list of possible
+extension valuesdepth extend a single array ";
+
+%feature("docstring")  calculateArrayParetoJ5Cache "Pareto< mvalue_t
+< long >, IndexType >::pValue calculateArrayParetoJ5Cache(const
+array_link &al, int verbose, rankStructure &rs) ";
+
+%feature("docstring")  addArraysToPareto "void
+addArraysToPareto(Pareto< mvalue_t< long >, array_link > &pset,
+pareto_cb paretofunction, const arraylist_t &arraylist, int jj, int
+verbose)
+
+add arrays to set of Pareto results ";
+
+%feature("docstring")  addArraysToPareto "void
+addArraysToPareto(Pareto< mvalue_t< long >, array_link > &pset,
+pareto_cb_cache paretofunction, const arraylist_t &arraylist, int jj,
+int verbose)
+
+add arrays to set of Pareto results ";
+
+%feature("docstring")  readStatisticsFile "Jcounter
+readStatisticsFile(const char *numbersfile, int verbose)
+
+read statistics object from disk ";
+
+%feature("docstring")  writeStatisticsFile "void
+writeStatisticsFile(const char *numbersfile, const Jcounter &jc, int
+verbose)
+
+write statistics object to disk ";
+
+%feature("docstring")  calculateJstatistics "Jcounter
+calculateJstatistics(const char *afile, int jj=5, int verbose=1)
+
+calculate J-value statistics ";
 
 
 // File: extend_8h.xml
@@ -2978,6 +3650,11 @@ extend_arraylist(const arraylist_t &alist, arraydata_t &fullad,
 OAextend const &oaextend)
 
 extend a list of arrays ";
+
+%feature("docstring")  extend_arraylist "arraylist_t
+extend_arraylist(const arraylist_t &alist, const arraydata_t &fullad)
+
+extend a list of arrays with default options ";
 
 %feature("docstring")  extend_array "arraylist_t extend_array(const
 array_link &al, arraydata_t &fullad, OAextend const &oaextend)
@@ -3002,11 +3679,6 @@ simple wrapper function ";
 
 
 // File: graphtools_8h.xml
-%feature("docstring")  nauty::sorthelper "std::vector<Type>
-sorthelper(std::vector< Type > &v)
-
-helper function, substruct minimum from list of values ";
-
 %feature("docstring")  nauty::transformGraph "array_link
 transformGraph(const array_link &G, const std::vector< int > tr, int
 verbose=1)
@@ -3014,13 +3686,27 @@ verbose=1)
 apply a vertex permutation to a graph ";
 
 %feature("docstring")  nauty::reduceOAnauty "array_transformation_t
-reduceOAnauty(const array_link &al, int verbose=1)
+reduceOAnauty(const array_link &al, int verbose=0)
 
 reduce an orthogonal array to Nauty minimal form. the array
 transformation is returned ";
 
+%feature("docstring")  nauty::reduceOAnauty "array_transformation_t
+reduceOAnauty(const array_link &al, int verbose, const arraydata_t
+&ad) ";
+
 %feature("docstring")  nauty::array2graph "std::pair<array_link,
 std::vector<int> > array2graph(const array_link &al, int verbose=1)
+
+Convert orthogonal array to graph representation
+
+The conversion method is as in Ryan and Bulutoglu. The resulting graph
+is bi-partite. The graph representation can be used for isomorphism
+testing. ";
+
+%feature("docstring")  nauty::array2graph "std::pair<array_link,
+std::vector<int> > array2graph(const array_link &al, int verbose,
+const arraydata_t &ad)
 
 Convert orthogonal array to graph representation
 
@@ -3152,6 +3838,11 @@ const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t
 &reduction)
 
 generic LMCcheck function ";
+
+%feature("docstring")  LMCcheckOriginal "lmc_t LMCcheckOriginal(const
+array_link &al)
+
+direct LMC check using the original LMC check ";
 
 %feature("docstring")  calculateSymmetryGroups "LMCreduction_t
 calculateSymmetryGroups(const array_link &al, const arraydata_t
@@ -3313,6 +4004,10 @@ int maxlen=256, const bool ret=true) ";
 print_perm(std::ostream &out, const std::vector< permutationType > s,
 const int maxlen=256, const bool ret=true) ";
 
+%feature("docstring")  print_perm_int "static void
+print_perm_int(const std::vector< permutationType > s, const int
+maxlen=256, const bool ret=true) ";
+
 %feature("docstring")  print_perm "static void print_perm(const
 larray< permutationType > s, const int maxlen=256, const bool
 ret=true) ";
@@ -3426,12 +4121,7 @@ permutationLex(numtype k, objecttype *s, numtype n)
 See
 alsohttp://en.wikipedia.org/wiki/Permutation#Numbering_permutations
 
-Parameters:
------------
-
-param s
-
-len:  ";
+Parameters: ";
 
 %feature("docstring")  random_perm "void random_perm(objecttype *s,
 numtype len)
@@ -3603,6 +4293,25 @@ n:
 
 C:  ";
 
+%feature("docstring")  composition_perm "void composition_perm(const
+std::vector< numtype > &A, const std::vector< numtype > &B,
+std::vector< numtype > &C)
+
+Calculate composition of 2 permutations.
+
+Calculates C = B  A
+
+Parameters:
+-----------
+
+A:
+
+B:
+
+n:
+
+C:  ";
+
 %feature("docstring")  perform_perm "void perform_perm(const object
 *const src, object *const target, const int n, const numtype *perm)
 
@@ -3626,7 +4335,7 @@ numtype > perm)
 Perform a permutation on a set of objects. ";
 
 %feature("docstring")  perform_inv_perm "void perform_inv_perm(const
-std::vector< object > src, std::vector< object > target, const int n,
+std::vector< object > src, std::vector< object > &target, const int n,
 const std::vector< numtype > perm)
 
 Perform inverse permutation. ";
@@ -3660,8 +4369,32 @@ n:
 
 perm:  ";
 
+%feature("docstring")  init_perm "void init_perm(std::vector< numtype
+> &perm)
+
+Initialiaze a permutation
+
+Parameters:
+-----------
+
+perm:
+
+len:  ";
+
 %feature("docstring")  init_perm "void init_perm(numtype *perm, int
 len)
+
+Initialiaze a permutation
+
+Parameters:
+-----------
+
+perm:
+
+len:  ";
+
+%feature("docstring")  init_signperm "void init_signperm(std::vector<
+numtype > &signperm)
 
 Initialiaze a permutation
 
@@ -3974,6 +4707,9 @@ Determine whether an element passes the strength test, specialized for
 2-level array ";
 
 
+// File: timsort_8hpp.xml
+
+
 // File: tools_8h.xml
 %feature("docstring")  base_name "std::string base_name(std::string
 const &path) ";
@@ -3995,8 +4731,9 @@ const char *message,...) ";
 
 %feature("docstring")  system_uname "std::string system_uname() ";
 
-%feature("docstring")  mycheck "void mycheck(int condition, const
-char *message,...) ";
+%feature("docstring")  mycheck_handler "void mycheck_handler(const
+char *file, const char *func, int line, int condition, const char
+*message,...) ";
 
 %feature("docstring")  myassert "void myassert(int condition, const
 char *str=0) ";
@@ -4344,7 +5081,9 @@ sort arrays using bubbleSort ";
 %feature("docstring")  flipSort "void flipSort(itemType a[],
 indexType l, indexType r)
 
-sorting similar to bubblesort but fast for sorted arrays ";
+sorting similar to bubblesort but fast for sorted arrays
+
+The indices l and r are inclusive. ";
 
 %feature("docstring")  bubbleSort2 "void bubbleSort2(Object obj[],
 indexType array_size)

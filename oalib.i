@@ -1,8 +1,6 @@
 /* File: example.i */
 %module(docstring="Python Orthogonal Array interface") oalib
 
-// see http://www.swig.org/Doc1.3/Python.html#Python_nn65
-//%feature("autodoc", "docstring")
 
 // basic features, see http://realmike.org/blog/2010/07/18/python-extensions-in-cpp-using-swig/
 %include "std_string.i"
@@ -268,11 +266,14 @@ def __setitem__(self,index, value):
 %}
 }
 
+// see http://www.swig.org/Doc1.3/Python.html#Python_nn65
+//%feature("autodoc", "docstring")
+
 
 %feature("autodoc", "1");
 // to generate the oadoxy.i:
 // doxygen Doxyfile
-// python doxy2swig.py xml/index.xml oadoxy.i
+// python2 doxy2swig.py xml/index.xml oadoxy.i
 // see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
 
 %include "oadoxy.i"
