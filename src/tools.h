@@ -742,7 +742,9 @@ void quickSort ( T a[], const int& leftarg, const int& rightarg )
 }
 
 template <class itemType, class indexType>
-/// sort list using shellSort
+/*** sort list using shellSort
+ * The indices l and r are inclusive.
+ */
 void shellSort ( itemType a[], indexType l, indexType r )
 {
     static indexType i, j, h;

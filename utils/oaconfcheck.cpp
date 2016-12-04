@@ -88,7 +88,7 @@ int main ( int argc, char* argv[] ) {
 
     ll=arraylist_t();
     ll.push_back(exampleArray(30,1));
-    
+
     for ( size_t i=0; i<ll.size(); i++ ) {
         array_link al = ll[i];
 
@@ -97,7 +97,7 @@ int main ( int argc, char* argv[] ) {
         al.showarray();
         lmc_t r = LMC0check ( al, 2);
         printf ( "array %d: result %d\n (should be %d)\n", (int) i, r, LMC_MORE );
-        
+
         return 0;
         /* Apply random transformation */
         if (0) {

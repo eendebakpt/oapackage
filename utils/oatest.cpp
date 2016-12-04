@@ -46,13 +46,14 @@ Copyright: See LICENSE.txt file that comes with this distribution
 
 using namespace Eigen;
 
-void speedcheck_conf ( const char *input, int verbose ) {
+void speedcheck_conf ( const char *input, int verbose, int nmax=2000 ) {
     double t0;
     arraylist_t ll= readarrayfile ( input );
     printf ( "### speedcheck: read from file (%d arrays)\n", ( int ) ll.size() );
 
     t0=get_time_ms();
-    for ( size_t i=0; i<ll.size(); i++ ) {
+    nmax = std::min( (int)(ll.size()), nmax);
+    for ( size_t i=0; i< (size_t) nmax; i++ ) {
         array_link al = ll[i];
 
         //al = al.randomrowperm();
@@ -81,13 +82,13 @@ void speedcheck_conf ( const char *input, int verbose ) {
     printf ( "dt lmc0  %.3f \n", get_time_ms()-t0 );
 
     {
+        ll.resize(nmax);
         double t0=get_time_ms();
         arraylist_t  out= selectConferenceIsomorpismClasses ( ll, 0,CONFERENCE_ISOMORPHISM );
 
 
-        for ( size_t i=0; i<ll.size(); i++ ) {
+        for ( size_t i=0; i<(size_t)nmax; i++ ) {
             array_link al = ll[i];
-
         }
         printf ( "dt nauty %.3f \n", get_time_ms()-t0 );
     }
