@@ -2,7 +2,9 @@
 # pieter.eendebak@gmail.com
 
 __all__ = ['oahelper']
-
+__description__ = "Orthogonal Array package"
+__uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
+__doc__ = __description__ + " <" + __uri__ + ">"
 
 import oalib
 oalib.setloglevel(oalib.SYSTEM)

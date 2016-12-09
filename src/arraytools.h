@@ -1737,7 +1737,7 @@ namespace arrayfile
 
 /// format mode
 enum arrayfilemode_t
-{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR };
+{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR, A_AUTOMATIC };
 enum afilerw_t
 { READ, WRITE, READWRITE };
 
@@ -1971,6 +1971,10 @@ public:
     static arrayfile::arrayfilemode_t parseModeString ( const std::
             string format ) {
         arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
+        if(format=="AUTO" || format == "A") {
+            mode = arrayfile::A_AUTOMATIC;
+            
+        } else {
         if ( format == "BINARY" || format == "B" ) {
             mode = arrayfile::ABINARY;
         } else {
@@ -1983,6 +1987,7 @@ public:
                     mode = arrayfile::ATEXT;
                 }
             }
+        }
         }
         return mode;
     }
