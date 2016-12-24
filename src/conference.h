@@ -70,6 +70,7 @@ public:
 
 public:
     /// create new conference_t object
+    conference_t ( );
     conference_t ( int N, int k, int j1zero  );
     conference_t ( const conference_t &rhs );
 
@@ -225,7 +226,7 @@ struct conference_options {
 } ;
 
 /// Class to generate candidate extensions with caching
-class CandidateGenerator
+class CandidateGeneratorX
 {
 public:
     conference_t ct;
@@ -245,7 +246,7 @@ private:
 
 public:
 
-    CandidateGenerator ( const array_link &al, const conference_t &ct );
+    CandidateGeneratorX ( const array_link &al, const conference_t &ct );
 
     /** generate candidates with caching
      * this method uses j2 filtering
@@ -304,22 +305,131 @@ private:
 
 };
 
-
-/// Class to generate candidate extensions with caching
-class CandidateGeneratorDouble
+/** Class to generate candidate extensions with caching
+ * 
+ * We assume that the designs to be extended are run ordered, so that the caching has maximal effect.
+ * 
+ **/
+class CandidateGeneratorBase
 {
 public:
-    conference_t ct;
-    int verbose;
+    conference_t ct; // type of designs
+    int verbose; // output level
 
 
     mutable array_link al;
-    mutable int last_valid;
+    mutable int last_valid; // index of last valid column
 
-private:
-    mutable std::vector< cperm_list > candidate_list_double;
+protected:
+    mutable std::vector< cperm_list > candidate_list; // list of candidate extensions
+
+public:
+    CandidateGeneratorBase ( const array_link &al, const conference_t &ct );
+
+    void showCandidates(int verbose=1) const
+    {
+        myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
+        for ( int i =2; i<=last_valid; i++ ) {
+            myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list[i].size() );
+            if (verbose>=2) {
+                ::showCandidates(candidate_list[i]);
+            }
+        }
+    }    
+
+    
+protected:
+        static const  int START_COL = 2;
+
+    /** find the starting column for the extension
+     *
+     * For startcol k the elements in candidate_list[k] are valid
+     */
+    int startColumn ( const array_link &alx, int verbose=0 ) const
+    {
+        if ( this->al.n_columns!=alx.n_columns ) {
+            int startcol=-1;
+if (verbose) {
+    printfd("startColumn: return -1\n");
+}
+            return startcol;
+        }
+        int startcol = al.firstColumnDifference ( alx );
+if (verbose) {
+    printfd("startColumn: firstColumnDifference %d, last_valid %d\n", startcol, last_valid);
+}
+
+        startcol = std::min ( startcol, last_valid );
+        if ( startcol<this->START_COL ) {
+            startcol=-1;
+        }
+        return startcol;
+    }
+
+};
+
+/// Class to generate conference candidate extensions with fixed zero
+class CandidateGeneratorZero  : public CandidateGeneratorBase
+{
+    int zero_position;
+public:    
+    CandidateGeneratorZero ( const array_link &al, const conference_t &ct, int zero_position );
+
+    const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
+
+};
 
 
+/// Class to generate candidate extensions with caching
+class CandidateGeneratorInflate
+{
+public:
+    conference_t ct;
+    int verbose;   
+
+protected:
+public: // FIXME, remove
+    std::vector<CandidateGeneratorZero> generators;
+
+public:
+
+    CandidateGeneratorInflate ( const array_link &al, const conference_t &ct );
+
+    /** generate candidates with caching
+     * this method uses j2 filtering
+     */
+    const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const {
+         std::vector<cperm> tmp  = this->generators[kz].generateCandidates(al);
+         printfd("-------- tmp\n");
+::showCandidates(tmp);
+this->generators[kz].showCandidates(2);
+         std::vector<cperm> tmp2  = this->generators[kz].generateCandidates(al);
+         printfd("-------- tmp2\n");
+::showCandidates(tmp2);
+         this->generators[kz].showCandidates(2);
+         
+         printfd("### kz %d: %d, %d\n", kz, tmp.size(), tmp2.size() );
+     return this->generators[kz].generateCandidates(al);   
+    }
+
+    void showCandidates(int verbose=1) const
+    {
+        myprintf ( "CandidateGeneratorInflate: N %d\n", this->ct.N );
+        for ( int kz=0; kz<this->ct.N; kz++ ) {
+        myprintf ( "  candidates for kz %d\n", kz );
+            this->generators[kz].showCandidates(verbose);
+        }
+    }
+};
+
+typedef CandidateGeneratorInflate CandidateGenerator;
+//typedef CandidateGeneratorX CandidateGenerator;
+
+
+/// Class to generate double conference candidate extensions with caching
+class CandidateGeneratorDouble  : public CandidateGeneratorBase
+{
+    
 public:
 
     CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
@@ -327,36 +437,8 @@ public:
     /** generate candidates with caching
      * this method uses symmetry inflation, assumes j1=0 and j2=0
      */
-    const std::vector<cperm> & generateDoubleConfCandidates ( const array_link &al ) const;
+    const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
 
-    void showCandidates() const
-    {
-        myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
-        for ( int i =2; i<=last_valid; i++ ) {
-            myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_double[i].size() );
-        }
-    }
-    static const  int START_COL = 2;
-private:
-
-    /** find the starting column for the extension
-     *
-     * For startcol k the elements in candidate_list[k] are valid
-     */
-    int startColumn ( const array_link &alx ) const
-    {
-        if ( this->al.n_columns!=alx.n_columns ) {
-            int startcol=-1;
-            return startcol;
-        }
-        int startcol = al.firstColumnDifference ( alx );
-
-        startcol = std::min ( startcol, last_valid );
-        if ( startcol<2 ) {
-            startcol=-1;
-        }
-        return startcol;
-    }
 };
 
 
@@ -443,6 +525,19 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=
 /// return minimal position of zero in design
 int minz ( const array_link &al, int k );
 
+/// filter list of columns, only return columns with zero at specified position
+    inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, int zero_position) 
+    {
+        std::vector<cperm> out;
+        for ( size_t i=0; i<lst.size(); i++ ) {
+            if ( lst[i][zero_position]==0 ) {
+                out.push_back ( lst[i] );
+            }
+        }
+        printfd("filterZeroPosition: zero_position %d: %d->%d\n", zero_position, lst.size(), out.size() );
+        return out;
+    }
+    
 /// class to filter designs
 class DconferenceFilter
 {
@@ -463,6 +558,7 @@ private:
     std::vector<int> check_indices;
     /// used for filtering based on zero
     int minzvalue;
+    
 public:
     int inline_row;
     symmdata sd;
@@ -575,8 +671,10 @@ public:
         return true;
     }
 
-    /// filter on partial column (only last col)
-    // r the number of rows that are valid
+    /** filter on partial column (only last col)
+     * 
+     * r (int): the number of rows that are valid
+     **/
     bool filterJpartial(const cperm &c, int r ) const {
         const int N = als.n_rows;
         long j = partial_inner_product(c, this->als, als.n_columns-1, r);
@@ -778,7 +876,12 @@ private:
 
 std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart=2 );
 
-// inflate candindate column: TODO: documentation
+/** Inflate a candidate column
+ * 
+ * The extensions are generated according to the symmertry specified by the symmetry group. Filtering is performed using the filter object.
+ * 
+ * From the filtering object only the J2 filtering is used.
+ **/
 std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter );
 
 

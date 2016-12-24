@@ -56,6 +56,7 @@ fwditer random_unique ( fwditer begin, fwditer end, size_t num_random ) {
     return begin;
 }
 
+/// generate a range of numbers
 struct rangegenerator {
     rangegenerator ( int init ) : start ( init ) { }
 
@@ -69,6 +70,7 @@ struct rangegenerator {
 #include <algorithm>
 
 template <typename T, typename T2>
+/// return subvector of a vector specified by indices
 T2 subvector ( const T2& full, const T& ind ) {
     int num_indices = ind.size();
     T2 target ( num_indices );
@@ -82,6 +84,13 @@ enum reduction_method {NONE, NAUTY, LMC0};
 
 enum max_selection_method {SELECT_RANDOM, SELECT_FIRST};
 
+/** select a subset of arrays
+ * 
+ * 
+ * \param lst Input list of arrays
+ * \param nmax The maximum size of the subset
+ * \param method Method for selecting the subset
+ */
 arraylist_t selectArraysMax ( const arraylist_t &lst, int nmax, max_selection_method method = SELECT_RANDOM, int verbose=0 ) {
     nmax = std::min ( nmax, ( int ) lst.size() );
 
@@ -133,7 +142,7 @@ int main ( int argc, char* argv[] ) {
     opt.setOption ( "ctype" );
 
     opt.setOption ( "reduction" );
-    opt.setFlag ( "debug" );
+    opt.setOption ( "debug" );
 
     opt.addUsage ( "Orthonal Array: oaconference: testing platform" );
     opt.addUsage ( "Usage: oaconference [OPTIONS] [FILE]" );
@@ -207,14 +216,14 @@ int main ( int argc, char* argv[] ) {
 
         if ( inputarrays.size() >0 ) {
             ctype = conference_t ( N, kstart, j1zero );
-            assert(inputarrays[0].n_rows==N);
+            assert ( inputarrays[0].n_rows==N );
         }
         ctype.ctype=ctx;
         ctype.itype=itype;
         ctype.j3zero=j3zero;
         ctype.j1zero=j1zero;
         //kmax=inputarrays[0].n_columns+1;
-        
+
     } else {
         ctype.ctype=ctx;
         ctype.itype=itype;
@@ -261,9 +270,10 @@ int main ( int argc, char* argv[] ) {
 
             case CONFERENCE_ISOMORPHISM:
                 // TODO: make a version with symmetry inflation
-                if ( debug )
+                if ( debug ) {
+                    printfd ( "debug option set: using extend_conference_plain\n" );
                     outlist = extend_conference_plain ( inputarrays, ctype,  verbose, select==NAUTY );
-                else
+                } else
                     outlist = extend_conference ( inputarrays, ctype,  verbose, select==NAUTY );
                 break;
             default
