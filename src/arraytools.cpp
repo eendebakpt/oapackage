@@ -863,14 +863,40 @@ array_link exampleArray ( int idx, int verbose ) {
         myprintf ( "exampleArray: no such index %d", idx );
         return array_link();
         break;
+    case 35: {
+        dstr ="first double conference design in DC(20,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 20,4, 0 );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,1,0,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,1,1,0};        return al;
+        break;
+    }
+    case 36: {
+        dstr ="second double conference design in DC(20,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+                array_link al ( 20,4, 0 );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,-1,1,0,-1,-1,-1,1,1,-1,-1,-1,1,1,1,0,1,-1};
+        break;
+    }
+    case 37: {
+        dstr ="third double conference design in DC(20,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 20,4, 0 );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,-1,-1,0,1,1,-1,1,-1,-1,1,-1,1,-1,1,0,-1,1};
+        break;
+    }
     case 32: {
         dstr ="first double conference design in DC(18,4)";
         if ( verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
         }
         array_link al ( 18,4, 0 );
-        int tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,1,-1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,-1,-1,-1,-1,-1,-1};
-        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,-1,-1,-1,-1,0,0,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,0,0,1,1,-1,-1,-1,-1,1,1,-1,-1,1,1,1,1,-1,-1};        al.setarraydata ( tmp, al.n_rows*al.n_columns );
         return al;
         break;
     }
@@ -880,8 +906,7 @@ array_link exampleArray ( int idx, int verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
         }
         array_link al ( 18,4, 0 );
-        int tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,-1,-1,-1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1};
-        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,-1,-1,-1,-1,0,0,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,0,0,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1};        al.setarraydata ( tmp, al.n_rows*al.n_columns );
         return al;
         break;
     }
@@ -891,8 +916,7 @@ array_link exampleArray ( int idx, int verbose ) {
             myprintf ( "exampleArray: %s\n", dstr.c_str() );
         }
               array_link al ( 18,4, 0 );
-        int tmp[] = {0,0,0,1,0,0,0,-1,1,1,1,0,1,1,1,0,1,1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,-1,-1,-1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1};
-        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        int tmp[] = {0,0,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,-1,-1,-1,-1,0,0,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,-1,0,0,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1};        al.setarraydata ( tmp, al.n_rows*al.n_columns );
         return al;
         break;
     }
