@@ -863,6 +863,40 @@ array_link exampleArray ( int idx, int verbose ) {
         myprintf ( "exampleArray: no such index %d", idx );
         return array_link();
         break;
+    case 32: {
+        dstr ="first double conference design in DC(18,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 18,4, 0 );
+        int tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,1,-1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,-1,-1,-1,-1,-1,-1};
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
+    case 33: {
+        dstr ="second double conference design in DC(18,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+        array_link al ( 18,4, 0 );
+        int tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,-1,-1,-1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1};
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
+    case 34: {
+        dstr ="third double conference design in DC(18,4)";
+        if ( verbose ) {
+            myprintf ( "exampleArray: %s\n", dstr.c_str() );
+        }
+              array_link al ( 18,4, 0 );
+        int tmp[] = {0,0,0,1,0,0,0,-1,1,1,1,0,1,1,1,0,1,1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,1,-1,1,-1,-1,-1,-1,1,1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1};
+        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+        return al;
+        break;
+    }
+
     case 31: {
         dstr ="conference design in C(8,4)";
         if ( verbose ) {
