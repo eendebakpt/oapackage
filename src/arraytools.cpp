@@ -870,7 +870,8 @@ array_link exampleArray ( int idx, int verbose ) {
         }
         array_link al ( 20,4, 0 );
         int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,1,0,-1,-1,-1,-1,1,1,-1,-1,-1,1,1,-1,1,1,0};        return al;
-        break;
+               al.setarraydata ( tmp, al.n_rows*al.n_columns );
+               break;
     }
     case 36: {
         dstr ="second double conference design in DC(20,4)";
@@ -879,7 +880,8 @@ array_link exampleArray ( int idx, int verbose ) {
         }
                 array_link al ( 20,4, 0 );
         int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,-1,1,0,-1,-1,-1,1,1,-1,-1,-1,1,1,1,0,1,-1};
-        break;
+               al.setarraydata ( tmp, al.n_rows*al.n_columns );
+               break;
     }
     case 37: {
         dstr ="third double conference design in DC(20,4)";
@@ -888,7 +890,8 @@ array_link exampleArray ( int idx, int verbose ) {
         }
         array_link al ( 20,4, 0 );
         int tmp[] = {0,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,0,1,1,1,1,-1,-1,-1,-1,1,-1,1,0,1,-1,-1,1,1,-1,-1,-1,1,1,-1,-1,0,1,1,-1,1,-1,1,-1,-1,0,1,1,-1,1,-1,-1,1,-1,1,-1,1,0,-1,1};
-        break;
+               al.setarraydata ( tmp, al.n_rows*al.n_columns );
+               break;
     }
     case 32: {
         dstr ="first double conference design in DC(18,4)";
