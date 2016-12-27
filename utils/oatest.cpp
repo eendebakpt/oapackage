@@ -329,36 +329,66 @@ int main ( int argc, char* argv[] )
 
      //print_options(); exit(0);
 
-     if (0)
-     {
-          const int N = 16;
-          int j1zero=1;
-               conference_t ct ( N, 4, j1zero );
-          ct.ctype=conference_t::DCONFERENCE;
+     if (1) {
+
+          array_link al = exampleArray(r, 1);
+          conference_t ct ( al.n_rows, al.n_columns+4, 0 );
           ct.j3zero=0;
           
-          arraylist_t ll = ct.createDconferenceRootArrays();
-          printfd("generated %d root arrays\n", ll.size() );
-          //array_link al2 = ct.create_root();
-            //        array_link al3 = ct.create_root_three();
-                    array_link al = ll[0];
-al.showarray();
+          if (verbose>=1)
+               al.showarray();
+          
+          assert(al.is_conference() );
+          assert(al.min()==-1);
+          
+          
+          int kz = maxz(al)+1;
+          myprintf("finding extensions for kz %d\n", kz);
+          
+          int filtersymm=1;
+          int filterj2 = 1;
+          std::vector<cperm> ee= generateConferenceExtensionsOld ( al, ct,  kz, verbose, filtersymm,  filterj2  );
+          printf("generateConferenceExtensions: %d\n-------------\n", (int) ee.size() );
+          showCandidates(ee);
+          
+          verbose++;
+          ee= generateSingleConferenceExtensions ( al, ct,  kz, verbose, filtersymm,  filterj2, ct.j3zero, 1  );
+          printf("generateConferenceExtensions: %d\n-------------\n", (int) ee.size() );
+          exit (0);
+     }
+     if ( 0 ) {
+          const int N = 16;
+          int j1zero=1;
+          conference_t ct ( N, 4, j1zero );
+          ct.ctype=conference_t::DCONFERENCE;
+          ct.j3zero=1;
 
-          CandidateGeneratorDouble cgenerator( array_link(), ct);
+          if (0) {
+          arraylist_t ll = ct.createDconferenceRootArrays();
+          printfd ( "generated %d root arrays\n", ll.size() );
+          //array_link al2 = ct.create_root();
+          //        array_link al3 = ct.create_root_three();
+          array_link al = ll[0];
+          }
+          array_link al = exampleArray(r, 1);
+          al.showarray();
+//exit(0);
+
+          CandidateGeneratorDouble cgenerator ( array_link(), ct );
           cgenerator.verbose=2;
-          for(int i=0; i<2; i++) {
-          {
-               printf("\n----\n");
-          const std::vector<cperm> &cl = cgenerator.generateCandidates ( al );
-printfd("generated %d\n", cl.size() );
-cgenerator.showCandidates(2);
+          for ( int i=0; i<2; i++ ) {
+               {
+                    printf ( "\n---------------------------------\n" );
+                    const std::vector<cperm> &cl = cgenerator.generateCandidates ( al );
+                    printfd ( "generated %d\n", cl.size() );
+                    cgenerator.showCandidates ( 2 );
+               }
           }
-          }
-exit(0);
-}
+          exit ( 0 );
+     }
      {
           int j1zero=0;
-const int N = r;
+          const int N = r;
 
 
           conference_t ctype ( N, 4, j1zero );
@@ -376,12 +406,12 @@ const int N = r;
           int ncmax=2;
           array_link root = al2;
 
-          if (0) {
-          int extcol=2;
-          std::vector<cperm>        ee = generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );
-          printfd ( "generated %d\n", ee.size() );
+          if ( 0 ) {
+               int extcol=2;
+               std::vector<cperm>        ee = generateConferenceExtensions ( al2, ctype, extcol, 0, 0, 1 );
+               printfd ( "generated %d\n", ee.size() );
           }
-          
+
           if ( 0 ) {
                int extcol=3;
                std::vector<cperm>        ee2 = generateConferenceExtensions ( al3, ctype, extcol, 0, 0, 1 );
@@ -389,30 +419,34 @@ const int N = r;
                //    conf_candidates_t tmp = generateCandidateExtensions ( ctype, 2, ncstart, ncmax, root );
 
           }
+          printf ( "------------------------------\n" );
+
           CandidateGenerator cgenerator ( array_link(), ctype );
           cgenerator.verbose=verbose;
-          cgenerator.generators[ii].verbose=2;
-          cgenerator.showCandidates(2);
-          
-          const std::vector<cperm> &cl = cgenerator.generateConfCandidates ( al2, ii );
-          cgenerator.showCandidates(2);
+          //cgenerator.generators[ii].verbose=2;
+          cgenerator.showCandidates ( 2 );
+
+          printf ( "------------------------------\n" );
+          const std::vector<cperm> &cl = cgenerator.generateCandidatesZero ( al2, ii );
+          cgenerator.showCandidates ( 2 );
           printfd ( " cache: generated %d\n", cl.size() );
 
-                    exit ( 0 );
-                    
+          exit ( 0 );
+
+          /*
           std::vector<cperm>  cltotal;
           for ( int i=0; i<ctype.N; i++ ) {
                CandidateGeneratorZero cgenerator2 ( array_link(), ctype, i );
                //cgenerator2.verbose=2;
                std::vector<cperm> clc;
                clc = cgenerator2.generateCandidates ( al2 );
-               if (verbose>=3)
+               if ( verbose>=3 )
                     printfd ( "    cache %d: generated %d\n", ii, clc.size() );
 
                cltotal.insert ( cltotal.begin(), clc.begin(), clc.end() );
           }
           printfd ( " cache: generated %d\n", cltotal.size() );
-
+*/
           printf ( "done\n" );
           exit ( 0 );
      }

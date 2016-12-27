@@ -928,6 +928,19 @@ array_link exampleArray ( int idx, int verbose )
           myprintf ( "exampleArray: no such index %d", idx );
           return array_link();
           break;
+          
+          
+     case 38: {
+          dstr ="LMC0 conference design in C(30,3)";
+          if ( verbose ) {
+               myprintf ( "exampleArray: %s\n", dstr.c_str() );
+          }
+          array_link al ( 30,3, 0 );
+        int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1};
+          al.setarraydata ( tmp, al.n_rows*al.n_columns );
+          return al;
+          break;
+     }
      case 35: {
           dstr ="first double conference design in DC(20,4)";
           if ( verbose ) {

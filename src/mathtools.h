@@ -683,6 +683,15 @@ static void print_perm_int ( const std::vector<permutationType> s, const int max
 #ifdef FULLPACKAGE
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
+/// print permutation with string in front 
+static void print_perm ( const char *msg,  const std::vector<permutationType> s, const int maxlen = 256, const bool ret = true )
+{
+	myprintf("%s: ", msg);
+    print_perm ( std::cout, s, maxlen, ret );
+	myprintf("\n");
+}
+
+template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
 static void print_perm ( const larray<permutationType> s, const int maxlen = 256, const bool ret = true )
 {
     print_perm ( std::cout, s, maxlen, ret );

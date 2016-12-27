@@ -82,6 +82,32 @@ int checkConferenceComposition ( const array_link &al, int verbose=0 ) {
     return 0;
 }
 
+void checkGenerators(int verbose = 1)
+{
+    int N = 20;
+    conference_t ct ( N, 4, 1 );
+          ct.ctype=conference_t::DCONFERENCE;
+          ct.j3zero=1;
+
+          array_link al = exampleArray(35, 1);
+          //al.showarray();
+
+          CandidateGeneratorDouble cgenerator ( array_link(), ct );
+          cgenerator.verbose=0;
+          for ( int i=0; i<2; i++ ) {
+        {
+                const std::vector<cperm> &cl = cgenerator.generateCandidates ( al );
+                    myassert ( cl.size()==3, "unittest error: inverse of array transformation\n" );
+
+                    if (verbose>=2)
+                    {
+                        printfd ( "generated %d\n", cl.size() );
+                    cgenerator.showCandidates ( 2 );
+        }
+               }
+          }
+}
+
 /// check transformation inverse. return 0 if test is good
 int checkTransformationInverse ( const array_link &al ) {
     arraydata_t adataX = arraylink2arraydata ( al );
@@ -180,6 +206,11 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             kk = extend_conference ( kk, ctype,  0 );
         }
         myassert ( kk.size() ==1, "unittest error: conference matrices for N=4\n" );
+    }
+    
+        {
+        cprintf ( verbose,"%s: generators for conference matrix extensions\n", bstr );
+        checkGenerators(verbose);
     }
 
     {
