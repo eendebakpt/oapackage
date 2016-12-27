@@ -409,7 +409,7 @@ public:
     std::vector<cperm> generateCandidatesZero ( const array_link &al, int kz ) const {
          const std::vector<cperm> &cci = this->generateCandidates(al);
          
-              std::vector<cperm>  cci0 = filterZeroPosition ( cci, this->zero_position );
+             std::vector<cperm>  cci0 = filterZeroPosition ( cci, kz );
             return cci0;
     }
 

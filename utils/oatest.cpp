@@ -329,32 +329,66 @@ int main ( int argc, char* argv[] )
 
      //print_options(); exit(0);
 
-     if (1) {
 
-          array_link al = exampleArray(r, 1);
+     if ( 1 ) {
+          array_link al = exampleArray ( r, 1 );
           conference_t ct ( al.n_rows, al.n_columns+4, 0 );
           ct.j3zero=0;
-          
-          if (verbose>=1)
+
+          if (xx>0)
+               al=al.selectFirstColumns ( xx );
+
+          if ( verbose>=1 )
                al.showarray();
+
+          assert ( al.is_conference() );
+          assert ( al.min() ==-1 );
+
+
+          int filterj2=1;
+          int filtersymminline=1;
+          int averbose=verbose;
+                  std::vector<cperm>      ccX = generateSingleConferenceExtensions ( al, ct, -1, averbose, 1, filterj2, ct.j3zero, filtersymminline );
+showCandidates(ccX);
+printf("\n-----------\n");
+                    
+          CandidateGenerator cgenerator ( array_link(), ct );
+          int kz = maxz ( al ) +1;
+          cgenerator.verbose=verbose;
+          std::vector<cperm> ee = cgenerator.generateCandidatesZero ( al, kz );
           
-          assert(al.is_conference() );
-          assert(al.min()==-1);
-          
-          
-          int kz = maxz(al)+1;
-          myprintf("finding extensions for kz %d\n", kz);
-          
+          cgenerator.showCandidates(2);
+          printf ( "generateCandidatesZero: %d\n-------------\n", ( int ) ee.size() );
+
+
+          exit ( 0 );
+     }
+     if ( 1 ) {
+
+          array_link al = exampleArray ( r, 1 );
+          conference_t ct ( al.n_rows, al.n_columns+4, 0 );
+          ct.j3zero=0;
+
+          if ( verbose>=1 )
+               al.showarray();
+
+          assert ( al.is_conference() );
+          assert ( al.min() ==-1 );
+
+
+          int kz = maxz ( al ) +1;
+          myprintf ( "finding extensions for kz %d\n", kz );
+
           int filtersymm=1;
           int filterj2 = 1;
-          std::vector<cperm> ee= generateConferenceExtensionsOld ( al, ct,  kz, verbose, filtersymm,  filterj2  );
-          printf("generateConferenceExtensions: %d\n-------------\n", (int) ee.size() );
-          showCandidates(ee);
-          
+          std::vector<cperm> ee= generateConferenceExtensionsOld ( al, ct,  kz, verbose, filtersymm,  filterj2 );
+          printf ( "generateConferenceExtensions: %d\n-------------\n", ( int ) ee.size() );
+          showCandidates ( ee );
+
           verbose++;
-          ee= generateSingleConferenceExtensions ( al, ct,  kz, verbose, filtersymm,  filterj2, ct.j3zero, 1  );
-          printf("generateConferenceExtensions: %d\n-------------\n", (int) ee.size() );
-          exit (0);
+          ee= generateSingleConferenceExtensions ( al, ct,  kz, verbose, filtersymm,  filterj2, ct.j3zero, 1 );
+          printf ( "generateConferenceExtensions: %d\n-------------\n", ( int ) ee.size() );
+          exit ( 0 );
      }
      if ( 0 ) {
           const int N = 16;
@@ -363,14 +397,14 @@ int main ( int argc, char* argv[] )
           ct.ctype=conference_t::DCONFERENCE;
           ct.j3zero=1;
 
-          if (0) {
-          arraylist_t ll = ct.createDconferenceRootArrays();
-          printfd ( "generated %d root arrays\n", ll.size() );
-          //array_link al2 = ct.create_root();
-          //        array_link al3 = ct.create_root_three();
-          array_link al = ll[0];
+          if ( 0 ) {
+               arraylist_t ll = ct.createDconferenceRootArrays();
+               printfd ( "generated %d root arrays\n", ll.size() );
+               //array_link al2 = ct.create_root();
+               //        array_link al3 = ct.create_root_three();
+               array_link al = ll[0];
           }
-          array_link al = exampleArray(r, 1);
+          array_link al = exampleArray ( r, 1 );
           al.showarray();
 //exit(0);
 
@@ -446,7 +480,7 @@ int main ( int argc, char* argv[] )
                cltotal.insert ( cltotal.begin(), clc.begin(), clc.end() );
           }
           printfd ( " cache: generated %d\n", cltotal.size() );
-*/
+          */
           printf ( "done\n" );
           exit ( 0 );
      }
