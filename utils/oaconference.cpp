@@ -171,8 +171,8 @@ int main ( int argc, char* argv[] ) {
     setloglevel ( NORMAL );
 
     std::string format = opt.getStringValue ( 'f', "AUTO" );
-    arrayfile::arrayfilemode_t file_mode = arrayfile_t::parseModeString ( format );
-
+    arrayfile::arrayfilemode_t file_mode_base = arrayfile_t::parseModeString ( format );
+    
     int debug = opt.getIntValue ( "debug", 0 );
     int r = opt.getIntValue ( 'r', 1 );
     int verbose = opt.getIntValue ( 'v', 1 );
@@ -316,6 +316,7 @@ int main ( int argc, char* argv[] ) {
         }
 
         if ( output.length() >=1 ) {
+            arrayfilemode_t file_mode = file_mode_base;
             if ( file_mode==arrayfile::A_AUTOMATIC ) {
                 if ( outlist.size() < 1000 ) {
                     // small files in text format for easy reading
@@ -329,6 +330,7 @@ int main ( int argc, char* argv[] ) {
                     }
                 }
             }
+            //printfd("file_mode: %d, size %d\n", file_mode, outlist.size() );
 
             std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
             if ( verbose )
