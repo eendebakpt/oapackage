@@ -1636,7 +1636,7 @@ std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, co
           }
      }
 #endif
-     if ( verbose || 1 ) {
+     if ( verbose || 0 ) {
           printfd ( "%s: %.3f [s]: generated %ld/%ld/%ld perms (len %ld)\n", __FUNCTION__, get_time_ms() - t0, ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
           //al.show();
           //al.transposed().showarray(); showCandidates ( cc );
@@ -2041,7 +2041,8 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
      if ( verbose ) {
           printfd ( "--- extend_conference_matrix: extcol %d, zstart %d, maxz %d, maxzpos %d ---\n", extcol, zstart, maxzval, maxzpos );
 
-          al.showarray();
+          if (verbose>=2)
+               al.showarray();
      }
      for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
           if ( verbose>=2 )
@@ -2052,11 +2053,11 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
                //const std::vector<cperm> &cl = cgenerator.cande.ce[ii];
                //FIXME: only if valid
                const std::vector<cperm> &cl = cgenerator.generateCandidatesZero ( al, ii );
-               if (verbose) {
-               printfd ( "-- ii %d, %d candidates \n", ii, cl.size() );
-               if (verbose>=1) {
-               cgenerator.showCandidates ( 2 );
-               }
+               if ( verbose>2 ) {
+                    printfd ( "-- ii %d, %d candidates \n", ii, cl.size() );
+                    if ( verbose>=2 ) {
+                         cgenerator.showCandidates ( 2 );
+                    }
                }
                //printfd ( " cande %d --> cache %d\n", ( int ) cgenerator.cande.ce[ii].size(), ( int ) cl.size() );
                if ( ct.ctype==conference_t::CONFERENCE_DIAGONAL ) {
@@ -2073,7 +2074,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
           if ( verbose>=2 ) {
                printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
           }
-          if (0) {
+          if ( 0 ) {
                printfd ( "### generated candidates at kz %d...\n", ii );
                showCandidates ( extensionsX );
 
@@ -2927,7 +2928,7 @@ const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( co
      if ( startcol==-1 ) {
           array_link als = al.selectFirstColumns ( START_COL );
           startcol=START_COL+1;
-          int averbose=1;
+          int averbose=0;
 
           double t0=get_time_ms();
           ccX = generateSingleConferenceExtensions ( als, ct, -1, averbose, 1, filterj2, filterj3, filtersymminline );
@@ -3241,8 +3242,8 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
      int nb = sd.ft.atfast ( sd.ft.n_rows - 1, scol ); // number of blocks
      /* we check in blocks determined by the ft */
      for ( int j = 0; j < nb; j++ ) {
-          int x1 = sd.ft.at ( 2*j, scol );
-          int x2 = sd.ft.at ( 2*j+1, scol );
+          int x1 = sd.ft.atfast ( 2*j, scol );
+          int x2 = sd.ft.atfast ( 2*j+1, scol );
           //std::stable_sort( rowperm+x1, rowperm+x2);
           shellSort ( rowperm, x1, x2-1 );
 
@@ -3366,3 +3367,4 @@ lmc_t LMC0check ( const array_link &al, int verbose )
 
 
 // kate: indent-mode cstyle; indent-width 5; replace-tabs on; 
+

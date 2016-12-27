@@ -251,7 +251,7 @@ int main ( int argc, char* argv[] ) {
     double t0 = get_time_ms();
 
     for ( int extcol=kstart; extcol<kmax; extcol++ ) {
-        printf ( "oaconference: extend column %d (max number of columns %d, time %.1f [s])\n", extcol, kmax, get_time_ms ( t0 ) );
+        printf ( "\n### oaconference: extend column %d (max number of columns %d, time %.1f [s])\n", extcol, kmax, get_time_ms ( t0 ) );
 
         arraylist_t outlist;
 
