@@ -363,14 +363,10 @@ template <class Type>
 std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 {
     int n = B.size()-1;
-    // myprintf("macwilliams_transform: %d\n", n);
+    // printfd("macwilliams_transform: %d\n", n);
     std::vector<double> Bp ( n+1 );
 
     if ( s==2 ) {
-
-        //initncombscache ( n );
-        //printf("n %d, ncombscacheNumber %d\n", n, ncombscacheNumber() );
-
         if ( n <= ncombscacheNumber() ) {
             // use cached version of krawtchouks
             //printfd("macwilliams_transform: using krawtchouksCache\n");
@@ -388,9 +384,6 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
                 for ( int i=0; i<=n; i++ ) {
                     //myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
                     Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
-                    //myprintf("--\n");
-                    //	myprintf("macwilliams_transform:  B[%d] += %.1f * %ld   (%d %d %d)\n", j , (double) B[i] , krawtchouk<long>(j, i, n, 2), j, i, n);
-
                 }
                 Bp[j] /= N;
             }
@@ -400,14 +393,11 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
         for ( int j=0; j<=n; j++ ) {
             Bp[j]=0;
             for ( int i=0; i<=n; i++ ) {
-                //myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
                 Bp[j] +=  B[i] * krawtchouk<long> ( j, i, n, s ); // pow(s, -n)
-                //myprintf("--\n");
             }
             Bp[j] /= N;
         }
     }
-    // myprintf("macwilliams_transform: n %d, s %d: Bp ", n, s); display_vector(Bp); std::cout << std::endl;
 
     return Bp;
 }
@@ -420,9 +410,7 @@ std::vector<double> distance_distribution ( const array_link &al )
 
     // calculate distance distribution
 
-    //myprintf("distance_distribution\n");
     std::vector<double> dd ( n+1 );
-
 
     for ( int r1=0; r1<N; r1++ ) {
         for ( int r2=0; r2<r1; r2++ ) {
@@ -436,7 +424,6 @@ std::vector<double> distance_distribution ( const array_link &al )
     for ( int x=0; x<=n; x++ ) {
         dd[x] /= N;
     }
-    //myprintf("distance_distribution: "); display_vector(dd); std::cout << std::endl;
 
     return dd;
 }
@@ -455,11 +442,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
         myprintf ( "\n" );
     }
 
-    //int v = sg.n;
-//sg.gsize;
-
     int jprod = B.n; // std::accumulate(sg.gsize.begin(), sg.gsize.begin()+sg.ngroups, 1, multiplies<int>());
-    //myprintf("jprod: %d/%d\n", jprod, B.n);
 
     int *bi = new int[sg.ngroups];
     int *iout = new int[sg.ngroups];
@@ -506,23 +489,18 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
         Bout.show();
     }
 
-//----------------
-
-    // use formula from page 555 in Xu and Wu  (Theorem 4.i)
+	// use formula from page 555 in Xu and Wu  (Theorem 4.i)
     std::vector<double> A ( sg.n+1, 0 );
 
 
     for ( int i=0; i<jprod; i++ ) {
-        //myprintf("   %s\n", B.tmpidxstr(i).c_str() );
         Bout.linear2idx ( i, bi );
         int jsum=0;
         for ( int j=0; j<Bout.k; j++ )
             jsum += bi[j];
         if ( verbose>=2 )
             myprintf ( "   jsum %d/%d, i %d\n", jsum, ( int ) A.size(), i );
-        //printfd("jsum %d/%d, i %d/%d\n", jsum, sg.n+1, i, jprod);
         A[jsum]+=Bout.data[i];
-        //}
     }
 
     delete [] iout;
@@ -551,7 +529,6 @@ std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
     if ( verbose )
         myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, ( long ) ncomb );
 
-//#pragma omp parallel for
     for ( int64_t i=0; i<ncomb; i++ ) {
 
         array_link alsub = al.selectColumns ( cp );
@@ -592,7 +569,6 @@ std::vector<double> PECsequence ( const array_link &al, int verbose )
         pec[0]=-1;
         return pec;
     }
-
 
 #ifdef DOOPENMP
     #pragma omp parallel for
@@ -641,7 +617,6 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 
     ndarray<double> B ( dims );
     ndarray<double> Bout ( dims );
-    //printfd("GWLPmixed: %s\n", adata.idstr().c_str() ); printf("  dims "); display_vector(dims); printf("\n");
 
     distance_distribution_mixed ( al, B, verbose );
     if ( verbose>=3 ) {
@@ -650,8 +625,7 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
     }
 
     int N = adata.N;
-    //int s = 0;
-// calculate GWP
+	// calculate GWLP
     std::vector<int> ss = adata.getS();
 
     std::vector<int> sx;
@@ -707,9 +681,7 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
             std::cout << std::endl;
         }
 #endif
-        //double sum_of_elems =std::accumulate( B.begin(), B.end(),0.); myprintf("   sum %.3f\n", sum_of_elems);
-
-// calculate GWP
+		// calculate GWP
         std::vector<double> gma = macwilliams_transform ( B, N, s );
 
         if ( truncate ) {
@@ -729,7 +701,6 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
 inline double GWPL2val ( GWLPvalue x )
 {
     double r=0;
-    //for ( size_t i=0; i<x.size(); i++ ) r = r/10 + x[i];
     for ( int i=x.size()-1; i>0; i-- )
         r = r/10 + x.v[i];
     if ( 0 ) {

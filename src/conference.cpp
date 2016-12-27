@@ -2766,7 +2766,6 @@ CandidateGeneratorZero::CandidateGeneratorZero ( const array_link &al, const con
 
 CandidateGeneratorInflate::CandidateGeneratorInflate ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ )
 {
-     //this->generators; //.resize(0);
      for ( int i=0; i<ct.N; i++ ) {
           this->generators.push_back ( CandidateGeneratorZero ( al, ct, i ) );
      }
@@ -2911,7 +2910,7 @@ const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( co
      if ( verbose>=2 )
           myprintf ( "CandidateGenerator::%s: start\n",tag );
 
-     int startcol = this->startColumn ( al, 1 );
+     int startcol = this->startColumn ( al, 0 );
      int kfinal=al.n_columns;
      int ncfinal = al.n_columns+1;
      int finalcol=kfinal;

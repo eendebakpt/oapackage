@@ -426,7 +426,7 @@ public:
 
 };
 
-
+/*
 /// Class to generate candidate extensions with caching
 class CandidateGeneratorInflate2
 {
@@ -442,9 +442,7 @@ public:
 
     CandidateGeneratorInflate2 ( const array_link &al, const conference_t &ct );
 
-    /** generate candidates with caching
-     * this method uses j2 filtering
-     */
+
     const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const {
         std::vector<cperm> tmp  = this->generators[kz].generateCandidates ( al );
         printfd ( "-------- tmp\n" );
@@ -468,7 +466,8 @@ public:
     }
 };
 
-
+*/
+    
 /// Class to generate candidate extensions with caching
 class CandidateGeneratorInflate
 {
