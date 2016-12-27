@@ -923,12 +923,12 @@ array_link exampleArray ( int idx, int verbose )
      std::string dstr = "";
 
      switch ( idx ) {
-     default
-               :
-          myprintf ( "exampleArray: no such index %d", idx );
+     default:
+          myprintf ( "exampleArray: no such index %d\n", idx );
           return array_link();
           break;
-     case 39: {
+     case 39:
+     {
           dstr ="first LMC0 conference design in C(8,6)";
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
@@ -1170,7 +1170,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
-          // array in OA(4, 2, 2^a)
           array_link al ( 4,3, 0 );
           int tmp[] = { 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1 };
           al.setarraydata ( tmp, al.n_rows*al.n_columns );
@@ -1222,8 +1221,6 @@ array_link exampleArray ( int idx, int verbose )
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
 
-
-          //
           array_link al ( 40,7, 0 );
           int tmp[] = 	{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1,
                           1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0,
@@ -1248,8 +1245,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: array in OA(9, 3^2)\n" );
           }
-
-          //
           array_link al ( 9,3, 0 );
           int tmp[] = 	{0,0,0,1,1,1,2,2,2,0,1,2,1,1,2,0,0,2,2,0,2,0,2,1,0,1,1     };
 
@@ -1261,8 +1256,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: D-optimal array in OA(44, 2^8)\n" );
           }
-
-          //
           array_link al ( 44,8, 0 );
           int tmp[] = 	{1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0,
                           1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0,
@@ -1291,8 +1284,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: even-odd array OA(64, 2^13)\n" );
           }
-
-          //
           array_link al ( 64, 13, 0 );
           int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                           0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1344,8 +1335,6 @@ array_link exampleArray ( int idx, int verbose )
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
 
-
-          //
           array_link al ( 24,5, 0 );
           int tmp[] = 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                           1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
@@ -1484,7 +1473,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
-          //
           array_link al ( 7,16, 0 );
           int tmp[] = 	{0,  1,  1,  1,  1,  1,  1,  1,  0, -1, -1, -1, -1, -1,  1,  1,  0,
                           -1, -1, -1,  1,  1,  1,  1,  0, -1,  1, -1,  1,  1,  1,  1,  0, -1,
@@ -1506,7 +1494,6 @@ array_link exampleArray ( int idx, int verbose )
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
-          //
           array_link al ( 3, 4, 0 );
           int tmp[] = 	{0,  1,  1,  1,  0, -1,  1,  1,  0,  1, -1,  1 };
 

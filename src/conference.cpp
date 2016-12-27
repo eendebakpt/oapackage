@@ -2073,7 +2073,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
           if ( verbose>=2 ) {
                printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
           }
-          {
+          if (0) {
                printfd ( "### generated candidates at kz %d...\n", ii );
                showCandidates ( extensionsX );
 

@@ -106,6 +106,44 @@ void checkGenerators(int verbose = 1)
         }
                }
           }
+          
+          
+          // generator for conference matrices
+          {
+              const int example_idx=39;
+                     array_link al = exampleArray ( example_idx, 1 );
+          conference_t ct ( al.n_rows, al.n_columns+4, 0 );
+
+          if ( verbose>=2 ) {
+              myprintf("checking generator on array:\n");
+               al.showarray();
+          }
+          myassert ( al.is_conference() );
+          myassert ( al.min() ==-1 );
+
+          int filterj2=1;
+          int filtersymminline=1;
+          int averbose=verbose;
+                  std::vector<cperm>      ccX = generateSingleConferenceExtensions ( al, ct, -1, averbose, 1, filterj2, ct.j3zero, filtersymminline );
+                  if (verbose>=2) {
+                      
+showCandidates(ccX);
+printf("\n-----------\n");
+                  }
+                  myassert(ccX.size() == 2, "number of candidnates generated");
+                  {
+          CandidateGenerator cgenerator ( array_link(), ct );
+          int kz = maxz ( al ) +1;
+          cgenerator.verbose=verbose;
+          std::vector<cperm> ee = cgenerator.generateCandidatesZero ( al, kz );
+          printf("ee.size() %d\n", (int)ee.size() );
+          myassert(ee.size()==1, "number of candidnates generated");
+          if (verbose>=2) {
+          cgenerator.showCandidates(2);
+          printf ( "generateCandidatesZero: %d\n-------------\n", ( int ) ee.size() );
+          }
+          }
+          }
 }
 
 /// check transformation inverse. return 0 if test is good

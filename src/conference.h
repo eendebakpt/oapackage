@@ -247,7 +247,7 @@ inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, in
             out.push_back ( lst[i] );
         }
     }
-    printfd ( "filterZeroPosition: zero_position %d: %d->%d\n", zero_position, lst.size(), out.size() );
+    //printfd ( "filterZeroPosition: zero_position %d: %d->%d\n", zero_position, lst.size(), out.size() );
     return out;
 }
 
