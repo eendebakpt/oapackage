@@ -256,9 +256,10 @@ endmacro()
 
 ############### Programs ################################
   
-set(nautysrc nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c) #  nauty/gtools.c
 include_directories(.)
-include_directories(nauty)
+
+set(nautysrc src/nauty/nauty.c src/nauty/nautinv.c src/nauty/nautil.c src/nauty/naurng.c src/nauty/naugraph.c src/nauty/schreier.c src/nauty/naugroup.c) #  nauty/gtools.c
+include_directories(src/nauty)
 
 set(graphsrc )
 
