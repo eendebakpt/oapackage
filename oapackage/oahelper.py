@@ -141,7 +141,7 @@ def plot2Dline(line, *args, **kwargs):
         yy = np.array(plt.ylim())
         xx = (-line[2] - line[1] * yy) / line[0]
         plt.plot(xx, yy, *args, **kwargs)
-        
+
 
 #%% Make nice plots
 # http://blog.olgabotvinnik.com/prettyplotlib/
@@ -1226,11 +1226,11 @@ def makearraylink(al):
         al = tmp
     return al
 
+
 def formatC(al, wrap=True):
     """ Format array the inclusion in C code """
-    l=np.array(al).T.flatten().tolist()
-    s=','.join(['%d' % x for x in l])
+    l = np.array(al).T.flatten().tolist()
+    s = ','.join(['%d' % x for x in l])
     if wrap:
-        s='\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (al.n_rows, al.n_columns) + s + '};'
+        s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (al.n_rows, al.n_columns) + s + '};'
     return s
-    

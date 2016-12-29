@@ -156,7 +156,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 # import researchOA
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False,  urlprefix='', makeheader=True, verbose=1, lbls=None):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
 
     #%% Prepare data
     if verbose:
@@ -184,7 +184,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     pfile0 = 'paretoarrays.oa'
     pfile = os.path.join(outputdir, pfile0)
-    oalib.writearrayfile(pfile,  paretoarrays)
+    oalib.writearrayfile(pfile, paretoarrays)
 
     istrlnk = markup.oneliner.a('paretoarrays.oa', href=urlprefix + pfile0)
 
