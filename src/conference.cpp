@@ -196,8 +196,8 @@ conference_t::conference_t ( )
      this->ncols = -1;
      this->ctype = CONFERENCE_NORMAL;
      this->itype = MATRIX_ISOMORPHISM;
-     this->j1zero = -1;
-     this->j3zero = -1;
+     this->j1zero = 0;
+     this->j3zero = 0;
 }
 
 conference_t::conference_t ( int N, int k, int _j1zero )
@@ -1066,8 +1066,11 @@ std::vector<cperm> generateConferenceExtensionsOld ( const array_link &al, const
           //printfd("extend1 %d: inner product %d\n", (int)i, ip);
           int target = -ip;
 
-          if ( second_cache.count ( target ) ==1 )
-               ff2=second_cache.at ( target );
+          if ( second_cache.count ( target ) ==1 ) {
+               std::map<int, std::vector<cperm> >::iterator it;
+               it= second_cache.find ( target ); // use .find because .at is C++11
+               ff2=it->second;
+          }
           else {
                ff2 = get_second ( N, kz, target, verbose>=2 );
                second_cache.insert ( std::pair<int, std::vector<cperm> > ( target, ff2 ) );
