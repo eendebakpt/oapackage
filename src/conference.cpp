@@ -3220,7 +3220,7 @@ lmc_t init_lmc0_sort_comp ( const array_link &al, int column, int sel_col, rowso
 
      // Compare zero position
      r = lmc0_compare_zeropos_block ( al, 0, n_rows, rowperm, colperm, column, rowsignperm, colsignperm, n_rows );
-     if ( r==LMC_LESS or r==LMC_MORE ) {
+     if ( r==LMC_LESS || r==LMC_MORE ) {
           return r;
      }
      /* Compare whole Columns */
@@ -3252,7 +3252,7 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
 
           // Compare blocks wrt zero position
           r = lmc0_compare_zeropos_block ( al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm, n_rows );
-          if ( r==LMC_LESS or r==LMC_MORE ) {
+          if ( r==LMC_LESS || r==LMC_MORE ) {
                return r;
           }
      }
