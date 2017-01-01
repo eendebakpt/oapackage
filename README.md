@@ -62,7 +62,6 @@ Installation
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
 Installation can be done using the following command::
 
-
 > pip install OApackage --user
 
 To compile the package you need Python, Numpy and Swig 3.x.
