@@ -1,7 +1,7 @@
 Orthogonal Array Package
 ========================
 
-(version 2.2)
+(version 2.3.3)
 
 The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
@@ -12,8 +12,8 @@ Usage
 
 The package can be used from Python:
 ``` python
->>> import oalib
->>> al=oalib.exampleArray(0)
+>>> import oapackage
+>>> al=oapackage.exampleArray(0)
 >>> al.showarray()
 array: 
   0   0
@@ -30,6 +30,12 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
+For for examples see the Ipython notebooks in the
+[examples](examples/).
+
+Acknowledgements
+------------
+
 If you use this code or any of the results, please cite this program as follows:
 
 Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays, P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
@@ -43,15 +49,15 @@ The code was written by:
 Ideas contributed by:
 
 * Eric Schoen <eric.schoen@tno.nl>
-* Alan Vazquez <alanrvazquez@gmail.com>
+* Alan Vazquez-Alcocer <alanrvazquez@gmail.com>
 
 See the file LICENSE for copyright details.
 
 Installation
 ------------
 
+[![PyPI version](https://badge.fury.io/py/OApackage.svg)](https://badge.fury.io/py/OApackage)
 [![Build status](https://ci.appveyor.com/api/projects/status/f6ia9br95soimf9u?svg=true)](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8)
-[![Version](https://pypip.in/v/OApackage/badge.svg)](https://pypi.python.org/pypi/OApackage/)
 
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
 Installation can be done using the following command::
@@ -61,7 +67,7 @@ Installation can be done using the following command::
 
 To compile the package you need Python, Numpy and Swig 3.x.
 
-The binary tools have been tested using Linux, Windows XP/Win7 (using Cygwin and Visual Studio) and Raspberry Pi.
+The binary tools have been tested using Linux, Windows XP/Win7 and Raspberry Pi.
 The program uses a cmake build system. From the commandline type::
 
 > mkdir -p build; cd build
