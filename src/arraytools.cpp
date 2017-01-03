@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 
+#include <algorithm>
 
 #include "arraytools.h"
 
@@ -864,6 +865,26 @@ array_link array_link::selectColumns ( std::vector<int> c ) const
      return d;
 }
 
+bool array_link::isSymmetric() const
+{
+     int n = std::min( (int)this->n_columns, (int)this->n_rows);
+     for ( int c=0; c<n; c++ ) {
+          for ( int r=0; r<c; r++ ) {
+                    if (  this->at ( c,r ) != this->at ( r,c ) )
+                         return false;
+          }
+     }
+     return true;
+}
+void array_link::makeSymmetric()
+{
+     int n = std::min( (int)this->n_columns, (int)this->n_rows);
+     for ( int c=0; c<n; c++ ) {
+          for ( int r=0; r<c; r++ ) {
+                      this->at ( c,r ) = this->at ( r,c );
+          }
+     }
+}
 array_link array_link::deleteColumn ( int index ) const
 {
      mycheck ( this->n_columns>=2, "array_link::deleteColumn: array has <2 columns\n" );
@@ -927,26 +948,25 @@ array_link exampleArray ( int idx, int verbose )
           myprintf ( "exampleArray: no such index %d\n", idx );
           return array_link();
           break;
-     case 39:
-     {
+     case 39: {
           dstr ="first LMC0 conference design in C(8,6)";
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
-               array_link al ( 8,6, 0 );
-        int tmp[] = {0,1,1,1,1,1,1,1,1,0,1,1,1,-1,-1,-1,1,-1,0,1,-1,1,1,-1,1,-1,-1,0,1,1,-1,1,1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,0,1,-1};
-        al.setarraydata ( tmp, al.n_rows*al.n_columns );
+          array_link al ( 8,6, 0 );
+          int tmp[] = {0,1,1,1,1,1,1,1,1,0,1,1,1,-1,-1,-1,1,-1,0,1,-1,1,1,-1,1,-1,-1,0,1,1,-1,1,1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,0,1,-1};
+          al.setarraydata ( tmp, al.n_rows*al.n_columns );
           return al;
           break;
-     }          
-          
+     }
+
      case 38: {
           dstr ="LMC0 conference design in C(30,3)";
           if ( verbose ) {
                myprintf ( "exampleArray: %s\n", dstr.c_str() );
           }
           array_link al ( 30,3, 0 );
-        int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1};
+          int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1};
           al.setarraydata ( tmp, al.n_rows*al.n_columns );
           return al;
           break;

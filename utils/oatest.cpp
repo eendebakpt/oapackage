@@ -22,6 +22,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "anyoption.h"
 #include "tools.h"
 #include "extend.h"
+#include "graphtools.h"
 
 #include "evenodd.h"
 #include "oadevelop.h"
@@ -330,6 +331,55 @@ int main ( int argc, char* argv[] )
      //print_options(); exit(0);
 
 
+     {
+          bool addcol=false;
+          
+     const int nx=2;
+     array_link G(nx,nx, array_link::INDEX_DEFAULT);
+     G.setconstant(0); G.at(0,1)=1; G.at(1,0)=1;
+     if (addcol)
+     G.at(nx-1,nx-1)=5;
+     
+     
+    // arraydata_t ad = arraylink2arraydata(G);
+     arraydata_t ad(6, nx, 2, nx);
+     
+     //ad.show();
+     array_transformation_t T(ad);
+     
+     T.reset();
+     
+     std::vector<int> perm(nx); for(size_t i=0; i<perm.size(); i++) perm[i]=i;     
+     random_perm(perm);
+     
+     T.setrowperm(perm); T.setcolperm(perm);
+     T.show();
+     
+     G.showarray();
+     G = T.apply(G);
+     G.showarray();
+     
+     std::vector<int> colors(G.n_rows); for(size_t i=0; i<colors.size(); i++) colors[i]=0;
+     if (addcol)
+          colors[nx-1]=1;     
+     std::vector<int> colorsx(G.n_rows);
+     colorsx = permute(colors, perm);
+     //colorsx = permuteback(colors, perm);
+     
+     printfd("colorsx.size %d\n", colorsx.size() );
+     print_perm("colorsx", colorsx);
+     
+     std::vector<int> tr = nauty::reduceNauty (G, colorsx, verbose);
+     print_perm("tr        ", tr);
+     print_perm("tr inverse", invert_permutation(tr));
+tr=invert_permutation(tr);
+
+     myprintf("-- output:\n");
+     array_link Gx = transformGraph ( G, tr, verbose );
+Gx.showarray();
+ 
+     exit(0);
+}
      if ( 1 ) {
           array_link al = exampleArray ( r, 1 );
           conference_t ct ( al.n_rows, al.n_columns+4, 0 );

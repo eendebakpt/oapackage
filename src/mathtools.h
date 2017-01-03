@@ -688,7 +688,6 @@ static void print_perm ( const char *msg,  const std::vector<permutationType> s,
 {
 	myprintf("%s: ", msg);
     print_perm ( std::cout, s, maxlen, ret );
-	myprintf("\n");
 }
 
 template <class permutationType>	/* permtype should be a numeric type, i.e. int or long */
@@ -1888,7 +1887,7 @@ template<class Type, class IndexType>
 std::vector<Type> permute ( const std::vector<Type> x, const std::vector<IndexType> indices )
 {
     std::vector<Type> y ( x.size() );
-    for ( int i=0; i<x.size(); i++ ) {
+    for ( size_t i=0; i<x.size(); i++ ) {
         //myprintf ( " permute %d: y[%d]=x[%d]=%f\n", i, i, indices[i], x[indices[i]] );
         y[i]=x[indices[i]];
     }

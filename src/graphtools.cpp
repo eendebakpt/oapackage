@@ -179,7 +179,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
         myprintf ( "reduceNauty: calling densenauty\n" );
 
     densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,canong );
-    if ( verbose>=2 ) {
+    if ( verbose>=3 ) {
         myprintf ( "Generators for Aut(C[%d]):\n",n );
 
         myprintf ( "order = " );

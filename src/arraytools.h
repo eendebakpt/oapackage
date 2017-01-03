@@ -675,9 +675,14 @@ public:
     /// return true if the array is a +1,0, -1 valued array
     bool is_conference () const;
 
-
+    /// return true if the array is symmetric
+    bool isSymmetric() const;
+    
     // manipulation of arrays
 
+    /// make the array symmetric by copying the upper-right to the lower-left
+    void makeSymmetric();
+    
     /// return array with selected column removed
     array_link deleteColumn ( int index ) const;
 
