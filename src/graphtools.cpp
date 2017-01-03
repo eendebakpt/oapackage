@@ -38,10 +38,12 @@ namespace nauty
 /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 
 template<class Type>
+/// return vector with unique elements
 std::vector<Type> uniquevec ( const std::vector<Type> &v )
 {
     std::vector<Type> w = v;
 // fixme: better option for this?
+	std::sort( w.begin(), w.end() );
     typename std::vector< Type >::iterator last = std::unique ( w.begin(), w.end() );
     w.erase ( last,  w.end() );
     return w;
@@ -55,15 +57,15 @@ void setcolors ( std::vector<int> colors, int *lab, int *ptn )
     const int n = colors.size();
     std::vector<int> ucols =uniquevec ( colors );
     if ( verbose )
-        printf ( "setcolors: found %d/%d unique colors\n" , ( int ) ucols.size(), n );
+        myprintf ( "setcolors: found %d/%d unique colors\n" , ( int ) ucols.size(), n );
     if ( verbose ) {
         display_vector ( colors );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
     int x=-1;
     for ( size_t i=0; i<ucols.size(); i++ ) {
         if ( verbose )
-            printf ( "color %d: %d\n", ( int ) i, ucols[i] );
+            myprintf ( "setcolors: color %d: %d\n", ( int ) i, ucols[i] );
         for ( size_t j=0; j<colors.size(); j++ ) {
             if ( colors[j]==ucols[i] ) {
                 x++;
@@ -74,7 +76,7 @@ void setcolors ( std::vector<int> colors, int *lab, int *ptn )
         ptn[x]=0;
     }
     if ( verbose ) {
-        printf ( "lab and ptn:\n" );
+        myprintf ( "setcolors: lab and ptn:\n" );
         print_perm ( lab, n );
         print_perm ( ptn, n );
     }
@@ -87,10 +89,10 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 
     //for(size_t j=0; j<colors.size(); j++) colors[j]=j;
     if ( verbose ) {
-        printf ( "reduceNauty: %d vertices\n", G.n_rows );
-        printf ( "  colors: " );
+        myprintf ( "reduceNauty: %d vertices\n", G.n_rows );
+        myprintf ( "  colors: " );
         display_vector ( colors );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
     if ( ( int ) colors.size() !=G.n_rows || G.n_rows!=G.n_columns ) {
         myprintf ( "reduceNauty: input sizes not valid" );
@@ -154,6 +156,9 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
     for ( int ix=0; ix<nvertices; ix++ ) {
         for ( int iy=0; iy<nvertices; iy++ ) {
             if ( G.atfast ( ix,iy ) >0 ) {
+				if (verbose>=3) {
+				myprintf("adding edge: %d->%d: %d\n", ix, iy, m);	
+				}
                 ADDONEEDGE ( g, ix, iy, m );
             }
         }
@@ -163,25 +168,33 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
     options.defaultptn=false;
 
     if ( verbose>=2 ) {
-        printf ( "options.defaultptn: %d\n", options.defaultptn );
-        printf ( " lab: \n " );
+        myprintf ( "options.defaultptn: %d\n", options.defaultptn );
+        myprintf ( " lab: \n " );
         print_perm ( lab, n );
-        printf ( " ptn: \n " );
+        myprintf ( " ptn: \n " );
         print_perm ( ptn, n );
     }
 
     if ( verbose )
-        printf ( "reduceNauty: calling densenauty\n" );
+        myprintf ( "reduceNauty: calling densenauty\n" );
 
     densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,canong );
     if ( verbose>=2 ) {
-        printf ( "Generators for Aut(C[%d]):\n",n );
+        myprintf ( "Generators for Aut(C[%d]):\n",n );
 
-        printf ( "order = " );
+        myprintf ( "order = " );
         writegroupsize ( stdout,stats.grpsize1,stats.grpsize2 );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
 
+        if ( verbose>=2 ) {
+        myprintf ( "options.defaultptn: %d\n", options.defaultptn );
+        myprintf ( " lab: \n " );
+        print_perm ( lab, n );
+        myprintf ( " ptn: \n " );
+        print_perm ( ptn, n );
+    }
+    
     std::vector<int> tr ( nvertices );
     std::copy ( lab, lab+nvertices, tr.begin() );
 
@@ -214,7 +227,7 @@ array_transformation_t reduceOAnauty ( const array_link &al, int verbose, const 
     std::vector<int> &colors = Gc.second;
 
     if ( verbose>=2 ) {
-        printf ( "graph:\n" );
+        myprintf ( "graph:\n" );
         G.showarray();
     }
 
@@ -309,7 +322,7 @@ std::pair<array_link, std::vector<int> >  array2graph ( const array_link &al, in
 
 
     if ( verbose )
-        printf ( "array2graph: generating graph of size %d=%d+%d+%d\n", nVertices, nrows, ncols, nColumnLevelVertices );
+        myprintf ( "array2graph: generating graph of size %d=%d+%d+%d\n", nVertices, nrows, ncols, nColumnLevelVertices );
     array_link G ( nVertices, nVertices, 0 ); // graph
     G.setconstant ( 0 );
 
@@ -340,7 +353,7 @@ array_link transformGraph ( const array_link &G, const std::vector<int> tr, int 
 {
     array_link H = G;
 
-    //printfd("transformGraph: tr "); display_vector(tr); printf("\n");
+    //printfd("transformGraph: tr "); display_vector(tr); myprintf("\n");
     for ( int i=0; i<H.n_rows; i++ ) {
         for ( int j=0; j<H.n_columns; j++ ) {
             int ix=tr[i];
@@ -365,13 +378,13 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
     array_transformation_t ttr ( arrayclass );
 
     if ( verbose ) {
-        printf ( "labelling2transformation: class %s\n", arrayclass.idstr().c_str() );
-        printf ( "labelling2transformation: pp  " );
+        myprintf ( "labelling2transformation: class %s\n", arrayclass.idstr().c_str() );
+        myprintf ( "labelling2transformation: pp  " );
         display_vector ( pp );
-        printf ( "\n" );
-        printf ( "labelling2transformation: ppi " );
+        myprintf ( "\n" );
+        myprintf ( "labelling2transformation: ppi " );
         display_vector ( ppi );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
     const int N= arrayclass.N;
     std::copy ( pp.begin(), pp.begin() +N, ttr.rperm );
@@ -383,7 +396,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
     ttr=ttr.inverse();
 
     if ( verbose ) {
-        printf ( "labelling2transformation: rowperm " );
+        myprintf ( "labelling2transformation: rowperm " );
         print_perm ( ttr.rperm, N );
     }
 
@@ -394,7 +407,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
     if ( verbose>=2 ) {
         printfd ( "colperm: " );
         display_vector ( colperm );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
     colperm = sorthelper ( colperm );
     colperm = invert_permutation ( colperm );
@@ -403,7 +416,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
     if ( verbose ) {
         printfd ( "labelling2transformation: colperm " );
         display_vector ( colperm );
-        printf ( "\n" );
+        myprintf ( "\n" );
     }
 
     std::vector<int> s = arrayclass.getS();
@@ -425,14 +438,14 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
         if ( verbose>=2 ) {
             printfd ( "index sorted: " );
             display_vector ( is.indices );
-            printf ( "\n" );
+            myprintf ( "\n" );
         }
         ww=is.indices;
 
         if ( verbose>=1 ) {
             printfd ( "oagraph2transformation: lvlperm %d: ",ii );
             display_vector ( ww );
-            printf ( "\n" );
+            myprintf ( "\n" );
             fflush ( 0 );
         }
         ttl.setlevelperm ( ii, ww );
@@ -460,7 +473,7 @@ int unittest_nautynormalform ( const array_link &al, int verbose )
     arraydata_t arrayclass = arraylink2arraydata ( al );
 
     if ( verbose>=2 ) {
-        printf ( "unittest_nautynormalform: testing on array\n" );
+        myprintf ( "unittest_nautynormalform: testing on array\n" );
         al.showarray();
     }
 
@@ -476,9 +489,9 @@ int unittest_nautynormalform ( const array_link &al, int verbose )
     if ( alx1 != alx2 ) {
         printfd ( "unittest_nautynormalform: error: transformed graphs unequal!\n" );
 
-        printf ( "alx1: \n" );
+        myprintf ( "alx1: \n" );
         alx1.showarray();
-        printf ( "alx2: \n" );
+        myprintf ( "alx2: \n" );
         alx2.showarray();
 
         return 0;
