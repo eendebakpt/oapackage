@@ -93,7 +93,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
     if ( verbose ) {
         myprintf ( "reduceNauty: %d vertices\n", G.n_rows );
         myprintf ( "  colors: " );
-        display_vector ( colors );
+		print_perm(colors);
         myprintf ( "\n" );
     }
     if ( ( int ) colors.size() !=G.n_rows || G.n_rows!=G.n_columns ) {
@@ -167,7 +167,7 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
     }
 
     setcolors ( colors, lab, ptn );
-    options.defaultptn=false;
+    options.defaultptn=false; // use the coloring!
 
     if ( verbose>=2 ) {
         myprintf ( "options.defaultptn: %d\n", options.defaultptn );
@@ -179,7 +179,10 @@ std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int
 
     if ( verbose )
         myprintf ( "reduceNauty: calling densenauty\n" );
-
+if (verbose>=2) {
+        myprintf ( "reduceNauty: options.defaultptn %d, options.getcanon %d, options.digraph %d\n", options.defaultptn, options.getcanon, options.digraph );
+	
+}
     densenauty ( g,lab,ptn,orbits,&options,&stats,m,n,canong );
     if ( verbose>=3 ) {
         myprintf ( "Generators for Aut(C[%d]):\n",n );

@@ -332,9 +332,9 @@ int main ( int argc, char* argv[] )
 
 
      {
-          bool addcol=false;
+          bool addcol=true;
           
-     const int nx=2;
+     int nx=3;
      array_link G(nx,nx, array_link::INDEX_DEFAULT);
      G.setconstant(0); G.at(0,1)=1; G.at(1,0)=1;
      if (addcol)
