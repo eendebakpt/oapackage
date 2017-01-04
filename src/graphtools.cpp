@@ -85,7 +85,9 @@ void setcolors ( std::vector<int> colors, int *lab, int *ptn )
 
 std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int verbose )
 {
-
+	if (! G.isSymmetric() ) {
+		printfd("reduceNauty: array is not symmetric, operation not well defined\n");
+	}
 
     //for(size_t j=0; j<colors.size(); j++) colors[j]=j;
     if ( verbose ) {

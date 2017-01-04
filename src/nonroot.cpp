@@ -13,7 +13,7 @@ inline void cpy_dyndata_rowsort ( const dyndata_t *src, dyndata_t *dest )
 {
 #ifdef OADEBUG
     if ( src->N!=dest->N ) {
-        printf ( "error: source and target dyndata_t have unequal number of rows!\n" );
+        myprintf ( "error: source and target dyndata_t have unequal number of rows!\n" );
         exit ( 0 );
     }
 #endif
@@ -25,15 +25,15 @@ inline void cpy_dyndata_rowsortl ( const dyndata_t *src, dyndata_t *dest )
 {
 #ifdef OADEBUG
     if ( src->N!=dest->N ) {
-        printf ( "error: source and target dyndata_t have unequal number of rows!\n" );
+        myprintf ( "error: source and target dyndata_t have unequal number of rows!\n" );
         exit ( 0 );
     }
     if ( src->rowsortl==0 ) {
-        printf ( "cpy_dyndata_rowsortl: ERROR: source %ld\n", ( long ) src->rowsortl );
+        myprintf ( "cpy_dyndata_rowsortl: ERROR: source %ld\n", ( long ) src->rowsortl );
         exit ( 0 );
     }
     if ( dest->rowsortl==0 ) {
-        printf ( "cpy_dyndata_rowsortl: ERROR: target %ld\n", ( long ) dest->rowsortl );
+        myprintf ( "cpy_dyndata_rowsortl: ERROR: target %ld\n", ( long ) dest->rowsortl );
         exit ( 0 );
         return;
     }
@@ -140,8 +140,8 @@ inline lmc_t LMC_check_col_tplus ( const array_t *original, const array_t *array
                     break;
                 } else if ( original[cur_row] > lperm[array[rowp]] ) { //the permuted array is lex. less than original
                     ret = LMC_LESS;
-                    //printf("ret: %d, cur_row %d= j(%d)*oaindex(%d)+k(%d);", ret, cur_row,j,oaindex,k);
-                    //printf(" val %d    val %d\n",  original[cur_row ] ,  lperm[array[rowp]] );
+                    //myprintf("ret: %d, cur_row %d= j(%d)*oaindex(%d)+k(%d);", ret, cur_row,j,oaindex,k);
+                    //myprintf(" val %d    val %d\n",  original[cur_row ] ,  lperm[array[rowp]] );
                     break;
                 }
 #endif
@@ -172,7 +172,7 @@ inline lmc_t LMC_check_col_tplus ( const array_t *original, const array_t *array
 */
 inline lmc_t LMC_check_col_less ( const array_t *original, const array_t *array, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd )
 {
-    //printfd("LMC_check_col: start: lperm "); print_perm(lperm, ad->s[0]);
+    //myprintfd("LMC_check_col: start: lperm "); print_perm(lperm, ad->s[0]);
     lmc_t ret = LMC_EQUAL;
     int cur_row=0, rowp;
     const int oaindex = ad->oaindex;
@@ -215,7 +215,7 @@ inline lmc_t LMC_check_col_less ( const array_t *original, const array_t *array,
             break;
     }
 
-    //printf("LMC_check_col: at col %d, ret %d (LMC_EQUAL 1, LMC_LESS 0)\n", dd->col,ret); printf("sorted column: \n");
+    //myprintf("LMC_check_col: at col %d, ret %d (LMC_EQUAL 1, LMC_LESS 0)\n", dd->col,ret); printf("sorted column: \n");
     //print_col_sorted(array, lperm, rowsort, ad->N);
 
 #ifdef OAANALYZE_DISCR
@@ -272,7 +272,7 @@ inline lmc_t LMC_check_col_nosort ( const array_t *original, const array_t *arra
 */
 inline lmc_t LMC_check_col_buffer ( const array_t *original, const array_t *array, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd, rowsort_value_t *rsbuffer )
 {
-    //printf("LMC_check_col: start\n");
+    //myprintf("LMC_check_col: start\n");
     lmc_t ret = LMC_EQUAL;
     int cur_row, rowp;
     const int oaindex = ad->oaindex;
@@ -325,7 +325,7 @@ inline lmc_t LMC_check_col_buffer ( const array_t *original, const array_t *arra
 // check range of elements (inclusive)
 inline lmc_t checkLMChelperSorted ( int ix, int iy, const array_t *arraycol,  levelperm_t lperm, const arraydata_t *ad )
 {
-    //printf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
+    //myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
     array_t prevval=0; //lperm[0];
 
     for ( int cur_row = ix; cur_row <= iy; cur_row++ ) {
@@ -342,7 +342,6 @@ inline lmc_t checkLMChelperSorted ( int ix, int iy, const array_t *arraycol,  le
 // check range of elements (inclusive)
 inline lmc_t checkLMChelperSorted ( int ix, int iy, const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad,  rowsortlight_t *rowsort )
 {
-    //printf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
     int v1=0, v2=0;
 
     array_t prevval=0;
@@ -357,12 +356,12 @@ inline lmc_t checkLMChelperSorted ( int ix, int iy, const array_t *originalcol, 
         // sort check
         if ( prevval==1 && cval==0 ) {
             if ( 0 ) {
-                printf ( "checkLMChelperSorted line %d: %d to %d: ", __LINE__, ix, iy );
+                myprintf ( "checkLMChelperSorted line %d: %d to %d: ", __LINE__, ix, iy );
                 for ( int v=ix; v<=iy; v++ ) {
                     int rowp = rowsort[v];
-                    printf ( "%d ", lperm[arraycol[rowp]] );
+                    myprintf ( "%d ", lperm[arraycol[rowp]] );
                 }
-                printf ( "\n" );
+                myprintf ( "\n" );
             }
             return LMC_LESS;
         }
@@ -380,7 +379,7 @@ inline lmc_t checkLMChelperSorted ( int ix, int iy, const array_t *originalcol, 
 // check range of elements (inclusive)
 inline lmc_t checkLMChelper ( int ix, int iy, const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad,  rowsortlight_t *rowsortl )
 {
-    //printf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
+    //myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
     int v1=0, v2=0;
 
 #ifdef OADEBUG
@@ -406,7 +405,7 @@ inline lmc_t checkLMChelper ( int ix, int iy, const array_t *originalcol, const 
 // check range of elements (inclusive)
 inline lmc_t checkLMChelper ( int ix, int iy, const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad,  rowsort_t *rowsort )
 {
-    //printf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
+    //myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
     int v1=0, v2=0;
 
     for ( int cur_row = ix; cur_row <= iy; cur_row++ ) {
@@ -429,8 +428,6 @@ inline lmc_t checkLMChelper ( int ix, int iy, const array_t *originalcol, const 
 // sort for 2-level arrays (low and high are inclusive)
 inline void sortzerooneR ( rowsortlight_t *rs, int low, int high, const array_t *arraycol )
 {
-//printf("sortzerooneR: size %d, low %d high %d\n", 1+high-low, low, high);
-
     while ( low < high ) {
         if ( arraycol[rs[low]] == 1 ) {
             low ++;
@@ -448,15 +445,6 @@ inline void sortzerooneR ( rowsortlight_t *rs, int low, int high, const array_t 
 // sort for 2-level arrays (low and high are inclusive)
 inline void sortzeroone ( rowsortlight_t *rs, int low, int high, const array_t *arraycol )
 {
-//printf("sortzeroone: size %d, low %d high %d\n", 1+high-low, low, high);
-
-    /*    if( (high-low) <=1) {
-        if( (high-low) ==0)      return;
-            if ( arraycol[rs[high]] < arraycol[rs[low]] ) {
-                std::swap( rs[high], rs[low] );
-        }   return;
-    } */
-
     while ( low < high ) {
         if ( arraycol[rs[low]] == 0 ) {
             low ++;
@@ -475,8 +463,6 @@ inline void sortzeroone ( rowsortlight_t *rs, int low, int high, const array_t *
 // sort for 2-level arrays (low and high are inclusive)
 inline void sortzerooneR ( rowsort_t *rs, int low, int high, const array_t *arraycol )
 {
-//printf("sortzerooneR: low %d high %d\n", low, high);
-
     while ( low < high ) {
         if ( arraycol[rs[low].r] == 1 ) {
             low ++;
@@ -494,9 +480,6 @@ inline void sortzerooneR ( rowsort_t *rs, int low, int high, const array_t *arra
 // sort for 2-level arrays (low and high are inclusive)
 inline void sortzeroone ( rowsort_t *rs, int low, int high, carray_t *arraycol )
 {
-//printf("sortzeroone: size %d, low %d high %d\n", 1+high-low, low, high);
-
-
     while ( low < high ) {
         if ( arraycol[rs[low].r] == 0 ) {
             low ++;
@@ -518,7 +501,7 @@ lmc_t LMC_check_col_rowsymm ( const array_t *arraycol,  const arraydata_t *ad, c
     lmc_t ret = LMC_EQUAL;
     const int scol = col-1;
 
-    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
+    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // myprintf("LMC_check_col_ft: nb %d\n",nb);
     array_t * sdp=sd.ft.array+scol*sd.ft.n_rows;
 
     array_t lperm[2] = { ( array_t ) 0,1};
@@ -546,7 +529,7 @@ lmc_t LMC_check_col_ft_2level_rowsymm ( const array_t *originalcol, const array_
     const int scol = dd->col-1;
     rowsortlight_t *rowsort = dd->rowsortl;
 
-    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
+    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // myprintf("LMC_check_col_ft: nb %d\n",nb);
     array_t * sdp=sd.ft.array+scol*sd.ft.n_rows;
 
     /* we check in blocks determined by the ft */
@@ -574,9 +557,9 @@ lmc_t LMC_check_col_ft_2level_rowsymm ( const array_t *originalcol, const array_
             int x1 = sdp[2*j];
             int x2 = sdp[2*j+1];
             if ( x1==x2 && 0 ) {
-                printf ( "\n### \n" );
+                myprintf ( "\n### \n" );
                 sd.ft.showarray();
-                printf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
+                myprintf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
             }
             sortzerooneR ( rowsort, x1, x2-1, arraycol );
         }
@@ -608,7 +591,7 @@ lmc_t LMC_check_col_ft_2level ( const array_t *originalcol, const array_t *array
     const int scol = dd->col-1;
     rowsortlight_t *rowsort = dd->rowsortl;
 
-    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
+    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // myprintf("LMC_check_col_ft: nb %d\n",nb);
     array_t * sdp=sd.ft.array+scol*sd.ft.n_rows;
 
     /* we check in blocks determined by the ft */
@@ -636,9 +619,9 @@ lmc_t LMC_check_col_ft_2level ( const array_t *originalcol, const array_t *array
             int x1 = sdp[2*j];
             int x2 = sdp[2*j+1];
             if ( x1==x2 && 0 ) {
-                printf ( "\n### \n" );
+                myprintf ( "\n### \n" );
                 sd.ft.showarray();
-                printf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
+                myprintf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
             }
             sortzerooneR ( rowsort, x1, x2-1, arraycol );
         }
@@ -656,7 +639,7 @@ lmc_t LMC_check_col_ft_testing ( const array_t *originalcol, carray_t *arraycol,
     const int scol = dd->col-1;
     rowsort_t *rowsort = dd->rowsort;
 
-    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // printf("LMC_check_col_ft: nb %d\n",nb);
+    int nb = sd.ft.atfast ( sd.ft.n_rows-1, scol ); // myprintf("LMC_check_col_ft: nb %d\n",nb);
     array_t * sdp=sd.ft.array+scol*sd.ft.n_rows;
 
     /* we check in blocks determined by the ft */
@@ -664,7 +647,7 @@ lmc_t LMC_check_col_ft_testing ( const array_t *originalcol, carray_t *arraycol,
         //int x1 = sd.ft.atfast(2*j, scol); int x2 = sd.ft.atfast(2*j+1, scol);
         int x1 = sdp[2*j];
         int x2 = sdp[2*j+1];
-        //if (col>4) 	    printf("  calling checkLMChelper: %d to %d (inclusive)\n", x1, x2-1);
+        //if (col>4) 	    myprintf("  calling checkLMChelper: %d to %d (inclusive)\n", x1, x2-1);
 
         ret = checkLMChelper ( x1, x2-1, originalcol, arraycol, lperm, ad, rowsort );
         if ( ret!=LMC_EQUAL ) {
@@ -709,15 +692,14 @@ lmc_t LMC_check_col_ft_testing ( const array_t *originalcol, carray_t *arraycol,
                 int x1 = sdp[2*j];
                 int x2 = sdp[2*j+1];
                 if ( x1==x2 && 0 ) {
-                    printf ( "\n### \n" );
+                    myprintf ( "\n### \n" );
                     sd.ft.showarray();
-                    printf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
+                    myprintf ( "calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2 );
                 }
                 sortzerooneR ( rowsort, x1, x2-1, arraycol );
             }
         }
     }
-//printf("ret %d\n", ret);
 
     return ret;
 }
@@ -747,7 +729,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
             rowp = rowsort[cur_row].r;
 
             //if (dverbose) {
-//		printf("##\nk %d: prevvalue %d, rowsort[cur_row].val %d\n", k, prevvalue, rowsort[cur_row].val);
+//		myprintf("##\nk %d: prevvalue %d, rowsort[cur_row].val %d\n", k, prevvalue, rowsort[cur_row].val);
 //	      }
 
             if ( rowsort[cur_row].val!=prevvalue ) {
@@ -770,24 +752,22 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
 
                             if ( originalcol[cur_row2 ] < lperm[arraycol[rowp2]] ) {
                                 if ( dverbose )  {
-                                    printf ( "early abort MORE: j %d, k %d, previndex %d, kk %d\n", j, k, previndex, kk );
-                                    printf ( "  %d %d (arraycol[rowp2] %d %d)\n", originalcol[cur_row2 ] , lperm[arraycol[rowp2]], arraycol[rowp2], rowp2 );
+                                    myprintf ( "early abort MORE: j %d, k %d, previndex %d, kk %d\n", j, k, previndex, kk );
+                                    myprintf ( "  %d %d (arraycol[rowp2] %d %d)\n", originalcol[cur_row2 ] , lperm[arraycol[rowp2]], arraycol[rowp2], rowp2 );
                                 }
                                 // continue;
                                 //if (!fh) {   rete = LMC_MORE;  fh=1;  }
                                 ret=LMC_MORE;
 
-                                //if (v!=ret) printf("huh? ret %d, v %d\n", ret, v);
                                 return ret;
                                 break;
                             } else if ( originalcol[cur_row2] > lperm[arraycol[rowp2]] ) {
                                 //continue;
                                 if ( dverbose ) {
-                                    printf ( "early abort: LESS j %d, k %d, previndex %d, kk %d\n", j, k, previndex, kk );
+                                    myprintf ( "early abort: LESS j %d, k %d, previndex %d, kk %d\n", j, k, previndex, kk );
                                 }
                                 // if (!fh) { fh=1;  rete = LMC_LESS;  }
                                 ret = LMC_LESS;
-                                // if (v!=ret) printf("huh? ret %d, v %d\n", ret, v);
                                 return ret;
                                 break;
                             }
@@ -800,7 +780,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
             }
 
             // if (dverbose)
-            //   printf("k: %d, rowsort.val %d->%d (val array %d)\n", k, rowsort[cur_row].val, sval*rowsort[cur_row].val+lperm[arraycol[rowp]], lperm[arraycol[rowp]] );
+            //   myprintf("k: %d, rowsort.val %d->%d (val array %d)\n", k, rowsort[cur_row].val, sval*rowsort[cur_row].val+lperm[arraycol[rowp]], lperm[arraycol[rowp]] );
             if ( !newalg ) {
                 rowsort[cur_row].val = sval*rowsort[cur_row].val+lperm[arraycol[rowp]];
                 if ( ret!=LMC_EQUAL )
@@ -820,7 +800,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
             //oacolSort ( rowsort+ ( j*oaindex ), previndex, oaindex-1 );
             oacolSort ( rowsort+ ( j*oaindex ), 0, oaindex-1 );
 
-            //printf("previndex %d, oaindex %d\n", previndex, oaindex);
+            //myprintf("previndex %d, oaindex %d\n", previndex, oaindex);
             int k;
             for ( k = previndex; k < oaindex; k++ ) {
                 cur_row = j*oaindex+k;
@@ -839,7 +819,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
             }
             if ( ret!=LMC_EQUAL ) {
                 if ( dverbose ) {
-                    printf ( "abort: j %d, k %d, row %d, ret %d\n", j, k, j*oaindex+k, ret );
+                    myprintf ( "abort: j %d, k %d, row %d, ret %d\n", j, k, j*oaindex+k, ret );
                 }
                 break;
             }
@@ -858,7 +838,6 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
             oacolSort ( rowsort+ ( j*oaindex ), 0, oaindex-1 );
         }
     }
-//printf("ret %d\n", ret);
 
     return ret;
 }
@@ -879,7 +858,7 @@ inline lmc_t LMC_check_col_ft_X ( const array_t *originalcol, carray_t *arraycol
 */
 inline lmc_t LMC_check_col ( const array_t *originalcol, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd )
 {
-    //printf("LMC_check_col: start\n");
+    //myprintf("LMC_check_col: start\n");
     lmc_t ret = LMC_EQUAL;
     int cur_row, rowp;
 #ifdef OAANALYZE_DISCR
@@ -988,7 +967,7 @@ inline lmc_t LMC_check_col ( const array_t *originalcol, const array_t *arraycol
 */
 lmc_t LMC_check_col ( const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dd )
 {
-    //printf("LMC_check_col: start\n");
+    //myprintf("LMC_check_col: start\n");
     lmc_t ret = LMC_EQUAL;
     int cur_row, rowp;
     int oaindex = ad->oaindex;
@@ -1047,7 +1026,6 @@ lmc_t LMC_check_col ( const array_t *original, const array_t *array, const array
 */
 inline lmc_t LMC_check_col_complete ( const array_t *original, carray_t *array, const arraydata_t *ad, const dyndata_t *dd )
 {
-    //printf("LMC_check_col: start\n");
     lmc_t ret = LMC_EQUAL;
     const int oaindex = ad->oaindex;
     const int nrows = ad->N;
@@ -1088,12 +1066,12 @@ inline lmc_t LMC_check_col_complete ( const array_t *original, carray_t *array, 
 /** Check column with ordering based on j5 */
 inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *array, levelperm_t lperm, const arraydata_t *ad, const dyndata_t *dd )
 {
-//   printf("LMC_check_col_j5order: check code path...\n");
+//   myprintf("LMC_check_col_j5order: check code path...\n");
 
     // OPTIMIZE: pre-calculate J5 values!
     // OPTIMIZE: use first m rows to calculate j5?
     assert ( ad->order==ORDER_J5 );
-    //printf("LMC_check_col_j5order!\n");
+    //myprintf("LMC_check_col_j5order!\n");
 
     const int cpoffset = ad->N*dd->colperm[dd->col];
     if ( dd->col<4 ) { // XXX
@@ -1113,7 +1091,7 @@ inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *arr
     //int jcol = abs(predictJrowsort(array, ad->N, dd->rowsort, lperm));
     colperm_t pp = new_perm_init<colindex_t> ( 5 );
     if ( 0 ) {
-        printf ( "original:\n" );
+        myprintf ( "original:\n" );
         print_array ( original, ad->N, ad->ncols );
     }
     pp[4]=dd->col;
@@ -1124,10 +1102,10 @@ inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *arr
     pp[4]=dd->colperm[dd->col];
     int jcol= abs ( jvaluefast ( array, ad->N, 5, pp ) );	// NOTE: tricky lperms have not been done!
     if ( 1 && dd->col>4 ) {
-        //printf("array:\n");
+        //myprintf("array:\n");
         //print_array(array, ad->N, ad->ncols);
         if ( log_print ( DEBUG,"" ) ) {
-            printf ( "  xxx col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol );
+            myprintf ( "  xxx col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol );
             print_perm ( pp, 5 );
         }
 
@@ -1141,7 +1119,7 @@ inline lmc_t LMC_check_col_j5order ( const array_t *original, const array_t *arr
         return ret;
     } else {
         if ( log_print ( DEBUG,"" ) ) {
-            printf ( "  j5order: col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol );
+            myprintf ( "  j5order: col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol );
             print_perm ( pp, 5 );
         }
 
@@ -1184,7 +1162,7 @@ lmc_t LMCreduce_non_root_j4 ( const array_t * original, const arraydata_t* ad, c
     const int cg = ad->get_col_group ( dyndata->col );	/* current column group */
     /* number of columns remaining in this group */
     const int ncolsremgroup = ad->colgroupsize[cg]+ad->colgroupindex[cg]-dyndata->col;
-    //printf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg], ad->colgroupindex[cg]);
+    //myprintf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg], ad->colgroupindex[cg]);
 
 #ifdef OADEBUG
     myassertdebug ( dyndata->col!=ad->ncols, "LMC_non_root this code should not be reached! dyndata->col!=ad->ncols\n" );
@@ -1196,7 +1174,7 @@ lmc_t LMCreduce_non_root_j4 ( const array_t * original, const arraydata_t* ad, c
     const int col = dyndata->col;
     for ( int i=0; i<ncolsremgroup; i++ ) {
         std::swap ( colpermloop[0], colpermloop[i] );
-        //	 printf("\n\n## colperm loop i=%d (col %d):\n", i, dyndata->col);
+        //	 myprintf("\n\n## colperm loop i=%d (col %d):\n", i, dyndata->col);
 
         // keep track of applied column permutation
         copy_perm ( dyndata->colperm, dyndatacpy->colperm, ad->ncols );
@@ -1237,7 +1215,7 @@ lmc_t LMCreduce_non_root_j4 ( const array_t * original, const arraydata_t* ad, c
                     ret =  LMC_check_col ( reduction->array+dyndata->col*+ad->N, original+cpoffset, lperm, ad, dyndatacpy );
 #endif
                 } else {
-                    //printf("j5 order\n");
+                    //myprintf("j5 order\n");
                     ret =  LMC_check_col_j5order ( reduction->array, original, lperm, ad, dyndatacpy );
                 }
 
@@ -1332,8 +1310,6 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
     init_perm<colindex_t> ( colpermloop, remsize );	// intialize for entire loop
     const int col = dyndata->col;
     for ( int i=0; i<ncolsremgroup; i++ ) {
-        //if (i==0) printfd("col %d: ncolsremgroup %d\n", dyndata->col, ncolsremgroup);
-
         std::swap ( colpermloop[0], colpermloop[i] );	// swap 2 columns, we swap them back at the end of the loop so we do not need to initialize each time
         //	 printf("\n\n## colperm loop i=%d (col %d):\n", i, dyndata->col);
 
@@ -1395,11 +1371,10 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
                 }
             }
 
-            //printf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j, ret);
+            //myprintf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j, ret);
 
             if ( ret==LMC_LESS ) {
                 //logstream ( DEBUG ) << printfstring ( "  LMC_LESS: column %d\n", col );
-                //printf("LMCreduce_non_root: found reduction: lastcol %d->%d\n", reduction->lastcol, col);
                 reduction->lastcol=col;
             }
 
@@ -1415,15 +1390,15 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
                 reduction->mincol=std::min ( reduction->mincol, col );
 
                 if ( 0 && reduction->mode==OA_REDUCE_PARTIAL ) {
-                    printf ( "debug: reduction->mode %d\n", reduction->mode );
+                    myprintf ( "debug: reduction->mode %d\n", reduction->mode );
                     if ( col<reduction->targetcol ) {
-                        printf ( "  LMC_REDUCE_PARTIAL: abort loop!\n" );
+                        myprintf ( "  LMC_REDUCE_PARTIAL: abort loop!\n" );
                         ret=LMC_LESS;
                     }
                 }
             }
             if ( ret==LMC_EQUAL ) {
-                //printf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 ); // @PTE
+                //myprintf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 ); // @PTE
                 reduction->symms.storeSymmetryPermutation ( dyndatacpy );
 
                 //reduction->storeColumnPermutation(dyndatacpy->colperm, dyndatacpy->col+1 );
@@ -1474,10 +1449,9 @@ lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dynd
 lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* ad, dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic )
 {
     const int dverbose=0;
-    //printf("debug: col %d\n", dyndata->col);
 
     if ( dverbose )
-        printf ( "LMCreduce_non_root_2level: level %d\n", dyndata->col );
+        myprintf ( "LMCreduce_non_root_2level: level %d\n", dyndata->col );
 
     /* static allocation of data structures for non-root stage of LMC check */
     levelperm_t *lperm_p = 0;
@@ -1514,7 +1488,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
     const int cg = ad->get_col_group ( dyndata->col );	/* current column group */
     /* number of columns remaining in this group */
     const int ncolsremgroup = ad->colgroupsize[cg]+ad->colgroupindex[cg]-dyndata->col;
-    //printf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg], ad->colgroupindex[cg]);
+    //myprintf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg], ad->colgroupindex[cg]);
 
     //debug_print_transformations(reduction, original, *array, ad, dyndata);
 
@@ -1529,9 +1503,6 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
 
         // keep track of applied column permutation
         std::swap ( dyndatacpy->colperm[col], dyndatacpy->colperm[col+i] );
-
-        //printf("full colperm: "); print_perm(dyndatacpy->colperm, ad->ncols);	//
-        // show_array(original, ad->ncols, ad->N);
 
         lperm[0]=0;
         lperm[1]=1; // special init for 2-level arrays
@@ -1549,7 +1520,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
             /* LMC_check_col performs level permutations, updates the sorting structure and compares with the original array on blocks of oaindex */
 
             if ( reduction->mode>=OA_REDUCE ) {
-                printf ( "LMCreduce_non_root_2level: mode OA_REDUCE not implemented\n" );
+                myprintf ( "LMCreduce_non_root_2level: mode OA_REDUCE not implemented\n" );
                 return LMC_NONSENSE;
             } else {
                 if ( ad->order==ORDER_LEX ) {
@@ -1559,7 +1530,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
 #endif
                     if ( dyndatacpy->col==ad->ncols-1 ) {
                         ret =  LMC_check_col_ft_2level_rowsymm ( reductionarrayoffset, original+cpoffset, lperm, ad, dyndatacpy, * ( reduction->sd ) , 0 );
-                        //  printf("LMCreduce_non_root_2level: special check for final column: col %d (ncols %d) return %d!!!!\n", dyndatacpy->col, ad->ncols, ret);
+                        //  myprintf("LMCreduce_non_root_2level: special check for final column: col %d (ncols %d) return %d!!!!\n", dyndatacpy->col, ad->ncols, ret);
 
                     } else {
 
@@ -1575,14 +1546,14 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
                 }
             }
 
-            //printf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j, ret);
+            //myprintf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j, ret);
 
             if ( ret==LMC_LESS ) {
                 reduction->lastcol=col;
             }
 
             if ( ret==LMC_EQUAL ) {
-                //printf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 ); // @PTE
+                //myprintf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 ); // @PTE
                 reduction->symms.storeSymmetryPermutation ( dyndatacpy );
 
                 // this column could not decide, go one level deeper
@@ -1601,7 +1572,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
                 /*
                 // special case for check of 2-level arrays: if the first permutation is LMC_EQUAL, then the second permutation can only be LMC_MORE
                 if(ret==LMC_MORE && 0) {
-                printf("early brake: col %d\n", dyndata->col);
+                myprintf("early brake: col %d\n", dyndata->col);
                 	 dyndatacpy->rowsortl2rowsort();
                 	 reduction->updateTransformation( *ad, dyndatacpy, lperm_p, original );
                 	 array_link tmp(original, ad->N, ad->ncols);
@@ -1610,7 +1581,7 @@ lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* a
                 	}
                 	if (specialf) {
                 	 array_link ww(original, ad->N, ad->ncols);
-                	 printf("at col %d: level perm leads to same value\n", dyndata->col);
+                	 myprintf("at col %d: level perm leads to same value\n", dyndata->col);
                 	 ww.selectFirstColumns(dyndata->col+2).showarray();
 
                 	}

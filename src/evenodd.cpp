@@ -90,14 +90,14 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
             this->lastcol[k]=lc;
         }
         if ( verbose>=2 ) {
-            printf ( "   depth_extend_sub_t.initialize: initialize: array %d lmc %d\n", k, ( int ) lmc );
-            //  printf("   -> lastcol %d md5: %s\n", this->lastcol[k], alist[k].md5().c_str() );
+            myprintf ( "   depth_extend_sub_t.initialize: initialize: array %d lmc %d\n", k, ( int ) lmc );
+            //  myprintf("   -> lastcol %d md5: %s\n", this->lastcol[k], alist[k].md5().c_str() );
             //oaextend.info(); reduction->show();
 
         }
 
         if ( k>25 && 0 ) {
-            printf ( "file %s: line %d: exit\n", __FILE__, __LINE__ );
+            myprintf ( "file %s: line %d: exit\n", __FILE__, __LINE__ );
             exit ( 0 );
         }
         reduction.releaseStatic();
@@ -106,12 +106,12 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 
     for ( size_t k=0; k<alist.size(); ++k ) {
         if ( verbose>=1 ) {
-            printf ( "  depth_extend_sub_t.initialize: array %ld: lmc %d, lastcol %d, ncolumns %d\n", k, ( int ) this->lmctype[k], this->lastcol[k], ncolsx );
+            myprintf ( "  depth_extend_sub_t.initialize: array %ld: lmc %d, lastcol %d, ncolumns %d\n", k, ( int ) this->lmctype[k], this->lastcol[k], ncolsx );
         }
         bool b1= ( this->lastcol[k]>=ncolsx || this->lastcol[k]==-1 );
         bool b2 = lmctype[k]>=LMC_EQUAL;
         if ( b1!=b2 ) {
-            printf ( "oadevelop:initialize: huh? b1 %d b2 %d, lmctype[k] %d, lastcol[k] %d, col %d\n", b1, b2, lmctype[k], lastcol[k], ncolsx );
+            myprintf ( "oadevelop:initialize: huh? b1 %d b2 %d, lmctype[k] %d, lastcol[k] %d, col %d\n", b1, b2, lmctype[k], lastcol[k], ncolsx );
             oaextend.info();
         }
 
@@ -119,14 +119,14 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
             valididx.push_back ( k );
         } else {
             if ( lmctype[k]>=LMC_EQUAL ) {
-                //printf("oadevelop.h: initialize: huh?\n");
+                //myprintf("oadevelop.h: initialize: huh?\n");
                 //exit(0);
             }
         }
     }
 
     if ( verbose ) {
-        printf ( "depth_extend_sub_t: initialize: selected %ld valid extension indices of %ld arrays\n", valididx.size(), alist.size() );
+        myprintf ( "depth_extend_sub_t: initialize: selected %ld valid extension indices of %ld arrays\n", valididx.size(), alist.size() );
     }
     arraylist_t v = ::selectArrays ( alist, valididx );
 
@@ -137,7 +137,7 @@ arraylist_t depth_extend_sub_t::initialize ( const arraylist_t& alist, const arr
 
 
     if ( verbose>=3 ) {
-        printf ( "   v %ld\n", v.size() );
+        myprintf ( "   v %ld\n", v.size() );
     }
     return v;
 }
@@ -158,7 +158,7 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
     case DEPTH_EXTENSIONS:
 
         if ( verbose>=3 ) {
-            printf ( "depth_extend_array: calling depth_extend! %ld arrays, %ld/%ld extensions, extcol %d\n", goodarrays.size(), dextendsub.valididx.size(), dextend.extension_column_list.size(), extensioncol );
+            myprintf ( "depth_extend_array: calling depth_extend! %ld arrays, %ld/%ld extensions, extcol %d\n", goodarrays.size(), dextendsub.valididx.size(), dextend.extension_column_list.size(), extensioncol );
             ff();
         }
 #ifdef DOOPENMP
@@ -172,7 +172,7 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
         break;
     case DEPTH_DIRECT: {
         if ( verbose>=1 ) {
-            printf ( "processDepth: calling depth_extend_direct! %ld  arrays, %ld extensions, extcol %d\n", goodarrays.size(),dextend.extension_column_list.size(), extensioncol );
+            myprintf ( "processDepth: calling depth_extend_direct! %ld  arrays, %ld extensions, extcol %d\n", goodarrays.size(),dextend.extension_column_list.size(), extensioncol );
             ff();
         }
 
@@ -187,7 +187,7 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
     break;
     default
             :
-        printf ( "no such depth algoritm\n" );
+        myprintf ( "no such depth algoritm\n" );
         exit ( 1 );
     }
 }
@@ -202,7 +202,7 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
     }
 
     if ( verbose>=2 || 0 ) {
-        printf ( "%sdepth_extend_hybrid column %d->%d: input %d arrays\n", sp.c_str(), extcol, extcol+1, ( int ) alist.size() );
+        myprintf ( "%sdepth_extend_hybrid column %d->%d: input %d arrays\n", sp.c_str(), extcol, extcol+1, ( int ) alist.size() );
     }
 
     const arraydata_t *adfull = dextend.ad;
@@ -217,7 +217,7 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
         dextend.setposition ( extcol, i, alist.size(), -1, -1 );
 
         if ( dextend.showprogress ( 1, extcol ) ) {
-            printf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
+            myprintf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
             ff();
         }
 
@@ -249,7 +249,7 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
     }
 
     if ( verbose>=2 || 0 ) {
-        printf ( "%sdepth_extend column %d->%d: input %d arrays\n", sp.c_str(), extcol, extcol+1, ( int ) alist.size() );
+        myprintf ( "%sdepth_extend column %d->%d: input %d arrays\n", sp.c_str(), extcol, extcol+1, ( int ) alist.size() );
     }
 
 
@@ -260,13 +260,13 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
 
         if ( verbose>=2 || extcol<=dextend.loglevelcol ) {
             // log if extcol is small enough
-            printf ( "%sdepth_extend_direct column %d->%d, parse array %d/%d\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size() );
+            myprintf ( "%sdepth_extend_direct column %d->%d, parse array %d/%d\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size() );
             ff();
         } else {
             if ( verbose &&  extcol<=dextend.loglevelcol+9 ) {
                 // log at certain time intervals if extcol is small enough
                 if ( dextend.showprogress ( 1, extcol ) ) {
-                    printf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
+                    myprintf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
                     ff();
                 }
             }
@@ -284,7 +284,7 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
 
         if ( extcol<dextend.ad->ncols-1 && alocal.size() >0 ) {
             if ( verbose>=3 ) {
-                printf ( "%sdepth_extend column %d->%d: calling depth_extend_direct \n", sp.c_str(), extcol, extcol+1 );
+                myprintf ( "%sdepth_extend column %d->%d: calling depth_extend_direct \n", sp.c_str(), extcol, extcol+1 );
 
             }
             depth_extend_direct ( alocal,  dextend, extcol+1, oaextendx, verbose );
@@ -365,7 +365,7 @@ void depth_extend_array ( const array_link &al, depth_extend_t &dextend, const a
 
                 // results
                 if ( dextendsub.lmctype[i]>=LMC_EQUAL ) {
-                    printf ( "array %d: lmc %d, lastcol %d, lastcol parent %d\n", i, dextendsub.lmctype[i], dextendsub.lastcol[i], dextendsub.lastcol[pi] );
+                    myprintf ( "array %d: lmc %d, lastcol %d, lastcol parent %d\n", i, dextendsub.lmctype[i], dextendsub.lastcol[i], dextendsub.lastcol[pi] );
                 }
                 //dextend.lmctype[k]=lmc;
                 //      dextend.lastcol[k]=lc;
@@ -408,14 +408,13 @@ void depth_extend_log ( int i, const arraylist_t &alist, int nn, depth_extend_t 
 
     if ( verbose>=2 || extcol<=dextend.loglevelcol ) {
         // log if extcol is small enough
-        printf ( "%sdepth_extend column %d->%d, parse array %d/%d (%d extend cols)\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size(), nn );
+        myprintf ( "%sdepth_extend column %d->%d, parse array %d/%d (%d extend cols)\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size(), nn );
         ff();
     } else {
-        //printf("verbose %d, extcol %d ~ %d\n", verbose, extcol, dextend.loglevelcol+1);
         if ( verbose ) {
             // log at certain time intervals if extcol is small enough
             if ( dextend.showprogress ( 1, extcol ) ) {
-                // printf ( "%sdepth_extend: column %d, array %d/%d (%zu extend cols)\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size(), nn );
+                // myprintf ( "%sdepth_extend: column %d, array %d/%d (%zu extend cols)\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size(), nn );
                 ff();
                 if ( i>2 ) {
                     //   exit(0);
@@ -438,7 +437,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
     std::string sp = depth_extend_logstring ( extcol-dextend.loglevelcol );
 
     if ( verbose>=2 ) {
-        printf ( "depth_extend: start: extcol %d, ad->ncols %d\n", dextend.ad->ncols, extcol );
+        myprintf ( "depth_extend: start: extcol %d, ad->ncols %d\n", dextend.ad->ncols, extcol );
     }
     if ( extcol>=dextend.ad->ncols ) {
         return;
@@ -455,7 +454,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
         const array_link &al = alist[i];
 #ifdef OADEBUG
         if ( al.n_columns+1 > dextend.ad->ncols ) {
-            printf ( "depth_extend_omp: error extension has too many columns: extcol %d, al.n_columns %d, dextend.ad->ncols %d\n", extcol, al.n_columns, dextend.ad->ncols );
+            myprintf ( "depth_extend_omp: error extension has too many columns: extcol %d, al.n_columns %d, dextend.ad->ncols %d\n", extcol, al.n_columns, dextend.ad->ncols );
             exit ( 1 );
         }
 #endif
@@ -472,7 +471,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 
         depth_extend_log ( i, alist, nn, dextend,  extcol,  verbose );
 
-        //printf("dextend.discardJ5 %d, extcol %d\n", dextend.discardJ5, extcol);
+        //myprintf("dextend.discardJ5 %d, extcol %d\n", dextend.discardJ5, extcol);
         if ( dextend.discardJ5 >=0 && ( dextend.discardJ5 <= extcol ) ) {
             std::vector<int> j5 = al.Jcharacteristics ( 5 );
             for ( size_t i=0; i<j5.size(); i++ ) {
@@ -496,7 +495,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
         dlocal.resize ( nn );
 
         //      LMCreduction_t reduction ( &adlocal );
-        //printf("  extcol: %d, ad.ncols %d\n", extcol, dextend.ad->ncols);
+        //myprintf("  extcol: %d, ad.ncols %d\n", extcol, dextend.ad->ncols);
         arraydata_t adlocal ( dextend.ad, extcol+1 );
         arraydata_t adsub ( dextend.ad, extcol );
 
@@ -509,13 +508,13 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
         for ( size_t j=0; j<nn; j++ ) {
             // printfd("j %d\n", j);
             if ( dlocal.verbose>=2 ) {
-                printf ( "%sdepth_extend: col %d: j %ld: %d %ld\n", sp.c_str(), extcol, j,dextendsub.valididx[j], dextend.extension_column_list.size() );
+                myprintf ( "%sdepth_extend: col %d: j %ld: %d %ld\n", sp.c_str(), extcol, j,dextendsub.valididx[j], dextend.extension_column_list.size() );
             }
 
             array_link ee = hstacklastcol ( al, dextend.extension_column_list[dextendsub.valididx[j]] );
 
             if ( verbose>=3 ) {
-                printf ( "ee: " );
+                myprintf ( "ee: " );
                 ee.show();
             }
 
@@ -526,7 +525,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 
             dlocal.strengthcheck[j]=b;
             if ( dlocal.verbose>=2 ) {
-                printf ( "%sarray %d: extension %d: strength check %d\n", sp.c_str(), ( int ) i, ( int ) j, b );
+                myprintf ( "%sarray %d: extension %d: strength check %d\n", sp.c_str(), ( int ) i, ( int ) j, b );
             }
 
             if ( b ) {
@@ -555,7 +554,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
                     dlocal.lmctype[j]=lmc;
                     dlocal.lastcol[j]=lc;
                     if ( dlocal.verbose>=2 && lmc>=LMC_EQUAL ) {
-                        printf ( "%sarray %d: extension %d: strength check %d, lmc %d, dt %.3f\n", sp.c_str(), ( int ) i, ( int ) j, b, lmc, dt );
+                        myprintf ( "%sarray %d: extension %d: strength check %d, lmc %d, dt %.3f\n", sp.c_str(), ( int ) i, ( int ) j, b, lmc, dt );
                     }
 
                 } // OMP_CRITIAL
@@ -568,7 +567,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 
         arraylist_t alocal = dlocal.selectArraysXX ( al, dextend.extension_column_list );
         if ( verbose>=2 ) {
-            printf ( "%sdepth_extend column %d->%d: adding %ld/%ld arrays\n", sp.c_str(), extcol, extcol+1, alocal.size(), dextendsub.valididx.size() );
+            myprintf ( "%sdepth_extend column %d->%d: adding %ld/%ld arrays\n", sp.c_str(), extcol, extcol+1, alocal.size(), dextendsub.valididx.size() );
 
         }
 
@@ -579,7 +578,7 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 #endif
 
         if ( extcol==11 && 0 ) {
-            printf ( " dextend.setposition: %d, %d, %d\n", extcol, ( int ) i, ( int ) alist.size() );
+            myprintf ( " dextend.setposition: %d, %d, %d\n", extcol, ( int ) i, ( int ) alist.size() );
         }
         dextend.counter->addNfound ( extcol+1, alocal.size() );
         dextend.arraywriter->writeArray ( alocal );
@@ -587,17 +586,17 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
 
         if ( extcol<dextend.ad->ncols-1 && alocal.size() >0 ) {
             if ( verbose>=3 ) {
-                printf ( "%sdepth_extend column %d->%d: calling depth extend with %ld array extensions\n", sp.c_str(), extcol, extcol+1, localvalididx.size() );
+                myprintf ( "%sdepth_extend column %d->%d: calling depth extend with %ld array extensions\n", sp.c_str(), extcol, extcol+1, localvalididx.size() );
             }
 
             cprintf ( dv>=1, "  # depth_extend column : array %d/%d: nn %d, calling depth extend with %ld array extensions\n", ( int ) i, ( int ) alist.size(), nn, localvalididx.size() );
 
-            //printf ( "# %sdepth_extend column %d->%d: calling depth extend with %ld array extensions\n", sp.c_str(), extcol, extcol+1, dlocal2.valididx.size() );
-            //printf("calling depth_extend: %d %d\n",  alocal[0].n_columns, extcol+1 );
+            //myprintf ( "# %sdepth_extend column %d->%d: calling depth extend with %ld array extensions\n", sp.c_str(), extcol, extcol+1, dlocal2.valididx.size() );
+            //myprintf("calling depth_extend: %d %d\n",  alocal[0].n_columns, extcol+1 );
 
             if ( nomp>=1 || extcol>=13 || alocal.size() <=3 || extcol<=9 ) {
                 if ( dv>=1 ) {
-                    printf ( "depth_extend_omp: extcol %d, i %ld/%ld, recursive on %ld arrays!\n ", extcol, i, alist.size(), alocal.size() );
+                    myprintf ( "depth_extend_omp: extcol %d, i %ld/%ld, recursive on %ld arrays!\n ", extcol, i, alist.size(), alocal.size() );
                 }
                 // recursive method
                 depth_extend_sub_t dlocal2 ( 0 );
@@ -648,8 +647,8 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb pare
     #pragma omp parallel for schedule(dynamic,1)
     for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
         if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
-            printf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
-            printf ( "  " );
+            myprintf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+            myprintf ( "  " );
             pset.show ( 1 );
         }
 
@@ -687,8 +686,8 @@ void addArraysToPareto ( Pareto<mvalue_t<long>,array_link> &pset, pareto_cb_cach
     #pragma omp parallel for schedule(dynamic,1)
     for ( int i=0; i< ( int ) arraylist.size(); i++ ) {
         if ( verbose>=3 || ( ( i%15000==0 ) && verbose>=2 ) ) {
-            printf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
-            printf ( "  " );
+            myprintf ( "addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size() );
+            myprintf ( "  " );
             pset.show ( 1 );
         }
 
@@ -811,7 +810,7 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
 
         fgets ( line, 512, fid );
         if ( verbose>=2 ) {
-            printf ( "read line: |%s|\n", line );
+            myprintf ( "read line: |%s|\n", line );
         }
         if ( strlen ( line ) ==0 ) {
             continue;
@@ -828,7 +827,7 @@ Jcounter readStatisticsFile ( const char *numbersfile, int verbose )
             jc = Jcounter ( N, jj );
             if ( r>0 ) {
                 if ( verbose ) {
-                    printf ( "readStatisticsFile: found N %d, jj %d\n", N, jj );
+                    myprintf ( "readStatisticsFile: found N %d, jj %d\n", N, jj );
                 }
             }
         } else {

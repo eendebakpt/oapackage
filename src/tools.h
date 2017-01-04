@@ -34,10 +34,14 @@ inline void printfd_handler ( const char *file, const char* func, int line, cons
     const char *fileshort = s.c_str();
     myprintf ( "file %s: function %s: line %d: ", fileshort, func, line );
 #ifdef FULLPACKAGE
+	char buf[64 * 1024];
+
     va_list va;
     va_start ( va, message );
-    vprintf ( message, va );
+    //vprintf ( message, va );
+    vsprintf ( buf, message, va );
     va_end ( va );
+	myprintf("%s", buf);
 #else
     myprintf("printfd_handler not implemented");
 #endif

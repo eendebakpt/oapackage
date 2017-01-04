@@ -8,6 +8,8 @@
 #include "oaoptions.h"
 #include "arraytools.h"
 #include "version.h"
+#include "printfheader.h"
+#include "tools.h"
 
 /// Information about compile time options
 std::string compile_information()
