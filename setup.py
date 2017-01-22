@@ -325,6 +325,7 @@ except(IOError, ImportError):
     long_description = open('README.md', 'rt').read()
 
 version = get_version_info()[0]
+print('OApackage: version %s'  % version)
 
 setup(name='OApackage',
       #cmdclass = {'test': OATest },
