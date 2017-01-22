@@ -1,9 +1,7 @@
 include README.md
 include FORMAT.txt
 include LICENSE
-include ALGORITHM.txt
 include CMakeLists.txt
-include ChangeLog
 include oadoxy.i
 include oaconfig.txt
 include numpy.i

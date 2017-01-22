@@ -277,7 +277,7 @@ if os.name == 'nt':
 else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
-    oalib_module.extra_compile_args += ['-Wno-date-time']
+    oalib_module.extra_compile_args += ['-Wno-date-time', '-Wno-delete-non-virtual-dtor']
 
 
 if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
