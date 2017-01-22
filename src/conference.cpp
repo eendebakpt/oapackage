@@ -2393,9 +2393,9 @@ arraylist_t extend_conference_plain ( const arraylist_t &lst, const conference_t
 
      int vb=std::max ( 0, verbose-1 );
 
-     int ncstart=3;
-     if ( lst.size() >0 )
-          ncstart=lst[0].n_columns+1;
+     //int ncstart=3;
+     //if ( lst.size() >0 )
+     //     ncstart=lst[0].n_columns+1;
 
      ConferenceIsomorphismSelector selector ( ctype.itype, verbose>=2, select_isomorphism_classes );
 
@@ -2430,9 +2430,9 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
      int vb=std::max ( 0, verbose-1 );
 
-     int ncstart=3;
-     if ( lst.size() >0 )
-          ncstart=lst[0].n_columns+1;
+     //int ncstart=3;
+     //if ( lst.size() >0 )
+     //     ncstart=lst[0].n_columns+1;
 
      /// FIXME: move higher up in hierarchy
      CandidateGenerator cgenerator ( array_link(), ctype );

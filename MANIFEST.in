@@ -11,9 +11,8 @@ include mex/compile.m
 #include oalib_wrap.cxx
 
 recursive-include src *.h *.cpp
-recursive-include nauty *.h *.cpp *.c
-include nauty/nauty.h
-#recursive-include bitarray *.h *.cpp
+recursive-include src/nauty *.h *.cpp *.c
+include src/nauty/nauty.h
 
 #graft python
 #graft oalib
@@ -22,7 +21,7 @@ graft utils
 exclude TODO
 exclude oalib_wrap_dev.cxx
 exclude oalib_wrap.cxx
-exclude oalib.py
+#exclude oalib.py
 
 # do not include development code
 exclude dev/oadevelop.cpp

@@ -197,8 +197,8 @@ compile_options = []
 
 if oadev:
     sources = ['oalib.i'] + sources
-    swig_opts += ['-modern', '-c++', '-w503,401,362',
-                  '-Isrc/', '-Idev/']  # , '-o oalib_wrap_dev.cxx']
+    swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
+                  '-Isrc/', '-Idev/'] 
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
 else:
@@ -277,8 +277,8 @@ if os.name == 'nt':
 else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
-    oalib_module.extra_compile_args += ['-Wno-date-time', '-Wno-delete-non-virtual-dtor']
-
+    oalib_module.extra_compile_args += ['-Wno-date-time',]
+    #swig_opts += [ '-Wno-delete-non-virtual-dtor' ]
 
 if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
     # openmp version of code
@@ -298,17 +298,24 @@ packages = ['oapackage']
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-#from distutils.command.build import build
+from distutils.command.build import build
 from setuptools.command.install import install
 
+
+# see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
+class CustomBuild(build):
+    def run(self):
+        self.run_command('build_ext')
+        build.run(self)
+        # self.run_command('install')
+        # self.do_egg_install()
 
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
-        install.run(self)
+        #install.run(self)
         # self.run_command('install')
-        # self.do_egg_install()
-
+        self.do_egg_install()
 
 # PyPi does not support markdown....
 try:
@@ -321,7 +328,7 @@ version = get_version_info()[0]
 
 setup(name='OApackage',
       #cmdclass = {'test': OATest },
-      cmdclass={'test': OATest, 'install': CustomInstall},
+      cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild},
       version=version,
       author="Pieter Eendebak",
       description="Package to generate and analyse orthogonal arrays and optimal designs",
