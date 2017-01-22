@@ -313,9 +313,9 @@ class CustomBuild(build):
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
-        #install.run(self)
+        install.run(self)
         # self.run_command('install')
-        self.do_egg_install()
+        #self.do_egg_install()
 
 # PyPi does not support markdown....
 try:
