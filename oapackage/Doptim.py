@@ -153,9 +153,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     return hh
 #%%
 
-# import researchOA
-
-
 def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
 
     #%% Prepare data
@@ -163,7 +160,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
         print('generateDpage: dds %s' % str(dds.shape))
 
     pp = oahelper.createPareto(dds)
-    paretoidx = np.array(pp.allindices())
+    #paretoidx = np.array(pp.allindices())
 
     narrays = dds.shape[0]
     npareto = pp.number()
@@ -493,6 +490,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     """ Calculate D-optimal designs
 
 
+    For more details see the paper "Two-Level Designs to Estimate All Main
+    Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903
+    
     Arguments
     ---------
     arrayclass : object
