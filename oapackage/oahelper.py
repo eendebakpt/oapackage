@@ -11,6 +11,7 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 #%% Load packages
 from __future__ import print_function
 
+import oapackage
 import oalib
 import sys
 import os
@@ -249,15 +250,16 @@ def joinArrayLists(ww):
 
 def createPareto(dds, verbose=1):
     """ Create Pareto object from dataset """
-    pp = oalib.ParetoDoubleLong()
+    pp = oapackage.ParetoDoubleLong()
 
     for ii in range(dds.shape[0]):
-        v = dds[ii, :]
+        v = (dds[ii, :]).astype(np.float64)
         pp.addvalue(v, ii)
 
     if verbose:
         pp.show(verbose)
     return pp
+
 
 #%% Utils
 
@@ -328,14 +330,14 @@ def finddirectories(p, patt=None):
 
 def oainfo(afile, verbose=1):
     """ Print information about a file containing arrays """
-    af = oalib.arrayfile_t(afile, verbose)
+    af = oapackage.arrayfile_t(afile, verbose)
     print(af.showstr())
     af.closefile()
 
 
 def oaIsBinary(afile):
     """ Return true if array file is in binary format """
-    af = oalib.arrayfile_t(afile)
+    af = oapackage.arrayfile_t(afile)
     ret = af.isbinary()
     af.closefile()
     return ret
@@ -560,7 +562,7 @@ def checkOAfile(afile, verbose=0):
     """ Return pointer to array file
     Automatically check for compressed array files
     """
-    af = oalib.arrayfile_t(afile, verbose)
+    af = oapackage.arrayfile_t(afile, verbose)
     nm = af.filename
     if af.isopen():
         return nm
@@ -658,8 +660,8 @@ def checkFilesOA(lst, cache=1, verbose=0):
 
 def randomizearrayfile(afile, afileout, verbose=1):
     """ Randomize a file with arrays """
-    lst = oalib.readarrayfile(afile)
-    rlst = oalib.arraylist_t()
+    lst = oapackage.readarrayfile(afile)
+    rlst = oapackage.oalib.arraylist_t()
     for ii, al in enumerate(lst):
         adata = oalib.arraylink2arraydata(al)
         trans = oalib.array_transformation_t(adata)
@@ -668,7 +670,7 @@ def randomizearrayfile(afile, afileout, verbose=1):
         trans.randomize()
         alr = trans.apply(al)
         rlst.push_back(alr)
-    oalib.writearrayfile(afileout, rlst)
+    oapackage.writearrayfile(afileout, rlst)
 
 
 def nArrayFile(afile, verbose=1):

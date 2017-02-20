@@ -7,6 +7,9 @@
 #%% Load packages
 import numpy as np
 import oalib
+import oapackage
+import sys
+
 
 #%%
 
@@ -128,100 +131,28 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
 
 #
 
-import sys
 
-if sys.version_info.major == 2:
-        # PyBliss is legacy code, oly support this for Python 2
-    try:
-        import PyBliss
-    except Exception as e:
-        print(e)
-        print('oapackage.graphtools: could not import PyBliss!')
-        pass
-
-    def findCanonicalPyBliss(gg, arrayclass, verbose=0):
-        """ Find a canonical labelling using PyBliss """
-        G = PyBliss.Graph()
-        for ii in range(0, arrayclass.N):
-            G.add_vertex(ii, color=0)
-
-        for ii in range(0, arrayclass.ncols):
-            jj = arrayclass.N + ii
-            G.add_vertex(jj, color=1)
-
-        nn = np.sum(arrayclass.getS())
-        for ii in range(0, nn):
-            jj = arrayclass.N + arrayclass.ncols + ii
-            G.add_vertex(jj, color=2)
-
-        if 1:
-            ee = zip(list(gg.nonzero()[0]), list(gg.nonzero()[1]))
-            ee = [e for e in ee if e[0] <= e[1]]
-            for e in ee:
-                G.add_edge(e[0], e[1])
-        if verbose:
-            print('graph: %d vertices, %d edges' % (G.nof_vertices(), -1))
-
-        canlab = G.canonical_labeling()
-        canlab = [canlab[k] for k in sorted(canlab.keys())]
-        if verbose:
-            print(canlab)
-        return canlab
-    # canlab=findCanonical2(gg, arrayclass, verbose=0)
-
-    def reduceBliss(al, arrayclass, verbose=1):
-
-        if arrayclass.ismixed():
-            print('reduction of mixed classes not implemented?')
-            pass
-            # raise Exception('reduction of mixed classes not implemented')
-
-        gg, colors, idata2 = oa2graph(al, arrayclass)
-
-        pp = findCanonicalPyBliss(gg, arrayclass, verbose=0)
-        tt = graph2arrayTransformation(pp, arrayclass)
-
-        return pp, tt
-
-    def designReduceBliss(al, arrayclass, verbose=1):
-
-        al = oapackage.makearraylink(al)
-        if arrayclass.ismixed():
-            print('reduction of mixed classes not implemented?')
-            pass
-            # raise Exception('reduction of mixed classes not implemented')
-
-        pp, tt = reduceBliss(al, arrayclass, verbose=1)
-        alx = tt.apply(al)
-        return alx, tt
 
 #%%
 
-
-def makearraylink(al):
-    """ Convert array to array_link object """
-    if isinstance(al, np.ndarray):
-        tmp = oalib.array_link()
-        tmp.setarray(al)
-        al = tmp
-    return al
+from oapackage import makearraylink
 
 
-def selectIsomorphismClasses(sols, arrayclass, verbose=1):
+def selectIsomorphismClasses(sols, verbose=1):
     """ Select isomorphism classes from a list of designs """
     # perform check on array data type
     mm = []
     for ii, al in enumerate(sols):
-        al = makearraylink(al)
+        oapackage.tprint('selectIsomorphismClasses: array %d' % ii)
+        al = oapackage.makearraylink(al)
 
-        pp, tt = reduceBliss(al, arrayclass, verbose >= 2)
-        tt = graph2arrayTransformation(pp, arrayclass)
+        tt = oapackage.reduceOAnauty(al, verbose >= 2)
+
+        #pp, tt = reduceBliss(al, arrayclass, verbose >= 2)
+        #tt = graph2arrayTransformation(pp, arrayclass)
         alx = tt.apply(al)
         mm.append(np.array(alx))
         pass
-        # convert design to graph representation
-
-        # convert to canonical form
 
     # perform uniqueness check
     nn = len(mm)
@@ -241,3 +172,7 @@ def selectIsomorphismClasses(sols, arrayclass, verbose=1):
               (len(sols), np.unique(b).size))
 
     return b, mm
+
+def test_select_isomorphism():
+    ll=[oapackage.exampleArray(0),oapackage.exampleArray(0)]
+    selectIsomorphismClasses(ll)
