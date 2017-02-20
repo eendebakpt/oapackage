@@ -422,7 +422,7 @@ public:
 
 #ifdef SWIGPYTHON
 // Add module docstring
-%pythoncode 
+%pythoncode  
 %{
 __doc__ = """
 Python Orthogonal Array Interface 2

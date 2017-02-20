@@ -30,12 +30,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define myPrintf Rprintf
 #else
 #include <stdio.h>
-  #ifdef SWIGCODE
-  #include "printfheader.h"
-  #else
-  #define myprintf printf
-  #endif
+#ifdef SWIGCODE
+#include "printfheader.h"
+#else
+#define myprintf printf
 #endif
+#endif
+
 
 #include <stdlib.h>
 #include <iostream>
@@ -51,8 +52,41 @@ void display_vector ( const std::vector<atype> &v, const char *sep = " " )
 {
     std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
 }
+template <>
+/// specialized function to print a std::vector
+inline void display_vector ( const std::vector<int> &v, const char *sep )
+{
+    for ( size_t i=0; i<v.size(); i++ ) {
+        myprintf ( "%d", v[i] );
+        if ( i<v.size()-1 ) {
+            myprintf ( "%s", sep );
+        }
+    }
+}
+template <>
+/// specialized function to print a std::vector
+inline void display_vector ( const std::vector<long> &v, const char *sep )
+{
+    for ( size_t i=0; i<v.size(); i++ ) {
+        myprintf ( "%ld", v[i] );
+        if ( i<v.size()-1 ) {
+            myprintf ( "%s", sep );
+        }
+    }
 }
 
+template <>
+/// specialized function to print a std::vector
+inline void display_vector ( const std::vector<double> &v, const char *sep )
+{
+    for ( size_t i=0; i<v.size(); i++ ) {
+        myprintf ( "%f", v[i] );
+        if ( i<v.size()-1 ) {
+            myprintf ( "%s", sep );
+        }
+    }
+}
+} // end of namespace
 
 
 template <class ValueType, class IndexType>
@@ -65,28 +99,28 @@ struct pareto_element {
     std::vector<IndexType> indices;
 
     /// return true of the argument element dominates this value
-    bool dominates ( pValue v )
-    {
+    bool dominates ( pValue v ) {
         for ( size_t i=0; i<v.size(); i++ ) {
-            if ( value[i] < v[i] )
+            if ( value[i] < v[i] ) {
                 return false;
+            }
         }
         return true;
     }
-    bool isdominated ( pValue v )
-    {
+    bool isdominated ( pValue v ) {
         for ( size_t i=0; i<v.size(); i++ ) {
-            if ( value[i] > v[i] )
+            if ( value[i] > v[i] ) {
                 return false;
+            }
         }
         return true;
     }
     /// return true of the argument element is equal to this element
-    bool equal ( pValue v )
-    {
+    bool equal ( pValue v ) {
         for ( size_t i=0; i<v.size(); i++ ) {
-            if ( value[i] != v[i] )
+            if ( value[i] != v[i] ) {
                 return false;
+            }
         }
         return true;
     }
@@ -114,13 +148,11 @@ public:
     ~Pareto() {};
 
     /// return the total number of Pareto optimal values
-    int number() const
-    {
+    int number() const {
         return elements.size();
     }
     /// return the toal number Pareto optimal objects
-    int numberindices() const
-    {
+    int numberindices() const {
         int t=0;
         for ( size_t i=0; i<elements.size(); i++ ) {
             t+= elements[i].indices.size() ;
@@ -128,26 +160,24 @@ public:
         return t;
     }
 
-    std::string __repr__() const
-    {
+    std::string __repr__() const {
         std::string ss = printfstring ( "Pareto: %zu optimal values, %zu elements\n", elements.size(), numberindices() );
         return ss;
     }
 
-    static void showvalue(const pValue p)
-    {
+    static void showvalue ( const pValue p ) {
         detail::display_vector ( p, "; " );
 
     }
     /// show the current set of Pareto optimal elements
-    void show ( int verbose=1 )
-    {
-        if ( verbose==0 )
+    void show ( int verbose=1 ) {
+        if ( verbose==0 ) {
             return;
-        myprintf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
+        }
+        myprintf ( "Pareto: %ld optimal values, %d objects\n", ( long ) elements.size(),  numberindices() );
         if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
-                myprintf ( "value %d: ", (int)i );
+                myprintf ( "value %d: ", ( int ) i ); fflush(stdout);
                 detail::display_vector ( elements[i].value, "; " );
                 myprintf ( "\n" );
                 if ( verbose>=3 ) {
@@ -160,8 +190,7 @@ public:
     }
 
     /// return all indices of the Pareto optimal elements as a std::deque
-    std::deque<IndexType> allindicesdeque() const
-    {
+    std::deque<IndexType> allindicesdeque() const {
         std::deque<IndexType> lst;
         for ( size_t i=0; i<elements.size(); i++ ) {
             lst.insert ( lst.end(), elements[i].indices.begin(), elements[i].indices.end() );
@@ -170,8 +199,7 @@ public:
     }
 
     /// return all indices of the Pareto optimal elements
-    std::vector<IndexType> allindices() const
-    {
+    std::vector<IndexType> allindices() const {
         std::vector<IndexType> lst;
         for ( size_t i=0; i<elements.size(); i++ ) {
             lst.insert ( lst.end(), elements[i].indices.begin(), elements[i].indices.end() );
@@ -180,35 +208,39 @@ public:
     }
 
     /// return all Paretop optimal elements
-    std::vector<pValue> allvalues() const
-    {
+    std::vector<pValue> allvalues() const {
         std::vector<pValue> lst;
         for ( size_t i=0; i<this->elements.size(); i++ ) {
-            lst.push_back(this->elements[i].value);
+            lst.push_back ( this->elements[i].value );
         }
         return lst;
     }
 
     /// add a new element
-    bool addvalue ( const pValue val, const IndexType idx )
-    {
+    bool addvalue ( const pValue val, const IndexType idx ) {
         size_t ii=0;
         while ( ii<elements.size() ) {
-            if ( verbose>=4 )
-                myprintf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
+            if ( verbose>=4 ) {
+                myprintf ( "Pareto::addvalue: compare new element to element %d\n", ( int ) ii );
+            }
             if ( elements[ii].dominates ( val ) ) {
                 if ( elements[ii].equal ( val ) ) {
                     elements[ii].indices.push_back ( idx );
-                    if ( verbose>=3 )
+                    if ( verbose>=3 ) {
                         myprintf ( "Pareto::addvalue: new pareto item (same value)\n" );
+                    }
                     return true;
                 } else {
                     // not a pareto element, so continue
                     if ( verbose>=3 ) {
                         myprintf ( "Pareto::addvalue: not pareto\n" );
-			myprintf(" new elememnt : "); this->showvalue(val); myprintf("\n");
-			myprintf("  dominated by: "); this->showvalue(elements[ii].value); myprintf("\n");
-		    }
+                        myprintf ( " new elememnt : " );
+                        this->showvalue ( val );
+                        myprintf ( "\n" );
+                        myprintf ( "  dominated by: " );
+                        this->showvalue ( elements[ii].value );
+                        myprintf ( "\n" );
+                    }
                     return false;
                 }
             }
@@ -216,16 +248,21 @@ public:
                 // element ii is dominated by the new element, we remove element ii
                 if ( verbose>=2 ) {
                     printf ( "Pareto::addvalue: removing element\n" );
-	      if ( verbose>=3 ) {
-			myprintf("  new element : "); this->showvalue(val); myprintf("\n");
-			myprintf("removing %3d : ", (int)ii); this->showvalue(elements[ii].value); myprintf("\n");
-		    }
+                    if ( verbose>=3 ) {
+                        myprintf ( "  new element : " );
+                        this->showvalue ( val );
+                        myprintf ( "\n" );
+                        myprintf ( "removing %3d : ", ( int ) ii );
+                        this->showvalue ( elements[ii].value );
+                        myprintf ( "\n" );
+                    }
 
-	    }
+                }
                 elements.erase ( elements.begin() +ii );
             } else {
-                if ( verbose>=4 )
+                if ( verbose>=4 ) {
                     myprintf ( "Pareto:addvalue: ii++\n" );
+                }
                 ii++;
             }
         }
@@ -235,11 +272,13 @@ public:
         p.value = val;
         p.indices.push_back ( idx );
         this->elements.push_back ( p );
-        if ( verbose>=2 )
-            myprintf ( "Pareto: addvalue: new pareto item (new value), total is %ld\n", (long)this->elements.size() );
+        if ( verbose>=2 ) {
+            myprintf ( "Pareto: addvalue: new pareto item (new value), total is %ld\n", ( long ) this->elements.size() );
+        }
         return true;
     }
 };
 
 
 #endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
