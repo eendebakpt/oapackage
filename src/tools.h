@@ -496,7 +496,7 @@ void print_array ( const array_link &A );
 
 #ifdef FULLPACKAGE
 template <class atype>
-/// print vector
+/// print vector using generic cout print functionality
 void display_vector ( const std::vector<atype> &v )
 {
     const char *sep = " ";
@@ -511,11 +511,14 @@ void display_vector ( const std::vector<atype> &v )
 #endif
 
 template <class atype>
-/// print vector
-void printf_vector ( const std::vector<atype> &v, const char *format )
+/// print vector using printf function
+void printf_vector ( const std::vector<atype> &v, const char *format, const char *sep ="" )
 {
-    for ( unsigned int i=0; i<v.size(); i++ )
+    for ( unsigned int i=0; i<v.size(); i++ ) {
         myprintf ( format, v[i] );
+		if (i<v.size()-1)
+			myprintf ("%s", sep );
+}
 }
 
 #ifdef FULLPACKAGE
