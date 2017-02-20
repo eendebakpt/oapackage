@@ -1236,3 +1236,19 @@ def formatC(al, wrap=True):
     if wrap:
         s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (al.n_rows, al.n_columns) + s + '};'
     return s
+
+#%%
+
+def create_pareto_element( vv, pareto=None ):
+    """ Create a vector of mvalue_t elements 
+    Args:
+        vv (list): list with tuples or arrays
+    """
+    if isinstance(pareto, oalib.ParetoMultiLong):
+        vector_pareto=oalib.mvalueVector( )
+        for v in vv:
+            vec=oalib.mvalue_t_long(list(v) )
+            vector_pareto.push_back(vec)
+    else:
+        vector_pareto = vv
+    return vector_pareto
