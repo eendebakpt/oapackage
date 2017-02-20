@@ -2521,6 +2521,7 @@ double array_link::Eefficiency() const
 
 std::vector<int> array_link::Fvalues ( int jj ) const
 {
+     /// TODO: this assumes the strength is at least 3
      jstruct_t js ( *this, jj );
      std::vector<int> FF=js.calculateF();
      return FF;

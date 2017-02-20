@@ -7,4 +7,5 @@ Example notebooks
 * [Conference isomorphisms](conference_design_isomorphism.ipynb)
 * [Write arrays to disk, or read from disk](example_oa_files.ipynb)
 * [Reduction of graphs to normal form using Nauty](example_nauty.ipynb)
+* [Calculate a Pareto optimal set of elements](example_pareto.ipynb)
 

@@ -30,7 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define myPrintf Rprintf
 #else
 #include <stdio.h>
-//#define myPrintf printf
+  #ifdef SWIGCODE
+  #include "printfheader.h"
+  #else
+  #define myprintf printf
+  #endif
 #endif
 
 #include <stdlib.h>
@@ -140,16 +144,16 @@ public:
     {
         if ( verbose==0 )
             return;
-        printf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
+        myprintf ( "Pareto: %ld optimal values, %d objects\n", (long)elements.size(),  numberindices()  );
         if ( verbose>=2 ) {
             for ( size_t i=0; i<elements.size(); i++ ) {
-                printf ( "value %d: ", (int)i );
+                myprintf ( "value %d: ", (int)i );
                 detail::display_vector ( elements[i].value, "; " );
-                printf ( "\n" );
+                myprintf ( "\n" );
                 if ( verbose>=3 ) {
-                    printf ( "  indices: " );
+                    myprintf ( "  indices: " );
                     detail::display_vector ( elements[i].indices, ", " );
-                    printf ( "\n" );
+                    myprintf ( "\n" );
                 }
             }
         }
@@ -191,19 +195,19 @@ public:
         size_t ii=0;
         while ( ii<elements.size() ) {
             if ( verbose>=4 )
-                printf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
+                myprintf ( "Pareto::addvalue: compare new element to element %d\n", (int) ii );
             if ( elements[ii].dominates ( val ) ) {
                 if ( elements[ii].equal ( val ) ) {
                     elements[ii].indices.push_back ( idx );
                     if ( verbose>=3 )
-                        printf ( "Pareto::addvalue: new pareto item (same value)\n" );
+                        myprintf ( "Pareto::addvalue: new pareto item (same value)\n" );
                     return true;
                 } else {
                     // not a pareto element, so continue
                     if ( verbose>=3 ) {
-                        printf ( "Pareto::addvalue: not pareto\n" );
-			printf(" new elememnt : "); this->showvalue(val); printf("\n");
-			printf("  dominated by: "); this->showvalue(elements[ii].value); printf("\n");
+                        myprintf ( "Pareto::addvalue: not pareto\n" );
+			myprintf(" new elememnt : "); this->showvalue(val); myprintf("\n");
+			myprintf("  dominated by: "); this->showvalue(elements[ii].value); myprintf("\n");
 		    }
                     return false;
                 }
@@ -213,15 +217,15 @@ public:
                 if ( verbose>=2 ) {
                     printf ( "Pareto::addvalue: removing element\n" );
 	      if ( verbose>=3 ) {
-			printf("  new element : "); this->showvalue(val); printf("\n");
-			printf("removing %3d : ", (int)ii); this->showvalue(elements[ii].value); printf("\n");
+			myprintf("  new element : "); this->showvalue(val); myprintf("\n");
+			myprintf("removing %3d : ", (int)ii); this->showvalue(elements[ii].value); myprintf("\n");
 		    }
 
 	    }
                 elements.erase ( elements.begin() +ii );
             } else {
                 if ( verbose>=4 )
-                    printf ( "Pareto:addvalue: ii++\n" );
+                    myprintf ( "Pareto:addvalue: ii++\n" );
                 ii++;
             }
         }
@@ -232,7 +236,7 @@ public:
         p.indices.push_back ( idx );
         this->elements.push_back ( p );
         if ( verbose>=2 )
-            printf ( "Pareto: addvalue: new pareto item (new value), total is %ld\n", (long)this->elements.size() );
+            myprintf ( "Pareto: addvalue: new pareto item (new value), total is %ld\n", (long)this->elements.size() );
         return true;
     }
 };
