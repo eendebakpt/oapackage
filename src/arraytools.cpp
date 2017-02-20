@@ -1807,7 +1807,7 @@ void array_link::showproperties() const
      std::vector<double> gwlp = this->GWLP();
 #ifdef FULLPACKAGE
      myprintf ( "  GWLP " );
-     display_vector ( gwlp );
+     printf_vector ( gwlp, "%d", " " );
      myprintf ( "\n" );
 #endif
      return;
@@ -3313,7 +3313,6 @@ void jstruct_t::calcj4 ( const array_link &al )
      delete_perm ( pp );
 }
 
-/// create table with J2 values
 
 void jstruct_t::calcj5 ( const array_link &al )
 {
@@ -3355,6 +3354,12 @@ void jstruct_t::calcj5 ( const array_link &al )
 }
 
 
+/** Create an object to calculate J-characteristics
+ * 
+ * @param al Array to use
+ * @param jj Type of J-characteristics to calculate
+ * 
+ **/
 jstruct_t::jstruct_t ( const array_link &al, int jj )
 {
      const int k=al.n_columns;

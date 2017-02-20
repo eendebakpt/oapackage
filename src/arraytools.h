@@ -735,7 +735,7 @@ public:
     /// calculate E-efficiency
     double Eefficiency () const;
 
-    /// Calculate F-values of a 2-level matrix
+    /// Calculate F-values of a 2-level matrix. This assumes the strength is at least 3. Otherwise use the jstruct_t object
     std::vector < int >Fvalues ( int jj ) const;
 
     /// Calculate F-values of a conference design
@@ -1213,7 +1213,7 @@ public:
  * @brief struct to hold data of an array, e.g. J-characteristic, rank
  *
  * See papers: Minimum G2-aberration properties of two-level foldover designs, Butler, 2004
- *  Design Selection and Classification for Hadamard Matrices Using Generalized Minimum Aberration Criteria, Deng and Tang
+ *             Design Selection and Classification for Hadamard Matrices Using Generalized Minimum Aberration Criteria, Deng and Tang
  *
  */
 class jstruct_t
@@ -1228,10 +1228,12 @@ public:
     double A;                   // abberation
 
 public:
+    /// Create an object to calculate J-characteristics
     jstruct_t ();
+    /// Create an object to calculate J-characteristics
+    jstruct_t ( const array_link & al, int jj = 4 );
     jstruct_t ( const int N, const int K, const int jj = 4 );
     jstruct_t ( const jstruct_t & js );
-    jstruct_t ( const array_link & al, int jj = 4 );
     ~jstruct_t ();
 
 private:
