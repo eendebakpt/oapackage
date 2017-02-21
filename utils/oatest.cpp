@@ -330,6 +330,13 @@ int main ( int argc, char* argv[] )
 
      //print_options(); exit(0);
 
+{
+     array_link al = exampleArray(r);
+     
+    array_transformation_t tt = reduceOAnauty(al);
+array_link alx = tt.apply(al);
+exit(0);     
+}
 
      {
           bool addcol=true;
