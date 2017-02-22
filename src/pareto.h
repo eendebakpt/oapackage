@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <deque>
 #include <iterator>
+#include <sstream>
 
 namespace detail
 {
