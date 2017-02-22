@@ -49,7 +49,8 @@ def test_numpy_interface(verbose=0):
     if verbose:
         print('direct')
     al = array_link(A)
-    al.showarray()
+    if verbose:
+        al.showarray()
     Ax = np.array(al)
     if verbose:
         print(A)
