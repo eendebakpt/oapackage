@@ -132,7 +132,6 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
 #
 
 
-
 #%%
 
 from oapackage import makearraylink
@@ -173,6 +172,7 @@ def selectIsomorphismClasses(sols, verbose=1):
 
     return b, mm
 
+
 def test_select_isomorphism():
-    ll=[oapackage.exampleArray(0),oapackage.exampleArray(0)]
+    ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
     selectIsomorphismClasses(ll)

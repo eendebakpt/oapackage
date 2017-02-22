@@ -24,14 +24,17 @@ import_array();
 #endif
 %}
 
+%apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
+%apply ( double* IN_ARRAY2, int DIM1, int DIM2 ) { (double* pymatdoubleinput, int nrows, int ncols) }
+
 %apply (double* ARGOUT_ARRAY1, int DIM1) {(double* pymat1, int nrows)}
-%apply (double* ARGOUT_ARRAY2, int DIM1, int DIM2) {(double* pymat2, int nrows, int ncols)}
+//%apply (double* ARGOUT_ARRAY2, int DIM1, int DIM2) {(double* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(int* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* pymat1, int n)}
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
-%apply (int* ARGOUT_ARRAY1, int DIM1, double xx) {(int* rangevec, int n, double xx)}
-%apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(array_t* pymat2, int nrows, int ncols)}
+//%apply (int* ARGOUT_ARRAY1, int DIM1, double xx) {(int* rangevec, int n, double xx)}
+//%apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(array_t* pymat2, int nrows, int ncols)}
 
 // enable keyword arguments in interface
 //%feature ("kwargs")

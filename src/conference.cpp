@@ -2189,9 +2189,9 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
      int vb=std::max ( 0, verbose-1 );
 
-     int ncstart=3;
-     if ( lst.size() >0 )
-          ncstart=lst[0].n_columns+1;
+     //int ncstart=3;
+     //if ( lst.size() >0 )
+     //     ncstart=lst[0].n_columns+1;
 
      CandidateGeneratorDouble cgenerator ( array_link() , ctype );
 

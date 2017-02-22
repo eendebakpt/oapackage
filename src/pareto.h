@@ -50,7 +50,9 @@ template <class atype>
 /// generic function to print a std::vector
 void display_vector ( const std::vector<atype> &v, const char *sep = " " )
 {
-    std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
+    std::stringstream buffer;
+    std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( buffer, sep ) );
+    myprintf("%s", buffer.str().c_str() );
 }
 template <>
 /// specialized function to print a std::vector
@@ -67,6 +69,7 @@ template <>
 /// specialized function to print a std::vector
 inline void display_vector ( const std::vector<long> &v, const char *sep )
 {
+    //myprintf("long case");
     for ( size_t i=0; i<v.size(); i++ ) {
         myprintf ( "%ld", v[i] );
         if ( i<v.size()-1 ) {
@@ -79,6 +82,7 @@ template <>
 /// specialized function to print a std::vector
 inline void display_vector ( const std::vector<double> &v, const char *sep )
 {
+    //myprintf("int case");
     for ( size_t i=0; i<v.size(); i++ ) {
         myprintf ( "%f", v[i] );
         if ( i<v.size()-1 ) {

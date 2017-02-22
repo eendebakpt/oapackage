@@ -547,6 +547,42 @@ array_link::array_link ( const array_link &rhs )   //: n_rows(rhs.n_rows), n_col
 #endif
 }
 
+#ifdef SWIGCODE
+/*
+    array_link::array_link ( double* pymatdoubleinput, int nrows, int ncols )
+    {
+     this->index=INDEX_DEFAULT;
+     this->n_columns=ncols;
+     this->n_rows=nrows;
+     this->array = create_array ( this->n_rows, this->n_columns );
+     int i=0;
+          for(int row=0; row<this->n_rows; row++ ) {
+     for ( int col=0; col<this->n_columns;col++) {
+               this->array[row+col*this->n_rows] = (array_t)pymatdoubleinput[i];
+          i++;
+     }
+     }
+    }
+*/
+    
+    array_link::array_link ( long* pymatinput, int nrows, int ncols )
+    {
+     this->index=INDEX_DEFAULT;
+     this->n_columns=ncols;
+     this->n_rows=nrows;
+     this->array = create_array ( this->n_rows, this->n_columns );
+     int i=0;
+          for(int row=0; row<this->n_rows; row++ ) {
+     for ( int col=0; col<this->n_columns;col++) {
+               this->array[row+col*this->n_rows] = pymatinput[i];
+          i++;
+     }
+     }
+    }
+    
+#endif
+
+
 array_link::array_link ( Eigen::MatrixXd &m )
 {
      this->index=INDEX_DEFAULT;

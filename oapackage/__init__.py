@@ -35,6 +35,36 @@ def autodoctest():
     return
 
 
+def test_numpy_interface(verbose=0):
+    A = np.eye(3, 4).astype(int)
+    A[0, :] = [10, 20, 30, 50]
+    A[2, :] = [-3, -4, -5, -6]
+
+    if verbose:
+        print('makearraylink')
+    al = makearraylink(A)
+    if verbose:
+        al.showarray()
+
+    if verbose:
+        print('direct')
+    al = array_link(A)
+    al.showarray()
+    Ax = np.array(al)
+    if verbose:
+        print(A)
+        print(Ax)
+
+    if 0:
+        # not possible right now...
+        if verbose:
+            print('direct float')
+        A = np.eye(3).astype(float)
+        al = array_link(A)
+        if verbose:
+            al.showarray()
+
+
 def unittest(verbose=1):
     """ Perform some unit testing, return True if succesfull """
     if verbose:
@@ -42,6 +72,9 @@ def unittest(verbose=1):
     al = oalib.array_link()
     ii = 0
     al = oalib.exampleArray(ii, 0)
+
+
+    test_numpy_interface()
 
     if not isinstance(al.getarray(), np.ndarray):
         print(

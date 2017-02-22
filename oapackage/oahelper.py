@@ -1239,15 +1239,18 @@ def formatC(al, wrap=True):
 
 #%%
 
-def create_pareto_element( vv, pareto=None ):
+
+def create_pareto_element(values, pareto=None):
     """ Create a vector of mvalue_t elements 
     Args:
         vv (list): list with tuples or arrays
     """
-    if isinstance(pareto, oalib.ParetoMultiLong):
-        vector_pareto=oalib.mvalueVector( )
-        for v in vv:
-            vec=oalib.mvalue_t_long(list(v) )
+    if pareto is None:
+        pareto = oalib.ParetoDoubleLong()
+    if isinstance(pareto, oalib.ParetoMultiLongLong):
+        vector_pareto = oalib.mvalueVector()
+        for v in values:
+            vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     else:
         vector_pareto = vv

@@ -654,6 +654,10 @@ struct array_link {
     array_link ( const array_link & );
     array_link ( Eigen::MatrixXd & m );
 
+#ifdef SWIGCODE
+    array_link ( long* pymatinput, int nrows, int ncols );
+   // array_link ( double* pymatdoubleinput, int nrows, int ncols );
+#endif
     array_link clone () const;
 
 public:
