@@ -289,10 +289,7 @@ print('find_packages: %s' % find_packages())
 #print('swig_opts: %s' % str(swig_opts) )
 
 data_files = []
-#data_files+=[ ('', ['scripts/example_python_testing.py'])]
-
 scripts = ['scripts/example_python_testing.py']
-
 packages = ['oapackage']
 
 # fix from:

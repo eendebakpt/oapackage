@@ -75,7 +75,7 @@ def unittest(verbose=1):
     al = oalib.exampleArray(ii, 0)
 
 
-    test_numpy_interface()
+    #test_numpy_interface()
 
     if not isinstance(al.getarray(), np.ndarray):
         print(

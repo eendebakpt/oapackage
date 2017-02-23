@@ -138,11 +138,21 @@ from oapackage import makearraylink
 
 
 def selectIsomorphismClasses(sols, verbose=1):
-    """ Select isomorphism classes from a list of designs """
+    """ Select isomorphism classes from a list of designs 
+    
+    Args:
+        sols (list of arrays)
+        verbose (int)
+    Return:
+        indices (list)
+        
+    """
+
     # perform check on array data type
     mm = []
     for ii, al in enumerate(sols):
-        oapackage.tprint('selectIsomorphismClasses: array %d' % ii)
+        if verbose:
+            oapackage.tprint('selectIsomorphismClasses: process aray %d/%d'  % ( ii, len(sols)) )
         al = oapackage.makearraylink(al)
 
         tt = oapackage.reduceOAnauty(al, verbose >= 2)
@@ -164,13 +174,13 @@ def selectIsomorphismClasses(sols, verbose=1):
     dt = qq[0].dtype.descr * nx
     qqq = np.array(qq, dtype=dt)
 
-    a, b = np.unique(qqq, return_inverse=True)
+    a, indices = np.unique(qqq, return_inverse=True)
 
     if verbose >= 1:
         print('selectIsomorphismClasses: reduce %d to %d' %
-              (len(sols), np.unique(b).size))
+              (len(sols), np.unique(indices).size))
 
-    return b, mm
+    return indices, mm
 
 
 def test_select_isomorphism():
