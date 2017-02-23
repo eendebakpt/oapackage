@@ -26,8 +26,12 @@ it is necessary to check they are correct.
 
 #define DEFAULT_WORDSIZE 0
 #define SIZEOF_INT 4
+#ifdef _MSC_VER
+#define SIZEOF_LONG 4
+#else
 #define SIZEOF_LONG 8
-#define SIZEOF_LONG_LONG 8   /* 0 if nonexistent */
+#endif
+#define SIZEOF_LONG_LONG 0  /* 0 if nonexistent */
 
 #define HAVE_CONST 1    /* compiler properly supports const */
 
