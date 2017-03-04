@@ -163,7 +163,7 @@ class OATest(TestCommand):
         print('## oapackage test: load package')
         import oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
-        print('## oapackage test: package compile options\n%s\n' % oapackage.compile_options())
+        print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
         oapackage.unittest(verbose=1)
         if 0:
