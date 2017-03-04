@@ -346,7 +346,7 @@ setup(name='OApackage',
       # people to run tests!
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
       zip_safe=False,
-      install_requires=['numpy>=1.9'],
+      install_requires=['numpy>=1.10'],
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
                    'Programming Language :: Python :: 2',

@@ -137,6 +137,7 @@ template <class ValueType, class IndexType>
  *
  * The class is templated by the type of values to be compared and an index type. The index type is used to index the elements.
  *
+ * For elements added to the Pareto structure larger is better.
  */
 class Pareto
 {

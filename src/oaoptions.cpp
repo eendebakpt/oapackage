@@ -11,6 +11,10 @@
 #include "printfheader.h"
 #include "tools.h"
 
+namespace nauty {
+#include "nauty.h"
+}
+
 /// Information about compile time options
 std::string compile_information()
 {
@@ -176,7 +180,11 @@ std::string print_options_string ( )
     outx << std::endl;
 
     outx << tabsep << "columns sorting method: " << oacolSortName << std::endl;
+    outx << tabsep << "nauty: SIZEOF_LONG " << SIZEOF_LONG << std::endl;
 
+	if (SIZEOF_LONG!=sizeof(long) ) {
+	outx << tabsep << "!! ERROR: sizeof(long) does not correspond to compile time size of long"	<< std::endl;
+	}
 	const std::string s  = outx.str();
 	return s;
 }

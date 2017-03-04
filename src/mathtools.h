@@ -464,6 +464,11 @@ private:
         return 1;
     }
 
+    /** return true if the argument element is larger than this value
+	 * 
+	 * The comparision is from left to right.
+	 * 
+	 */    
     int better ( const mvalue_t &rhs ) const
     {
         for ( size_t i=0; i<this->v.size(); i++ ) {
