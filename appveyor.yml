@@ -69,6 +69,8 @@ install:
   # not already installed.
   - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
 
+  # install proxy, see https://www.appveyor.com/docs/how-to/http-proxy/
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-http-proxy.ps1'))
   
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
