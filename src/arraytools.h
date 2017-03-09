@@ -167,10 +167,8 @@ typedef const int const_colindex_t;		    /** constant version of type used for c
 
 #else
 
-typedef short int
-array_t;			/** type of elements in an orthogonal array *//* array_t should be signed! */
-typedef const short int
-carray_t;				/** constant version of array_t */
+typedef short int array_t;			/** type of elements in an orthogonal array *//* array_t should be signed! */
+typedef const short int carray_t;				/** constant version of array_t */
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_SHORT

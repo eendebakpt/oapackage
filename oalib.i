@@ -204,7 +204,8 @@ def __getattr__(self, attr):
       a = dict()
       a['version']=3
       a['shape']=(self.n_rows, self.n_columns)
-      a['typestr']='<i4' # sizeof(array_t)
+      sizeofdata=_oalib.sizeof_array_t()
+      a['typestr']='<i%d' % sizeofdata # sizeof(array_t)
       a['data']=(self.data(), False)
       # convert from the OAP column-major style to Numpy row-major style
       a['strides']=(2, 2*self.n_rows)

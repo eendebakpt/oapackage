@@ -22,9 +22,6 @@ __version__ = oalib.version()
 
 #%%
 
-if oalib.sizeof_array_t()!=4:
-  raise Exception('sizeof(array_t) is unequal to 4, array interface will not work')
-
 
 def autodoctest():
     """ Test the module using autodoc
