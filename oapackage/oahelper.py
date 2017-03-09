@@ -20,6 +20,7 @@ import functools
 from collections import Counter
 import operator
 import fileinput
+import traceback
 import re
 from time import gmtime, strftime
 import time
@@ -733,18 +734,18 @@ def mkdirc(xdir):
         os.mkdir(xdir)
     return xdir
 
-import traceback
 
-try:
-    import dateutil
-    import dateutil.parser
-except:
-    warnings.warn('oahelper: could not load datautil package...')
-    pass
 
 
 def parseProcessingTime(logfile, verbose=0):
     """ Parse a log file to calculate the processing time """
+
+    try:
+        import dateutil.parser
+    except:
+        warnings.warn('oahelper: could not load dateutil package...')
+        pass
+
     fileinput.close()
     tstart = None
     tend = None

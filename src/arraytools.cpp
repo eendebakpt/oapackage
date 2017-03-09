@@ -25,6 +25,11 @@
 
 using namespace std;
 
+int sizeof_array_t()
+{
+ return sizeof(array_t);   
+}
+
 #ifdef WIN32
 #else
 #include <fcntl.h>

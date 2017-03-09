@@ -145,8 +145,6 @@ extern
 "C" {
 }
 
-//typedef int int32_t;
-
 #ifdef OADEBUG
 
 typedef int
@@ -156,24 +154,16 @@ array_t;		/** type of array elements,  should be signed! */
 typedef int
 carray_t;			/* array_t should be signed! */
 #else
-typedef const int
-carray_t;			/* array_t should be signed! */
-//typedef int carray_t; /* array_t should be signed! */
+typedef const int carray_t;			/* array_t should be signed! */
 #endif
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_INT
 /*other options for MPI_ARRAY_T are: char: MPI_CHAR, short: MPI_SHORT, int: MPI_INT, long: MPI_LONG */
 
-typedef int
-rowindex_t;			/** type used for row indexing */
-typedef int
-colindex_t;		/** type used for column indexing */
-typedef const int
-const_colindex_t;		    /** constant version of type used for column indexing */
-
-//typedef long colindex_t; /** type used for column indexing */
-//typedef const long const_colindex_t; /** constant version of type used for column indexing */
+typedef int rowindex_t;			/** type used for row indexing */
+typedef int colindex_t;		/** type used for column indexing */
+typedef const int const_colindex_t;		    /** constant version of type used for column indexing */
 
 #else
 
@@ -186,19 +176,14 @@ carray_t;				/** constant version of array_t */
 #define MPI_ARRAY_T MPI_SHORT
 /*other options for MPI_ARRAY_T are: char: MPI_CHAR, short: MPI_SHORT, int: MPI_INT, long: MPI_LONG */
 
-typedef short int
-rowindex_t;				/** type used for row indexing */
-typedef int
-colindex_t;		/** type used for column indexing */
-typedef const int
-const_colindex_t;		    /** constant version of type used for column indexing */
+typedef short int rowindex_t;				/** type used for row indexing */
+typedef int colindex_t;		/** type used for column indexing */
+typedef const int const_colindex_t;		    /** constant version of type used for column indexing */
 
 #endif /* OADEBUG */
 
-typedef array_t *
-array_p;			/** pointer to array */
-typedef carray_t *
-carray_p;			/** point to constant array */
+typedef array_t * array_p;			/** pointer to array */
+typedef carray_t * carray_p;			/** point to constant array */
 
 //#define XX
 #ifdef XX
@@ -220,6 +205,8 @@ vindex_t;			/* value index type */
 struct array_link;
 struct arraydata_t;
 
+/// return size in bytes of array_t type
+int sizeof_array_t();
 
 /// possible values for J-values of 2-level design
 inline
