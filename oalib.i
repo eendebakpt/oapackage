@@ -208,7 +208,7 @@ def __getattr__(self, attr):
       a['typestr']='<i%d' % sizeofdata # sizeof(array_t)
       a['data']=(self.data(), False)
       # convert from the OAP column-major style to Numpy row-major style
-      a['strides']=(2, 2*self.n_rows)
+      a['strides']=(sizeofdata, sizeofdata*self.n_rows)
       return a
     else:
       raise AttributeError("%r object has no attribute %r" %
