@@ -123,6 +123,9 @@ def unittest(verbose=1):
     from . graphtools import oa2graph
     arrayclass = oalib.arraylink2arraydata(al)
     _ = oa2graph(al, arrayclass)
+    
+    test_numpy_interface()
+    
     return True
 
 #%%
