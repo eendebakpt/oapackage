@@ -1854,11 +1854,15 @@ void array_link::showproperties() const
      return;
 }
 
+void array_link::debug() const
+{
+	myprintf("debug: %ld %p", (long)array, (void *)array);
+}
 #ifdef SWIGCODE
-unsigned long array_link::data()
+void * array_link::data()
 {
      //return ( static_cast<long>( (void *) array ) );
-     return ( unsigned long ( size_t ( ( void * ) array ) ) );
+     return ( void* ( array ) );
 }
 #else
 #endif
