@@ -1855,10 +1855,10 @@ void array_link::showproperties() const
 }
 
 #ifdef SWIGCODE
-long array_link::data()
+unsigned long array_link::data()
 {
      //return ( static_cast<long>( (void *) array ) );
-     return ( long ( size_t ( ( void * ) array ) ) );
+     return ( unsigned long ( size_t ( ( void * ) array ) ) );
 }
 #else
 #endif

@@ -1017,7 +1017,7 @@ public:
     std::string showarrayS () const;
 
 #ifdef SWIGCODE
-    long data ();			/// return pointer to data, needed for swig interface
+    unsigned long data ();			/// return pointer to data, needed for swig interface
 #endif
 
 };

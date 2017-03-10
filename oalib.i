@@ -206,7 +206,7 @@ def __getattr__(self, attr):
       a['shape']=(self.n_rows, self.n_columns)
       sizeofdata=_oalib.sizeof_array_t()
       a['typestr']='<i%d' % sizeofdata # sizeof(array_t)
-      a['data']=(self.data(), False)
+      a['data']=(self.data(), True)
       # convert from the OAP column-major style to Numpy row-major style
       a['strides']=(sizeofdata, sizeofdata*self.n_rows)
       return a
