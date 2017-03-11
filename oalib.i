@@ -193,11 +193,14 @@ def transformGraphMatrix(G, tr, verbose=1):
 %}
 
 
+/* Convert from C --> Python */
+%typemap(out) void * {
+    $result = PyLong_FromVoidPtr($1);
+}
 
 
 %extend array_link {
 %insert("python") %{
-#__array_interface__ = None
 
 def __getattr__(self, attr):
     if attr=='__array_interface__':
@@ -206,7 +209,7 @@ def __getattr__(self, attr):
       a['shape']=(self.n_rows, self.n_columns)
       sizeofdata=_oalib.sizeof_array_t()
       a['typestr']='<i%d' % sizeofdata # sizeof(array_t)
-      a['data']=(self.data(), False)
+      a['data']=(self.data(), True)
       # convert from the OAP column-major style to Numpy row-major style
       a['strides']=(sizeofdata, sizeofdata*self.n_rows)
       return a

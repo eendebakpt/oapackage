@@ -25,9 +25,9 @@
 
 
 #ifdef WIN32
-#ifdef FULLPACKAGE
-#include "msstdint.h"
-#endif
+	#ifdef FULLPACKAGE
+	#include "msstdint.h"
+	#endif
 #else
 #ifdef _WIN32			// || __CYGWIN__
 // No visual studio!
@@ -36,6 +36,9 @@
 #ifndef int32_t
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
+#endif
+#ifndef uint64_t
+typedef (unsigned __int64) uint64_t;
 #endif
 #endif
 
@@ -611,6 +614,12 @@ array_link exampleArray ( int idx = 0, int verbose = 0 );
 /// calculate J-characteristics for a conference design
 std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
+//#define voidp_t (void*)
+
+//typedef uint64_t voidp_t;
+#ifdef SWIGCODE
+#endif
+
 /*! \brief Wrapper class for an array
 
  The array_link struct is a struct that represents an arrays. Copying of array links
@@ -1016,8 +1025,10 @@ public:
 //private:
     std::string showarrayS () const;
 
+	void debug() const;
 #ifdef SWIGCODE
-    long data ();			/// return pointer to data, needed for swig interface
+
+    void* data ();			/// return pointer to data, needed for swig interface
 #endif
 
 };

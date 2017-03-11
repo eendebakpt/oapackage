@@ -127,7 +127,7 @@ void array_transformation_t::show ( ) const
      std::stringstream ss;
      this->show ( ss );
      //std::cout << ss.str();
-     printf ( "%s", ss.str().c_str() );
+     myprintf ( "%s", ss.str().c_str() );
 #endif
 }
 
@@ -202,11 +202,8 @@ void array_transformation_t::free()
           return;
      }
 
-//printf("array_transformation_t::free\n");
      delete_perm ( rperm );
-//printf("array_transformation_t::free: delete colperm (ad %ld)\n", long(ad));
      delete_perm ( cperm );
-//myprintf("array_transformation_t::free: delete lperms\n");
      for ( colindex_t c=0; c<ad->ncols; c++ ) {
           delete_perm ( lperms[c] );
      }
@@ -259,19 +256,16 @@ array_transformation_t::~array_transformation_t()
 
 bool array_transformation_t::isIdentity() const
 {
-     //	myprintf("isIdentity:\n");
      for ( int i=0; i<ad->ncols; ++i ) {
           if ( cperm[i]!=i ) {
                return 0;
           }
      }
-     //	myprintf("isIdentity: cols good\n");
      for ( int i=0; i<ad->N; ++i ) {
           if ( rperm[i]!=i ) {
                return 0;
           }
      }
-     //	myprintf("isIdentity: rows good\n");
      for ( int c=0; c<ad->ncols; ++c ) {
           for ( int i=0; i<ad->s[c]; ++i ) {
                if ( lperms[c][i]!=i ) {
@@ -279,7 +273,6 @@ bool array_transformation_t::isIdentity() const
                }
           }
      }
-     //	myprintf("isIdentity: yes\n");
      return 1;
 }
 
@@ -429,7 +422,6 @@ void foldtest ( jstruct_t &js, const array_link &al, int jj, int verbose )
      const rowindex_t N = al.n_rows;
      const colindex_t k = al.n_columns;
      int *pp = new_comb_init<int> ( jj );
-     //printf("array:\n"); print_array(al);
 
      array_t **tmpcol = malloc2d<array_t> ( jj+1, N );
      std::fill ( tmpcol[0], tmpcol[0]+N, 0 );
@@ -650,7 +642,7 @@ void array_link::setvalue ( int r, int c, double val )
 {
      if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
 #ifdef FULLPACKAGE
-          printf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
+          myprintf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
 #endif
           return;
      }
@@ -832,7 +824,7 @@ std::string array_link::md5() const
 void showArrayList ( const arraylist_t &lst )
 {
      for ( size_t i=0; i<lst.size(); i++ ) {
-          printf ( "array %d:\n", ( int ) i );
+          myprintf ( "array %d:\n", ( int ) i );
           lst[i].showarray();
      }
 }
@@ -1854,11 +1846,15 @@ void array_link::showproperties() const
      return;
 }
 
+void array_link::debug() const
+{
+	myprintf("debug: %ld %p %p", (long)this->array, (void *)array, ( void * )array);
+}
 #ifdef SWIGCODE
-long array_link::data()
+void* array_link::data()
 {
      //return ( static_cast<long>( (void *) array ) );
-     return ( long ( size_t ( ( void * ) array ) ) );
+     return (  (void*) ( this->array ) );
 }
 #else
 #endif
@@ -2599,7 +2595,7 @@ std::vector<int> array_link::Jcharacteristics ( int jj ) const
                /// assume design is conference matrix
                return ::Jcharacteristics_conference ( *this, jj, 0 );
           } else {
-               printf ( "not implemented\n" );
+               myprintf ( "not implemented\n" );
                return std::vector<int>();
           }
      }
@@ -3539,7 +3535,7 @@ void jstructbase_t::showdata ( int verbose )
      if ( verbose>=2 ) {
           typedef std::map<int, int>::const_iterator it_type;
           for ( it_type iterator = this->jvalue2index.begin(); iterator != this->jvalue2index.end(); iterator++ ) {
-               printf ( "this->jvalue2index[%d]=%d\n", iterator->first, iterator->second );
+               myprintf ( "this->jvalue2index[%d]=%d\n", iterator->first, iterator->second );
           }
      }
 #endif
@@ -4137,10 +4133,6 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
                     a.array[idx] = a.array[idx] % 2;
                }
           }
-          if ( dbg ) {
-               myprintf ( "  here: %ld %ld\n", ( long ) diffarray.array, ( long ) a.array );
-          }
-
      }
      diffarray=a;
      if ( dbg ) {
@@ -4285,7 +4277,7 @@ int arrayfile_t::read_array ( array_t* array, const int nrows, const int ncols )
      break;
      default
                :
-          printf ( "arrayfile_t::read_array: error: no such mode %d\n", this->mode );
+          myprintf ( "arrayfile_t::read_array: error: no such mode %d\n", this->mode );
           break;
      }
 
@@ -4304,7 +4296,7 @@ void arrayfile_t::writeheader()
 
           if ( this->mode == arrayfile::ABINARY_DIFFZERO ) {
                // NOTE: needed because in ABINARY_DIFFZERO we diff modulo 2
-               if ( this->nbits!=1 ) printf ( "not implemented...!\n" );
+               if ( this->nbits!=1 ) myprintf ( "not implemented...!\n" );
                assert ( this->nbits==1 );
           }
           fwrite ( ( const void* ) & magic,sizeof ( int ),1,this->nfid );
@@ -5149,11 +5141,11 @@ int appendarrayfile ( const char *fname, const array_link al )
      arrayfile_t *afile = new arrayfile_t ( fname );
 
      if ( dverbose ) {
-          printf ( "\n### appendarrayfile: opened array file: %s\n", afile->showstr().c_str() );
+          myprintf ( "\n### appendarrayfile: opened array file: %s\n", afile->showstr().c_str() );
      }
 
      if ( ! afile->isopen() ) {
-          printf ( "appendarrayfile: creating new array file %s\n", fname );
+          myprintf ( "appendarrayfile: creating new array file %s\n", fname );
           {
                nrows=al.n_rows;
                ncols=al.n_columns;
@@ -5169,20 +5161,20 @@ int appendarrayfile ( const char *fname, const array_link al )
                //afile->nfid = fopen(fname, "r+b");
 
                fseek ( afile->nfid, 0, SEEK_SET );
-               printf ( "  " );
+               myprintf ( "  " );
                printfd ( "file is at position %d\n", ftell ( afile->nfid ) );
 
                char buf[4]= {1,2,3,4};
                int p = fseek ( afile->nfid, 0, SEEK_END );
-               printf ( "  p %d, afile->nfid %ld\n", p, ( long ) afile->nfid );
-               printf ( " fseek errno: %s\n", strerror ( errno ) );
+               myprintf ( "  p %d, afile->nfid %ld\n", p, ( long ) afile->nfid );
+               myprintf ( " fseek errno: %s\n", strerror ( errno ) );
                int rr=fread ( buf, 1, 4, afile->nfid );
-               printf ( "rr %d, something went wrong with fread()? %s\n", rr, strerror ( errno ) );
+               myprintf ( "rr %d, something went wrong with fread()? %s\n", rr, strerror ( errno ) );
                int pp = ftell ( afile->nfid );
                fseek ( afile->nfid, 0, SEEK_CUR );
                rr=fwrite ( buf, 1, 4, afile->nfid );
-               printf ( "rr %d, something went wrong with fwrite()! %s\n", rr, strerror ( errno ) );
-               printf ( "  written rr %d\n", rr );
+               myprintf ( "rr %d, something went wrong with fwrite()! %s\n", rr, strerror ( errno ) );
+               myprintf ( "  written rr %d\n", rr );
                afile->seek ( afile->narrays );
           }
      }
@@ -5194,7 +5186,7 @@ int appendarrayfile ( const char *fname, const array_link al )
 //		printf ( "# file status %d (O_RDONLY %d, O_RDWR %d, O_APPEND %d)\n", fs, O_RDONLY , O_RDWR, O_APPEND );
 
      if ( ! afile->isopen() ) {
-          printf ( "writearrayfile: problem with file %s\n", fname );
+          myprintf ( "writearrayfile: problem with file %s\n", fname );
           return 0;
      }
 
@@ -5215,7 +5207,7 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
      if ( af.mode==ABINARY ) {
           for ( std::vector<int>::iterator it = idx.begin(); it<idx.end(); ++it ) {
                if ( verbose ) {
-                    printf ( "selectArrays: idx %d\n", *it );
+                    myprintf ( "selectArrays: idx %d\n", *it );
                }
                af.seek ( *it );
                af.read_array ( al );
@@ -5230,23 +5222,23 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                for ( std::vector<int>::iterator it = idx.begin(); it<idx.end(); ++it ) {
                     int pos =  *it;
                     if ( verbose ) {
-                         printf ( "selectArrays: idx %d, cpos %d\n", pos, cpos );
+                         myprintf ( "selectArrays: idx %d, cpos %d\n", pos, cpos );
                     }
                     if ( pos<cpos ) {
-                         printf ( "selectArrays: arrayfile in text mode and negative seek, aborting!!! %d %d\n", pos, cpos );
+                         myprintf ( "selectArrays: arrayfile in text mode and negative seek, aborting!!! %d %d\n", pos, cpos );
                          return;
                     }
                     int nsk=pos-cpos;
                     if ( verbose ) {
-                         printf ( "selectArrays: skipping %d arrays\n", nsk );
+                         myprintf ( "selectArrays: skipping %d arrays\n", nsk );
                     }
                     for ( int j=0; j< ( nsk ); j++ )  {
                          af.read_array ( al );
                          if ( verbose>=3 ) {
                               std::vector<double> tmp = al.GWLP();
-                              printf ( "  gwlp: " );
+                              myprintf ( "  gwlp: " );
                               display_vector ( tmp );
-                              printf ( "\n" );
+                              myprintf ( "\n" );
                          }
                          cpos++;
                     }
@@ -5256,10 +5248,10 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                }
           } else {
                if ( verbose>=2 ) {
-                    printf ( "selectArrays: text file with unsorted indices, UNTESTED CODE!\n" );
+                    myprintf ( "selectArrays: text file with unsorted indices, UNTESTED CODE!\n" );
                }
                if ( verbose ) {
-                    printf ( "selectArrays: no sorted indices!\n" );
+                    myprintf ( "selectArrays: no sorted indices!\n" );
                }
                if ( verbose>=2 ) {
                     cout << "idx: ";
@@ -5282,7 +5274,7 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                }
                selectArrays ( filename,  sidx, tmp, 0 );
                if ( ( int ) tmp.size() !=nn ) {
-                    printf ( "ERROR!\n" );
+                    myprintf ( "ERROR!\n" );
                     return;
                }
                for ( int j=0; j<nn; j++ ) {
