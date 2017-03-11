@@ -193,6 +193,10 @@ def transformGraphMatrix(G, tr, verbose=1):
 %}
 
 
+/* Convert from C --> Python */
+%typemap(out) void * {
+    $result = PyLong_FromVoidPtr($1);
+}
 
 
 %extend array_link {

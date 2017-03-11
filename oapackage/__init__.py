@@ -68,7 +68,7 @@ def test_numpy_interface(verbose=0):
 def test_nauty(verbose=0):
     if verbose:
         print('test_nauty: test reduction to normal form')
-    al = oalib.exampleArray(1, 1)
+    al = oalib.exampleArray(1, verbose)
     alr=al.randomperm()
     tr=oalib.reduceOAnauty(alr)
     alx=tr.apply(alr)

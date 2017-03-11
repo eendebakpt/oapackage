@@ -90,13 +90,13 @@ std::string print_options_string ( )
     outx << "Orthogonal Array Package " << version() << std::endl;
 
     outx << "Compile date: " << __DATE__ << " " << __TIME__ << std::endl;
-    //outx << "SVN version: " << svn_version << std::endl;
 
     outx <<tabsep << "void * type: sizeof(void *) " << sizeof ( void * ) << std::endl;
     outx <<tabsep << "array_t type: sizeof(array_t) " << sizeof ( array_t ) << std::endl;
     outx <<tabsep << "integer types: sizeof(short int) " << sizeof ( short int ) << std::endl;
     outx <<tabsep << "integer types: sizeof(unsigned long int) " << sizeof ( unsigned long int ) << "," << " sizeof(int) " << sizeof (int ) << std::endl;
-    outx <<tabsep << "floating point type: sizeof(float) " << sizeof ( float ) << ", sizeof(double) " << sizeof ( double ) << ", sizeof(long double) " << sizeof ( long double ) <<  std::endl;
+	outx << tabsep << "integer types: sizeof(long long) " << sizeof(long long) << std::endl;
+	outx <<tabsep << "floating point type: sizeof(float) " << sizeof ( float ) << ", sizeof(double) " << sizeof ( double ) << ", sizeof(long double) " << sizeof ( long double ) <<  std::endl;
     outx <<tabsep << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
 
     Eigen::MatrixXd mymatrix ( 1,1 );
