@@ -1856,13 +1856,13 @@ void array_link::showproperties() const
 
 void array_link::debug() const
 {
-	myprintf("debug: %ld %p", (long)array, (void *)array);
+	myprintf("debug: %ld %p", (long)this->array, (void *)array);
 }
 #ifdef SWIGCODE
 void * array_link::data()
 {
      //return ( static_cast<long>( (void *) array ) );
-     return ( void* ( array ) );
+     return (  (void*) ( this->array ) );
 }
 #else
 #endif
@@ -4141,10 +4141,6 @@ int arrayfile_t::read_array_binary_zero ( array_link &a )
                     a.array[idx] = a.array[idx] % 2;
                }
           }
-          if ( dbg ) {
-               myprintf ( "  here: %ld %ld\n", ( long ) diffarray.array, ( long ) a.array );
-          }
-
      }
      diffarray=a;
      if ( dbg ) {

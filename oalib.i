@@ -197,7 +197,6 @@ def transformGraphMatrix(G, tr, verbose=1):
 
 %extend array_link {
 %insert("python") %{
-#__array_interface__ = None
 
 def __getattr__(self, attr):
     if attr=='__array_interface__':
