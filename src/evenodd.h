@@ -45,14 +45,14 @@ struct depth_path_t {
         for ( int i = depthstart; i <= depth; i++ ) {
 
             if ( ( i - depthstart ) == maxentries ) {
-                printf ( "... " );
+                myprintf ( "... " );
                 break;
             }
 
-            printf ( "%d: %d/%d (%d->%d) ", i, ncurr[i], nmax[i], necols[i],
+            myprintf ( "%d: %d/%d (%d->%d) ", i, ncurr[i], nmax[i], necols[i],
                      ngecols[i] );
         }
-        printf ( "\n" );
+        myprintf ( "\n" );
 
     }
     void init ( int ncols, int _depthstart = 9 ) {
@@ -122,25 +122,25 @@ struct counter_t {
         #pragma omp critical
 #endif
         {
-            printf ( "depth_extend: counts " );
+            myprintf ( "depth_extend: counts " );
             display_vector ( this->nfound );
-            printf ( "\n" );
+            myprintf ( "\n" );
         }
     }
 
     /// show information about the number of arrays found
     inline void showcounts ( const arraydata_t & ad ) const {
-        printf ( "--results--\n" );
+        myprintf ( "--results--\n" );
         for ( size_t i = ad.strength; i <= ( size_t ) ad.ncols; i++ ) {
-            printf ( "depth_extend: column %ld: found %d\n", i, this->nfound[i] );
+            myprintf ( "depth_extend: column %ld: found %d\n", i, this->nfound[i] );
         }
     }
 
     /// show information about the number of arrays found
     inline void showcounts ( const char *str, int first, int last ) const {
-        printf ( "--results--\n" );
+        myprintf ( "--results--\n" );
         for ( size_t i = first; i <= ( size_t ) last; i++ ) {
-            printf ( "%s: column %ld: found %d\n", str, i, this->nfound[i] );
+            myprintf ( "%s: column %ld: found %d\n", str, i, this->nfound[i] );
         }
     }
 };
@@ -185,7 +185,7 @@ public:
 
     std::vector < int > updateExtensionPointers ( int extcol ) {
         if ( verbose >= 3 )
-            printf
+            myprintf
             ( "updateExtensionPointers: determine extensions that can be used at the next stage\n" );
 
         std::vector < int >pointers;
@@ -193,7 +193,7 @@ public:
         for ( size_t i = 0; i < lmctype.size (); i++ ) {
             // we need proper strength
             if ( strengthcheck[i] ) {
-                //printf("##  depth_extend_sub_t.updateExtensionPointers: i %zu, lastcol %d extcol %d \n", i, lastcol[i], extcol);
+                //myprintf("##  depth_extend_sub_t.updateExtensionPointers: i %zu, lastcol %d extcol %d \n", i, lastcol[i], extcol);
                 if ( lastcol[i] >= extcol || lastcol[i] == -1 || extcol < 5 ) {
                     // NOTE: extcol < 5 condition --> make generic
                     // good candidate
@@ -203,7 +203,7 @@ public:
             }
         }
         if ( verbose >= 2 )
-            printf ( "updateExtensionPointers: extcol %d, kept %ld/%ld pointers\n",
+            myprintf ( "updateExtensionPointers: extcol %d, kept %ld/%ld pointers\n",
                      extcol, pointers.size (), lmctype.size () );
         return pointers;
     }
@@ -215,25 +215,25 @@ public:
     /// select the arrays with are LMC and hence need to be written to disk
     inline arraylist_t selectArraysZ ( const arraylist_t & alist ) const {
         if ( verbose >= 2 )
-            printf
+            myprintf
             ( "depth_extend_sub_t: selectArrays: alist.size() %ld, lmctype %ld\n",
               alist.size (), lmctype.size () );
         arraylist_t ga;
         for ( size_t i = 0; i < lmctype.size (); i++ ) {
             //size_t ii = valididx[i];
             if ( verbose >= 3 )
-                printf
+                myprintf
                 ( "  depth_extend_sub_t.selectArraysZ: array %ld: lmctype %d\n", i,
                   lmctype[i] );
             if ( lmctype[i] >= LMC_EQUAL ) {
                 array_link ee = alist[i];
 
                 ga.push_back ( ee );
-                // printf ( "  selectArraysZ: selected array %zu/%zu\n", i, lmctype.size() );
+                // myprintf ( "  selectArraysZ: selected array %zu/%zu\n", i, lmctype.size() );
             }
         }
         if ( verbose )
-            printf ( "dextend_sub_t: selected %d/%d arrays\n", ( int ) ga.size (),
+            myprintf ( "dextend_sub_t: selected %d/%d arrays\n", ( int ) ga.size (),
                      ( int ) alist.size () );
         return ga;
     }
@@ -241,13 +241,13 @@ public:
     inline arraylist_t selectArraysXX ( const array_link & al,
                                         const arraylist_t & elist ) const {
         if ( verbose >= 2 )
-            printf
+            myprintf
             ( "depth_extend_sub_t: selectArraysXX: alist.size() %ld, lmctype %ld\n",
               elist.size (), lmctype.size () );
         arraylist_t ga;
         for ( size_t i = 0; i < n (); i++ ) {
             if ( verbose >= 3 ) {
-                printf ( "  selectArraysXX lmctype %d\n", lmctype[i] );
+                myprintf ( "  selectArraysXX lmctype %d\n", lmctype[i] );
             }
             if ( lmctype[i] >= LMC_EQUAL ) {
                 array_link ee = hstacklastcol ( al, elist[valididx[i]] );
@@ -256,7 +256,7 @@ public:
             }
         }
         if ( verbose >= 1 )
-            printf ( "dextend_sub_t: selected %d/%d arrays\n", ( int ) ga.size (),
+            myprintf ( "dextend_sub_t: selected %d/%d arrays\n", ( int ) ga.size (),
                      ( int ) elist.size () );
         return ga;
     }
@@ -268,8 +268,8 @@ public:
         }
         //int ngood =std::accumulate(lmctype.begin(),lmctype.end(),0);//#include <numeric>
         if ( verbose ) {
-            printf ( "lmc %ld/%d\n", nl, ( int ) lmctype.size () );
-            printf ( "valididx size %ld\n", valididx.size () );
+            myprintf ( "lmc %ld/%d\n", nl, ( int ) lmctype.size () );
+            myprintf ( "valididx size %ld\n", valididx.size () );
         }
     }
 };
@@ -325,7 +325,7 @@ public:
 
         logtime = _logtime;
         if ( ad == 0 ) {
-            printf ( "depth_extend_t: pointer to arraydata_t is zero!" );
+            myprintf ( "depth_extend_t: pointer to arraydata_t is zero!" );
         }
 
         writearrays = 1;
@@ -340,7 +340,7 @@ public:
     };
 
     depth_extend_t ( const depth_extend_t & de ) {
-        //printf("depth_extend_t: copy constructor\n"); printf(" searchpath: "); de.searchpath.show(16);
+        //myprintf("depth_extend_t: copy constructor\n"); myprintf(" searchpath: "); de.searchpath.show(16);
         verbose = de.verbose;
         oaextend = de.oaextend;
         ad = de.ad;
@@ -365,7 +365,7 @@ public:
 public:
 
     void show () {
-        printf ( "depth_extend_t: logtime %.1f [s]\n", logtime );
+        myprintf ( "depth_extend_t: logtime %.1f [s]\n", logtime );
     }
 
     void setNarraysMax ( long n ) {
@@ -383,7 +383,7 @@ public:
         {
             if ( arraywriter->nwritten > this->narraysmax ) {
                 /// HACK
-                printf ( "dextend_t: number of arrays written: %d, quitting\n",
+                myprintf ( "dextend_t: number of arrays written: %d, quitting\n",
                          arraywriter->nwritten );
                 this->counter->showcounts ( *this->ad );
                 this->arraywriter->closeafiles ();
@@ -418,18 +418,18 @@ public:
                     int na = this->counter->nArrays ();
 
 #ifdef DOOPENMP
-                    printf
+                    myprintf
                     ( "-- depth_extend: progress: %.1f [s], narrays %d (%.1f arrays/s), thread %d/%d\n",
                       dt0, na, na / dt0, omp_get_thread_num (),
                       omp_get_num_threads () );
 #else
-                    printf
+                    myprintf
                     ( "-- depth_extend: progress: %.1f [s], narrays %d (%.1f arrays/s)\n",
                       dt0, na, na / dt0 );
 #endif
 
                     if ( depth > 0 ) {
-                        printf ( "-- depth %2d: %.1f [s]: ", depth, dt0 );
+                        myprintf ( "-- depth %2d: %.1f [s]: ", depth, dt0 );
                         searchpath.show ( depth );
                     }
                 }
@@ -440,7 +440,7 @@ public:
         }
     }
     inline void info () const {
-        printf ( "depth_extend: " );
+        myprintf ( "depth_extend: " );
         ad->show ();
     }
 
@@ -562,17 +562,6 @@ calculateArrayParetoJ5Cache ( const array_link & al, int verbose,
     p.push_back ( f4 );		// F
     addJmax < IndexType > ( al, p, verbose );
 
-    if (0) {
-        printf ( "calculateArrayParetoJ5Cache: %d ; ", r );
-        wm.show_integer();
-        printf ( " ; " );
-        f4.show_integer();
-        printf ( " ; " );
-        p[3].show_integer();
-        printf ( " ; " );
-        p[4].show_integer();
-        printf ( "\n" );
-    }
     return p;
 }
 
@@ -702,7 +691,7 @@ public:
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
                 it != maxJcounts.end (); ++it ) {
             if ( it->second<0 ) {
-                printf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
+                myprintf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
             } else {
                 if( it->first.j==jval)
                     k[it->first.k] += it->second;
@@ -717,7 +706,7 @@ public:
         for ( std::map < jindex_t, long >::const_iterator it = maxJcounts.begin ();
                 it != maxJcounts.end (); ++it ) {
             if ( it->second<0 ) {
-                printf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
+                myprintf ( "Jcounter::getTotals: value -1 for index %s\n", it->first.toString().c_str() );
             } else {
                 k[it->first.k] += it->second;
             }
@@ -765,9 +754,9 @@ public:
         if ( verbose ) {
             jstruct_t js ( al, this->jj );
             std::vector < int >FF = js.calculateF ();
-            printf ( "addArray: maxJ %d: ", maxJ );
+            myprintf ( "addArray: maxJ %d: ", maxJ );
             display_vector ( FF );
-            printf ( "\n" );
+            myprintf ( "\n" );
         }
         jindex_t ji = jindex_t ( k, maxJ );
         #pragma omp critical
@@ -786,7 +775,7 @@ private:
         if ( k > 0 ) {
             for ( size_t j = 0; j < fvals.size (); j++ ) {
                 jindex_t ji ( k, fvals[j] );
-                //printf("adding val %s\n", ji.toString().c_str());
+                //myprintf("adding val %s\n", ji.toString().c_str());
                 maxJcounts[ji] = 0;
             }
         }

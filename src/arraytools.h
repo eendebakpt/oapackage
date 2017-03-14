@@ -308,7 +308,7 @@ public:
         this->s = new array_t[this->ncols];
 
         if ( ad2.s == 0 ) {
-            printf ( "error: invalid arraydata_t structure\n" );
+            myprintf ( "error: invalid arraydata_t structure\n" );
         }
         std::copy ( ad2.s, ad2.s + this->ncols, s );
         return *this;
@@ -1182,10 +1182,10 @@ public:
 
     symmdata ( const array_link  &al, int minlen=1 );
     void show ( int verbose=1 ) const {
-        printf ( "symmdata: rowvalues\n" );
+        myprintf ( "symmdata: rowvalues\n" );
         this->rowvalue.showarray();
         if ( verbose>=2 ) {
-            printf ( "symmdata: ft:" );
+            myprintf ( "symmdata: ft:" );
             this->ft.show();
             this->ft.showarray();
         }
@@ -1341,7 +1341,6 @@ array_link::operator= ( const array_link & rhs )
 inline array_link &
 array_link::shallowcopy ( const array_link & rhs )
 {
-    //myprintf("array_link::operator= (index %d)\n", rhs.index);
     this->n_rows = rhs.n_rows;
     this->n_columns = rhs.n_columns;
     this->index = rhs.index;
@@ -1357,7 +1356,6 @@ inline array_link & array_link::deepcopy ( const array_link & rhs )
     this->index = rhs.index;
     // perform deep copy
     if ( this->array ) {
-        //  myprintf("  destroy array %d\n", this->array);
         destroy_array ( this->array );
     }
     if ( rhs.array == 0 ) {
@@ -1705,7 +1703,6 @@ public:
             int riz = rhs.rperm[ri];
             int rix = c.rperm[ri];
             c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
-            //myprintf(" ri %d, riz %d, rix %d: lhs.rswitch[rix] %d rhs.rswitch[riz] %d ...\n", ri, riz, rix, lhs.rswitch[rix], rhs.rswitch[riz]);
         }
 
         /* column sign switches */
@@ -1916,7 +1913,7 @@ private:
             num += nrows * ncols * 4;
             break;
         case 1: {
-            word_addr_t num_of_words = nwords ( nrows * ncols );	//myprintf("num_of_words: %d\n", (int)num_of_words);
+            word_addr_t num_of_words = nwords ( nrows * ncols );	
             num += sizeof ( word_t ) * num_of_words;
         }
         break;
@@ -2008,7 +2005,6 @@ public:
                 m = ad.s[i];
             }
         }
-        //myprintf("m %d\n", m);
         if ( m == 2 ) {
             return 1;    // bit
         } else if ( m < 120 ) {
@@ -2162,10 +2158,8 @@ selectArraysMask ( const arraylist_t & al, std::vector < MType > &mask,
                    arraylist_t & rl )
 {
     assert ( al.size () == mask.size () );
-    //myprintf("selectArraysMask: al.size() %d mask.size() %d\n", al.size(), mask.size());
     for ( int idx = 0; idx < al.size (); idx++ ) {
         if ( mask[idx] ) {
-            //myprintf("selectArraysMask: idx %d %d\n", idx, mask[idx]);
             rl.push_back ( al.at ( idx ) );
         }
     }
@@ -2336,7 +2330,7 @@ public:
             arraydata_t ad0 ( &ad, i );
             std::string afile = prefix + "-" + ad0.idstr () + ".oa";
             if ( verbose >= 3 )
-                printf ( "depth_extend_t: creating output file %s\n",
+                myprintf ( "depth_extend_t: creating output file %s\n",
                          afile.c_str () );
 
             int nb = arrayfile_t::arrayNbits ( ad );

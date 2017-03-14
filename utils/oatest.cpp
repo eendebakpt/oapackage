@@ -330,6 +330,13 @@ int main ( int argc, char* argv[] )
 
      //print_options(); exit(0);
 
+     {
+          arraylist_t ll = readarrayfile("test.oa");
+          array_link al = ll[0];
+          
+          reduceDOPform(al, 3);
+          return 0;
+     }
 {
      array_link al = exampleArray(r);
      

@@ -3632,14 +3632,14 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
             std::vector<double> gwp = GWLP ( al );
             cout << "GMA: ";
             printf_vector<double> ( gwp, "%.3f " );
-            cout << endl;
+            myprintf("\n");
         }
         std::vector< GWLPvalue > dopgwp = projectionGWLPs ( al );
 
         if ( verbose>=3 ) {
             myprintf( "  delete-1 GWP sequence:        " );
             display_vector< GWLPvalue > ( dopgwp );
-            cout << endl;
+            myprintf("\n");
         }
 
         if ( dopruning ) {
@@ -3650,7 +3650,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
                 //printf_vector<GWLPvalue> ( dopgwp, "%.3f " );
                 display_vector< GWLPvalue > ( dopgwp );
 
-                cout << endl;
+				myprintf("\n");
                 std::cout << "  pruning check: " << dopgwp[ncols-1] << " minmax " << x << std::endl;
             }
             if ( dopgwp[ncols-1]>x ) {
