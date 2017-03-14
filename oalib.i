@@ -360,7 +360,7 @@ import numpy
 %template(mvalue_t_double) mvalue_t<double>;
 %template(ParetoLongLong) Pareto<long,long>;
 %template(ParetoMultiLongLong) Pareto<mvalue_t<long>,long>;
-%template(ParetoMultiDoubleLong) Pareto<mvalue_t<long>,long>;
+%template(ParetoMultiDoubleLong) Pareto<mvalue_t<double>,long>;
 %template(ParetoDoubleLong) Pareto<double,long>;
 %template(ParetoElementLong) pareto_element<mvalue_t<long>,long>;
 %template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
@@ -374,7 +374,7 @@ import numpy
 # for legacy reasons and for name consistency
 GWLPvalueVector = vector_mvalue_t_double
 mvalueVector = vector_mvalue_t_long
-%template(mvalueVector) std::vector<mvalue_t<long> >;
+#%template(mvalueVector) std::vector<mvalue_t<long> >;
 %}
 
 //%template(GWLPvalueVector) std::vector< mvalue_t<double> >;

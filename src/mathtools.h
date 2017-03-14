@@ -445,15 +445,28 @@ public:
 
     void show_integer() const {
 		for(size_t i=0; i<this->v.size(); i++) {
-			printf("%ld", (long)this->v[i] );
+			myprintf("%ld", (long)this->v[i] );
 			if (i<this->v.size()-1 )
-				printf(",");
+				myprintf(",");
 		}
 	}
 	
     template <class W>
     friend std::ostream& operator<< ( std::ostream& stream, const mvalue_t<W>& mval );
 
+#ifdef SWIGCODE
+	std::string __repr__x()
+	{
+		std::stringstream s;
+		for(size_t i=0; i<this->v.size(); i++) {
+			s << v[i];
+			if (i<this->v.size()-1 )
+				s <<(",");
+		}
+		
+		return s.str();
+	}
+#endif	
 private:
     int equal ( const mvalue_t &rhs ) const
     {
