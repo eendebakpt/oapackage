@@ -1251,8 +1251,28 @@ def create_pareto_element(values, pareto=None):
     if isinstance(pareto, oalib.ParetoMultiLongLong):
         vector_pareto = oalib.mvalueVector()
         for v in values:
+            if isinstance(v, (int)):
+                # convert to list type
+                v=[v]
+            if not isinstance(v, (list,type)):
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
+    elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
+        vector_pareto = oalib.GWLPvalueVector() # FIXME: naming of GWLPvalueVector
+        for v in values:
+            if isinstance(v, (int, float)):
+                # convert to list type
+                v=[float(v)]
+            if not isinstance(v, (list,type)):
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
+            print(v)
+            vec = oalib.mvalue_t_double(list(v))
+            vector_pareto.push_back(vec)
+    elif isinstance(pareto, oalib.ParetoDoubleLong):
+        if not isinstance(values, (list, tuple, np.ndarray)):
+            raise('')
+        vector_pareto = values
     else:
-        vector_pareto = vv
+        raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
     return vector_pareto

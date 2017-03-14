@@ -364,10 +364,20 @@ import numpy
 %template(ParetoDoubleLong) Pareto<double,long>;
 %template(ParetoElementLong) pareto_element<mvalue_t<long>,long>;
 %template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
-%template(mvalueVector) std::vector<mvalue_t<long> >;
-//%template(vector_mvalue_double) std::vector<mvalue_t<double> >;
+%template(vector_mvalue_t_double) std::vector<mvalue_t<double> >;
+%template(vector_mvalue_t_int) std::vector<mvalue_t<int> >;
+%template(vector_mvalue_t_long) std::vector<mvalue_t<long> >;
 %template(DequeParetoElementLong) std::deque<pareto_element<mvalue_t<long>,long> >;
-%template(GWLPvalueVector) std::vector< mvalue_t<double> >;
+
+
+%pythoncode %{
+# for legacy reasons and for name consistency
+GWLPvalueVector = vector_mvalue_t_double
+mvalueVector = vector_mvalue_t_long
+%template(mvalueVector) std::vector<mvalue_t<long> >;
+%}
+
+//%template(GWLPvalueVector) std::vector< mvalue_t<double> >;
 
 %template(cpermVector) std::vector< cperm >;
 
