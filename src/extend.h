@@ -110,7 +110,7 @@ public:
     {
         //verbose=2;
         if (verbose)
-            printf("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
+            myprintf("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
         if (ad.ncolgroups==1 && ad.s[0]==2 && (ad.strength==3) ) {
             //printf(" using MODE_J4\n");
             return MODE_J4;
@@ -123,7 +123,7 @@ public:
         std::cout << __repr__();
 
         if (vb>1) {
-            printf("OAextend: use_row_symmetry: %d\n", this->use_row_symmetry );
+            myprintf("OAextend: use_row_symmetry: %d\n", this->use_row_symmetry );
         }
         std::cout << std::endl;
     }
@@ -153,7 +153,7 @@ struct extendpos {
 #ifdef OADEBUG
     void show()
     {
-        printf("extendpos struct: N %d, col %d, ncols %d\n", this->ad->N, this->col, this->ad->ncols);
+        myprintf("extendpos struct: N %d, col %d, ncols %d\n", this->ad->N, this->col, this->ad->ncols);
     }
 #endif
 };
@@ -306,9 +306,9 @@ struct split {
     /// show information about stack
     void show()
     {
-        printf("stack: %d elements\n", this->count);
+        myprintf("stack: %d elements\n", this->count);
         for(int i=0; i<this->count; i++) {
-            printf("row %d (pos %d): ", this->st[i], this->cvalidpos[i]);
+            myprintf("row %d (pos %d): ", this->st[i], this->cvalidpos[i]);
             print_perm(this->valid[i], this->nvalid[i]);
         }
     }

@@ -874,7 +874,7 @@ bool next_perm ( std::vector<permutationType> &s )
 
     if ( i==0 ) {
         // last permutation reached!
-        // printf("last permutation reached\n");
+        // myprintf("last permutation reached\n");
         for ( int k=0; k< ( len/2 ); k++ ) {
             std::swap ( s[k], s[len-k-1] );
         }
@@ -994,7 +994,7 @@ numtype* permutationLex ( numtype k, objecttype *s, numtype n )
     for ( int j=0; j<n-1; j++ ) {
 #ifdef OADEBUG
         if ( fact==0 )
-            printf ( "division by zero: j %d, fact %d, k %d\n", j, fact, k );
+            myprintf ( "division by zero: j %d, fact %d, k %d\n", j, fact, k );
 #endif
         tempj = ( k/ fact ) % ( n - j );
         //printf("j %d, fact %d, tempj %d\n", j, fact, tempj);

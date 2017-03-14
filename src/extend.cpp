@@ -93,7 +93,7 @@ void dextend_t::DefficiencyFilter ( double Dfinal, int k, int kfinal, double Lma
         dextend.filter[ii] = chk;
         if ( dextend.lmctype[ii]==LMC_MORE ) {
             //	printf("dextend.filtermode %d, chk %d: %.10e %.10e %e %e - %d %f\n", dextend.filtermode, chk, Ci, Cfinal, Cfinalmulti, pow(Lmax, kfinal-kn), kfinal-kn, Lmax);
-//	 printf("      chk: Lmax"); printdoubleasbits(Lmax);
+//	 myprintf("      chk: Lmax"); printdoubleasbits(Lmax);
         }
     }
 
@@ -147,7 +147,7 @@ std::string OAextend::__repr__() const
 void OAextend::setAlgorithmAuto ( arraydata_t *ad )
 {
     if ( ad==0 ) {
-        printf ( "setAlgorithmAuto: zero pointer\n" );
+        myprintf ( "setAlgorithmAuto: zero pointer\n" );
         return;
     }
     algorithm_t x = OAextend::getPreferredAlgorithm ( *ad );
@@ -180,7 +180,7 @@ void OAextend::setAlgorithm ( algorithm_t algorithm,  arraydata_t *ad )
     default
             :
         init_column_previous = INITCOLUMN_PREVIOUS;
-        printf ( "OAextend::setAlgorithm: error: algorithm (%d) unknown\n", algorithm );
+        myprintf ( "OAextend::setAlgorithm: error: algorithm (%d) unknown\n", algorithm );
         break;
     }
 
@@ -658,7 +658,7 @@ int Jcheck ( carray_t *array, const rowindex_t N, const int jmax, const extendpo
 inline lmc_t quick_lmc_test ( carray_t* orig, const extendpos *p )
 {
 #ifndef SAFELPERM
-    printf ( "error: we need SAFELPERM for this code path!\n" );
+    myprintf ( "error: we need SAFELPERM for this code path!\n" );
 #endif
 
     //if (p->col!=p->ad->strength)
@@ -679,7 +679,7 @@ inline lmc_t quick_lmc_test ( carray_t* orig, const extendpos *p )
     dyndata_t *dynd = new dyndata_t ( adfix->N );
     LMCreduction_t *reduction = new LMCreduction_t ( adfix );
 
-    printf ( "quick_lmc_test: code untested...\n" );
+    myprintf ( "quick_lmc_test: code untested...\n" );
     OAextend oaextend;
     //reduction->mode = LMC_TEST;
     lmc_t lmc2 = LMCreduce ( array, array, adfix, dynd, reduction, oaextend );
@@ -776,19 +776,19 @@ void quicktransformtest ( array_t *array, array_t *tmparray, LMCreduction_t *red
     tmptransformation.apply ( array, tmparray );
 
     int val=std::lexicographical_compare ( array, array + ad->N* ( ad->ncols ), tmparray, tmparray + ad->N* ( ad->ncols ) );
-    printf ( " previous transform: %d\n", val );
+    myprintf ( " previous transform: %d\n", val );
     if ( val==0 ) {
-        printf ( " previous transform value: %d\n", val );
+        myprintf ( " previous transform value: %d\n", val );
     } else if ( val<0 ) {
-        printf ( "-- quick LMC!--\n" );
+        myprintf ( "-- quick LMC!--\n" );
         for ( int x=0; x<ad->ncols*ad->N; x++ )
             tmparray[x]=tmparray[x]-array[x];
         // show_array(array, ad->ncols, ad->N);
-        printf ( "--\n" );
+        myprintf ( "--\n" );
         print_array ( tmparray, ad->ncols, ad->N );
 
     } else {
-        printf ( "----\n" );
+        myprintf ( "----\n" );
         //for(int x=0; x<ad->ncols*ad->N; x++)
         // tmparray[x]=tmparray[x]-array[x];
         print_array ( array, ad->ncols, ad->N );
@@ -943,9 +943,9 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
         showLoopProgress ( array, col_offset, N, node_rank, nlmcarrays );
 
         if ( ( extensions.size() *ad->N*extensioncol ) > ( 1024*1024*1024/sizeof ( array_t ) ) ) {
-            printf ( "extend_array: ERROR: running out of memory! extensions.size() %d, ad->N %d\n", ( int ) extensions.size(), ad->N );
+            myprintf ( "extend_array: ERROR: running out of memory! extensions.size() %d, ad->N %d\n", ( int ) extensions.size(), ad->N );
             array_link al ( origarray, ad->N, extensioncol );
-            printf ( "row symmetry group of array: \n" );
+            myprintf ( "row symmetry group of array: \n" );
             al.row_symmetry_group().show();
             throw -1;
 #ifdef OADEBUG
@@ -1028,8 +1028,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 int npos = check_branch ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
                 //int npos = check_branch_2level ( es, array_colstart, p, stack, firstpos, oaextend.use_row_symmetry );
 
-                //cout << "Current array" << endl; print_array(array, ad->N, ad->ncols); cout << printfstring("Branches: %d\n", npos);
-
                 if ( npos > 1 )
                     copy_freq_table ( es->freqtable, es->freqtable_cache[p->row], es->freqtablesize );
 
@@ -1072,7 +1070,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 if ( log_print ( QUIET, "" ) ) {
                     logstream ( QUIET ) << printfstring ( "  OA extension: " ) << narrays-1 << " arrays checked, " << extensions.size() << " solutions so far";
                     logstream ( QUIET ) << ", time " << printtime();
-                    printf ( "  OA extension: current row: " );
+                    myprintf ( "  OA extension: current row: " );
                     print_perm ( array+col_offset, N, 36 );
 
                     //testreduction(ad, array, dynd);
@@ -1130,7 +1128,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 break;
                 default
                         :
-                    printf ( "extend_array: no such mode!\n" );
+                    myprintf ( "extend_array: no such mode!\n" );
                     break;
                 }
                 nlmcarrays++;
@@ -1200,7 +1198,7 @@ int extend_arraylist ( const arraylist_t & alist, arraydata_t &fullad,  OAextend
             extensioncol=extensioncolx;
 
         if ( extensioncol!=al->n_columns ) {
-            printf ( "problem: array has %d columns, extension to column %d is requested\n", al->n_columns, extensioncol );
+            myprintf ( "problem: array has %d columns, extension to column %d is requested\n", al->n_columns, extensioncol );
             continue;
         }
         n += extend_array ( ( carray_t * ) ( al->array ), &fullad, extensioncol, extensions, oaextend );
@@ -1224,7 +1222,7 @@ arraylist_t runExtendRoot (  arraydata_t adata, int nmax, int verbose )
         arraylist_t solsx;
         extend_arraylist ( sols, adata, oaoptions, ii, solsx );
         if ( verbose ) {
-            printf ( "runExtend: ncols %d: %ld arrays\n", ii+1, (long)solsx.size() );
+            myprintf ( "runExtend: ncols %d: %ld arrays\n", ii+1, (long)solsx.size() );
         }
         sols=solsx;
 
