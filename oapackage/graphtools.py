@@ -144,7 +144,8 @@ def selectIsomorphismClasses(sols, verbose=1):
         sols (list of arrays)
         verbose (int)
     Return:
-        indices (list)
+        indices (list of integers): indices of the isomorphism classes
+        mm (list of arrays): the arrays in normal form
         
     """
 
