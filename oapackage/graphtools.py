@@ -139,21 +139,30 @@ from oapackage import makearraylink
 
 def selectIsomorphismClasses(sols, verbose=1):
     """ Select isomorphism classes from a list of designs 
-    
+
     Args:
         sols (list of arrays)
         verbose (int)
     Return:
         indices (list of integers): indices of the isomorphism classes
         mm (list of arrays): the arrays in normal form
-        
+
+
+    Example:
+        >>> sols=[oapackage.exampleArray(i) for i in [26,26,27,26]]
+        >>> idx, mm = selectIsomorphismClasses(sols)
+
+    To select one representative array from each isomorphism class one can use:
+        >>> _, ui = np.unique(idx, return_index=True)
+        >>> representatives = [sols[i] for i in ui]
+
     """
 
     # perform check on array data type
     mm = []
     for ii, al in enumerate(sols):
         if verbose:
-            oapackage.tprint('selectIsomorphismClasses: process aray %d/%d'  % ( ii, len(sols)) )
+            oapackage.tprint('selectIsomorphismClasses: process aray %d/%d' % (ii, len(sols)))
         al = oapackage.makearraylink(al)
 
         tt = oapackage.reduceOAnauty(al, verbose >= 2)
