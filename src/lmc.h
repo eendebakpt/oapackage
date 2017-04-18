@@ -343,6 +343,8 @@ inline array_link rootPlus(const arraydata_t &ad)
 #ifdef _WIN32
 // on windows do not use smart pointers, it is a mess
 //#if _MSC_VER >= 1600
+#elif __APPLE__
+// tr1/memory is not always found on macos
 #else
 #define SDSMART
 #endif
