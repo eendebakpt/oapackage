@@ -15,6 +15,16 @@
 // disable omp pragma warnings
 #ifdef WIN32
 #pragma warning (disable : 4068 )
+#elif defined(__APPLE__)
+#pragma warning (disable : 4068 )
+
+bool operator!= (symmdataPointer const& ptr, int x)
+{
+    // A friendly reminder to not test pointers against any values except 0 (NULL)
+    myassert(!x);
+    return ptr;
+}
+
 #else
 // http://choorucode.com/2014/03/11/how-to-ignore-specific-warning-of-gcc/
 //#pragma GCC diagnostic ignored "-Wno-unknown-pragmas"

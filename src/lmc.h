@@ -353,6 +353,23 @@ inline array_link rootPlus(const arraydata_t &ad)
 #include <memory>
 typedef std::shared_ptr<symmdata> symmdataPointer;
 //typedef std::shared_ptr<symmdata> symmdataPointer;
+
+#elif defined(__APPLE__)
+
+#include <memory>
+typedef std::shared_ptr<symmdata> symmdataPointer;
+
+/** @brief An operator to test whether a pointer holds a null value or not
+ *
+ * It is recomended to not compare pointers to integers and use explicit
+ * conversion `ptr to bool` instead or as another approach to compare pointers against
+ * nullptr which has type of std::nullptr. But such methods would force migration to C++11. Hence,
+ * the purpose of this method is to avoid ether rewritting the whole project or changing the code
+ * that already works on other platforms (aka Windows) by adding a missing in <memory> header
+ * comparison `bool operator!=(smart_ptr, int)`
+ */
+bool operator!= (symmdataPointer const& ptr, int x);
+
 #else
 #include <tr1/memory>
 typedef std::tr1::shared_ptr<symmdata> symmdataPointer;
