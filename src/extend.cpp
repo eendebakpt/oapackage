@@ -953,10 +953,8 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 #endif
         }
 
-        //if (nlmcarrays>1) break; HACK
 
         if ( p->row < N ) {	/*column is not yet full */
-            //log_print(SYSTEM, "extend_array: at row p->row %d, col %d\n", p->row, p->col);
 
 #ifdef SYMMBLOCKS
             const int bsize = N/p->ad->s[0];
@@ -1017,8 +1015,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 add_element_freqtable_col ( es, p->row-1, array_colstart, es->freqtable );
                 //add_element_freqtable ( es, p->row-1, array, es->freqtable );
 
-                // OPTIMIZE: countelements: make cache system
-                // OPTIMIZE: get_range: can be done more efficient
                 get_range ( array, p, es, oaextend.use_row_symmetry );
 #ifdef COUNTELEMENTCHECK
                 addelement ( array_colstart[p->row-1], es->elements );
@@ -1035,7 +1031,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                     more_branches = return_stack ( stack, p, array, col_offset );
                 } else {
                     array_colstart[p->row] = firstpos;
-                    //printf("p->row increasing: %d to %d\n", p->row, p->row+1);
                     p->row++;
                 }
             } else { /* came back from branche */
@@ -1045,9 +1040,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 /* range and elements do not need to be copied, they are recalculated */
                 countelements ( array_colstart, p->row, p->ad->s[p->col], es->elements );
 #endif
-
-                //printf("  returned from branch: current stack p->row %d\n", p->row);
-                //stack->print();
 
                 stack->cvalidpos[stack->count-1]++;
 
@@ -1072,8 +1064,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                     logstream ( QUIET ) << ", time " << printtime();
                     myprintf ( "  OA extension: current row: " );
                     print_perm ( array+col_offset, N, 36 );
-
-                    //testreduction(ad, array, dynd);
                 }
             }
 
