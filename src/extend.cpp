@@ -126,7 +126,7 @@ void OAextend::updateArraydata ( arraydata_t *ad ) const
     case MODE_AUTOSELECT:
     default
             :
-        printfd ( "error: OAextend::updateArraydata: no such mode %d\n", this->algmode );
+        printfd ( "error: OAextend::updateArraydata: no such mode %d for algorithm_t\n", this->algmode );
         break;
     }
 }
@@ -364,7 +364,8 @@ int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stac
     return npos;
 }
 
-/**
+/** Special version for 2-level array
+ * 
  * We check for all possible extensions. There are several criteria that can be used to check whether an element is valid or not.
  * These are: strength check, strength 1 check (i.e. the number of elements), range check (due to LMC test)
  *
@@ -401,7 +402,6 @@ int check_branch_2level ( extend_data_t *es, carray_t* array_colstart, extendpos
 #endif
             p->value = i; // TODO: eliminate value from pos structure?
             /* strength t check */
-            // TODO: use _2level version of this function
             if ( valid_element_2level ( es, p ) ) {
                 stack->valid[stack->count][npos]=p->value;
                 npos++;
@@ -948,9 +948,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             myprintf ( "row symmetry group of array: \n" );
             al.row_symmetry_group().show();
             throw -1;
-#ifdef OADEBUG
-            exit(1);
-#endif
         }
 
 
@@ -977,26 +974,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             }
 #endif
 
-#ifdef QUICKLMC
-            if ( array_colstart[p->row] == -1 && ( p->row == ( 2*p->ad->N/4 ) || p->row == p->ad->N/4 || p->row == 3*p->ad->N/4 ) ) {
-                lmc_t cutbranch = quick_lmc_test ( array, p );
-                if ( cutbranch==LMC_LESS ) {
-                    log_print ( QUIET, "found quick lmc less %d\n", p->row );
-                    show_array ( array, p->col+1, p->ad->N );
-
-                    // return to stack
-                    more_branches = return_stack ( stack, p, array, col_offset );
-
-                    if ( more_branches )
-                        continue;
-                    else {
-                        logstream ( QUIET ) << "cutbranch: no more branches" << endl;
-                        break;
-                    }
-                }
-            }
-#endif
-
 #ifdef JCHECK
             int jc = Jcheck ( array, N, jmax, p );
             if ( jc ) {
@@ -1013,7 +990,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             if ( array_colstart[p->row] == -1 ) {	//current entry is empty
                 // frequencies table from previous loop is clean, only add a single element
                 add_element_freqtable_col ( es, p->row-1, array_colstart, es->freqtable );
-                //add_element_freqtable ( es, p->row-1, array, es->freqtable );
 
                 get_range ( array, p, es, oaextend.use_row_symmetry );
 #ifdef COUNTELEMENTCHECK
@@ -1022,7 +998,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
 
                 array_t firstpos;
                 int npos = check_branch ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
-                //int npos = check_branch_2level ( es, array_colstart, p, stack, firstpos, oaextend.use_row_symmetry );
 
                 if ( npos > 1 )
                     copy_freq_table ( es->freqtable, es->freqtable_cache[p->row], es->freqtablesize );
@@ -1056,7 +1031,7 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             }
         } else {	//reached end of column
             narrays++;
-
+   
             if ( ( narrays % oaextend.nLMC == 0 ) || ( ( get_time_ms()-extendTime ) > oaextend.singleExtendTime ) ) {
                 extendTime = get_time_ms();
                 if ( log_print ( QUIET, "" ) ) {
@@ -1076,7 +1051,6 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
             if ( oaextend.checkarrays==0 )
                 lmc = LMC_MORE;
             else {
-                //  reduction->mode=LMC_REDUCE_PARTIAL;
                 lmc =  LMCcheck ( array, *ad, oaextend, reduction );
             }
 
@@ -1124,6 +1098,11 @@ int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colind
                 nlmcarrays++;
             }
             more_branches = return_stack ( stack, p, array, col_offset );
+	    
+	    if (oaextend.check_maximal) {
+	      // abort the algorithm
+	      more_branches = false;
+	    }
         }
     } while ( more_branches );	/* continue as long as more branches are left */
 

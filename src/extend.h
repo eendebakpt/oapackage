@@ -38,8 +38,13 @@ public:
     double singleExtendTime;
     //! number of arrays LMC tested before printing progress of single extension
     int nLMC ;
+    
     //! perform LMC test after generation of array
     int checkarrays;
+    
+    //! if true then return at once if a single extension has been found
+    int check_maximal;
+    
     //! adds a symmetry check to the extension algorithm based in symmetry of row permutations
     int use_row_symmetry;
 
@@ -60,7 +65,7 @@ private:
     algorithm_t algmode;	// MODE_ORIGINAL: original, MODE_J4: j4 check, ...
 
 public:
-    OAextend() : singleExtendTime(10.0), nLMC(40000), checkarrays(1), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
+    OAextend() : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
     {
 #ifdef OADEV
         algmode = MODE_AUTOSELECT;
@@ -160,7 +165,7 @@ struct extendpos {
 
 /* functions */
 
-double progress_column(array_t *column, extendpos *p);
+//double progress_column(array_t *column, extendpos *p);
 
 
 /* Public part of interface */
