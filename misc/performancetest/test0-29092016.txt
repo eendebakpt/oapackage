@@ -1,0 +1,61 @@
+OA performance testing
+OAlib: version 2.2.11
+Orthogonal Array Package 2.2.11
+Compile date: Sep 29 2016 13:40:14
+  array_t type: sizeof(array_t) 2
+  integer types: sizeof(unsigned long int) 8, sizeof(int) 4
+  floating point type: sizeof(float) 4, sizeof(double) 8, sizeof(long double) 16
+  Eigen version: 3.2.7
+  eigen: JacobiSVD threshold 2.22045e-16
+  Compiler: __VERSION__ 5.4.0 20160609
+  Compiler: __GNUC_VERSION__ 50400
+  Compiler: __INTEL_COMPILER none
+  Optimization: __OPTIMIZE__
+  Compile time options: OACHECK, FREQELEM, USE_SMALLSTEP, USE_TPLUSCOLUMN, SYMMBLOCKS, OADEV, 
+  columns sorting method: flipSort
+
+System:
+  Python: 3.5.2 (default, Sep 10 2016, 08:21:44)  [GCC 5.4.0 20160609]
+  Machine: Linux woelmuis 4.4.0-38-generic #57-Ubuntu SMP Tue Sep 6 15:42:33 UTC 2016 x86_64 x86_64
+
+Running tests:
+
+runExtend: N=48, k=6, t=3
+runExtend: N=32, k=6, t=3
+runExtend: N=16, k=16, t=2
+runExtend: N=96, k=8, t=4
+total time 3.214 [s]
+extra testing cases
+runExtend: N=24, k=5, t=2
+runExtend: N=18, k=9, t=2
+runExtend: N=16, k=6, t=2
+Orthogonal Arrays 2.2.11
+For more details see the files README.txt and LICENSE.txt
+oaanalyse: reading 1 file(s)
+oaanalyse: openmp 1
+file /home/eendebakpt/misc/oa/oacode/testdata/test64.oa
+  arrayfile_t::arrayfile_t: legacy file format, file /home/eendebakpt/misc/oa/oacode/testdata/test64.oa!
+readarrayfile: loading arrays: 0/1937
+   read 1937 array(s) (size 64 15)
+analyseArrays (j-values): 1937 arrays, jj 4
+  calculation (j-filter) for array 0/1937
+  calculation (rank, Defficiency) for array 0/1937
+  statistics calculation (GWLP) for array 0/1937
+pytest5: running oaanalyse
+runExtend: N=32, k=10, t=3
+runExtend: N=32, k=10, t=3
+case 32.2-2-2-2-2-2-2-2-2-2: 2-level method 1.49 [s] -> 1.05 [s]
+-----
+
+Results:
+
+runExtend(N=48, k=6, t=3, l=2): time 0.08 [s]
+runExtend(N=32, k=6, t=3, l=2): time 0.10 [s]
+runExtend(N=16, k=16, t=2, l=2): time 2.75 [s]
+runExtend(N=96, k=8, t=4, l=2): time 3.21 [s]
+runExtend(N=24, k=5, t=2, l=[3, 2]): time 3.27 [s]
+runExtend(N=18, k=9, t=2, l=[2, 3]): time 3.29 [s]
+Total time: 3.214 [s], 3.292 [s], 4.748 [s]
+   should be of order 4.4 [s], 4.6 [s], 5.9 [s] (woelmuis)
+   should be of order 3.2 [s], 3.3 [s], 4.7 [s] (marmot) [v 2.0.0]
+   should be of order 2.96 [s], 3.0 [s], 4.6 [s] (marmot) [v 2.0.24]
