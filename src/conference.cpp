@@ -3329,9 +3329,7 @@ lmc_t LMC0check ( const array_link &al, int verbose )
      for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
 
           /*1. Select the first (sel_col) column */
-          int first_col = colperm[ 0 ];
-          colperm[ 0 ] = colperm[ sel_col ];
-          colperm[ sel_col ] = first_col;
+          std::swap(colperm[ 0 ], colperm[ sel_col ] );
 
           /*2. Find row-level permutation such that the first column only contains ones */
           rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
@@ -3358,8 +3356,7 @@ lmc_t LMC0check ( const array_link &al, int verbose )
 
           }
 
-          colperm[ sel_col ] = colperm[ 0 ];
-          colperm[ 0 ] = first_col;
+          std::swap(colperm[ 0 ], colperm[ sel_col ] );
           init_signperm ( rowsignperm );
 
      }
