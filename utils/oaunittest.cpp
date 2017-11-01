@@ -256,20 +256,19 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
         array_link  al = exampleArray ( 22, 0 );
         if ( verbose>=2 )
             al.show();
+        if (0) {
         std::vector<int> f3 = al.FvaluesConference ( 3 );
         if ( verbose>=2 ) {
             printf ( "F3: " );
             display_vector ( f3 );
             printf ( "\n" );
         }
+        }
+        
         const int N = al.n_rows;
         jstructconference_t js ( N, 4 );
         std::vector<int> f4 = al.FvaluesConference ( 4 );
         std::vector<int> j4 = js.Jvalues();
-
-        myassert ( j4[0]==28, "unittest error: conference matricex F values: j4[0]\n" );
-        myassert ( f4[0]==0, "unittest error: conference matricex F values: f4[0] \n" );
-        myassert ( f4[1]==0, "unittest error: conference matricex F values: j4[1]\n" );
 
         if ( verbose>=2 ) {
             printf ( "j4: " );
@@ -279,6 +278,11 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
             display_vector ( f4 );
             printf ( "\n" );
         }
+
+        myassert ( j4[0]==28, "unittest error: conference matricex F values: j4[0]\n" );
+        myassert ( f4[0]==0, "unittest error: conference matricex F values: f4[0] \n" );
+        myassert ( f4[1]==0, "unittest error: conference matricex F values: j4[1]\n" );
+
     }
 
     {
