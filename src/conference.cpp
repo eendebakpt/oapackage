@@ -2551,13 +2551,12 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verb
      return pp.first;
 }
 
-arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype )
-{
 
+arraylist_t  selectLMC0doubleconference ( const arraylist_t &list, int verbose,  const conference_t &ctype )
+{
      arraylist_t out ;
      for ( size_t i=0; i<list.size(); i++ ) {
-          lmc_t r=LMC0check ( list[i] );
-
+          lmc_t r=LMC0checkDC ( list[i] );
 
           if ( verbose>=2 || ( verbose && i%10000==0 ) )
                printfd ( "selectLMC0: i %d/%d, r %d, total %d\n", i, list.size(), r, out.size() );
@@ -2570,7 +2569,25 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
           }
      }
      return out;
+}
 
+arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype )
+{
+     arraylist_t out ;
+     for ( size_t i=0; i<list.size(); i++ ) {
+          lmc_t r=LMC0check ( list[i] );
+
+          if ( verbose>=2 || ( verbose && i%10000==0 ) )
+               printfd ( "selectLMC0: i %d/%d, r %d, total %d\n", i, list.size(), r, out.size() );
+          if ( r==LMC_LESS ) {
+               // pass, array is not in LMC0 format
+          } else  {
+               if ( verbose>=2 )
+                    list[i].showarray();
+               out.push_back ( list[i] );
+          }
+     }
+     return out;
 }
 
 
