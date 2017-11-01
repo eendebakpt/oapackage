@@ -60,6 +60,7 @@ import_array();
 #include "arraytools.h"
 #include "tools.h"
 #include "md5.h"
+#include "nonroot.h"
 #include "pareto.h"
 #include "arrayproperties.h"
 #include "extend.h"
@@ -334,7 +335,6 @@ import numpy
 %}
 #endif
 
-//%include "printfheader.h"
 %include "oaoptions.h"
 %include "mathtools.h"
 %include "arraytools.h"

@@ -3185,7 +3185,7 @@ std::vector<int> jstructbase_t::calculateF ( ) const
      std::vector<int> F ( nn );
 
      for ( size_t i=0; i<this->values.size(); i++ ) {
-          int fi = values[i];
+          int fi = abs(values[i]);
           int idx = jvalue2index.find ( fi )->second;
           F[idx]++;
           //printf("value %d: idx %d\n", fi, idx);

@@ -95,7 +95,7 @@ inline void display_vector ( const std::vector<double> &v, const char *sep )
 
 
 template <class ValueType, class IndexType>
-/// helper class for the Pareto class
+/// helper class for the Pareto class to hold elements
 struct pareto_element {
 
     typedef std::vector<ValueType> pValue;

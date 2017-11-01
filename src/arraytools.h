@@ -1291,12 +1291,12 @@ class jstructconference_t : public jstructbase_t
 public:
     jstructconference_t ( int N, int jj = 4 ) {
         this->jj = jj;
-        calcJvalues ( N, 4 );
+        calcJvalues ( N, jj );
     }
     jstructconference_t ( const array_link & al, int jj = 4 ) {
         this->jj = jj;
         const int N = al.n_rows;
-        calcJvalues ( N, 4 );
+        calcJvalues ( N, jj );
         calc ( al );
     }
     //~jstruct_t ();
