@@ -559,6 +559,7 @@ arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int ve
 std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
 
+/// select conference arrays in LMC0 form
 arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype );
 
 
@@ -595,6 +596,9 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR );
 
 /// sort list of arrays according to LMC-0 ordering
 arraylist_t sortLMC0 ( const arraylist_t &lst );
+
+/// LMC0 check for double conference matrix
+lmc_t LMC0checkDC ( const array_link &al, int verbose = 0 );
 
 /// check if array is in LM0 form
 lmc_t LMC0check ( const array_link &al, int verbose = 0 );

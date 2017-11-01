@@ -3125,6 +3125,7 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateCandidates ( const 
      return this->candidate_list[ncfinal];
 }
 
+/// find row sign permutation such that the specified columns has only values +1
 void rowlevel_permutation ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, std::vector<int> &rowsignperm, const rowindex_t n_rows, int column )
 {
 
@@ -3296,6 +3297,68 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
      return r;
 }
 
+lmc_t LMC0checkDC ( const array_link &al, int verbose )
+{
+     /*0. Initialize data */
+     lmc_t result = LMC_MORE;
+
+     if ( ! al.is_conference() ) {
+          printfd ( "error: input array is not a conference design" );
+          return LMC_NONSENSE;
+     }
+     const int ncols = al.n_columns;
+     const int nrows = al.n_rows;
+
+     std::vector<int> colperm ( ncols );
+     init_perm ( colperm );
+
+     std::vector<int> colsignperm ( ncols );
+     init_signperm ( colsignperm );
+
+     std::vector<int> rowsignperm ( nrows );
+     init_signperm ( rowsignperm );
+
+     dyndata_t rowperm_data = dyndata_t ( nrows );
+     rowsort_t *rowsort = rowperm_data.rowsort;
+
+     for ( rowindex_t i = 0; i < nrows; i++ ) {
+          rowsort[i].val = i;
+     }
+
+     symmdata sd ( al );
+
+     for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
+
+          cprintf(verbose, "LMC0checkDC: column %d\n", sel_col );
+          
+          /*1. Select the first (sel_col) column */
+          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+
+          /* 3. Find permutation to sort the array and compare column */
+          result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
+          if ( result==LMC_LESS ) {
+               return result;
+          }
+
+          //printf("--- sel_col %d\n",sel_col);
+          //print_rowsort(rowsort, al.n_rows);
+
+
+               /* 5. Select the next column */
+               result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
+               if ( result==LMC_LESS ) {
+                    return result;
+
+               }
+
+          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+          init_signperm ( rowsignperm );
+
+     }
+
+     return result;
+}
+
 lmc_t LMC0check ( const array_link &al, int verbose )
 {
      /*0. Initialize data */
@@ -3334,7 +3397,7 @@ lmc_t LMC0check ( const array_link &al, int verbose )
           /*2. Find row-level permutation such that the first column only contains ones */
           rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
 
-          /* 3. Find permutation to sort the array and compare column*/
+          /* 3. Find permutation to sort the array and compare column */
           result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
           if ( result==LMC_LESS ) {
                return result;
