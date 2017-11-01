@@ -80,7 +80,7 @@ T2 subvector ( const T2& full, const T& ind ) {
     return target;
 }
 
-enum reduction_method {NONE, NAUTY, LMC0};
+enum reduction_method {NONE, NAUTY, LMC0, LMC0DC};
 
 enum max_selection_method {SELECT_RANDOM, SELECT_FIRST};
 
@@ -160,7 +160,7 @@ int main ( int argc, char* argv[] ) {
     opt.addUsage ( printfstring ( " --itype [TYPE]				Matrix isomorphism type (CONFERENCE_ISOMORPHISM %d, CONFERENCE_RESTRICTED_ISOMORPHISM %d)", CONFERENCE_ISOMORPHISM, CONFERENCE_RESTRICTED_ISOMORPHISM ).c_str() );
     opt.addUsage ( " --j1zero [INT]             Restrict designs to J1=0" );
     opt.addUsage ( " --j3zero [INT]		Restrict designs to J3=0" );
-    opt.addUsage ( printfstring ( " --select [INT]             Method to reduce generated designs (None %d, NAUTY %d, LMC0 %d)", NONE, NAUTY, LMC0 ).c_str() );
+    opt.addUsage ( printfstring ( " --select [INT]             Method to reduce generated designs (None %d, NAUTY %d, LMC0 %d, LMC0DC %d)", NONE, NAUTY, LMC0, LMC0DC ).c_str() );
     opt.processCommandArgs ( argc, argv );
 
 
@@ -295,6 +295,9 @@ int main ( int argc, char* argv[] ) {
                 break;
             case LMC0:
                 outlist = selectLMC0 ( outlist, verbose>=1, ctype );
+                break;
+            case LMC0DC:
+                outlist = selectLMC0doubleconference ( outlist, verbose>=1, ctype );
                 break;
             default:
                 printfd ( "error: selection method %d not implemented\n", ( int ) select );

@@ -559,6 +559,9 @@ arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int ve
 std::vector<int> selectConferenceIsomorpismIndices ( const arraylist_t &lst, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
 
 
+/// select double conference arrays in LMC0 form
+arraylist_t  selectLMC0doubleconference ( const arraylist_t &list, int verbose,  const conference_t &ctype );
+
 /// select conference arrays in LMC0 form
 arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype );
 
