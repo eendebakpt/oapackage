@@ -1412,11 +1412,9 @@ void init_perm ( numtype *perm, int len )
 // Initialize sign permutation
 template <class numtype>
 /**
- * Initialiaze a permutation
- * @param perm
- * @param len
+ * Initialiaze a sign permutation with all +1s
+ * @param signperm Permutation
  */
-
 void init_signperm ( std::vector<numtype> &signperm)
 {
     for ( size_t i=0; i<signperm.size(); i++ )
@@ -1425,6 +1423,7 @@ void init_signperm ( std::vector<numtype> &signperm)
 
 
 template <class numtype>
+/// return true if two permutations are equal
 bool compare_perm ( const numtype *permA, const numtype *permB, int len )
 {
     return std::equal ( permA, permA+len, permB );

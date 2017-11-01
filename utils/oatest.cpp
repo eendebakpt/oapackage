@@ -331,10 +331,34 @@ int main ( int argc, char* argv[] )
      //print_options(); exit(0);
 
      {
-          arraylist_t ll = readarrayfile("test.oa");
-          array_link al = ll[0];
+          arraylist_t ll = readarrayfile(input);
           
-          reduceDOPform(al, 3);
+          for(size_t i=0; i<ll.size(); i++) {
+           lmc_t r = LMC0checkDC(ll[i], verbose);    
+           printf("array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)i, (int)r, LMC_LESS, LMC_MORE);
+           
+           // randomize
+           array_link al = ll[i];
+           
+           conference_transformation_t tr(al);
+           tr.randomizecolperm();
+           tr.randomizerowperm();
+           tr.randomizecolflips();
+
+          array_link alx = tr.apply(al);
+
+          if (al!=alx) {
+           lmc_t r = LMC0checkDC(alx, verbose);    
+           
+           printf("randomized array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)i, (int)r, LMC_LESS, LMC_MORE);
+           if (r!=LMC_LESS) {
+                printf("error!?\n");
+                exit(1);
+          }
+          } else{
+           printf("randomized array %d: same array\n", (int)i);
+          }
+          }
           return 0;
      }
 {
