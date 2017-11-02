@@ -3287,9 +3287,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
 
      for ( int c=column; c<ncols ; c++ ) {
 
-          int col = colperm[c];
-          colperm[c]=colperm[column];
-          colperm[column]=col;
+          std::swap( colperm[c], colperm[column] );
 
           /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
           int current_sign_col = colsignperm[colperm[column]];
@@ -3307,9 +3305,8 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
           }
 
           colsignperm[ colperm[column] ] = current_sign_col;
-          colperm[ column ] = colperm[ c ];
-          colperm[ c ] = col;
-
+          
+          std::swap( colperm[c], colperm[column] );
      }
      return r;
 }
@@ -3360,6 +3357,17 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
           //printf("--- sel_col %d\n",sel_col);
           //print_rowsort(rowsort, al.n_rows);
 
+          /* 4. Select one of the possible zero's in the selected column */
+          for ( int zidx = 0; zidx < 2; zidx++ ) {
+               std::swap(rowsort[0].r, rowsort[zidx].r);
+               
+               for(int c = 1; c<ncols; c++) {
+                    int current_sign_col = colsignperm[colperm[c]];
+               int value = ( rowsignperm[rowsort[0].r]*current_sign_col ) * ( al.atfast ( rowsort[0].r, colperm[c] ) );
+
+          
+                    colsignperm[colperm[c]] = current_sign_col * value;
+               }
 
                /* 5. Select the next column */
                result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
@@ -3368,6 +3376,9 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
 
                }
 
+               std::swap(rowsort[0].r, rowsort[zidx].r);
+
+          }
           std::swap(colperm[ 0 ], colperm[ sel_col ] );
           init_signperm ( rowsignperm );
 
