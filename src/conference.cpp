@@ -3265,9 +3265,14 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
      for ( int j = 0; j < nb; j++ ) {
           int x1 = sd.ft.atfast ( 2*j, scol );
           int x2 = sd.ft.atfast ( 2*j+1, scol );
+          //printf("sort size %d\n", x2-x1);
+          
+          if ( (x2-x1)>1 )
+          {
           //std::stable_sort( rowperm+x1, rowperm+x2);
-          shellSort ( rowperm, x1, x2-1 );
-
+          flipSort ( rowperm, x1, x2-1 );
+          }
+          
           // Compare blocks wrt zero position
           r = lmc0_compare_zeropos_block ( al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm, n_rows );
           if ( r==LMC_LESS || r==LMC_MORE ) {
