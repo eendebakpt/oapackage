@@ -234,9 +234,10 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     {
         cprintf ( verbose,"%s: double conference matrices\n", bstr );
 
-        array_link al = exampleArray();
+        array_link al = exampleArray(36, verbose);
+        myassert(al.is_conference(2), "check on double conference design type");
         
-        conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
+        //conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
 
     }
     
