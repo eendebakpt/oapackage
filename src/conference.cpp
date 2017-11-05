@@ -247,6 +247,95 @@ array_link conference_t::create_root_three ( ) const
 
      return al;
 }
+    void  conference_t::addRootArrays ( arraylist_t &lst ) const {
+        switch ( this->ctype ) {
+        case CONFERENCE_NORMAL:
+        case CONFERENCE_DIAGONAL:
+            switch ( this->itype ) {
+            case CONFERENCE_ISOMORPHISM:
+                lst.push_back ( this->create_root() );
+                break;
+            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+                array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+                for ( int i=N/2+1; i<=N; i++ ) {
+                    al.setconstant ( -1 );
+                    al.at ( 0,0 ) =0;
+                    for ( int k=1; k<i; k++ ) {
+                        al.at ( k,0 ) =1;
+                    }
+                    lst.push_back ( al );
+                }
+            }
+            break;
+            default
+                    :
+                printfd ( "not implemented (itype %d)\n", this->itype );
+            }
+            break; //
+        case DCONFERENCE: {
+            switch ( this->itype ) {
+            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+                arraylist_t tmp = this->createDconferenceRootArrays ( );
+                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+            }
+            break;
+            case CONFERENCE_ISOMORPHISM: {
+                if ( this->j1zero ) {
+                    printfd ( "ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
+                }
+                if ( this->j3zero ) {
+                    printfd ( "ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
+                }
+                assert ( this->j1zero==0 );
+                assert ( this->j3zero==0 );
+                arraylist_t tmp = this->createDconferenceRootArrays ( );
+                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+            }
+            break;
+            default
+                    :
+
+                printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
+                exit ( 0 );
+            }
+        }
+        }
+        if ( 0 ) {
+            for ( size_t i=0; i<lst.size(); i++ ) {
+                printf ( "root array %d:\n", int ( i ) );
+                lst[i].showarray();
+            }
+        }
+    }
+
+        arraylist_t conference_t::createDconferenceRootArrays ( ) const {
+        //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
+
+        arraylist_t lst;
+        array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+        if ( j1zero ) {
+            al.setconstant ( -1 );
+            al.at ( 0,0 ) =0;
+            al.at ( 1,0 ) =0;
+            for ( int k=2; k<N/2+1; k++ ) {
+                al.at ( k,0 ) =1;
+            }
+            lst.push_back ( al );
+
+        } else {
+            for ( int i=N/2+1; i<=N; i++ ) {
+                al.setconstant ( -1 );
+                al.at ( 0,0 ) =0;
+                al.at ( 1,0 ) =0;
+                for ( int k=2; k<i; k++ ) {
+                    al.at ( k,0 ) =1;
+                }
+                lst.push_back ( al );
+            }
+        }
+        return lst;
+    }
+    
 array_link conference_t::create_root ( ) const
 {
      array_link al ( this->N, 2, 0 ); // c.ncols
@@ -307,8 +396,45 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
      return true;
 }
 
+/// reduce double conference matrix to normal form
+conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose ){
+     if (! al.is_conference(2)  ) 
+     {
+          myprintf("reduceConferenceTransformation: error: design is not a double conference design\n");
+          conference_transformation_t t ( al );
+          return t;     
+     }
+     
+     arraydata_t arrayclass ( 3, al.n_rows, 1, al.n_columns );
+          //printfd("run %d ", i); arrayclass.show();
+          array_transformation_t at = reduceOAnauty ( al+1, verbose>=2, arrayclass );
+         // alx=at.apply ( al+1 ) + ( - 1 );
+          
+          conference_transformation_t t ( al );
+          t.rperm = at.rowperm();
+          t.cperm = at.colperm();
+          
+          for(int c=0; c<al.n_columns;c++) {
+               std::vector<int> lp = at.lvlperm(c);
+               assert(lp[1]==1); // 0 should go to 0
+          t.cswitch[c] = (lp[0]==0)? 1 : -1;
+          }
+          
+return t;
+     
+}
+
+
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose )
 {
+
+     if (! al.is_conference(1)  ) 
+     {
+          myprintf("reduceConferenceTransformation: error: design is not a conference design\n");
+     conference_transformation_t t ( al );
+     return t;     
+     }
+     
      const int nr = al.n_rows;
      const int nc=al.n_columns;
      const int nn = 2* ( nr+nc );
@@ -317,7 +443,7 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
      G.setconstant ( 0 );
 
      if ( verbose )
-          printf ( "reduceConference: %d, %d\n", nr, nc );
+          myprintf ( "reduceConferenceTransformation: %d, %d\n", nr, nc );
 
      std::vector<int> colors ( 2* ( nr+nc ) );
 
@@ -700,11 +826,8 @@ int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, 
 
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart )
+int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart = 2 )
 {
-     //return true; // hack
-//	int k = sd.rowvalue.n_columns-1;
-
      for ( size_t i=rowstart; i<c.size()-1; i++ ) {
           if ( check_indices[i+1] ) {
                if ( ( ( unsigned char ) c[i] ) > ( ( unsigned char ) c[i+1] ) ) {
@@ -713,12 +836,11 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
                }
           }
      }
-     // accept
      return true;
 }
 
 /// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
+int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart = 2 )
 {
      const int verbose=0;
 
@@ -736,8 +858,6 @@ int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart )
      for ( size_t i=rowstart; i<c.size()-1; i++ ) {
           // TODO: use the sd.checkIdx() for this
           if ( sd.rowvalue.atfast ( i, k ) ==sd.rowvalue.atfast ( i+1, k ) ) {
-               //if ( c[i]<c[i+1] && c[i]!=0 && c[i+1]!=0 ) {
-               //printf("c[i] %d, (char)c[i] %d\n", c[i], (unsigned char)c[i]);
                if ( ( ( unsigned char ) c[i] ) > ( ( unsigned char ) c[i+1] ) ) {
                     // discard
 
@@ -954,7 +1074,73 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
      return e2;
 }
 
+    /// return True of the extension satisfies all checks
+    bool DconferenceFilter::filter ( const cperm &c ) const {
+        if ( filterfirst ) {
+            if ( c[0]<0 ) {
+                return false;
+            }
+        }
+        if ( filtersymm ) {
+            if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
+                return false;
+            }
+        }
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, 0 ) ) {
+                return false;
+            }
+        }
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3 ( c ) ) {
+                return false;
+            }
+        }
+        ngood++;
+        return true;
+    }
+    
+    
+        /// return True of the candidate satisfies the symmetry check
+    bool DconferenceFilter::filterSymmetry ( const cperm &c ) const {
+        return  satisfy_symm ( c, check_indices, 0 );
+    }
 
+    bool DconferenceFilter::filterReason ( const cperm &c ) const {
+        if ( filterfirst ) {
+            if ( c[0]<0 ) {
+                myprintf ( "filterfirst\n" );
+                return false;
+            }
+        }
+        if ( filtersymm ) {
+            if ( ! satisfy_symm ( c, sd, 0 ) ) {
+                myprintf ( "symmetry\n" );
+                return false;
+            }
+        }
+        if ( filterj2 ) {
+            // perform inner product check for all columns
+            if ( ! ipcheck ( c, als, 0 ) ) {
+                myprintf ( "j2\n" );
+                return false;
+            }
+        }
+        if ( filterj3 ) {
+            // perform inner product check for all columns
+            if ( ! this->filterJ3 ( c ) ) {
+                myprintf ( "j3\n" );
+                return false;
+            }
+        }
+        ngood++;
+        myprintf ( "filter check good\n" );
+
+        return true;
+    }
+    
 /** filter conferece matrix extension candidates
  *
  * Filtering is based in symmetry and ip
@@ -2285,8 +2471,7 @@ std::vector<int> selectUniqueArrayIndices ( const arraylist_t &lstr, int verbose
 }
 
 
-/// FIXME: name
-/// FIXME: reduce to more compact format
+/// reduce a matrix to Nauty normal form
 array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int verbose )
 {
      array_link alx;
@@ -2629,6 +2814,7 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
      return false;
 }
 
+/*
 bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
 {
      assert ( alL.n_rows==alR.n_rows );
@@ -2657,7 +2843,7 @@ bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
      // the arrays are equal
      return false;
 }
-
+*/
 
 arraylist_t sortLMC0 ( const arraylist_t &lst )
 {
@@ -3334,6 +3520,7 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
      std::vector<int> colsignperm ( ncols );
      init_signperm ( colsignperm );
 
+     // row sign permutations are not allowed for double conference matrices, but we have them to re-use code
      std::vector<int> rowsignperm ( nrows );
      init_signperm ( rowsignperm );
 
@@ -3356,6 +3543,7 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
           /* 3. Find permutation to sort the array and compare column */
           result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
           if ( result==LMC_LESS ) {
+               cprintf(verbose, "LMC0checkDC: init_lmc0_sort_comp result is %d, abort\n", result );
                return result;
           }
 
@@ -3370,13 +3558,19 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
                     int current_sign_col = colsignperm[colperm[c]];
                int value = ( rowsignperm[rowsort[0].r]*current_sign_col ) * ( al.atfast ( rowsort[0].r, colperm[c] ) );
 
-          
+               if (current_sign_col * value==0) {
+                    printf("LMC0checkDC: multiple zeros in a single row not supported...\n"); exit(1);
+               }
+               
+          cprintf(verbose, "LMC0checkDC:  current_sign_col * value %d\n",  current_sign_col * value);
                     colsignperm[colperm[c]] = current_sign_col * value;
                }
 
                /* 5. Select the next column */
                result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
                if ( result==LMC_LESS ) {
+                                   cprintf(verbose, "LMC0checkDC: zidx %d, result is %d, abort\n", zidx, result );
+
                     return result;
 
                }

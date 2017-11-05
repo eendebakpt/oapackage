@@ -202,7 +202,6 @@ int main ( int argc, char* argv[] ) {
 
         int loglevel = opt->getIntValue ( 'l', NORMAL );
         setloglevel ( loglevel );
-        //printf("set log level to %d\n", loglevel);
 
         int dosort = opt->getIntValue ( 's', 1 );
         int userowsymm = opt->getIntValue ( "rowsymmetry", 1 );

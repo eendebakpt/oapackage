@@ -673,6 +673,9 @@ public:
     /// return true if the array is a +1,0, -1 valued array
     bool is_conference () const;
 
+    /// return true if the array is a +1,0, -1 valued array, with specialindex number of zeros in each column
+    bool is_conference ( int nz ) const;
+    
     /// return true if the array is symmetric
     bool isSymmetric() const;
     
