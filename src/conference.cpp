@@ -2667,7 +2667,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
 
      // safety check
      if ( lst.size() >0 ) {
-          if ( lst[0].min() <-1 ) {
+          if ( ! lst[0].is_conference() ) {
                printfd ( "error: arrays should have positive integer values\n" );
                arraylist_t lstgood;
                std::vector<int> cidx;
@@ -2712,7 +2712,7 @@ std::pair<arraylist_t, std::vector<int> > selectConferenceIsomorpismHelper ( con
                prev=al;
                ci++;
           }
-          cidx[i]=ci;
+          cidx[idx[i]]=ci;
      }
 
      if ( verbose ) {
@@ -2800,12 +2800,13 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
           int zr = maxz ( alR, c );
 
           if ( zl<zr ) {
-               dprintf("error!");
+               printfd("error!"); exit(1);
                return true;
           }
           if ( zl>zr ) {
-               dprintf("error!");
+               printfd("error!"); exit(1);
                return false;
+               
      }
           }
           // zero is at same position(s) in column, let LMC ordering decide
