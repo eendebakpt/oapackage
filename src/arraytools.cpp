@@ -27,7 +27,7 @@ using namespace std;
 
 int sizeof_array_t()
 {
- return sizeof(array_t);   
+     return sizeof ( array_t );
 }
 
 #ifdef WIN32
@@ -41,6 +41,38 @@ int get_file_status ( FILE* f )
 }
 
 #endif
+
+int array_transformation_t::operator== ( const array_transformation_t & t2 ) const
+{
+     if ( this->ad->N != t2.ad->N ) {
+          return 0;
+     }
+
+     int nrows = this->ad->N;
+     int ncols = this->ad->ncols;
+
+     if ( this->ad->ncols !=t2.ad->ncols ) {
+          return 0;
+     }
+
+     if ( !std::equal ( this->rperm, this->rperm+nrows, t2.rperm ) ) {
+          return 0;
+     }
+     if ( !std::equal ( this->cperm, this->cperm+ncols, t2.cperm ) ) {
+          return 0;
+     }
+
+     for ( int c=0; c<ncols; c++ ) {
+          int nlevels = this->ad->s[c];
+          if ( nlevels!=t2.ad->s[c] )
+               return 0;
+          if ( !std::equal ( this->lperms[c], this->lperms[c]+nlevels, t2.lperms[c] ) ) {
+               return 0;
+          }
+     }
+
+     return 1;
+};
 
 std::vector<int> array_transformation_t::rowperm() const
 {
@@ -561,22 +593,22 @@ array_link::array_link ( const array_link &rhs )   //: n_rows(rhs.n_rows), n_col
      }
     }
 */
-    
-    array_link::array_link ( long* pymatinput, int nrows, int ncols )
-    {
+
+array_link::array_link ( long* pymatinput, int nrows, int ncols )
+{
      this->index=INDEX_DEFAULT;
      this->n_columns=ncols;
      this->n_rows=nrows;
      this->array = create_array ( this->n_rows, this->n_columns );
      int i=0;
-          for(int row=0; row<this->n_rows; row++ ) {
-     for ( int col=0; col<this->n_columns;col++) {
+     for ( int row=0; row<this->n_rows; row++ ) {
+          for ( int col=0; col<this->n_columns; col++ ) {
                this->array[row+col*this->n_rows] = pymatinput[i];
-          i++;
+               i++;
+          }
      }
-     }
-    }
-    
+}
+
 #endif
 
 
@@ -900,21 +932,21 @@ array_link array_link::selectColumns ( std::vector<int> c ) const
 
 bool array_link::isSymmetric() const
 {
-     int n = std::min( (int)this->n_columns, (int)this->n_rows);
+     int n = std::min ( ( int ) this->n_columns, ( int ) this->n_rows );
      for ( int c=0; c<n; c++ ) {
           for ( int r=0; r<c; r++ ) {
-                    if (  this->at ( c,r ) != this->at ( r,c ) )
-                         return false;
+               if ( this->at ( c,r ) != this->at ( r,c ) )
+                    return false;
           }
      }
      return true;
 }
 void array_link::makeSymmetric()
 {
-     int n = std::min( (int)this->n_columns, (int)this->n_rows);
+     int n = std::min ( ( int ) this->n_columns, ( int ) this->n_rows );
      for ( int c=0; c<n; c++ ) {
           for ( int r=0; r<c; r++ ) {
-                      this->at ( c,r ) = this->at ( r,c );
+               this->at ( c,r ) = this->at ( r,c );
           }
      }
 }
@@ -973,11 +1005,11 @@ array_link array_link::randomrowperm() const
 /** Return example array */
 array_link exampleArray ( int idx, int verbose )
 {
-     if(idx==-1) {
-      for(int i=0; i<40;i++) {
-       array_link al = exampleArray(i, verbose);    
-      }
-     return exampleArray(0);
+     if ( idx==-1 ) {
+          for ( int i=0; i<40; i++ ) {
+               array_link al = exampleArray ( i, verbose );
+          }
+          return exampleArray ( 0 );
      }
 
      std::string dstr = "";
@@ -1808,17 +1840,18 @@ double array_link::nonzero_fraction() const
      return nz/nn;
 }
 
-bool array_link::is_conference (int nz) const
+bool array_link::is_conference ( int nz ) const
 {
-     if (! this->is_conference()) { return false; };
-     
-     for(int c=0; c<this->n_columns; c++) {
+     if ( ! this->is_conference() ) {
+          return false;
+     };
+
+     for ( int c=0; c<this->n_columns; c++ ) {
           int n =0;
-          for(int r=0; r<this->n_rows; r++)
-          {
-           if (this->atfast(r, c)==0) n++;    
+          for ( int r=0; r<this->n_rows; r++ ) {
+               if ( this->atfast ( r, c ) ==0 ) n++;
           }
-          if (n!=nz) return false;
+          if ( n!=nz ) return false;
      }
      return true;
 }
@@ -1869,13 +1902,13 @@ void array_link::showproperties() const
 
 void array_link::debug() const
 {
-	myprintf("debug: %ld %p %p", (long)this->array, (void *)array, ( void * )array);
+     myprintf ( "debug: %ld %p %p", ( long ) this->array, ( void * ) array, ( void * ) array );
 }
 #ifdef SWIGCODE
 void* array_link::data()
 {
      //return ( static_cast<long>( (void *) array ) );
-     return (  (void*) ( this->array ) );
+     return ( ( void* ) ( this->array ) );
 }
 #else
 #endif
@@ -3206,7 +3239,7 @@ std::vector<int> jstructbase_t::calculateF ( ) const
      std::vector<int> F ( nn );
 
      for ( size_t i=0; i<this->values.size(); i++ ) {
-          int fi = abs(values[i]);
+          int fi = abs ( values[i] );
           int idx = jvalue2index.find ( fi )->second;
           F[idx]++;
           //printf("value %d: idx %d\n", fi, idx);
@@ -3413,10 +3446,10 @@ void jstruct_t::calcj5 ( const array_link &al )
 
 
 /** Create an object to calculate J-characteristics
- * 
+ *
  * @param al Array to use
  * @param jj Type of J-characteristics to calculate
- * 
+ *
  **/
 jstruct_t::jstruct_t ( const array_link &al, int jj )
 {
