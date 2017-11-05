@@ -1553,6 +1553,9 @@ public:
         return trx + ( -1 );
     }
 
+    /// Comparison operator
+    int operator== ( const array_transformation_t & t2 ) const;
+    
     /// composition operator. the transformations are applied from the left
     array_transformation_t operator* ( const array_transformation_t b ) {
 
