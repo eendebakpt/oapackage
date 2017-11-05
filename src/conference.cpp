@@ -247,95 +247,97 @@ array_link conference_t::create_root_three ( ) const
 
      return al;
 }
-    void  conference_t::addRootArrays ( arraylist_t &lst ) const {
-        switch ( this->ctype ) {
-        case CONFERENCE_NORMAL:
-        case CONFERENCE_DIAGONAL:
-            switch ( this->itype ) {
-            case CONFERENCE_ISOMORPHISM:
-                lst.push_back ( this->create_root() );
-                break;
-            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-                for ( int i=N/2+1; i<=N; i++ ) {
+void  conference_t::addRootArrays ( arraylist_t &lst ) const
+{
+     switch ( this->ctype ) {
+     case CONFERENCE_NORMAL:
+     case CONFERENCE_DIAGONAL:
+          switch ( this->itype ) {
+          case CONFERENCE_ISOMORPHISM:
+               lst.push_back ( this->create_root() );
+               break;
+          case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+               array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+               for ( int i=N/2+1; i<=N; i++ ) {
                     al.setconstant ( -1 );
                     al.at ( 0,0 ) =0;
                     for ( int k=1; k<i; k++ ) {
-                        al.at ( k,0 ) =1;
+                         al.at ( k,0 ) =1;
                     }
                     lst.push_back ( al );
-                }
-            }
-            break;
-            default
+               }
+          }
+          break;
+          default
                     :
-                printfd ( "not implemented (itype %d)\n", this->itype );
-            }
-            break; //
-        case DCONFERENCE: {
-            switch ( this->itype ) {
-            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                arraylist_t tmp = this->createDconferenceRootArrays ( );
-                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
-            }
-            break;
-            case CONFERENCE_ISOMORPHISM: {
-                if ( this->j1zero ) {
+               printfd ( "not implemented (itype %d)\n", this->itype );
+          }
+          break; //
+     case DCONFERENCE: {
+          switch ( this->itype ) {
+          case CONFERENCE_RESTRICTED_ISOMORPHISM: {
+               arraylist_t tmp = this->createDconferenceRootArrays ( );
+               lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+          }
+          break;
+          case CONFERENCE_ISOMORPHISM: {
+               if ( this->j1zero ) {
                     printfd ( "ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
-                }
-                if ( this->j3zero ) {
+               }
+               if ( this->j3zero ) {
                     printfd ( "ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
-                }
-                assert ( this->j1zero==0 );
-                assert ( this->j3zero==0 );
-                arraylist_t tmp = this->createDconferenceRootArrays ( );
-                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
-            }
-            break;
-            default
+               }
+               assert ( this->j1zero==0 );
+               assert ( this->j3zero==0 );
+               arraylist_t tmp = this->createDconferenceRootArrays ( );
+               lst.insert ( lst.end(), tmp.begin(), tmp.end() );
+          }
+          break;
+          default
                     :
 
-                printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
-                exit ( 0 );
-            }
-        }
-        }
-        if ( 0 ) {
-            for ( size_t i=0; i<lst.size(); i++ ) {
-                printf ( "root array %d:\n", int ( i ) );
-                lst[i].showarray();
-            }
-        }
-    }
+               printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
+               exit ( 0 );
+          }
+     }
+     }
+     if ( 0 ) {
+          for ( size_t i=0; i<lst.size(); i++ ) {
+               printf ( "root array %d:\n", int ( i ) );
+               lst[i].showarray();
+          }
+     }
+}
 
-        arraylist_t conference_t::createDconferenceRootArrays ( ) const {
-        //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
+arraylist_t conference_t::createDconferenceRootArrays ( ) const
+{
+     //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
 
-        arraylist_t lst;
-        array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-        if ( j1zero ) {
-            al.setconstant ( -1 );
-            al.at ( 0,0 ) =0;
-            al.at ( 1,0 ) =0;
-            for ( int k=2; k<N/2+1; k++ ) {
-                al.at ( k,0 ) =1;
-            }
-            lst.push_back ( al );
+     arraylist_t lst;
+     array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
+     if ( j1zero ) {
+          al.setconstant ( -1 );
+          al.at ( 0,0 ) =0;
+          al.at ( 1,0 ) =0;
+          for ( int k=2; k<N/2+1; k++ ) {
+               al.at ( k,0 ) =1;
+          }
+          lst.push_back ( al );
 
-        } else {
-            for ( int i=N/2+1; i<=N; i++ ) {
-                al.setconstant ( -1 );
-                al.at ( 0,0 ) =0;
-                al.at ( 1,0 ) =0;
-                for ( int k=2; k<i; k++ ) {
+     } else {
+          for ( int i=N/2+1; i<=N; i++ ) {
+               al.setconstant ( -1 );
+               al.at ( 0,0 ) =0;
+               al.at ( 1,0 ) =0;
+               for ( int k=2; k<i; k++ ) {
                     al.at ( k,0 ) =1;
-                }
-                lst.push_back ( al );
-            }
-        }
-        return lst;
-    }
-    
+               }
+               lst.push_back ( al );
+          }
+     }
+     return lst;
+}
+
 array_link conference_t::create_root ( ) const
 {
      array_link al ( this->N, 2, 0 ); // c.ncols
@@ -397,44 +399,43 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
 }
 
 /// reduce double conference matrix to normal form (work in progress)
-conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose ){
-     if (! al.is_conference(2)  ) 
-     {
-          myprintf("reduceConferenceTransformation: error: design is not a double conference design\n");
+conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose )
+{
+     if ( ! al.is_conference ( 2 ) ) {
+          myprintf ( "reduceConferenceTransformation: error: design is not a double conference design\n" );
           conference_transformation_t t ( al );
-          return t;     
+          return t;
      }
-     
+
      arraydata_t arrayclass ( 3, al.n_rows, 1, al.n_columns );
-          //printfd("run %d ", i); arrayclass.show();
-          array_transformation_t at = reduceOAnauty ( al+1, verbose>=2, arrayclass );
-         // alx=at.apply ( al+1 ) + ( - 1 );
-          
-          conference_transformation_t t ( al );
-          t.rperm = at.rowperm();
-          t.cperm = at.colperm();
-          
-          for(int c=0; c<al.n_columns;c++) {
-               std::vector<int> lp = at.lvlperm(c);
-               assert(lp[1]==1); // 0 should go to 0
-          t.cswitch[c] = (lp[0]==0)? 1 : -1; // FIXME!
-          }
-          
-return t;
-     
+     //printfd("run %d ", i); arrayclass.show();
+     array_transformation_t at = reduceOAnauty ( al+1, verbose>=2, arrayclass );
+     // alx=at.apply ( al+1 ) + ( - 1 );
+
+     conference_transformation_t t ( al );
+     t.rperm = at.rowperm();
+     t.cperm = at.colperm();
+
+     for ( int c=0; c<al.n_columns; c++ ) {
+          std::vector<int> lp = at.lvlperm ( c );
+          assert ( lp[1]==1 ); // 0 should go to 0
+          t.cswitch[c] = ( lp[0]==0 ) ? 1 : -1; // FIXME!
+     }
+
+     return t;
+
 }
 
 
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose )
 {
 
-     if (! al.is_conference(1)  ) 
-     {
-          myprintf("reduceConferenceTransformation: error: design is not a conference design\n");
-     conference_transformation_t t ( al );
-     return t;     
+     if ( ! al.is_conference ( 1 ) ) {
+          myprintf ( "reduceConferenceTransformation: error: design is not a conference design\n" );
+          conference_transformation_t t ( al );
+          return t;
      }
-     
+
      const int nr = al.n_rows;
      const int nc=al.n_columns;
      const int nn = 2* ( nr+nc );
@@ -1074,73 +1075,76 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
      return e2;
 }
 
-    /// return True of the extension satisfies all checks
-    bool DconferenceFilter::filter ( const cperm &c ) const {
-        if ( filterfirst ) {
-            if ( c[0]<0 ) {
-                return false;
-            }
-        }
-        if ( filtersymm ) {
-            if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
-                return false;
-            }
-        }
-        if ( filterj2 ) {
-            // perform inner product check for all columns
-            if ( ! ipcheck ( c, als, 0 ) ) {
-                return false;
-            }
-        }
-        if ( filterj3 ) {
-            // perform inner product check for all columns
-            if ( ! this->filterJ3 ( c ) ) {
-                return false;
-            }
-        }
-        ngood++;
-        return true;
-    }
-    
-    
-        /// return True of the candidate satisfies the symmetry check
-    bool DconferenceFilter::filterSymmetry ( const cperm &c ) const {
-        return  satisfy_symm ( c, check_indices, 0 );
-    }
+/// return True of the extension satisfies all checks
+bool DconferenceFilter::filter ( const cperm &c ) const
+{
+     if ( filterfirst ) {
+          if ( c[0]<0 ) {
+               return false;
+          }
+     }
+     if ( filtersymm ) {
+          if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
+               return false;
+          }
+     }
+     if ( filterj2 ) {
+          // perform inner product check for all columns
+          if ( ! ipcheck ( c, als, 0 ) ) {
+               return false;
+          }
+     }
+     if ( filterj3 ) {
+          // perform inner product check for all columns
+          if ( ! this->filterJ3 ( c ) ) {
+               return false;
+          }
+     }
+     ngood++;
+     return true;
+}
 
-    bool DconferenceFilter::filterReason ( const cperm &c ) const {
-        if ( filterfirst ) {
-            if ( c[0]<0 ) {
-                myprintf ( "filterfirst\n" );
-                return false;
-            }
-        }
-        if ( filtersymm ) {
-            if ( ! satisfy_symm ( c, sd, 0 ) ) {
-                myprintf ( "symmetry\n" );
-                return false;
-            }
-        }
-        if ( filterj2 ) {
-            // perform inner product check for all columns
-            if ( ! ipcheck ( c, als, 0 ) ) {
-                myprintf ( "j2\n" );
-                return false;
-            }
-        }
-        if ( filterj3 ) {
-            // perform inner product check for all columns
-            if ( ! this->filterJ3 ( c ) ) {
-                myprintf ( "j3\n" );
-                return false;
-            }
-        }
-        ngood++;
-        myprintf ( "filter check good\n" );
 
-        return true;
-    }
-    
+/// return True of the candidate satisfies the symmetry check
+bool DconferenceFilter::filterSymmetry ( const cperm &c ) const
+{
+     return  satisfy_symm ( c, check_indices, 0 );
+}
+
+bool DconferenceFilter::filterReason ( const cperm &c ) const
+{
+     if ( filterfirst ) {
+          if ( c[0]<0 ) {
+               myprintf ( "filterfirst\n" );
+               return false;
+          }
+     }
+     if ( filtersymm ) {
+          if ( ! satisfy_symm ( c, sd, 0 ) ) {
+               myprintf ( "symmetry\n" );
+               return false;
+          }
+     }
+     if ( filterj2 ) {
+          // perform inner product check for all columns
+          if ( ! ipcheck ( c, als, 0 ) ) {
+               myprintf ( "j2\n" );
+               return false;
+          }
+     }
+     if ( filterj3 ) {
+          // perform inner product check for all columns
+          if ( ! this->filterJ3 ( c ) ) {
+               myprintf ( "j3\n" );
+               return false;
+          }
+     }
+     ngood++;
+     myprintf ( "filter check good\n" );
+
+     return true;
+}
+
 /** filter conferece matrix extension candidates
  *
  * Filtering is based in symmetry and ip
@@ -1256,8 +1260,7 @@ std::vector<cperm> generateConferenceExtensionsOld ( const array_link &al, const
                std::map<int, std::vector<cperm> >::iterator it;
                it= second_cache.find ( target ); // use .find because .at is C++11
                ff2=it->second;
-          }
-          else {
+          } else {
                ff2 = get_second ( N, kz, target, verbose>=2 );
                second_cache.insert ( std::pair<int, std::vector<cperm> > ( target, ff2 ) );
           }
@@ -2230,7 +2233,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
      if ( verbose ) {
           printfd ( "--- extend_conference_matrix: extcol %d, zstart %d, maxz %d, maxzpos %d ---\n", extcol, zstart, maxzval, maxzpos );
 
-          if (verbose>=2)
+          if ( verbose>=2 )
                al.showarray();
      }
      for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
@@ -2796,18 +2799,20 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
 
           {
                // FIXME: remove this code path
-          int zl = maxz ( alL, c );
-          int zr = maxz ( alR, c );
+               int zl = maxz ( alL, c );
+               int zr = maxz ( alR, c );
 
-          if ( zl<zr ) {
-               printfd("error!"); exit(1);
-               return true;
-          }
-          if ( zl>zr ) {
-               printfd("error!"); exit(1);
-               return false;
-               
-     }
+               if ( zl<zr ) {
+                    printfd ( "error!" );
+                    exit ( 1 );
+                    return true;
+               }
+               if ( zl>zr ) {
+                    printfd ( "error!" );
+                    exit ( 1 );
+                    return false;
+
+               }
           }
           // zero is at same position(s) in column, let LMC ordering decide
           for ( int r=0; r<alL.n_rows; r++ ) {
@@ -3359,8 +3364,10 @@ void init_lmc0_rowsort ( const array_link &al, int sutk_col, rowsort_t *rowperm,
      std::stable_sort ( rowperm, rowperm+al.n_rows );
 }
 
-int get_zero_pos_block ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const int nrows )
+int get_zero_pos_blockX ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const int nrows )
 {
+     /// FIXME: remove dead function
+
      int position_zero = nrows+1;
      for ( int i = x1; i < x2; i++ ) {
           int current_val = al.atfast ( rowperm[i].r, colperm[column] );
@@ -3373,8 +3380,33 @@ int get_zero_pos_block ( const array_link &al, const int x1, const int x2, rowso
 
 }
 
-lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
+/*** compare zero positions in a block of a design
+ *
+ *
+ */
+lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm )
 {
+     int nrows = rowsignperm.size();
+
+     for ( int i = x1; i < x2; i++ ) {
+          array_t val0 = al.atfast ( i, column );
+          array_t val =  al.atfast ( rowperm[i].r, colperm[column] );
+
+          if ( val0!=val ) {
+               if ( val0==0 ) {
+                    return LMC_MORE;
+               }
+               if ( val==0 )
+                    return LMC_LESS;
+          }
+     }
+     return LMC_EQUAL;
+}
+
+lmc_t lmc0_compare_zeropos_blockX ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
+{
+/// FIXME: remove dead function
+
      /* Get zero position in the original array*/
      int al_position_zero = nrows+1;
 
@@ -3385,7 +3417,7 @@ lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int
      }
 
      /* Check position of zeros */
-     int position_zero = get_zero_pos_block ( al, x1, x2, rowperm, colperm, column, nrows );
+     int position_zero = get_zero_pos_blockX ( al, x1, x2, rowperm, colperm, column, nrows );
 
      if ( position_zero > al_position_zero ) {
           return LMC_MORE;
@@ -3399,7 +3431,7 @@ lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int
 }
 
 
-/* Compare two columns with the zero element in the same position */
+/* Compare two columns with the zero elements in the same position */
 lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
 {
 
@@ -3422,7 +3454,7 @@ lmc_t init_lmc0_sort_comp ( const array_link &al, int column, int sel_col, rowso
 
           int rx = rowperm[i].r; // play with current rowperm structure
           int posit_al = al.at ( rx, sel_col );
-          int trans_val = ( rowsignperm[ rx ] ) *posit_al;
+          int trans_val = ( colsignperm[sel_col] * rowsignperm[ rx ] ) *posit_al;
           int m = ( ( trans_val+3 ) % 3 );
           rowperm[ i ].val = m;
 
@@ -3430,7 +3462,7 @@ lmc_t init_lmc0_sort_comp ( const array_link &al, int column, int sel_col, rowso
      std::stable_sort ( rowperm, rowperm+n_rows ); // and now play with rowperm.rr
 
      // Compare zero position
-     r = lmc0_compare_zeropos_block ( al, 0, n_rows, rowperm, colperm, column, rowsignperm, colsignperm, n_rows );
+     r = lmc0_compare_zeropos_block ( al, 0, n_rows, rowperm, colperm, column, rowsignperm, colsignperm );
      if ( r==LMC_LESS || r==LMC_MORE ) {
           return r;
      }
@@ -3459,15 +3491,15 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
           int x1 = sd.ft.atfast ( 2*j, scol );
           int x2 = sd.ft.atfast ( 2*j+1, scol );
           //printf("sort size %d\n", x2-x1);
-          
-          if ( (x2-x1)>1 )
-          {
-          //std::stable_sort( rowperm+x1, rowperm+x2);
-          flipSort ( rowperm, x1, x2-1 );
+
+          if ( ( x2-x1 ) >1 ) {
+               // TODO: put this check in sd generation
+               //std::stable_sort( rowperm+x1, rowperm+x2);
+               flipSort ( rowperm, x1, x2-1 );
           }
-          
+
           // Compare blocks wrt zero position
-          r = lmc0_compare_zeropos_block ( al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm, n_rows );
+          r = lmc0_compare_zeropos_block ( al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm );
           if ( r==LMC_LESS || r==LMC_MORE ) {
                return r;
           }
@@ -3485,7 +3517,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
 
      for ( int c=column; c<ncols ; c++ ) {
 
-          std::swap( colperm[c], colperm[column] );
+          std::swap ( colperm[c], colperm[column] );
 
           /* i. Apply the correct column level permutation to make the element X(1,k) equal to 1*/
           int current_sign_col = colsignperm[colperm[column]];
@@ -3496,6 +3528,7 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
           r = LMC0_sortrows_compare ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, sd );
 
           if ( r==LMC_EQUAL ) {
+               //printfd("   LMC0_columns: recurse into column %d\n" , column+1);
                r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, sd );
           }
           if ( r==LMC_LESS ) {
@@ -3503,8 +3536,8 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
           }
 
           colsignperm[ colperm[column] ] = current_sign_col;
-          
-          std::swap( colperm[c], colperm[column] );
+
+          std::swap ( colperm[c], colperm[column] );
      }
      return r;
 }
@@ -3542,50 +3575,88 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
 
      for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
 
-          cprintf(verbose, "LMC0checkDC: column %d\n", sel_col );
-          
+          cprintf ( verbose, "\nLMC0checkDC: column %d\n", sel_col );
+
+           
           /*1. Select the first (sel_col) column */
-          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+          std::swap ( colperm[ 0 ], colperm[ sel_col ] );
 
-          /* 3. Find permutation to sort the array and compare column */
-          result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
-          if ( result==LMC_LESS ) {
-               cprintf(verbose, "LMC0checkDC: init_lmc0_sort_comp result is %d, abort\n", result );
-               return result;
-          }
+          /* 2. Select a possible sign switch for the selected column */
 
-          //printf("--- sel_col %d\n",sel_col);
-          //print_rowsort(rowsort, al.n_rows);
+          int colsign0 = colsignperm[colperm[0]];
 
-          /* 4. Select one of the possible zero's in the selected column */
-          for ( int zidx = 0; zidx < 2; zidx++ ) {
-               std::swap(rowsort[0].r, rowsort[zidx].r);
-               
-               for(int c = 1; c<ncols; c++) {
-                    int current_sign_col = colsignperm[colperm[c]];
-               int value = ( rowsignperm[rowsort[0].r]*current_sign_col ) * ( al.atfast ( rowsort[0].r, colperm[c] ) );
+          for ( int k=0; k<2; k++ ) {
 
-               if (current_sign_col * value==0) {
-                    printf("LMC0checkDC: multiple zeros in a single row not supported...\n"); exit(1);
+               colsignperm[colperm[0]] = colsign0 * ( ( k==0 ) ?1:-1 );
+               cprintf ( verbose, " # LMC0checkDC: selected sign switch %d: colsignperm ", colsignperm[colperm[0]] );
+               if ( verbose ) {
+                    display_vector ( colsignperm );
+                    myprintf ( "\n" );
+               }
+               //colsignperm);
+
+               // needed???
+               for ( rowindex_t i = 0; i < nrows; i++ ) {
+                    rowsort[i].r =i;
+                    rowsort[i].val = colsignperm[colperm[0]]*colperm[rowsort[i].r];
+               }
+               //myprintf(" -- a1:\n"); print_rowsort(rowsort, al.n_rows);
+
+               /* 4. Select one of the possible zero's in the selected column */
+               for ( int zidx = 0; zidx < 2; zidx++ ) {
+
+                    for ( rowindex_t i = 0; i < nrows; i++ ) {
+                         rowsort[i].r =i;
+                    }
+                    /* 3. Find permutation to sort the array and compare column */
+                    result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
+
+                    std::swap ( rowsort[0].r, rowsort[zidx].r );
+
+                    if ( result==LMC_LESS ) {
+                         cprintf ( verbose, "LMC0checkDC: init_lmc0_sort_comp result is %d, abort\n", result );
+                         return result;
+                    }
+
+                    //myprintf(" -- k %d:\n", k); print_rowsort(rowsort, al.n_rows);
+
+                    if ( verbose ) {
+                         printf ( "--- sel_col %d, zidx %d\n",sel_col, zidx );
+                         print_rowsort ( rowsort, al.n_rows );
+                    }
+
+                    for ( int c = 1; c<ncols; c++ ) {
+                         int current_sign_col = colsignperm[colperm[c]];
+                         int value = ( rowsignperm[rowsort[0].r]*current_sign_col ) * ( al.atfast ( rowsort[0].r, colperm[c] ) );
+
+                         if ( current_sign_col * value==0 ) {
+                              printf ( "LMC0checkDC: multiple zeros in a single row not supported...\n" );
+                              exit ( 1 );
+                         }
+
+                         cprintf ( verbose>=2, "   LMC0checkDC:  current_sign_col * value %d\n",  current_sign_col * value );
+                         colsignperm[colperm[c]] = current_sign_col * value;
+                    }
+               cprintf ( verbose, " # LMC0checkDC: colsignperm for zidx %d", zidx );
+               if ( verbose ) {
+                    display_vector ( colsignperm );
+                    myprintf ( "\n" );
                }
                
-          cprintf(verbose, "LMC0checkDC:  current_sign_col * value %d\n",  current_sign_col * value);
-                    colsignperm[colperm[c]] = current_sign_col * value;
+                    /* 5. Select the next column */
+                    result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
+                    if ( result==LMC_LESS ) {
+                         cprintf ( verbose, "LMC0checkDC: zidx %d, result is %d, abort\n", zidx, result );
+
+                         return result;
+
+                    }
+
+                    std::swap ( rowsort[0].r, rowsort[zidx].r );
+
                }
-
-               /* 5. Select the next column */
-               result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
-               if ( result==LMC_LESS ) {
-                                   cprintf(verbose, "LMC0checkDC: zidx %d, result is %d, abort\n", zidx, result );
-
-                    return result;
-
-               }
-
-               std::swap(rowsort[0].r, rowsort[zidx].r);
-
           }
-          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+          std::swap ( colperm[ 0 ], colperm[ sel_col ] );
           init_signperm ( rowsignperm );
 
      }
@@ -3626,7 +3697,7 @@ lmc_t LMC0check ( const array_link &al, int verbose )
      for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
 
           /*1. Select the first (sel_col) column */
-          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+          std::swap ( colperm[ 0 ], colperm[ sel_col ] );
 
           /*2. Find row-level permutation such that the first column only contains ones */
           rowlevel_permutation ( al, rowsort, colperm, rowsignperm, nrows, 0 );//
@@ -3653,7 +3724,7 @@ lmc_t LMC0check ( const array_link &al, int verbose )
 
           }
 
-          std::swap(colperm[ 0 ], colperm[ sel_col ] );
+          std::swap ( colperm[ 0 ], colperm[ sel_col ] );
           init_signperm ( rowsignperm );
 
      }
