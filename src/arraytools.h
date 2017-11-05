@@ -614,8 +614,6 @@ array_link exampleArray ( int idx = 0, int verbose = 0 );
 /// calculate J-characteristics for a conference design
 std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
-//#define voidp_t (void*)
-
 //typedef uint64_t voidp_t;
 #ifdef SWIGCODE
 #endif

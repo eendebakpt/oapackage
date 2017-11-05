@@ -229,6 +229,18 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
     }
 
 #ifdef OADEV
+
+    /* double conference matrices */
+    {
+        cprintf ( verbose,"%s: double conference matrices\n", bstr );
+
+        array_link al = exampleArray();
+        
+        conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
+
+    }
+    
+#endif
     /* conference matrices */
     {
         cprintf ( verbose,"%s: conference matrices\n", bstr );
@@ -355,7 +367,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 ) {
 
         myassert ( alx==al, "transformation of conference matrix\n" )	;
     }
-#endif
 
     /* constructors */
     {

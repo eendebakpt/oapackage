@@ -396,7 +396,7 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
      return true;
 }
 
-/// reduce double conference matrix to normal form
+/// reduce double conference matrix to normal form (work in progress)
 conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose ){
      if (! al.is_conference(2)  ) 
      {
@@ -417,7 +417,7 @@ conference_transformation_t reduceDoubleConferenceTransformation ( const array_l
           for(int c=0; c<al.n_columns;c++) {
                std::vector<int> lp = at.lvlperm(c);
                assert(lp[1]==1); // 0 should go to 0
-          t.cswitch[c] = (lp[0]==0)? 1 : -1;
+          t.cswitch[c] = (lp[0]==0)? 1 : -1; // FIXME!
           }
           
 return t;
@@ -2794,14 +2794,20 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
                     return false;
           }
 
+          {
+               // FIXME: remove this code path
           int zl = maxz ( alL, c );
           int zr = maxz ( alR, c );
 
-          if ( zl<zr )
+          if ( zl<zr ) {
+               dprintf("error!");
                return true;
-          if ( zl>zr )
+          }
+          if ( zl>zr ) {
+               dprintf("error!");
                return false;
-
+     }
+          }
           // zero is at same position(s) in column, let LMC ordering decide
           for ( int r=0; r<alL.n_rows; r++ ) {
                if ( al[r]> ar[r] )

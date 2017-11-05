@@ -109,7 +109,7 @@ array_link reduceConference ( const array_link &, int verbose = 0 );
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose );
 
 /// reduce double conference matrix to normal form
-conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
+//conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
 
 
 /// Helper structure containing extensions of conference designs
@@ -430,7 +430,6 @@ public:
 
 //typedef CandidateGeneratorInflate CandidateGenerator;
 typedef CandidateGeneratorConference CandidateGenerator;
-//typedef CandidateGeneratorX CandidateGenerator;
 
 
 /// Class to generate double conference candidate extensions with caching

@@ -973,6 +973,12 @@ array_link array_link::randomrowperm() const
 /** Return example array */
 array_link exampleArray ( int idx, int verbose )
 {
+     if(idx==-1) {
+      for(int i=0; i<40;i++) {
+       array_link al = exampleArray(i, verbose);    
+      }
+     return exampleArray(0);
+     }
 
      std::string dstr = "";
 
