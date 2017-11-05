@@ -331,99 +331,110 @@ int main ( int argc, char* argv[] )
      //print_options(); exit(0);
 
      {
-          arraylist_t ll = readarrayfile(input);
-          
-          for(size_t i=0; i<ll.size(); i++) {
-           lmc_t r = LMC0checkDC(ll[i], verbose);    
-           printf("array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)i, (int)r, LMC_LESS, LMC_MORE);
-           
-           // randomize
-           array_link al = ll[i];
-           
-           conference_transformation_t tr(al);
-           tr.randomizecolperm();
-           tr.randomizerowperm();
-           tr.randomizecolflips();
+          arraylist_t ll = readarrayfile ( input );
 
-          array_link alx = tr.apply(al);
+          lmc_t r = LMC0checkDC ( ll[0], 3 ); 
+          printf ( "array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", ( int ) 0, ( int ) r, LMC_LESS, LMC_MORE ); exit(0);
 
-          if (al!=alx) {
-           lmc_t r = LMC0checkDC(alx, verbose);    
-           
-           printf("randomized array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)i, (int)r, LMC_LESS, LMC_MORE);
-           if (r!=LMC_LESS) {
-                printf("error!?\n");
-                exit(1);
+          for ( size_t i=0; i<ll.size(); i++ ) {
+               lmc_t r = LMC0checkDC ( ll[i], verbose>=2 );
+               printf ( "array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", ( int ) i, ( int ) r, LMC_LESS, LMC_MORE );
+
+               // randomize
+               array_link al = ll[i];
+
+               for ( int jj=0; jj<10; jj++ ) {
+                    conference_transformation_t tr ( al );
+                    tr.randomizecolperm();
+                    tr.randomizerowperm();
+                    tr.randomizecolflips();
+
+                    array_link alx = tr.apply ( al );
+
+                    if ( al!=alx ) {
+                         lmc_t r = LMC0checkDC ( alx, verbose>=2 );
+
+                         printf ( "  randomized array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", ( int ) i, ( int ) r, LMC_LESS, LMC_MORE );
+                         if ( r!=LMC_LESS ) {
+                              printf ( "error!?\n" );
+                              exit ( 1 );
+                         }
+                    } else {
+                         printf ( " randomized array %d: same array\n", ( int ) i );
+                    }
+               }
           }
-          } else{
-           printf("randomized array %d: same array\n", (int)i);
-          }
-          }
+
           return 0;
      }
-{
-     array_link al = exampleArray(r);
-     
-    array_transformation_t tt = reduceOAnauty(al);
-array_link alx = tt.apply(al);
-exit(0);     
-}
+     {
+          array_link al = exampleArray ( r );
+
+          array_transformation_t tt = reduceOAnauty ( al );
+          array_link alx = tt.apply ( al );
+          exit ( 0 );
+     }
 
      {
           bool addcol=true;
-          
-     int nx=3;
-     array_link G(nx,nx, array_link::INDEX_DEFAULT);
-     G.setconstant(0); G.at(0,1)=1; G.at(1,0)=1;
-     if (addcol)
-     G.at(nx-1,nx-1)=5;
-     
-     
-    // arraydata_t ad = arraylink2arraydata(G);
-     arraydata_t ad(6, nx, 2, nx);
-     
-     //ad.show();
-     array_transformation_t T(ad);
-     
-     T.reset();
-     
-     std::vector<int> perm(nx); for(size_t i=0; i<perm.size(); i++) perm[i]=i;     
-     random_perm(perm);
-     
-     T.setrowperm(perm); T.setcolperm(perm);
-     T.show();
-     
-     G.showarray();
-     G = T.apply(G);
-     G.showarray();
-     
-     std::vector<int> colors(G.n_rows); for(size_t i=0; i<colors.size(); i++) colors[i]=0;
-     if (addcol)
-          colors[nx-1]=1;     
-     std::vector<int> colorsx(G.n_rows);
-     colorsx = permute(colors, perm);
-     //colorsx = permuteback(colors, perm);
-     
-     printfd("colorsx.size %d\n", colorsx.size() );
-     print_perm("colorsx", colorsx);
-     
-     std::vector<int> tr = nauty::reduceNauty (G, colorsx, verbose);
-     print_perm("tr        ", tr);
-     print_perm("tr inverse", invert_permutation(tr));
-tr=invert_permutation(tr);
 
-     myprintf("-- output:\n");
-     array_link Gx = transformGraph ( G, tr, verbose );
-Gx.showarray();
- 
-     exit(0);
-}
+          int nx=3;
+          array_link G ( nx,nx, array_link::INDEX_DEFAULT );
+          G.setconstant ( 0 );
+          G.at ( 0,1 ) =1;
+          G.at ( 1,0 ) =1;
+          if ( addcol )
+               G.at ( nx-1,nx-1 ) =5;
+
+
+          // arraydata_t ad = arraylink2arraydata(G);
+          arraydata_t ad ( 6, nx, 2, nx );
+
+          //ad.show();
+          array_transformation_t T ( ad );
+
+          T.reset();
+
+          std::vector<int> perm ( nx );
+          for ( size_t i=0; i<perm.size(); i++ ) perm[i]=i;
+          random_perm ( perm );
+
+          T.setrowperm ( perm );
+          T.setcolperm ( perm );
+          T.show();
+
+          G.showarray();
+          G = T.apply ( G );
+          G.showarray();
+
+          std::vector<int> colors ( G.n_rows );
+          for ( size_t i=0; i<colors.size(); i++ ) colors[i]=0;
+          if ( addcol )
+               colors[nx-1]=1;
+          std::vector<int> colorsx ( G.n_rows );
+          colorsx = permute ( colors, perm );
+          //colorsx = permuteback(colors, perm);
+
+          printfd ( "colorsx.size %d\n", colorsx.size() );
+          print_perm ( "colorsx", colorsx );
+
+          std::vector<int> tr = nauty::reduceNauty ( G, colorsx, verbose );
+          print_perm ( "tr        ", tr );
+          print_perm ( "tr inverse", invert_permutation ( tr ) );
+          tr=invert_permutation ( tr );
+
+          myprintf ( "-- output:\n" );
+          array_link Gx = transformGraph ( G, tr, verbose );
+          Gx.showarray();
+
+          exit ( 0 );
+     }
      if ( 1 ) {
           array_link al = exampleArray ( r, 1 );
           conference_t ct ( al.n_rows, al.n_columns+4, 0 );
           ct.j3zero=0;
 
-          if (xx>0)
+          if ( xx>0 )
                al=al.selectFirstColumns ( xx );
 
           if ( verbose>=1 )
@@ -436,16 +447,16 @@ Gx.showarray();
           int filterj2=1;
           int filtersymminline=1;
           int averbose=verbose;
-                  std::vector<cperm>      ccX = generateSingleConferenceExtensions ( al, ct, -1, averbose, 1, filterj2, ct.j3zero, filtersymminline );
-showCandidates(ccX);
-printf("\n-----------\n");
-                    
+          std::vector<cperm>      ccX = generateSingleConferenceExtensions ( al, ct, -1, averbose, 1, filterj2, ct.j3zero, filtersymminline );
+          showCandidates ( ccX );
+          printf ( "\n-----------\n" );
+
           CandidateGenerator cgenerator ( array_link(), ct );
           int kz = maxz ( al ) +1;
           cgenerator.verbose=verbose;
           std::vector<cperm> ee = cgenerator.generateCandidatesZero ( al, kz );
-          
-          cgenerator.showCandidates(2);
+
+          cgenerator.showCandidates ( 2 );
           printf ( "generateCandidatesZero: %d\n-------------\n", ( int ) ee.size() );
 
 

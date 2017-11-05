@@ -1802,6 +1802,21 @@ double array_link::nonzero_fraction() const
      return nz/nn;
 }
 
+bool array_link::is_conference (int nz) const
+{
+     if (! this->is_conference()) { return false; };
+     
+     for(int c=0; c<this->n_columns; c++) {
+          int n =0;
+          for(int r=0; r<this->n_rows; r++)
+          {
+           if (this->atfast(r, c)==0) n++;    
+          }
+          if (n!=nz) return false;
+     }
+     return true;
+}
+
 bool array_link::is_conference () const
 {
      int m = this->min();

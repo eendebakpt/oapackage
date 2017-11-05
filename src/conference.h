@@ -90,95 +90,11 @@ public:
     array_link create_root_three ( ) const;
 
     /// create the root arrays with 1 column for the double conference matrices
-    arraylist_t createDconferenceRootArrays ( ) const {
-        //assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
-
-        arraylist_t lst;
-        array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-        if ( j1zero ) {
-            al.setconstant ( -1 );
-            al.at ( 0,0 ) =0;
-            al.at ( 1,0 ) =0;
-            for ( int k=2; k<N/2+1; k++ ) {
-                al.at ( k,0 ) =1;
-            }
-            lst.push_back ( al );
-
-        } else {
-            for ( int i=N/2+1; i<=N; i++ ) {
-                al.setconstant ( -1 );
-                al.at ( 0,0 ) =0;
-                al.at ( 1,0 ) =0;
-                for ( int k=2; k<i; k++ ) {
-                    al.at ( k,0 ) =1;
-                }
-                lst.push_back ( al );
-            }
-        }
-        return lst;
-    }
-
+    arraylist_t createDconferenceRootArrays ( ) const;
+    
     /// add the root arrays to a list
-    void addRootArrays ( arraylist_t &lst ) const {
-        switch ( this->ctype ) {
-        case CONFERENCE_NORMAL:
-        case CONFERENCE_DIAGONAL:
-            switch ( this->itype ) {
-            case CONFERENCE_ISOMORPHISM:
-                lst.push_back ( this->create_root() );
-                break;
-            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                array_link al ( this->N, 1, array_link::INDEX_DEFAULT );
-                for ( int i=N/2+1; i<=N; i++ ) {
-                    al.setconstant ( -1 );
-                    al.at ( 0,0 ) =0;
-                    for ( int k=1; k<i; k++ ) {
-                        al.at ( k,0 ) =1;
-                    }
-                    lst.push_back ( al );
-                }
-            }
-            break;
-            default
-                    :
-                printfd ( "not implemented (itype %d)\n", this->itype );
-            }
-            break; //
-        case DCONFERENCE: {
-            switch ( this->itype ) {
-            case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                arraylist_t tmp = this->createDconferenceRootArrays ( );
-                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
-            }
-            break;
-            case CONFERENCE_ISOMORPHISM: {
-                if ( this->j1zero ) {
-                    printfd ( "ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
-                }
-                if ( this->j3zero ) {
-                    printfd ( "ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n" );
-                }
-                assert ( this->j1zero==0 );
-                assert ( this->j3zero==0 );
-                arraylist_t tmp = this->createDconferenceRootArrays ( );
-                lst.insert ( lst.end(), tmp.begin(), tmp.end() );
-            }
-            break;
-            default
-                    :
-
-                printfd ( "ERROR: not implemented (itype %d)\n", this->itype );
-                exit ( 0 );
-            }
-        }
-        }
-        if ( 0 ) {
-            for ( size_t i=0; i<lst.size(); i++ ) {
-                printf ( "root array %d:\n", int ( i ) );
-                lst[i].showarray();
-            }
-        }
-    }
+    void addRootArrays ( arraylist_t &lst ) const;
+    
     /// return string representation of the object
     std::string __repr__() const {
         return printfstring ( "conference type: N %d, ncols %d", this->N, this->ncols );
@@ -192,9 +108,11 @@ array_link reduceConference ( const array_link &, int verbose = 0 );
 /// reduce conference matrix to normal form
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose );
 
+/// reduce double conference matrix to normal form
+conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
 
 
-/// Helper structure
+/// Helper structure containing extensions of conference designs
 struct conference_extend_t {
     std::vector<cperm> first;
     std::vector<cperm> second;
@@ -212,6 +130,7 @@ public:
         return this->extensions.size();
     }
 
+    /// return the set of extension arrays
     arraylist_t getarrays ( const array_link al ) const {
         arraylist_t ll;
 
@@ -610,15 +529,6 @@ lmc_t LMC0check ( const array_link &al, int verbose = 0 );
 bool isConferenceFoldover ( const array_link &al, int verbose = 0 );
 
 
-/// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart=2 );
-
-/// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart=2 );
-
-/// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend );
-
 // return true if the extension column satisfies the inner product check
 int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=0 );
 
@@ -681,8 +591,6 @@ public:
                 }
                 inline_row=i;
             }
-            //inline_dtable.showarray();
-            //printfd("  inline J3 check: inline_row %d\n", inline_row);
         } else {
             inline_row=-1;
         }
@@ -730,32 +638,7 @@ public:
     }
 
     /// return True of the extension satisfies all checks
-    bool filter ( const cperm &c ) const {
-        if ( filterfirst ) {
-            if ( c[0]<0 ) {
-                return false;
-            }
-        }
-        if ( filtersymm ) {
-            if ( ! satisfy_symm ( c, check_indices, 0 ) ) {
-                return false;
-            }
-        }
-        if ( filterj2 ) {
-            // perform inner product check for all columns
-            if ( ! ipcheck ( c, als, 0 ) ) {
-                return false;
-            }
-        }
-        if ( filterj3 ) {
-            // perform inner product check for all columns
-            if ( ! this->filterJ3 ( c ) ) {
-                return false;
-            }
-        }
-        ngood++;
-        return true;
-    }
+    bool filter ( const cperm &c ) const;
 
     /** filter on partial column (only last col)
      *
@@ -807,38 +690,7 @@ public:
         return true;
     }
     /// return True of the extension satisfies all checks
-    bool filterReason ( const cperm &c ) const {
-        if ( filterfirst ) {
-            if ( c[0]<0 ) {
-                myprintf ( "filterfirst\n" );
-                return false;
-            }
-        }
-        if ( filtersymm ) {
-            if ( ! satisfy_symm ( c, sd, 0 ) ) {
-                myprintf ( "symmetry\n" );
-                return false;
-            }
-        }
-        if ( filterj2 ) {
-            // perform inner product check for all columns
-            if ( ! ipcheck ( c, als, 0 ) ) {
-                myprintf ( "j2\n" );
-                return false;
-            }
-        }
-        if ( filterj3 ) {
-            // perform inner product check for all columns
-            if ( ! this->filterJ3 ( c ) ) {
-                myprintf ( "j3\n" );
-                return false;
-            }
-        }
-        ngood++;
-        myprintf ( "filter check good\n" );
-
-        return true;
-    }
+    bool filterReason ( const cperm &c ) const;
 
     /// return True of the candidate satisfies the J3 check
     bool filterJ3 ( const cperm &c ) const {
@@ -924,9 +776,8 @@ public:
 
 
     /// return True of the candidate satisfies the symmetry check
-    bool filterSymmetry ( const cperm &c ) const {
-        return  satisfy_symm ( c, check_indices, 0 );
-    }
+    bool filterSymmetry ( const cperm &c ) const;
+    
     /// return True of the candidate extension satisfies the J2 check
     bool filterJ2 ( const cperm &c ) const {
         return ipcheck ( c, als, 0 );
