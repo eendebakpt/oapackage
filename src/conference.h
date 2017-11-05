@@ -483,7 +483,6 @@ arraylist_t  selectLMC0doubleconference ( const arraylist_t &list, int verbose, 
 /// select conference arrays in LMC0 form
 arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conference_t &ctype );
 
-
 /** Generate candidate extensions (wrapper function)
  *
  * \param al design to be extended
