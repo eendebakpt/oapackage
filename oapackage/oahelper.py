@@ -735,8 +735,6 @@ def mkdirc(xdir):
     return xdir
 
 
-
-
 def parseProcessingTime(logfile, verbose=0):
     """ Parse a log file to calculate the processing time """
 
@@ -1253,20 +1251,20 @@ def create_pareto_element(values, pareto=None):
         for v in values:
             if isinstance(v, (int)):
                 # convert to list type
-                v=[v]
-            if not isinstance(v, (list,type)):
-                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
+                v = [v]
+            if not isinstance(v, (list, type)):
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
-        vector_pareto = oalib.vector_mvalue_t_double() # FIXME: naming of GWLPvalueVector
+        vector_pareto = oalib.vector_mvalue_t_double()  # FIXME: naming of GWLPvalueVector
         for v in values:
             if isinstance(v, (int, float)):
                 # convert to list type
-                v=[float(v)]
-            if not isinstance(v, (list,type)):
-                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
-    
+                v = [float(v)]
+            if not isinstance(v, (list, type)):
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
+
             vec = oalib.mvalue_t_double(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoDoubleLong):
@@ -1274,5 +1272,5 @@ def create_pareto_element(values, pareto=None):
             raise('')
         vector_pareto = values
     else:
-        raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported'  % (type(pareto), type(v)))
+        raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
     return vector_pareto
