@@ -65,15 +65,17 @@ def test_numpy_interface(verbose=0):
         if verbose:
             al.showarray()
 
+
 def test_nauty(verbose=0):
     if verbose:
         print('test_nauty: test reduction to normal form')
     al = oalib.exampleArray(1, verbose)
-    alr=al.randomperm()
-    tr=oalib.reduceOAnauty(alr)
-    alx=tr.apply(alr)
-    assert(alx==al)
-    
+    alr = al.randomperm()
+    tr = oalib.reduceOAnauty(alr)
+    alx = tr.apply(alr)
+    assert(alx == al)
+
+
 def unittest(verbose=1):
     """ Perform some unit testing, return True if succesfull """
     if verbose:
@@ -82,8 +84,7 @@ def unittest(verbose=1):
     ii = 0
     al = oalib.exampleArray(ii, 0)
 
-
-    #test_numpy_interface()
+    # test_numpy_interface()
 
     if not isinstance(al.getarray(), np.ndarray):
         print(
@@ -131,10 +132,10 @@ def unittest(verbose=1):
     from . graphtools import oa2graph
     arrayclass = oalib.arraylink2arraydata(al)
     _ = oa2graph(al, arrayclass)
-    
+
     test_numpy_interface()
     test_nauty()
-    
+
     return True
 
 #%%
