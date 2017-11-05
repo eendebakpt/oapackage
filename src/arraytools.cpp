@@ -72,7 +72,7 @@ int array_transformation_t::operator== ( const array_transformation_t & t2 ) con
      }
 
      return 1;
-};
+}
 
 std::vector<int> array_transformation_t::rowperm() const
 {
