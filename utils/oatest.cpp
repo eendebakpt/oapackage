@@ -333,7 +333,7 @@ int main ( int argc, char* argv[] )
      {
           arraylist_t ll = readarrayfile ( input );
 
-          lmc_t r = LMC0checkDC ( ll[0], 3 ); 
+          lmc_t r = LMC0checkDC ( ll[0], verbose ); 
           printf ( "array %d: result %d (LMC_LESS %d, LMC_MORE %d)\n", ( int ) 0, ( int ) r, LMC_LESS, LMC_MORE ); exit(0);
 
           for ( size_t i=0; i<ll.size(); i++ ) {

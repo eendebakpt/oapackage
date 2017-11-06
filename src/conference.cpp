@@ -1154,7 +1154,6 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
      symmetry_group rs = als.row_symmetry_group();
      symmdata sd ( als );
 
-
      if ( verbose>=2 )
           sd.show ( 1 );
 
@@ -2779,7 +2778,14 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
 }
 
 
-/// return true of alL is smaller than alR in LMC-0 ordering
+/** return true if alL is smaller than alR in LMC-0 ordering
+ *
+ * In LMC0 ordering a column is smaller than another column if
+ *
+ * i) The zeros occur in earlier positions
+ * ii) For equal zeros, use LMC ordering with order 0, 1, -1
+ *
+ */
 bool compareLMC0 ( const array_link &alL, const array_link &alR )
 {
      assert ( alL.n_rows==alR.n_rows );
@@ -2797,23 +2803,7 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
                     return false;
           }
 
-          {
-               // FIXME: remove this code path
-               int zl = maxz ( alL, c );
-               int zr = maxz ( alR, c );
 
-               if ( zl<zr ) {
-                    printfd ( "error!" );
-                    exit ( 1 );
-                    return true;
-               }
-               if ( zl>zr ) {
-                    printfd ( "error!" );
-                    exit ( 1 );
-                    return false;
-
-               }
-          }
           // zero is at same position(s) in column, let LMC ordering decide
           for ( int r=0; r<alL.n_rows; r++ ) {
                if ( al[r]> ar[r] )
@@ -2825,37 +2815,6 @@ bool compareLMC0 ( const array_link &alL, const array_link &alR )
      // the arrays are equal
      return false;
 }
-
-/*
-bool compareLMC0_1 ( const array_link &alL, const array_link &alR )
-{
-     assert ( alL.n_rows==alR.n_rows );
-     assert ( alL.n_columns==alR.n_columns );
-
-     for ( int c=0; c<alL.n_columns; c++ ) {
-          // check position of zero in column c
-          int zl = maxz ( alL, c );
-          int zr = maxz ( alR, c );
-
-          if ( zl<zr )
-               return true;
-          if ( zl>zr )
-               return false;
-
-          // zero is at same position in column, let LMC ordering decide
-          const array_t *al = alL.array + c*alL.n_rows;
-          const array_t *ar = alR.array + c*alR.n_rows;
-          for ( int r=0; r<alL.n_rows; r++ ) {
-               if ( al[r]> ar[r] )
-                    return true;	// note the reversed sign here
-               if ( al[r]< ar[r] )
-                    return false;	// note the reversed sign here
-          }
-     }
-     // the arrays are equal
-     return false;
-}
-*/
 
 arraylist_t sortLMC0 ( const arraylist_t &lst )
 {
@@ -2872,11 +2831,8 @@ conference_options::conference_options ( int maxpos )
 /// inflate a list of extensions
 std::vector<cperm> conferenceReduce ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
 {
-     // FIXME: j2 check only for last pair
-     //std::vector<cperm> cci = filter.filterList ( ccX );
      std::vector<cperm> cci = filter.filterListJ2last ( ccX );
 
-     //printfd ( "inflate: %d: %d -> %d (als %d, alx %d, filter size %d)\n", als.n_columns, ( int ) ccX.size(), ( int ) cci.size() , als.n_columns, alfull.n_columns, filter.als.n_columns );
      return cci;
 }
 
@@ -3477,11 +3433,6 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
 
      lmc_t r = LMC_NONSENSE;
      const int cp = colperm[column];
-     for ( int i=0; i < n_rows; i++ ) {
-          int rx = rowperm[i].r;
-          int current_val = ( ( colsignperm[cp]*rowsignperm[ rx ] ) *al.atfast ( rx, cp ) );
-          rowperm[ i ].val = ( ( current_val+3 ) % 3 );
-     }
 
      /* Sort rows of the array in blocks*/
      int scol = column - 1;
@@ -3490,14 +3441,20 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
      for ( int j = 0; j < nb; j++ ) {
           int x1 = sd.ft.atfast ( 2*j, scol );
           int x2 = sd.ft.atfast ( 2*j+1, scol );
-          //printf("sort size %d\n", x2-x1);
 
+          // OPTIMIZE: put this check in sd.ft generation
           if ( ( x2-x1 ) >1 ) {
-               // TODO: put this check in sd generation
-               //std::stable_sort( rowperm+x1, rowperm+x2);
+
+               for ( int i=x1; i < x2; i++ ) {
+                    int rx = rowperm[i].r;
+                    int current_val = ( ( colsignperm[cp]*rowsignperm[ rx ] ) *al.atfast ( rx, cp ) );
+                    rowperm[ i ].val = ( ( current_val+3 ) % 3 );
+               }
+
                flipSort ( rowperm, x1, x2-1 );
           }
 
+          // OPTIMIZE: direct pointers?
           // Compare blocks wrt zero position
           r = lmc0_compare_zeropos_block ( al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm );
           if ( r==LMC_LESS || r==LMC_MORE ) {
@@ -3510,6 +3467,12 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
      return r;
 }
 
+/** Recursive function to perform LMC0 test.
+ *
+ * The rowsignperm is assumed to be fixed. The colsignperm is determined by setting the value for the first row to +1.
+ *
+ *
+ */
 lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, const symmdata &sd )
 {
 
@@ -3528,7 +3491,6 @@ lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> 
           r = LMC0_sortrows_compare ( al, column, rowperm, colperm, rowsignperm, colsignperm, nrows, sd );
 
           if ( r==LMC_EQUAL ) {
-               //printfd("   LMC0_columns: recurse into column %d\n" , column+1);
                r = LMC0_columns ( al, rowperm, colperm, column+1, rowsignperm, colsignperm, ncols, nrows, sd );
           }
           if ( r==LMC_LESS ) {
@@ -3547,7 +3509,7 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
      /*0. Initialize data */
      lmc_t result = LMC_MORE;
 
-     if ( ! al.is_conference() ) {
+     if ( ! al.is_conference ( 2 ) ) {
           printfd ( "error: input array is not a conference design" );
           return LMC_NONSENSE;
      }
@@ -3574,41 +3536,27 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
      symmdata sd ( al );
 
      for ( int sel_col = 0; sel_col < ncols; sel_col++ ) {
+          cprintf ( verbose, "\nLMC0checkDC: selected column %d\n", sel_col );
 
-          cprintf ( verbose, "\nLMC0checkDC: column %d\n", sel_col );
-
-           
           /*1. Select the first (sel_col) column */
           std::swap ( colperm[ 0 ], colperm[ sel_col ] );
 
-          /* 2. Select a possible sign switch for the selected column */
-
           int colsign0 = colsignperm[colperm[0]];
 
+          /* 2. Select a possible sign switch for the selected column */
           for ( int k=0; k<2; k++ ) {
 
                colsignperm[colperm[0]] = colsign0 * ( ( k==0 ) ?1:-1 );
-               cprintf ( verbose, " # LMC0checkDC: selected sign switch %d: colsignperm ", colsignperm[colperm[0]] );
-               if ( verbose ) {
+               if ( verbose>=2 ) {
+                    myprintf ( " # LMC0checkDC: selected sign switch %d: colsignperm ", colsignperm[colperm[0]] );
                     display_vector ( colsignperm );
                     myprintf ( "\n" );
                }
-               //colsignperm);
 
-               // needed???
-               for ( rowindex_t i = 0; i < nrows; i++ ) {
-                    rowsort[i].r =i;
-                    rowsort[i].val = colsignperm[colperm[0]]*colperm[rowsort[i].r];
-               }
-               //myprintf(" -- a1:\n"); print_rowsort(rowsort, al.n_rows);
-
-               /* 4. Select one of the possible zero's in the selected column */
+               /* 3. Select one of the possible zero's in the selected column */
                for ( int zidx = 0; zidx < 2; zidx++ ) {
 
-                    for ( rowindex_t i = 0; i < nrows; i++ ) {
-                         rowsort[i].r =i;
-                    }
-                    /* 3. Find permutation to sort the array and compare column */
+                    /* 4. Find permutation to sort the array and compare column */
                     result = init_lmc0_sort_comp ( al, 0, sel_col, rowsort, rowsignperm, colperm, colsignperm, nrows );
 
                     std::swap ( rowsort[0].r, rowsort[zidx].r );
@@ -3618,13 +3566,12 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
                          return result;
                     }
 
-                    //myprintf(" -- k %d:\n", k); print_rowsort(rowsort, al.n_rows);
-
-                    if ( verbose ) {
-                         printf ( "--- sel_col %d, zidx %d\n",sel_col, zidx );
+                    if ( verbose>=2 ) {
+                         printf ( "--- LMC0checkDC: sel_col %d, zidx %d\n",sel_col, zidx );
                          print_rowsort ( rowsort, al.n_rows );
                     }
 
+                    // select the proper column sign permutations
                     for ( int c = 1; c<ncols; c++ ) {
                          int current_sign_col = colsignperm[colperm[c]];
                          int value = ( rowsignperm[rowsort[0].r]*current_sign_col ) * ( al.atfast ( rowsort[0].r, colperm[c] ) );
@@ -3637,12 +3584,12 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
                          cprintf ( verbose>=2, "   LMC0checkDC:  current_sign_col * value %d\n",  current_sign_col * value );
                          colsignperm[colperm[c]] = current_sign_col * value;
                     }
-               cprintf ( verbose, " # LMC0checkDC: colsignperm for zidx %d", zidx );
-               if ( verbose ) {
-                    display_vector ( colsignperm );
-                    myprintf ( "\n" );
-               }
-               
+                    if ( verbose>=2 ) {
+                         cprintf ( verbose>=2, " # LMC0checkDC: colsignperm for zidx %d: ", zidx );
+                         display_vector ( colsignperm );
+                         myprintf ( "\n" );
+                    }
+
                     /* 5. Select the next column */
                     result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
                     if ( result==LMC_LESS ) {
@@ -3653,7 +3600,6 @@ lmc_t LMC0checkDC ( const array_link &al, int verbose )
                     }
 
                     std::swap ( rowsort[0].r, rowsort[zidx].r );
-
                }
           }
           std::swap ( colperm[ 0 ], colperm[ sel_col ] );
