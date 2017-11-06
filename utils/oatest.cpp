@@ -343,7 +343,7 @@ int main ( int argc, char* argv[] )
                // randomize
                array_link al = ll[i];
 
-               for ( int jj=0; jj<10; jj++ ) {
+               for ( int jj=0; jj<30; jj++ ) {
                     conference_transformation_t tr ( al );
                     tr.randomizecolperm();
                     tr.randomizerowperm();

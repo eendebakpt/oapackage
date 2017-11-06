@@ -2741,12 +2741,14 @@ arraylist_t selectConferenceIsomorpismClasses ( const arraylist_t &lst, int verb
 
 arraylist_t  selectLMC0doubleconference ( const arraylist_t &list, int verbose,  const conference_t &ctype )
 {
+     double t0 = get_time_ms();
+     
      arraylist_t out ;
      for ( size_t i=0; i<list.size(); i++ ) {
           lmc_t r=LMC0checkDC ( list[i] );
 
           if ( verbose>=2 || ( verbose && i%10000==0 ) )
-               printfd ( "selectLMC0: i %d/%d, r %d, total %d\n", i, list.size(), r, out.size() );
+               printfd ( "selectLMC0: i %d/%d, result %d, total %d (%.1f [s])\n", i, list.size(), r, out.size(), get_time_ms()-t0 );
           if ( r==LMC_LESS ) {
                // pass, array is not in LMC0 format
           } else  {
@@ -3342,8 +3344,6 @@ int get_zero_pos_blockX ( const array_link &al, const int x1, const int x2, rows
  */
 lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm )
 {
-     int nrows = rowsignperm.size();
-
      for ( int i = x1; i < x2; i++ ) {
           array_t val0 = al.atfast ( i, column );
           array_t val =  al.atfast ( rowperm[i].r, colperm[column] );
@@ -3390,10 +3390,10 @@ lmc_t lmc0_compare_zeropos_blockX ( const array_link &al, const int x1, const in
 /* Compare two columns with the zero elements in the same position */
 lmc_t compare_conf_columns ( const array_link &al, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
 {
-
+     int cp = colperm[column];
+     int csp = colsignperm[cp];
      for ( int i=0; i<nrows; i++ ) {
-          int cp = colperm[column];
-          int value_cdesign_trans = ( colsignperm[cp]*rowsignperm[rowperm[i].r] ) * al.atfast ( rowperm[i].r, cp );
+          int value_cdesign_trans = ( csp*rowsignperm[rowperm[i].r] ) * al.atfast ( rowperm[i].r, cp );
           if ( ( ( al.atfast ( i, column ) +3 ) % 3 ) < ( ( value_cdesign_trans+3 ) % 3 ) ) // Transform the elements from (0, 1, -1) to (0, 1, 2)
                return LMC_MORE;
           if ( ( ( al.atfast ( i, column ) +3 ) % 3 ) > ( ( value_cdesign_trans+3 ) % 3 ) )
@@ -3473,9 +3473,10 @@ lmc_t LMC0_sortrows_compare ( const array_link &al, int column, rowsort_t *rowpe
  *
  *
  */
-lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, const symmdata &sd )
+lmc_t LMC0_columns ( const array_link &al, rowsort_t *rowperm, std::vector<int> colperm, int column, const std::vector<int> &rowsignperm, std::vector<int> colsignperm, const int ncols, const int nrows, const symmdata &sd )
 {
-
+     // OPTIMIZE: pass colperm and colsignperm as reference?
+     
      lmc_t r = LMC_NONSENSE;
 
      for ( int c=column; c<ncols ; c++ ) {
