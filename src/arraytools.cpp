@@ -1822,7 +1822,6 @@ symmetry_group array_link::row_symmetry_group() const
           for ( int k=0; k<nc; k++ ) {
                m.v[k]= this->atfast ( i, k );
           }
-          //rr.push_back ( m );
      }
      symmetry_group sg ( rr, true, 0 );
      return sg;
