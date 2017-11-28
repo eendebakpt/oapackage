@@ -104,6 +104,11 @@ else()
 endif()
 endif(OADEV)
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Using CLang compiler")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat-deprecated-writable-strings -fPIC")
+endif()
+
 # for ccache
 if(NOT WIN32 AND 0)
   if("$ENV{USER}" STREQUAL "eendebakpt")

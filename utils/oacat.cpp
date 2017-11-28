@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
             int nc;
             bool valid=false;
             FILE *fid = fopen(fname, "rb");
-            if (fid>0) {
+            if (fid!=0) {
                 //printf("fid %d\n", fid);
                 valid= readbinheader(fid, nr, nc);
                 if (valid) {

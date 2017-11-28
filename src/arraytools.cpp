@@ -810,7 +810,7 @@ std::string array_link::md5() const
           short int *x = new short int[nn];
           std::copy ( array, array+nn, x );
           std::string m = ::md5 ( x, nn*sizeof ( short int ) );
-          delete x;
+          delete [] x;
           return m;
      }
 #else

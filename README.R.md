@@ -18,6 +18,7 @@ Installation from a package file can be done with
 
 > R CMD INSTALL [PACKAGEFILE]
 
+Make sure yoy have rcppeigen installed.
 
 Development
 -----------
