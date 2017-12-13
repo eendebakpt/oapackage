@@ -981,7 +981,6 @@ int rankStructure::rankxf ( const array_link &al )
 {
     this->ncalc++;
 
-    ks = this->ks;
     int k = al.n_columns;
     const int m = 1+k+k* ( k-1 ) /2;
     const int msub = 1+ks+ks* ( ks-1 ) /2;
@@ -1490,7 +1489,6 @@ std::vector<int> Jcharacteristics ( const array_link &al, int jj, int verbose )
 double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 {
     double dd=-1;
-    double dd2=-1;
     //int n = mymatrix.rows();
     int m = mymatrix.cols();
     //int N = n;

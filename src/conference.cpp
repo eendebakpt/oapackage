@@ -1224,7 +1224,7 @@ std::vector<cperm> generateConferenceExtensionsOld ( const array_link &al, const
 
      // filter based on symmetry
 
-     if ( filtersymm && 1 ) {
+     if ( filtersymm ) {
           array_link alx = al.selectFirstRows ( ( N+2 ) /2 );
 
           DconferenceFilter cfilter ( alx, 1, 0, 0 );
@@ -1827,7 +1827,7 @@ std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, co
           }
      }
 #endif
-     if ( verbose || 0 ) {
+     if ( verbose ) {
           printfd ( "%s: %.3f [s]: generated %ld/%ld/%ld perms (len %ld)\n", __FUNCTION__, get_time_ms() - t0, ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
           //al.show();
           //al.transposed().showarray(); showCandidates ( cc );
@@ -1939,7 +1939,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
           }
      }
 #endif
-     if ( verbose || 1 ) {
+     if ( verbose ) {
           printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
           //al.show();
           //al.transposed().showarray(); showCandidates ( cc );
@@ -1994,7 +1994,7 @@ std::vector<cperm> generateDoubleConferenceExtensions2 ( const array_link &al, c
 
      //printfd ( "generateDoubleConferenceExtensions: before filter generated %d/%ld perms (len %ld)\n", n, factorial<long> ( c.size() ), ( long ) c.size() );
      //cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
-     if ( verbose || 0 ) {
+     if ( verbose ) {
           printfd ( "generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n", ( long ) cc.size(), n, factorial<long> ( c.size() ), ( long ) c.size() );
           //al.show();
           //al.transposed().showarray(); showCandidates ( cc );
@@ -2376,10 +2376,6 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
      double t0=get_time_ms();
 
      int vb=std::max ( 0, verbose-1 );
-
-     //int ncstart=3;
-     //if ( lst.size() >0 )
-     //     ncstart=lst[0].n_columns+1;
 
      CandidateGeneratorDouble cgenerator ( array_link() , ctype );
 
@@ -3231,8 +3227,8 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateCandidates ( const 
      // assert we have the right settings
 
      const char *tag = "generateCandidates (double conf matrices, cache)";
+     assert ( ct.j1zero==1 ); // method only valif for j1 and j2 zero
      const int filterj2=1;
-     assert ( ct.j1zero==1 );
      const int filterj3=ct.j3zero;
      double t00=get_time_ms();
 

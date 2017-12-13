@@ -2300,7 +2300,7 @@ public:
         #pragma omp critical
 #endif
         {
-            size_t i = A.n_columns;
+            int i = A.n_columns;
             if ( writearrays ) {
                 if ( i < afiles.size () && i>=0 ) {
                     afiles[i]->append_array ( A );
