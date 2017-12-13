@@ -113,7 +113,10 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 //conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
 
 
-/// Helper structure containing extensions of conference designs
+/** Helper structure containing extensions of conference designs
+ * 
+ * 
+ */
 struct conference_extend_t {
     std::vector<cperm> first;
     std::vector<cperm> second;
@@ -167,92 +170,9 @@ inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, in
             out.push_back ( lst[i] );
         }
     }
-    //printfd ( "filterZeroPosition: zero_position %d: %d->%d\n", zero_position, lst.size(), out.size() );
     return out;
 }
 
-struct conference_options {
-    int maxzpos;
-
-    conference_options ( int maxpos = -1 );
-} ;
-
-/// Class to generate candidate extensions with caching
-class CandidateGeneratorX
-{
-public:
-    conference_t ct;
-    int verbose;
-
-    // legacy structure
-    conf_candidates_t cande;
-
-    mutable std::vector<array_link> alz;
-
-private:
-
-    /// candidate_list_conf[kz][k] are the valid candidates with a zero at position kz and at column index k
-    mutable std::vector< std::vector<cperm_list > > candidate_list_conf;
-    /// index of last valid entry in cache
-    mutable std::vector<int> last_valid_conf;
-
-public:
-
-    CandidateGeneratorX ( const array_link &al, const conference_t &ct );
-
-    /** generate candidates with caching
-     * this method uses j2 filtering
-     */
-    const std::vector<cperm> & generateConfCandidatesZero ( const array_link &al, int kz ) const;
-
-    void showCandidates() const {
-
-        myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
-        for ( int kz=0; kz<this->ct.N; kz++ ) {
-            for ( int i =2; i<=this->last_valid_conf[kz]; i++ ) {
-                myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list_conf[kz][i].size() );
-            }
-        }
-    }
-
-    void updateLastValid ( int lv ) const {
-        // special case: if the data is invalid for one value of kz, we make all entries invalid
-        // not efficient in general, but efficient for our orderly generation
-        for ( size_t i=0; i<this->last_valid_conf.size(); i++ ) {
-            this->last_valid_conf[i]=std::min ( this->last_valid_conf[i], lv );
-        }
-    }
-private:
-    /** find the starting column for the extension
-     *
-     * Startcol is the index of the first column with valid elements, if corresponds to
-     * startcol=k the elements in candidate_list_conf[kz][k] are valid
-     */
-    int startColumn ( const array_link &alx, int kz, int verbose=0 ) const {
-        if ( this->alz[kz].n_columns!=alx.n_columns ) {
-            int startcol=-1;
-            //printfd(" ### reset because of column diff!\n");
-            return startcol;
-        }
-        int startcol = alz[kz].firstColumnDifference ( alx );
-
-        startcol = std::min ( startcol, last_valid_conf[kz] );
-        if ( startcol<2 ) {
-            startcol=-1;
-        }
-
-        if ( verbose || startcol==-2 ) {
-            printfd ( "startColumn: startcol %d\n", startcol );
-            myprintf ( "-- cache --\n" );
-            this->alz[kz].transposed().showarray();
-            myprintf ( "-- new --\n" );
-            alx.transposed().showarray();
-        }
-
-        return startcol;
-    }
-
-};
 
 /** Class to generate candidate extensions with caching
  *
@@ -320,10 +240,9 @@ protected:
 
 };
 
-/// Class to generate conference candidate extensions with fixed zero
+/// Class to generate conference candidate extensions 
 class CandidateGeneratorConference  : public CandidateGeneratorBase
 {
-    int zero_position; // not used at the moment
     
 public:
     CandidateGeneratorConference ( const array_link &al, const conference_t &ct, int zero_position = -1 );
@@ -349,47 +268,6 @@ public:
 
 };
 
-/*
-/// Class to generate candidate extensions with caching
-class CandidateGeneratorInflate2
-{
-public:
-    conference_t ct;
-    int verbose;
-
-protected:
-public: // FIXME, remove
-    std::vector<CandidateGeneratorZero> generators;
-
-public:
-
-    CandidateGeneratorInflate2 ( const array_link &al, const conference_t &ct );
-
-
-    const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const {
-        std::vector<cperm> tmp  = this->generators[kz].generateCandidates ( al );
-        printfd ( "-------- tmp\n" );
-        ::showCandidates ( tmp );
-        this->generators[kz].showCandidates ( 2 );
-        std::vector<cperm> tmp2  = this->generators[kz].generateCandidates ( al );
-        printfd ( "-------- tmp2\n" );
-        ::showCandidates ( tmp2 );
-        this->generators[kz].showCandidates ( 2 );
-
-        printfd ( "### kz %d: %d, %d\n", kz, tmp.size(), tmp2.size() );
-        return this->generators[kz].generateCandidates ( al );
-    }
-
-    void showCandidates ( int verbose=1 ) const {
-        myprintf ( "CandidateGeneratorInflate: N %d\n", this->ct.N );
-        for ( int kz=0; kz<this->ct.N; kz++ ) {
-            myprintf ( "  candidates for kz %d\n", kz );
-            this->generators[kz].showCandidates ( verbose );
-        }
-    }
-};
-
-*/
     
 /// Class to generate candidate extensions with caching
 class CandidateGeneratorInflate
@@ -447,7 +325,7 @@ public:
     /** Generate candidates with caching
      * 
      * This method uses symmetry inflation, assumes j1=0 and j2=0. Optimal performance is achieved when the arrays
-     * to be extended make identical first columns.
+     * to be extended have identical first columns.
      * 
      */
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
