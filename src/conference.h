@@ -267,50 +267,8 @@ public:
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
 
 };
-
     
-/// Class to generate candidate extensions with caching
-class CandidateGeneratorInflate
-{
-public:
-    conference_t ct;
-    int verbose;
 
-protected:
-public: // FIXME, remove
-    std::vector<CandidateGeneratorZero> generators;
-
-public:
-
-    CandidateGeneratorInflate ( const array_link &al, const conference_t &ct );
-
-    /** generate candidates with caching
-     * this method uses j2 filtering
-     */
-    const std::vector<cperm> & generateConfCandidates ( const array_link &al, int kz ) const {
-        std::vector<cperm> tmp  = this->generators[kz].generateCandidates ( al );
-        printfd ( "-------------------------- tmp\n" );
-        ::showCandidates ( tmp );
-        this->generators[kz].showCandidates ( 2 );
-        std::vector<cperm> tmp2  = this->generators[kz].generateCandidates ( al );
-        printfd ( "-------------------------- tmp2\n" );
-        ::showCandidates ( tmp2 );
-        this->generators[kz].showCandidates ( 2 );
-
-        printfd ( "### kz %d: %d, %d\n", kz, tmp.size(), tmp2.size() );
-        return this->generators[kz].generateCandidates ( al );
-    }
-
-    void showCandidates ( int verbose=1 ) const {
-        myprintf ( "CandidateGeneratorInflate: N %d\n", this->ct.N );
-        for ( int kz=0; kz<this->ct.N; kz++ ) {
-            myprintf ( "  candidates for kz %d\n", kz );
-            this->generators[kz].showCandidates ( verbose );
-        }
-    }
-};
-
-//typedef CandidateGeneratorInflate CandidateGenerator;
 typedef CandidateGeneratorConference CandidateGenerator;
 
 
@@ -337,9 +295,6 @@ public:
 /** Extend a single conference design with candidate columns */
 conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
 
-/// helper function
-conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator );
-
 /** Extend a list of conference designs with a single column.
  *
  */
@@ -353,7 +308,6 @@ arraylist_t extend_conference_restricted ( const arraylist_t &lst, const confere
 
 // extend a list of double conference matrices
 arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_t ctype, int verbose ) ;
-
 
 /// select representatives for the isomorphism classes of a list of conference arrays
 arraylist_t  selectConferenceIsomorpismClasses ( const arraylist_t &list, int verbose,  matrix_isomorphism_t itype = CONFERENCE_ISOMORPHISM );
@@ -384,8 +338,6 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 
 // generate extensions for conference matrices in LMC0 form
 std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline );
-
-std::vector<cperm> generateConferenceExtensionsOld ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2 );
 
 
 /** return max position of zero in array, returns -1 if no zero is found

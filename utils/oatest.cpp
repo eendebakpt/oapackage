@@ -462,33 +462,6 @@ int main ( int argc, char* argv[] )
 
           exit ( 0 );
      }
-     if ( 1 ) {
-
-          array_link al = exampleArray ( r, 1 );
-          conference_t ct ( al.n_rows, al.n_columns+4, 0 );
-          ct.j3zero=0;
-
-          if ( verbose>=1 )
-               al.showarray();
-
-          assert ( al.is_conference() );
-          assert ( al.min() ==-1 );
-
-
-          int kz = maxz ( al ) +1;
-          myprintf ( "finding extensions for kz %d\n", kz );
-
-          int filtersymm=1;
-          int filterj2 = 1;
-          std::vector<cperm> ee= generateConferenceExtensionsOld ( al, ct,  kz, verbose, filtersymm,  filterj2 );
-          printf ( "generateConferenceExtensions: %d\n-------------\n", ( int ) ee.size() );
-          showCandidates ( ee );
-
-          verbose++;
-          ee= generateSingleConferenceExtensions ( al, ct,  kz, verbose, filtersymm,  filterj2, ct.j3zero, 1 );
-          printf ( "generateConferenceExtensions: %d\n-------------\n", ( int ) ee.size() );
-          exit ( 0 );
-     }
      if ( 0 ) {
           const int N = 16;
           int j1zero=1;

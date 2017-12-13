@@ -1206,117 +1206,6 @@ std::vector<cperm> generateConferenceExtensions ( const array_link &al, const co
      return ee;
 }
 
-std::vector<cperm> generateConferenceExtensionsOld ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2 )
-{
-     double t0=get_time_ms();
-
-     /// legacy code
-
-     assert ( kz>=0 ); // FIXME: refactor so we can accept kz==-1
-
-     conference_extend_t ce;
-     std::vector<cperm> extensions ( 0 );
-     const int N = ct.N;
-     const int extcol=al.n_columns;
-
-     // loop over all possible first combinations
-     std::vector<cperm> ff = get_first ( N, kz, verbose );
-
-     // filter based on symmetry
-
-     if ( filtersymm ) {
-          array_link alx = al.selectFirstRows ( ( N+2 ) /2 );
-
-          DconferenceFilter cfilter ( alx, 1, 0, 0 );
-          ff= cfilter.filterList ( ff );
-     }
-
-     if ( verbose>=2 ) {
-          for ( size_t i=0; i<ff.size(); i++ ) {
-               printf ( "extend1 %d: N %d: ", ( int ) i, N );
-               display_vector ( ff[i] );
-               printf ( "\n" );
-          }
-     }
-
-     ce.first=ff;
-     ce.second=ff;
-
-     array_link als = al.selectFirstColumns ( extcol );
-
-     cperm c0 = getColumn ( al, 0 );
-     cperm c1 = getColumn ( al, 1 );
-
-     std::map<int, std::vector<cperm> > second_cache;
-     std::vector<cperm> ff2;
-
-     for ( size_t i=0; i<ce.first.size(); i++ ) {
-          int ip = innerprod ( c0, ce.first[i] );
-          //printfd("extend1 %d: inner product %d\n", (int)i, ip);
-          int target = -ip;
-
-          if ( second_cache.count ( target ) ==1 ) {
-               std::map<int, std::vector<cperm> >::iterator it;
-               it= second_cache.find ( target ); // use .find because .at is C++11
-               ff2=it->second;
-          } else {
-               ff2 = get_second ( N, kz, target, verbose>=2 );
-               second_cache.insert ( std::pair<int, std::vector<cperm> > ( target, ff2 ) );
-          }
-          ce.second=ff2;
-
-          //printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
-
-          for ( size_t j=0; j<ff2.size(); j++ ) {
-               cperm c = ce.combine ( i, j );
-
-#ifdef OADEBUG
-#else
-               if ( 1 ) {
-                    extensions.push_back ( c );
-                    continue;
-               }
-#endif
-               int ip0 = innerprod ( c0, c );
-               int ip1 = innerprod ( c1, c );
-               //printf("extend %d: N %d ", (int)i, N); display_vector(c);	 printf("\n");
-
-               if ( verbose>=2 ) {
-                    //alx.showarraycompact();
-                    array_link ecol=al.selectFirstColumns ( 1 );
-                    array_link alx = hstack ( al, ecol );
-                    alx.setColumn ( kz, c );
-                    alx.showarray();
-               }
-               // add array to good set if ip2 is zero
-               if ( ip0==0 && ip1==0 ) {
-                    extensions.push_back ( c );
-               } else {
-                    printfd ( "huh?" );
-
-                    printf ( " ip0 ip1 %d %d\n" , ip0, ip1 );
-                    al.show();
-                    printf ( "  c: %d\n", ( int ) c.size() );
-                    array_link alx = hstack ( al, c );
-                    alx.showarray();
-               }
-          }
-     }
-
-     //ce.extensions=extensions;
-     if ( verbose>=2 )
-          printf ( "generateConferenceExtensions: after generation: found %d extensions\n", ( int ) extensions.size() );
-     // perform row symmetry check
-
-     std::vector<cperm> e2 = filterCandidates ( extensions, al,  filtersymm,  filterj2,  verbose );
-
-     if ( verbose>=1 )
-          myprintf ( "%s: %.3f [s]: symmetry check %d + ip filter %d: %d->%d\n", __FUNCTION__, get_time_ms() - t0, filtersymm, filterj2, ( int ) extensions.size(), ( int ) e2.size() );
-
-     ce.extensions=e2;
-
-     return e2;
-}
 
 /// return number of +1 values in the first column of an array
 int nOnesFirstColumn ( const array_link &al )
@@ -2494,10 +2383,12 @@ array_link reduceMatrix ( const array_link &al, matrix_isomorphism_t itype, int 
 }
 
 
-
+/** Class to select isomorphism classes 
+ * 
+ * By performing the isomorphism check incrementally we can save memory
+ */
 class ConferenceIsomorphismSelector {
-// OPTIONS: special array_link with reduced size --> factor 4 for char type
-// online adding of single element or batches with isomorphism reduction
+// IDEA: special array_link with reduced size could safe more memory
 public:
      matrix_isomorphism_t itype;
      int verbose;
@@ -2613,24 +2504,8 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
      int vb=std::max ( 0, verbose-1 );
 
-     //int ncstart=3;
-     //if ( lst.size() >0 )
-     //     ncstart=lst[0].n_columns+1;
-
-     /// FIXME: move higher up in hierarchy
+     /// IDEA: move higher up in hierarchy
      CandidateGenerator cgenerator ( array_link(), ctype );
-     //printfd ( "CandidateGenerator: constructed\n" );
-     //cgenerator.verbose=2;
-
-     if ( 0 ) {
-          // debugging
-          cgenerator.generateCandidatesZero ( lst[0],5 );
-          cgenerator.generateCandidatesZero ( lst[0],7 );
-          cgenerator.showCandidates();
-     }
-
-     // legacy code, fixed set of candidates, remove later
-     //cgenerator.cande  = generateCandidateExtensions ( ctype, verbose>=2, ncstart );
 
      ConferenceIsomorphismSelector selector ( ctype.itype, verbose>=2, select_isomorphism_classes );
 
@@ -2917,13 +2792,6 @@ CandidateGeneratorConference::CandidateGeneratorConference ( const array_link &a
 CandidateGeneratorZero::CandidateGeneratorZero ( const array_link &al, const conference_t &ct_, int zero_position ) : CandidateGeneratorBase ( al, ct_ )
 {
      this->zero_position = zero_position;
-}
-
-CandidateGeneratorInflate::CandidateGeneratorInflate ( const array_link &al, const conference_t &ct_ ) : ct ( ct_ )
-{
-     for ( int i=0; i<ct.N; i++ ) {
-          this->generators.push_back ( CandidateGeneratorZero ( al, ct, i ) );
-     }
 }
 
 CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const conference_t &ct_ ) : CandidateGeneratorBase ( al, ct_ )   // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
