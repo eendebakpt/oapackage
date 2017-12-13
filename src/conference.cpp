@@ -2377,10 +2377,6 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
 
      int vb=std::max ( 0, verbose-1 );
 
-     //int ncstart=3;
-     //if ( lst.size() >0 )
-     //     ncstart=lst[0].n_columns+1;
-
      CandidateGeneratorDouble cgenerator ( array_link() , ctype );
 
      for ( size_t i=0; i<lst.size(); i++ ) {
@@ -3231,8 +3227,8 @@ const std::vector<cperm> & CandidateGeneratorDouble::generateCandidates ( const 
      // assert we have the right settings
 
      const char *tag = "generateCandidates (double conf matrices, cache)";
+     assert ( ct.j1zero==1 ); // method only valif for j1 and j2 zero
      const int filterj2=1;
-     assert ( ct.j1zero==1 );
      const int filterj3=ct.j3zero;
      double t00=get_time_ms();
 

@@ -70,12 +70,13 @@ public:
     rowindex_t N;	/** number of runs */
     colindex_t ncols;	/** total number of columns (factors) in the design */
 
+    /// Type of conference design 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
-    conference_type ctype; /// defines the type of matrices
+    conference_type ctype; /// defines the type of designs
     matrix_isomorphism_t itype; /// defines the isomorphism type
 
-    bool j3zero;
     bool j1zero; /// for the double conference type matrices
+    bool j3zero;
 
 public:
     /// create new conference_t object
@@ -257,6 +258,9 @@ private:
  *
  * We assume that the designs to be extended are run ordered, so that the caching has maximal effect.
  *
+ * The key idea used is that any valid extension of a design A with k columns is a permutation of a valid extension
+ * of the design B obtained by taking the with l < k columsn of A. The permutations that are allowed are called the
+ * symmetry inflations. All the j2 checks performed for the extension of B do not have to be repeated for the permutations of this extension.
  **/
 class CandidateGeneratorBase
 {
@@ -440,8 +444,11 @@ public:
 
     CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
 
-    /** generate candidates with caching
-     * this method uses symmetry inflation, assumes j1=0 and j2=0
+    /** Generate candidates with caching
+     * 
+     * This method uses symmetry inflation, assumes j1=0 and j2=0. Optimal performance is achieved when the arrays
+     * to be extended make identical first columns.
+     * 
      */
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
 
