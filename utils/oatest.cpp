@@ -175,31 +175,6 @@ array_link array2xf2 ( const array_link &al )
      return out;
 }
 
-array_link sortrows ( const array_link &al )
-{
-     const int nc = al.n_columns;
-
-     std::vector<mvalue_t<int> > rr ( al.n_rows );
-     for ( int i=0; i<al.n_rows; i++ ) {
-          mvalue_t<int> &m = rr[i];
-          m.v.resize ( nc );
-
-          for ( int k=0; k<nc; k++ ) {
-               m.v[k]= al.atfast ( i, k );
-          }
-     }
-     indexsort sorter ( rr );
-     sorter.show();
-
-     array_link out ( al.n_rows, al.n_columns, 0 );
-     for ( int r=0; r<al.n_rows; r++ ) {
-          for ( int i=0; i<al.n_columns; i++ ) {
-               int newrow= sorter.indices[r];
-               out._setvalue ( r,i,  al.atfast ( newrow,i ) );
-          }
-     }
-     return out;
-}
 
 void paretoInfo ( const array_link & alx )
 {

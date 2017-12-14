@@ -2106,6 +2106,7 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
      return ce;
 }
 
+/// extend a conference matrix using a generator for the candidate extensions
 conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator )
 {
      conference_extend_t ce;
@@ -2154,11 +2155,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
           if ( verbose>=2 ) {
                printf ( "array: kz %d: %d extensions\n", ii, ( int ) extensionsX.size() );
           }
-          if ( 0 ) {
-               printfd ( "### generated candidates at kz %d...\n", ii );
-               showCandidates ( extensionsX );
 
-          }
           ce.extensions.insert ( ce.extensions.end(), extensionsX.begin(), extensionsX.end() );
      }
 
@@ -2166,26 +2163,35 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
      return ce;
 }
 
-// FIXME: implement a local_symmetry check
-// FIXME: implement partial j2 checking for cached conference matrices
+// OPTIMIZE: implement a local_symmetry check
+// OPTIMIZE: implement partial j2 checking for cached conference matrices
 
-/// sort rows of an array based on the zero elements
-array_link sortrows ( const array_link al )
+/// sort rows in an array
+array_link sortrows ( const array_link &al )
 {
-     size_t nr=al.n_rows;
-     // initialize original index locations
-     std::vector<size_t> idx ( nr );
-     for ( size_t i = 0; i != nr; ++i )
-          idx[i] = i;
+     const int nc = al.n_columns;
 
-     //compfunc = ..;
-     // sort indexes based on comparing values in v
-// sort(idx.begin(), idx.end(), compfunc );
+     std::vector<mvalue_t<int> > rr ( al.n_rows );
+     for ( int i=0; i<al.n_rows; i++ ) {
+          mvalue_t<int> &m = rr[i];
+          m.v.resize ( nc );
 
-     printfd ( "not implemented...\n" );
-     return al;
+          for ( int k=0; k<nc; k++ ) {
+               m.v[k]= al.atfast ( i, k );
+          }
+     }
+     indexsort sorter ( rr );
+     sorter.show();
+
+     array_link out ( al.n_rows, al.n_columns, 0 );
+     for ( int r=0; r<al.n_rows; r++ ) {
+          for ( int i=0; i<al.n_columns; i++ ) {
+               int newrow= sorter.indices[r];
+               out._setvalue ( r,i,  al.atfast ( newrow,i ) );
+          }
+     }
+     return out;
 }
-
 
 
 template<typename T>
@@ -2239,7 +2245,6 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
 
 
           }
-          //printf("al3:\n"); al3.showarray();
 
           if ( ( long ) vectorsizeof ( ee ) > ( long ( 1 ) *1024*1024*1024 ) / ( long ) ctype.N ) {
                printfd ( "generateCandidateExtensions: set of generated candidates too large, aborting (root %d, extcol %d, ee.size() %d)", root, extcol, ee.size() );
@@ -2257,7 +2262,6 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
 
 arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_t ctype, int verbose )
 {
-     // TODO: cache candidate extensions
      arraylist_t outlist;
      if ( verbose>=2 ) {
           printfd ( "extend_double_conference: start with %d arrays\n", ( int ) lst.size() );
@@ -2273,15 +2277,12 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
           int extcol=al.n_columns;
           conference_extend_t ce = extend_double_conference_matrix ( al, ctype, cgenerator, extcol, vb, -1 );
 
-
           arraylist_t ll = ce.getarrays ( al );
-          const int nn = ll.size();
-
           outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
           if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
                double dt = get_time_ms() - t0;
-               printf ( "extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( int ) outlist.size(), dt );
+               printf ( "extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", ( int ) i, ( int ) lst.size(), (int) ll.size(), ( int ) outlist.size(), dt );
                fflush ( 0 );
           }
      }
@@ -2412,6 +2413,8 @@ public:
           return candidates.size();
      }
 
+     /** Add a set of arrays to the lis of isomorphism classes 
+      */
      void add ( const arraylist_t &lst ) {
 
           long nstart = candidates.size();
@@ -2429,7 +2432,7 @@ public:
                     // reduce...
                     std::vector<int> ridx = selectUniqueArrayIndices ( reductions, verbose );
 
-                    //FIXME: remove entries
+                    //TODO: efficient removal of entries
                     // see http://stackoverflow.com/questions/596162/can-you-remove-elements-from-a-stdlist-while-iterating-through-it
 
                     arraylist_t tmp;
@@ -2467,17 +2470,12 @@ arraylist_t extend_conference_plain ( const arraylist_t &lst, const conference_t
 
      int vb=std::max ( 0, verbose-1 );
 
-     //int ncstart=3;
-     //if ( lst.size() >0 )
-     //     ncstart=lst[0].n_columns+1;
-
      ConferenceIsomorphismSelector selector ( ctype.itype, verbose>=2, select_isomorphism_classes );
 
      for ( size_t i=0; i<lst.size(); i++ ) {
           const array_link &al = lst[i];
           int extcol=al.n_columns;
           conference_extend_t ce = extend_conference_matrix ( al, ctype, extcol, vb, -1 );
-
 
           arraylist_t ll = ce.getarrays ( al );
           const int nn = ll.size();
@@ -2518,12 +2516,11 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
           conference_extend_t ce = extend_conference_matrix_generator ( al, ctype, extcol, vb, -1, cgenerator );
 
           arraylist_t ll = ce.getarrays ( al );
-          const int nn = ll.size();
 
           selector.add ( ll );
 
           if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
-               printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), nn, ( long ) selector.size(), get_time_ms()-t0 );
+               printf ( "extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", ( int ) i, ( int ) lst.size(), (int) ll.size(), ( long ) selector.size(), get_time_ms()-t0 );
                fflush ( 0 );
           }
      }

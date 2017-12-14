@@ -109,13 +109,7 @@ array_link reduceConference ( const array_link &, int verbose = 0 );
 /// reduce conference matrix to normal form
 conference_transformation_t reduceConferenceTransformation ( const array_link &al, int verbose );
 
-/// reduce double conference matrix to normal form
-//conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose );
-
-
 /** Helper structure containing extensions of conference designs
- * 
- * 
  */
 struct conference_extend_t {
     std::vector<cperm> first;
