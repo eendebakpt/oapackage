@@ -1145,7 +1145,7 @@ bool DconferenceFilter::filterReason ( const cperm &c ) const
      return true;
 }
 
-/** filter conferece matrix extension candidates
+/** filter conference matrix extension candidates
  *
  * Filtering is based in symmetry and ip
  */
@@ -2131,8 +2131,7 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
           std::vector<cperm> extensionsX;
 
           {
-               //const std::vector<cperm> &cl = cgenerator.cande.ce[ii];
-               //FIXME: only if valid
+               //FIXME: only if valid??
                const std::vector<cperm> &cl = cgenerator.generateCandidatesZero ( al, ii );
                if ( verbose>2 ) {
                     printfd ( "-- ii %d, %d candidates \n", ii, cl.size() );
@@ -2148,8 +2147,6 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
                     // FIXME: for cached generated candidates we could remove the filterj2 check
                     extensionsX  = filterCandidates ( cl,  al,1, 1, verbose );
                }
-
-               //extensionsX  = filterCandidates ( cande,  al,1, 1, verbose );
           }
 
           if ( verbose>=2 ) {

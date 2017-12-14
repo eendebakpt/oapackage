@@ -242,6 +242,8 @@ public:
     CandidateGeneratorConference ( const array_link &al, const conference_t &ct, int zero_position = -1 );
 
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
+    
+    /// generate all candidate extensions with a zero at the specified position
     std::vector<cperm> generateCandidatesZero ( const array_link &al, int kz ) const {
          const std::vector<cperm> &cci = this->generateCandidates(al);
          

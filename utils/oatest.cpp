@@ -175,7 +175,7 @@ array_link array2xf2 ( const array_link &al )
      return out;
 }
 
-
+/// show information about Pareto criteria for conference matrix
 void paretoInfo ( const array_link & alx )
 {
      std::vector < int >j5 = alx.Jcharacteristics ( 5 );
