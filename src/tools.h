@@ -790,5 +790,14 @@ inline void printdoubleasbits ( double decker )
     myprintf ( "\n" );
 }
 
+/// calculate directory name for job splitted into parts
+std::string splitDir(std::vector < int >ii);
+
+/// calculate file name of job splitted into parts
+std::string splitFile(std::vector < int >ii);
+
+/// calculate tag for job splitted into parts
+std::string splitTag(std::vector < int >ii);
+
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
