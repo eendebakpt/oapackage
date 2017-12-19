@@ -98,10 +98,6 @@ void print_copyright_light();
 void print_options(std::ostream &outx);
 void print_options();
 
-#ifdef OADEBUG
-int globalHackOption(int, int = -1);
-#endif
-
 #ifdef OADEV
 inline int oadevelop()
 {

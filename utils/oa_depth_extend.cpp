@@ -134,9 +134,7 @@ int main ( int argc, char* argv[] )
 	printf ( "  discardJ5: %d\n", discardJ5 );
 	}	
 #ifdef _OPENMP 
-	//omp_set_num_threads(4);
 	printf ( "  openmp: num threads %d, max num threads %d\n", omp_get_num_threads(), omp_get_max_threads() );
-	//omp_set_dynamic(1);
 
 	if ( 0 ) {
 		//printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n", omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
@@ -147,16 +145,6 @@ int main ( int argc, char* argv[] )
 		printf ( "note: omp_get_nested()=%d, make sure to set OMP_THREAD_LIMIT!\n", omp_get_nested() );
 #endif
 	
-#ifdef OADEBUG
-	if ( hack ) {
-		printfd ( "setting hack to on\n" );
-		globalHackOption ( 0, 1 );
-	} else {
-		globalHackOption ( 0, 0 );
-	}
-	printfd ( "###### hack: %d\n", globalHackOption ( 0 ) );
-#endif
-
 	int doextend = opt.getFlag ( 'e' );
 	int dopruning = opt.getFlag ( 'p' );
 	j5structure_t j5structure = ( j5structure_t ) opt.getIntValue ( 'j', J5_45 );
@@ -228,7 +216,6 @@ int main ( int argc, char* argv[] )
 
 	double t0=get_time_ms();
 
-	//setdtsymm ( 0 ); setdtlmc ( 0 );
 
 	depth_extensions_storage_t *ds = 0;
 
@@ -237,7 +224,6 @@ int main ( int argc, char* argv[] )
 		ds = new depth_extensions_storage_t( );
 		ds->resize ( arraylist->size() );
 	} else {
-		//exit(0);
 	}
 
 	// loop over all arrays
@@ -269,8 +255,6 @@ int main ( int argc, char* argv[] )
 		}
 	}
 
-	//printf("time loop %.3f [s]\n", get_time_ms()-t0x);	exit(0); // HACK
-
 	if ( ds!=0 ) {
 		if ( verbose ) {
 			printf ( "oa_depth_extend: calling processDepth\n" );
@@ -281,9 +265,6 @@ int main ( int argc, char* argv[] )
 			printf ( "ai %ld: %ld arrays for extension\n", ai, ds->goodarrayslist[ai].size() );
 		}
 		dextend.counter->showcounts ( "after init", adfull->strength, adfull->ncols );
-
-		//printf("## adfull: %ld\n",  (long) adfull );
-//adfull->show();
 
 		//#pragma omp parallel for schedule(dynamic,1)
 		for ( size_t ai=0; ai<arraylist->size(); ai++ ) {
@@ -309,7 +290,6 @@ int main ( int argc, char* argv[] )
 	}
 	dextend.counter->showcounts ( *adfull );
 
-	//dextend.arraywriter->closeafiles();
 	delete dextend.arraywriter;
 	delete dextend.counter;
 

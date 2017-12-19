@@ -19,10 +19,6 @@
 #include "tools.h"
 #include "arrayproperties.h"
 
-#ifdef _OPENMP
-//#include "omp.h"
-#endif
-
 template <class Type>
 /// Write a vector of vector elements to file
 void vectorvector2file ( const std::string fname, const std::vector<std::vector<Type> > vals )
@@ -72,8 +68,6 @@ void intvector2file ( std::string fname, std::vector<Type> vals )
     fclose ( fid );
 
 }
-
-
 
 
 /// Helper function
@@ -196,8 +190,6 @@ int main ( int argc, char* argv[] )
 
 
     // analyse
-    //jstruct_t *js ;
-
     vector<jstruct_t> results;
 
     if ( doj ) {
@@ -303,11 +295,7 @@ else {
 
     }
 
-
-
-    //printf("dogma %d: GMA\n", dogma);
     int ncols=-1;
-
 
     std::vector<std::vector<double> > gmalist(arraylist->size());
     std::vector<double> c2list(arraylist->size());
@@ -419,9 +407,6 @@ else {
 
         if ( dorank ) {
             std::string rankfile = abase + "-rank.txt";
-            //intvector2file<int>(rankfile, rankx);
-            //rankfile = abase + "-rankvals.txt";
-            //vectorvector2file<double>(rankfile, rankvals);
             rankfile = abase + "-rankvalues.bin";
             vectorvector2binfile ( rankfile, rankvals, 1, 4 );
         }
@@ -448,12 +433,10 @@ else {
         } else {
             outfile += "<standard output>";
         }
-
     }
 
     /* free allocated structures */
     delete arraylist;
-
 
     return 0;
 }
