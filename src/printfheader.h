@@ -24,7 +24,6 @@ inline void pyprintf ( const char *message, ... )
     }
     PyFile_WriteString ( buf, f );
 
-//  printf("pyprintf called with |%s|\n", buf);
     return ;
 }
 #define myprintf pyprintf

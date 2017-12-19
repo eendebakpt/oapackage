@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-setup.py file for SWIG example
+setup.py file for OApackage
 """
 
 #%% Load packages
@@ -121,6 +121,41 @@ def get_version_info(verbose=0):
 
 # print(get_version_info())
 
+import subprocess
+import re
+
+try:
+    from distutils.version import LooseVersion
+    from distutils.spawn import find_executable
+    
+    def get_swig_executable(swig_minimum_version='3.0', verbose=0):
+        """ Get SWIG executable """
+        # stolen from https://github.com/FEniCS/ffc/blob/master/setup.py
+    
+        # Find SWIG executable
+        swig_executable = None
+        swig_version = None
+        swig_valid = False
+        for executable in ["swig", "swig3.0"]:
+            swig_executable = find_executable(executable)
+            if swig_executable is not None:
+                # Check that SWIG version is ok
+                output = subprocess.check_output([swig_executable, "-version"]).decode('utf-8')
+                swig_version = re.findall(r"SWIG Version ([0-9.]+)", output)[0]
+                if LooseVersion(swig_version) >= LooseVersion(swig_minimum_version):
+                    swig_valid = True
+                    break                
+        if verbose:
+            print("Found SWIG: %s (version %s)" % (swig_executable, swig_version))
+        return swig_executable, swig_version, swig_valid
+    swig_executable, swig_version, swig_valid = get_swig_executable()
+    print('swig_version %s' % swig_version)
+except:
+    # fallback
+    swig_valid = True
+
+if not swig_valid:
+  raise Exception('could not find a recent version if SWIG')
 
 #%% Hack to remove option for c++ code
 try:
@@ -343,8 +378,7 @@ setup(name='OApackage',
       data_files=data_files,
       test_suite="oapackage.unittest",
       scripts=scripts,
-      # nose and coverage are only for tests, but we'd like to encourage
-      # people to run tests!
+      # nose and coverage are only for tests
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
       zip_safe=False,
       install_requires=['numpy>=1.10'],

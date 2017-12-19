@@ -9,10 +9,6 @@
 
 #define NEWINTERFACE
 
-//%feature("pythonprepend") array_link::clear() %{
-//  print('gr')
-//%}
-
 %{
 #define SWIG_FILE_WITH_INIT
 %}
@@ -28,13 +24,10 @@ import_array();
 %apply ( double* IN_ARRAY2, int DIM1, int DIM2 ) { (double* pymatdoubleinput, int nrows, int ncols) }
 
 %apply (double* ARGOUT_ARRAY1, int DIM1) {(double* pymat1, int nrows)}
-//%apply (double* ARGOUT_ARRAY2, int DIM1, int DIM2) {(double* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(int* pymat2, int nrows, int ncols)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* pymat1, int n)}
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
-//%apply (int* ARGOUT_ARRAY1, int DIM1, double xx) {(int* rangevec, int n, double xx)}
-//%apply (int* ARGOUT_ARRAY2, int DIM1, int DIM2) {(array_t* pymat2, int nrows, int ncols)}
 
 // enable keyword arguments in interface
 //%feature ("kwargs")
@@ -45,9 +38,7 @@ import_array();
 #include <utility>
 #include <Eigen/Core>
 #include <Eigen/Dense>
-//#include <Eigen/Dense>
 
-//#include <Python.h>
 #include <numpy/arrayobject.h>
 
 #ifdef _WIN32
@@ -76,17 +67,6 @@ import_array();
 
 /* Instantiate a few different versions of the template */
 //%template(EigenMatrix) Eigen::MatrixXd;
-
-/*
-%pythoncode %{ 
-def eigen2numpy(m):
-  print('convert eigen to numpy matrix')
-  
-  m.rows()
-
-%}
-*/
-
 
 
 %typemap(in) Eigen::MatrixXd (Eigen::MatrixXd inputEigen)
@@ -448,8 +428,6 @@ Python Orthogonal Array Interface 2
 #endif
 
 
-
-//%module darray
 %inline %{
 
 double iarray_get(int *a, int index) {

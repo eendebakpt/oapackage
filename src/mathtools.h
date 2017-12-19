@@ -45,12 +45,6 @@ inline double round ( double x )
 }
 #endif
 
-#ifdef SWIG
-//%ignore    mvalue_t::operator<<;
-//%rename(Complex_add_dc) operator+(double, const Complex &);
-//%ignore    mvalue_t::operator<<( std::ostream& stream, const mvalue_t<W>& mval );
-#endif
-
 #include <queue>
 
 // from: http://codereview.stackexchange.com/questions/13979/simple-object-pool-template-container-in-c

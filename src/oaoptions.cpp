@@ -176,7 +176,7 @@ std::string print_options_string ( )
 #ifdef OADEV
     outx << "OADEV" << sep;
 #endif
-#ifdef SWIG
+#ifdef SWIGCODE
     outx << "SWIG" << sep;
 #endif
     outx << std::endl;
@@ -210,6 +210,18 @@ void print_options ( std::ostream &out )
 	out << s;
 
 }
+
+#ifdef SWIGCODE
+std::string swig_version()
+{
+	return SWIG_VERSION;
+}
+#else
+std::string swig_version()
+{
+	return "noswig";
+}
+#endif
 
 #ifdef OADEBUG
 int hopts[10]= {0,0,0,0,0,0,0,0,0,0};
