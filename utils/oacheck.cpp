@@ -120,30 +120,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
 //        result = LMCreduce ( cpy, &ad, &dynd, reduction );
 
         int dbgval=-1;
-        //array_link
-        //reduction->transformation->apply(cpy);
-        if (0) {
-            printf("!! check reduction transformation\n");
-            array_link tmparray(ad.N, ad.ncols, -1);
-            array_link resultarray(reduction->array, ad.N, ad.ncols, -1);
-
-            //reduction->transformation->inverse().apply(array, tmparray.array);
-            reduction->transformation->apply(cpy, tmparray.array);
-            if (verbose>=3) {
-                tmparray.showarray();
-                resultarray.showarray();
-            }
-            printf("equal: %d\n", tmparray==resultarray);
-            dbgval = (tmparray==resultarray);
-
-            return;//HACK
-
-        }
-
-        // LMCreduction_t reduction ( &ad );
-        //reduction.mode=LMC_REDUCE;
-        //lmc_t ret = LMCcheck ( alf, ad, oaextend, reduction );
-
 
         array_link link ( reduction->array, ad.N, ad.ncols, hcol );
         hlist.push_back ( link );
@@ -176,25 +152,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     indexsort hlistsort(hlist );
     int findex = hlistsort.indices[0];
 
-    // hlistsort.show(); printf("\n");
-
-    if (0) {
-        array_link a1 = classlist->at(101) ;
-        array_link a2 =classlist->at(129);
-        int vv = (a1<a2);
-        printf("a1 < a2? %d\n", vv);
-
-        printf("classlist[101]<classlist[129] %d\n", classlist->at(101) <  classlist->at(129) );
-        printf("classlist[129]<classlist[101] %d\n",  classlist->at(129) <  classlist->at(101) );
-        printf("classlist[121]<classlist[129] %d\n", classlist->at(121) <  classlist->at(129) );
-        printf("classlist[121]<classlist[101] %d\n",  classlist->at(121) <  classlist->at(101) );
-
-        for(int jj=0; jj<ad.ncols; jj++) {
-            int val = indices[hlistsort.indices[jj] ] ;
-            printf("jj %d: pos %d val %d\n", jj, hlistsort.indices[jj], val);
-        }
-    }
-
     if ( checkloglevel ( NORMAL ) ) {
         cout << "Found representative for Hadamard orbit:" << endl;
         //cout << hlist[0];
@@ -217,8 +174,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
 int main ( int argc, char* argv[] ) {
     char	*fname;
     int correct = 0, wrong = 0;
-
-
 
     /* parse command line options */
     AnyOption opt;
@@ -364,14 +319,12 @@ int main ( int argc, char* argv[] ) {
             reduction->mode = OA_REDUCE;
             array_link al(array, ad.N, ad.ncols, -10);
             reduction->setArray(al);
-            //copy_array(al.array, reduction->array, ad.N, ad.ncols);
             result = LMCcheckj4 ( al, ad, *reduction, oaextend );
             break;
         }
         case MODE_CHECK_SYMMETRY:
         {
             const int verbose=0;
-            //OAextend oaextend;
 
        {
                 oaextend.setAlgorithm(MODE_LMC_SYMMETRY, &ad);
@@ -398,7 +351,6 @@ int main ( int argc, char* argv[] ) {
             }
 
             arraydata_t adata(ad);
-    //mydebug2(al, adata, oaextend, 0);
     
             if (0) {
                 if (verbose)
@@ -421,9 +373,6 @@ int main ( int argc, char* argv[] ) {
                 reduction->clearSymmetries();
                 reduction->setArray(al);
 
-//		        rn = LMCcheckXX(al, adata, oaextend, reduction, reductionsub, dverbose) ;
-
-//		copy_array(al.array, reduction.array, adata.N, adata.ncols); // hack?
                 reduction->setArray(al);
                 lmc_t result3 = LMCcheckSymmetryMethod(al, ad, oaextend, *reduction, reductionsub, dverbose) ;
                 if(result!=result3) {
@@ -446,8 +395,6 @@ int main ( int argc, char* argv[] ) {
                 if (result!=result2) {
                     printfd("ERROR: oacheck: compare with original: MODE_CHECK_SYMMETRY: %d (should be %d)\n ", result, result2);
                     reduction2->transformation->show();
-		    
-		    //reduction->c
 		    
 		    LMCreduction_t reductionsub= calculateSymmetryGroups( al.deleteColumn(-1),  ad,  oaextend, 0);
 		    reductionsub.symms.show(2);
@@ -472,7 +419,6 @@ int main ( int argc, char* argv[] ) {
         }
         case MODE_CHECKJ5XFAST:
         {
-            //OAextend oaextend;
             oaextend.setAlgorithm(MODE_J5ORDERX, &ad);
 
             /* LMC test with special code */
@@ -482,7 +428,6 @@ int main ( int argc, char* argv[] ) {
 	      // TODO: make special MODE for this
             array_link al(array, ad.N, ad.ncols, -10);
 	    reduction->updateSDpointer(al);
-	   // reduction->sd->show(2);
 	    }
             result = LMCcheck ( al, ad, oaextend, *reduction );
             break;
@@ -575,7 +520,6 @@ int main ( int argc, char* argv[] ) {
             exit ( 1 );
             break;
         }
-
 
         bool aequal;
         switch ( mode ) {
