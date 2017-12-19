@@ -211,17 +211,5 @@ void print_options ( std::ostream &out )
 
 }
 
-#ifdef OADEBUG
-int hopts[10]= {0,0,0,0,0,0,0,0,0,0};
-int globalHackOption ( int i, int val )
-{
-    if ( i>=0 && i<10 ) {
-        if ( val!=-1 )
-            hopts[i]=val;
-        return hopts[i];
-    }
-    myprintf ( "globalHackOption: error: invalid index\n" );
-    return -1;
-}
-#endif
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

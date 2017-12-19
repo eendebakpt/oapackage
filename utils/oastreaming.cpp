@@ -81,11 +81,8 @@ AnyOption * parseOptions ( int argc, char* argv[], algorithm_t &algorithm )
 	opt->addUsage ( " --initcolprev [INTEGER]	Initialization method of new column (default: 1)" );
 	opt->addUsage ( " --maxk [INTEGER] Maximum number of columns to exten to (default: extracted from config file) " );
 
-#ifdef CLASSICCODE
-#else
 	std::string ss = printfstring ( " -m [MODE]			Algorithm (" ) + algorithm_t_list() + ")\n" ;
 	opt->addUsage ( ss.c_str() );
-#endif
 	//opt->printUsage();
 	opt->addUsage ( "" );
 	opt->addUsage ( "Example: ./oastreaming -r inputarrays.oa -l 2" );

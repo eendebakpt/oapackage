@@ -1105,10 +1105,8 @@ numtype next_combination_fold ( numtype *comb, int k, int n )
     i = k - 1;
     comb[i]++;
     while ( ( comb[i] >= offset + i ) && ( i > 0 ) ) {
-        //printf("next_combination: while 1: i %d, comb[i] %d\n", i, comb[i]);
         i--;
         comb[i]++;
-
     }
 
     int fold = i;

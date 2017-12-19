@@ -614,10 +614,6 @@ array_link exampleArray ( int idx = 0, int verbose = 0 );
 /// calculate J-characteristics for a conference design
 std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
-//typedef uint64_t voidp_t;
-#ifdef SWIGCODE
-#endif
-
 /*! \brief Wrapper class for an array
 
  The array_link struct is a struct that represents an arrays. Copying of array links
@@ -648,7 +644,6 @@ struct array_link {
 
 #ifdef SWIGCODE
     array_link ( long* pymatinput, int nrows, int ncols );
-   // array_link ( double* pymatdoubleinput, int nrows, int ncols );
 #endif
     array_link clone () const;
 
@@ -1023,12 +1018,10 @@ public:
 
     }
 
-//private:
     std::string showarrayS () const;
 
 	void debug() const;
 #ifdef SWIGCODE
-
     void* data ();			/// return pointer to data, needed for swig interface
 #endif
 

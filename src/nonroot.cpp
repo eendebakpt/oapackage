@@ -437,7 +437,6 @@ inline void sortzerooneR ( rowsortlight_t *rs, int low, int high, const array_t 
             high --;
         }
         if ( low < high ) {
-            //swap arr[low], arr[high]
             std::swap ( rs[low], rs[high] );
         }
     }

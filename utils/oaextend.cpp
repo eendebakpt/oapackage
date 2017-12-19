@@ -105,12 +105,8 @@ AnyOption * parseOptions ( int argc, char* argv[], algorithm_t &algorithm ) {
     opt->addUsage ( " --maxk [INTEGER] Maximum number of columns to exten to (default: extracted from config file) " );
     opt->addUsage ( " --streaming			Operate in streaming mode. Generated arrays will be written to disk immediately. " );
 
-#ifdef CLASSICCODE
-    algorithm_t_list();
-#else
     std::string ss = printfstring ( " -m [MODE]			Algorithm (" ) + algorithm_t_list() + ")\n" ;
     opt->addUsage ( ss.c_str() );
-#endif
     //opt->printUsage();
     opt->addUsage ( "" );
     opt->addUsage ( "Example: ./oaextendsingle -l 2" );

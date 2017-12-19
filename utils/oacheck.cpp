@@ -25,11 +25,7 @@
 
 #define stringify( name ) # name
 
-#ifdef CLASSICCODE
-const int ncheckopts=5;
-#else
 const int ncheckopts=14;
-#endif
 enum checkmode_t {MODE_CHECK, MODE_REDUCE, MODE_REDUCERANDOM, MODE_REDUCETRAIN, MODE_REDUCETRAINRANDOM, MODE_CHECKJ4, MODE_REDUCEJ4, MODE_REDUCEJ4RANDOM, MODE_CHECKJ5X, MODE_REDUCEJ5X, MODE_HADAMARD, MODE_NONE, MODE_CHECK_SYMMETRY, MODE_CHECKJ5XFAST};
 
 /// return mode for oacheck in std::string
