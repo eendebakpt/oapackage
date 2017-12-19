@@ -211,18 +211,6 @@ void print_options ( std::ostream &out )
 
 }
 
-#ifdef SWIGCODE
-std::string swig_version()
-{
-	return SWIG_VERSION;
-}
-#else
-std::string swig_version()
-{
-	return "noswig";
-}
-#endif
-
 #ifdef OADEBUG
 int hopts[10]= {0,0,0,0,0,0,0,0,0,0};
 int globalHackOption ( int i, int val )
