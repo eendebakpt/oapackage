@@ -24,44 +24,6 @@
 #include "evenodd.h"
 #include "pareto.h"
 
-/// calculate directory name for job splitted into parts
-std::string splitDir(std::vector < int >ii)
-{
-    std::string s;
-    for (size_t i = 0; i < ii.size(); i++) {
-	s += printfstring("sp%d-split-%d/", i, ii[i]);
-    }
-    return s;
-}
-
-/// calculate file name of job splitted into parts
-std::string splitFile(std::vector < int >ii)
-{
-    std::string s;
-    for (size_t i = 0; i < ii.size(); i++) {
-	s += printfstring("sp%d-split-%d", i, ii[i]);
-	if (i < ii.size() - 1)
-	    s += "-";
-    }
-    return s;
-}
-
-/// calculate tag for job splitted into parts
-std::string splitTag(std::vector < int >ii)
-{
-    std::string s;
-    if (ii.size() == 0) {
-	s += "base";
-	return s;
-    }
-    for (size_t i = 0; i < ii.size(); i++) {
-	s += printfstring("%d", ii[i]);
-	if (i < ii.size() - 1)
-	    s += ".";
-    }
-    return s;
-}
-
 // convert to split vector
 inline std::vector < int >tovec(std::vector < int >ii, int i)
 {
