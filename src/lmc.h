@@ -232,7 +232,7 @@ public:
         rootrowperms = this->rootrowperms;
         lperm_p =  this->current_trans->lperms;
 
-        this->LMC_root_rowperms_init = 1; // FIXME: is this needed?
+        this->LMC_root_rowperms_init = 1; // OPTIMIZE: is this needed?
     }
 
     /** @brief Static initialization of root row permutations (full group)
@@ -322,7 +322,7 @@ public:
 
 
 
-/// helper function
+/// helper function, create array with root and elements of additional columns set to 1000
 inline array_link rootPlus(const arraydata_t &ad)
 {
     array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
@@ -332,10 +332,6 @@ inline array_link rootPlus(const arraydata_t &ad)
             al.at(r, i)=1000;
         }
     }
-    //reduction.setArray(al);
-    //reduction.init_state=INIT;
-    //printf("LMCcheck: updated reduction.array to\n");
-    //reduction.getArray().showarray();
     return al;
 }
 
@@ -543,7 +539,6 @@ struct LMCreduction_t {
 
     } symms;
 
-    //symmdata *sd;
     symmdataPointer sd;
 
 public:
@@ -926,14 +921,10 @@ lmc_t LMCcheckOriginal ( const array_link &al );
 LMCreduction_t calculateSymmetryGroups(const array_link &al, const arraydata_t &adata, const OAextend &oaextend, int verbose=1, int hack=0);
 lmc_t LMCcheckSymmetryMethod(const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction,  LMCreduction_t &reductionsub, int dverbose);
 
-//#include <array>
-
 template<class numtype>
 /// Convert selection of elements to extended permutation
 void combadd2perm(const larray<numtype> &comb, int newidx, int n, larray<numtype> &target, larray<numtype> &wtmp)
 {
-//    larray<numtype> w(n);
-//    larray<numtype> wtmp(n);	// FIXME: allocation is expensive!
     for(int i=0; i<n; i++) {
         wtmp[i]=i;
     }
@@ -975,7 +966,6 @@ larray<numtype> comb2perm(const larray<numtype> comb, int n)
             j++;
         }
     }
-    // std::array<numtype, n> a;
     return w;
 }
 
@@ -993,7 +983,6 @@ std::vector<numtype> comb2perm(const std::vector<numtype> comb, int n)
             j++;
         }
     }
-    // std::array<numtype, n> a;
     return w;
 }
 
@@ -1042,7 +1031,6 @@ void create_root_permutations_index_helper ( rowperm_t *rperms, levelperm_t *lpe
 
 void print_rowsort ( rowsort_t *rowsort, int N );
 void print_column_rowsort ( const array_t *arraycol, rowsort_t *rowsort, int N );
-//void print_column_rowsort2 ( const array_t *arraycol, const array_t *arraycol2, rowsort_t *rowsort, levelperm_t lperm, int N );
 
 void print_fracs ( int logl = NORMAL );
 void clear_fracs();
