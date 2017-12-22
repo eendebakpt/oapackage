@@ -42,7 +42,7 @@ template<class Type>
 std::vector<Type> uniquevec ( const std::vector<Type> &v )
 {
     std::vector<Type> w = v;
-// fixme: better option for this?
+	// OPTIMIE: better method for this?
 	std::sort( w.begin(), w.end() );
     typename std::vector< Type >::iterator last = std::unique ( w.begin(), w.end() );
     w.erase ( last,  w.end() );
@@ -458,16 +458,7 @@ array_transformation_t oagraph2transformation ( const std::vector<int> &pp, cons
 
     ttl=ttl.inverse();
 
-    if (0) {
-        printfd("## ttr \n");
-        ttr.show();
-        printfd("## ttc \n");
-        ttc.show();
-        printfd("## ttl \n");
-        ttl.show();
-    }
     array_transformation_t tt = ttr*ttc*ttl;
-
     return tt;
 }
 

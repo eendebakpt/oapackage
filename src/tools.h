@@ -554,26 +554,6 @@ inline void addelement ( const array_t elem, int* elements )
 }
 
 
-#ifdef OAANALYZE_DISCR
-enum {ANALYSIS_NONE, ANALYSIS_DISCRIMINATOR};
-void analysis_print ( const int level, const char *message, ... );
-
-void analyse_discriminant ( int row, int col, lmc_t, int nr, int nc );
-void print_discriminant ( int nr, int nc );
-void clear_discriminant ( int nr, int nc );
-void init_discriminant ( int nr, int nc );
-
-void analysis_init_values();
-void analysis_increase_counter ( const std::string &p );
-void analysis_show_counter ( const std::string &p );
-
-#endif
-
-
-
-
-
-
 /// return time with milisecond precision
 double get_time_ms();
 

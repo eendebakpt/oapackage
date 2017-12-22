@@ -1,5 +1,5 @@
 /*! \file oaoptions.h
-	\brief Contains options for the oa algorithm
+    \brief Contains options for the oa algorithm
 
 	These options are compiled into the program. Making them a run-time option would be inefficient.
 */
@@ -7,17 +7,9 @@
 #ifndef ALGO_OPTIONS_H
 #define ALGO_OPTIONS_H
 
-//#include <iostream>
 #include <string>
 
-// reduce options of programs to only allow classic algorithms
-#ifdef OADEV
-#else
-//#define CLASSICCODE
-#endif
-
-
-/* max number of columns is algorithms */
+/* max number of columns in algorithms */
 #define MAXCOLS 60
 #define MAXROWS 2048
 
@@ -29,7 +21,6 @@ const int HACK = 0;
 
 /* output analysis data */
 //#define OAANALYZE 1
-//#define OAANALYZE_DISCR 1
 
 /* for developing purposes*/
 //#define OAEXTRA 1
@@ -49,9 +40,6 @@ const int HACK = 0;
 
 /* safe level permutations (needed for intermediate lmc test) */
 //#define SAFELPERM 1
-
-/* apply strength 1 check to speed up calculations */
-//#define
 
 /* frequency element cache using row, value pairs */
 #define FREQELEM 1

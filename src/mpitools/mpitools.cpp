@@ -8,9 +8,6 @@
 #include "mpitools.h"
 
 
-//using namespace std;
-
-
 /**
  * Function to print information from slaves to file (stdout from slaves is not passed to the user).
  * @param level 
@@ -133,9 +130,6 @@ void extend_array_mpi(array_t *array, arraydata_t *ad, colindex_t extensioncol, 
 
 int extend_slave_code(const int this_rank, OAextend const &oaextend)
 {
-    //TODO: algorithm option passing
-
-    // OPTIMIZE: optimize for communication speed
     MPI_Status	status;
     int msg = 0;
 
@@ -194,7 +188,6 @@ int extend_slave_code(const int this_rank, OAextend const &oaextend)
                 array_link	tmp_extension(array, ad->N, extensioncol, -1);
                 solutions.push_back(tmp_extension);
             }
-            //printf("SLAVE %d: extend loop\n", this_rank); fflush(stdout);
 
             for (arraylist_t::iterator it = solutions.begin(); it != solutions.end(); it++) {
                 extend_array(it->array, ad, extensioncol, extensions, oaextend);
