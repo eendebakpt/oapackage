@@ -2708,7 +2708,15 @@ std::vector<cperm> conferenceReduce ( const std::vector<cperm> &ccX, const array
 }
 
 
-/// inflate a list of extensions
+/** Inflate a list of extensions to extensions for one column extra
+ * 
+ * \param ccX List of candidate extensions
+ * \param als Design to be extended
+ * \param alfull ??
+ * \param filter Class to filter designs
+ * \param ct conferece class
+ * \param verbose Verbosity level
+ */
 std::vector<cperm> extensionInflate ( const std::vector<cperm> &ccX, const array_link &als, const array_link &alfull, const DconferenceFilter &filter, const conference_t &ct, int verbose )
 {
      std::vector<cperm> cci;
@@ -2801,7 +2809,6 @@ CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const
 }
 
 
-
 const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( const array_link &al ) const
 {
      // assert we have the right settings
@@ -2857,7 +2864,7 @@ const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( co
                myprintf ( "## %s: at %d columns: start with %d extensions, to generate extensions for column %d (%d column array)\n", tag, kx+1, ( int ) ccX.size(), kx+1 , kx+2 );
 
           cci = extensionInflate ( ccX, als, alx, filter, ct, ( verbose>=2 ) * ( verbose-1 ) );
-          // FIXME: use the following
+          // OPTIMIZE: use the following?
           // cci = filter.filterListZero ( cci );
 
           if ( verbose >=2 ) {

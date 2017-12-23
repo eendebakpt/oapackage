@@ -369,7 +369,7 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=
 /// return minimal position of zero in design
 int minz ( const array_link &al, int k );
 
-/// class to filter designs
+/// class to filter single or double conference designs
 class DconferenceFilter
 {
 public:
@@ -466,7 +466,6 @@ public:
                 out.push_back ( lst[i] );
             }
         }
-        //printfd("filterListZero: minzvalue %d: %d -> %d\n", minzvalue, lst.size(), out.size() );
         return out;
     }
 
@@ -619,7 +618,10 @@ public:
     bool filterJ2last ( const cperm &c ) const {
         return ipcheck ( c, als, als.n_columns-1 );
     }
-    /// return True of the candidate extension satisfies the zero
+    /** return True of the candidate extension satisfies the zero check
+     * 
+     * This means that the first entries of the extension do not contain a zero.
+     */
     bool filterZero ( const cperm &c ) const {
         // TODO: minzvalue-1?
         for ( int i=0; i<minzvalue-1; i++ ) {
