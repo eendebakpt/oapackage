@@ -616,8 +616,7 @@ int main(int argc, char *argv[])
 		    else {
 			continue;
 		    }
-		}
-		
+		}		
 
 		if (debug) {
 		int apos = arrayInFile(exampleArray(dindex), psourcefile.c_str() );

@@ -173,8 +173,9 @@ inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, in
  * We assume that the designs to be extended are run ordered, so that the caching has maximal effect.
  *
  * The key idea used is that any valid extension of a design A with k columns is a permutation of a valid extension
- * of the design B obtained by taking the with l < k columsn of A. The permutations that are allowed are called the
- * symmetry inflations. All the j2 checks performed for the extension of B do not have to be repeated for the permutations of this extension.
+ * of the design B obtained by taking the first l < k columns of A. The permutations that are allowed are called the
+ * symmetry inflations. All the j2 checks performed for the extension of B do not have to be repeated for the
+ * permutations of this extension.
  **/
 class CandidateGeneratorBase
 {
@@ -187,11 +188,13 @@ public:
     mutable int last_valid; // index of last valid column
 
 protected:
-    mutable std::vector< cperm_list > candidate_list; // list of candidate extensions. the elements of candidate_list[k] correspond to columns with index k-1
+    /// list of candidate extensions. the elements of candidate_list[k] correspond to columns with index k-1
+    mutable std::vector< cperm_list > candidate_list;
 
 public:
     CandidateGeneratorBase ( const array_link &al, const conference_t &ct );
 
+    /// show the candidate extensions for each column    
     void showCandidates ( int verbose=1 ) const {
         myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
@@ -239,7 +242,7 @@ class CandidateGeneratorConference  : public CandidateGeneratorBase
 {
     
 public:
-    CandidateGeneratorConference ( const array_link &al, const conference_t &ct, int zero_position = -1 );
+    CandidateGeneratorConference ( const array_link &al, const conference_t &ct );
 
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
     
@@ -253,16 +256,15 @@ public:
 
 };
 
-/// Class to generate conference candidate extensions with fixed zero
-class CandidateGeneratorZero  : public CandidateGeneratorBase
-{
-    int zero_position;
-public:
-    CandidateGeneratorZero ( const array_link &al, const conference_t &ct, int zero_position );
-
-    const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
-
-};
+// class CandidateGeneratorZero  : public CandidateGeneratorBase
+// {
+//     int zero_position;
+// public:
+//     CandidateGeneratorZero ( const array_link &al, const conference_t &ct, int zero_position );
+// 
+//     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
+// 
+// };
     
 
 typedef CandidateGeneratorConference CandidateGenerator;
