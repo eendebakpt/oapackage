@@ -840,7 +840,11 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
      return true;
 }
 
-/// helper function, return true if a candidate extensions satisfies the symmetry test
+/** helper function, return true if a candidate extensions satisfies the symmetry test
+ * 
+ * The candidate extension fails the symmetry test if a simple row permutation of two succesive rows leads to a smaller design.
+ * 
+ */
 int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart = 2 )
 {
      const int verbose=0;
@@ -857,7 +861,6 @@ int satisfy_symm ( const cperm &c, const symmdata & sd, int rowstart = 2 )
           printf ( "\n" );
      }
      for ( size_t i=rowstart; i<c.size()-1; i++ ) {
-          // TODO: use the sd.checkIdx() for this
           if ( sd.rowvalue.atfast ( i, k ) ==sd.rowvalue.atfast ( i+1, k ) ) {
                if ( ( ( unsigned char ) c[i] ) > ( ( unsigned char ) c[i+1] ) ) {
                     // discard
@@ -949,7 +952,12 @@ int maxz ( const array_link &al, int k )
      return maxzidx ;
 }
 
-/// filter candidate extensions based on symmetry propery
+/** Filter candidate extensions based on symmetry propery
+ * 
+ * The subblock S obtained by deleting the first row or column should be symmetric or anti-symmetric.
+ * See "Conference matrices", Peter J. Cameron, CSG, 7 October 2011
+ * 
+ */
 std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, const array_link &als, int verbose )
 {
      const int N = als.n_rows;
@@ -966,9 +974,9 @@ std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, 
           printf ( "N %d, mval %d\n", N, mval );
 
      const int k = als.n_columns;
-     cperm tmp ( N );
+     cperm comparerow ( N );
      for ( int i=0; i<k; i++ )
-          tmp[i] = als.at ( k, i );
+          comparerow[i] = als.at ( k, i );
 
      std::vector<cperm> e ( 0 );
      for ( size_t i=0; i<extensions.size(); i++ ) {
@@ -976,17 +984,8 @@ std::vector<cperm> filterCandidatesSymm ( const std::vector<cperm> &extensions, 
 
           int good=1;
           for ( int x=2; x<k; x++ ) {
-               if ( tmp[x]!=mval*ex[x] ) {
+               if ( comparerow[x]!=mval*ex[x] ) {
                     good=0;
-                    if ( k>3 && verbose>=3 ) {
-                         printf ( "discard extension %d: N %d, k %d: x %d\n", ( int ) i, N, k, x );
-                         printf ( "tmp: " );
-                         printf_vector<signed char> ( tmp, "%d " );
-                         printf ( "\n" );
-                         printf ( "ex: " );
-                         printf_vector<signed char> ( ex, "%d " );
-                         printf ( "\n" );
-                    }
                     break;
                }
           }
@@ -1148,15 +1147,21 @@ bool DconferenceFilter::filterReason ( const cperm &c ) const
 /** filter conference matrix extension candidates
  *
  * Filtering is based in symmetry and ip
+ * 
+ * \param extensions List of extensions
+ * \param als Design to be extended
+ * \param filtersymm If true, then filter based on row symmetries?
+ * \param filterip If true, filter based on J2
  */
 std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, const array_link &als, int filtersymm, int filterip, int verbose )
 {
-     symmetry_group rs = als.row_symmetry_group();
      symmdata sd ( als );
 
      if ( verbose>=2 )
           sd.show ( 1 );
 
+     std::vector<int> checkidx = sd.checkIdx();
+     
      std::vector<cperm> e2 ( 0 );
      for ( size_t i=0; i<extensions.size(); i++ ) {
 
@@ -1174,7 +1179,7 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
                }
           }
           if ( filtersymm ) {
-               if ( ! satisfy_symm ( extensions[i], sd ) ) {
+               if ( ! satisfy_symm ( extensions[i], checkidx ) ) {
                     if ( verbose>=2 ) {
                          printf ( "filterCandidates: reject due to row symm: " );
                          display_vector ( extensions[i] );
@@ -2006,6 +2011,14 @@ std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al
      return e2;
 }
 
+/** select maximum possible position for a zero in the column of a design assuming the design is in LMC0 format
+ * 
+ * \param maxzpos Maximum position of zero an specified design
+ * \param ctype Type of conference matrix
+ * \param al Array containing the design
+ * \param extcol Extension column
+ * 
+ */
 int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const array_link &al, int extcol )
 {
      if ( maxzpos<0 ) {
@@ -2014,16 +2027,12 @@ int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const 
                maxzpos = al.n_rows-1;
                break;
           case conference_t::CONFERENCE_DIAGONAL:
-
                maxzpos = extcol;
-               //printf("ct.ctype==conference_t::conference_t::CONFERENCE_DIAGONAL: maxzpos %d/%d, extcol %d\n", maxzpos, al.n_rows-1, extcol);
                break;
           case conference_t::DCONFERENCE:
                maxzpos = al.n_rows-1;
-
                break;
-          default
-                    :
+          default:
                printfd ( "not implemented...\n" );
                maxzpos = al.n_rows-1;
           }
@@ -2110,7 +2119,6 @@ conference_extend_t extend_conference_matrix ( const array_link &al, const confe
 conference_extend_t extend_conference_matrix_generator ( const array_link &al, const conference_t & ct, int extcol, int verbose, int maxzpos, const CandidateGenerator &cgenerator )
 {
      conference_extend_t ce;
-     ce.extensions.resize ( 0 );
 
      const int N = ct.N;
      const int k = extcol;
@@ -2125,13 +2133,15 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
           if ( verbose>=2 )
                al.showarray();
      }
+     
+     // loop over all possible positions of the next zero in the design
      for ( int ii=zstart; ii<maxzpos+1; ii++ ) {
           if ( verbose>=2 )
                printfd ( "array: generate with zero at %d\n", ii );
           std::vector<cperm> extensionsX;
 
           {
-               //FIXME: only if valid??
+               // generate possible extension candidates
                const std::vector<cperm> &cl = cgenerator.generateCandidatesZero ( al, ii );
                if ( verbose>2 ) {
                     printfd ( "-- ii %d, %d candidates \n", ii, cl.size() );
@@ -2139,9 +2149,8 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
                          cgenerator.showCandidates ( 2 );
                     }
                }
-               //printfd ( " cande %d --> cache %d\n", ( int ) cgenerator.cande.ce[ii].size(), ( int ) cl.size() );
                if ( ct.ctype==conference_t::CONFERENCE_DIAGONAL ) {
-                    extensionsX = filterCandidatesSymm ( cl,  al, verbose ); // FIXME: is this needed?
+                    extensionsX = filterCandidatesSymm ( cl,  al, verbose ); // not needed, but might make calculations faster
                     extensionsX = filterCandidates ( extensionsX,  al,1, 1, verbose );
                } else {
                     // FIXME: for cached generated candidates we could remove the filterj2 check
@@ -2497,7 +2506,7 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
           printfd ( "extend_conference: start with %d arrays\n", ( int ) lst.size() );
      }
 
-     int vb=std::max ( 0, verbose-1 );
+     int subverbose=std::max ( 0, verbose-1 );
 
      /// IDEA: move higher up in hierarchy
      CandidateGenerator cgenerator ( array_link(), ctype );
@@ -2510,10 +2519,9 @@ arraylist_t extend_conference ( const arraylist_t &lst, const conference_t ctype
 
           const array_link &al = lst[i];
           int extcol=al.n_columns;
-          conference_extend_t ce = extend_conference_matrix_generator ( al, ctype, extcol, vb, -1, cgenerator );
+          conference_extend_t ce = extend_conference_matrix_generator ( al, ctype, extcol, subverbose, -1, cgenerator );
 
           arraylist_t ll = ce.getarrays ( al );
-
           selector.add ( ll );
 
           if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {

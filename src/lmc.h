@@ -184,7 +184,6 @@ public:
     int nrootrowperms_full;
     rowperm_t* rootrowperms_full;
 
-
     array_t* colbuffer;	/** buffer for a single column */
 
     dyndata_t ** dyndata_p;	/** dynamic data; row permutations */
@@ -275,7 +274,6 @@ typedef larray<colindex_t> colpermtypelight;
 
 typedef std::vector<int> colpermtype;
 typedef std::vector< colpermtype > colpermset;
-//typedef std::set<std::vector<int> > colpermset;
 
 #define USE_ROWPERM_POOL
 
@@ -293,7 +291,7 @@ public:
 
     arraysymmetry(const dyndata_t *dyndata);
 
-/// copy constructor
+    /// copy constructor
     arraysymmetry(const arraysymmetry &rhs);
 
     //Copy assignment operator
@@ -317,10 +315,6 @@ public:
         print_perm(colperm);
     }
 };
-
-
-
-
 
 /// helper function, create array with root and elements of additional columns set to 1000
 inline array_link rootPlus(const arraydata_t &ad)

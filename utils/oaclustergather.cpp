@@ -262,10 +262,12 @@ int main(int argc, char *argv[])
     if (opt.getValue("output") != 0)
 	outputprefix = opt.getValue('o');
 
+    enum pareto_method {EVENODDPARETO, J5STATS, CONFERENCESTATS};
+    
     const std::string basedir = opt.getStringValue("basedir", "");
     const char *configfile = opt.getStringValue("config", "oaconfig.txt");
     int verbose = opt.getIntValue('v', 1);
-    int method = opt.getIntValue("method", 0);
+    pareto_method method = (pareto_method) opt.getIntValue("method", 0);
     int debug = opt.getIntValue("debug", 0);
     const int dindex = opt.getIntValue("dindex", 24);
     
@@ -307,7 +309,7 @@ int main(int argc, char *argv[])
     int cleanrun = 1;		/// indicates whether all necessary files have been found
 
     const char *methodtag = 0;
-    if (method == 1) {
+    if (method == J5STATS) {
 
 	methodtag = "jstats";
 	const int jjval = 5;
@@ -440,7 +442,7 @@ int main(int argc, char *argv[])
 
     }
 
-    if (method == 0) {
+    if (method == EVENODDPARETO) {
 	methodtag = "pareto";
 
 	{
@@ -790,11 +792,8 @@ int main(int argc, char *argv[])
 	fflush(0);
     }
 
-
     /* free allocated structures */
     delete adata;
-
-
     
     if (cleanrun)
 	return 0;
