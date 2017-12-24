@@ -38,7 +38,8 @@ Acknowledgements
 
 If you use this code or any of the results, please cite this program as follows:
 
-Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays, P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
+[Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays](http://dx.doi.org/10.1002/jcd.20236), E.D. Schoen, P.T. Eendebak, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
+[Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions](https://doi.org/10.1080/00401706.2016.1142903), Pieter T. Eendebak, Eric D. Schoen, Technometrics Vol. 59 , Iss. 1, 2017
 
 The code was written by:
 
