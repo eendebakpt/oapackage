@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <algorithm>
 
-
 #include "arraytools.h"
 #include "graphtools.h"
 #include "arrayproperties.h"

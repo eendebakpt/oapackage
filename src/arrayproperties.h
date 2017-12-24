@@ -8,7 +8,6 @@
 #ifndef ARRAYPROPERTIES_H
 #define ARRAYPROPERTIES_H
 
-
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Dense>
@@ -17,12 +16,10 @@
 #include "arraytools.h"
 #include "tools.h"
 
-
 #define stringify( name ) # name
 
 /// calculate determinant of X^T X by using the SVD
 double detXtX ( const Eigen::MatrixXd & mymatrix, int verbose = 1 );
-double detXtXfloat ( const Eigen::MatrixXf & mymatrix, int verbose = 1 );
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
 void DAEefficiecyWithSVD ( const Eigen::MatrixXd & x, double &Deff,
@@ -63,7 +60,6 @@ std::vector < double >
 PECsequence ( const array_link & al, int verbose = 0 );
 #endif
 
-
 /// Return the distance distribution of a design
 std::vector < double >
 distance_distribution ( const array_link & al );
@@ -84,14 +80,12 @@ GWLP ( const array_link & al, int verbose = 0, int truncate = 1 );
 std::vector < double >
 GWLPmixed ( const array_link & al, int verbose = 0, int truncate = 1 );
 
-
 // SWIG has some issues with typedefs, so we use a define
 //typedef double GWLPvalue;
 //typedef mvalue_t<double> GWLPvalue;
 #define GWLPvalue mvalue_t<double>
 
 typedef mvalue_t < double >DOFvalue;
-
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projections
 std::vector < GWLPvalue > projectionGWLPs ( const array_link & al );
@@ -125,7 +119,6 @@ int arrayrankColPivQR ( const array_link & al, double threshold = -1 );
 
 int arrayrankFullPivLU ( const array_link &al, double threshold = -1 );
 int arrayrankSVD ( const array_link &al, double threshold = -1 );
-
 
 /// calculate the rank of an array
 int arrayrank ( const array_link & al );
@@ -248,8 +241,6 @@ public:
 /// return the condition number of a matrix
 double conditionNumber ( const array_link &M );
 
-
-
 #ifdef FULLPACKAGE
 
 #include "pareto.h"
@@ -273,9 +264,6 @@ Pareto < mvalue_t < long >, long >parsePareto ( const arraylist_t & arraylist,
         int verbose,
         paretomethod_t paretomethod =
             PARETOFUNCTION_DEFAULT );
-
-//void addArray(Pareto < mvalue_t < long >, long > pset, const array_link &al, int verbose, paretomethod_t paretomethod = PARETOFUNCTION_DEFAULT);
-
 
 /// calculate A3 and A4 value for array
 inline mvalue_t < long >

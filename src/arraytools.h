@@ -920,14 +920,14 @@ public:
 
     /// internal function
     template < class numtype > void setarraydata ( const numtype * tmp, int n ) {
-        //for(size_t i=0; i<n; i++) {
-        //    this->array[i]=tmp[i];
-        //}
         if ( n != this->n_rows * this->n_columns )
             myprintf
             ( "array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n",
               n, this->n_rows, this->n_columns );
-        std::copy ( tmp, tmp + n, this->array );
+		//for(size_t i=0; i<n; i++) {
+		//    this->array[i]=(array_t) tmp[i];
+		//}
+		std::copy( tmp, tmp + n, this->array );
     }
     /// special method for SWIG interface
     void setarraydata ( std::vector < int >tmp, int n ) {
@@ -1028,6 +1028,7 @@ public:
 };
 
 // simple permutation type
+typedef signed char cperm_t;
 typedef std::vector < signed char > cperm;
 typedef std::vector <cperm > cperm_list;
 

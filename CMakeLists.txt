@@ -68,14 +68,15 @@ message(STATUS "OA extend code: ${OAEXTEND}")
 set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h src/evenodd.h)
 set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/graphtools.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/Deff.cpp src/evenodd.cpp)
 
+set(headers ${headers} src/conference.h)
+set(srcs ${srcs} src/conference.cpp)
+
 set(headersextend ${headers} src/extend.h src/strength.h src/lmc.h src/nonroot.h )
 set(srcsextend ${srcs} src/extend.cpp src/lmc.cpp src/nonroot.cpp )
 
 set(headersextend ${headersextend} src/InfInt.h)
 set(srcsextend ${srcsextend} src/InfInt.cpp)
 
-set(headersextend ${headersextend} src/conference.h)
-set(srcsextend ${srcsextend} src/conference.cpp)
 
 if(OADEV)
   set(headersextend ${headersextend} dev/oadevelop.h)
@@ -199,8 +200,8 @@ if(WIN32)
 endif()
 if (MSVC)
   message(STATUS "MSCV compiler")
-  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /D_SCL_SECURE_NO_WARNINGS")
-  ADD_DEFINITIONS(-DNODEFAULTLIB:library)
+  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /D_SCL_SECURE_NO_WARNINGS")
+  #ADD_DEFINITIONS(-DNODEFAULTLIB:library)
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
   #set ( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} /NODEFAULTLIB:MSVCRT /EHsc /W0 /MT /verbose" )
  # SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
