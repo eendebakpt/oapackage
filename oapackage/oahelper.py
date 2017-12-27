@@ -527,7 +527,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         r = process.poll()
         # r = os.system(cmd) # old method
         if (not r == 0):
-            print('runcommand: cmd returned error! r=%d')
+            print('runcommand: cmd returned error! r=%d' % r)
             print(cmd)
             return r
     else:
