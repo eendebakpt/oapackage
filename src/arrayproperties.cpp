@@ -1544,13 +1544,7 @@ typedef Eigen::VectorXf MyVectorf;
 double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 {
     double dd=-1;
-    //double dd2=-1;
-    //int n = mymatrix.rows();
     int m = mymatrix.cols();
-    //int N = n;
-
-    //    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
-    //  int rank = lu_decomp.rank();
 
     MyMatrixf mm = mymatrix.transpose() * mymatrix;
     SelfAdjointEigenSolver<MyMatrixf> es;
@@ -1580,8 +1574,6 @@ double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
     MyMatrixf Smat ( S );
     MyArrayf Sa=Smat.array();
     dd = exp ( 2*Sa.log().sum() );
-
-    //
 
     if ( S[0]<1e-15 ) {
         if ( verbose>=2 )

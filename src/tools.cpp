@@ -380,12 +380,22 @@ int log_print ( const int level, const char *message, ... )
     return result;
 }
 
+inline char path_separator()
+{
+#ifdef _WIN32
+	return '\\';
+#else
+	return '/';
+#endif
+}
+
 /// calculate directory name for job splitted into parts
 std::string splitDir(std::vector < int >ii)
 {
     std::string s;
     for (size_t i = 0; i < ii.size(); i++) {
-	s += printfstring("sp%d-split-%d/", i, ii[i]);
+	s += printfstring("sp%d-split-%d", i, ii[i]) ;
+	s += path_separator();
     }
     return s;
 }
