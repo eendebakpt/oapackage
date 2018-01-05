@@ -1739,7 +1739,7 @@ namespace arrayfile
 
 /// format mode
 enum arrayfilemode_t
-{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR, A_AUTOMATIC };
+{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR, A_AUTOMATIC, A_AUTOMATIC_BINARY };
 enum afilerw_t
 { READ, WRITE, READWRITE };
 
@@ -1986,7 +1986,11 @@ public:
                 if ( format == "Z" || format == "DIFFZERO" ) {
                     mode = arrayfile::ABINARY_DIFFZERO;
                 } else {
+                if ( format == "AB" || format == "AUTOBINARY" ) {
+                mode = arrayfile::A_AUTOMATIC_BINARY;
+                } else {    
                     mode = arrayfile::ATEXT;
+                }
                 }
             }
         }
