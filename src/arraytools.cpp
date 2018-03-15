@@ -4629,7 +4629,7 @@ void arrayfile_t::createfile ( const std::string fname, int nrows, int ncols, in
 
 arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 {
-     int warngz = verbose>=1;
+     int warngz = verbose>=2;
 #ifdef SWIG
      swigcheck();
 #endif
@@ -4687,7 +4687,6 @@ arrayfile_t::arrayfile_t ( const std::string fnamein, int verbose )
 #else
      this->iscompressed=0;
      this->nfid = fopen ( fname.c_str(), "r+b" );
-     // printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
      this->gzfid=0;
 #endif
 

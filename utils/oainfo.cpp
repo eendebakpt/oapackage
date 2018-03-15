@@ -70,6 +70,12 @@ int main(int argc, char* argv[])
             std::cout << afile.showstr() << std::endl;
 	  }
         } else {
+	    if (afile.iscompressed) {
+	      if (verbose)
+		printf("oainfo: compressed file (afile.iscompressed %d)\n", afile.iscompressed);
+	    }
+	    if (showformat)
+		  myprintf("%d\n", (int)afile.mode);
             // try to read as binary file
             if (verbose>=3) {
                 printf("oainfo: opening as data file...\n");
@@ -92,8 +98,9 @@ int main(int argc, char* argv[])
                 std::cout << printfstring("file %s: binary data file with %d rows, %d columns\n", fname, nr, nc);
             }
             else {
+		  if (verbose) {
                 std::cout << printfstring("file %s: invalid file\n", fname);
-
+	      }
             }
         }
     }

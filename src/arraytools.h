@@ -2357,9 +2357,11 @@ public:
 };
 
 
-/// Read header for binary data file. Return true if valid header file
-inline bool
-readbinheader ( FILE * fid, int &nr, int &nc )
+/** Read header for binary data file. Return true if valid header file
+ * 
+ * The header consists of 4 integers: 2 magic numbers, then the number of rows and columns
+ */
+inline bool readbinheader ( FILE * fid, int &nr, int &nc )
 {
     if ( fid == 0 ) {
         return false;
