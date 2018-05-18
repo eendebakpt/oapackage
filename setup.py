@@ -121,17 +121,18 @@ def get_version_info(verbose=0):
 
 # print(get_version_info())
 
+
 import subprocess
 import re
 
 try:
     from distutils.version import LooseVersion
     from distutils.spawn import find_executable
-    
+
     def get_swig_executable(swig_minimum_version='3.0', verbose=0):
         """ Get SWIG executable """
         # stolen from https://github.com/FEniCS/ffc/blob/master/setup.py
-    
+
         # Find SWIG executable
         swig_executable = None
         swig_version = None
@@ -144,7 +145,7 @@ try:
                 swig_version = re.findall(r"SWIG Version ([0-9.]+)", output)[0]
                 if LooseVersion(swig_version) >= LooseVersion(swig_minimum_version):
                     swig_valid = True
-                    break                
+                    break
         if verbose:
             print("Found SWIG: %s (version %s)" % (swig_executable, swig_version))
         return swig_executable, swig_version, swig_valid
@@ -155,7 +156,7 @@ except:
     swig_valid = True
 
 if not swig_valid:
-  raise Exception('could not find a recent version if SWIG')
+    raise Exception('could not find a recent version if SWIG')
 
 #%% Hack to remove option for c++ code
 try:
@@ -234,7 +235,7 @@ compile_options = []
 if oadev:
     sources = ['oalib.i'] + sources
     swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
-                  '-Isrc/', '-Idev/'] 
+                  '-Isrc/', '-Idev/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
 else:
@@ -313,7 +314,7 @@ if os.name == 'nt':
 else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
-    oalib_module.extra_compile_args += ['-Wno-date-time',]
+    oalib_module.extra_compile_args += ['-Wno-date-time', ]
     #swig_opts += [ '-Wno-delete-non-virtual-dtor' ]
 
 if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
@@ -343,21 +344,24 @@ class CustomBuild(build):
         # self.run_command('install')
         # self.do_egg_install()
 
+
 class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
         install.run(self)
         # self.run_command('install')
-        #self.do_egg_install()
+        # self.do_egg_install()
+
 
 def readme():
     with open('README.md') as f:
         return f.read()
 
+
 long_description = readme()
 
 version = get_version_info()[0]
-print('OApackage: version %s'  % version)
+print('OApackage: version %s' % version)
 
 setup(name='OApackage',
       #cmdclass = {'test': OATest },
@@ -366,7 +370,7 @@ setup(name='OApackage',
       author="Pieter Eendebak",
       description="Package to generate and analyse orthogonal arrays and optimal designs",
       long_description=long_description,
-	  long_description_content_type='text/markdown',
+      long_description_content_type='text/markdown',
       author_email='pieter.eendebak@gmail.com',
       license="BSD",
       url='http://www.pietereendebak.nl/oapackage/index.html',
