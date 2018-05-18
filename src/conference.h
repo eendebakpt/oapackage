@@ -643,6 +643,8 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
  * The extensions are generated according to the symmertry specified by the symmetry group. Filtering is performed using the filter object.
  *
  * From the filtering object only the J2 filtering is used.
+ * 
+ * \return List of inflated extensions
  **/
 std::vector<cperm> inflateCandidateExtension ( const cperm &basecandidate,  const array_link &als,  const symmetry_group &alsg, const std::vector<int> &check_indices, const conference_t & ct, int verbose , const DconferenceFilter &filter );
 

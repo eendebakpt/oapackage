@@ -84,7 +84,11 @@ def unittest(verbose=1):
     ii = 0
     al = oalib.exampleArray(ii, 0)
 
-    # test_numpy_interface()
+    arrayclass = oalib.arraydata_t(2, 16, 2, 6)  # fine
+    alist = [arrayclass.create_root()]
+    r = oalib.extend_arraylist(alist, arrayclass)
+    if len(r) != 3:
+        raise Exception('extension generation for %s failed' % (arrayclass, ))
 
     if not isinstance(al.getarray(), np.ndarray):
         print(

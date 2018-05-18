@@ -180,11 +180,13 @@ def selectIsomorphismClasses(sols, verbose=1):
         qq[ii] = mm[ii].flatten()
 
     # Trick to make unique work...
-    nx = qq[0].size
-    dt = qq[0].dtype.descr * nx
-    qqq = np.array(qq, dtype=dt)
-
-    a, indices = np.unique(qqq, return_inverse=True)
+    a, indices = np.unique(np.vstack( qq), axis=0, return_inverse=True)
+    if 0:
+        nx = qq[0].size
+        dt = qq[0].dtype.descr * nx
+        qqq = np.array(qq, dtype=dt)
+    
+        a, indices = np.unique(qqq, return_inverse=True)
 
     if verbose >= 1:
         print('selectIsomorphismClasses: reduce %d to %d' %

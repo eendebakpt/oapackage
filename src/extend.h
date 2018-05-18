@@ -79,12 +79,13 @@ public:
         this->init_column_previous = o.init_column_previous;
         this->extendarraymode = o.extendarraymode;
         this->j5structure = o.j5structure;
-
+	this->check_maximal=o.check_maximal;
+	
         this->algmode=o.algmode;
         // we do NOT copy the storefile: this->storefile = o.storefile;
 
     };
-    OAextend( arraydata_t &ad) : singleExtendTime(10.0), nLMC(40000), checkarrays(1), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
+    OAextend( arraydata_t &ad) : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
     {
 
 #ifdef OADEV

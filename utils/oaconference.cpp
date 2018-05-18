@@ -320,8 +320,8 @@ int main ( int argc, char* argv[] ) {
 
         if ( output.length() >=1 ) {
             arrayfilemode_t file_mode = file_mode_base;
-            if ( file_mode==arrayfile::A_AUTOMATIC ) {
-                if ( outlist.size() < 1000 ) {
+            if ( file_mode==arrayfile::A_AUTOMATIC || file_mode==arrayfile::A_AUTOMATIC_BINARY ) {
+                if ( outlist.size() < 1000 && ( file_mode != arrayfile::A_AUTOMATIC_BINARY ) ) {
                     // small files in text format for easy reading
                     file_mode= arrayfile::ATEXT;
                 } else {

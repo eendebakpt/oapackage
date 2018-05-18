@@ -527,7 +527,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         r = process.poll()
         # r = os.system(cmd) # old method
         if (not r == 0):
-            print('runcommand: cmd returned error! r=%d' % r)
+            print('runcommand: cmd returned error! r=%d' % str(r) )
             print(cmd)
             return r
     else:
@@ -631,12 +631,17 @@ def checkFiles(lst, cache=1, verbose=0):
 
 def checkFilesOA(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
-        cache: 0 (no), 1 (check), -1 (always)
+        
+        Args:
+            lst (list)
+            cache (int): 0 (always return False), 1 (check), -1 (always return True)
         For array files also the .gz extension is checked
 
         Returns False if one or more of the files do not exist
         Returns True if all files exist
     """
+    if verbose>=2:
+        print('checkFilesOA: cache %s'  % (cache, ))
     if cache == -1:
         return True
     if cache == 0:

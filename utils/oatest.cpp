@@ -306,6 +306,21 @@ int main ( int argc, char* argv[] )
      //print_options(); exit(0);
 
      {
+          setloglevel ( DEBUG );
+
+          int N=16;
+          arraydata_t ad ( 2, N, 2, 6 );
+          ad.show();
+          array_link root = ad.create_root();
+          
+          arraylist_t lst;
+          lst.push_back(root);
+          
+          arraylist_t r = extend_arraylist(lst, ad);
+          printf("extended to %d designs\n" , (int) r.size() );
+          exit(0);
+     }
+     {
           arraylist_t ll = readarrayfile ( input );
 
           lmc_t r = LMC0checkDC ( ll[0], verbose ); 

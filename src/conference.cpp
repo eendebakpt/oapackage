@@ -2286,7 +2286,7 @@ arraylist_t extend_double_conference ( const arraylist_t &lst, const conference_
           arraylist_t ll = ce.getarrays ( al );
           outlist.insert ( outlist.end(), ll.begin(), ll.end() );
 
-          if ( verbose>=2 || ( verbose>=1 && ( i%400==0 || i==lst.size()-1 ) ) ) {
+          if ( verbose>=2 || ( verbose>=1 && ( i%1000==0 || i==lst.size()-1 ) ) ) {
                double dt = get_time_ms() - t0;
                printf ( "extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", ( int ) i, ( int ) lst.size(), (int) ll.size(), ( int ) outlist.size(), dt );
                fflush ( 0 );

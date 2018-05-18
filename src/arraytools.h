@@ -1739,7 +1739,7 @@ namespace arrayfile
 
 /// format mode
 enum arrayfilemode_t
-{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR, A_AUTOMATIC };
+{ ATEXT, ALATEX, ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO, AERROR, A_AUTOMATIC, A_AUTOMATIC_BINARY };
 enum afilerw_t
 { READ, WRITE, READWRITE };
 
@@ -1986,7 +1986,11 @@ public:
                 if ( format == "Z" || format == "DIFFZERO" ) {
                     mode = arrayfile::ABINARY_DIFFZERO;
                 } else {
+                if ( format == "AB" || format == "AUTOBINARY" ) {
+                mode = arrayfile::A_AUTOMATIC_BINARY;
+                } else {    
                     mode = arrayfile::ATEXT;
+                }
                 }
             }
         }
@@ -2353,9 +2357,11 @@ public:
 };
 
 
-/// Read header for binary data file. Return true if valid header file
-inline bool
-readbinheader ( FILE * fid, int &nr, int &nc )
+/** Read header for binary data file. Return true if valid header file
+ * 
+ * The header consists of 4 integers: 2 magic numbers, then the number of rows and columns
+ */
+inline bool readbinheader ( FILE * fid, int &nr, int &nc )
 {
     if ( fid == 0 ) {
         return false;

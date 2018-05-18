@@ -27,14 +27,15 @@ int main(int argc, char* argv[])
     /* parse command line options */
     AnyOption opt;
     opt.setFlag(  "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
-    opt.setOption("format", 'f');
+    opt.setFlag("format", 'f');
     opt.setOption("verbose", 'v');
 
     opt.addUsage( "Orthonal Array Info: print information about files" );
     opt.addUsage( "Usage: oainfo [OPTIONS] [FILES]" );
     opt.addUsage( "" );
     opt.addUsage( " -h --help  			Prints this help " );
-    opt.addUsage( " -v --verbose  			Verbose level " );
+    opt.addUsage( " -v --verbose [INT]		Verbose level " );
+    opt.addUsage( " -f --format  		Output only the file format" );
     opt.processCommandArgs(argc, argv);
 
 
@@ -49,6 +50,8 @@ int main(int argc, char* argv[])
         exit(0);
     }
 
+    int showformat = opt.getFlag('f');
+    
     /* read in the arrays */
     if (verbose>=2)
         cout << "oainfo: reading " << opt.getArgc() << " file(s)" << endl;
@@ -61,8 +64,18 @@ int main(int argc, char* argv[])
         arrayfile_t afile(fnames, 3*(verbose>=3) );
 
         if (afile.isopen() ) {
+	  if (showformat)
+	      myprintf("%d\n", (int)afile.mode);
+	  else {
             std::cout << afile.showstr() << std::endl;
+	  }
         } else {
+	    if (afile.iscompressed) {
+	      if (verbose)
+		printf("oainfo: compressed file (afile.iscompressed %d)\n", afile.iscompressed);
+	    }
+	    if (showformat)
+		  myprintf("%d\n", (int)afile.mode);
             // try to read as binary file
             if (verbose>=3) {
                 printf("oainfo: opening as data file...\n");
@@ -85,8 +98,9 @@ int main(int argc, char* argv[])
                 std::cout << printfstring("file %s: binary data file with %d rows, %d columns\n", fname, nr, nc);
             }
             else {
+		  if (verbose) {
                 std::cout << printfstring("file %s: invalid file\n", fname);
-
+	      }
             }
         }
     }
