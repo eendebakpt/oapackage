@@ -6,13 +6,9 @@
 
 #%% Load packages
 import numpy as np
-import oalib
 import oapackage
-import sys
-
 
 #%%
-
 
 def oa2graph(al, adata, verbose=1):
     """
@@ -27,9 +23,7 @@ def oa2graph(al, adata, verbose=1):
     >     im, colors, r = oa2graph( A, oadata );
 
     """
-    #A = np.array(al)
     A = al.getarray(verbose=0)
-    #print('type A: %s' % type(A) )
     nrows = adata.N
     ncols = A.shape[1]
     nRowVertices = A.shape[0]
@@ -66,25 +60,9 @@ def oa2graph(al, adata, verbose=1):
 
     # The non-row vertices do not have any connections to other non-row
     # vertices.
-
-    if 0:
-        # xy is an old data structure which is not used any moref
-        xy = np.zeros((2, nrows + s.sum()))
-
-        # calculate positions
-        for row in range(0, nrows):
-            xy[:, row] = np.array([0, row])
-
-        pos = nrows
-        for col in range(0, ncols):
-            for ss in range(0, s[col]):
-                xy[:, pos] = np.array([2 + ss / s[col], col])
-                pos = pos + 1
-
     return im, colors, dict({'adata': adata, 'im': im, 'colors': colors, 'nVertices': nVertices})
 
 
-import oapackage
 
 
 def graph2arrayTransformation(pp, arrayclass, verbose=0):
@@ -105,7 +83,6 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
         (pp[(arrayclass.N + arrayclass.ncols):(arrayclass.N + arrayclass.ncols + ns)]))
     lvlperm = lvlperm - lvlperm.min()
 
-    #%%
     ttr = oapackage.array_transformation_t(arrayclass)
     ttr.setrowperm(rowperm)
     ttr = ttr.inverse()
@@ -129,13 +106,7 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
     tt = ttr * ttc * ttl
     return tt
 
-#
-
-
 #%%
-
-from oapackage import makearraylink
-
 
 def selectIsomorphismClasses(sols, verbose=1):
     """ Select isomorphism classes from a list of designs 
@@ -196,4 +167,5 @@ def selectIsomorphismClasses(sols, verbose=1):
 
 def test_select_isomorphism():
     ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
-    selectIsomorphismClasses(ll)
+    indices, mm = selectIsomorphismClasses(ll, verbose=0)
+    assert(indices[0]==indices[1])
