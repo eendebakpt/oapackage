@@ -527,7 +527,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         r = process.poll()
         # r = os.system(cmd) # old method
         if (not r == 0):
-            print('runcommand: cmd returned error! r=%d' % str(r) )
+            print('runcommand: cmd returned error! r=%d' % str(r))
             print(cmd)
             return r
     else:
@@ -631,7 +631,7 @@ def checkFiles(lst, cache=1, verbose=0):
 
 def checkFilesOA(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
-        
+
         Args:
             lst (list)
             cache (int): 0 (always return False), 1 (check), -1 (always return True)
@@ -640,8 +640,8 @@ def checkFilesOA(lst, cache=1, verbose=0):
         Returns False if one or more of the files do not exist
         Returns True if all files exist
     """
-    if verbose>=2:
-        print('checkFilesOA: cache %s'  % (cache, ))
+    if verbose >= 2:
+        print('checkFilesOA: cache %s' % (cache, ))
     if cache == -1:
         return True
     if cache == 0:
@@ -1238,7 +1238,8 @@ def formatC(al, wrap=True):
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:
-        s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (al.n_rows, al.n_columns) + s + '};'
+        s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (
+            al.n_rows, al.n_columns) + s + '};'
     return s
 
 #%%
@@ -1258,7 +1259,8 @@ def create_pareto_element(values, pareto=None):
                 # convert to list type
                 v = [v]
             if not isinstance(v, (list, type)):
-                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
+                    type(pareto), type(v)))
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
@@ -1268,7 +1270,8 @@ def create_pareto_element(values, pareto=None):
                 # convert to list type
                 v = [float(v)]
             if not isinstance(v, (list, type)):
-                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
+                raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
+                    type(pareto), type(v)))
 
             vec = oalib.mvalue_t_double(list(v))
             vector_pareto.push_back(vec)
@@ -1277,5 +1280,6 @@ def create_pareto_element(values, pareto=None):
             raise('')
         vector_pareto = values
     else:
-        raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (type(pareto), type(v)))
+        raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
+            type(pareto), type(v)))
     return vector_pareto

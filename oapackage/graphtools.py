@@ -162,7 +162,8 @@ def selectIsomorphismClasses(sols, verbose=1):
     mm = []
     for ii, al in enumerate(sols):
         if verbose:
-            oapackage.tprint('selectIsomorphismClasses: process aray %d/%d' % (ii, len(sols)))
+            oapackage.tprint(
+                'selectIsomorphismClasses: process aray %d/%d' % (ii, len(sols)))
         al = oapackage.makearraylink(al)
 
         tt = oapackage.reduceOAnauty(al, verbose >= 2)
@@ -178,12 +179,12 @@ def selectIsomorphismClasses(sols, verbose=1):
         qq[ii] = mm[ii].flatten()
 
     # Trick to make unique work...
-    a, indices = np.unique(np.vstack( qq), axis=0, return_inverse=True)
+    a, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)
     if 0:
         nx = qq[0].size
         dt = qq[0].dtype.descr * nx
         qqq = np.array(qq, dtype=dt)
-    
+
         a, indices = np.unique(qqq, return_inverse=True)
 
     if verbose >= 1:
