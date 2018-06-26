@@ -11,6 +11,12 @@ Welcome to oapackage's documentation!
    :caption: Contents:
 
 
+Testing
+=======
+
+.. automodule:: oapackage
+   :members:
+
 
 Indices and tables
 ==================

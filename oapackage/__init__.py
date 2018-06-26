@@ -1,22 +1,28 @@
-# Orthogonal Array package
-# pieter.eendebak@gmail.com
+""" Orthogonal Array package
+
+The Orthogonal Array package is a pacakge to generate and analyse orthogonal
+arrays, optimal designs and conference matrices. For more information see
+
+http://github.com/eendebakpt/oapackage
+
+"""
+
+import oalib
+import oapackage.Doptim
+
+oalib.setloglevel(oalib.SYSTEM)
+oalib.log_print(-oalib.SYSTEM, '')
+from oalib import *
+from . oahelper import *
+from . Doptim import *
+from . import scanf
+
+import numpy as np
 
 __all__ = ['oahelper']
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
 __doc__ = __description__ + " <" + __uri__ + ">"
-
-import oalib
-oalib.setloglevel(oalib.SYSTEM)
-oalib.log_print(-oalib.SYSTEM, '')
-from oalib import *
-# import .oahelper
-from . oahelper import *
-# import .Doptim
-from . Doptim import *
-from . import scanf
-
-import numpy as np
 
 __version__ = oalib.version()
 

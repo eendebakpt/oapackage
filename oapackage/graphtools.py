@@ -167,8 +167,6 @@ def selectIsomorphismClasses(sols, verbose=1):
 
         tt = oapackage.reduceOAnauty(al, verbose >= 2)
 
-        #pp, tt = reduceBliss(al, arrayclass, verbose >= 2)
-        #tt = graph2arrayTransformation(pp, arrayclass)
         alx = tt.apply(al)
         mm.append(np.array(alx))
         pass
