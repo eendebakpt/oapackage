@@ -56,10 +56,11 @@ author = 'Pieter Eendebak, Alan Vazquez'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
+
+#import oapackage
+#version = '{}'.format(oapackage.__version__)
 # The short X.Y version.
-import oapackage
-# The short X.Y version.
-version = '{}'.format(oapackage.__version__)
+version = ''
 # The full version, including alpha/beta/rc tags.
 release = version
 
