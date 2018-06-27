@@ -11,9 +11,9 @@ in :raw-latex:`\cite{Eendebak2009}`.
 
 The main function for array extension is the following:
 
-::
-
-    {label=C++ interface}
+.. code-block:: c++
+   :caption: C++ interface
+   
     /// extend a list of arrays
     arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
                 OAextend const &oaextendoptions);
@@ -23,15 +23,20 @@ Here \|fullad\| is the structure describing the type of arrays and
 
 A typical session could be:
 
-label=Extend an array >>> N=8; ncols=3; >>>
-arrayclass=oapackage.arraydata\_t(2, N, 2, ncols) >>>
-al=arrayclass.create\_root() >>> al.showarray() array: 0 0 0 0 0 1 0 1 1
-0 1 0 1 1 1 1 >>> >>> alist=oapackage.extend\_array(al, arrayclass) >>>
-for al in alist: ... al.showarray()
-
-array: 0 0 0 0 0 0 0 1 1 0 1 1 1 0 1 1 0 1 1 1 0 1 1 0
-
-array: 0 0 0 0 0 1 0 1 0 0 1 1 1 0 0 1 0 1 1 1 0 1 1 1
+.. code-block:: python
+   :caption: Extend an array
+   
+   >>> N=8; ncols=3;
+   >>> arrayclass=oapackage.arraydata\_t(2, N, 2, ncols)
+   >>> al=arrayclass.create\_root() 
+   >>> al.showarray()
+   array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
+   >>> 
+   >>> alist=oapackage.extend\_array(al, arrayclass)
+   >>> for al in alist:
+   ... al.showarray()
+   array: 0 0 0 0 0 0 0 1 1 0 1 1 1 0 1 1 0 1 1 1 0 1 1 0
+   array: 0 0 0 0 0 1 0 1 0 0 1 1 1 0 0 1 0 1 1 1 0 1 1 1
 
 Even-odd
 --------
@@ -45,10 +50,13 @@ An :math:`n\times k` conference design is an :math:`N\times k` matrix
 with entries 0, -1, +1 such that i) in each column the symbol 0 occurs
 exactly one time and ii) all columns are orthogonal to each other. A
 more detailed description is given
-in :raw-latex:`\cite{wiki:ConferenceMatrix}`.
+in :cite:`wiki:ConferenceMatrix`.
 
-label=Generate conference designs with 8 rows >>> import oapackage >>>
-ctype=oapackage.conference\_t(N=8, k=8) >>> >>> al =
+.. code-block:: python
+ :caption: Generate conference designs with 8 rows
+                    
+ >>> import oapackage
+ >>> ctype=oapackage.conference\_t(N=8, k=8) >>> >>> al =
 ctype.create\_root\_three() >>> al.showarray() array: 0 1 1 1 0 -1 1 1 0
 1 1 1 1 1 -1 1 -1 1 1 -1 1 1 -1 -1 >>> l4=oapackage.extend\_conference (
 [al], ctype, verbose=0) >>> l5=oapackage.extend\_conference ( l4, ctype,

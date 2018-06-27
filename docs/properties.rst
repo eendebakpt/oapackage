@@ -40,39 +40,32 @@ The :math:`D`-efficiency, :math:`A`-efficiency and :math:`E`-efficiency
 are calculated by calculating the SVD of the second order interaction
 matrix. The efficiencies can then be calculated using the eigenvalues of
 the SVD. For the definition of the :math:`D`-, :math:`A`- and
-:math:`E`-efficiency see Definition [definition:Aefficiency]. For the
+:math:`E`-efficiency see Definition :ref:`DAE`. For the
 rank of a matrix the LU decomposition of the matrix is calculated using
-the Eigen package :raw-latex:`\cite{eigenweb}`.
+the Eigen package :cite:`eigenweb`.
 
-[:math:`{{\color{darkblue}D}}`-efficiency and average VIF] Let
-:math:`{{\color{darkblue}X}}` be an :math:`N\times k` :math:`2`-factor
-array with second order model :math:`{F({{\color{darkblue}X}})}`. Then
-we define the :math:`{{\color{darkblue}D}}`-efficiency and the average
-variance inflation factor as
+.. topic:: D-efficiency and average VIF
 
-.. math::
+   Let :math:`{{\color{darkblue}X}}` be an :math:`N\times k` :math:`2`-factor
+   array with second order model :math:`{F({{\color{darkblue}X}})}`. Then we define the :math:`{{\color{darkblue}D}}`-efficiency and the average variance inflation factor as
 
-   \begin{aligned}
-   {{\color{darkblue}D}({{\color{darkblue}X}})} = \left( \det {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}\right)^{1/m} / N , 
-   \label{formula:Defficiency} \\
-   {\mathrm{VIF}({{\color{darkblue}X}})} = N \operatorname{tr}\left( \frac{1}{ {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}} \right) /m . \label{formula:VIF} \end{aligned}
+   .. math::
+       :name: DAE
+    
+       {{\color{darkblue}D}({{\color{darkblue}X}})} = \left( \det {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}\right)^{1/m} / N , 
+       \label{formula:Defficiency} \\
+       {\mathrm{VIF}({{\color{darkblue}X}})} = N \operatorname{tr}\left( \frac{1}{ {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}} \right) /m . \label{formula:VIF}
+       
+   The matrix :math:`{F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}` is called the information matrix. Let :math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the information matrix. Then the :math:`{{\color{darkblue}E}}`-efficiency of a matrix is [definition:Eefficiency] defined as
 
- [definition:Aefficiency] [definition:A value] [definition:B value] The
-matrix :math:`{F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}`
-is called the information matrix. Let
-:math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the
-information matrix. Then the :math:`{{\color{darkblue}E}}`-efficiency of
-a matrix is [definition:Eefficiency] defined as
+   .. math::
+       :name: Eefficiency
+       {{\color{darkblue}E}({{\color{darkblue}X}})} = \min_j \lambda_j .
+       \label{formula:E-efficiency}
 
-.. math::
-
-   \begin{aligned}
-   {{\color{darkblue}E}({{\color{darkblue}X}})} = \min_j \lambda_j .
-   \label{formula:E-efficiency}\end{aligned}
-
- Note that in terms of the eigenvalues we have
+Note that in terms of the eigenvalues we have
 :math:`{{\color{darkblue}D}(X)} = (\prod_j \lambda_j)^{1/m} / N` and
 :math:`{\mathrm{VIF}(X)} = N (\sum_j \lambda_j^{-1})/m`.
 
 The :math:`D_s`-effiency is the main effect robustness, see the appendix
-in :raw-latex:`\cite{Schoen2010}` for more details.
+in :cite:`Schoen2010` for more details.
