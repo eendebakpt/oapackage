@@ -10,7 +10,11 @@ Welcome to oapackage's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   data
+   properties
+   generation
+   normalform
+   
 Testing
 =======
 
@@ -24,3 +28,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+License
+=======
+
+.. include:: ../LICENSE
