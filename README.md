@@ -3,7 +3,8 @@ Orthogonal Array Package
 
 (version 2.4.4)
 
-The code allows to work with orthogonal arrays. Features include generation of complete series of orthogonal arrays, 
+The Orothognal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
+Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the page <http://pietereendebak.nl/oapackage/>.
 

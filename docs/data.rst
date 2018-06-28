@@ -13,7 +13,7 @@ Introduction
 
 Orthogonal arrays are an important tool in the design of
 experiments :cite:`Hedayat1999`. The Orthogonal Array
-packagecontains functionality the generate orthogonal arrays and to
+package contains functionality the generate orthogonal arrays and to
 analyse their properties. The algorithms and methods in this package
 have been described in :cite:`Eendebak2009`. A large
 collection of arrays can be found on the Orthogonal Array
