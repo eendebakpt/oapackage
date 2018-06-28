@@ -31,7 +31,7 @@ Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
 For for examples see the Ipython notebooks in the
-[examples](examples/).
+[examples](docs/examples/).
 
 Acknowledgements
 ------------

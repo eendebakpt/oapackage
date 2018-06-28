@@ -14,6 +14,7 @@ Welcome to oapackage's documentation!
    properties
    generation
    normalform
+   examplenotebooks
    
 Testing
 =======
