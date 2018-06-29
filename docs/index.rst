@@ -10,6 +10,7 @@ Welcome to oapackage's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   oapackage
    data
    properties
    generation
