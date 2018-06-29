@@ -29,7 +29,17 @@ Orthogonal arrays, optimal designs and conference designs are important tools in
 experiments [@Hedayat1999]. The Orthogonal Array
 package contains functionality to generate and analyse these various designs. bla bla bla
 
-For generation of orthogona arrays and conference designs we use a exhaustive generation of designs with ismorphism pruning
+
+The main functionality of the package consists of:
+
+* Generation of orthogonal arrays, optimal designs and conference designs
+* Reduction to normal form and isomophism testing of designs using Nauty
+* Calculation of statisitcal properties of designs
+
+The application of generated designs to analyse experiments is left to exising packages such as
+[R](https://www.r-project.org/) and xxx xxx.
+
+For generation of orthogonal arrays and conference designs we use a exhaustive generation of designs with ismorphism pruning
 [@Eendebak2009], [@TwoLevelEnumeration].  bla bla
 A generic interface to Nauty [@nauty] is provied to perform ismophism testing and reduction to normal form for designs with a specified isomorphism group.
 A large collection of arrays can be found on the Orthogonal Array

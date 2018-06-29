@@ -1,9 +1,9 @@
 Orthogonal Array Package
 ========================
 
-(version 2.4.4)
+(version 2.4.6)
 
-The Orothognal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
+The Orthognal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the page <http://pietereendebak.nl/oapackage/>.
@@ -31,11 +31,11 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
-For for examples see the Ipython notebooks in the
-[examples](docs/examples/).
+For for examples see the Jupyter notebooks in the
+[docs/examples](docs/examples/).
 
 Acknowledgements
-------------
+----------------
 
 If you use this code or any of the results, please cite this program as follows:
 
