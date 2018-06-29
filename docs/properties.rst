@@ -97,14 +97,15 @@ MD5 sums
 --------
 
 To check data structures on disk the packages includes functions to
-generate MD5 sums of designs. These are:
-
+generate MD5 sums of designs. 
 .. code-block:: python
  :caption: Calculate md5 sum of a design
 
  >>> import oapackage; al=oapackage.exampleArray(0)
  >>> al.md5()
  '6454c492239a8e01e3c01a864583abf2'
+
+The C++ functions are:
 
 .. code-block:: c
 
