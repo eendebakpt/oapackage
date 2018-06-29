@@ -17,13 +17,6 @@ Welcome to oapackage's documentation!
    normalform
    examplenotebooks
    
-Testing
-=======
-
-.. automodule:: oapackage
-   :members:
-
-
 Indices and tables
 ==================
 
@@ -35,3 +28,9 @@ License
 =======
 
 .. include:: ../LICENSE
+
+Testing
+=======
+
+.. automodule:: oapackage
+   :members:

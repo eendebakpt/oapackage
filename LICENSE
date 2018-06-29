@@ -31,7 +31,7 @@ For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 
 ###################################################################################
 
-This package also used code from other works:
+This package also uses code from other works:
 
 Eigen (MPL2 license, see http://eigen.tuxfamily.org/)
 InfInt (by Sercan Tutar, GPL2 license)

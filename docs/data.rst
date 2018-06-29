@@ -382,7 +382,7 @@ generate MD5 sums. These are:
     std::string md5(const std::string filename);
 
 Command line interface
-======================
+----------------------
 
 Included in the packages are several command line tools. For each tool
 help can be obtained from the command line by using the switch \|-h\|.
