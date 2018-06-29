@@ -345,42 +345,6 @@ After the header there follow \|nc\*nr [FLOAT64]\| values.
 
 
 
-GWLP and J-characteristics
---------------------------
-
-From an \|array\_link\| object we can calculate the generalized
-worldlength patterns :cite`Xu2001`, :math:`F`-values and
-:math:`J`-characteristics.
-
-.. code-block:: python
- :caption: Calculate GWLP and :math:`F`-values 
-   
- >>> al=oapackage.exampleArray(1)
- >>> al.showarray() array: 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 1 0 0 1 1 0 0 0 1 1 1 1 0 1 1 1 1 1 0 0 1 1 1 0 1 0 1 1 0 1 1 0 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1 1 1 0 1 0 1 1 1 0 0
- >>> g=al.GWLP() >>> print(’GWLP: GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
- >>> print(’F3-value: ??
- F3-value: (4, 6)
- >>> print(’F4-value: %s' % ??)
- F4-value: (1, 4)
- >>> print(’J3-characteristis:
- J3-characteristis: (8, 8, 0, 0, 0, 8, 0, 8, 0, 0)
-
-
-
-
-MD5 sums
---------
-
-To check data structures on disk the packages includes functions to
-generate MD5 sums. These are:
-
-::
-
-    /// calculate md5 sum of a data block in memory
-    std::string md5(void *data, int numbytes);
-    /// calculate md5 sum of a file on disk
-    std::string md5(const std::string filename);
-
 Command line interface
 ----------------------
 
