@@ -49,7 +49,7 @@ calculate statistical properties. For example to calculate the
 Interfaces
 ----------
 
-The Orthogonal Array packagehas several interfaces. First of all there
+The Orthogonal Array package has several interfaces. First of all there
 are command line tools for manipulating arrays and generating. All
 functions of the package can be used from either C++ or Python. For a
 restricted set of functionality also Matlab or R can be used.
