@@ -31,8 +31,9 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
-For for examples see the Jupyter notebooks in the
-[docs/examples](docs/examples/).
+For examples see the Jupyter notebooks in the
+[docs/examples](docs/examples/). Documentation is available
+at [https://readthedocs.org/projects/oapackage/](https://readthedocs.org/projects/oapackage/).
 
 Acknowledgements
 ----------------
@@ -77,13 +78,10 @@ The program uses a `cmake` build system. From the commandline type::
 > make install
 
 
-Data format
------------
+Testing
+-------
 
-Arrays are stored in plain files or binary files. For text files the first line contains the number of columns, the number of rows and the number of arrays (or -1 if the number of arrays is not specified). Then for each array a single line with the index of the array, followed by N lines containing the array. The binary format is suitable for storing a very high numbers of arrays and supports random access. Also see the file `FORMAT.txt`.
-
-To examine the result files one can use the oacat tool from the package, or the standard UNIX utilities cat, less, head and tail.
-
+To perform tests run `pytest`.
 
 
 
