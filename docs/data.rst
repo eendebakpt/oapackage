@@ -129,7 +129,7 @@ class. For example:
 
    >>> import oapackage
    >>> al=oapackage.exampleArray()
-   >>> af=oapackage.arrayfile\_t(’test.oa’, al.n\_rows, al.n\_columns)
+   >>> af=oapackage.arrayfile\_t('test.oa', al.n\_rows, al.n\_columns)
    >>> af.append\_array(al)
    >>> print(af)
    file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
@@ -138,7 +138,7 @@ class. For example:
 The arrays can be written in text or binary format. For more details on
 the file format see Section :ref:`File formats`. The header of the
 \|arrayfile\_t\| class is listed below.
-
+ 
 ::
 
     struct arrayfile_t
@@ -357,6 +357,7 @@ These are:
     the contents of the files. For example:
 
     .. code-block:: console
+    
         $ oainfo result-8.2-2-2-2.oa
         Orthogonal Array package 1.8.7
         oainfo: reading 1 file(s)

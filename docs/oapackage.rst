@@ -5,15 +5,6 @@ The Orthogonal Array package
 :Author: P.T. Eendebak [1]_
 :Date:   July, 2015
 
-.. role:: math(raw)
-   :format: html latex
-..
-
-.. role:: raw-latex(raw)
-   :format: latex
-..
-
-|image|
 
 Introduction
 ============
@@ -53,8 +44,26 @@ are command line tools for manipulating arrays and generating. All
 functions of the package can be used from either C++ or Python. For a
 restricted set of functionality also Matlab or R can be used.
 
-Compilation and installation
-----------------------------
+License
+-------
+
+The code is available under a BSD style license, see the file LICENSE
+for details. If you use this code or any of the results, please cite
+this program as follows:
+
+*Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays*,
+P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages
+123-140, 2010.
+
+Acknowledgements
+----------------
+
+The code and ideas for this package have been contributed by Eric
+Schoen, Ruben Snepvangers, Vincent Brouerius van Nidek, Alan
+Vazquez-Alcocer and Pieter Thijs Eendebak.
+
+Installation
+============
 
 The program has been tested using Linux and Windows (XP, Windows 7 and
 Windows 8). The Python interface is available from the Python Package
@@ -76,8 +85,8 @@ the Python interface using Linux use
 
 > python setup.py build > python setup.py install –user
 
-The Python interface requires Numpy :cite:`NumPy`,
-Matplotlib :cite:`Matplotlib` and Swig. The code has been
+The Python interface requires Numpy :cite:`NumPy`,
+Matplotlib :cite:`Matplotlib` and Swig. The code has been
 tested with Python 2.7, 3.5 and 3.6.
 
 Using Windows start Cygwin or the Visual Studio command prompt. From the
@@ -87,21 +96,5 @@ package source directory run:
 
 This creates a binary installer package.
 
-License
--------
 
-The code is available under a BSD style license, see the file LICENSE
-for details. If you use this code or any of the results, please cite
-this program as follows:
-
-*Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays*,
-P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages
-123-140, 2010.
-
-Acknowledgements
-----------------
-
-The code and ideas for this package have been contributed by Eric
-Schoen, Ruben Snepvangers, Vincent Brouerius van Nidek, Alan
-Vazquez-Alcocer and Pieter Thijs Eendebak.
 

@@ -18,6 +18,7 @@ The Orthogonal Array package contains functionality to generate and analyse orth
    generation
    normalform
    examplenotebooks
+   references
    
 Indices and tables
 ==================
