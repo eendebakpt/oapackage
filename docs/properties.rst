@@ -46,21 +46,21 @@ the Eigen package :cite:`eigenweb`.
 
 .. topic:: D-efficiency and average VIF
 
-   Let :math:`{{\color{darkblue}X}}` be an :math:`N\times k` :math:`2`-factor
-   array with second order model :math:`{F({{\color{darkblue}X}})}`. Then we define the :math:`{{\color{darkblue}D}}`-efficiency and the average variance inflation factor as
+   Let :math:`X` be an :math:`N\times k` :math:`2`-factor
+   array with second order model :math:`{F(X)}`. Then we define the :math:`{{\color{darkblue}D}}`-efficiency and the average variance inflation factor as
 
    .. math::
        :name: DAE
     
-       {{\color{darkblue}D}({{\color{darkblue}X}})} = \left( \det {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}\right)^{1/m} / N , 
+       {{\color{darkblue}D}(X)} = \left( \det {F(X)}^T {F(X)}\right)^{1/m} / N , 
        \label{formula:Defficiency} \\
-       {\mathrm{VIF}({{\color{darkblue}X}})} = N \operatorname{tr}\left( \frac{1}{ {F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}} \right) /m . \label{formula:VIF}
+       {\mathrm{VIF}(X)} = N \operatorname{tr}\left( \frac{1}{ {F(X)}^T {F(X)}} \right) /m . \label{formula:VIF}
        
-   The matrix :math:`{F({{\color{darkblue}X}})}^T {F({{\color{darkblue}X}})}` is called the information matrix. Let :math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the information matrix. Then the :math:`{{\color{darkblue}E}}`-efficiency of a matrix is [definition:Eefficiency] defined as
+   The matrix :math:`{F(X)}^T {F(X)}` is called the information matrix. Let :math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the information matrix. Then the :math:`{{\color{darkblue}E}}`-efficiency of a matrix is [definition:Eefficiency] defined as
 
    .. math::
        :name: Eefficiency
-       {{\color{darkblue}E}({{\color{darkblue}X}})} = \min_j \lambda_j .
+       {{\color{darkblue}E}(X)} = \min_j \lambda_j .
        \label{formula:E-efficiency}
 
 Note that in terms of the eigenvalues we have
@@ -84,12 +84,12 @@ worldlength patterns :cite`Xu2001`, :math:`F`-values and
  >>> al=oapackage.exampleArray(1)
  >>> al.showarray() array: 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 1 0 0 1 1 0 0 0 1 1 1 1 0 1 1 1 1 1 0 0 1 1 1 0 1 0 1 1 0 1 1 0 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1 1 1 0 1 0 1 1 1 0 0
  >>> g=al.GWLP() >>> print(’GWLP: GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
- >>> print(’F3-value: ??
+ >>> print('F3-value: %s' % str(al.Fvalues(3)))
  F3-value: (4, 6)
- >>> print(’F4-value: %s' % ??)
+ >>> print('F4-value: %s' % str(al.Fvalues(4)))
  F4-value: (1, 4)
- >>> print(’J3-characteristis:
- J3-characteristis: (8, 8, 0, 0, 0, 8, 0, 8, 0, 0)
+ >>> print('J3-characteristics: %s’ % str(al.Jcharacteristics(3)))
+ J3-characteristics: (8, 8, 0, 0, 0, 8, 0, 8, 0, 0)
 
 
 
@@ -98,6 +98,7 @@ MD5 sums
 
 To check data structures on disk the packages includes functions to
 generate MD5 sums of designs. 
+
 .. code-block:: python
  :caption: Calculate md5 sum of a design
 

@@ -47,14 +47,9 @@ The structure containing an orthogonal array is called the
 \|array\_link\| structure. It consists of a specified number of rows and
 columns, the data (integer values) and an index.
 
-[def:array\_link]
-
 ::
 
     struct array_link
-
-::
-
     {
         //! Number of rows in array
         rowindex_t n_rows;
