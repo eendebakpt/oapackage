@@ -136,8 +136,7 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 	bool abort = false;
 
 
-	DoptimReturn rr = Doptimize(arrayclass, nrestarts, niter, alpha, verbose, method, maxtime, nabort );
-	//std::vector<std::vector<double> > dds = rr.first; 	arraylist_t AA = rr.second;
+	DoptimReturn rr = Doptimize(arrayclass, nrestarts, alpha, verbose, method, niter, maxtime, nabort );
 	std::vector<std::vector<double> > dds = rr.dds; 	arraylist_t AA = rr.designs;
 	
 	
@@ -147,12 +146,9 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 
 	nout = std::min ( nout, ( int ) AA.size() );
 	// select best arrays
-
-
 		if ( verbose>=1 && nout>0) {
 		mexPrintf ( "Doptim: generated design with D-efficiency %f\n",  AA[0].Defficiency());
 	}
-
 
 	// sort according to values
 	std::vector<double> sval ( AA.size() );
@@ -196,5 +192,5 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 	return;
 }
 
-#include "mexstandalone.h"
+//#include "mexstandalone.h"
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

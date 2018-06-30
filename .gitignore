@@ -77,3 +77,17 @@ _oalib.cpython-35m-x86_64-linux-gnu.so
 .coverage
 workshop
 ClusterCommands
+Deff.o
+Doptim.o
+InfInt.o
+arrayproperties.o
+arraytools.o
+pareto.o
+md5.o
+mathtools.o
+oaoptions.o
+strength.o
+_build
+anyoption.o
+.cache
+untitled*.py

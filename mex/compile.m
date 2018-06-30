@@ -12,7 +12,7 @@ lst =cat(1,lst(:), 'src/lmc.cpp', 'src/extend.cpp', 'src/nonroot.cpp');
 
 fprintf('  compiling Doptim.cpp with %d source files\n', length(lst));
 
-args={'-Isrc', '-I.'};
+args={'-Isrc', '-Isrc/nauty', '-I.'};
 
 if isOctave
     args{end+1}='-DNOOPENMP';

@@ -4,7 +4,7 @@
 setup.py file for OApackage
 """
 
-#%% Load packages
+# %% Load packages
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 from setuptools import Extension
@@ -15,6 +15,8 @@ from os import path
 import os
 import sys
 import platform
+import subprocess
+import re
 
 try:
     import numpy as np
@@ -27,7 +29,7 @@ npinclude = np.get_include()
 
 here = path.abspath(path.dirname(__file__))
 
-#%%
+# %%
 
 
 def checkZlib(verbose=0):
@@ -58,8 +60,6 @@ def checkZlib(verbose=0):
         tmp_dir = tempfile.mkdtemp(prefix='helloztest_')
         bin_file_name = os.path.join(tmp_dir, 'helloz')
         file_name = bin_file_name + '.c'
-
-        #print('tmp_dir: %s'  % tmp_dir)
 
         with open(file_name, 'w') as fp:
             fp.write(c_code)
@@ -97,9 +97,6 @@ def checkZlib(verbose=0):
 
 #%%
 
-import re
-
-
 def get_version_info(verbose=0):
     """ Extract version information from source code """
 
@@ -120,10 +117,6 @@ def get_version_info(verbose=0):
     return FULLVERSION, GIT_REVISION
 
 # print(get_version_info())
-
-
-import subprocess
-import re
 
 try:
     from distutils.version import LooseVersion
@@ -201,12 +194,7 @@ class OATest(TestCommand):
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.unittest(verbose=1)
-        if 0:
-            ii = 0
-            al = oapackage.exampleArray(ii, 0)
-            Deff = al.Defficiency()
-            print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
+        oapackage.tests.unittest(verbose=1)
         errno = 0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -338,6 +326,7 @@ from setuptools.command.install import install
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 class CustomBuild(build):
+
     def run(self):
         self.run_command('build_ext')
         build.run(self)
@@ -346,6 +335,7 @@ class CustomBuild(build):
 
 
 class CustomInstall(install):
+
     def run(self):
         self.run_command('build_ext')
         install.run(self)
