@@ -132,16 +132,13 @@ import sys
 import numpy as np
 
 def reduceGraphNauty(G, colors, verbose=1):
-  """ Reduce vertex transformation reducing array to normal form
+  """ Return vertex transformation reducing array to normal form
   
-  The reduction is calculated using `Nauty <http://pallini.di.uniroma1.it/>`_
+  The reduction is calculated using `Nauty <http://users.cecs.anu.edu.au/~bdm/nauty/>`_
 
-  Arguments
-  ---------
-      G : Numpy array
-	the graph in incidence matrix form
-      colors : list
-	an optional vertex coloring
+  Args:
+      G (numpy array) :	the graph in incidence matrix form
+      colors (list or None): an optional vertex coloring
   """
   
   al=array_link()

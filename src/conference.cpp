@@ -444,7 +444,7 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
      G.setconstant ( 0 );
 
      if ( verbose )
-          myprintf ( "reduceConferenceTransformation: %d, %d\n", nr, nc );
+          myprintf ( "reduceConferenceTransformation: reduce design with %d rows, %d columns\n", nr, nc );
 
      std::vector<int> colors ( 2* ( nr+nc ) );
 

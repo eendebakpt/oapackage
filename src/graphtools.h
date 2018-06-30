@@ -38,7 +38,7 @@ namespace nauty
 #include "nauty.h"
 /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 
-/** reduce a colored graph to Nauty minimal form
+/** Reduce a colored graph to Nauty minimal form
  *
  * The transformation returned is from the normal form to the specified graph.
  *
