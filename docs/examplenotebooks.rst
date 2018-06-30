@@ -10,4 +10,4 @@ The example Jupyter notebooks can be found on github https://github.com/eendebak
     :glob:
 
     examples/example_*
-    conference_design*ipynb
+    conference_design*

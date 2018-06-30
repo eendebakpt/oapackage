@@ -356,11 +356,12 @@ These are:
     This program reads Orthogonal Array packagedata files and reports
     the contents of the files. For example:
 
-     eendebakpt:math:` oainfo result-8.2-2-2-2.oa
-    Orthogonal Array package 1.8.7
-    oainfo: reading 1 file(s)
-    file result-8.2-2-2.oa: 8 rows, 3 columns, 2 arrays, mode text, nbits 0
-    ~eendebakpt`
+    .. code-block:: console
+        $ oainfo result-8.2-2-2-2.oa
+        Orthogonal Array package 1.8.7
+        oainfo: reading 1 file(s)
+        file result-8.2-2-2.oa: 8 rows, 3 columns, 2 arrays, mode text, nbits 0
+        $
 
 \|oacat\|
     Show the contents of a file with orthogonal arrays for a data file.
