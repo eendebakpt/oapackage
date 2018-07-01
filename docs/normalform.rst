@@ -35,7 +35,7 @@ Reduction to delete-one-factor project form
 -------------------------------------------
 
 
-The canonical form is described in [A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections](https://econpapers.repec.org/paper/antwpaper/2014007.htm)
+The canonical form is described in `A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections <https://econpapers.repec.org/paper/antwpaper/2014007.htm>`_.
 An example with the methods is `Example code for delete-one-factor projections`_
 
 
