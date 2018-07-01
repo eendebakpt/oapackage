@@ -7,7 +7,7 @@ tags:
   - design of experiments
 authors:
   - name: Pieter Thijs Eendebak
-    orcid: 0000-0003-0872-7098
+    orcid: 0000-0001-7018-1124
     affiliation: "1, 2"
   - name: Alan Vazquez
     orcid: 0000-0000-0000-0000
