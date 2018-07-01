@@ -33,7 +33,7 @@ Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
 For examples see the Jupyter notebooks in the
 [docs/examples](docs/examples/). Documentation is available
-at [https://readthedocs.org/projects/oapackage/](https://readthedocs.org/projects/oapackage/).
+at [https://oapackage.readthedocs.io/en/latest/](https://oapackage.readthedocs.io/en/latest/).
 
 Acknowledgements
 ----------------
