@@ -167,7 +167,9 @@ texinfo_documents = [
 
 def run_apidoc(_):
     ignore_paths = [
-      'oapackage/markup.py'
+      'oapackage/markup.py',
+      'get_artifacts.py',
+      'untitled*.py'
     ]
 
     argv = [
@@ -176,14 +178,14 @@ def run_apidoc(_):
         "-e",
         "-M",
         "-o", ".",
-        ".."
+        "../oapackage"
     ] + ignore_paths
 
     try:
         # Sphinx 1.7+
         from sphinx.ext import apidoc
         apidoc.main(argv)
-    except ImportError:
+    except ImportError as ex:
         # Sphinx 1.6 (and earlier)
         from sphinx import apidoc
         argv.insert(0, apidoc.__file__)
