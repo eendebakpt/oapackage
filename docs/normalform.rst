@@ -31,16 +31,22 @@ Reduction to LMC normal form
     /// reduce an array to canonical form using delete-1-factor ordering
     array_link reduceDOPform(const array_link &al);
 
+Reduction to delete-one-factor project form
+-------------------------------------------
+
+
+
 Reduction using graph isomorphisms
 ----------------------------------
 
- To reduce a general graph to Nauty
+To reduce a general graph to Nauty
 canonical form one can use ``reduceNauty``. For orthogonal arrays we can
 encode the array structure as a graph. The reduction can then be done
 with ``reduceOAnauty``.
 
 .. code-block:: python
    :caption: Reduce a design to normal form using Nauty
+   
    >>> al = oapackage.exampleArray(0).randomperm()
    >>> al.showarray()
    array: 0 1 1 1 1 0 0 0 0 0 1 1 1 0 0 1

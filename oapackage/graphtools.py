@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Module to with with designs and graphs
+""" Module to work with designs and graphs
 
 @author: eendebakpt
 """

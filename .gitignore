@@ -93,3 +93,7 @@ anyoption.o
 untitled*.py
 modules.rst
 oapackage.rst
+oapackage.*.rst
+setup.rst
+oalib.rst
+untitled0.rst

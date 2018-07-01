@@ -354,7 +354,25 @@ mvalueVector = vector_mvalue_t_long
 #%template(mvalueVector) std::vector<mvalue_t<long> >;
 %}
 
-//%template(GWLPvalueVector) std::vector< mvalue_t<double> >;
+%extend mvalue_t<double> {
+%insert("python") %{
+
+def __getattr__(self, attr):
+    if attr=='__array_interface__':
+      a = dict()
+      a['version']=3
+      a['shape']=(x.size(), )
+      sizeofdata=_oalib.sizeof_array_t()
+      a['typestr']='<f%d' % sizeof(double)
+      a['data']=np.array(self.v)
+      #a['strides']=??
+      return a
+    else:
+      raise AttributeError("%r object has no attribute %r" %
+                         (self.__class__, attr))
+                         
+%}
+}
 
 %template(cpermVector) std::vector< cperm >;
 

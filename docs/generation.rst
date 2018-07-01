@@ -43,7 +43,7 @@ A typical session could be:
 Even-odd
 --------
 
-The even-odd arrays are a special class of orthognal arrays with at least one of the odd $J$-characteristics unequal to zero.
+The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
 More information on this class of designs will be written later.
 
 Conference designs
@@ -87,7 +87,7 @@ and 7 factors is shown below.
  >>> print('We generate optimal designs with: %s' % arrayclass)
  We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s 2,2,2,2,2,2,2, order 0.
  >>> alpha=[1,2,0] 
- >>> method=oapackage.DOPTIM\_UPDATE 
+ >>> method=oapackage.DOPTIM_UPDATE 
  >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True)
  Doptim: optimization class 40.2-2-2-2-2-2-2
  Doptimize: iteration 0/40
