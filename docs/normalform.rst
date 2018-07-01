@@ -31,8 +31,8 @@ Reduction to LMC normal form
     /// reduce an array to canonical form using delete-1-factor ordering
     array_link reduceDOPform(const array_link &al);
 
-Reduction to delete-one-factor project form
--------------------------------------------
+Reduction to delete-one-factor projection form
+----------------------------------------------
 
 
 The canonical form is described in `A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections <https://econpapers.repec.org/paper/antwpaper/2014007.htm>`_.

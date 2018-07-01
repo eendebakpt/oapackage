@@ -166,16 +166,19 @@ texinfo_documents = [
 #%%
 
 def run_apidoc(_):
+    import os
+    print('run_apidoc: current dir is %s'  % os.getcwd())
+    
     ignore_paths = [
       'oapackage/markup.py',
       'get_artifacts.py',
-      'untitled*.py'
+      'untitled*.py', 'setup.py','doxy2swig.py',
     ]
 
     argv = [
         "-f",
-        "-T",
-        "-e",
+#        "-T",
+#        "-e",
         "-M",
         "-o", ".",
         "../oapackage"
