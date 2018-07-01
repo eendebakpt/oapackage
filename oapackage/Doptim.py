@@ -5,7 +5,6 @@ For more information see: https://doi.org/10.1080/00401706.2016.1142903
 
 Pieter Eendebak <pieter.eendebak@gmail.com>
 
-@author: eendebakpt
 """
 
 from __future__ import print_function
@@ -29,7 +28,6 @@ from oapackage.markup import oneliner as e
 
 def array2Dtable(sols, verbose=1, titlestr=None):
     """ Generate HTML table with information about for a list of designs """
-    # page.p()
     na = len(sols)
     page = markup.page()
     page.table(style=' border-collapse: collapse;')

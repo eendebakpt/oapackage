@@ -20,8 +20,8 @@ The main function for array extension is the following:
     arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
                 OAextend const &oaextendoptions);
 
-Here \|fullad\| is the structure describing the type of arrays and
-\|oaxextendoptions\| contains various options for the algorithm.
+Here `fullad` is the structure describing the type of arrays and
+`oaxextendoptions` contains various options for the algorithm.
 
 A typical session could be:
 
@@ -100,7 +100,7 @@ The parameters of the function are documented in the code.
 To calculate properties of designs we can use the following functions.
 For :math:`D`-efficiencies we can use
 
-::
+.. code-block:: c++
 
     std::vector<double> array_link::Defficiencies ( int verbose ) const;
 
@@ -110,7 +110,7 @@ For details see :cite:`EendebakSO`.
 The projective estimation capacity (PEC) sequence
 from :cite:`loeppky2004ranking` can be calculated with:
 
-::
+.. code-block:: c++
 
     std::vector<double> PECsequence(const array_link &al, int verbose=1);
 

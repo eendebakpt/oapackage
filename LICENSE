@@ -1,4 +1,4 @@
-Copyright (c) 2011-2015, Pieter Eendebak <pieter.eendebak@gmail.com>
+Copyright (c) 2011-2018, Pieter Eendebak <pieter.eendebak@gmail.com>
 Copyright (c) 2009, TNO Science & Industry
 
 Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,9 @@ For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 
 This package also uses code from other works:
 
-Eigen (MPL2 license, see http://eigen.tuxfamily.org/)
-InfInt (by Sercan Tutar, GPL2 license)
-bitarray (by Isaac Turner, MIT license)
-md5.cpp (by RSA Data Security)
-msstdint.h (by Alexander Chemeris, see https://code.google.com/p/msinttypes/)
+* Eigen (see http://eigen.tuxfamily.org/, MPL2 license)
+* InfInt (by Sercan Tutar, GPL2 license)
+* bitarray (by Isaac Turner, MIT license)
+* md5.cpp (by RSA Data Security)
+* msstdint.h (by Alexander Chemeris, see https://code.google.com/p/msinttypes/)
+

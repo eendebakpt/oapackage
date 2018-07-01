@@ -4,7 +4,7 @@ Properties of designs
 Statistical properties of an array
 ----------------------------------
 
-Most properties of an array can be calculated using the \|array\_link\|
+Most properties of an array can be calculated using the :py:class:`~oapackage.oalib.array_link`
 object. The interface is listed below.
 
 ::
@@ -45,26 +45,26 @@ rank of a matrix the LU decomposition of the matrix is calculated using
 the Eigen package :cite:`eigenweb`.
 
 .. topic:: D-efficiency and average VIF
+   :name: DAE
 
    Let :math:`X` be an :math:`N\times k` :math:`2`-factor
-   array with second order model :math:`{F(X)}`. Then we define the :math:`{{\color{darkblue}D}}`-efficiency and the average variance inflation factor as
+   array with second order model :math:`{F(X)}`. Then we define the :math:`{D}`-efficiency and the average variance inflation factor as
 
    .. math::
-       :name: DAE
     
-       {{\color{darkblue}D}(X)} = \left( \det {F(X)}^T {F(X)}\right)^{1/m} / N , 
+       {D(X)} = \left( \det {F(X)}^T {F(X)}\right)^{1/m} / N , 
        \label{formula:Defficiency} \\
        {\mathrm{VIF}(X)} = N \operatorname{tr}\left( \frac{1}{ {F(X)}^T {F(X)}} \right) /m . \label{formula:VIF}
        
-   The matrix :math:`{F(X)}^T {F(X)}` is called the information matrix. Let :math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the information matrix. Then the :math:`{{\color{darkblue}E}}`-efficiency of a matrix is [definition:Eefficiency] defined as
+   The matrix :math:`{F(X)}^T {F(X)}` is called the information matrix. Let :math:`\lambda_1, \ldots, \lambda_m` be the eigenvalues of the information matrix. Then the :math:`{E}`-efficiency of a matrix is defined as
 
    .. math::
-       :name: Eefficiency
-       {{\color{darkblue}E}(X)} = \min_j \lambda_j .
+       
+       {E(X)} = \min_j \lambda_j .
        \label{formula:E-efficiency}
 
 Note that in terms of the eigenvalues we have
-:math:`{{\color{darkblue}D}(X)} = (\prod_j \lambda_j)^{1/m} / N` and
+:math:`{D(X)} = (\prod_j \lambda_j)^{1/m} / N` and
 :math:`{\mathrm{VIF}(X)} = N (\sum_j \lambda_j^{-1})/m`.
 
 The :math:`D_s`-effiency is the main effect robustness, see the appendix
@@ -74,8 +74,8 @@ in :cite:`Schoen2010` for more details.
 GWLP and J-characteristics
 --------------------------
 
-From an \|array\_link\| object we can calculate the generalized
-worldlength patterns :cite`Xu2001`, :math:`F`-values and
+From an :py:meth:`~oapackage.oalib.array_link` object we can calculate the generalized
+worldlength patterns :cite:`Xu2001`, :math:`F`-values and
 :math:`J`-characteristics.
 
 .. code-block:: python
@@ -83,7 +83,9 @@ worldlength patterns :cite`Xu2001`, :math:`F`-values and
    
  >>> al=oapackage.exampleArray(1)
  >>> al.showarray() array: 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 1 0 0 1 1 0 0 0 1 1 1 1 0 1 1 1 1 1 0 0 1 1 1 0 1 0 1 1 0 1 1 0 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1 1 1 0 1 0 1 1 1 0 0
- >>> g=al.GWLP() >>> print(’GWLP: GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
+ >>> g=al.GWLP()
+ >>> print('print(’GWLP: %s’% str(g) )
+ GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
  >>> print('F3-value: %s' % str(al.Fvalues(3)))
  F3-value: (4, 6)
  >>> print('F4-value: %s' % str(al.Fvalues(4)))
