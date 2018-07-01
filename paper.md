@@ -21,7 +21,7 @@ affiliations:
    index: 3
 date: 1 July 2018
 bibliography: paper.bib
-----
+---
 
 # Summary
 
