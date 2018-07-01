@@ -333,6 +333,26 @@ import numpy
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
 %template(pairGraphColors) std::pair< array_link  , std::vector<int>  >;
 
+%extend mvalue_t<double> {
+%insert("python") %{
+
+def __getattr__(self, attr):
+    if attr=='__array_interface__':
+      a = dict()
+      a['version']=3
+      a['shape']=(x.size(), )
+      sizeofdata=_oalib.sizeof_array_t()
+      a['typestr']='<f%d' % sizeof(double)
+      a['data']=np.array(self.v)
+      #a['strides']=??
+      return a
+    else:
+      raise AttributeError("%r object has no attribute %r" %
+                         (self.__class__, attr))
+                         
+%}
+}
+
 %template(mvalue_t_long) mvalue_t<long>;
 %template(mvalue_t_double) mvalue_t<double>;
 %template(ParetoLongLong) Pareto<long,long>;
@@ -354,25 +374,7 @@ mvalueVector = vector_mvalue_t_long
 #%template(mvalueVector) std::vector<mvalue_t<long> >;
 %}
 
-%extend mvalue_t<double> {
-%insert("python") %{
 
-def __getattr__(self, attr):
-    if attr=='__array_interface__':
-      a = dict()
-      a['version']=3
-      a['shape']=(x.size(), )
-      sizeofdata=_oalib.sizeof_array_t()
-      a['typestr']='<f%d' % sizeof(double)
-      a['data']=np.array(self.v)
-      #a['strides']=??
-      return a
-    else:
-      raise AttributeError("%r object has no attribute %r" %
-                         (self.__class__, attr))
-                         
-%}
-}
 
 %template(cpermVector) std::vector< cperm >;
 
