@@ -1,5 +1,4 @@
 ---
-title: 'OApackage: A Python package for generation and analysis of orthogonal arrays and conference designs'
 tags:
   - Python
   - ortogonal arrays
