@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-
-Collection of helper functions for OA package
+""" Collection of helper functions for OA package
 
 Pieter Eendebak <pieter.eendebak@gmail.com>
 
 @author: eendebakpt
 """
 
-#%% Load packages
+# %% Load packages
 from __future__ import print_function
 
 import oapackage
@@ -86,8 +84,6 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
 
     w = ww[2] / geometry[0]
     h = ww[3] / geometry[1]
-
-    # wm=plt.get_current_fig_manager()
 
     if verbose:
         print('tilefigs: ww %s, w %d h %d' % (str(ww), w, h))
@@ -200,10 +196,6 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True, tightlayout=T
         for t in texts:
             t.set_color(almost_black)
 
-        # ttx=legend.get_texts()
-        #[v.set_color(almost_black) for v in ttx]
-
-    # fig.tight_layout(pad=0.1)
     if not fig is None and tightlayout:
         fig.tight_layout(pad=1.0)
 
@@ -633,10 +625,10 @@ def checkFilesOA(lst, cache=1, verbose=0):
     """ Check whether a file or list of files exists
 
         Args:
-            lst (list)
+            lst (list): list of files
             cache (int): 0 (always return False), 1 (check), -1 (always return True)
+        
         For array files also the .gz extension is checked
-
         Returns False if one or more of the files do not exist
         Returns True if all files exist
     """
@@ -661,11 +653,15 @@ def checkFilesOA(lst, cache=1, verbose=0):
 
 #%%
 
-# import gc
-
-
 def randomizearrayfile(afile, afileout, verbose=1):
-    """ Randomize a file with arrays """
+    """ Randomize a file with orthogonal arrays
+    
+    Each array is transformed with a random transformation
+    
+    Args:
+        afile (str): input file
+        afileout (str): output file
+    """
     lst = oapackage.readarrayfile(afile)
     rlst = oapackage.oalib.arraylist_t()
     for ii, al in enumerate(lst):
@@ -690,18 +686,16 @@ def nArrayFile(afile, verbose=1):
 def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
     """ Select arrays in a file by indices
 
-    Input:
-        - infile (string)
-        - outfile (string)
-        - inx (list of indices)
+    Args:
+        infile (str): file with designs
+        outfile (str): output  file with designs
+        inx (list of indices)
     Output:
         - None
 
     """
     if not checkFiles(outfile, cache=cache):
         gidxint = oalib.intVector([int(x) for x in idx])
-        # print('  xx select: %s' % str(gidxint))
-        # print('  xx select: %s' % str([v for v in gidxint]))
         sols = oalib.arraylist_t()
         oalib.selectArrays(infile, gidxint, sols, 0)
         af = oalib.arrayfile_t(infile, 1)
@@ -764,13 +758,11 @@ def parseProcessingTime(logfile, verbose=0):
                 tstart = dateutil.parser.parse(line[13:])
                 if verbose >= 2:
                     print('parseProcessingTime: tstart: %s' % tstart)
-            # else:
-            #    print('invalid line? %s' % line)
-            if line.startswith('#time end:'):
+            elif line.startswith('#time end:'):
                 tend = dateutil.parser.parse(line[10:])
                 if verbose >= 2:
                     print('parseProcessingTime: tend: %s' % tend)
-            if line.startswith('#time total:'):
+            elif line.startswith('#time total:'):
                 dtr = (line[13:])
                 dtr = float(dtr[:-5])
                 if verbose >= 2:
@@ -787,7 +779,7 @@ def parseProcessingTime(logfile, verbose=0):
             print('error processing log %s' % logfile)
             traceback.print_exc(file=sys.stdout)
         dtt = -1
-    if not dtr is None:
+    if dtr is not None:
         if abs(dtr - dtt) > 10:
             print(
                 'parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]' % (dtt, dtr))

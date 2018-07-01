@@ -12,11 +12,11 @@ The Orthogonal Array package contains functionality to generate and analyse orth
    :maxdepth: 2
    :caption: Contents:
 
-   oapackage
+   oapackage-intro
    data
-   properties
    generation
    normalform
+   properties
    examplenotebooks
    references
    

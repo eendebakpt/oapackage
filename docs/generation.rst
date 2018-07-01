@@ -1,6 +1,8 @@
 Generation of designs
 =====================
 
+The package can be used to generate several classes of designs. Generated
+designs are available on the website http://www.pietereendebak.nl/oapackage/index.html
 
 Generation of orthogonal arrays
 -------------------------------
@@ -41,7 +43,8 @@ A typical session could be:
 Even-odd
 --------
 
-??
+The even-odd arrays are a special class of orthognal arrays with at least one of the odd $J$-characteristics unequal to zero.
+More information on this class of designs will be written later.
 
 Conference designs
 ------------------
@@ -69,7 +72,7 @@ in :cite:`wiki:ConferenceMatrix`.
 Calculation of D-optimal designs
 --------------------------------
 
-D-optimal designs can be calculated with the function \|Doptimize\|.
+D-optimal designs can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
 This function uses a coordinate exchange algorithm to generate designs
 with good properties for the :math:`D`-efficiency.
 

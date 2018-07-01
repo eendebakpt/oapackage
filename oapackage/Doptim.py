@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
+""" Module to generate D-optimal designs
 
-Collection of helper functions for OA package
+For more information see: https://doi.org/10.1080/00401706.2016.1142903
 
 Pieter Eendebak <pieter.eendebak@gmail.com>
 
@@ -18,8 +18,6 @@ try:
     import matplotlib
     import matplotlib.pyplot as plt
 except:
-    # print('Doptim: matplotlib cannot be found, not all functionality is
-    # available')
     pass
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
@@ -56,7 +54,7 @@ def array2Dtable(sols, verbose=1, titlestr=None):
     # page.p.close()
     return page
 
-#%%
+# %%
 
 try:
     import brewer2mpl
@@ -102,7 +100,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
-    # print(area)
     for jj, ii in enumerate(idx):
         gidx = (colors == ii).nonzero()[0]
         gp = np.intersect1d(paretoidx, gidx)
@@ -135,33 +132,29 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
         oahelper.setWindowRectangle(10, 10, 860, 600)
     except Exception as e:
         print('generateDscatter: setWindowRectangle failed')
-        # print(e)
         pass
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
-    if not nofig:
+    if not nofig:        
         plt.show()
-    # time.sleep(0.01)
     ax.grid(b=True, which='both', color='0.85', linestyle='-')
     ax.set_axisbelow(True)
 
     if not nofig:
         plt.draw()
-
+        plt.pause(1e-3)
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
 #%%
 
 
 def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
-
-    #%% Prepare data
+    """ Helper function to generate web page with D-optimal design results """
     if verbose:
         print('generateDpage: dds %s' % str(dds.shape))
 
     pp = oahelper.createPareto(dds)
-    #paretoidx = np.array(pp.allindices())
 
     narrays = dds.shape[0]
     npareto = pp.number()
@@ -186,8 +179,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     istrlnk = markup.oneliner.a('paretoarrays.oa', href=urlprefix + pfile0)
 
-    # lbls= ['Optimization of $D+.5 D_s$', 'Optimization of $D+  0.5 D_s$',
-    # 'Optimization of $D+3*Ds$', 'Optimization of $D+3*D_s$']
     if lbls is None:
         lbls = ['Optimization of $D$']
     hh = generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
@@ -286,15 +277,9 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     return outfile
 
-# generateDpage(doptimdir, arrayclass, dds, sols, optimfunc=[1,0,0],
-# makeheader=True)
-
 #%%
 
-# TODO: implement fast update of xf
-
-
-def optimDeffhelper(classdata):
+def _optimDeffhelper(classdata):
     """ Helper function that is suitable for the multi-processing framework """
 
     N = classdata[0]
@@ -324,7 +309,17 @@ def calcScore(dds, optimfunc):
 
 
 def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1, 0, 0], method=0):
-    """ Optimize arrays """
+    """ Optimize array using specified optimization method
+    
+    Args:
+        A0 (array_link): design to optimize
+        arrayclass (object): contains class of designs to optimize
+        alpha (list): specifies the optimization function
+        
+    Returns:
+        d (array): efficiencies
+        A (array): optimized design
+    """
     # get factor levels
     if arrayclass is None:
         s = A0.getarray().max(axis=0) + 1
@@ -356,17 +351,13 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     A = A0.clone()
     lc = 0
     for ii in range(0, niter):
-        # r=random.randint(0,N-1)
-        # c=random.randint(0,k-1)
         r = np.random.randint(N)
         c = np.random.randint(k)
         r2 = np.random.randint(N)
         # make sure c2 is in proper column
-        # c2=np.random.randint(k)
         c2 = gstart[gidx[c]] + oalib.fastrand() % gsize[gidx[c]]
         # print('  %d,%d <--> %d,%d' % (r,c,r2,c2))
 
-        # o=A[r, c]; o2=A[r2, c2]
         o = A._at(r, c)
         o2 = A._at(r2, c2)  # no extra error checking
         # swap
@@ -440,7 +431,14 @@ def filterPareto(scores, dds, sols, verbose=0):
 
 
 def scoreDn(dds, optimfunc):
-    """ Calculate scores from various efficiencies """
+    """ Calculate scores from various efficiencies
+
+    Args:
+        dds (array): calculated D-efficiencies
+        optimfunc (): parameters for optimization function
+    Returns:
+        scores (array)
+    """
     scores = np.array([oalib.scoreD(dd, optimfunc) for dd in dds])
     return scores
 
@@ -449,8 +447,8 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
     """ Select best arrays according to given scores
         The resulting data is sorted
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     scores : array
         scores for the designs
     dds : array
@@ -473,8 +471,6 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
                           for ii in range(dds.shape[1])[::-1]] + [scores])[::-1]
     else:
         idx = np.argsort(-scores.flatten())
-    # print(idx.shape)
-    # print(scores.shape)
     scores = scores[idx]
     dds = dds[idx, :]
     sols = [sols[ii] for ii in idx]
@@ -494,8 +490,8 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     For more details see the paper "Two-Level Designs to Estimate All Main
     Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     arrayclass : object
         Specifies the type of design to optimize
     nrestarts : integer
@@ -513,7 +509,14 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
 
     Returns
     -------
-    scores, dds, designs, nrestarts
+    scores: list
+        list of scores
+    dds: array
+        array with calculated efficiencies
+    designs: list
+        list of generated designs
+    nrestarts: int
+        number of restarts used
 
 
     """
@@ -532,23 +535,17 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
         # needed because of SWIG wrapping of struct type
         sols = [x.clone() for x in sols]
         nrestarts = rr.nrestarts
-        # dds,sols=rr[0],rr[1]
-        # dds=rr[0]
-        # sols=[x.clone() for x in sols]
-        # dt=time.time()-t0
         scores = np.array(
             [oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
 
         if verbose >= 3:
             print('Doptimize: max score %.3f, max D: %.6f' %
                   (np.max(scores), np.max([A.Defficiency() for A in sols])))
-        # dt=time.time()-t0
-
     else:
         raise Exception('code not tested....')
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
-        sols = []  # oalib.arraylist_t()
+        sols = []  
 
         nrestarts = 0
         for ii in range(nrestarts):
@@ -584,8 +581,6 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
             if selectpareto and ii % 502 == 0:
                 scores, dds, sols = filterPareto(scores, dds, sols)
 
-            # print(dds.shape)
-
     if selectpareto:
         if verbose >= 2:
             print('Doptim: before Pareto filter (%d arrays)' % len(sols))
@@ -594,7 +589,6 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     if verbose:
         dt = time.time() - t0
         print('Doptim: done (%d arrays, %.1f [s])' % (len(sols), dt))
-        # print(sols)
 
     # sort & select
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)

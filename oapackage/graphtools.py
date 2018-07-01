@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+""" Module to with with designs and graphs
 
 @author: eendebakpt
 """
@@ -8,14 +8,13 @@
 import numpy as np
 import oapackage
 
-#%%
+# %%
 
 def oa2graph(al, adata, verbose=1):
     """
     Convert orthogonal array to graph representation
 
-    The conversion method is as in Ryan and Bulutoglu.
-    The resulting graph is bi-partite.
+    The conversion method is as in Ryan and Bulutoglu. The resulting graph is bi-partite.
     The graph representation can be used for isomorphism testing.
 
     Example
@@ -63,8 +62,6 @@ def oa2graph(al, adata, verbose=1):
     return im, colors, dict({'adata': adata, 'im': im, 'colors': colors, 'nVertices': nVertices})
 
 
-
-
 def graph2arrayTransformation(pp, arrayclass, verbose=0):
     """ From a relabelling of the graph return the corresponding array transformation """
     ppi = np.zeros(len(pp), )
@@ -73,7 +70,6 @@ def graph2arrayTransformation(pp, arrayclass, verbose=0):
     pp = np.array(pp).astype(int)
 
     # extract colperms and rowperm and levelperms from this...
-
     rowperm = np.array((pp[0:arrayclass.N]))
     rowperm = rowperm - rowperm.min()
     colperm = np.array((pp[arrayclass.N:(arrayclass.N + arrayclass.ncols)]))

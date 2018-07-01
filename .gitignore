@@ -91,3 +91,5 @@ _build
 anyoption.o
 .cache
 untitled*.py
+modules.rst
+oapackage.rst
