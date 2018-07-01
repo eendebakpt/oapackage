@@ -18,10 +18,10 @@ bibliography: paper.bib
 
 ---
 tags:
-  - Python
-  - ortogonal arrays
-  - conference matrices
-  - design of experiments
+  - R
+  - data visualization
+  - regression models
+  - marginal effects
 date: 1 July 2018
 bibliography: paper.bib
 ----
