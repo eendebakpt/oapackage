@@ -14,11 +14,11 @@ The Orthogonal Array package contains functionality to generate and analyse orth
    :caption: Contents:
 
    oapackage-intro
+   examplenotebooks
    data
    generation
    normalform
    properties
-   examplenotebooks
    references
    
 Indices and tables

@@ -29,12 +29,12 @@ A typical session could be:
    :caption: Extend an array
    
    >>> N=8; ncols=3;
-   >>> arrayclass=oapackage.arraydata\_t(2, N, 2, ncols)
-   >>> al=arrayclass.create\_root() 
+   >>> arrayclass=oapackage.arraydata_t(2, N, 2, ncols)
+   >>> al=arrayclass.create_root() 
    >>> al.showarray()
    array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
    >>> 
-   >>> alist=oapackage.extend\_array(al, arrayclass)
+   >>> alist=oapackage.extend_array(al, arrayclass)
    >>> for al in alist:
    ... al.showarray()
    array: 0 0 0 0 0 0 0 1 1 0 1 1 1 0 1 1 0 1 1 1 0 1 1 0
@@ -59,12 +59,12 @@ in :cite:`wiki:ConferenceMatrix`.
  :caption: Generate conference designs with 8 rows
                     
  >>> import oapackage
- >>> ctype=oapackage.conference\_t(N=8, k=8)
- >>> al = ctype.create\_root\_three()
+ >>> ctype=oapackage.conference_t(N=8, k=8)
+ >>> al = ctype.create_root_three()
  >>> al.showarray() array: 0 1 1 1 0 -1 1 1 0 1 1 1 1 1 -1 1 -1 1 1 -1 1 1 -1 -1
- >>> l4=oapackage.extend\_conference ([al], ctype, verbose=0)
- >>> l5=oapackage.extend\_conference ( l4, ctype,verbose=0) 
- >>> l6=oapackage.extend\_conference ( l5, ctype, verbose=0)
+ >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
+ >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
+ >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
  >>>
  >>> print('number of non-isomorphic conference designs: number of conference designs: %d'  % len(l6) )
  non-isomorphic conference designs: 11
@@ -83,7 +83,7 @@ and 7 factors is shown below.
  :caption: Doptimize
  
  >>> N=40; s=2; k=7;
- >>> arrayclass=oapackage.arraydata\_t(s, N, 0, k) 
+ >>> arrayclass=oapackage.arraydata_t(s, N, 0, k) 
  >>> print('We generate optimal designs with: %s' % arrayclass)
  We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s 2,2,2,2,2,2,2, order 0.
  >>> alpha=[1,2,0] 

@@ -1,4 +1,4 @@
---
+---
 title: 'OApackage: A Python package for generation and analysis of orthogonal arrays and conference designs'
 tags:
   - Python
@@ -19,9 +19,9 @@ affiliations:
    index: 2
  - name: University of Leuven
    index: 3
-date: 1 August 2018
+date: 1 July 2018
 bibliography: paper.bib
----
+----
 
 # Summary
 
