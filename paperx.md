@@ -1,18 +1,4 @@
 ---
-tags:
-  - Python
-  - ortogonal arrays
-  - conference matrices
-  - design of experiments
-date: 1 July 2018
-bibliography: paper.bib
-----
-
-# Summary
-
-Orthogonal arrays, 
-
----
 title: 'ggeffects: Tidy Data Frames of Marginal Effects from Regression Models'
 tags:
   - R
@@ -29,3 +15,18 @@ affiliations:
 date: 08 June 2018
 bibliography: paper.bib
 ---
+
+---
+tags:
+  - Python
+  - ortogonal arrays
+  - conference matrices
+  - design of experiments
+date: 1 July 2018
+bibliography: paper.bib
+----
+
+# Summary
+
+Orthogonal arrays, 
+
