@@ -169,7 +169,6 @@ if("$ENV{USER}" STREQUAL "eendebakpt" )
 endif()
 
 if("$ENV{OADEBUG}" STREQUAL "1")
-  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
 endif()
 
@@ -219,26 +218,6 @@ endif()
 if(OADEV)
   set(COPTS "${COPTS} -DOADEV")
 endif()
-
-set(POG 0)	# Profile Guided Optimization
-
-#set(COPTS "${COPTS} -ffast-math")
-
-if(POG STREQUAL "1")
-  message(STATUS "POG: profile")
-  message(STATUS "POG: run from command line: ")
-  set(COPTS "${COPTS} -fprofile-generate --coverage")
-  set(LINKOPTS "${LINKOPTS} -fprofile-generate --coverage")
-  
- # set(COPTS "${COPTS} -prof-gen -fprofile-generate --coverage ")
- # set(LINKOPTS "${LINKOPTS} -prof-gen -fprofile-generate --coverage")  
-endif()
-if(POG STREQUAL "2")
-  message(STATUS "POG: use")
-  set(COPTS "${COPTS} -fprofile-use")
-  set(LINKOPTS "${LINKOPTS} -fprofile-use")
-endif()
-
 
 macro(add_compile_flags _target)
   # Provide user feedback
@@ -343,26 +322,6 @@ message(STATUS "Extend progs: ${extendprogs}")
 endif()
 
 message(STATUS "Progs: ${progs}")
-
-###############
-#message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
-if (0)
-ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc} 
-  add_compile_flags(oagraph)
-  TARGET_LINK_LIBRARIES(oagraph oalib)
-
-  if (WIN32) 
-      if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
-    endif()
-   #	message(STATUS "Win32 build: ${item}")
-  else()
-	TARGET_LINK_LIBRARIES(oagraph m)
-  endif()
-  if(ZLIB_FOUND)
-	TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
-  endif()
-endif()
 
 ###############
 
