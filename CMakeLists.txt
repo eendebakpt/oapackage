@@ -110,15 +110,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat-deprecated-writable-strings -fPIC")
 endif()
 
-# for ccache
-if(NOT WIN32 AND 0)
-  if("$ENV{USER}" STREQUAL "eendebakpt")
-    message(STATUS "Using ccache for compilation")
-    set(CMAKE_CXX_COMPILER "ccache")
-    set(CMAKE_CXX_COMPILER_ARG1 "g++")
-  endif()
-endif()
-
 # used for HPC at Antwerpen
 #option(INTEL_CC "Use the Intel compiler." OFF) 
 
@@ -149,7 +140,6 @@ if (INTEL_CC)
     message(FATAL_ERROR "Cannot find Intel compiler.  You may need to run `.  /opt/intel/bin/compilervars.sh intel64'") 
   endif () 
 
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1 -O3")
   message(STATUS "At HPC cluster")
 endif (INTEL_CC) 
 
@@ -413,19 +403,8 @@ if(Boost_FOUND)
 endif()
 
 
-##### R test
 site_name(HOSTNAME)
 #message(STATUS "Hostname ${HOSTNAME}")
-
-if("$ENV{USER}" STREQUAL "eendebakpt" AND "${HOSTNAME}" STREQUAL "marmot")
-  set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/mathtools.h src/oaoptions.h src/tools.h)
-  set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
-  
-  add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
-  set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE  -Isrc -I/usr/share/R/include") # ${COPTS}
-  #set_target_properties(Rtest PROPERTIES LINK_FLAGS "-lR")
-  TARGET_LINK_LIBRARIES(Rtest R)
-endif()
 
 ####### Octave / Matlab support ##########################
 
@@ -493,29 +472,7 @@ endif()
 # > matlab -nojvm -r "Doptim; exit"
 
 
-####### Python and R support ##########################
-
-
-#add_custom_target( Rswig )
-#add_custom_target( R2 )
-#
-#add_custom_command(
-#  TARGET Rswig POST_BUILD
-#  COMMAND swig -c++ -DOADEV -Idev/ -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
-#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#  DEPENDS 
-#)
-#
-#add_custom_command(
-#  TARGET R2 POST_BUILD
-#  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
-#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#  DEPENDS 
-#)
-#
-#R CMD SHLIB  -o example.so oalib_wrapR.cpp liboalib.a-d
-#Rscript example.r
-
+####### Python support ##########################
 
 
 #add_dependencies(pythoncheck python)
@@ -566,8 +523,8 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "3")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "4")
+SET(CPACK_PACKAGE_VERSION_PATCH "7")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 
