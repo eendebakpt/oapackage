@@ -46,8 +46,8 @@ If you use this code or any of the results, please cite this program as follows:
 The code was written by:
 
 * Pieter Eendebak <pieter.eendebak@gmail.com>
-* Vincent Brouerius van Nidek
 * Alan Vazquez-Alcocer
+* Vincent Brouerius van Nidek
 
 Ideas contributed by:
 
