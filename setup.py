@@ -330,8 +330,7 @@ class CustomBuild(build):
     def run(self):
         self.run_command('build_ext')
         build.run(self)
-        # self.run_command('install')
-        # self.do_egg_install()
+
 
 
 class CustomInstall(install):
@@ -339,8 +338,6 @@ class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
         install.run(self)
-        # self.run_command('install')
-        # self.do_egg_install()
 
 
 def readme():
@@ -354,7 +351,6 @@ version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
 setup(name='OApackage',
-      #cmdclass = {'test': OATest },
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild},
       version=version,
       author="Pieter Eendebak",
@@ -364,13 +360,12 @@ setup(name='OApackage',
       author_email='pieter.eendebak@gmail.com',
       license="BSD",
       url='http://www.pietereendebak.nl/oapackage/index.html',
-      keywords=["orthogonal arrays, design of experiments"],
+      keywords=["orthogonal arrays, design of experiments, conference designs, isomorphism testing"],
       ext_modules=[oalib_module],
       py_modules=['oalib'],
-      # packages=find_packages(exclude=['oahelper']),
       packages=packages,
       data_files=data_files,
-      test_suite="oapackage.unittest",
+      test_suite="oapackage.tests.unittest",
       scripts=scripts,
       # nose and coverage are only for tests
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
