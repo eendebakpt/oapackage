@@ -55,12 +55,6 @@ else()
   set(OADEV 1 CACHE BOOL "Enable development code")
 endif()
 
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/extend.h") 
-  set(OAEXTEND 0 CACHE BOOL "Enable OA generation code")
-else()
-  set(OAEXTEND 1 CACHE BOOL "Enable OA generation code")
-endif()
-
 
 message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
@@ -241,9 +235,8 @@ set(graphsrc )
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
-if(OAEXTEND)
-  list(APPEND progs oacheck oastreaming oaunittest)
-endif()
+list(APPEND progs oacheck oastreaming oaunittest)
+
 if(OADEV)
   list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
 endif()
@@ -272,16 +265,11 @@ else()
 
 endif()
 
-if (OAEXTEND)
   add_executable(oaextendsingle "utils/oaextend.cpp" ${headersextend})
   add_compile_flags(oaextendsingle)
 
-  # get_directory_property( DirDefs COMPILE_DEFINITIONS ) 
-  #message( "COMPILE_DEFINITIONS = ${DirDefs}" )
-  
   TARGET_LINK_LIBRARIES(oaextendsingle oalib)
   set(extendprogs oaextendsingle )
-
 
   if (MPI_FOUND AND NOT WIN32 AND 1)
     message(STATUS "Found MPI package: adding oaextendmpi")
@@ -316,10 +304,9 @@ if (OAEXTEND)
       TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
    endif()
   
-endif(MPI_FOUND AND NOT WIN32 AND 1)
+  endif(MPI_FOUND AND NOT WIN32 AND 1)
 
 message(STATUS "Extend progs: ${extendprogs}")
-endif()
 
 message(STATUS "Progs: ${progs}")
 
@@ -521,7 +508,6 @@ if(WIN32)
   SET(CPACK_GENERATOR "ZIP")
 else()
   SET(CPACK_GENERATOR "DEB")
-  #SET(CPACK_GENERATOR "TGZ")
   SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") #required
 endif()
 INCLUDE(CPack)
@@ -542,5 +528,4 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # module load GCC/4.7.0
 # cmake -DCMAKE_INSTALL_PREFIX:PATH=~vsc20149 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
-# mmlsquota
 
