@@ -24,10 +24,6 @@ enum {DOPTIM_UPDATE, DOPTIM_SWAP, DOPTIM_FLIP, DOPTIM_AUTOMATIC, DOPTIM_NONE};
  */
 array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int optimmethod = DOPTIM_AUTOMATIC, int niter=100000, int nabort=0 );
 
-/// debugging function
-array_link  optimDeff2level ( const array_link &A0,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose=1, int optimmethod= DOPTIM_AUTOMATIC, int niter=100000, int nabort = 0 );
-
-
 /** @brief Structure containing results of the Doptimize function
  *
  */

@@ -3653,7 +3653,6 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
         }
 
         if ( dopruning ) {
-            //double x = vectormax<double>(dopgwp);
             GWLPvalue x = * ( min_element ( dopgwp.begin(), dopgwp.begin() +ncols-1 ) );
             if ( verbose>=2 ) {
                 myprintf( "  delete-1 GWP sequence:        " );
@@ -3679,15 +3678,12 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
         indexsort is ( dopgwp );
 
         if ( ad.ismixed() ) {
-            //printfd ( "reduceArraysGWLP: warning array is mixed!\n" );
-
             dofvalues = mixedProjGWLP ( dopgwp,ad, verbose );
 
             if ( verbose>=3 ) {
                 myprintf( "old indexsort:\n" );
                 is.show();
             }
-            //is.init(xx);
         }
 
         if ( verbose>=2 )
@@ -3716,15 +3712,12 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
             //myprintf("  delete-1 GMA: sorted "); display_vector<double>(sgma);  cout << endl;
         }
 
-        //testTranspose(al);
-
         symmetry_group sg ( sdofvalues, 0 );
         if ( verbose>=2 )
             sg.show();
 
         // Done: calculate row symmetry group
-
-
+		
         array_link alf ( al, is.indices );
 
         if ( verbose>=2 )
@@ -3739,14 +3732,11 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
 
         LMCreduction_t reduction ( &ad );
 
-        // TODO: adapt extend system
-
         array_link lm ( al );
 
         if ( verbose>=3 )
             ad.show ( 2 );
-
-
+		
         reduction.mode=OA_REDUCE;
         reduction.init_state=COPY;
         {
@@ -3754,9 +3744,9 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
             reduction.setArray ( alf );
 
             int changed = check_root_update ( alf.array, ad, reduction.array );
-            if ( changed ) {
-                //printfd ( "reduceArraysGWLP: array changed %d.\n", changed );
-                // reduction.getArray().showarray();
+            if ( changed && verbose>=4 ) {
+                printfd ( "reduceArraysGWLP: array changed %d.\n", changed );
+                reduction.getArray().showarray();
             }
         }
 

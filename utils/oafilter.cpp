@@ -125,8 +125,6 @@ int main(int argc, char* argv[])
     std::string format = opt.getStringValue('f', "BINARY");
     arrayfile::arrayfilemode_t mode = arrayfile_t::parseModeString(format);
 
-    //printf(" we have %d args\n", opt.getArgc());
-
     /* read in the arrays */
     std::string infile =  opt.getArgv( 0 );
     std::string anafile =  opt.getArgv( 1 );
@@ -147,8 +145,6 @@ int main(int argc, char* argv[])
 
     if (verbose)
         printf("oafilter: filtering %d arrays\n", n);
-
-    // TODO: update to new binary format
 
     // read analysis file
     FILE *afid = fopen(anafile.c_str(),  "rb");
@@ -174,7 +170,6 @@ int main(int argc, char* argv[])
     // filter
     arraylist_t *filtered = new arraylist_t;
     selectArrays(*arraylist,  gidx, *filtered);
-
 
     /* write arrays to file */
     if (verbose)

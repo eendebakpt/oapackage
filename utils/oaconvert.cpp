@@ -119,9 +119,8 @@ int main(int argc, char* argv[])
             printf("warning: untested code! (number of arrays undefined)\n");
         }
 
-        long i;
         int index;
-        for (i = 0; i < narrays; i++)
+        for (long i = 0; i < narrays; i++)
         {
             if ( (i%10000==0 && verbose) || (verbose>=3) ) {
                 log_print(QUIET, "oaconvert: loading arrays: %d/%d\n", i, af.narrays);

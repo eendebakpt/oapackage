@@ -48,7 +48,7 @@ int main ( int argc, char* argv[] )
    opt.addUsage ( " -f [FORMAT]					Output format (default: TEXT, or BINARY) " );
    opt.addUsage ( " -o [FILE] --output [FILE]	Output prefix (default: standard output) " );
    opt.addUsage ( " -s [STRENGTH]  --strength [STRENGTH] Set strength to use in checking" );
-   opt.addUsage ( " -e --extend			Extend set of arrays before checking " );
+   opt.addUsage ( " -e --extend			Extend set of arrays before reduction " );
    opt.addUsage ( " -p --prune			Prune" );
    opt.addUsage ( " -d --dolmc			Do LMC?" );
    opt.addUsage ( " " );

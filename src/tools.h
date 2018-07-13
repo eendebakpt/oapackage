@@ -64,7 +64,6 @@ inline void printfd_handler ( const char *file, const char* func, int line, cons
 %ignore next_comb;
 %ignore next_comb2;
 %ignore init_restart;
-%ignore set_colcombs_fixed;
 %ignore addelement;
 %ignore row_rank_partial;
 %ignore row_rank;

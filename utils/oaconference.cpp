@@ -18,7 +18,6 @@
 #include "tools.h"
 #include "extend.h"
 
-
 #include "conference.h"
 
 #include <algorithm>
@@ -27,20 +26,16 @@
 #include <string>
 using namespace std;
 
+/// Print all permutations of the characters in a given string
 void print_all_permutations ( const string& s ) {
     string s1 = s;
     sort ( s1.begin(), s1.end() );
     int n=0;
     do {
-        cout << s1 << endl;
+        std::cout << s1 << std::endl;
         n++;
     } while ( next_permutation ( s1.begin(), s1.end() ) );
     printf ( "%d/%ld perms (len %ld)\n", n, factorial<long> ( s1.size() ), ( long ) s1.size() );
-}
-
-void testx() {
-    print_all_permutations ( "001111112222222" );
-    exit ( 0 );
 }
 
 template<class fwditer>
@@ -67,8 +62,6 @@ struct rangegenerator {
     int start;
 };
 
-#include <algorithm>
-
 template <typename T, typename T2>
 /// return subvector of a vector specified by indices
 T2 subvector ( const T2& full, const T& ind ) {
@@ -80,9 +73,8 @@ T2 subvector ( const T2& full, const T& ind ) {
     return target;
 }
 
-enum reduction_method {NONE, NAUTY, LMC0, LMC0DC};
-
-enum max_selection_method {SELECT_RANDOM, SELECT_FIRST};
+enum reduction_method {NONE, NAUTY, LMC0, LMC0DC}; // method to perform reduction to isomorphism classes
+enum max_selection_method {SELECT_RANDOM, SELECT_FIRST}; /// method to reduce the generated set of designs
 
 /** select a subset of arrays
  * 
@@ -333,8 +325,6 @@ int main ( int argc, char* argv[] ) {
                     }
                 }
             }
-            //printfd("file_mode: %d, size %d\n", file_mode, outlist.size() );
-
             std::string outfile = output + printfstring ( "-%d-%d", ctype.N, extcol+1 )  + ".oa";
             if ( verbose )
                 printf ( "oaconference: write %d arrays to file %s...\n", ( int ) outlist.size(), outfile.c_str() );
