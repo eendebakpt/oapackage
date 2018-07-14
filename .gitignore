@@ -1,5 +1,16 @@
-x.txt
+# Temp files
 *py~
+
+# Build system
+cbuild
+build
+buildx
+OAlib.egg-info
+OApackage.egg-info
+
+# Misc
+
+x.txt
 old
 x2.txt
 *txt~
@@ -17,10 +28,6 @@ OA.kdevelop*
 hopper
 testing
 vsc
-build
-buildx
-OAlib.egg-info
-OApackage.egg-info
 oatest2.cpp
 oalib_wrapR.o
 scripts/scanf.py.bak

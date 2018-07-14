@@ -26,8 +26,7 @@ except ImportError:
         "prior to installing OApackage")
 
 npinclude = np.get_include()
-
-here = path.abspath(path.dirname(__file__))
+setup_directory = path.abspath(path.dirname(__file__))
 
 # %%
 
@@ -50,10 +49,8 @@ def checkZlib(verbose=0):
             #include <zlib.h>
             #include <stdio.h>
         
-            int main(int argc, char* argv[])
-            {
+            int main(int argc, char* argv[]) {
                 printf("Hello zlib test...\\n");
-        
                 return 0;
             }
             """
@@ -153,9 +150,8 @@ if not swig_valid:
 
 #%% Hack to remove option for c++ code
 try:
-        # see
-        # http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
-    from setuptools.py31compat import get_path, get_config_vars
+    # see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
+    from setuptools.py31compat import get_config_vars
 
     (opt,) = get_config_vars('OPT')
 
@@ -210,14 +206,13 @@ srcs = srcs + ['conference.cpp']
 
 srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
 srcs = ['src/' + ff for ff in srcs]
-if os.path.exists('dev/oadevelop.cpp') and 1:
+if os.path.exists('dev/oadevelop.cpp'):
     oadev = 1
     print('Building development code')
     srcs = ['dev/oadevelop.cpp'] + srcs
-
 sources = srcs + ['src/bitarray/bit_array.cpp']
-swig_opts = []
 
+swig_opts = []
 compile_options = []
 
 if oadev:
@@ -233,15 +228,14 @@ else:
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE']
 
-if 1:
-    swig_opts += ['-Isrc/nauty/']
-    compile_options += ['-Isrc/nauty/']
+# add nauty files
+swig_opts += ['-Isrc/nauty/']
+compile_options += ['-Isrc/nauty/']
 
-    sources += ['src/graphtools.cpp']
+sources += ['src/graphtools.cpp']
 
-    # nauty/gtools.c
-    for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c'.split(' '):
-        sources += ['src/' + f]
+for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c'.split(' '):
+    sources += ['src/' + f]
 
 if platform.system() == 'Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
@@ -267,18 +261,10 @@ else:
     oalib_module = Extension('_oalib', sources=sources,
                              include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
                              )
-    progs = ['oainfo', 'oasplit', 'oacat']
-    progs = []
-    pm = []
-    for ii, p in enumerate(progs):
-        prog_module = Extension(p, sources=sources + ['utils/%s.cpp' % p],
-                                include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries)
-        pm.append(prog_module)
 
 compile_options += ['-DNOOMP']
 swig_opts += ['-DNOOMP']
 
-# ['-DNOOMP', '-DSWIGCODE', '-DFULLPACKAGE'] # '-DHAVE_BOOST'
 oalib_module.extra_compile_args = compile_options
 
 if checkZlib(verbose=0):
@@ -296,9 +282,6 @@ else:
 
 if os.name == 'nt':
     oalib_module.extra_compile_args += []
-
-    # for cygwin/mingw ?
-    #oalib_module.extra_compile_args += ['-fpermissive', '-std=gnu++11' ];
 else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
@@ -314,7 +297,7 @@ print('find_packages: %s' % find_packages())
 #print('swig_opts: %s' % str(swig_opts) )
 
 data_files = []
-scripts = ['scripts/example_python_testing.py']
+scripts = ['misc/scripts/example_python_testing.py']
 packages = ['oapackage']
 
 # fix from:
@@ -330,8 +313,7 @@ class CustomBuild(build):
     def run(self):
         self.run_command('build_ext')
         build.run(self)
-        # self.run_command('install')
-        # self.do_egg_install()
+
 
 
 class CustomInstall(install):
@@ -339,8 +321,6 @@ class CustomInstall(install):
     def run(self):
         self.run_command('build_ext')
         install.run(self)
-        # self.run_command('install')
-        # self.do_egg_install()
 
 
 def readme():
@@ -354,7 +334,6 @@ version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
 setup(name='OApackage',
-      #cmdclass = {'test': OATest },
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild},
       version=version,
       author="Pieter Eendebak",
@@ -364,13 +343,12 @@ setup(name='OApackage',
       author_email='pieter.eendebak@gmail.com',
       license="BSD",
       url='http://www.pietereendebak.nl/oapackage/index.html',
-      keywords=["orthogonal arrays, design of experiments"],
+      keywords=["orthogonal arrays, design of experiments, conference designs, isomorphism testing"],
       ext_modules=[oalib_module],
       py_modules=['oalib'],
-      # packages=find_packages(exclude=['oahelper']),
       packages=packages,
       data_files=data_files,
-      test_suite="oapackage.unittest",
+      test_suite="oapackage.tests.unittest",
       scripts=scripts,
       # nose and coverage are only for tests
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],

@@ -23,7 +23,6 @@
  */
 int main(int argc, char* argv[])
 {
-
     /* parse command line options */
     AnyOption opt;
     opt.setFlag(  "help", 'h' );   /* a flag (takes no argument), supporting long and short form */
@@ -37,7 +36,6 @@ int main(int argc, char* argv[])
     opt.addUsage( " -v --verbose [INT]		Verbose level " );
     opt.addUsage( " -f --format  		Output only the file format" );
     opt.processCommandArgs(argc, argv);
-
 
     int verbose =  opt.getIntValue("verbose", 2);
     if (verbose>=2) {

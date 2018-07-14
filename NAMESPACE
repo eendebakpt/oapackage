@@ -1,4 +1,0 @@
-useDynLib(oapackage)
-exportPattern("^[[:alpha:]]+")
-export(Doptimize)
-

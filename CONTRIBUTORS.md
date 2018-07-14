@@ -1,7 +1,7 @@
 # Contributors
 
-Pieter Eendebak
-Eric Schoen
-Alan Vazquez-Alcocer
+* Pieter Eendebak
+* Eric Schoen
+* Alan Vazquez-Alcocer
 
 

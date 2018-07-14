@@ -55,12 +55,6 @@ else()
   set(OADEV 1 CACHE BOOL "Enable development code")
 endif()
 
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/extend.h") 
-  set(OAEXTEND 0 CACHE BOOL "Enable OA generation code")
-else()
-  set(OAEXTEND 1 CACHE BOOL "Enable OA generation code")
-endif()
-
 
 message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
@@ -110,15 +104,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat-deprecated-writable-strings -fPIC")
 endif()
 
-# for ccache
-if(NOT WIN32 AND 0)
-  if("$ENV{USER}" STREQUAL "eendebakpt")
-    message(STATUS "Using ccache for compilation")
-    set(CMAKE_CXX_COMPILER "ccache")
-    set(CMAKE_CXX_COMPILER_ARG1 "g++")
-  endif()
-endif()
-
 # used for HPC at Antwerpen
 #option(INTEL_CC "Use the Intel compiler." OFF) 
 
@@ -149,7 +134,6 @@ if (INTEL_CC)
     message(FATAL_ERROR "Cannot find Intel compiler.  You may need to run `.  /opt/intel/bin/compilervars.sh intel64'") 
   endif () 
 
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1 -O3")
   message(STATUS "At HPC cluster")
 endif (INTEL_CC) 
 
@@ -179,7 +163,6 @@ if("$ENV{USER}" STREQUAL "eendebakpt" )
 endif()
 
 if("$ENV{OADEBUG}" STREQUAL "1")
-  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
 endif()
 
@@ -230,26 +213,6 @@ if(OADEV)
   set(COPTS "${COPTS} -DOADEV")
 endif()
 
-set(POG 0)	# Profile Guided Optimization
-
-#set(COPTS "${COPTS} -ffast-math")
-
-if(POG STREQUAL "1")
-  message(STATUS "POG: profile")
-  message(STATUS "POG: run from command line: ")
-  set(COPTS "${COPTS} -fprofile-generate --coverage")
-  set(LINKOPTS "${LINKOPTS} -fprofile-generate --coverage")
-  
- # set(COPTS "${COPTS} -prof-gen -fprofile-generate --coverage ")
- # set(LINKOPTS "${LINKOPTS} -prof-gen -fprofile-generate --coverage")  
-endif()
-if(POG STREQUAL "2")
-  message(STATUS "POG: use")
-  set(COPTS "${COPTS} -fprofile-use")
-  set(LINKOPTS "${LINKOPTS} -fprofile-use")
-endif()
-
-
 macro(add_compile_flags _target)
   # Provide user feedback
 #  message(STATUS "  Adding compile flags to: ${_target}")
@@ -272,9 +235,8 @@ set(graphsrc )
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
-if(OAEXTEND)
-  list(APPEND progs oacheck oastreaming oaunittest)
-endif()
+list(APPEND progs oacheck oastreaming oaunittest)
+
 if(OADEV)
   list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
 endif()
@@ -303,16 +265,11 @@ else()
 
 endif()
 
-if (OAEXTEND)
   add_executable(oaextendsingle "utils/oaextend.cpp" ${headersextend})
   add_compile_flags(oaextendsingle)
 
-  # get_directory_property( DirDefs COMPILE_DEFINITIONS ) 
-  #message( "COMPILE_DEFINITIONS = ${DirDefs}" )
-  
   TARGET_LINK_LIBRARIES(oaextendsingle oalib)
   set(extendprogs oaextendsingle )
-
 
   if (MPI_FOUND AND NOT WIN32 AND 1)
     message(STATUS "Found MPI package: adding oaextendmpi")
@@ -347,32 +304,11 @@ if (OAEXTEND)
       TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
    endif()
   
-endif(MPI_FOUND AND NOT WIN32 AND 1)
+  endif(MPI_FOUND AND NOT WIN32 AND 1)
 
 message(STATUS "Extend progs: ${extendprogs}")
-endif()
 
 message(STATUS "Progs: ${progs}")
-
-###############
-#message(STATUS "xxx: utils/oagraph.cpp ${headers} ${nautysrc}")
-if (0)
-ADD_EXECUTABLE(oagraph "utils/oagraph.cpp" ${headers} )  # ${nautysrc} 
-  add_compile_flags(oagraph)
-  TARGET_LINK_LIBRARIES(oagraph oalib)
-
-  if (WIN32) 
-      if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
-    endif()
-   #	message(STATUS "Win32 build: ${item}")
-  else()
-	TARGET_LINK_LIBRARIES(oagraph m)
-  endif()
-  if(ZLIB_FOUND)
-	TARGET_LINK_LIBRARIES(oagraph ${ZLIB_LIBRARIES})
-  endif()
-endif()
 
 ###############
 
@@ -413,19 +349,8 @@ if(Boost_FOUND)
 endif()
 
 
-##### R test
 site_name(HOSTNAME)
 #message(STATUS "Hostname ${HOSTNAME}")
-
-if("$ENV{USER}" STREQUAL "eendebakpt" AND "${HOSTNAME}" STREQUAL "marmot")
-  set(headersR src/Deff.h src/arrayproperties.h src/arraytools.h src/strength.h src/mathtools.h src/oaoptions.h src/tools.h)
-  set(srcsR  src/Deff.cpp src/arrayproperties.cpp src/arraytools.cpp src/strength.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp )
-  
-  add_executable(Rtest utils/Rtest.cpp ${srcsR} ${headersR})
-  set_target_properties(Rtest PROPERTIES COMPILE_FLAGS "-DRPACKAGE  -Isrc -I/usr/share/R/include") # ${COPTS}
-  #set_target_properties(Rtest PROPERTIES LINK_FLAGS "-lR")
-  TARGET_LINK_LIBRARIES(Rtest R)
-endif()
 
 ####### Octave / Matlab support ##########################
 
@@ -493,29 +418,7 @@ endif()
 # > matlab -nojvm -r "Doptim; exit"
 
 
-####### Python and R support ##########################
-
-
-#add_custom_target( Rswig )
-#add_custom_target( R2 )
-#
-#add_custom_command(
-#  TARGET Rswig POST_BUILD
-#  COMMAND swig -c++ -DOADEV -Idev/ -Isrc/ -o oalib_wrapR.cpp -r oalib.i\; export PKG_CXXFLAGS="-Isrc/ -I./ -DSWIGR"\; echo "pre"
-#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#  DEPENDS 
-#)
-#
-#add_custom_command(
-#  TARGET R2 POST_BUILD
-#  COMMAND rm -f oalibR.so\; R CMD SHLIB  -o oalibR.so oalib_wrapR.cpp src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/extend.cpp src/oadevelop.cpp src/lmc.cpp src/nonroot.cpp
-#  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#  DEPENDS 
-#)
-#
-#R CMD SHLIB  -o example.so oalib_wrapR.cpp liboalib.a-d
-#Rscript example.r
-
+####### Python support ##########################
 
 
 #add_dependencies(pythoncheck python)
@@ -566,8 +469,8 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "3")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "4")
+SET(CPACK_PACKAGE_VERSION_PATCH "7")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 
@@ -605,7 +508,6 @@ if(WIN32)
   SET(CPACK_GENERATOR "ZIP")
 else()
   SET(CPACK_GENERATOR "DEB")
-  #SET(CPACK_GENERATOR "TGZ")
   SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") #required
 endif()
 INCLUDE(CPack)
@@ -626,5 +528,4 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # module load GCC/4.7.0
 # cmake -DCMAKE_INSTALL_PREFIX:PATH=~vsc20149 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
-# mmlsquota
 
