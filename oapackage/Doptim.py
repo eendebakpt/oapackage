@@ -592,3 +592,12 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
 
     return scores, dds, sols, nrestarts
+
+#%% Tests
+    
+def test_calcScore():
+    dds=np.random.rand( 10, 3)
+    scores=calcScore(dds, optimfunc=[1,2,3])
+    assert(scores.shape==(dds.shape[0], ))
+
+

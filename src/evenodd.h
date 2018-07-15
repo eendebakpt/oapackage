@@ -1,6 +1,8 @@
 /*! \file evenodd.h
  *  \brief Contains functions to generate even-odd designs
  *
+ * The generation is done by defining a special ordering in the set of designs. 
+ * The primary ordering is based in the J5 value of 5-column designs, the secondary ordering is the regular LMC ordering.
  */
 
 #pragma once

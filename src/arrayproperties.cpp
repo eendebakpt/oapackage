@@ -27,7 +27,11 @@ using namespace Eigen;
 
 
 template<class Type>
-/// helper class: n-dimensional array
+/** helper class: n-dimensional array
+ *
+ * The data is stored in a flat array. The dimensions are stored in a vector \c dims.
+ *
+ **/
 class ndarray
 {
 
@@ -84,11 +88,13 @@ public:
     }
 
 
+	/// size of the array (product of all dimensions)
     long totalsize() const
     {
         return n;
-//	return this->cumprod[
     }
+
+	/// print the array to stdout
     void show() const
     {
         for ( int i=0; i<n; i++ ) {
@@ -131,7 +137,6 @@ public:
     {
         int lidx=0;
         for ( int i=0; i<k; i++ ) {
-            //lidx = dims[i]*lidx+idx[i];
             lidx += idx[i]*cumprod[i];
         }
         return lidx;
@@ -175,7 +180,7 @@ public:
 };
 
 
-/// Hamming distance
+/// calculate Hamming distance between two rows of an array
 inline int dH ( const int N, int k, const array_link &al, int r1, int r2 )
 {
     int dh=0;
@@ -189,7 +194,7 @@ inline int dH ( const int N, int k, const array_link &al, int r1, int r2 )
     return dh;
 }
 
-/// Hamming distance
+/// calculate Hamming distance between two rows of an array with mixed levels
 inline void dHmixed ( const int N, int k, const array_link &al, int r1, int r2, int *dh, int ncolgroups, const std::vector<int> colgroupindex )
 {
     for ( int i=0; i<ncolgroups; i++ )
@@ -210,13 +215,11 @@ inline int dHx ( const int nr, int k, carray_t *data, int c1, int c2 )
 {
     // nr is the OA column variable
 
-    //printf("nr %d, k %d, c1 c2 %d %d\n", nr, k, c1, c2);
     int dh=0;
     carray_t *d1 = data+c1*nr;
     carray_t *d2 = data+c2*nr;
 
     for ( int c=0; c<nr; c++ ) {
-        //printf("  c %d\n", c);
         dh += d1[c]!=d2[c];
     }
     return dh;
@@ -248,7 +251,6 @@ std::vector<double> distance_distributionT ( const array_link &al, int norm=1 )
         }
 
     // calculate distance distribution
-    //printf("distance_distribution\n");
     std::vector<double> dd ( n+1 );
 
     for ( int r1=0; r1<N; r1++ ) {

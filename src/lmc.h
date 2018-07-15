@@ -208,7 +208,7 @@ public:
 
     void show(int verbose=1) const
     {
-        myprintf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", long(this->ad), LMC_non_root_init );
+        myprintf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", (const long)(this->ad), LMC_non_root_init );
     }
 
     void init ( const arraydata_t *adp );

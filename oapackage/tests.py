@@ -6,8 +6,11 @@ import numpy as np
 import oapackage
 import oalib
 import oapackage.Doptim
+import oapackage.graphtools
+import unittest
 
 
+    
 def autodoctest():
     """ Test the module using autodoc
     Example:
@@ -19,7 +22,20 @@ def autodoctest():
     """
     return
 
+def test_scanf():
+    import oapackage
+    r=oapackage.scanf.sscanf('1', '%d')
+    assert(r[0]==1)
 
+def test_oa2graph():
+    al=oapackage.exampleArray(2,0)
+    adata=oapackage.arraylink2arraydata(al)
+    g=oapackage.graphtools.oa2graph(al, adata)
+    assert(g[0].shape==(34,34))
+    
+    #t = graph2arrayTransformation(pp, arrayclass, verbose=0):
+
+        
 def test_numpy_interface(verbose=0):
     A = np.eye(3, 4).astype(int)
     A[0, :] = [10, 20, 30, 50]
@@ -64,7 +80,7 @@ def test_nauty(verbose=0):
     assert(alx == al)
 
 
-def unittest(verbose=1):
+def miscunittest(verbose=1):
     """ Perform some unit testing, return True if succesfull """
     if verbose:
         print('oapackage: unittest: oalib version %s' % oalib.version())
@@ -129,6 +145,29 @@ def unittest(verbose=1):
     return True
 
 #%%
-if __name__ == "__main__":
+class TestDoptimize(unittest.TestCase):
+
+    def setUp(self):
+        
+        self.arrayclass=oapackage.arraydata_t(2, 16, 2, 6)
+
+
+    def test_unittest(self):
+        scores, dds, sols, n=oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=0, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
+
+        r=oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
+
+    def test_optimDeffPython(self):
+        al=oapackage.exampleArray(2)
+        r, al =oapackage.Doptim.optimDeffPython(al, arrayclass=None, niter=10000, nabort=2500, verbose=0, alpha=[1, 0, 0], method=0)
+
+
+class TestCppLibrary(unittest.TestCase):
+
+    def test_miscunittest(self):
+        miscunittest()
+        
+if __name__=='__main__':
     """ Test code """
-    unittest()
+    unittest.main()
+    #t=TestDoptimize()

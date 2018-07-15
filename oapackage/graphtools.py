@@ -63,7 +63,15 @@ def oa2graph(al, adata, verbose=1):
 
 
 def graph2arrayTransformation(pp, arrayclass, verbose=0):
-    """ From a relabelling of the graph return the corresponding array transformation """
+    """ From a relabeling of the graph return the corresponding array transformation
+    
+    Args:
+        pp (array): relabeling of graph vertices
+        arrayclass (arraydata_t): class of arrays
+        verbose (int): verbosity level
+    Returns:
+        tt (obj): array transformation
+    """
     ppi = np.zeros(len(pp), )
     ppi[pp] = range(len(pp))
     ppi = np.array(ppi).astype(int)
@@ -147,12 +155,6 @@ def selectIsomorphismClasses(sols, verbose=1):
 
     # Trick to make unique work...
     a, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)
-    if 0:
-        nx = qq[0].size
-        dt = qq[0].dtype.descr * nx
-        qqq = np.array(qq, dtype=dt)
-
-        a, indices = np.unique(qqq, return_inverse=True)
 
     if verbose >= 1:
         print('selectIsomorphismClasses: reduce %d to %d' %
