@@ -54,6 +54,7 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 
 # %%
 
+
 try:
     import brewer2mpl
 except:
@@ -99,7 +100,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
     if lbls is None:
-        lbls=['%d' % i for i in range(len(idx))]
+        lbls = ['%d' % i for i in range(len(idx))]
     for jj, ii in enumerate(idx):
         gidx = (colors == ii).nonzero()[0]
         gp = np.intersect1d(paretoidx, gidx)
@@ -127,7 +128,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
-    if not nofig:        
+    if not nofig:
         plt.show()
     ax.grid(b=True, which='both', color='0.85', linestyle='-')
     ax.set_axisbelow(True)
@@ -272,6 +273,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
 #%%
 
+
 def _optimDeffhelper(classdata):
     """ Helper function that is suitable for the multi-processing framework """
 
@@ -303,12 +305,12 @@ def calcScore(dds, optimfunc):
 
 def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1, 0, 0], method=0):
     """ Optimize array using specified optimization method
-    
+
     Args:
         A0 (array_link): design to optimize
         arrayclass (object): contains class of designs to optimize
         alpha (list): specifies the optimization function
-        
+
     Returns:
         d (array): efficiencies
         A (array): optimized design
@@ -538,7 +540,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
         raise Exception('code not tested....')
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
-        sols = []  
+        sols = []
 
         nrestarts = 0
         for ii in range(nrestarts):
@@ -589,10 +591,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     return scores, dds, sols, nrestarts
 
 #%% Tests
-    
+
+
 def test_calcScore():
-    dds=np.random.rand( 10, 3)
-    scores=calcScore(dds, optimfunc=[1,2,3])
-    assert(scores.shape==(dds.shape[0], ))
-
-
+    dds = np.random.rand(10, 3)
+    scores = calcScore(dds, optimfunc=[1, 2, 3])
+    assert(scores.shape == (dds.shape[0], ))

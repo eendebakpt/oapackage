@@ -10,6 +10,7 @@ import oapackage
 
 # %%
 
+
 def oa2graph(al, adata, verbose=1):
     """
     Convert orthogonal array to graph representation
@@ -118,4 +119,4 @@ def selectIsomorphismClasses(sols, verbose=1):
 def test_select_isomorphism():
     ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
     indices, mm = selectIsomorphismClasses(ll, verbose=0)
-    assert(indices[0]==indices[1])
+    assert(indices[0] == indices[1])

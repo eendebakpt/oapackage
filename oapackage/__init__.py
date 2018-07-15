@@ -26,4 +26,3 @@ __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
 __doc__ = __description__ + " <" + __uri__ + ">"
 
 __version__ = oalib.version()
-

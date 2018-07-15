@@ -239,7 +239,8 @@ def joinArrayLists(ww):
         for al in w:
             ll.push_back(al)
     return ll
-   
+
+
 def createPareto(dds, verbose=1):
     """ Create Pareto object from dataset """
     pp = oapackage.ParetoDoubleLong()
@@ -470,6 +471,7 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     page.table.close()
     return page
 
+
 import subprocess
 
 
@@ -583,6 +585,7 @@ def checkArrayFile(afile, cache=1):
         else:
             return False
 
+
 try:
     basestring  # attempt to evaluate basestring
 
@@ -626,7 +629,7 @@ def checkFilesOA(lst, cache=1, verbose=0):
         Args:
             lst (list): list of files
             cache (int): 0 (always return False), 1 (check), -1 (always return True)
-        
+
         For array files also the .gz extension is checked
         Returns False if one or more of the files do not exist
         Returns True if all files exist
@@ -652,11 +655,12 @@ def checkFilesOA(lst, cache=1, verbose=0):
 
 #%%
 
+
 def randomizearrayfile(afile, afileout, verbose=1):
     """ Randomize a file with orthogonal arrays
-    
+
     Each array is transformed with a random transformation
-    
+
     Args:
         afile (str): input file
         afileout (str): output file
@@ -971,6 +975,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
                       (afile, af.filename))
         return False
 
+
 if 0:
     def pointer2np(p, sz):
         """ Convert array pointer to numpy array """
@@ -1102,6 +1107,7 @@ def showtriangles(jresults, showindex=1):
             s = ','.join(map(str, xx))
             print('%s' % s)
 #%%
+
 
 from oapackage import markup
 import webbrowser

@@ -10,7 +10,6 @@ import oapackage.graphtools
 import unittest
 
 
-    
 def autodoctest():
     """ Test the module using autodoc
     Example:
@@ -22,20 +21,22 @@ def autodoctest():
     """
     return
 
+
 def test_scanf():
     import oapackage
-    r=oapackage.scanf.sscanf('1', '%d')
-    assert(r[0]==1)
+    r = oapackage.scanf.sscanf('1', '%d')
+    assert(r[0] == 1)
+
 
 def test_oa2graph():
-    al=oapackage.exampleArray(2,0)
-    adata=oapackage.arraylink2arraydata(al)
-    g=oapackage.graphtools.oa2graph(al, adata)
-    assert(g[0].shape==(34,34))
-    
-    #t = graph2arrayTransformation(pp, arrayclass, verbose=0):
+    al = oapackage.exampleArray(2, 0)
+    adata = oapackage.arraylink2arraydata(al)
+    g = oapackage.graphtools.oa2graph(al, adata)
+    assert(g[0].shape == (34, 34))
 
-        
+    # t = graph2arrayTransformation(pp, arrayclass, verbose=0):
+
+
 def test_numpy_interface(verbose=0):
     A = np.eye(3, 4).astype(int)
     A[0, :] = [10, 20, 30, 50]
@@ -145,16 +146,17 @@ def miscunittest(verbose=1):
     return True
 
 #%%
-    
+
+
 class TestOahelper(unittest.TestCase):
     def test_joinArrayLists(self):
         l1 = [oapackage.exampleArray(2)]
         l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
-        l=oapackage.oahelper.joinArrayLists([l1, l2])
-        assert(len(l)==len(l1)+len(l2))
+        l = oapackage.oahelper.joinArrayLists([l1, l2])
+        assert(len(l) == len(l1) + len(l2))
 
-    def test_checkFilesOA(self):     
-        r=oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
+    def test_checkFilesOA(self):
+        r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
         self.assertTrue(r)
 
     def test_floatformat(self):
@@ -162,54 +164,60 @@ class TestOahelper(unittest.TestCase):
         self.assertEqual(s, '3.14')
         s = oapackage.oahelper.floatformat(3.14, mind=1, maxd=2)
         self.assertEqual(s, '3.1')
+
     def test_safemin(self):
-        r=oapackage.oahelper.safemin(np.array([1,-2,3]), default=0)
+        r = oapackage.oahelper.safemin(np.array([1, -2, 3]), default=0)
         self.assertEqual(r, -2)
-        r=oapackage.oahelper.safemin(np.array([]), default=-2)
+        r = oapackage.oahelper.safemin(np.array([]), default=-2)
         self.assertEqual(r, -2)
-        
-    def test_create_pareto_element(self):        
-        values=[1,2,3]
-        p=oapackage.oahelper.create_pareto_element(values, pareto=None)
+
+    def test_create_pareto_element(self):
+        values = [1, 2, 3]
+        p = oapackage.oahelper.create_pareto_element(values, pareto=None)
 
     def test_designStandardError(self):
-        al=oapackage.exampleArray(14, 0)
-        v=oapackage.oahelper.designStandardError(al)
-        
+        al = oapackage.exampleArray(14, 0)
+        v = oapackage.oahelper.designStandardError(al)
+
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
 
     def test_bounds(self):
-        b=oapackage.oahelper.DefficiencyBound(.8, 4, 6)        
+        b = oapackage.oahelper.DefficiencyBound(.8, 4, 6)
         self.assertAlmostEqual(b, 0.8944271909999)
-        
+
+
 class TestDoptimize(unittest.TestCase):
 
     def setUp(self):
-        
-        self.arrayclass=oapackage.arraydata_t(2, 16, 2, 6)
-        self.dds = np.random.rand( 20,3)
+
+        self.arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
+        self.dds = np.random.rand(20, 3)
 
     def test_unittest(self):
-        scores, dds, sols, n=oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=0, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
+        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
+                                                          1, 0, 0], verbose=0, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
 
-        r=oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
+        r = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
 
     def test_optimDeffPython(self):
-        al=oapackage.exampleArray(2)
-        r, al =oapackage.Doptim.optimDeffPython(al, arrayclass=None, niter=10000, nabort=2500, verbose=0, alpha=[1, 0, 0], method=0)
+        al = oapackage.exampleArray(2)
+        r, al = oapackage.Doptim.optimDeffPython(
+            al, arrayclass=None, niter=10000, nabort=2500, verbose=0, alpha=[1, 0, 0], method=0)
 
     def test_generateDscatter(self):
-        r=oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, ndata=3, nofig=True, fig=20, scatterarea=80)
-        #plt.close(r['ax'])
+        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None,
+                                              ndata=3, nofig=True, fig=20, scatterarea=80)
+        # plt.close(r['ax'])
 
 
 class TestCppLibrary(unittest.TestCase):
 
     def test_miscunittest(self):
         miscunittest()
-        
-if __name__=='__main__':
+
+
+if __name__ == '__main__':
     """ Test code """
     unittest.main()
-    #t=TestDoptimize()
+    # t=TestDoptimize()
