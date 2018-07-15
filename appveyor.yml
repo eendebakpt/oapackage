@@ -23,9 +23,9 @@ environment:
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
 
-#    - PYTHON: "C:\\Python37-x64"
-#      PYTHON_VERSION: "3.7.x"
-#      PYTHON_ARCH: "64"
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.x"
+      PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
@@ -102,7 +102,7 @@ install:
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
   
-  # https://chocolatey.org
+  # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
 build: off
