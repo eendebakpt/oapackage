@@ -153,6 +153,9 @@ try:
 
     (opt,) = get_config_vars('OPT')
 
+    #import sysconfig
+    #opt = sysconfig.get_config_var('OPT')
+
     if not opt is None:
         opt = " ".join(flag for flag in opt.split()
                        if flag != '-Wstrict-prototypes')
