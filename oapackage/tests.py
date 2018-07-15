@@ -145,6 +145,14 @@ def miscunittest(verbose=1):
     return True
 
 #%%
+    
+class TestOahelper(unittest.TestCase):
+    def test_joinArrayLists(self):
+        l1 = [oapackage.exampleArray(2)]
+        l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
+        l=oapackage.oahelper.joinArrayLists([l1, l2])
+        assert(len(l)==len(l1)+len(l2))
+        
 class TestDoptimize(unittest.TestCase):
 
     def setUp(self):

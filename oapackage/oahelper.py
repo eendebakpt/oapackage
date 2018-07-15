@@ -239,8 +239,7 @@ def joinArrayLists(ww):
         for al in w:
             ll.push_back(al)
     return ll
-
-
+   
 def createPareto(dds, verbose=1):
     """ Create Pareto object from dataset """
     pp = oapackage.ParetoDoubleLong()

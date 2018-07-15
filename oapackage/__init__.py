@@ -27,8 +27,3 @@ __doc__ = __description__ + " <" + __uri__ + ">"
 
 __version__ = oalib.version()
 
-#%%
-if __name__ == "__main__":
-    """ Dummy main for oapackage """
-    import doctest
-    doctest.testmod()
