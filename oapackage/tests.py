@@ -152,6 +152,36 @@ class TestOahelper(unittest.TestCase):
         l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
         l=oapackage.oahelper.joinArrayLists([l1, l2])
         assert(len(l)==len(l1)+len(l2))
+
+    def test_checkFilesOA(self):     
+        r=oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
+        self.assertTrue(r)
+
+    def test_floatformat(self):
+        s = oapackage.oahelper.floatformat(3.14, mind=2, maxd=4)
+        self.assertEqual(s, '3.14')
+        s = oapackage.oahelper.floatformat(3.14, mind=1, maxd=2)
+        self.assertEqual(s, '3.1')
+    def test_safemin(self):
+        r=oapackage.oahelper.safemin(np.array([1,-2,3]), default=0)
+        self.assertEqual(r, -2)
+        r=oapackage.oahelper.safemin(np.array([]), default=-2)
+        self.assertEqual(r, -2)
+        
+    def test_create_pareto_element(self):        
+        values=[1,2,3]
+        p=oapackage.oahelper.create_pareto_element(values, pareto=None)
+
+    def test_designStandardError(self):
+        al=oapackage.exampleArray(14, 0)
+        v=oapackage.oahelper.designStandardError(al)
+        
+    def test_fac(self):
+        self.assertEqual(oapackage.oahelper.fac(4), 24)
+
+    def test_bounds(self):
+        b=oapackage.oahelper.DefficiencyBound(.8, 4, 6)        
+        self.assertAlmostEqual(b, 0.8944271909999)
         
 class TestDoptimize(unittest.TestCase):
 

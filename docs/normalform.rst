@@ -47,8 +47,7 @@ in the example notebooks section.
 Reduction using graph isomorphisms
 ----------------------------------
 
-To reduce a general graph to Nauty
-canonical form one can use ``reduceNauty``. For orthogonal arrays we can
+To reduce a general graph to Nauty canonical form one can use ``reduceNauty``. For orthogonal arrays we can
 encode the array structure as a graph. The reduction can then be done
 with ``reduceOAnauty``.
 

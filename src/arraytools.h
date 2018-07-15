@@ -644,6 +644,7 @@ struct array_link {
 
 #ifdef SWIGCODE
     array_link ( long* pymatinput, int nrows, int ncols );
+	//array_link( double* pymatinput, int nrows, int ncols);
 #endif
     array_link clone () const;
 

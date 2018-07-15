@@ -1163,16 +1163,13 @@ def designStandardError(al):
 def DefficiencyBound(D, k, k2):
     """ Calculate the D-efficiency bound of an array extension
 
-    Input
-    -----
-    D : float
-        D-efficiency of the design
-    k, k2: integers
-        numbers of columns 
-    Output
-    ------
-    D2 : float
-        bound on the D-efficiency of extensions of a design with k columns to k2 columns    
+    Args:
+        D (float): D-efficiency of the design
+        k (int): numbers of columns 
+        k2 (int): numbers of columns 
+
+    Returns:
+    D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns    
 
     """
     m = 1. + k + k * (k - 1) / 2
