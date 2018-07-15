@@ -14,6 +14,7 @@ from codecs import open  # To use a consistent encoding
 from os import path
 import os
 import sys
+imnport logging
 import platform
 import subprocess
 import re
@@ -75,16 +76,16 @@ def checkZlib(verbose=0):
                 compiler.compile([file_name]), bin_file_name, libraries=libraries, )
         except CompileError as e:
             if verbose:
-                print('helloz compile error')
+                print('checkZlib: compile error in %s, zlib not available' % file_name)
             ret_val = False
         except LinkError as e:
             if verbose:
-                print('helloz link error')
+                print('checkZlib: link error in %s, zlib not available' % file_name)
             ret_val = False
         except Exception as e:
             if verbose:
-                print('helloz  error')
-                print(e)
+                print('checkZlib: unknown error in %s, zlib not available' % file_name)
+                logging.exception(e)
             ret_val = False
     except Exception as e:
         ret_val = False
@@ -154,6 +155,9 @@ try:
     from setuptools.py31compat import get_config_vars
 
     (opt,) = get_config_vars('OPT')
+
+    #import sysconfig
+    #opt = sysconfig.get_config_var('OPT')
 
     if not opt is None:
         opt = " ".join(flag for flag in opt.split()
@@ -267,7 +271,7 @@ swig_opts += ['-DNOOMP']
 
 oalib_module.extra_compile_args = compile_options
 
-if checkZlib(verbose=0):
+if checkZlib(verbose=1):
     if platform.system() == 'Windows':
         pass
     else:
