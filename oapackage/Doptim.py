@@ -60,7 +60,7 @@ except:
     pass
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80):
+def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -98,13 +98,16 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
+    if lbls is None:
+        lbls=['%d' % i for i in range(len(idx))]
     for jj, ii in enumerate(idx):
         gidx = (colors == ii).nonzero()[0]
         gp = np.intersect1d(paretoidx, gidx)
 
         color = mycmap[jj]
         cc = [color] * len(gp)
-        print('index %d: %d points' % (ii, gidx.size))
+        if verbose:
+            print('index %d: %d points' % (ii, gidx.size))
         ax.scatter(data[fi, gp], data[si, gp], s=scatterarea, c=cc,
                    linewidths=0, alpha=alpha, label=lbls[jj])  # , zorder=4)
         plt.draw()
@@ -112,16 +115,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     if data[si, :].std() < 1e-3:
         y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
         ax.yaxis.set_major_formatter(y_formatter)
-
-    if 0:
-        for xi, al in enumerate(sols):
-            D, Ds, D1 = al.Defficiencies()
-            print('D1 %f Ds %f D %f' % (D1, Ds, D))
-
-            tmp = plt.scatter(Ds, D, s=60, color='r')
-            if xi == 0:
-                tmp = plt.scatter(Ds, D, s=60, color='r', label='Strength 3')
-        plt.draw()
 
     xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
     plt.ylabel('D-efficiency', fontsize=16)
@@ -139,7 +132,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     ax.grid(b=True, which='both', color='0.85', linestyle='-')
     ax.set_axisbelow(True)
 
-    if not nofig:
+    if nofig:
+        plt.close(figh.number)
+    else:
         plt.draw()
         plt.pause(1e-3)
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})

@@ -194,7 +194,7 @@ class OATest(TestCommand):
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.unittest(verbose=1)
+        oapackage.tests.miscunittest(verbose=1)
         errno = 0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)

@@ -158,7 +158,7 @@ class TestDoptimize(unittest.TestCase):
     def setUp(self):
         
         self.arrayclass=oapackage.arraydata_t(2, 16, 2, 6)
-
+        self.dds = np.random.rand( 20,3)
 
     def test_unittest(self):
         scores, dds, sols, n=oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=0, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
@@ -168,6 +168,10 @@ class TestDoptimize(unittest.TestCase):
     def test_optimDeffPython(self):
         al=oapackage.exampleArray(2)
         r, al =oapackage.Doptim.optimDeffPython(al, arrayclass=None, niter=10000, nabort=2500, verbose=0, alpha=[1, 0, 0], method=0)
+
+    def test_generateDscatter(self):
+        r=oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, ndata=3, nofig=True, fig=20, scatterarea=80)
+        #plt.close(r['ax'])
 
 
 class TestCppLibrary(unittest.TestCase):
