@@ -14,7 +14,7 @@ from codecs import open  # To use a consistent encoding
 from os import path
 import os
 import sys
-imnport logging
+import logging
 import platform
 import subprocess
 import re
