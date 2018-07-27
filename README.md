@@ -72,12 +72,12 @@ Installation can be done using the following command::
 
 The binary tools have been tested using Linux, Windows XP/Win7/Win10 and Raspberry Pi.
 The program uses a `cmake` build system. From the commandline type::
-
+```
 > mkdir -p build; cd build
 > cmake ..
 > make
 > make install
-
+````
 
 Testing
 -------
