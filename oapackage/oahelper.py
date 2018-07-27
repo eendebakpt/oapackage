@@ -38,9 +38,10 @@ except:
 
 try:
     try:
-        from PySide import QtGui
+        from qtpy import QtGui
     except:
-        from PyQt4 import QtGui
+        # no Qt support
+        pass
 
     _applocalqt = None
 

@@ -64,27 +64,24 @@ Installation
 [![Build Status](https://travis-ci.org/eendebakpt/oapackage.svg?branch=master)](https://travis-ci.org/eendebakpt/oapackage)
 
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
-Installation can be done using the following command::
+Installation can be done using the following command:
 ```console
-pip install OApackage 
+$ pip install OApackage 
 ```
 (or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy and Swig 3.x.
 
 The binary tools have been tested using Linux, Windows XP/Win7/Win10 and Raspberry Pi.
 The program uses a `cmake` build system. From the commandline type::
 ```
-> mkdir -p build; cd build
-> cmake ..
-> make
-> make install
+$ mkdir -p build; cd build
+$ cmake ..
+$ make
+$ make install
 ````
 
 Testing
 -------
 
-To perform tests run `pytest`.
-
-
-
+To perform tests run `pytest`. To obtain a coverage report, run `coverage run --source='./' -m pytest`
 
 
