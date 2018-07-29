@@ -1,0 +1,13 @@
+name: oapackage
+channels:
+- conda-forge
+- defaults
+dependencies:
+- numpy
+- pip
+- swig
+- matplotlib
+- pip:
+  - scanf
+  
+# conda env create --name oapackage -f condalist.yml
