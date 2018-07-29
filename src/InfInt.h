@@ -44,8 +44,10 @@
 //#include <limits.h>
 #include <stdlib.h>
 
-#ifndef lldiv_t
-	// support all platforms
+#ifdef _WIN32
+#else
+#ifndef __lldiv_t_defined
+	// support older unix platforms
 	typedef struct _mylldiv_t
 	{
 		long long quot;
