@@ -295,15 +295,11 @@ F4 ( const array_link & al, int verbose = 1 )
 {
     jstruct_t js ( al, 4 );
     std::vector < int >FF = js.calculateF ();
-#ifdef FULLPACKAGE
     if ( verbose >= 3 ) {
-        printf ( "  parseArrayPareto: F (high to low): " );
+        myprintf ( "  parseArrayPareto: F (high to low): " );
         display_vector ( FF );
-        std::cout << std::endl;
-        //std::vector<int> Fval=js.Fval();
-        //display_vector ( Fval ); std::cout << std::endl;
+		myprintf("\n");
     }
-#endif
 
     mvalue_t < long >v ( FF, mvalue_t < long >::LOW );
     return v;

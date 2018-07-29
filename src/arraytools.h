@@ -976,12 +976,10 @@ public:
     /// return the row_symmetry group of an array
     symmetry_group row_symmetry_group () const;
 
-#ifdef FULLPACKAGE
     /// return the LMC form of the array
     array_link reduceLMC () const;
     /// return the delete-one-factor-projection form of the array
     array_link reduceDOP () const;
-#endif
 
     /// return the array as an Eigen matrix
     inline MatrixFloat getEigenMatrix () const {

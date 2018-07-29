@@ -1771,8 +1771,6 @@ array_link exampleArray ( int idx, int verbose )
      return array_link ( 1,1,-1 );
 }
 
-#ifdef FULLPACKAGE // related to LMC
-
 array_link array_link::reduceDOP() const
 {
      array_link d = reduceDOPform ( *this, 0 );
@@ -1805,8 +1803,6 @@ array_link array_link::reduceLMC() const
      return reduction.getArray();
 
 }
-
-#endif
 
 symmetry_group array_link::row_symmetry_group() const
 {

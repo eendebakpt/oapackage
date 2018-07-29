@@ -205,15 +205,12 @@ public:
     larray ( const larray &rhs )
     {
         if ( rhs.n<0 ) {
-            //myprintf("larray: copy constructor: rhs.n<0! %d\n", rhs.n);
-            //this->d[-40]=0;
             this->n=-1;
             this->d=0;
             return;
         }
         alloc ( rhs.n );
         std::copy ( rhs.d, rhs.d+n, this->d );
-        //for(int i=0; i<n; i++) this->d[i]=rhs.d[i];
     }
 
     ~larray()
@@ -224,8 +221,6 @@ public:
             n=-3;
         }
         this->d=0;
-        //  myprintf("  --> larray::~larray n %d d %ld\n", this->n, (long)this->d );
-
     }
 
     void resize ( size_t n )
@@ -240,17 +235,11 @@ public:
     //Copy assignment operator
     larray &operator= ( const larray &rhs )
     {
-        //  myprintf("larray::operator= n %d %d\n", this->n, rhs.n );
         if ( this->n != rhs.n ) {
             release();
             alloc ( rhs.n );
-        } else {
-            // myprintf("larray::operator= n %d %d (no re-allocation)\n", this->n, rhs.n );
-        }
-        //myprintf("larray::operator= after alloc: n %d rhs.n %d\n", this->n, rhs.n );
+        } 
         std::copy ( rhs.d, rhs.d+n, this->d );
-
-        //for(int i=0; i<n; i++) this->d[i]=rhs.d[i];
 
         return *this;
     }
@@ -258,12 +247,9 @@ public:
     //Copy assignemnt operator
     larray &operator= ( const std::vector<numtype> &rhs )
     {
-        //myprintf("larray::operator= (from vector) n %d %zu\n", this->n, rhs.size() );
         int nn =rhs.size();
         release();
-        // myprintf("  nn %d\n", nn);
         this->alloc ( nn );
-        // myprintf("  alloc done nn %d\n", nn);
         for ( int i=0; i<nn; i++ ) {
             this->d[i]=rhs[i];
         }
@@ -272,8 +258,6 @@ public:
 
     numtype operator[] ( int i ) const
     {
-        //  if(i<0) myprintf("larray::operator[] i %d\n", i);
-        //   if(i>=n) myprintf("larray::operator[] i %d (n %d)\n", i, n);
         return d[i];
     }
 
@@ -288,7 +272,6 @@ public:
     }
     bool operator== ( const larray &rhs ) const
     {
-        //  myprintf("larray::operator==\n");
         if ( this->n != rhs.n )
             return false;
         for ( int i=0; i<n; i++ ) {
@@ -308,7 +291,6 @@ public:
         for ( int i=0; i<n; i++ ) {
             l.d[i]=this->d[i];
         }
-        // myprintf("addelement: l.n %d\n", l.n);
         l.d[l.n-1]=v;
         return l;
     }
@@ -322,7 +304,6 @@ private:
     }
     void release()
     {
-        // myprintf("larray::release %d, d %ld\n", n, (long)d);
         if ( d!=0 ) {
             delete [] d;
             n=-2;
@@ -432,8 +413,6 @@ public:
     }
     bool operator>= ( const mvalue_t &rhs ) const
     {
-        //        if (dverbose) myprintf("mvalue_t: operator<=");
-
         return ! rhs.operator< ( *this );
     }
 
@@ -530,7 +509,6 @@ Type vectormin ( const std::vector<Type> &v, Type defaultvalue )
         return *p;
     }
 }
-
 
 
 template<class NumType>
