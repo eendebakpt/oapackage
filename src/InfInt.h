@@ -46,7 +46,7 @@
 
 #ifndef lldiv_t
 	// support all platforms
-	typedef struct _lldiv_t
+	typedef struct _mylldiv_t
 	{
 		long long quot;
 		long long rem;
