@@ -231,7 +231,6 @@ public:
                 array_link ee = alist[i];
 
                 ga.push_back ( ee );
-                // myprintf ( "  selectArraysZ: selected array %zu/%zu\n", i, lmctype.size() );
             }
         }
         if ( verbose )

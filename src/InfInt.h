@@ -44,6 +44,15 @@
 //#include <limits.h>
 #include <stdlib.h>
 
+#ifndef lldiv_t
+	// support all platforms
+	typedef struct _lldiv_t
+	{
+		long long quot;
+		long long rem;
+	} lldiv_t;
+#endif
+
 #ifdef _WIN32
 #define LONG_LONG_MIN LLONG_MIN
 #define LONG_LONG_MAX LLONG_MAX
