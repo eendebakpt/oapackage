@@ -809,7 +809,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 		  array_link al = exampleArray(2);
           symmetry_group sg = al.row_symmetry_group();
-		  assert(sg.permsize() == sg.permsize_large());
+		  assert(sg.permsize() == sg.permsize_large().toLong() );
 
 		  //symmetry_group
 		  std::vector<int> vv; vv.push_back(0); vv.push_back(0); vv.push_back(1);
