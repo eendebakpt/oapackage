@@ -54,6 +54,7 @@
 		long long rem;
 	} lldiv_t;
 #endif
+#endif
 
 #ifdef _WIN32
 #define LONG_LONG_MIN LLONG_MIN
