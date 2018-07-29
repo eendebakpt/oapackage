@@ -5,7 +5,7 @@ compiler:
     - clang
 os:
 - linux
-- osx
+#- osx
 
 #before_install:
 #  - sudo apt-get install cmake
