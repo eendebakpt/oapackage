@@ -1,7 +1,7 @@
 Orthogonal Array Package
 ========================
 
-A mex interface to the Orthogonal Array package is contained in the subdirectory mex/.
+A mex interface to the Orthogonal Array package is contained in the subdirectory `mex/`.
 
 Installation
 ------------
