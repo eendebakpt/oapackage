@@ -6,7 +6,9 @@ Orthogonal Array Package
 The Orthognal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
-For more information about the package see the page <http://pietereendebak.nl/oapackage/>.
+For more information about the package see the
+documentation at [https://oapackage.readthedocs.io/en/latest/](https://oapackage.readthedocs.io/en/latest/)
+and the webpage <http://pietereendebak.nl/oapackage/>.
 
 Usage
 -------
@@ -31,9 +33,8 @@ D-efficiency 1.000000, rank 2
 Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
-For examples see the Jupyter notebooks in the
-[docs/examples](docs/examples/). Documentation is available
-at [https://oapackage.readthedocs.io/en/latest/](https://oapackage.readthedocs.io/en/latest/).
+For more examples see the Jupyter notebooks in the
+[docs/examples](docs/examples/). 
 
 Acknowledgements
 ----------------
@@ -65,7 +66,7 @@ Installation
 
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
 Installation can be done using the following command:
-```console
+``` console
 $ pip install OApackage 
 ```
 (or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy and Swig 3.x.

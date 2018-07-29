@@ -1756,8 +1756,10 @@ public:
 #ifdef FULLPACKAGE
 
     typedef long perm_return_type;
-//#define perm_return_type long
-    /// return size of the group of all permutations respecting the symmetry
+    /** return size of the group of all permutations respecting the symmetry
+	  *
+	  * The return type can overflow quickly. For larger group sizes use permsize_large
+	  */
     perm_return_type permsize() const
     {
         perm_return_type  s = 1;
@@ -1771,7 +1773,6 @@ public:
                 throw;
                 return -1;
             }
-
             s *= f;
         }
         return s;
