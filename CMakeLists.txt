@@ -102,7 +102,7 @@ endif(OADEV)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "Using CLang compiler")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat-deprecated-writable-strings -fPIC")
-    if(NO_COMPILER_WARNINGS)
+    if(NOCOMPILERWARNINGS)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
     endif()
 endif()
@@ -156,7 +156,11 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
 
+
   set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
+  if(NOCOMPILERWARNINGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+  endif()
 endif ()
 
 # for debugging
