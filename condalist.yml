@@ -2,8 +2,10 @@ name: oapackage
 channels:
 - conda-forge
 - defaults
+- intel
 dependencies:
 - python=3.5 # rtd python version
+- mkl
 - numpy
 - pip
 - swig
