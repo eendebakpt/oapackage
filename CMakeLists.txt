@@ -156,18 +156,12 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
 
-
-  set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
   if(NOCOMPILERWARNINGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+  else()
+    set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
   endif()
 endif ()
-
-# for debugging
-if("$ENV{USER}" STREQUAL "eendebakpt" )
-  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
-  #set(COPTS "-g -O0" ) # -std=c++0x ")
-endif()
 
 if("$ENV{OADEBUG}" STREQUAL "1")
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
@@ -193,8 +187,6 @@ if (MSVC)
   set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /D_SCL_SECURE_NO_WARNINGS")
   #ADD_DEFINITIONS(-DNODEFAULTLIB:library)
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  #set ( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} /NODEFAULTLIB:MSVCRT /EHsc /W0 /MT /verbose" )
- # SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
 endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")

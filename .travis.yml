@@ -3,12 +3,17 @@ language: cpp
 compiler:
     - gcc
     - clang
+os:
+- linux
+- windows
+
 #before_install:
 #  - sudo apt-get install cmake
 before_script:  
     - mkdir -p build
     - cd build
-    - cmake -DNOCOMPILERWARNINGS ..
+    - cmake --version
+    - cmake -DNOCOMPILERWARNINGS=1 ..
 
 script:
   - make  
