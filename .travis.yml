@@ -8,7 +8,7 @@ compiler:
 before_script:  
     - mkdir -p build
     - cd build
-    - cmake ..
+    - cmake -DNO_COMPILER_WARNINGS ..
 
 script:
   - make  
