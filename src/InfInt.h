@@ -44,17 +44,12 @@
 //#include <limits.h>
 #include <stdlib.h>
 
-#ifdef _WIN32
-#else
-#ifndef __lldiv_t_defined
-	// support older unix platforms
-	typedef struct _mylldiv_t
-	{
-		long long quot;
-		long long rem;
-	} lldiv_t;
-#endif
-#endif
+// not all platforms support lldiv_t, so we define our own 
+typedef struct _my_lldiv_t
+{
+	long long quot;
+	long long rem;
+} my_lldiv_t;
 
 #ifdef _WIN32
 #define LONG_LONG_MIN LLONG_MIN
@@ -115,9 +110,9 @@ inline static ldiv_t my_ldiv(long num, long denom)
 	return result;
 }
 
-inline static lldiv_t my_lldiv(long long num, long long denom)
+inline static my_lldiv_t my_lldiv(long long num, long long denom)
 {
-	lldiv_t result;
+	my_lldiv_t result;
 	result.quot = num / denom;
 	result.rem = num - denom * result.quot;
 	return result;
@@ -307,7 +302,7 @@ inline InfInt::InfInt(long long l) : pos(l >= 0)
 	}
 	do
 	{
-		lldiv_t dt = my_lldiv(l, BASE);
+		my_lldiv_t dt = my_lldiv(l, BASE);
 		val.push_back((ELEM_TYPE)dt.rem);
 		l = dt.quot;
 	} while (l > 0);
@@ -437,7 +432,7 @@ inline const InfInt& InfInt::operator=(long long l)
 	}
 	do
 	{
-		lldiv_t dt = my_lldiv(l, BASE);
+		my_lldiv_t dt = my_lldiv(l, BASE);
 		val.push_back((ELEM_TYPE)dt.rem);
 		l = dt.quot;
 	} while (l > 0);
@@ -675,7 +670,7 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
 	size_t digit = 0;
 	for (;; ++digit)
 	{
-		lldiv_t dt = my_lldiv(carry, BASE);
+		my_lldiv_t dt = my_lldiv(carry, BASE);
 		carry = dt.quot;
 		result.val[digit] = (ELEM_TYPE)dt.rem;
 
@@ -685,7 +680,7 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
 			PRODUCT_TYPE pval = result.val[digit] + val[i] * (PRODUCT_TYPE)rhs.val[digit - i];
 			if (pval >= BASE || pval <= -BASE)
 			{
-				lldiv_t dt = my_lldiv(pval, BASE);
+				my_lldiv_t dt = my_lldiv(pval, BASE);
 				carry += dt.quot;
 				pval = dt.rem;
 			}
@@ -699,7 +694,7 @@ inline InfInt InfInt::operator*(const InfInt& rhs) const
 	}
 	for (; carry > 0; ++digit)
 	{
-		lldiv_t dt = my_lldiv(carry, BASE);
+		my_lldiv_t dt = my_lldiv(carry, BASE);
 		result.val[digit] = (ELEM_TYPE)dt.rem;
 		carry = dt.quot;
 	}
@@ -1328,7 +1323,7 @@ inline void InfInt::multiplyByDigit(ELEM_TYPE factor, std::vector<ELEM_TYPE>& va
 		PRODUCT_TYPE pval = val[i] * (PRODUCT_TYPE)factor + carry;
 		if (pval >= BASE || pval <= -BASE)
 		{
-			lldiv_t dt = my_lldiv(pval, BASE);
+			my_lldiv_t dt = my_lldiv(pval, BASE);
 			carry = (ELEM_TYPE)dt.quot;
 			pval = dt.rem;
 		}
