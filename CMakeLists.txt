@@ -120,8 +120,7 @@ endif()
 message(STATUS "Hostname ${HOSTNAME}, VSC ${VSC}")
 
 if (VSC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -axSSE4.2,SSE4.1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") 
 endif()
 
 if (INTEL_CC) 
@@ -149,7 +148,7 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX)
   #message(STATUS "CMAKE_COMPILER_IS_GNUCXX ${CMAKE_COMPILER_IS_GNUCXX}")
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS "${COPTS}  -O3 ") # -fpermissive
   set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
@@ -159,7 +158,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   if(NOCOMPILERWARNINGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
   else()
-    set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
+    set(COPTS "${COPTS} -pedantic -Wno-variadic-macros")	# make code comply to R
   endif()
 endif ()
 

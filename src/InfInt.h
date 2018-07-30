@@ -47,9 +47,10 @@
 // not all platforms support lldiv_t, so we define our own 
 typedef struct _my_lldiv_t
 {
-	long long quot;
-	long long rem;
+       long long quot;
+       long long rem;
 } my_lldiv_t;
+
 
 #ifdef _WIN32
 #define LONG_LONG_MIN LLONG_MIN
@@ -130,10 +131,8 @@ public:
 	InfInt(const std::string& s);
 	InfInt(int l);
 	InfInt(long l);
-	InfInt(long long l);
 	InfInt(unsigned int l);
 	InfInt(unsigned long l);
-	InfInt(unsigned long long l);
 	InfInt(const InfInt& l);
 
 	/* assignment operators */
@@ -141,10 +140,8 @@ public:
 	const InfInt& operator=(const std::string& s);
 	const InfInt& operator=(int l);
 	const InfInt& operator=(long l);
-	const InfInt& operator=(long long l);
 	const InfInt& operator=(unsigned int l);
 	const InfInt& operator=(unsigned long l);
-	const InfInt& operator=(unsigned long long l);
 	const InfInt& operator=(const InfInt& l);
 
 	/* unary increment/decrement operators */
@@ -194,10 +191,8 @@ public:
 	/* conversion to primitive types */
 	int toInt() const; // throw
 	long toLong() const; // throw
-	long long toLongLong() const; // throw
 	unsigned int toUnsignedInt() const; // throw
 	unsigned long toUnsignedLong() const; // throw
-	unsigned long long toUnsignedLongLong() const; // throw
 
 private:
 	static ELEM_TYPE dInR(const InfInt& R, const InfInt& D);
@@ -210,8 +205,8 @@ private:
 	bool equalizeSigns();
 	void removeLeadingZeros();
 
-	std::vector<ELEM_TYPE> val; // number with base FACTOR
 	bool pos; // true if number is positive
+	std::vector<ELEM_TYPE> val; // number with base FACTOR
 };
 
 inline InfInt::InfInt() : pos(true)
@@ -286,33 +281,6 @@ inline InfInt::InfInt(long l) : pos(l >= 0)
 	}
 }
 
-inline InfInt::InfInt(long long l) : pos(l >= 0)
-{
-	//PROFINY_SCOPE
-	bool subtractOne = false;
-	if (l == LONG_LONG_MIN)
-	{
-		subtractOne = true;
-		++l;
-	}
-
-	if (!pos)
-	{
-		l = -l;
-	}
-	do
-	{
-		my_lldiv_t dt = my_lldiv(l, BASE);
-		val.push_back((ELEM_TYPE)dt.rem);
-		l = dt.quot;
-	} while (l > 0);
-
-	if (subtractOne)
-	{
-		--*this;
-	}
-}
-
 inline InfInt::InfInt(unsigned int l) : pos(true)
 {
 	//PROFINY_SCOPE
@@ -324,16 +292,6 @@ inline InfInt::InfInt(unsigned int l) : pos(true)
 }
 
 inline InfInt::InfInt(unsigned long l) : pos(true)
-{
-	//PROFINY_SCOPE
-	do
-	{
-		val.push_back((ELEM_TYPE)(l % BASE));
-		l = l / BASE;
-	} while (l > 0);
-}
-
-inline InfInt::InfInt(unsigned long long l) : pos(true)
 {
 	//PROFINY_SCOPE
 	do
@@ -414,32 +372,6 @@ inline const InfInt& InfInt::operator=(long l)
 	return subtractOne ? --*this : *this;
 }
 
-inline const InfInt& InfInt::operator=(long long l)
-{
-	//PROFINY_SCOPE
-	bool subtractOne = false;
-	if (l == LONG_LONG_MIN)
-	{
-		subtractOne = true;
-		++l;
-	}
-
-	pos = l >= 0;
-	val.clear();
-	if (!pos)
-	{
-		l = -l;
-	}
-	do
-	{
-		my_lldiv_t dt = my_lldiv(l, BASE);
-		val.push_back((ELEM_TYPE)dt.rem);
-		l = dt.quot;
-	} while (l > 0);
-
-	return subtractOne ? --*this : *this;
-}
-
 inline const InfInt& InfInt::operator=(unsigned int l)
 {
 	//PROFINY_SCOPE
@@ -454,19 +386,6 @@ inline const InfInt& InfInt::operator=(unsigned int l)
 }
 
 inline const InfInt& InfInt::operator=(unsigned long l)
-{
-	//PROFINY_SCOPE
-	pos = true;
-	val.clear();
-	do
-	{
-		val.push_back((ELEM_TYPE)(l % BASE));
-		l = l / BASE;
-	} while (l > 0);
-	return *this;
-}
-
-inline const InfInt& InfInt::operator=(unsigned long long l)
 {
 	//PROFINY_SCOPE
 	pos = true;
@@ -1060,24 +979,6 @@ inline long InfInt::toLong() const
 	return pos ? result : -result;
 }
 
-inline long long InfInt::toLongLong() const
-{
-	//PROFINY_SCOPE
-	if (*this > LONG_LONG_MAX || *this < LONG_LONG_MIN)
-	{
-#ifdef INFINT_USE_EXCEPTIONS
-		throw InfIntException("out of bounds");
-#else
-		std::cerr << "Out of LLONG bounds: " << *this << std::endl;
-#endif
-	}
-	long long result = 0;
-	for (int i = (int)val.size() - 1; i >= 0; --i)
-	{
-		result = result * BASE + val[i];
-	}
-	return pos ? result : -result;
-}
 
 inline unsigned int InfInt::toUnsignedInt() const
 {
@@ -1110,25 +1011,6 @@ inline unsigned long InfInt::toUnsignedLong() const
 #endif
 	}
 	unsigned long result = 0;
-	for (int i = (int)val.size() - 1; i >= 0; --i)
-	{
-		result = result * BASE + val[i];
-	}
-	return result;
-}
-
-inline unsigned long long InfInt::toUnsignedLongLong() const
-{
-	//PROFINY_SCOPE
-	if (!pos || *this > ULONG_LONG_MAX)
-	{
-#ifdef INFINT_USE_EXCEPTIONS
-		throw InfIntException("out of bounds");
-#else
-		std::cerr << "Out of ULLONG bounds: " << *this << std::endl;
-#endif
-	}
-	unsigned long long result = 0;
 	for (int i = (int)val.size() - 1; i >= 0; --i)
 	{
 		result = result * BASE + val[i];
