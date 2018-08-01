@@ -23,20 +23,19 @@
 
 
 #%% The oapackage cannot be build on rtd. We mock the module
-
+import os
 rtd = os.environ.get('READTHEDOCS', False)
 
 if rtd:
     import sys
     from unittest.mock import MagicMock
-    
-    
+
     class Mock(MagicMock):
-    
+
         @classmethod
         def __getattr__(cls, name):
             return MagicMock()
-    
+
     MOCK_MODULES = ['oalib']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
