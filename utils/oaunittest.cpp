@@ -815,7 +815,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 		  std::vector<int> vv; vv.push_back(0); vv.push_back(0); vv.push_back(1);
 		  symmetry_group sg2(vv);
 		  assert(sg2.permsize() == 2);
-		  printf("sg2: %d\n", sg2.permsize());
+		  if (verbose>=2)
+                       printf("sg2: %ld\n", sg2.permsize());
 		  assert(sg2.ngroups == 2);
 
 			//sg2.

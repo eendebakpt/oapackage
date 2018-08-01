@@ -29,9 +29,6 @@ import_array();
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
 
-// enable keyword arguments in interface
-//%feature ("kwargs")
-
 %include "std_pair.i"
 
 %{

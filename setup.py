@@ -245,6 +245,8 @@ if platform.system() == 'Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
     swig_opts += ['-DWIN32', '-D_WIN32']
 
+rtd = os.environ.get('READTHEDOCS', False)
+print('Readthedocs environment: %s' % (rtd,))
 
 if 'VSC_SCRATCH' in os.environ.keys():
     # we are running on the VSC cluster
@@ -253,22 +255,18 @@ if 'VSC_SCRATCH' in os.environ.keys():
     libraries = ['z']
     library_dirs = [zlibdir + '/lib']
     include_dirs = ['.', 'src', npinclude, zlibdir + '/include']
-    oalib_module = Extension('_oalib',
-                             sources=sources,
-                             include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
-                             )
 else:
     libraries = []
     library_dirs = []
     include_dirs = ['.', 'src', npinclude]
 
-    oalib_module = Extension('_oalib', sources=sources,
+oalib_module = Extension('_oalib', sources=sources,
                              include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
                              )
 
 compile_options += ['-DNOOMP']
 swig_opts += ['-DNOOMP']
-
+    
 oalib_module.extra_compile_args = compile_options
 
 if checkZlib(verbose=1):
@@ -290,7 +288,6 @@ else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
     oalib_module.extra_compile_args += ['-Wno-date-time', ]
-    #swig_opts += [ '-Wno-delete-non-virtual-dtor' ]
 
 if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
     # openmp version of code
@@ -306,6 +303,11 @@ packages = ['oapackage']
 
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
+
+if rtd:
+    ext_modules = []
+else:
+    ext_modules = [oalib_module]
 
 from distutils.command.build import build
 from setuptools.command.install import install
@@ -348,7 +350,7 @@ setup(name='OApackage',
       license="BSD",
       url='http://www.pietereendebak.nl/oapackage/index.html',
       keywords=["orthogonal arrays, design of experiments, conference designs, isomorphism testing"],
-      ext_modules=[oalib_module],
+      ext_modules=ext_modules,
       py_modules=['oalib'],
       packages=packages,
       data_files=data_files,

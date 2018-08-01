@@ -373,13 +373,10 @@ bool isConferenceFoldover ( const array_link &al, int verbose )
      for ( int i=0; i<al.n_rows; i++ ) {
           if ( ri[i]>-1 )
                continue;
-          //array_link alx = alt.selectColumns ( i );
           int foundcol=0;
           for ( int j=i+1; j<al.n_rows; j++ ) {
                if ( ri[j]>-1 )
                     continue;
-               //array_link alx2 = alt2.selectColumns ( j );
-               //assert ( alt.columnEqual(i, alt2, j)==(alx==alx2) );
                if ( alt.columnEqual ( i, alt2, j ) ) {
                     //if ( alx==alx2 ) {
                     foundcol=1;
@@ -410,7 +407,6 @@ conference_transformation_t reduceDoubleConferenceTransformation ( const array_l
      arraydata_t arrayclass ( 3, al.n_rows, 1, al.n_columns );
      //printfd("run %d ", i); arrayclass.show();
      array_transformation_t at = reduceOAnauty ( al+1, verbose>=2, arrayclass );
-     // alx=at.apply ( al+1 ) + ( - 1 );
 
      conference_transformation_t t ( al );
      t.rperm = at.rowperm();
@@ -423,7 +419,6 @@ conference_transformation_t reduceDoubleConferenceTransformation ( const array_l
      }
 
      return t;
-
 }
 
 
@@ -796,6 +791,18 @@ int satisfy_symm ( const cperm &c, const std::vector<int>  & check_indices, int 
      return true;
 }
 
+/// filter list of columns, only return columns with zero at specified position
+inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, int zero_position )
+{
+    std::vector<cperm> out;
+    for ( size_t i=0; i<lst.size(); i++ ) {
+        if ( lst[i][zero_position]==0 ) {
+            out.push_back ( lst[i] );
+        }
+    }
+    return out;
+}
+
 /// helper function
 int fix_symm ( cperm &c, const std::vector<int>  & check_indices, int rowstart, int rowend )
 {
@@ -1074,6 +1081,16 @@ std::vector<cperm> filterDconferenceCandidates ( const std::vector<cperm> &exten
      return e2;
 }
 
+bool DconferenceFilter::filterJpartial ( const cperm &c, int r ) const {
+        const int N = als.n_rows;
+        long j = partial_inner_product ( c, this->als, als.n_columns-1, r );
+        if ( std::abs ( j ) > ( N-r ) ) {
+            return false;
+        } else {
+            return true;
+        }
+}
+    
 /// return True of the extension satisfies all checks
 bool DconferenceFilter::filter ( const cperm &c ) const
 {
@@ -1604,6 +1621,11 @@ std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, co
      }
      assert ( al.n_columns>1 );
 
+     if (filtersymminline) {
+         if (!filtersymm) {
+          myprintf("filtersymminline selected, but no filtersymm, is this what you want?" );
+         }
+     }
      const int N = al.n_rows;
      DconferenceFilter dfilter ( al, filtersymm, filterj2, filterj3 );
      if ( verbose>=2 ) {
@@ -2808,7 +2830,13 @@ CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const
 {
 }
 
-
+std::vector<cperm> CandidateGeneratorConference::generateCandidatesZero ( const array_link &al, int kz ) const {
+         const std::vector<cperm> &cci = this->generateCandidates(al);
+         
+             std::vector<cperm>  cci0 = filterZeroPosition ( cci, kz );
+            return cci0;
+    }
+    
 const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( const array_link &al ) const
 {
      // assert we have the right settings
@@ -2885,81 +2913,6 @@ const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( co
      return this->candidate_list[ncfinal];
 }
 
-
-// const std::vector<cperm> & CandidateGeneratorZero::generateCandidates ( const array_link &al ) const
-// {
-//      // assert we have the right settings
-//      const char *tag = "generateCandidates (conference, zero fixed, cache)";
-//      const int filterj2=1;
-//      assert ( ct.j1zero==0 );
-//      const int filterj3=ct.j3zero;
-//      double t00=get_time_ms();
-// 
-//      if ( verbose>=2 )
-//           printf ( "CandidateGenerator::%s: start\n",tag );
-// 
-// 
-//      int startcol = this->startColumn ( al, 1 );
-//      int kfinal=al.n_columns;
-//      int ncfinal = al.n_columns+1;
-//      int finalcol=kfinal;
-// 
-//      if ( verbose>=2 ) {
-//           printf ( "\n" );
-//           printf ( "## %s: startcol %d, ncfinal %d\n", tag, startcol, ncfinal );
-//      }
-// 
-//      std::vector<cperm> ccX, cci;
-//      int kstart=-1;
-// 
-//      /* select initial set of columns */
-//      if ( startcol==-1 ) {
-//           array_link als = al.selectFirstColumns ( START_COL );
-//           startcol=START_COL+1;
-//           int averbose=1;
-// 
-//           double t0=get_time_ms();
-//           ccX = generateConferenceExtensions ( al, ct, this->zero_position, averbose, 1, filterj2 );
-//           this->candidate_list[START_COL+1] = ccX;
-//           last_valid= START_COL+1;
-//           kstart=startcol-1;
-//      } else {
-//           // TODO: check this bound is sharp
-//           ccX = this->candidate_list[startcol];
-//           last_valid=startcol;
-//           kstart=startcol-1;
-//      }
-// 
-//      /* inflate the columns untill we have reached the target */
-//      array_link als;
-//      for ( int kx=kstart; kx<kfinal; kx++ ) {
-//           als = al.selectFirstColumns ( kx );
-//           array_link alx = al.selectFirstColumns ( kx+1 );
-//           DconferenceFilter filter ( alx, 1, filterj2, filterj3 );
-// 
-//           if ( verbose >=2 )
-//                printf ( "## %s: at %d columns: start with %d extensions, to generate extensions for column %d (%d column array)\n", tag, kx+1, ( int ) ccX.size(), kx+1 , kx+2 );
-// 
-//           cci = extensionInflate ( ccX, als, alx, filter, ct, ( verbose>=2 ) * ( verbose-1 ) );
-//           cci = filterZeroPosition ( cci, this->zero_position );
-// 
-//           if ( verbose >=2 ) {
-//                printf ( "## %s: at %d columns: total inflated: %ld\n",tag,  kx+1, cci.size() );
-//                printf ( "   dt %.1f [ms]\n", 1e3* ( get_time_ms()-t00 ) );
-//           }
-// 
-//           ccX=cci;
-// 
-//           this->candidate_list[kx+2] = ccX;
-//           this->last_valid=kx+2;
-//      }
-// 
-//      if ( verbose>=2 )
-//           printf ( "CandidateGenerator::%s: generated %d candidates with %d columns\n",tag, ( int ) this->candidate_list[ncfinal].size(), ncfinal );
-// 
-//      this->al = al;
-//      return this->candidate_list[ncfinal];
-// }
 
 const std::vector<cperm> & CandidateGeneratorDouble::generateCandidates ( const array_link &al ) const
 {
