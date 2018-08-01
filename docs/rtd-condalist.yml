@@ -10,7 +10,11 @@ dependencies:
 - pip
 - swig
 - matplotlib
+- nbsphinx
 - pip:
   - scanf
+  - sphinxcontrib.bibtex
+  - sphinxcontrib.napoleon
+
   
 # conda env create --name oapackage -f condalist.yml

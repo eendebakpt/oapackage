@@ -146,18 +146,12 @@ except:
     # fallback
     swig_valid = True
 
-if not swig_valid:
-    raise Exception('could not find a recent version if SWIG')
-
 #%% Hack to remove option for c++ code
 try:
     # see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
     from setuptools.py31compat import get_config_vars
 
     (opt,) = get_config_vars('OPT')
-
-    #import sysconfig
-    #opt = sysconfig.get_config_var('OPT')
 
     if not opt is None:
         opt = " ".join(flag for flag in opt.split()
@@ -307,6 +301,9 @@ packages = ['oapackage']
 if rtd:
     ext_modules = []
 else:
+    if not swig_valid:
+        raise Exception('could not find a recent version if SWIG')
+
     ext_modules = [oalib_module]
 
 from distutils.command.build import build
