@@ -290,8 +290,7 @@ public:
 
     /**
      * @brief Write file with design of OA
-     * @param file
-     * @param ad Arraydata structure to write
+     * @param filename
      * @return
      */
     void writeConfigFile ( const char *filename ) const;

@@ -34,15 +34,11 @@ inline void print_cperm ( const char *msg, const cperm &c )
 }
 
 
-/// show a list of candidate extensions
-inline void showCandidates ( const std::vector<cperm> &cc )
-{
-    for ( size_t i=0; i<cc.size(); i++ ) {
-        myprintf ( "%d: ", ( int ) i );
-        print_cperm ( cc[i] );
-        myprintf ( "\n" );
-    }
-}
+/** Show a list of candidate extensions
+ *
+ * \param cc List of candidates to show
+ */
+void showCandidates ( const std::vector<cperm> &cc );
 
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {

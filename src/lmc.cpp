@@ -1268,6 +1268,24 @@ void LMC_static_struct_t::init_nonroot_stage ( levelperm_t * &lperm_p, colperm_t
 }
 
 
+/**
+ * @brief Returns the value of (part of) a row
+ * @param array
+ * @param start_idx
+ * @param end_idx
+ * @param n_rows
+ * @param index Value index for each of the columns of the array
+ * @return
+ */
+static inline int row_rank_partial ( const carray_t *array, rowindex_t n_rows, const vindex_t *index, colindex_t start_idx, colindex_t end_idx, const colperm_t &colperm, rowindex_t row )
+{
+    int	sum = 0;
+    const array_t *ar = array+row;
+    for ( colindex_t i = start_idx; i < end_idx; i++ ) {
+        sum += index[i] * ar[n_rows*colperm[i]];
+    }
+    return sum;
+}
 
 /**
 * @brief Sort an array based on the values of the root

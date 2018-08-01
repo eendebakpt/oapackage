@@ -178,6 +178,16 @@ void getConferenceNumbers ( int N,int k, int &q, int &q1, int &q2, int &v )
      //printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
 }
 
+/// show a list of candidate extensions
+void showCandidates ( const std::vector<cperm> &cc )
+{
+    for ( size_t i=0; i<cc.size(); i++ ) {
+        myprintf ( "%d: ", ( int ) i );
+        print_cperm ( cc[i] );
+        myprintf ( "\n" );
+    }
+}
+
 conference_t::conference_t ( const conference_t  &rhs )
 {
      this->N = rhs.N;

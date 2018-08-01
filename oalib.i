@@ -261,7 +261,7 @@ def __setitem__(self,index, value):
 %include "oadoxy.i"
 
 
-// http://www.swig.org/Doc2.0/Python.html#Python_nn47
+// see http://www.swig.org/Doc2.0/Python.html#Python_nn47
 
 %include "cpointer.i"
 %include "std_map.i"

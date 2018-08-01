@@ -953,9 +953,9 @@ void next_perm ( permutationType *s, const int len )
 template <class numtype, class objecttype>	/* permtype should be a numeric type, i.e. int or long */
 /**
  * See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations
- * @param
+ * @param k
  * @param s
- * @param len
+ * @param n
  * @return
  */
 numtype* permutationLex ( numtype k, objecttype *s, numtype n )
@@ -1259,7 +1259,7 @@ template <class numtype>
  * Calculates C = B \circ A
  * @param A
  * @param B
- * @param n
+ * @param n Length of permutations
  * @param C
  */
 inline void composition_perm ( const numtype * A, const  numtype* B, int n, numtype * C )
@@ -1276,7 +1276,6 @@ template <class numtype>
  * Calculates C = B \circ A
  * @param A
  * @param B
- * @param n
  * @param C
  */
 inline void composition_perm ( const std::vector<numtype> &A, const std::vector<numtype> &B,  std::vector<numtype> &C )
@@ -1357,9 +1356,8 @@ inline void perform_level_perm ( const numtype *const src, numtype *const target
 
 template <class numtype>
 /**
- * Initialiaze a permutation
+ * Initialize a permutation
  * @param perm
- * @param len
  */
 void init_perm ( std::vector<numtype> &perm)
 {
