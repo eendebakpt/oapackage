@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Collection of helper functions for OA package
 
-Pieter Eendebak <pieter.eendebak@gmail.com>
-
-@author: eendebakpt
+@author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
 
 # %% Load packages
@@ -555,7 +553,13 @@ def getArrayFile(afile):
 
 def checkOAfile(afile, verbose=0):
     """ Return pointer to array file
+    
     Automatically check for compressed array files
+    
+    Args:
+        afile (str): location of array file
+    Returns:
+        arrayfile_t or None
     """
     af = oapackage.arrayfile_t(afile, verbose)
     nm = af.filename
@@ -680,7 +684,11 @@ def randomizearrayfile(afile, afileout, verbose=1):
 
 
 def nArrayFile(afile, verbose=1):
-    """ Return number of arrays in file """
+    """ Return number of arrays in file
+    
+    Args:
+        afile (str): name of array file
+    """
     af = oalib.arrayfile_t(afile, 0)
     n = af.narrays
     af.closefile()
@@ -694,8 +702,8 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         infile (str): file with designs
         outfile (str): output  file with designs
         inx (list of indices)
-    Output:
-        - None
+    Returns:
+        None
 
     """
     if not checkFiles(outfile, cache=cache):
@@ -791,7 +799,14 @@ def parseProcessingTime(logfile, verbose=0):
 
 
 def safemax(data, default=0):
-    """ Return maximum of array with default value for empty array """
+    """ Return maximum of array with default value for empty array
+    
+    Args:
+        data (array or list): data to return the maximum
+        default (obj): default value 
+    Returns:
+        m: maximum value
+    """
 
     if isinstance(data, list):
         if len(data) == 0:
@@ -808,7 +823,6 @@ def safemax(data, default=0):
 
 def series2htmlstr(ad, html=1, case=0):
     """ Convert arraydata_t to html formatted string """
-#    s=[ad.s[ii] for ii in range(0, ad.ncols)]
     s = list(ad.getS())
     p = -1
     n = 0
@@ -870,9 +884,6 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
     solseo = oalib.arraylist_t()
     v = []
     for ii, js in enumerate(jresults):
-        # js.show()
-        #    if not np.array(js.vals)[0]==0:
-        #        solseo.append(sols0[ii])
         v.append(js.vals[0])
 
     si = [i for (i, j) in sorted(enumerate(v), key=operator.itemgetter(1))]
@@ -885,12 +896,11 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
 
 
 def extendSingleArray(A, adata, t=3, verbose=1):
-    """ Extend a single array """
+    """ Extend a single orthogonal array """
     oaoptions = oalib.OAextend()
     sols0 = oalib.arraylist_t()
     solsx = oalib.arraylist_t()
     sols0.push_back(A)
-    #N = A.n_rows
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
     sys.stdout.flush()
@@ -977,76 +987,45 @@ def compressOAfile(afile, decompress=False, verbose=1):
         return False
 
 
-if 0:
-    def pointer2np(p, sz):
-        """ Convert array pointer to numpy array """
-        if isinstance(sz, tuple):
-            1
-        else:
-            sz = (sz,)
-        ip = oalib.intArray.frompointer(p)
-        A = np.zeros(sz)
-        for ii in range(0, np.prod(sz)):
-            A[ii] = ip[ii]
-        A = A.reshape(sz)
-        return A
-
-if 0:
-    import ctypes
-
-    def arraylink2array(al):
-        """ Convert arraylink to numpy array """
-        print('use araylink.getarray')
-        w = al.array
-        nrows = al.n_rows
-        ncols = al.n_columns
-        func = ctypes.pythonapi.PyBuffer_FromMemory
-        func.restype = ctypes.py_object
-        buffer = func(w.__long__(), nrows * ncols * 2 * 2)
-        xx = np.frombuffer(buffer, np.int32, count=nrows * ncols)
-        xx = xx.reshape((ncols, nrows)).transpose()
-        return xx
+#def getposjvals(A, t, verbose=1):
+#    N = A.shape[0]
+#    k = A.shape[1]
+#    ncols = t + 1
+#    jstep = 2**(t + 1)
+#    njvals = int(1 + (float(N) / jstep))
+#    jvals = [N - jstep * l for l in range(0, njvals)]
+#    return jvals
 
 
-def getposjvals(A, t, verbose=1):
-    N = A.shape[0]
-    k = A.shape[1]
-    ncols = t + 1
-    jstep = 2**(t + 1)
-    njvals = int(1 + (float(N) / jstep))
-    jvals = [N - jstep * l for l in range(0, njvals)]
-    return jvals
-
-
-def arraystats(A, verbose=1):
-    """ Return statistics of an array """
-    Af = A.transpose().flatten()
-    al = oalib.array_link(A.shape[0], A.shape[1], 0)
-    alist = oalib.arraylist_t(1)
-    alist[0] = al
-    # al.array
-    ia = oalib.intArray.frompointer(al.array)
-    for x in range(0, A.size):
-        ia[x] = int(Af[x])
-#    al.showarray()
-    jresults = oalib.analyseArrays(alist, 0)
-    js = jresults[0]
-    vals = pointer2np(js.vals, js.nc)
-    jvals = getposjvals(A, 3, verbose=0)
-
-    jv = np.zeros(len(jvals))
-    c = Counter(abs(vals))
-    for ii, xx in enumerate(jvals):
-        if c.has_key(xx):
-            jv[ii] = c.get(xx)
-    if verbose:
-        print('Possible j-values: %s' % jvals, end="")
-        print('     values: %s' % jv.astype(int))
-
-    N = A.shape[0]
-    Ak = (1 / N ^ 2) * sum(vals**2)
-    print('Ak: %s' % Ak)
-    return Ak
+#def arraystats(A, verbose=1):
+#    """ Return statistics of an array """
+#    Af = A.transpose().flatten()
+#    al = oalib.array_link(A.shape[0], A.shape[1], 0)
+#    alist = oalib.arraylist_t(1)
+#    alist[0] = al
+#    # al.array
+#    ia = oalib.intArray.frompointer(al.array)
+#    for x in range(0, A.size):
+#        ia[x] = int(Af[x])
+##    al.showarray()
+#    jresults = oalib.analyseArrays(alist, 0)
+#    js = jresults[0]
+#    vals = pointer2np(js.vals, js.nc)
+#    jvals = getposjvals(A, 3, verbose=0)
+#
+#    jv = np.zeros(len(jvals))
+#    c = Counter(abs(vals))
+#    for ii, xx in enumerate(jvals):
+#        if c.has_key(xx):
+#            jv[ii] = c.get(xx)
+#    if verbose:
+#        print('Possible j-values: %s' % jvals, end="")
+#        print('     values: %s' % jv.astype(int))
+#
+#    N = A.shape[0]
+#    Ak = (1 / N ^ 2) * sum(vals**2)
+#    print('Ak: %s' % Ak)
+#    return Ak
 
 
 def argsort(seq):
@@ -1176,7 +1155,7 @@ def DefficiencyBound(D, k, k2):
         k2 (int): numbers of columns 
 
     Returns:
-    D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns    
+        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns    
 
     """
     m = 1. + k + k * (k - 1) / 2
@@ -1220,7 +1199,13 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
 
 
 def makearraylink(al):
-    """ Convert array to array_link object """
+    """ Convert array to array_link object
+    
+    Args:
+        al (numpy array): array to convert
+    Returns:
+        array_link
+    """
     if isinstance(al, np.ndarray):
         tmp = oalib.array_link()
         tmp.setarray(al)
@@ -1229,7 +1214,7 @@ def makearraylink(al):
 
 
 def formatC(al, wrap=True):
-    """ Format array the inclusion in C code """
+    """ Format array for inclusion in C code """
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:

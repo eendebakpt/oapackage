@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Module to work with designs and graphs
 
-@author: eendebakpt
+@author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
 
 #%% Load packages
