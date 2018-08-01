@@ -57,6 +57,7 @@ extensions += ['sphinxcontrib.bibtex']
 extensions += ['nbsphinx']
 extensions += ['sphinxcontrib.napoleon']
 extensions += ['sphinx.ext.intersphinx']
+extensions += ['IPython.sphinxext.ipython_console_highlighting']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

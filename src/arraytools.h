@@ -1032,19 +1032,15 @@ typedef std::vector <cperm > cperm_list;
 
 
 // concatenate 2 arrays in vertical direction
-array_link
-hstack ( const array_link & al, const array_link & b );
+array_link hstack ( const array_link & al, const array_link & b );
 
 // concatenate 2 arrays in vertical direction
-array_link
-hstack ( const array_link & al, const cperm & b );
+array_link hstack ( const array_link & al, const cperm & b );
 
 // concatenate 2 arrays in horizontal direction
-array_link
-hstack ( const array_link & al, const array_link & b );
+array_link hstack ( const array_link & al, const array_link & b );
 // concatenate the last column of array B to array A
-array_link
-hstacklastcol ( const array_link & A, const array_link & B );
+array_link hstacklastcol ( const array_link & A, const array_link & B );
 
 
 inline cperm vstack ( const cperm & A, const cperm & B )

@@ -4,3 +4,4 @@ nbsphinx
 sphinxcontrib.napoleon
 scanf
 matplotlib
+iPython
