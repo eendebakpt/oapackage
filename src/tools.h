@@ -453,7 +453,6 @@ void countelements ( carray_t* array, const int nelements, const int maxval, int
  */
 inline void addelement ( const array_t elem, int* elements )
 {
-    //myprintf("adding element as position %d\n", elem);
     elements[elem]++;
 }
 
@@ -480,12 +479,10 @@ inline std::string currenttime()
 }
 
 
-
 /// return string describing array
 std::string oafilestring ( const arraydata_t *ad );
 /// return string describing array
 std::string oafilestring ( rowindex_t rows, colindex_t cols, array_t *s );
-
 
 
 template <class numtype>
@@ -514,14 +511,6 @@ inline std::string printtime()
     timeinfo = localtime ( &rawtime );
     return printfstring ( "%s", asctime ( timeinfo ) );
 }
-
-#ifdef OAANALYZE_DISCR
-void init_discriminant ( int nr, int nc );
-//void print_discriminant(int nr, int nc);
-//void clear_discriminant(int nr, int nc);
-//void analyse_discriminant(int row, int col, lmc_t lmc, int nr, int nc);
-
-#endif
 
 /* sorting templates */
 

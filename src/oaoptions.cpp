@@ -163,9 +163,6 @@ std::string print_options_string ( )
     outx << "USE_TPLUSCOLUMN" << sep;
 #endif
 
-//	if (INIT_COL_PREVIOUS==1)
-    //	out << "INIT_COL_PREVIOUS" << sep;
-
 #ifdef SYMMBLOCKS
     outx << "SYMMBLOCKS" << sep;
 #endif
