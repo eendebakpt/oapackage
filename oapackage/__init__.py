@@ -13,7 +13,12 @@ import oapackage.tests
 
 oalib.setloglevel(oalib.SYSTEM)
 oalib.log_print(-oalib.SYSTEM, '')
-from oalib import *
+
+try:
+    from oalib import *
+except:
+    # fix for RTD
+    pass
 from . oahelper import *
 from . Doptim import *
 from . import scanf
