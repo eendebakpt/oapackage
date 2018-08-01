@@ -255,12 +255,12 @@ else:
     include_dirs = ['.', 'src', npinclude]
 
 oalib_module = Extension('_oalib', sources=sources,
-                             include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
-                             )
+                         include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
+                         )
 
 compile_options += ['-DNOOMP']
 swig_opts += ['-DNOOMP']
-    
+
 oalib_module.extra_compile_args = compile_options
 
 if checkZlib(verbose=1):
@@ -318,7 +318,6 @@ class CustomBuild(build):
         build.run(self)
 
 
-
 class CustomInstall(install):
 
     def run(self):
@@ -357,8 +356,8 @@ setup(name='OApackage',
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
       zip_safe=False,
       install_requires=['numpy>=1.13', 'scanf'],
-      extras_require = {
-        'GUI':  ["qtpy"],
+      extras_require={
+          'GUI':  ["qtpy"],
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
