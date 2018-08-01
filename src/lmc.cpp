@@ -1310,6 +1310,26 @@ inline void LMC_root_sort ( const carray_t *array, const arraydata_t *ad, const 
 }
 
 
+/**
+ * @brief Returns the value of (part of) a row
+ * @param array
+ * @param start_idx
+ * @param end_idx
+ * @param n_rows
+ * @param index Value index for each of the columns of the array
+ * @return
+ */
+static inline array_t row_rank_partial ( carray_t *array, colindex_t start_idx, colindex_t end_idx, rowindex_t n_rows, const vindex_t *index )
+{
+    array_t	sum = 0;
+    int j = 0;
+    j += n_rows*start_idx;
+    for ( colindex_t i = start_idx; i < end_idx; i++ ) {
+        sum += index[i] * array[j];
+        j += n_rows;
+    }
+    return sum;
+}
 
 /**
 * @brief Sort an array based on the values of the root

@@ -193,6 +193,25 @@ int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stac
 /// Find the range of the elements that are allowed
 void get_range ( array_t *array, extendpos *p, extend_data_t* es, int use_row_symmetry );
 
+/**
+ * @brief Returns the value of (part of) a row
+ * @param array
+ * @param start_idx
+ * @param end_idx
+ * @param n_rows
+ * @param index Value index for each of the columns of the array
+ * @return
+ */
+static inline array_t row_rank_partial ( carray_t *array, const colindex_t start_idx, const colindex_t end_idx, const rowindex_t row, const rowindex_t n_rows, const int *index )
+{
+    register int	i, sum = 0, j = row;
+    j += n_rows*start_idx;
+    for ( i = start_idx; i < end_idx; i++ ) {
+        sum += index[i] * array[j];
+        j += n_rows;
+    }
+    return sum;
+}
 
 /** @brief Find row symmetry structure of an array
  *
