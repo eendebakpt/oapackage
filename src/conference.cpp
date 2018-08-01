@@ -2816,6 +2816,10 @@ std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link 
      return cci;
 }
 
+/// return all candidates for the kth column
+cperm_list CandidateGeneratorBase::candidates(int k) {
+     return this->candidate_list[k];    
+}
 
 CandidateGeneratorBase::CandidateGeneratorBase ( const array_link &al, const conference_t &ct_ )
 {

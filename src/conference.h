@@ -173,17 +173,22 @@ protected:
 public:
     CandidateGeneratorBase ( const array_link &al, const conference_t &ct );
 
-    /// show the candidate extensions for each column    
+    /** Show the candidate extensions for each column    
+     * 
+     */
     void showCandidates ( int verbose=1 ) const {
         myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
-            myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list[i].size() );
+            myprintf ( "CandidateGenerator: number of candidnates for %dth column: %ld\n", i, ( long ) candidate_list[i].size() );
             if ( verbose>=2 ) {
                 ::showCandidates ( candidate_list[i] );
             }
         }
     }
-
+    
+    /// return all candidates for the kth column
+    cperm_list candidates(int k);
+    
 protected:
     static const int START_COL = 2;
 

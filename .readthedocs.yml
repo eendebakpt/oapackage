@@ -8,5 +8,5 @@ python:
 requirements_file: docs/rtd-requirements.txt
 
 # needed to get swig to install
-conda:
-  file: condalist.yml
+#conda:
+#  file: condalist.yml
