@@ -199,6 +199,18 @@ rev_index *create_reverse_colcombs ( colindex_t **colcombs, const int ncols, con
     return rev_colcombs;
 }
 
+    strength_check_t::~strength_check_t()
+    {
+        free2d_irr ( freqtable );
+        free2d ( indices );
+        free_colcombs_fixed ( colcombs, lambda, nvalues );
+        if ( r_index!=0 ) {
+            free ( r_index->index );
+            free ( r_index );
+        }
+
+    };
+
 
 /**
  * @brief Calculate position of a row in the frequency table
