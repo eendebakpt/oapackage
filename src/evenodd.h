@@ -174,7 +174,6 @@ public:
         this->lmctype.resize ( nn );
         this->lastcol.resize ( nn );
         this->strengthcheck.resize ( nn );
-        // this->tmp.resize(nn);
 
         std::fill ( this->lmctype.begin (), this->lmctype.begin () + nn, LMC_MORE );
         std::fill ( this->lastcol.begin (), this->lastcol.begin () + nn, -1 );
@@ -197,9 +196,6 @@ public:
             if ( strengthcheck[i] ) {
                 //myprintf("##  depth_extend_sub_t.updateExtensionPointers: i %zu, lastcol %d extcol %d \n", i, lastcol[i], extcol);
                 if ( lastcol[i] >= extcol || lastcol[i] == -1 || extcol < 5 ) {
-                    // NOTE: extcol < 5 condition --> make generic
-                    // good candidate
-                    //      printf("  %d %d \n", lastcol[i], extcol);
                     pointers.push_back ( valididx[i] );
                 }
             }
@@ -517,16 +513,6 @@ void depth_extend_hybrid ( const arraylist_t & alist, depth_extend_t & dextend,
 void depth_extend_direct ( const arraylist_t & alist, depth_extend_t & dextend,
                            int extcol, const OAextend & oaextendx,
                            int verbose );
-
-
-
-
-/** @brief perform depth-first extension
- *
- * The arrays generated are pruned by keeping a list of possible extension values
- *
- */
-//void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int col, int verbose=1 );
 
 
 /// depth extend a single array

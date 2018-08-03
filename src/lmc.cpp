@@ -2423,6 +2423,30 @@ lmc_t LMCcheckLex ( array_link const &al, arraydata_t const &ad )
     return result;
 }
 
+template<class numtype>
+/// Convert selection of elements to extended permutation
+void combadd2perm(const larray<numtype> &comb, int newidx, int n, larray<numtype> &target, larray<numtype> &wtmp)
+{
+    for(int i=0; i<n; i++) {
+        wtmp[i]=i;
+    }
+    int j=comb.size();
+    for(int i=0; i<j; i++) {
+        target[i]=comb[i];
+        wtmp[comb[i]]=-1;
+    }
+    if (j<0) myprintf("combadd2perm: j<0! j %d\n", j);
+    target[j]=newidx;
+    wtmp[newidx]=-1;
+    j++;
+
+    for(int i=0; i<n; i++) {
+        if (wtmp[i]>=0) {
+            target[j]=wtmp[i];
+            j++;
+        }
+    }
+}
 
 lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction,  LMCreduction_t &reductionsub, int dverbose )
 {
@@ -2481,7 +2505,6 @@ lmc_t LMCcheckSymmetryMethod ( const array_link &al, const arraydata_t &ad, cons
 //            std::vector<colindex_t> w = reductionsub.symmetries[i][j].colperm;  w.push_back(newcol);
             //larray<colindex_t> w = reductionsub.symmetries[i][j].colperm.addelement(newcol);
 
-            //myprintf("combadd2perm: newcol %d, ad.cols %d, wtmp.size() %d, colperm ", newcol, ad.ncols, wtmp.size() ); print_perm(reductionsub.symms.symmetries[i][j].colperm);
             combadd2perm ( reductionsub.symms.symmetries[i][j].colperm, newcol, ad.ncols, ww, wtmp ); // expensive
             //larray<colindex_t> ww = comb2perm<colindex_t>(w, ad.ncols);
 
@@ -2825,6 +2848,19 @@ LMCreduction_t calculateSymmetryGroups ( const array_link &al, const arraydata_t
 
 }
 
+/// helper function, create array with root and elements of additional columns set to 1000
+array_link rootPlus(const arraydata_t &ad)
+{
+    array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
+    al.create_root(ad);
+    for(int i=ad.strength; i<ad.ncols; i++) {
+        for(int r=0; r<ad.N; r++) {
+            al.at(r, i)=1000;
+        }
+    }
+    return al;
+}
+
 lmc_t LMCcheckOriginal ( const array_link &al ) {
     assert ( al.is2level() );
     arraydata_t ad = arraylink2arraydata ( al );
@@ -2837,9 +2873,14 @@ lmc_t LMCcheckOriginal ( const array_link &al ) {
 
 	            int changed = check_root_update ( al.array, ad, reduction.array );
 
-	//            reduction->setArray ( array, ad->N, ad->ncols );
+    return LMCcheck ( al.array, ad,  oaextend, reduction );
+}
 
-	
+lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction )
+{
+    myassert(ad.N==al.n_rows, "LMCcheck: wrong number of rows");
+    mycheck(ad.ncols<=al.n_columns, "LMCcheck: wrong number of columns al %d, adata %d", al.n_columns, ad.ncols);
+
     return LMCcheck ( al.array, ad,  oaextend, reduction );
 }
 
@@ -2866,21 +2907,13 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
         reduction.setArray ( array, ad.N, ad.ncols );
         //reduction->init_state=COPY;
 
-        //printfd("LMCreduce: copied array N %d, k %d, reduction->init_state %d\n", ad.N, ad.ncols, reduction.init_state);
-        //print_array(reduction.array, ad.N, ad.ncols);
-
     }
 
-    if ( 0 ) {
-        printfd ( "LMCcheck %s line %d: switching algorithm: init_state %d\n", __FUNCTION__, __LINE__, reduction.init_state );
-        oaextend.info();
-    }
 
     //printfd("oaextend.getAlgorithm() %d, MODE_ORIGINAL %d\n", oaextend.getAlgorithm(),MODE_ORIGINAL );
     switch ( oaextend.getAlgorithm() ) {
     case MODE_ORIGINAL: {
         lmc = LMCreduce ( array, array, &ad, &dynd, &reduction , oaextend );
-
     }
     break;
     case  MODE_J4: {
@@ -2913,8 +2946,6 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
         arraydata_t adx ( ad );
         x.setAlgorithm ( MODE_J5ORDERX, &adx );
         x.setAlgorithm ( MODE_J5ORDERXFAST, &adx );	 // TODO: work this out
-        //x.setAlgorithm(MODE_ORIGINAL, &adx);
-        // LMCreduction_t reductionsub2 = calculateSymmetryGroups( al, adx,  x, 0, 1);
         if ( dverbose ) {
             myprintf( "LMCcheck: MODE_LMC_SYMMETRY: calculateSymmetryGroups " );
         }
@@ -2941,7 +2972,6 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
             al.show();
             reductionsub.symms.showColperms ( 1 );
         }
-        // reduction.clearSymmetries();
 
         OAextend xx =oaextend;
         xx.setAlgorithm ( MODE_J5ORDERXFAST );
@@ -2971,9 +3001,6 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
     case  MODE_J5ORDERXFAST: {
         array_link al ( array, ad.N, ad.ncols, -20 );
         copy_array ( array, reduction.array, ad.N, ad.ncols );
-        // reduction.sd = symmdataPointer(new symmdata(al, 1) );
-
-        //double t0 = get_time_ms();
 
         OAextend oaextend2 = oaextend;
         oaextend2.setAlgorithm ( MODE_LMC_2LEVEL );
@@ -2995,9 +3022,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
 
 lmc_t LMCreduction_train ( const array_link &al, const arraydata_t* ad, LMCreduction_t *reduction, const OAextend &oaextend )
 {
-    //TODO: pass oaextend options to reduction train
     dyndata_t dyndata ( ad->N, 0 );
-    // OAextend oaextend;
     return LMCreduction_train ( al.array, ad, &dyndata, reduction , oaextend ) ;
 }
 

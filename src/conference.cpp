@@ -3356,9 +3356,6 @@ lmc_t LMC0check ( const array_link &al, int verbose )
                return result;
           }
 
-          //printf("--- sel_col %d\n",sel_col);
-          //print_rowsort(rowsort, al.n_rows);
-
           /* 4. Select one of two possible sign permutations for the first row */
           for ( int r_sign = 0; r_sign < 2; r_sign++ ) {
                rowsignperm[ rowsort[0].r ] = 2*r_sign - 1;
@@ -3367,14 +3364,11 @@ lmc_t LMC0check ( const array_link &al, int verbose )
                result = LMC0_columns ( al, rowsort, colperm, 1, rowsignperm, colsignperm, ncols, nrows, sd );
                if ( result==LMC_LESS ) {
                     return result;
-
                }
-
           }
 
           std::swap ( colperm[ 0 ], colperm[ sel_col ] );
           init_signperm ( rowsignperm );
-
      }
 
      return result;
