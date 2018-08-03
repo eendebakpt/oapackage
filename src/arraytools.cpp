@@ -3128,7 +3128,7 @@ array_link arraydata_t::create_root(int n_columns, int fill_value) const
      array_link al ( this->N, n_columns, -1 );
      al.create_root ( *this );
      
-     for(int i=this->strength; i<this->ncols; i++) {
+     for(int i=this->strength; i<al.n_columns; i++) {
           for(int r=0; r<this->N; r++) {
                al.at(r, i)=fill_value;
           }
