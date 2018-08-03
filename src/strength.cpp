@@ -14,6 +14,52 @@
 #include "strength.h"
 #include "arraytools.h"
 
+template <class basetype>
+/// Helper function
+vindex_t **set_indices ( colindex_t **colcombs, basetype *bases, const int k, colindex_t ncolcombs )
+{
+    int		prod, **indices = 0;
+
+    indices = malloc2d<int> ( ncolcombs, k );
+
+    for ( int j = 0; j < ncolcombs; j++ ) {
+        //numtype* init_valueindex_forward(numtype *valueindex, const numtype *bases, const numtype n)
+        prod = 1;
+        for ( int i = 0; i < k; i++ ) {
+            indices[j][i] = prod;
+            prod *= bases[colcombs[j][i]];
+        }
+    }
+    return indices;
+}
+
+/**
+ * @brief Destructor
+ * @param colcombs
+ * @param lambda
+ * @param nvalues
+ */
+void free_colcombs_fixed ( colindex_t **colcombs, int *lambda, int *nvalues )
+{
+    free2d<colindex_t> ( colcombs );
+    free ( lambda );
+    free ( nvalues );
+}
+
+/** Create a table with strength frequencies
+ * @brief Constructor
+ * @param ncolcombs Number of column combinations to store
+ * @param nvalues Number of tuples that can occur for each column combination
+ * @param nelements Return variable with the size of the allocated array
+ * @return
+ */
+strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements )
+{
+    strength_freq_table frequencies = malloc2d_irr<int> ( ncolcombs, nvalues, nelements );
+    return frequencies;
+}
+
+
 
 /**
  * @brief Constructor fuction
@@ -99,25 +145,7 @@ extend_data_t::~extend_data_t()
 }
 
 
-strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements )
-{
-    strength_freq_table frequencies = malloc2d_irr<int> ( ncolcombs, nvalues, nelements );
-    return frequencies;
-}
 
-
-/**
- * @brief Destructor
- * @param colcombs
- * @param lambda
- * @param nvalues
- */
-void free_colcombs_fixed ( colindex_t **colcombs, int *lambda, int *nvalues )
-{
-    free2d<colindex_t> ( colcombs );
-    free ( lambda );
-    free ( nvalues );
-}
 
 
 /**
@@ -209,8 +237,79 @@ rev_index *create_reverse_colcombs ( colindex_t **colcombs, const int ncols, con
             free ( r_index );
         }
 
-    };
+    }
 
+/// perform strength check on an array
+bool strength_check ( const array_link &al, int strength,  int verbose )
+{
+    if ( strength==0 )
+        return true;
+
+
+    arraydata_t ad = arraylink2arraydata ( al, 0, strength );
+    strength_check_t strengthcheck ( strength );
+
+    int oaindextmin = get_oaindex ( ad.s, ad.strength-1, ad.N );
+
+    /* set column combinations with extending column fixed */
+
+    if ( verbose>=2 )
+        myprintf ( "strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength );
+    strengthcheck.set_colcombs ( ad );
+
+    //myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
+    strengthcheck.indices = set_indices ( strengthcheck.colcombs, ad.s, ad.strength, strengthcheck.ncolcombs );	//sets indices for frequencies, does the malloc as well
+
+    strengthcheck.create_reverse_colcombs_fixed();
+
+    int val=true;
+    strengthcheck.freqtable = new_strength_freq_table ( strengthcheck.ncolcombs, strengthcheck.nvalues, strengthcheck.freqtablesize );
+
+    if ( verbose>=2 )
+        strengthcheck.info();
+
+    if ( verbose>=2 ) {
+        myprintf ( "before:\n" );
+        strengthcheck.print_frequencies ( );
+    }
+
+    for ( int i=0; i<strengthcheck.ncolcombs; i++ ) {
+            assert ( ad.N<=MAXROWS );
+            int valindex[MAXROWS];
+            std::fill_n(valindex, ad.N, 0);
+            for ( int t=0; t<ad.strength; t++ ) {
+                colindex_t cc = strengthcheck.colcombs[i][t];
+                int s = ad.s[cc];
+                array_t *array_coloffset=al.array+cc*ad.N;
+                for ( int r=0; r<ad.N; r++ ) {
+                    array_t val = array_coloffset[r];
+                    valindex[r] = valindex[r]*s+val;
+                }
+            }
+            for ( int r=0; r<ad.N; r++ ) {
+                int vi = valindex[r];
+                strengthcheck.freqtable[i][vi]++;
+            }
+
+        for ( int j=0; j<strengthcheck.nvalues[i]; j++ ) {
+            if ( strengthcheck.freqtable[i][j]!=ad.N/strengthcheck.nvalues[i] ) {
+                if ( verbose>=2 )
+                    myprintf ( "no good strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j], strengthcheck.nvalues[i] );
+                val=false;
+                break;
+            }
+        }
+
+        if ( val==false )
+            break;
+    }
+    if ( verbose>=2 ) {
+        myprintf ( "table of counted value pairs\n" );
+        strengthcheck.print_frequencies ( );
+    }
+
+    return val;
+}
 
 /**
  * @brief Calculate position of a row in the frequency table

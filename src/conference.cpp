@@ -2762,12 +2762,12 @@ std::vector<cperm> extensionInflate ( const std::vector<cperm> &ccX, const array
           const cperm &basecandidate = ccX[i];
 
           if ( verbose>2 )
-               myprintf ( "### inflate candidate:" );
+               myprintf ( "### inflate candidate %d: (sg ngroups %d, sgfull ngroups %d\n", i, (int)alsg.ngroups, (int)alfullsg.ngroups );
           //printf(" "); print_cperm( basecandidate); printf("\n");
           cc=  inflateCandidateExtension ( basecandidate, als, alsg, check_indices, ct, verbose, filter );
 
           if ( verbose>=2 ) {
-               myprintf ( "inflate: array %d/%d: generated %ld candidates\n", ( int ) i, ( int ) ccX.size(), ( long ) cc.size() );
+               myprintf ( "### inflate: array %d/%d: generated %ld candidates\n", ( int ) i, ( int ) ccX.size(), ( long ) cc.size() );
           }
           cci.insert ( cci.begin(), cc.begin(), cc.end() );
      }
@@ -2832,12 +2832,11 @@ CandidateGeneratorBase::CandidateGeneratorBase ( const array_link &al, const con
 
 CandidateGeneratorConference::CandidateGeneratorConference ( const array_link &al, const conference_t &ct_ ) : CandidateGeneratorBase ( al, ct_ )
 {
-}
+     if ( ct_.j1zero!=0 ) {
+          myprintf("error: j1zero should be zero for conference designs!\n");
+     }
 
-// CandidateGeneratorZero::CandidateGeneratorZero ( const array_link &al, const conference_t &ct_, int zero_position ) : CandidateGeneratorBase ( al, ct_ )
-// {
-//      this->zero_position = zero_position;
-// }
+}
 
 CandidateGeneratorDouble::CandidateGeneratorDouble ( const array_link &al, const conference_t &ct_ ) : CandidateGeneratorBase ( al, ct_ )   // , filter ( DconferenceFilter ( al, 1, 1, 1 ) )
 {
@@ -2855,7 +2854,9 @@ const std::vector<cperm> & CandidateGeneratorConference::generateCandidates ( co
      // assert we have the right settings
      const char *tag = "generateCandidates (conference, zero fixed, cache)";
      const int filterj2=1;
-     assert ( ct.j1zero==0 );
+     if ( ct.j1zero!=0 ) {
+          myprintf("error: j1zero should be zero for conference designs!\n");
+     }
      const int filterj3=ct.j3zero;
      const int filtersymminline=1;
      double t00=get_time_ms();

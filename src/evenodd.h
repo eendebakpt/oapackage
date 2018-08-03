@@ -607,7 +607,7 @@ public:
     std::vector < int >fvals;
     std::map < jindex_t, long >maxJcounts;
     double dt;			/// time needed for calculation
-
+    
     Jcounter () :N ( -1 ), jj ( -1 ) {
     }
 
