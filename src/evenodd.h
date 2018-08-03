@@ -388,9 +388,6 @@ public:
                          arraywriter->nwritten );
                 this->counter->showcounts ( *this->ad );
                 this->arraywriter->closeafiles ();
-                //printfd ( "symmetry time: %.1f [s]\n", getdtsymm() );
-                //printfd ( "lmc time: %.3f [s]\n", getdtlmc() );
-
                 exit ( 0 );
             }
         }
@@ -776,7 +773,6 @@ private:
         if ( k > 0 ) {
             for ( size_t j = 0; j < fvals.size (); j++ ) {
                 jindex_t ji ( k, fvals[j] );
-                //myprintf("adding val %s\n", ji.toString().c_str());
                 maxJcounts[ji] = 0;
             }
         }

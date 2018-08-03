@@ -179,7 +179,7 @@ public:
     void showCandidates ( int verbose=1 ) const {
         myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
-            myprintf ( "CandidateGenerator: number of candidnates for %dth column: %ld\n", i, ( long ) candidate_list[i].size() );
+            myprintf ( "CandidateGenerator: number of candidates for %dth column: %ld\n", i, ( long ) candidate_list[i].size() );
             if ( verbose>=2 ) {
                 ::showCandidates ( candidate_list[i] );
             }

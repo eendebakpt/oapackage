@@ -1794,7 +1794,6 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
      std::vector<long> nb ( N+1 );
 #endif
 
-     // TODO: do faster inline checks (e.g. abort with partial symmetry, take combined J2 check with many zeros)
      long n=0;
      do {
 
@@ -3061,32 +3060,31 @@ lmc_t lmc0_compare_zeropos_block ( const array_link &al, const int x1, const int
      return LMC_EQUAL;
 }
 
-lmc_t lmc0_compare_zeropos_blockX ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
-{
-/// FIXME: remove dead function
-
-     /* Get zero position in the original array*/
-     int al_position_zero = nrows+1;
-
-     for ( int i = x1; i < x2; i++ ) {
-          if ( al.atfast ( i, column ) == 0 ) {
-               al_position_zero = i; // changed from rowperm[r].r
-          }
-     }
-
-     /* Check position of zeros */
-     int position_zero = get_zero_pos_blockX ( al, x1, x2, rowperm, colperm, column, nrows );
-
-     if ( position_zero > al_position_zero ) {
-          return LMC_MORE;
-     }
-     if ( position_zero < al_position_zero ) {
-          return LMC_LESS;
-     }
-
-     return LMC_NONSENSE;
-
-}
+// lmc_t lmc0_compare_zeropos_blockX ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm, const int nrows )
+// {
+// 
+//      /* Get zero position in the original array*/
+//      int al_position_zero = nrows+1;
+// 
+//      for ( int i = x1; i < x2; i++ ) {
+//           if ( al.atfast ( i, column ) == 0 ) {
+//                al_position_zero = i; // changed from rowperm[r].r
+//           }
+//      }
+// 
+//      /* Check position of zeros */
+//      int position_zero = get_zero_pos_blockX ( al, x1, x2, rowperm, colperm, column, nrows );
+// 
+//      if ( position_zero > al_position_zero ) {
+//           return LMC_MORE;
+//      }
+//      if ( position_zero < al_position_zero ) {
+//           return LMC_LESS;
+//      }
+// 
+//      return LMC_NONSENSE;
+// 
+// }
 
 
 /* Compare two columns with the zero elements in the same position */
