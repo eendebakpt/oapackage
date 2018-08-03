@@ -18,9 +18,9 @@ enum {DOPTIM_UPDATE, DOPTIM_SWAP, DOPTIM_FLIP, DOPTIM_AUTOMATIC, DOPTIM_NONE};
 /** Optimize a design according to the optimization function specified.
  *
  * Arguments:
- * 	arrayclass: structure describing the design class
- * 	alpha: (3x1 array)
- * 	verbose: output level
+ * \param arrayclass	structure describing the design class
+ * \param alpha			(3x1 array)
+ * 	\param verbose		output level
  */
 array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int optimmethod = DOPTIM_AUTOMATIC, int niter=100000, int nabort=0 );
 
@@ -38,6 +38,7 @@ struct DoptimReturn {
 /// function to generate optimal designs
 DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestarts, const std::vector<double> alpha, int verbose, int method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort=5000 );
 
+/// function to generate optimal designs with mixed levels
 DoptimReturn DoptimizeMixed(const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector<double> alpha, int verbose=1, int nabort=-1);
 
 #endif
