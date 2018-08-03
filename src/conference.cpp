@@ -2762,7 +2762,7 @@ std::vector<cperm> extensionInflate ( const std::vector<cperm> &ccX, const array
           const cperm &basecandidate = ccX[i];
 
           if ( verbose>2 )
-               myprintf ( "### inflate candidate %d: (sg ngroups %d, sgfull ngroups %d\n", i, (int)alsg.ngroups, (int)alfullsg.ngroups );
+               myprintf ( "### inflate candidate %d: (sg ngroups %d, sgfull ngroups %d\n", (int)i, (int)alsg.ngroups, (int)alfullsg.ngroups );
           //printf(" "); print_cperm( basecandidate); printf("\n");
           cc=  inflateCandidateExtension ( basecandidate, als, alsg, check_indices, ct, verbose, filter );
 

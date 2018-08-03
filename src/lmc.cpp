@@ -2849,17 +2849,17 @@ LMCreduction_t calculateSymmetryGroups ( const array_link &al, const arraydata_t
 }
 
 /// helper function, create array with root and elements of additional columns set to 1000
-array_link rootPlus(const arraydata_t &ad)
-{
-    array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
-    al.create_root(ad);
-    for(int i=ad.strength; i<ad.ncols; i++) {
-        for(int r=0; r<ad.N; r++) {
-            al.at(r, i)=1000;
-        }
-    }
-    return al;
-}
+// array_link rootPlus(const arraydata_t &ad)
+// {
+//     array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
+//     al.create_root(ad);
+//     for(int i=ad.strength; i<ad.ncols; i++) {
+//         for(int r=0; r<ad.N; r++) {
+//             al.at(r, i)=1000;
+//         }
+//     }
+//     return al;
+// }
 
 lmc_t LMCcheckOriginal ( const array_link &al ) {
     assert ( al.is2level() );
@@ -2899,7 +2899,7 @@ lmc_t LMCcheck ( const array_t * array, const arraydata_t &ad, const OAextend &o
     if ( reduction.init_state==SETROOT ) {
         log_print ( DEBUG, "LMCcheck: reduction.init_state is SETROOT\n" );
 
-        array_link alp = rootPlus ( ad );
+        array_link alp = ad.create_root (ad.ncols, 1000);
         reduction.setArray ( alp );
         reduction.init_state=INIT;
     }

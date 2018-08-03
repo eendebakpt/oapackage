@@ -479,13 +479,10 @@ int main ( int argc, char* argv[] ) {
             randtest->transformation->apply ( array, testarray );
             copy_array ( testarray, reduction->array, ad.N, ad.ncols );
             reduction->init_state=INIT;
-            array_link alp = rootPlus(ad);
+            array_link alp = ad.create_root(ad.ncols, 1000);
             reduction->setArray(alp);
 
-            //oaextend.info();
-            //reduction->show();
             result = LMCreduce ( testarray, testarray, &ad, &dynd, reduction, oaextend);
-            //printf("oacheck: debug: result %d\n", result);
 
             if(log_print(NORMAL, "")) {
                 reduction->transformation->show();

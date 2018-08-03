@@ -1997,7 +1997,7 @@ void perform_row_permutation ( const array_link source, array_link &target, cons
 }
 
 
-void array_link::create_root ( const arraydata_t &ad )
+void array_link::create_root ( const arraydata_t &ad, int fill_value  )
 {
      if ( ! ( ad.N<=this->n_rows ) ) {
           myprintf ( "array_link::create_root: number of columns too small for root of size %d\n", ad.N );
@@ -2010,7 +2010,7 @@ void array_link::create_root ( const arraydata_t &ad )
           return;
      }
      assert ( ad.strength<=this->n_columns );
-     std::fill ( this->array, this->array+this->n_rows*this->n_columns, 0 );
+     std::fill ( this->array, this->array+this->n_rows*this->n_columns, fill_value );
      ::create_root ( ( this->array ), &ad );
 }
 
@@ -3121,12 +3121,21 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
      return al;
 }
 
-array_link arraydata_t::create_root() const
+array_link arraydata_t::create_root(int n_columns, int fill_value) const
 {
-     array_link al ( this->N, this->strength, -1 );
+     if (n_columns==-1)
+          n_columns = this->strength;
+     array_link al ( this->N, n_columns, -1 );
      al.create_root ( *this );
+     
+     for(int i=this->strength; i<this->ncols; i++) {
+          for(int r=0; r<this->N; r++) {
+               al.at(r, i)=fill_value;
+          }
+     }
      return al;
 }
+
 
 bool arraydata_t::is2level() const
 {

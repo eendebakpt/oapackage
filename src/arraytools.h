@@ -387,7 +387,7 @@ public:
     }
 
     /// return the root array for the class
-    array_link create_root () const;
+    array_link create_root (int n_columns = -1, int fill_value = 0) const;
 
     int getfactorlevel ( int idx ) const {
         if ( idx < 0 ) {
@@ -904,7 +904,7 @@ public:
     }
 
     /// create root in arraylink
-    void create_root ( const arraydata_t & ad );
+    void create_root ( const arraydata_t & ad, int fill_value = 0 );
 
     double nonzero_fraction () const;
 

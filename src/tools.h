@@ -435,7 +435,6 @@ void show_array_dyn ( const atype *array, const int x, const int y )
         k = i;
         for ( j = 0; j < x; j++ ) {
             std::cout << std::setw ( 3 ) <<  array[k];
-            //log_print(NORMAL, "%3i",(int) array[k]);
             k += y;
         }
         std::cout << "\n";
