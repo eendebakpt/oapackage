@@ -348,6 +348,13 @@ arraylist_t conference_t::createDconferenceRootArrays ( ) const
      return lst;
 }
 
+std::string conference_t::idstr() const {
+ 
+     std::string s = printfstring("conf-N%d-k%d-j-%d-%d-%d", this->N, this->ncols, this->j1zero, 1, this->j3zero);
+     return s;
+}
+
+
 array_link conference_t::create_root ( ) const
 {
      array_link al ( this->N, 2, 0 ); // c.ncols
