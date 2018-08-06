@@ -149,6 +149,7 @@ def miscunittest(verbose=1):
 
 
 class TestOahelper(unittest.TestCase):
+
     def test_joinArrayLists(self):
         l1 = [oapackage.exampleArray(2)]
         l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]

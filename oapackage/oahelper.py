@@ -553,9 +553,9 @@ def getArrayFile(afile):
 
 def checkOAfile(afile, verbose=0):
     """ Return pointer to array file
-    
+
     Automatically check for compressed array files
-    
+
     Args:
         afile (str): location of array file
     Returns:
@@ -685,7 +685,7 @@ def randomizearrayfile(afile, afileout, verbose=1):
 
 def nArrayFile(afile, verbose=1):
     """ Return number of arrays in file
-    
+
     Args:
         afile (str): name of array file
     """
@@ -800,7 +800,7 @@ def parseProcessingTime(logfile, verbose=0):
 
 def safemax(data, default=0):
     """ Return maximum of array with default value for empty array
-    
+
     Args:
         data (array or list): data to return the maximum
         default (obj): default value 
@@ -987,7 +987,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
         return False
 
 
-#def getposjvals(A, t, verbose=1):
+# def getposjvals(A, t, verbose=1):
 #    N = A.shape[0]
 #    k = A.shape[1]
 #    ncols = t + 1
@@ -997,7 +997,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
 #    return jvals
 
 
-#def arraystats(A, verbose=1):
+# def arraystats(A, verbose=1):
 #    """ Return statistics of an array """
 #    Af = A.transpose().flatten()
 #    al = oalib.array_link(A.shape[0], A.shape[1], 0)
@@ -1007,7 +1007,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
 #    ia = oalib.intArray.frompointer(al.array)
 #    for x in range(0, A.size):
 #        ia[x] = int(Af[x])
-##    al.showarray()
+# al.showarray()
 #    jresults = oalib.analyseArrays(alist, 0)
 #    js = jresults[0]
 #    vals = pointer2np(js.vals, js.nc)
@@ -1200,7 +1200,7 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
 
 def makearraylink(al):
     """ Convert array to array_link object
-    
+
     Args:
         al (numpy array): array to convert
     Returns:
