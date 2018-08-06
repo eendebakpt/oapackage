@@ -835,7 +835,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
                al = exampleArray ( 9, vb );
                al.showproperties();
                d = al.Defficiencies ( 0, 1 );
-               //printf("verbose: %d\n", verbose);
                if ( verbose>=2 )
                     printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
                if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
@@ -855,9 +854,10 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
           }
 
           al = exampleArray ( 13, vb );
-          //al.showarray();
-          //al.showproperties();
-
+          if (verbose>=3) {
+               al.showarray();
+               al.showproperties();
+          }
           d = al.Defficiencies ( 0,1 );
           if ( verbose>=2 )
                printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
@@ -878,8 +878,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
                al.showproperties();
 
                d = al.Defficiencies();
-               //if ( verbose>=2 )
-               printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
+               if ( verbose>=2 )
+                    printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
           }
 
      }
