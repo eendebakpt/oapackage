@@ -34,8 +34,6 @@ int main(int argc, char* argv[])
     opt.setOption("format", 'f');
     opt.setOption("verbose", 'v');
 
-//    	printf("Orthogonal Arrays %s\n", version().c_str());
-
     opt.addUsage( "Orthonal Array Join: join several array files into a single file" );
     opt.addUsage( "Usage: oajoin [OPTIONS] [FILES]" );
     opt.addUsage( "" );
@@ -110,7 +108,6 @@ int main(int argc, char* argv[])
     }
 
     /* free allocated structures */
-    //free_sols(*arraylist);
     delete arraylist;
 
     return 0;

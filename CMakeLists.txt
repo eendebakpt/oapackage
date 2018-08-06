@@ -236,7 +236,7 @@ set(progsextend )
 list(APPEND progs oacheck oastreaming oaunittest)
 
 if(OADEV)
-  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
+  list(APPEND progs oatest oaranktest oa_depth_extend oaclustergather) # oaextendA
 endif()
    
 if (WIN32)
