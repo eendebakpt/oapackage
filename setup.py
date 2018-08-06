@@ -292,8 +292,8 @@ print('find_packages: %s' % find_packages())
 #print('swig_opts: %s' % str(swig_opts) )
 
 data_files = []
-scripts = ['misc/scripts/example_python_testing.py']
-packages = ['oapackage']
+scripts = ['misc/scripts/example_oapackage_python.py']
+packages = find_packages()
 
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
@@ -357,7 +357,7 @@ setup(name='OApackage',
       zip_safe=False,
       install_requires=['numpy>=1.13', 'scanf'],
       extras_require={
-          'GUI':  ["qtpy"],
+          'GUI':  ["qtpy", 'matplotlib'],
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
