@@ -19,6 +19,7 @@ script:
   - make  
   - make package
   - ./oaunittest
+  - ./pareto_example
 
 #addons:
 #  artifacts: true

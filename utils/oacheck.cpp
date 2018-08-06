@@ -109,7 +109,7 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     for(int ij=0; ij<ad.ncols; ij++) indices[ij]=ij;
 
     int nn=ad.ncols;
-    int hcolmax=ad.ncols; // hcolmax=1;
+    int hcolmax=ad.ncols; 
     for ( colindex_t hcol=0; hcol<hcolmax; hcol++ ) {	// 4->
         logstream ( NORMAL ) << "array " << i << ": applying Hadamard transformation on column " << hcol << endl;
 
@@ -117,7 +117,6 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
         apply_hadamard ( &ad, cpy, hcol );
         reduction->transformation->reset();
         result = LMCreduction_train ( cpy, &ad, &dynd, reduction, oaextend );
-//        result = LMCreduce ( cpy, &ad, &dynd, reduction );
 
         int dbgval=-1;
 
@@ -146,15 +145,11 @@ void hadamardcheck(int i, array_t *array, const char *fname, const arraydata_t &
     logstream(NORMAL) << endl;
 
     /* sort the resulting list of arrays, the first element is then a LMC representative */
-    // sort ( hlist.begin(), hlist.end() );
-
-
     indexsort hlistsort(hlist );
     int findex = hlistsort.indices[0];
 
     if ( checkloglevel ( NORMAL ) ) {
         cout << "Found representative for Hadamard orbit:" << endl;
-        //cout << hlist[0];
         cout << " hcol: " << hlist[findex].index << printfstring(", findex %d", findex)<< endl;
     }
 
@@ -262,11 +257,6 @@ int main ( int argc, char* argv[] ) {
     logstream ( NORMAL ) << "Check mode: " << mode << " (" << modeString ( mode ) << ")" << endl;
 
 
-#ifdef OAANALYZE_DISCR
-    clear_discriminant(afile->nrows,afile->ncols);
-    analysis_init_values();
-#endif
-
     /* start checking */
     double Tstart = get_time_ms(), dt;
 
@@ -282,15 +272,13 @@ int main ( int argc, char* argv[] ) {
 	
         dyndata_t dynd = dyndata_t ( ad.N );
         OAextend oaextend;
-//		oaextend.setAlgorithm(algmethod, &ad);
 
         lmc_t result = LMC_NONSENSE;
 
         LMCreduction_t *reduction = new LMCreduction_t ( &ad );
         LMCreduction_t *randtest = new LMCreduction_t ( &ad );
         array_t *testarray = clone_array ( array, ad.N, ad.ncols );
-        randtest->transformation->randomize(); // HACK, set back!
-        //randtest->transformation->randomizecolperm();
+        randtest->transformation->randomize(); 
         reduction->setArray(al);	// FIXME: for reduction of arrays not in root-form we need to add the special initialization
 
         /* variables needed within the switch statement */
@@ -298,7 +286,6 @@ int main ( int argc, char* argv[] ) {
         case MODE_CHECK:
             /* LMC test with reduction code */
             reduction->mode = OA_TEST;
-            //result = LMCreduceFull ( array, array, &ad, &dynd, reduction );
             result = LMCreduce ( array, array, &ad, &dynd, reduction, oaextend );
             break;
         case MODE_CHECKJ4:
@@ -308,14 +295,12 @@ int main ( int argc, char* argv[] ) {
             reduction->init_state = COPY;
             array_link al(array, ad.N, ad.ncols, -10);
             oaextend.setAlgorithm(MODE_J4, &ad);
-            //reduction->show(0);
             result = LMCcheck ( al, ad, oaextend, *reduction);
             break;
         }
         case MODE_REDUCEJ4:
         {
             /* LMC test with special code */
-//					printf("WARNING: not complete\n");
             reduction->mode = OA_REDUCE;
             array_link al(array, ad.N, ad.ncols, -10);
             reduction->setArray(al);
@@ -336,7 +321,6 @@ int main ( int argc, char* argv[] ) {
 
                 if (verbose>=2) {
                     printf("oacheck : MODE_CHECK_SYMMETRY...\n" );
-                    // al.showarray();
                 }
                 /* LMC test with special code */
                 reduction->reset();
@@ -351,59 +335,6 @@ int main ( int argc, char* argv[] ) {
             }
 
             arraydata_t adata(ad);
-    
-            if (0) {
-                if (verbose)
-                    printf("oacheck : MODE_CHECK_SYMMETRY: checking algorithm using direct calculation...\n" );
-                     oaextend.setAlgorithm(MODE_J5ORDERX, &ad);
-                //    oaextend.j5structure=J5_45;
-
-                int dverbose=0;
-
-                OAextend x = oaextend;
-                //arraydata_t adx(ad);
-                //x.setAlgorithm(MODE_J5ORDERX, &adx);
-                LMCreduction_t reductionsub = calculateSymmetryGroups( al.deleteColumn(-1), ad,  oaextend, 0);
-
-                if (dverbose) {
-                    printf("LMCcheck: MODE_LMC_SYMMETRY: testing: strength %d, al ", ad.strength);
-                    al.show();
-                    reductionsub.symms.showColperms(1);
-                }
-                reduction->clearSymmetries();
-                reduction->setArray(al);
-
-                reduction->setArray(al);
-                lmc_t result3 = LMCcheckSymmetryMethod(al, ad, oaextend, *reduction, reductionsub, dverbose) ;
-                if(result!=result3) {
-                    printf("oacheck: MODE_CHECK_SYMMETRY: %d (~ %d)\n ", result, result3);
-                }
-              //  result=result3;
-
-            }
-
-            if (0)
-            {
-                oaextend.setAlgorithm(MODE_J5ORDERX, &ad);
-		        LMCreduction_t *reduction2 = new LMCreduction_t ( &ad );
-	      reduction2->setArray(al);
-                reduction2->mode = OA_TEST;
-				//    reduction2->symms.showSymmetries();
-				 //   exit(0);
-
-                lmc_t result2 = LMCcheck ( al, ad, oaextend, *reduction2 );
-                if (result!=result2) {
-                    printfd("ERROR: oacheck: compare with original: MODE_CHECK_SYMMETRY: %d (should be %d)\n ", result, result2);
-                    reduction2->transformation->show();
-		    
-		    LMCreduction_t reductionsub= calculateSymmetryGroups( al.deleteColumn(-1),  ad,  oaextend, 0);
-		    reductionsub.symms.show(2);
-		    reductionsub.symms.showSymmetries(2);
-		    
-		    
-		    delete reduction2;
-                }
-            }
             break;
         }
         case MODE_CHECKJ5X:
@@ -463,11 +394,6 @@ int main ( int argc, char* argv[] ) {
             /* LMC reduction */
             reduction->mode = OA_REDUCE;
             copy_array ( array, reduction->array, ad.N, ad.ncols );
-
-            //cout << "input: " << endl;
-            //show_array(array, afile->ncols, afile->nrows );
-            //cout << "input: " << endl;
-            //show_array(reduction->array, afile->ncols, afile->nrows );
 
             result = LMCreduce ( array, array, &ad, &dynd, reduction, oaextend );
             break;
@@ -617,16 +543,6 @@ int main ( int argc, char* argv[] ) {
         destroy_array ( testarray );
     }
 
-#ifdef OAANALYZE_DISCR
-    logstream(NORMAL) << "Discriminant: " << endl;
-    print_discriminant(afile->nrows,afile->ncols);
-    analysis_show_counter("root_level_perm");
-
-#endif
-
-    //  delete [] s;
-    //destroy_array ( array );
-    //close_arrayfile ( afile );
     afile->closefile();
     delete afile;
 
