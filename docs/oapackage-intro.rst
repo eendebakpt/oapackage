@@ -21,6 +21,7 @@ calculate statistical properties. For example to calculate the
 .. code-block:: python
    :caption: Calculate D-efficiency 
 
+   >>> import oapackage
    >>> al=oapackage.exampleArray(0)
    >>> al.showarray()
    array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
@@ -37,7 +38,7 @@ are command line tools for manipulating arrays and generating. All
 functions of the package can be used from either C++ or Python.
 
 For the generation of D-optimal designs also Matlab or R can be used, see
-the documentation [OApackage on github](https://github.com/eendebakpt/oapackage).
+the documentation `OApackage on github <https://github.com/eendebakpt/oapackage>`_.
 
 License
 -------
@@ -61,24 +62,24 @@ Installation
 ------------
 
 The program has been tested using Linux and Windows (XP, Windows 7 and
-Windows 8, Windows 10). The Python interface is available from the [Python Package
-Index](https://pypi.python.org/pypi/OApackage/). The package can be
+Windows 8, Windows 10). The Python interface is available from the `Python Package
+Index <https://pypi.python.org/pypi/OApackage/>`_. The package can be
 installed from the command line using pip:
 
 .. code-block:: console
 
-  > pip install OApackage
+  $ pip install OApackage
 
 The command line tools use a cmake build system. From the command line
 type:
 
 .. code-block:: console
 
-  > mkdir -p build
-  > cd build
-  > cmake .. 
-  > make
-  > make install
+  $ mkdir -p build
+  $ cd build
+  $ cmake .. 
+  $ make
+  $ make install
 
 This creates the command line utilities and a C++ library.
 
@@ -87,8 +88,8 @@ To compile the Python interface using Linux use
 
 .. code-block:: console
 
-  > python setup.py build 
-  > python setup.py install --user
+  $ python setup.py build 
+  $ python setup.py install --user
 
 The Python interface requires Numpy :cite:`NumPy`,
 Matplotlib :cite:`Matplotlib` and Swig. The code has been
@@ -99,7 +100,7 @@ package source directory run:
 
 .. code-block:: console
 
-  > python setup.py bdist\_wininst
+  $ python setup.py bdist\_wininst
 
 This creates a binary installer package.
 
