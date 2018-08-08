@@ -101,35 +101,7 @@ void speedcheck_conf ( const char *input, int verbose, int nmax=2000 )
 }
 
 
-//std::vector<double> Defficiencies (const array_link &al, const arraydata_t & arrayclass, int verbose ) ;
-
-array_link finalcheck ( const array_link &al,  const arraydata_t &arrayclass,  std::vector<double> alpha, int verbose, int optimmethod, int niterx, int nabortx )
-{
-     int nabort=al.n_rows*al.n_columns+2;
-     int niter= nabort+5;
-     array_link  al2 = optimDeff2level ( al, arrayclass, alpha, verbose>=3,  DOPTIM_UPDATE,  niter, nabort );
-
-
-     std::vector<double> dd0 = al.Defficiencies();
-     double d0 = scoreD ( dd0, alpha );
-
-     std::vector<double> dd = al2.Defficiencies();
-     double d = scoreD ( dd, alpha );
-
-     if ( d>d0 ) {
-          printf ( "finalcheck: %f -> %f\n", d0, d );
-     }
-
-     return al2;
-}
-
-
-
 #include "graphtools.h"
-
-
-
-
 
 
 array_link array2xf2 ( const array_link &al )

@@ -279,8 +279,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
      }
 
-#ifdef OADEV
-
      /* double conference matrices */
      {
           cprintf ( verbose,"%s: double conference matrices\n", bstr );
@@ -294,7 +292,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
      }
 
-#endif
      /* conference matrices */
      {
           cprintf ( verbose,"%s: conference matrices\n", bstr );
@@ -810,12 +807,20 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
      {
           cprintf ( verbose,"%s: calculate symmetry group\n", bstr );
 
-          const arraylist_t &arraylist = aa[5];
-
-          array_link al=arraylist.at ( 0 );
+		  array_link al = exampleArray(2);
           symmetry_group sg = al.row_symmetry_group();
+		  assert(sg.permsize() == sg.permsize_large().toLong() );
 
-          aa.resize ( 0 );
+		  //symmetry_group
+		  std::vector<int> vv; vv.push_back(0); vv.push_back(0); vv.push_back(1);
+		  symmetry_group sg2(vv);
+		  assert(sg2.permsize() == 2);
+		  if (verbose>=2)
+                       printf("sg2: %ld\n", sg2.permsize());
+		  assert(sg2.ngroups == 2);
+
+			//sg2.
+
      }
 
      /* Test efficiencies */
@@ -830,7 +835,6 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
                al = exampleArray ( 9, vb );
                al.showproperties();
                d = al.Defficiencies ( 0, 1 );
-               //printf("verbose: %d\n", verbose);
                if ( verbose>=2 )
                     printf ( "  efficiencies: D %f Ds %f D1 %f Ds0 %f\n", d[0], d[1], d[2], d[3] );
                if ( fabs ( d[0]-al.Defficiency() ) >1e-10 ) {
@@ -850,9 +854,10 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
           }
 
           al = exampleArray ( 13, vb );
-          //al.showarray();
-          //al.showproperties();
-
+          if (verbose>=3) {
+               al.showarray();
+               al.showproperties();
+          }
           d = al.Defficiencies ( 0,1 );
           if ( verbose>=2 )
                printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
@@ -873,8 +878,8 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
                al.showproperties();
 
                d = al.Defficiencies();
-               //if ( verbose>=2 )
-               printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
+               if ( verbose>=2 )
+                    printf ( "  efficiencies: D %f Ds %f D1 %f\n", d[0], d[1], d[2] );
           }
 
      }

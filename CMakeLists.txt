@@ -10,7 +10,7 @@ PROJECT(OApackage)
 if(WIN32)
 	#message(STATUS "Set build type...")
 	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
-	#set(CMAKE_BUILD_TYPE Release CACHE STRING)
+	#set(CMAKE_BUILD_TYPE Release STRING)
 endif()
 
 if (NOT WIN32)
@@ -102,6 +102,9 @@ endif(OADEV)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "Using CLang compiler")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat-deprecated-writable-strings -fPIC")
+    if(NOCOMPILERWARNINGS)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+    endif()
 endif()
 
 # used for HPC at Antwerpen
@@ -117,8 +120,7 @@ endif()
 message(STATUS "Hostname ${HOSTNAME}, VSC ${VSC}")
 
 if (VSC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # -DMPICH_IGNORE_CXX_SEEK -axSSE4.2,SSE4.1
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -axSSE4.2,SSE4.1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") 
 endif()
 
 if (INTEL_CC) 
@@ -146,21 +148,19 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX)
   #message(STATUS "CMAKE_COMPILER_IS_GNUCXX ${CMAKE_COMPILER_IS_GNUCXX}")
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS "${COPTS}  -O3 ") # -fpermissive
   set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
   
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
 
-  set(COPTS "${COPTS} -Wlong-long -pedantic -Wno-variadic-macros")	# make code comply to R
+  if(NOCOMPILERWARNINGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+  else()
+    set(COPTS "${COPTS} -pedantic -Wno-variadic-macros")	# make code comply to R
+  endif()
 endif ()
-
-# for debugging
-if("$ENV{USER}" STREQUAL "eendebakpt" )
-  #set(COPTS "-g -O2 -march=native" ) # -std=c++0x ") # -O3 does not always give the fastest results for executables!
-  #set(COPTS "-g -O0" ) # -std=c++0x ")
-endif()
 
 if("$ENV{OADEBUG}" STREQUAL "1")
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
@@ -186,8 +186,6 @@ if (MSVC)
   set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /D_SCL_SECURE_NO_WARNINGS")
   #ADD_DEFINITIONS(-DNODEFAULTLIB:library)
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  #set ( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE} /NODEFAULTLIB:MSVCRT /EHsc /W0 /MT /verbose" )
- # SET( CMAKE_SHARED_LINKER_FLAGS ${CMAKE_STATIC_LINKER_FLAGS} "/NODEFAULTLIBS:LIBCMT" )
 endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
@@ -238,7 +236,7 @@ set(progsextend )
 list(APPEND progs oacheck oastreaming oaunittest)
 
 if(OADEV)
-  list(APPEND progs oatest oaranktest oa_depth_extend oaextendA oaclustergather)
+  list(APPEND progs oatest oaranktest oa_depth_extend oaclustergather) # oaextendA
 endif()
    
 if (WIN32)
@@ -470,7 +468,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "4")
-SET(CPACK_PACKAGE_VERSION_PATCH "7")
+SET(CPACK_PACKAGE_VERSION_PATCH "8")
 
 #SET(CPACK_STRIP_FILES "bin/MyExecutable")
 

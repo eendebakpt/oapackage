@@ -33,19 +33,12 @@ inline void print_cperm ( const char *msg, const cperm &c )
     myprintf("\n");
 }
 
-/// partial inner product
-int partial_inner_product ( const cperm &a, const array_link &al, int col, int rmax ) ;
 
-
-/// show a list of candidate extensions
-inline void showCandidates ( const std::vector<cperm> &cc )
-{
-    for ( size_t i=0; i<cc.size(); i++ ) {
-        myprintf ( "%d: ", ( int ) i );
-        print_cperm ( cc[i] );
-        myprintf ( "\n" );
-    }
-}
+/** Show a list of candidate extensions
+ *
+ * \param cc List of candidates to show
+ */
+void showCandidates ( const std::vector<cperm> &cc );
 
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
@@ -83,6 +76,9 @@ public:
     conference_t ( int N, int k, int j1zero );
     conference_t ( const conference_t &rhs );
 
+    // return short string describing the class
+    std::string idstr() const;
+    
     /// create the unique representative of the 2 column design (for conference matrices)
     array_link create_root ( ) const;
 
@@ -154,19 +150,6 @@ inline bool checkZeroPosition(const cperm &p, int zero_position)
 
  
 
-/// filter list of columns, only return columns with zero at specified position
-inline std::vector<cperm> filterZeroPosition ( const std::vector<cperm> &lst, int zero_position )
-{
-    std::vector<cperm> out;
-    for ( size_t i=0; i<lst.size(); i++ ) {
-        if ( lst[i][zero_position]==0 ) {
-            out.push_back ( lst[i] );
-        }
-    }
-    return out;
-}
-
-
 /** Class to generate candidate extensions with caching
  *
  * We assume that the designs to be extended are run ordered, so that the caching has maximal effect.
@@ -193,17 +176,22 @@ protected:
 public:
     CandidateGeneratorBase ( const array_link &al, const conference_t &ct );
 
-    /// show the candidate extensions for each column    
+    /** Show the candidate extensions for each column    
+     * 
+     */
     void showCandidates ( int verbose=1 ) const {
         myprintf ( "CandidateGenerator: N %d\n", this->ct.N );
         for ( int i =2; i<=last_valid; i++ ) {
-            myprintf ( "CandidateGenerator: %d columns: %ld elements\n", i, ( long ) candidate_list[i].size() );
+            myprintf ( "CandidateGenerator: number of candidates for %dth column: %ld\n", i, ( long ) candidate_list[i].size() );
             if ( verbose>=2 ) {
                 ::showCandidates ( candidate_list[i] );
             }
         }
     }
-
+    
+    /// return all candidates for the kth column
+    cperm_list candidates(int k);
+    
 protected:
     static const int START_COL = 2;
 
@@ -246,24 +234,10 @@ public:
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
     
     /// generate all candidate extensions with a zero at the specified position
-    std::vector<cperm> generateCandidatesZero ( const array_link &al, int kz ) const {
-         const std::vector<cperm> &cci = this->generateCandidates(al);
-         
-             std::vector<cperm>  cci0 = filterZeroPosition ( cci, kz );
-            return cci0;
-    }
+    std::vector<cperm> generateCandidatesZero ( const array_link &al, int kz ) const;
 
 };
 
-// class CandidateGeneratorZero  : public CandidateGeneratorBase
-// {
-//     int zero_position;
-// public:
-//     CandidateGeneratorZero ( const array_link &al, const conference_t &ct, int zero_position );
-// 
-//     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
-// 
-// };
     
 
 typedef CandidateGeneratorConference CandidateGenerator;
@@ -321,8 +295,12 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
 
 /** Generate candidate extensions (wrapper function)
  *
- * \param al design to be extended
+ * \param al Design to be extended
+ * \param ct Class of conference designs
  * \param kz index of zero in candidate column
+ * \param verbose Verbosity level
+ * \param filtersymm If True, filter based on symmetry
+ * \param filterj2 If True, filter based on J2 values
  */
 std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose = 1, int filtersymm= 1, int filterj2 =1 );
 
@@ -334,7 +312,7 @@ std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, co
 
 
 // generate extensions for conference matrices in LMC0 form
-std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline );
+std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline = 0 );
 
 
 /** return max position of zero in array, returns -1 if no zero is found
@@ -475,15 +453,8 @@ public:
      *
      * r (int): the number of rows that are valid
      **/
-    bool filterJpartial ( const cperm &c, int r ) const {
-        const int N = als.n_rows;
-        long j = partial_inner_product ( c, this->als, als.n_columns-1, r );
-        if ( std::abs ( j ) > ( N-r ) ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    bool filterJpartial ( const cperm &c, int r ) const;
+    
     /// return True of the extension satisfies all J-characteristic checks
     bool filterJ ( const cperm &c, int j2start=0 ) const {
         if ( filterj2 ) {

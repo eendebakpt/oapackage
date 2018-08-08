@@ -1,6 +1,8 @@
 /*! \file evenodd.h
  *  \brief Contains functions to generate even-odd designs
  *
+ * The generation is done by defining a special ordering in the set of designs. 
+ * The primary ordering is based in the J5 value of 5-column designs, the secondary ordering is the regular LMC ordering.
  */
 
 #pragma once
@@ -172,7 +174,6 @@ public:
         this->lmctype.resize ( nn );
         this->lastcol.resize ( nn );
         this->strengthcheck.resize ( nn );
-        // this->tmp.resize(nn);
 
         std::fill ( this->lmctype.begin (), this->lmctype.begin () + nn, LMC_MORE );
         std::fill ( this->lastcol.begin (), this->lastcol.begin () + nn, -1 );
@@ -195,9 +196,6 @@ public:
             if ( strengthcheck[i] ) {
                 //myprintf("##  depth_extend_sub_t.updateExtensionPointers: i %zu, lastcol %d extcol %d \n", i, lastcol[i], extcol);
                 if ( lastcol[i] >= extcol || lastcol[i] == -1 || extcol < 5 ) {
-                    // NOTE: extcol < 5 condition --> make generic
-                    // good candidate
-                    //      printf("  %d %d \n", lastcol[i], extcol);
                     pointers.push_back ( valididx[i] );
                 }
             }
@@ -229,7 +227,6 @@ public:
                 array_link ee = alist[i];
 
                 ga.push_back ( ee );
-                // myprintf ( "  selectArraysZ: selected array %zu/%zu\n", i, lmctype.size() );
             }
         }
         if ( verbose )
@@ -387,9 +384,6 @@ public:
                          arraywriter->nwritten );
                 this->counter->showcounts ( *this->ad );
                 this->arraywriter->closeafiles ();
-                //printfd ( "symmetry time: %.1f [s]\n", getdtsymm() );
-                //printfd ( "lmc time: %.3f [s]\n", getdtlmc() );
-
                 exit ( 0 );
             }
         }
@@ -521,16 +515,6 @@ void depth_extend_direct ( const arraylist_t & alist, depth_extend_t & dextend,
                            int verbose );
 
 
-
-
-/** @brief perform depth-first extension
- *
- * The arrays generated are pruned by keeping a list of possible extension values
- *
- */
-//void depth_extend ( const arraylist_t &alist,  depth_extend_t &dextend, const depth_extend_sub_t &dextendsub, int col, int verbose=1 );
-
-
 /// depth extend a single array
 void depth_extend_array ( const array_link & al, depth_extend_t & dextend,
                           const arraydata_t & adfull, int verbose,
@@ -609,7 +593,7 @@ public:
     std::vector < int >fvals;
     std::map < jindex_t, long >maxJcounts;
     double dt;			/// time needed for calculation
-
+    
     Jcounter () :N ( -1 ), jj ( -1 ) {
     }
 
@@ -775,7 +759,6 @@ private:
         if ( k > 0 ) {
             for ( size_t j = 0; j < fvals.size (); j++ ) {
                 jindex_t ji ( k, fvals[j] );
-                //myprintf("adding val %s\n", ji.toString().c_str());
                 maxJcounts[ji] = 0;
             }
         }

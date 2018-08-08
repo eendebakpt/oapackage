@@ -6,6 +6,7 @@ cbuild
 build
 buildx
 OAlib.egg-info
+.vscode
 OApackage.egg-info
 
 # Misc

@@ -163,9 +163,6 @@ std::string print_options_string ( )
     outx << "USE_TPLUSCOLUMN" << sep;
 #endif
 
-//	if (INIT_COL_PREVIOUS==1)
-    //	out << "INIT_COL_PREVIOUS" << sep;
-
 #ifdef SYMMBLOCKS
     outx << "SYMMBLOCKS" << sep;
 #endif
@@ -182,7 +179,10 @@ std::string print_options_string ( )
     outx << std::endl;
 
     outx << tabsep << "columns sorting method: " << oacolSortName << std::endl;
-    outx << tabsep << "nauty: SIZEOF_LONG " << SIZEOF_LONG << std::endl;
+    
+	
+	outx << tabsep << "nauty: NAUTYVERSION " << NAUTYVERSION << std::endl;
+	outx << tabsep << "nauty: SIZEOF_LONG " << SIZEOF_LONG << std::endl;
 
 	if (SIZEOF_LONG!=sizeof(long) ) {
 	outx << tabsep << "!! ERROR: sizeof(long) does not correspond to compile time size of long"	<< std::endl;

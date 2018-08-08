@@ -146,7 +146,6 @@ int main(int argc, char* argv[])
 
 	for(int i = 0; i < nwrite; i++)
 	{
-		//finish_arrayfile(outfid[i]);
 		outfid[i]->finisharrayfile();
 		delete outfid[i];
 	}

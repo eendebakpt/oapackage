@@ -208,7 +208,7 @@ public:
 
     void show(int verbose=1) const
     {
-        myprintf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", long(this->ad), LMC_non_root_init );
+        myprintf("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", (const long)(this->ad), LMC_non_root_init );
     }
 
     void init ( const arraydata_t *adp );
@@ -315,19 +315,6 @@ public:
         print_perm(colperm);
     }
 };
-
-/// helper function, create array with root and elements of additional columns set to 1000
-inline array_link rootPlus(const arraydata_t &ad)
-{
-    array_link al(ad.N, ad.ncols, -1); //al.setvalue(100);
-    al.create_root(ad);
-    for(int i=ad.strength; i<ad.ncols; i++) {
-        for(int r=0; r<ad.N; r++) {
-            al.at(r, i)=1000;
-        }
-    }
-    return al;
-}
 
 
 #ifdef _WIN32
@@ -883,8 +870,9 @@ jj45_t jj45val ( carray_t *array, rowindex_t N, int jj, const colperm_t comb, in
 /** Apply a random transformation to an array **/
 void random_transformation ( array_t *array, const arraydata_t *adp );
 
-/* main functions for LMC reduction */
+/* helper function for LMC reduction */
 lmc_t LMCreduction_train ( const array_link &al, const arraydata_t* ad, LMCreduction_t *reduction,const OAextend &oaextend ) ;
+/* helper function for LMC reduction */
 lmc_t LMCreduction_train ( const array_t* original, const arraydata_t* ad, const dyndata_t *dyndata, LMCreduction_t *reduction,const OAextend &oaextend ) ;
 
 /// helper function
@@ -896,16 +884,8 @@ lmc_t LMCreduceFull ( carray_t* original, const array_t *array, const arraydata_
 /// generic LMCcheck function
 lmc_t LMCcheck ( const array_t *array, const arraydata_t &ad,  const OAextend &oaextend,LMCreduction_t &reduction );
 
-//lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad,  const OAextend &oaextend,LMCreduction_t &reduction );
-
 /// generic LMCcheck function
-inline lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction )
-{
-    myassert(ad.N==al.n_rows, "LMCcheck: wrong number of rows");
-    mycheck(ad.ncols<=al.n_columns, "LMCcheck: wrong number of columns al %d, adata %d", al.n_columns, ad.ncols);
-
-    return LMCcheck ( al.array, ad,  oaextend, reduction );
-}
+lmc_t LMCcheck ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction );
 
 /// direct LMC check using the original LMC check
 lmc_t LMCcheckOriginal ( const array_link &al );
@@ -915,30 +895,6 @@ lmc_t LMCcheckOriginal ( const array_link &al );
 LMCreduction_t calculateSymmetryGroups(const array_link &al, const arraydata_t &adata, const OAextend &oaextend, int verbose=1, int hack=0);
 lmc_t LMCcheckSymmetryMethod(const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction,  LMCreduction_t &reductionsub, int dverbose);
 
-template<class numtype>
-/// Convert selection of elements to extended permutation
-void combadd2perm(const larray<numtype> &comb, int newidx, int n, larray<numtype> &target, larray<numtype> &wtmp)
-{
-    for(int i=0; i<n; i++) {
-        wtmp[i]=i;
-    }
-    int j=comb.size();
-    for(int i=0; i<j; i++) {
-        target[i]=comb[i];
-        wtmp[comb[i]]=-1;
-    }
-    if (j<0) myprintf("combadd2perm: j<0! j %d\n", j);
-    target[j]=newidx;
-    wtmp[newidx]=-1;
-    j++;
-
-    for(int i=0; i<n; i++) {
-        if (wtmp[i]>=0) {
-            target[j]=wtmp[i];
-            j++;
-        }
-    }
-}
 
 template<class numtype>
 /// Convert selection of elements to extended permutation

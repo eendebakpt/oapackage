@@ -1,8 +1,8 @@
-/** \file oatest.cpp
+/** \file oaconfcheck.cpp
 
-C++ program: oatest
+C++ program: oaconfcheck
 
-oatest: tool for testing new algorithms
+oaconfcheck: tool for testing new algorithms
 
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
 

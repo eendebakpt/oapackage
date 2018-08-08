@@ -2,3 +2,6 @@ numpy
 sphinxcontrib.bibtex
 nbsphinx
 sphinxcontrib.napoleon
+scanf
+matplotlib
+iPython

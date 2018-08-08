@@ -3,17 +3,23 @@ language: cpp
 compiler:
     - gcc
     - clang
+os:
+- linux
+#- osx
+
 #before_install:
 #  - sudo apt-get install cmake
 before_script:  
     - mkdir -p build
     - cd build
-    - cmake ..
+    - cmake --version
+    - cmake -DNOCOMPILERWARNINGS=1 ..
 
 script:
   - make  
   - make package
   - ./oaunittest
+  - ./pareto_example
 
 #addons:
 #  artifacts: true

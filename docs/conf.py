@@ -22,6 +22,25 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 
+#%% The oapackage cannot be build on rtd. We mock the module
+import os
+rtd = os.environ.get('READTHEDOCS', False)
+
+if rtd:
+    import sys
+    from unittest.mock import MagicMock
+
+    class Mock(MagicMock):
+
+        @classmethod
+        def __getattr__(cls, name):
+            return MagicMock()
+
+    MOCK_MODULES = ['oalib']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+
+#%%
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -32,12 +51,13 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-#              'sphinx_rtd_theme',
+              #              'sphinx_rtd_theme',
               'sphinx.ext.mathjax']
 extensions += ['sphinxcontrib.bibtex']
 extensions += ['nbsphinx']
 extensions += ['sphinxcontrib.napoleon']
 extensions += ['sphinx.ext.intersphinx']
+extensions += ['IPython.sphinxext.ipython_console_highlighting']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -78,7 +98,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'docs/examples/.ipynb_checkpoints']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../oapackage/tests.py', '../oapackage/markup.py', 'examples/.ipynb_checkpoints/*']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -165,20 +185,21 @@ texinfo_documents = [
 
 #%%
 
+
 def run_apidoc(_):
     import os
-    print('run_apidoc: current dir is %s'  % os.getcwd())
-    
+    print('run_apidoc: current dir is %s' % os.getcwd())
+
     ignore_paths = [
-      'oapackage/markup.py',
-      'get_artifacts.py',
-      'untitled*.py', 'setup.py','doxy2swig.py',
+        'oapackage/markup.py',
+        'get_artifacts.py',
+        'untitled*.py', 'setup.py', 'doxy2swig.py',
     ]
 
     argv = [
         "-f",
-#        "-T",
-#        "-e",
+        #        "-T",
+        #        "-e",
         "-M",
         "-o", ".",
         "../oapackage"
@@ -197,4 +218,3 @@ def run_apidoc(_):
 
 def setup(app):
     app.connect('builder-inited', run_apidoc)
-

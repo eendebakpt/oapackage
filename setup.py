@@ -14,6 +14,7 @@ from codecs import open  # To use a consistent encoding
 from os import path
 import os
 import sys
+import logging
 import platform
 import subprocess
 import re
@@ -75,16 +76,16 @@ def checkZlib(verbose=0):
                 compiler.compile([file_name]), bin_file_name, libraries=libraries, )
         except CompileError as e:
             if verbose:
-                print('helloz compile error')
+                print('checkZlib: compile error in %s, zlib not available' % file_name)
             ret_val = False
         except LinkError as e:
             if verbose:
-                print('helloz link error')
+                print('checkZlib: link error in %s, zlib not available' % file_name)
             ret_val = False
         except Exception as e:
             if verbose:
-                print('helloz  error')
-                print(e)
+                print('checkZlib: unknown error in %s, zlib not available' % file_name)
+                logging.exception(e)
             ret_val = False
     except Exception as e:
         ret_val = False
@@ -145,9 +146,6 @@ except:
     # fallback
     swig_valid = True
 
-if not swig_valid:
-    raise Exception('could not find a recent version if SWIG')
-
 #%% Hack to remove option for c++ code
 try:
     # see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
@@ -190,7 +188,7 @@ class OATest(TestCommand):
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.unittest(verbose=1)
+        oapackage.tests.miscunittest(verbose=1)
         errno = 0
         #errno = pytest.main(self.pytest_args)
         sys.exit(errno)
@@ -241,6 +239,8 @@ if platform.system() == 'Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
     swig_opts += ['-DWIN32', '-D_WIN32']
 
+rtd = os.environ.get('READTHEDOCS', False)
+print('Readthedocs environment: %s' % (rtd,))
 
 if 'VSC_SCRATCH' in os.environ.keys():
     # we are running on the VSC cluster
@@ -249,25 +249,21 @@ if 'VSC_SCRATCH' in os.environ.keys():
     libraries = ['z']
     library_dirs = [zlibdir + '/lib']
     include_dirs = ['.', 'src', npinclude, zlibdir + '/include']
-    oalib_module = Extension('_oalib',
-                             sources=sources,
-                             include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
-                             )
 else:
     libraries = []
     library_dirs = []
     include_dirs = ['.', 'src', npinclude]
 
-    oalib_module = Extension('_oalib', sources=sources,
-                             include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
-                             )
+oalib_module = Extension('_oalib', sources=sources,
+                         include_dirs=include_dirs, library_dirs=library_dirs, libraries=libraries, swig_opts=swig_opts
+                         )
 
 compile_options += ['-DNOOMP']
 swig_opts += ['-DNOOMP']
 
 oalib_module.extra_compile_args = compile_options
 
-if checkZlib(verbose=0):
+if checkZlib(verbose=1):
     if platform.system() == 'Windows':
         pass
     else:
@@ -286,7 +282,6 @@ else:
     oalib_module.extra_compile_args += ['-O3', '-Wno-unknown-pragmas', '-Wno-sign-compare',
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
     oalib_module.extra_compile_args += ['-Wno-date-time', ]
-    #swig_opts += [ '-Wno-delete-non-virtual-dtor' ]
 
 if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
     # openmp version of code
@@ -297,11 +292,19 @@ print('find_packages: %s' % find_packages())
 #print('swig_opts: %s' % str(swig_opts) )
 
 data_files = []
-scripts = ['misc/scripts/example_python_testing.py']
-packages = ['oapackage']
+scripts = ['misc/scripts/example_oapackage_python.py']
+packages = find_packages()
 
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
+
+if rtd:
+    ext_modules = []
+else:
+    if not swig_valid:
+        raise Exception('could not find a recent version if SWIG')
+
+    ext_modules = [oalib_module]
 
 from distutils.command.build import build
 from setuptools.command.install import install
@@ -313,7 +316,6 @@ class CustomBuild(build):
     def run(self):
         self.run_command('build_ext')
         build.run(self)
-
 
 
 class CustomInstall(install):
@@ -344,7 +346,7 @@ setup(name='OApackage',
       license="BSD",
       url='http://www.pietereendebak.nl/oapackage/index.html',
       keywords=["orthogonal arrays, design of experiments, conference designs, isomorphism testing"],
-      ext_modules=[oalib_module],
+      ext_modules=ext_modules,
       py_modules=['oalib'],
       packages=packages,
       data_files=data_files,
@@ -354,6 +356,9 @@ setup(name='OApackage',
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
       zip_safe=False,
       install_requires=['numpy>=1.13', 'scanf'],
+      extras_require={
+          'GUI':  ["qtpy", 'matplotlib'],
+      },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
                    'Programming Language :: Python :: 2',

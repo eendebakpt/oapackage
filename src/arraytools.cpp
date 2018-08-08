@@ -1766,12 +1766,45 @@ array_link exampleArray ( int idx, int verbose )
           break;
      }
 
+          case 40: {
+          dstr="first conference design in C(14, 5)";
+          if ( verbose ) {
+               myprintf ( "exampleArray: %s\n", dstr.c_str() );
+          }
+          array_link al ( 14,5, 0 );
+          int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,-1,-1,-1,1,1,1,-1,-1,-1,1,1,1,0,-1,1,-1,-1,1,-1,-1,1,1,-1,1,1,1,-1,0,-1,1,-1,-1,1,-1,1,-1,1};
+          al.setarraydata ( tmp, al.n_rows*al.n_columns );
+          return al;
+          break;
+     }
+          case 41: {
+          dstr="second conference design in C(14, 5)";
+          if ( verbose ) {
+               myprintf ( "exampleArray: %s\n", dstr.c_str() );
+          }
+        array_link al ( 14,5, 0 );
+        int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,-1,-1,-1,1,1,1,-1,-1,-1,1,1,1,0,-1,1,-1,-1,1,-1,-1,1,1,-1,1,1,-1,-1,1,1,0,-1,-1,1,-1,1,-1,1};              
+          al.setarraydata ( tmp, al.n_rows*al.n_columns );
+          return al;
+          break;
+     }
+          case 42: {
+          dstr="third conference design in C(14, 5)";
+          if ( verbose ) {
+               myprintf ( "exampleArray: %s\n", dstr.c_str() );
+          }
+        array_link al ( 14,5, 0 );
+        int tmp[] = {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,1,1,0,1,1,-1,-1,-1,1,1,1,-1,-1,-1,1,1,1,0,-1,1,-1,-1,1,-1,-1,1,1,-1,1,1,-1,-1,1,-1,0,1,1,-1,-1,1,-1,1};         
+          al.setarraydata ( tmp, al.n_rows*al.n_columns );
+          return al;
+          break;
+     }
+
+        
      } // end of switch
 
      return array_link ( 1,1,-1 );
 }
-
-#ifdef FULLPACKAGE // related to LMC
 
 array_link array_link::reduceDOP() const
 {
@@ -1805,8 +1838,6 @@ array_link array_link::reduceLMC() const
      return reduction.getArray();
 
 }
-
-#endif
 
 symmetry_group array_link::row_symmetry_group() const
 {
@@ -1966,7 +1997,7 @@ void perform_row_permutation ( const array_link source, array_link &target, cons
 }
 
 
-void array_link::create_root ( const arraydata_t &ad )
+void array_link::create_root ( const arraydata_t &ad, int fill_value  )
 {
      if ( ! ( ad.N<=this->n_rows ) ) {
           myprintf ( "array_link::create_root: number of columns too small for root of size %d\n", ad.N );
@@ -1979,7 +2010,7 @@ void array_link::create_root ( const arraydata_t &ad )
           return;
      }
      assert ( ad.strength<=this->n_columns );
-     std::fill ( this->array, this->array+this->n_rows*this->n_columns, 0 );
+     std::fill ( this->array, this->array+this->n_rows*this->n_columns, fill_value );
      ::create_root ( ( this->array ), &ad );
 }
 
@@ -3090,12 +3121,21 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
      return al;
 }
 
-array_link arraydata_t::create_root() const
+array_link arraydata_t::create_root(int n_columns, int fill_value) const
 {
-     array_link al ( this->N, this->strength, -1 );
+     if (n_columns==-1)
+          n_columns = this->strength;
+     array_link al ( this->N, n_columns, -1 );
      al.create_root ( *this );
+     
+     for(int i=this->strength; i<al.n_columns; i++) {
+          for(int r=0; r<this->N; r++) {
+               al.at(r, i)=fill_value;
+          }
+     }
      return al;
 }
+
 
 bool arraydata_t::is2level() const
 {
@@ -3648,7 +3688,7 @@ symmdata::symmdata ( const array_link  &al, int minlen )
      }
 
      // TODO: make this into one-pass algoritm
-     ft=array_link ( 2*al.n_rows+2, al.n_columns,-1 );	// TODO: reduce size of ft array
+     ft=array_link ( 2*al.n_rows+2, al.n_columns,-1 );
      ft.setconstant ( 0 );
      //printf("symmdata::symmdata: ft " ); ft.show();
      size_t nfrow=ft.n_rows-1;
@@ -3659,10 +3699,7 @@ symmdata::symmdata ( const array_link  &al, int minlen )
           carray_t *rvc = rowvalue.array+c*N;
 
           for ( int r=1; r<al.n_rows; r++ ) {
-               //  printf(" r %d, c %d\n", r, c);
                if ( rvc[r]!=v ) {
-
-                    // printf(" set ft: %d, %d (r %d, c %d)\n", 2*nf, c, r, c);
                     if ( ( r-prevr ) >=minlen ) {
                          ft.atfast ( 2*nf,c ) =prevr;
                          ft.atfast ( 2*nf+1,c ) =r;
@@ -5331,7 +5368,6 @@ void  selectArrays ( const std::string filename,   std::vector<int> &idx, arrayl
                }
                for ( int j=0; j<nn; j++ ) {
                     int x=vv.indices[j];
-                    // TODO: or reverse entry?
                     rl.push_back ( tmp[x] );
                }
           }

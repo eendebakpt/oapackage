@@ -54,13 +54,14 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 
 # %%
 
+
 try:
     import brewer2mpl
 except:
     pass
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80):
+def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -98,13 +99,16 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
+    if lbls is None:
+        lbls = ['%d' % i for i in range(len(idx))]
     for jj, ii in enumerate(idx):
         gidx = (colors == ii).nonzero()[0]
         gp = np.intersect1d(paretoidx, gidx)
 
         color = mycmap[jj]
         cc = [color] * len(gp)
-        print('index %d: %d points' % (ii, gidx.size))
+        if verbose:
+            print('index %d: %d points' % (ii, gidx.size))
         ax.scatter(data[fi, gp], data[si, gp], s=scatterarea, c=cc,
                    linewidths=0, alpha=alpha, label=lbls[jj])  # , zorder=4)
         plt.draw()
@@ -112,16 +116,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     if data[si, :].std() < 1e-3:
         y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
         ax.yaxis.set_major_formatter(y_formatter)
-
-    if 0:
-        for xi, al in enumerate(sols):
-            D, Ds, D1 = al.Defficiencies()
-            print('D1 %f Ds %f D %f' % (D1, Ds, D))
-
-            tmp = plt.scatter(Ds, D, s=60, color='r')
-            if xi == 0:
-                tmp = plt.scatter(Ds, D, s=60, color='r', label='Strength 3')
-        plt.draw()
 
     xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
     plt.ylabel('D-efficiency', fontsize=16)
@@ -134,12 +128,14 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
-    if not nofig:        
+    if not nofig:
         plt.show()
     ax.grid(b=True, which='both', color='0.85', linestyle='-')
     ax.set_axisbelow(True)
 
-    if not nofig:
+    if nofig:
+        plt.close(figh.number)
+    else:
         plt.draw()
         plt.pause(1e-3)
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
@@ -277,6 +273,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
 #%%
 
+
 def _optimDeffhelper(classdata):
     """ Helper function that is suitable for the multi-processing framework """
 
@@ -308,12 +305,12 @@ def calcScore(dds, optimfunc):
 
 def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1, 0, 0], method=0):
     """ Optimize array using specified optimization method
-    
+
     Args:
         A0 (array_link): design to optimize
         arrayclass (object): contains class of designs to optimize
         alpha (list): specifies the optimization function
-        
+
     Returns:
         d (array): efficiencies
         A (array): optimized design
@@ -543,7 +540,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
         raise Exception('code not tested....')
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
-        sols = []  
+        sols = []
 
         nrestarts = 0
         for ii in range(nrestarts):
@@ -592,3 +589,11 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
 
     return scores, dds, sols, nrestarts
+
+#%% Tests
+
+
+def test_calcScore():
+    dds = np.random.rand(10, 3)
+    scores = calcScore(dds, optimfunc=[1, 2, 3])
+    assert(scores.shape == (dds.shape[0], ))

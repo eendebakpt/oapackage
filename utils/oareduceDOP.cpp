@@ -86,7 +86,6 @@ int main ( int argc, char* argv[] )
       outputprefix = opt.getValue ( 'o' );
 
    int verbose = opt.getIntValue ( 'v', 2 );
-   //double Afinal = opt.getDoubleValue('A', 0);
    int kfinal = opt.getIntValue ( 'k', 7 );
    int strength = opt.getIntValue ( 's', 2 );
    int dolmc = opt.getIntValue ( 'd', 1 );
@@ -136,7 +135,8 @@ int main ( int argc, char* argv[] )
 
    // write arrays to disk
    std::string outfile = outputprefix;
-   printf ( "  writing %ld arrays to %s\n", earrays.size(), outfile.c_str() );
+   if (verbose)
+    printf ( "  writing %ld arrays to %s\n", earrays.size(), outfile.c_str() );
    writearrayfile ( outfile.c_str(), &earrays, arrayfile::ABINARY );
 
    delete ad;

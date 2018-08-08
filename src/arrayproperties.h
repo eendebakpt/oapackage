@@ -81,7 +81,6 @@ std::vector < double >
 GWLPmixed ( const array_link & al, int verbose = 0, int truncate = 1 );
 
 // SWIG has some issues with typedefs, so we use a define
-//typedef double GWLPvalue;
 //typedef mvalue_t<double> GWLPvalue;
 #define GWLPvalue mvalue_t<double>
 
@@ -143,7 +142,6 @@ class rankStructure
 {
 public:
         typedef Eigen::FullPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
-        //typedef Eigen::ColPivHouseholderQR<Eigen::MatrixXd> EigenDecomp;
 
 public:
     array_link alsub;
@@ -200,9 +198,7 @@ public:
         Eigen::MatrixXd A = array2xf ( al ).getEigenMatrix ();
         decomp.compute ( A );
 
-        //Eigen::MatrixXd tmp = decomp.matrixQ (); this->Qi = tmp.inverse();
         this->Qi = decomp.matrixQ ().inverse ();
-        //this->Qi = decomp.matrixQ().transpose();
 
         nupdate++;
 
@@ -295,15 +291,11 @@ F4 ( const array_link & al, int verbose = 1 )
 {
     jstruct_t js ( al, 4 );
     std::vector < int >FF = js.calculateF ();
-#ifdef FULLPACKAGE
     if ( verbose >= 3 ) {
-        printf ( "  parseArrayPareto: F (high to low): " );
+        myprintf ( "  parseArrayPareto: F (high to low): " );
         display_vector ( FF );
-        std::cout << std::endl;
-        //std::vector<int> Fval=js.Fval();
-        //display_vector ( Fval ); std::cout << std::endl;
+		myprintf("\n");
     }
-#endif
 
     mvalue_t < long >v ( FF, mvalue_t < long >::LOW );
     return v;
@@ -326,7 +318,6 @@ inline typename Pareto < mvalue_t < long >, IndexType >::pValue
 calculateArrayParetoRankFA ( const array_link & al, int verbose )
 {
     int N = al.n_rows;
-    //int r = arrayrankFullPivQR ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
     int r = arrayrankFullPivLU ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
     mvalue_t < long >wm = A3A4 ( al );
     mvalue_t < long >f4 = F4 ( al );

@@ -290,8 +290,7 @@ public:
 
     /**
      * @brief Write file with design of OA
-     * @param file
-     * @param ad Arraydata structure to write
+     * @param filename
      * @return
      */
     void writeConfigFile ( const char *filename ) const;
@@ -388,7 +387,7 @@ public:
     }
 
     /// return the root array for the class
-    array_link create_root () const;
+    array_link create_root (int n_columns = -1, int fill_value = 0) const;
 
     int getfactorlevel ( int idx ) const {
         if ( idx < 0 ) {
@@ -644,6 +643,7 @@ struct array_link {
 
 #ifdef SWIGCODE
     array_link ( long* pymatinput, int nrows, int ncols );
+	//array_link( double* pymatinput, int nrows, int ncols);
 #endif
     array_link clone () const;
 
@@ -904,7 +904,7 @@ public:
     }
 
     /// create root in arraylink
-    void create_root ( const arraydata_t & ad );
+    void create_root ( const arraydata_t & ad, int fill_value = 0 );
 
     double nonzero_fraction () const;
 
@@ -975,12 +975,10 @@ public:
     /// return the row_symmetry group of an array
     symmetry_group row_symmetry_group () const;
 
-#ifdef FULLPACKAGE
     /// return the LMC form of the array
     array_link reduceLMC () const;
     /// return the delete-one-factor-projection form of the array
     array_link reduceDOP () const;
-#endif
 
     /// return the array as an Eigen matrix
     inline MatrixFloat getEigenMatrix () const {
@@ -1034,19 +1032,15 @@ typedef std::vector <cperm > cperm_list;
 
 
 // concatenate 2 arrays in vertical direction
-array_link
-hstack ( const array_link & al, const array_link & b );
+array_link hstack ( const array_link & al, const array_link & b );
 
 // concatenate 2 arrays in vertical direction
-array_link
-hstack ( const array_link & al, const cperm & b );
+array_link hstack ( const array_link & al, const cperm & b );
 
 // concatenate 2 arrays in horizontal direction
-array_link
-hstack ( const array_link & al, const array_link & b );
+array_link hstack ( const array_link & al, const array_link & b );
 // concatenate the last column of array B to array A
-array_link
-hstacklastcol ( const array_link & A, const array_link & B );
+array_link hstacklastcol ( const array_link & A, const array_link & B );
 
 
 inline cperm vstack ( const cperm & A, const cperm & B )

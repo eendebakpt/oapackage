@@ -29,6 +29,7 @@ inline void pyprintf ( const char *message, ... )
 #define myprintf pyprintf
 
 #else
+   // the full package is build (no restrictions from R or Python)
    #define FULLPACKAGE 1
    #include <stdio.h>
    #define myprintf printf

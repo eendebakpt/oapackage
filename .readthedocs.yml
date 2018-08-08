@@ -1,0 +1,12 @@
+build:
+  image: latest
+  
+python:
+  version: 3.5
+  setup_py_install: true
+  
+requirements_file: docs/rtd-requirements.txt
+
+# needed to get swig to install
+#conda:
+#  file: rtd-condalist.yml

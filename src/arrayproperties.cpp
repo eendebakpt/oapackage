@@ -27,7 +27,11 @@ using namespace Eigen;
 
 
 template<class Type>
-/// helper class: n-dimensional array
+/** helper class: n-dimensional array
+ *
+ * The data is stored in a flat array. The dimensions are stored in a vector \c dims.
+ *
+ **/
 class ndarray
 {
 
@@ -84,11 +88,13 @@ public:
     }
 
 
+	/// size of the array (product of all dimensions)
     long totalsize() const
     {
         return n;
-//	return this->cumprod[
     }
+
+	/// print the array to stdout
     void show() const
     {
         for ( int i=0; i<n; i++ ) {
@@ -131,7 +137,6 @@ public:
     {
         int lidx=0;
         for ( int i=0; i<k; i++ ) {
-            //lidx = dims[i]*lidx+idx[i];
             lidx += idx[i]*cumprod[i];
         }
         return lidx;
@@ -175,7 +180,7 @@ public:
 };
 
 
-/// Hamming distance
+/// calculate Hamming distance between two rows of an array
 inline int dH ( const int N, int k, const array_link &al, int r1, int r2 )
 {
     int dh=0;
@@ -189,7 +194,7 @@ inline int dH ( const int N, int k, const array_link &al, int r1, int r2 )
     return dh;
 }
 
-/// Hamming distance
+/// calculate Hamming distance between two rows of an array with mixed levels
 inline void dHmixed ( const int N, int k, const array_link &al, int r1, int r2, int *dh, int ncolgroups, const std::vector<int> colgroupindex )
 {
     for ( int i=0; i<ncolgroups; i++ )
@@ -210,13 +215,11 @@ inline int dHx ( const int nr, int k, carray_t *data, int c1, int c2 )
 {
     // nr is the OA column variable
 
-    //printf("nr %d, k %d, c1 c2 %d %d\n", nr, k, c1, c2);
     int dh=0;
     carray_t *d1 = data+c1*nr;
     carray_t *d2 = data+c2*nr;
 
     for ( int c=0; c<nr; c++ ) {
-        //printf("  c %d\n", c);
         dh += d1[c]!=d2[c];
     }
     return dh;
@@ -248,7 +251,6 @@ std::vector<double> distance_distributionT ( const array_link &al, int norm=1 )
         }
 
     // calculate distance distribution
-    //printf("distance_distribution\n");
     std::vector<double> dd ( n+1 );
 
     for ( int r1=0; r1<N; r1++ ) {
@@ -435,10 +437,8 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 // TODO: calculation is not very efficient
     if ( verbose ) {
         myprintf ( "macwilliams_transform_mixed:\n" );
-#ifdef FULLPACKAGE
         myprintf ( "sx: " );
         display_vector ( sx );
-#endif
         myprintf ( "\n" );
     }
 
@@ -674,13 +674,11 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
     } else {
         // calculate distance distribution
         std::vector<double> B = distance_distributionT ( al );
-#ifdef FULLPACKAGE
         if ( verbose ) {
             myprintf ( "distance_distributionT: " );
             display_vector ( B );
-            std::cout << std::endl;
+			myprintf("\n");
         }
-#endif
 		// calculate GWP
         std::vector<double> gma = macwilliams_transform ( B, N, s );
 
@@ -1253,11 +1251,6 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
         if ( verbose>=3 ) {
             myprintf ( "ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n", rank, rank2 );
 
-#ifdef FULLPACKAGE
-            if ( verbose>=4 ) {
-                std::cout << "Its singular values are:" << std::endl << S << std::endl;
-            }
-#endif
         }
     }
     int m = x.cols();
@@ -1267,18 +1260,7 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
         Deff=0;
         vif=0;
         Eeff=0;
-#ifdef FULLPACKAGE
-        if ( verbose>=3 ) {
-            Eigen::MatrixXd Smat ( S );
-            Eigen::ArrayXd Sa=Smat.array();
-            double Deff = exp ( 2*Sa.log().sum() /m ) /N;
 
-            std::cout << printfstring ( "  singular matrix: m (%d) > N (%d): rank ", m, N ) << rank << std::endl;
-            int mx = std::min ( m, N );
-            myprintf ( "   Deff %e, smallest eigenvalue %e, rank lu %d\n", Deff, S[mx-1], rank );
-
-        }
-#endif
         return;
     }
     if ( verbose>=3 )
@@ -1340,7 +1322,6 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
     if ( verbose>=3 )
         std::cout << "Its singular values are:" << std::endl << S << std::endl;
 #endif
-//cout << "x:\n"<< x << std::endl;
 
     Eeff = S[m-1]*S[m-1]/N;
     //cout << "Its singular values are:" << endl << S/sqrt(N) << endl;
@@ -1349,9 +1330,6 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
     for ( int i=0; i<m; i++ )
         vif+= 1/ ( S[i]*S[i] );
     vif = N*vif/m;
-
-//Eigen::VectorXf Si= S.inverse();
-//cout << "Its inverse singular values are:" << endl << Si << endl;
 
     Eigen::MatrixXd Smat ( S );
     Eigen::ArrayXd Sa=Smat.array();

@@ -401,17 +401,6 @@ These are:
     Read one or more files from disk and join all the array files into a
     single list.
 
-    Orthogonal Arrays 1.8.7 For more details see the files README.txt
-    and LICENSE.txt
-
-    Orthonal Array Join: join several array files into a single file
-    Usage: oajoin [OPTIONS] [FILES]
-
-    -h –help Prints this help -s –sort Sort the arrays -l –latex Output
-    with LaTeX format -o [FILE] –output [FILE] Output prefix (default:
-    standard output) -f [FORMAT] Output format (TEXT, BINARY (default),
-    D (binary difference) )
-
 `oasplit`
     Takes a single array file as input and splits the arrays to a
     specified number of output files.
@@ -421,12 +410,8 @@ These are:
 
 `oaanalyse`
     Calculates various statistics of arrays in a file. The statistics
-    are described in section `Statistical properties of an array`.
+    are described in section `Statistical properties of an array`_.
 
-.. [1]
-   Corresponding author. E-mail: pieter.eendebak@gmail.com. Address:
-   University of Antwerp, Dept. of Mathematics, Statistics, and
-   Actuarial Sciences, Prinsstraat 13, 2000 Antwerp, Belgium.
 
 .. |image| image:: images/oaimage-18_2-3-3-3-3-3-n17.png
 

@@ -69,28 +69,6 @@ inline void printfd_handler ( const char *file, const char* func, int line, cons
 %ignore row_rank;
 #endif
 
-#ifdef _WIN32
-//#define prefetch(x)
-#else
-#ifndef ARCH_HAS_PREFETCH
-#ifndef prefetch
-#ifdef DOPREFETCH
-// has some conflict with Eigen
-#define prefetch(x) __builtin_prefetch(x)
-#endif
-#endif
-#endif
-#endif
-
-
-/* do these work with recent GCC? */
-//#pragma GCC diagnostic warning "-Wformat"
-//#pragma warning (disable : 4018) // warning C4018: '==' : signed/unsigned mismatch
-//#if defined __GNUC__
-//#pragma DISABLE_WARNINGS
-//#endif
-
-
 //! Loglevel definitions. The loglevel determines to amount of output to stdout
 enum loglevel_t {LOGERROR, SYSTEM, QUIET, NORMAL, DEBUG, EXTRADEBUG};
 
@@ -113,7 +91,6 @@ public:
 #ifdef FULLPACKAGE
 std::ostream& logstream ( int level );
 #endif
-//ostream &streamloglevel(ostream &stream);
 
 std::string system_uname();
 
@@ -129,7 +106,6 @@ inline void mycheck_handler ( const char *file, const char* func, int line, int 
         vprintf ( message, va );
 #endif
         va_end ( va );
-//  myprintf ( "mycheck %d: %s", condition, str);
 #ifdef RPACKAGE
         throw;
 #else
@@ -260,87 +236,6 @@ int next_comb ( std::vector<Type> &comb, int k, int n )
 int next_comb ( int *comb, int k, int n );
 /** Go to next combination in sequence */
 int next_comb_s ( int *comb, int k, int n );
-
-/*!
-  Calculates the rank of a row, in order to determine the sorting order.
-  \brief Calculates row rank
-  \todo Combine n_columns and n_rows into *nrs, to reduce overhead
-  \param array
-  \param n_columns
-  \param n_rows
-  \param index
-  */
-static inline int row_rank ( array_t *array, const int n_columns, const int n_rows, const int *index )
-{
-    register int	i, sum = 0, j = 0;
-    for ( i = 0; i < n_columns; i++ ) {
-        sum += index[i] * array[j];
-        j += n_rows;
-    }
-    return sum;
-}
-
-/**
- * @brief Returns the value of (part of) a row
- * @param array
- * @param start_idx
- * @param end_idx
- * @param n_rows
- * @param index Value index for each of the columns of the array
- * @return
- */
-static inline int row_rank_partial ( const carray_t *array, rowindex_t n_rows, const vindex_t *index, colindex_t start_idx, colindex_t end_idx, const colperm_t &colperm, rowindex_t row )
-{
-    int	sum = 0;
-    const array_t *ar = array+row;
-    for ( colindex_t i = start_idx; i < end_idx; i++ ) {
-        sum += index[i] * ar[n_rows*colperm[i]];
-    }
-    return sum;
-}
-
-/**
- * @brief Returns the value of (part of) a row
- * @param array
- * @param start_idx
- * @param end_idx
- * @param n_rows
- * @param index Value index for each of the columns of the array
- * @return
- */
-static inline array_t row_rank_partial ( carray_t *array, colindex_t start_idx, colindex_t end_idx, rowindex_t n_rows, const vindex_t *index )
-{
-    array_t	sum = 0;
-    int j = 0;
-    j += n_rows*start_idx;
-    for ( colindex_t i = start_idx; i < end_idx; i++ ) {
-        sum += index[i] * array[j];
-        j += n_rows;
-    }
-    return sum;
-}
-
-
-/**
- * @brief Returns the value of (part of) a row
- * @param array
- * @param start_idx
- * @param end_idx
- * @param n_rows
- * @param index Value index for each of the columns of the array
- * @return
- */
-static inline array_t row_rank_partial ( carray_t *array, const colindex_t start_idx, const colindex_t end_idx, const rowindex_t row, const rowindex_t n_rows, const int *index )
-{
-    register int	i, sum = 0, j = row;
-    j += n_rows*start_idx;
-    for ( i = start_idx; i < end_idx; i++ ) {
-        sum += index[i] * array[j];
-        j += n_rows;
-    }
-    return sum;
-}
-
 
 template <class Object>
 /**
@@ -495,7 +390,7 @@ void print_array ( const array_link &A );
 
 #ifdef FULLPACKAGE
 template <class atype>
-/// print vector using generic cout print functionality
+/// print vector using generic std::cout print functionality
 void display_vector ( const std::vector<atype> &v )
 {
     const char *sep = " ";
@@ -505,7 +400,17 @@ void display_vector ( const std::vector<atype> &v )
 template <class atype>
 void display_vector ( const std::vector<atype> &v )
 {
-// dummy
+    // dummy
+	myprintf("vector(...)");
+}
+template <int atype>
+void display_vector(const std::vector<atype> &v)
+{
+	for (int i = 0; i < v.size(); i++) {
+		myprintf("%d", v[i]);
+		if (i<v.size()-1)
+			myprintf("%s", sep);
+	}
 }
 #endif
 
@@ -530,7 +435,6 @@ void show_array_dyn ( const atype *array, const int x, const int y )
         k = i;
         for ( j = 0; j < x; j++ ) {
             std::cout << std::setw ( 3 ) <<  array[k];
-            //log_print(NORMAL, "%3i",(int) array[k]);
             k += y;
         }
         std::cout << "\n";
@@ -548,7 +452,6 @@ void countelements ( carray_t* array, const int nelements, const int maxval, int
  */
 inline void addelement ( const array_t elem, int* elements )
 {
-    //myprintf("adding element as position %d\n", elem);
     elements[elem]++;
 }
 
@@ -575,12 +478,10 @@ inline std::string currenttime()
 }
 
 
-
 /// return string describing array
 std::string oafilestring ( const arraydata_t *ad );
 /// return string describing array
 std::string oafilestring ( rowindex_t rows, colindex_t cols, array_t *s );
-
 
 
 template <class numtype>
@@ -609,14 +510,6 @@ inline std::string printtime()
     timeinfo = localtime ( &rawtime );
     return printfstring ( "%s", asctime ( timeinfo ) );
 }
-
-#ifdef OAANALYZE_DISCR
-void init_discriminant ( int nr, int nc );
-//void print_discriminant(int nr, int nc);
-//void clear_discriminant(int nr, int nc);
-//void analyse_discriminant(int row, int col, lmc_t lmc, int nr, int nc);
-
-#endif
 
 /* sorting templates */
 

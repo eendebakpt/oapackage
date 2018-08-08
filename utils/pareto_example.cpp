@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main ( int argc, char **argv )
 {
-	printf("Example program for calculating Pareto optimnal elements\n");
+	printf("Example program for calculating Pareto optimal elements\n");
 	printf("    author: <pieter.eendebak@gmail.com>\n");
 	
    /* initialize random seed: */

@@ -29,9 +29,6 @@ import_array();
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
 
-// enable keyword arguments in interface
-//%feature ("kwargs")
-
 %include "std_pair.i"
 
 %{
@@ -258,13 +255,13 @@ def __setitem__(self,index, value):
 %feature("autodoc", "1");
 // to generate the oadoxy.i:
 // doxygen Doxyfile
-// python2 doxy2swig.py xml/index.xml oadoxy.i
+// python doxy2swig.py xml/index.xml oadoxy.i
 // see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
 
 %include "oadoxy.i"
 
 
-// http://www.swig.org/Doc2.0/Python.html#Python_nn47
+// see http://www.swig.org/Doc2.0/Python.html#Python_nn47
 
 %include "cpointer.i"
 %include "std_map.i"
