@@ -115,6 +115,7 @@ build_script:
   
 test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% jupyter kernelspec list"
   - "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
 
 after_test:
