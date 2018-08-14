@@ -153,9 +153,6 @@ try:
 
     (opt,) = get_config_vars('OPT')
 
-    #import sysconfig
-    #opt = sysconfig.get_config_var('OPT')
-
     if not opt is None:
         opt = " ".join(flag for flag in opt.split()
                        if flag != '-Wstrict-prototypes')
@@ -187,7 +184,7 @@ class OATest(TestCommand):
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         print('## oapackage test: load package')
-        import oapackage
+        import oapackage.tests
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 

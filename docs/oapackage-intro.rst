@@ -38,7 +38,8 @@ are command line tools for manipulating arrays and generating. All
 functions of the package can be used from either C++ or Python.
 
 For the generation of D-optimal designs also Matlab or R can be used, see
-the documentation `OApackage on github <https://github.com/eendebakpt/oapackage>`_.
+the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_
+and `README.R.md <https://github.com/eendebakpt/oapackage/README.R.md>`_.
 
 License
 -------
@@ -70,6 +71,7 @@ installed from the command line using pip:
 
   $ pip install OApackage
 
+The source code for the package is available on https://github.com/eendebakpt/oapackage.
 The command line tools use a cmake build system. From the command line
 type:
 
@@ -106,6 +108,8 @@ This creates a binary installer package.
 
 The R interface to the optimal design functionality of the package is available from CRAN
 http://cran.r-project.org/web/packages/oapackage/index.html.
+For the Matlab and Octave interface to the optimal design functionality see the 
+file `README.Matlab.md <https://github.com/eendebakpt/oapackage/blob/master/README.Matlab.md>`_.
 
 
 

@@ -34,7 +34,7 @@ For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 This package also uses code from other works:
 
 * Eigen (see http://eigen.tuxfamily.org/, MPL2 license)
-* InfInt (by Sercan Tutar, GPL2 license)
+* InfInt (by Sercan Tutar, MPL2 license)
 * bitarray (by Isaac Turner, MIT license)
 * md5.cpp (by RSA Data Security)
 * msstdint.h (by Alexander Chemeris, see https://code.google.com/p/msinttypes/)

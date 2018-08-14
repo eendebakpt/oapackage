@@ -21,7 +21,8 @@ import re
 from time import gmtime, strftime
 import time
 import warnings
-
+import webbrowser
+import tempfile
 
 try:
     import matplotlib
@@ -31,6 +32,31 @@ except:
         'oahelper: matplotlib cannot be found, not all functionality is available')
     pass
 
+from oapackage import markup
+
+def deprecated(func):
+    """ This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used. """
+
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        try:
+            filename = inspect.getfile(func)
+        except:
+            filename = '?'
+        try:
+            lineno = inspect.getlineno(func)
+        except:
+            lineno = -1
+        warnings.warn_explicit(
+            "Call to deprecated function {}.".format(func.__name__),
+            category=DeprecationWarning,
+            filename=filename,
+            lineno=lineno,
+        )
+        return func(*args, **kwargs)
+    return new_func
 
 #%% Load Qt support
 
@@ -368,11 +394,8 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '\\begin{psmallmatrix}' + chr(10)
         else:
             ss += '\\begin{pmatrix}' + chr(10)
-        # ss += '\hline' + chr(10)
     for ii in range(X.shape[0]):
         r = X[ii, :]
-#        for jj in range(X.shape[1]):
-#            v=r[jj]
         if isinstance(r[0], str):
             ss += ' & '.join(['%s' % x for x in r])
         else:
@@ -532,7 +555,6 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         fid.close()
     else:
         pass
-        #print('no logfile')
         #raise Exception('no logfile')
 
     # all good
@@ -910,14 +932,15 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
     """ Run extension algorithm and return arrays
 
-    Arguments
-    ---------
-    N : integer
-        number of rows
-    k: integer
-        number of columns
-    t: integer
-        strength of the arrays
+    Args:
+      N (int): number of rows
+      k (int): number of columns to extend to
+      t (int): strength of the arrays
+      l (int): factors of the designs
+      initsols (None or list): list of arrays to extend, None to start with root
+
+    Returns:
+        list: list of generated designs
 
     >>> r = runExtend(16, 5, 3, verbose=0)    
     """
@@ -987,47 +1010,6 @@ def compressOAfile(afile, decompress=False, verbose=1):
         return False
 
 
-# def getposjvals(A, t, verbose=1):
-#    N = A.shape[0]
-#    k = A.shape[1]
-#    ncols = t + 1
-#    jstep = 2**(t + 1)
-#    njvals = int(1 + (float(N) / jstep))
-#    jvals = [N - jstep * l for l in range(0, njvals)]
-#    return jvals
-
-
-# def arraystats(A, verbose=1):
-#    """ Return statistics of an array """
-#    Af = A.transpose().flatten()
-#    al = oalib.array_link(A.shape[0], A.shape[1], 0)
-#    alist = oalib.arraylist_t(1)
-#    alist[0] = al
-#    # al.array
-#    ia = oalib.intArray.frompointer(al.array)
-#    for x in range(0, A.size):
-#        ia[x] = int(Af[x])
-# al.showarray()
-#    jresults = oalib.analyseArrays(alist, 0)
-#    js = jresults[0]
-#    vals = pointer2np(js.vals, js.nc)
-#    jvals = getposjvals(A, 3, verbose=0)
-#
-#    jv = np.zeros(len(jvals))
-#    c = Counter(abs(vals))
-#    for ii, xx in enumerate(jvals):
-#        if c.has_key(xx):
-#            jv[ii] = c.get(xx)
-#    if verbose:
-#        print('Possible j-values: %s' % jvals, end="")
-#        print('     values: %s' % jv.astype(int))
-#
-#    N = A.shape[0]
-#    Ak = (1 / N ^ 2) * sum(vals**2)
-#    print('Ak: %s' % Ak)
-#    return Ak
-
-
 def argsort(seq):
     """ Stable argsort """
     # http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
@@ -1065,6 +1047,7 @@ def sortcols(X):
     return sind
 
 
+@deprecated
 def showtriangles(jresults, showindex=1):
     """ Show triangle of j-values """
     if isinstance(jresults, oalib.jstruct_t):
@@ -1088,10 +1071,6 @@ def showtriangles(jresults, showindex=1):
             print('%s' % s)
 #%%
 
-
-from oapackage import markup
-import webbrowser
-import tempfile
 
 
 def testHtml(hh=None):

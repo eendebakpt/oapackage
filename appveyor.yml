@@ -101,6 +101,8 @@ install:
   # This is where I install numpy from the pre-built wheel I compiled either
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
+
+  - "%CMD_IN_ENV% pip install jupyter"
   
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -113,6 +115,7 @@ build_script:
   
 test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"

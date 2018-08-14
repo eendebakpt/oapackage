@@ -13,6 +13,8 @@ import oalib
 import os
 import numpy as np
 import time
+import warnings
+
 try:
     import matplotlib
     import matplotlib.pyplot as plt
@@ -175,13 +177,14 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     if lbls is None:
         lbls = ['Optimization of $D$']
-    hh = generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
-    oahelper.niceplot(hh.get('ax', None), despine=True, legend=hh['pltlegend'])
+    if fig is not None:
+        hh = generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
+        oahelper.niceplot(hh.get('ax', None), despine=True, legend=hh['pltlegend'])
 
-    scatterfile = os.path.join(outputdir, 'scatterplot.png')
-    if verbose:
-        print('generateDpage: writen scatterplot to %s' % scatterfile)
-    plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
+        scatterfile = os.path.join(outputdir, 'scatterplot.png')
+        if verbose:
+            print('generateDpage: writen scatterplot to %s' % scatterfile)
+        plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
 
     #%% Create page
 
@@ -412,7 +415,17 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
 
 #%%
 def filterPareto(scores, dds, sols, verbose=0):
-    """ From a list of designs select only the pareto optimal designs """
+    """ From a list of designs select only the pareto optimal designs
+
+    Args:
+        scores (array): array of scores
+        dds (array): array with D-efficiency values
+        sols (list): list of designs
+    Returns:
+        pscores (list) : list of scores of pareto optimal designs
+        pdds (list): list of D-efficiency values of pareto optimal designs
+        psols (list) : list of selected designs
+    """
     pp = oahelper.createPareto(dds, verbose=0)
     paretoidx = np.array(pp.allindices())
 
@@ -430,7 +443,7 @@ def scoreDn(dds, optimfunc):
 
     Args:
         dds (array): calculated D-efficiencies
-        optimfunc (): parameters for optimization function
+        optimfunc (list): parameters for optimization function
     Returns:
         scores (array)
     """
@@ -537,7 +550,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
             print('Doptimize: max score %.3f, max D: %.6f' %
                   (np.max(scores), np.max([A.Defficiency() for A in sols])))
     else:
-        raise Exception('code not tested....')
+        warnings.warn('code not tested....')
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
         sols = []

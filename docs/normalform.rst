@@ -17,6 +17,7 @@ Nauty :cite:`nautyI`, :cite:`nautyII`. An advantage of this approach is
 that the graph isomorphism packages contain state-of-the-art methods for reduction to canonical form.
 A disadvantage is that these methods are unaware of the special structure of designs and cannot be tailored
 to create normal forms of a specific form.
+
                        
 Reduction to LMC normal form
 ----------------------------
