@@ -107,6 +107,7 @@ install:
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
   - "%CMD_IN_ENV% pip install jupyter"
+  - jupyter --version
   - jupyter kernelspec list
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -122,7 +123,7 @@ test_script:
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
   # only run nbconvert for python3.6
-  - IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
+  #- IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
   - IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
   # --ExecutePreprocessor.kernel_name=%PYTHON%/python
   #- "%CMD_IN_ENV% jupyter kernelspec list --json | grep display_name"
