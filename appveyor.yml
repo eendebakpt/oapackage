@@ -9,6 +9,10 @@ environment:
 
   matrix:
    
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
@@ -21,10 +25,6 @@ environment:
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python37-x64"
@@ -47,6 +47,8 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
 
+    # http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
+    
 matrix:
       fast_finish: true
 
@@ -101,8 +103,6 @@ install:
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
-  - "%CMD_IN_ENV% pip install jupyter"
-  
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
@@ -116,8 +116,9 @@ test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
-  - "%CMD_IN_ENV% jupyter kernelspec list"
   # only run nbconvert for python3.6
+  - IF %ispython36% == True "%CMD_IN_ENV% pip install jupyter"
+  - IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
   - IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
   # --ExecutePreprocessor.kernel_name=%PYTHON%/python
   #- "%CMD_IN_ENV% jupyter kernelspec list --json | grep display_name"
