@@ -103,6 +103,7 @@ install:
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
+  - "%CMD_IN_ENV% pip install jupyter"
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
