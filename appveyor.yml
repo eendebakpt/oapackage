@@ -103,6 +103,9 @@ install:
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
+  - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
+  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+
   - "%CMD_IN_ENV% pip install jupyter"
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -118,7 +121,6 @@ test_script:
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
   # only run nbconvert for python3.6
-  - IF %ispython36% == True "%CMD_IN_ENV% pip install jupyter"
   - IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
   - IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
   # --ExecutePreprocessor.kernel_name=%PYTHON%/python
