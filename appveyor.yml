@@ -8,8 +8,7 @@ environment:
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
 
   matrix:
-#    fast_finish: true
-    
+   
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
@@ -115,8 +114,13 @@ build_script:
   
 test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
+  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
   - "%CMD_IN_ENV% jupyter kernelspec list"
-  - "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
+  # only run nbconvert for python3.6
+  - IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb"
+  # --ExecutePreprocessor.kernel_name=%PYTHON%/python
+  #- "%CMD_IN_ENV% jupyter kernelspec list --json | grep display_name"
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
