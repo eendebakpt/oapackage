@@ -106,6 +106,12 @@ install:
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
+  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+
+  # part of the requirements
+  - "%CMD_IN_ENV% pip install scanf"
+
+  # for running the jupyter notebooks
   - "%CMD_IN_ENV% pip install jupyter"
   - jupyter --version
   - jupyter kernelspec list
