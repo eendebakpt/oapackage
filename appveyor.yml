@@ -120,6 +120,7 @@ build_script:
   
 test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
   # only run nbconvert for python3.6
