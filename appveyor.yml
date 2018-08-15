@@ -107,6 +107,7 @@ install:
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
   - "%CMD_IN_ENV% pip install jupyter"
+  - jupyter kernelspec list
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
