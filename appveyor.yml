@@ -6,6 +6,7 @@ environment:
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
 
   matrix:
    
@@ -112,9 +113,12 @@ install:
   - "%CMD_IN_ENV% pip install scanf"
 
   # for running the jupyter notebooks
-  - IF %ispython36% == True %CMD_IN_ENV% "pip install jupyter"
-  - IF %ispython36% == True jupyter --version
-  - IF %ispython36% == True jupyter kernelspec list
+  - "%CMD_IN_ENV36% pip install jupyter"
+  - "%CMD_IN_ENV36% jupyter --version"
+  - "%CMD_IN_ENV36% jupyter kernelspec list"
+  #- IF %ispython36% == True jupyter --version
+  #- IF %ispython36% == True jupyter kernelspec list
+  
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
