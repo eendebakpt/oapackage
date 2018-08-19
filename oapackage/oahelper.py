@@ -947,10 +947,20 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     sols0.push_back(A)
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
+    assert(n>=len(solsx))
     sys.stdout.flush()
     return solsx
 
 
+def test_extendSingleArray():
+    A=oapackage.exampleArray(4,1)
+    adata=oapackage.arraylink2arraydata(A)
+    B=A.selectFirstColumns(5)
+    ee=extendSingleArray(B, adata, t=2, verbose=1)
+    assert(ee[0].n_columns==B.n_columns+1)
+    assert(ee[1]==A.selectFirstColumns(6))
+
+    
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
     """ Run extension algorithm and return arrays
 
