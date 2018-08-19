@@ -152,23 +152,36 @@ def miscunittest(verbose=1):
 
 
 class TestOAfiles(unittest.TestCase):
-
-    def test_oaIsBinary(self):
+    """ Test functionality related to orthogonal array files """
+    def test_misc_file_operations(self):
         a = tempfile.mktemp(suffix='.oa')
         lst=[oapackage.exampleArray(4,1)]
         oapackage.writearrayfile(a, lst)
         assert(oapackage.oahelper.oaIsBinary(a) is False)
         oapackage.writearrayfile(a, oapackage.exampleArray(4,1), oapackage.ABINARY)
         assert(oapackage.oahelper.oaIsBinary(a) )
+        
+        oapackage.oahelper.oainfo(a)
 
     def test_findfilesR(self):
         _=oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
+    def test_checkArrayFile(self):
+        a = tempfile.mktemp(suffix='.oa')
+        self.assertFalse(oapackage.oahelper.checkArrayFile(a))
+
 class TestOAhelper(unittest.TestCase):
+    """ Test functionality contained in oahelper module """
 
     # def test_tilefigs(self):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
+    def test_argsort():
+        idx=oapackage.oahelper.argsort([1,2,3])
+        assert(idx==[0,1,2])
+        idx=oapackage.oahelper.argsort([2,2,1])
+        assert(idx==[2,0,1])
+        
     def test_runExtend(self):
         N = 24
         k = 5
@@ -178,10 +191,6 @@ class TestOAhelper(unittest.TestCase):
         rx = oapackage.oahelper.runExtend(N, k, t=t, l=2, initsols=r, verbose=3)
         self.assertTrue(len(r) == 10)
         self.assertTrue(len(rx) == 63)
-
-    def test_checkArrayFile(self):
-        a = tempfile.mktemp(suffix='.oa')
-        self.assertFalse(oapackage.oahelper.checkArrayFile(a))
 
     def test_joinArrayLists(self):
         l1 = [oapackage.exampleArray(2)]
