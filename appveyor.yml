@@ -112,9 +112,9 @@ install:
   - "%CMD_IN_ENV% pip install scanf"
 
   # for running the jupyter notebooks
-  - "%CMD_IN_ENV% pip install jupyter"
-  - jupyter --version
-  - jupyter kernelspec list
+  - IF %ispython36% == True "%CMD_IN_ENV% pip install jupyter"
+  - IF %ispython36% == True jupyter --version
+  - IF %ispython36% == True jupyter kernelspec list
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
 
