@@ -151,6 +151,19 @@ def miscunittest(verbose=1):
 #%%
 
 
+class TestOAfiles(unittest.TestCase):
+
+    def test_oaIsBinary(self):
+        a = tempfile.mktemp(suffix='.oa')
+        lst=[oapackage.exampleArray(4,1)]
+        oapackage.writearrayfile(a, lst)
+        assert(oapackage.oahelper.oaIsBinary(a) is False)
+        oapackage.writearrayfile(a, oapackage.exampleArray(4,1), oapackage.ABINARY)
+        assert(oapackage.oahelper.oaIsBinary(a) )
+
+    def test_findfilesR(self):
+        _=oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
+
 class TestOAhelper(unittest.TestCase):
 
     # def test_tilefigs(self):

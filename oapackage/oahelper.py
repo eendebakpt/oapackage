@@ -100,7 +100,9 @@ except:
         return [[0, 0, 1280, 720]]
     pass
 
-
+def test_monitorSizes():
+    monitorSizes()
+    
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
     """ Tile figure windows on a specified area """
     mngr = plt.get_current_fig_manager()
@@ -419,6 +421,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
     return ss
 
 
+@deprecated
 def array2latex_old(ltable, htable=None):
     """ Write a numpy array to latex format """
     print('please use array2latex from researchOA instead')
