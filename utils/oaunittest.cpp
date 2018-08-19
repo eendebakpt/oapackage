@@ -252,8 +252,8 @@ void test_array_manipulation() {
 		 
 	array_link al5 = al.selectFirstColumns(5);
 	assert(al5.n_columns == 5);
-	array_link alx = al5.selectFirstColumns(8);
-	assert(alx.n_columns == al5.n_columns);
+	//array_link alx = al5.selectFirstColumns(8);
+	//assert(alx.n_columns == al5.n_columns);
 }
 
 /** unittest for oapackage
