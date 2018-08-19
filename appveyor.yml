@@ -6,10 +6,14 @@ environment:
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
 
   matrix:
-#    fast_finish: true
-    
+   
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
@@ -22,10 +26,6 @@ environment:
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python37-x64"
@@ -48,6 +48,8 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
 
+    # http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
+    
 matrix:
       fast_finish: true
 
@@ -101,6 +103,21 @@ install:
   # This is where I install numpy from the pre-built wheel I compiled either
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
+
+  - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
+  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+
+  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+
+  # part of the requirements
+  - "%CMD_IN_ENV% pip install scanf"
+
+  # for running the jupyter notebooks
+  - "%CMD_IN_ENV36% pip install jupyter"
+  - "%CMD_IN_ENV36% jupyter --version"
+  - "%CMD_IN_ENV36% jupyter kernelspec list"
+  #- IF %ispython36% == True jupyter --version
+  #- IF %ispython36% == True jupyter kernelspec list
   
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -113,6 +130,15 @@ build_script:
   
 test_script:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
+  #- ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
+  #- ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+  # only run nbconvert for python3.6
+  #- IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
+  - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb "
+  #- IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb "
+  # --ExecutePreprocessor.kernel_name=%PYTHON%/python
+  #- "%CMD_IN_ENV% jupyter kernelspec list --json | grep display_name"
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"

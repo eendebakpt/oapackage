@@ -9,23 +9,26 @@ http://github.com/eendebakpt/oapackage
 
 import oalib
 import oapackage.Doptim
-import oapackage.tests
 
-oalib.setloglevel(oalib.SYSTEM)
-oalib.log_print(-oalib.SYSTEM, '')
+
+from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
 try:
     from oalib import *
 except:
     # fix for RTD
     pass
+
 from . oahelper import *
 from . Doptim import *
 from . import scanf
 
 import numpy as np
 
-__all__ = ['oahelper']
+oalib.setloglevel(oalib.SYSTEM)
+oalib.log_print(-oalib.SYSTEM, '')
+
+#__all__ = ['oahelper']
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
 __doc__ = __description__ + " <" + __uri__ + ">"

@@ -184,7 +184,7 @@ class OATest(TestCommand):
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         print('## oapackage test: load package')
-        import oapackage
+        import oapackage.tests
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 

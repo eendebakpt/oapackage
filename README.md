@@ -83,6 +83,10 @@ $ make install
 Testing
 -------
 
-To perform tests run `pytest`. To obtain a coverage report, run `coverage run --source='./' -m pytest`
+To perform tests run `pytest`. To obtain a coverage report, run
+```
+$ coverage run --source='./oapackage' -m pytest
+$ coverage report --omit oapackage/markup.py,oapackage/tests.py,oapackage/deprecated.py
+```
 
 

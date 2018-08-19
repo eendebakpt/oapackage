@@ -858,11 +858,12 @@ typedef  std::vector<array_link> extensioncol_list_t;
  * For calculation efficiency several cache systems are used counting the number of occurences of elements and t-tuples.
  *
  *
- * @param array Array to extend
+ * @param origarray Array to extend
  * @param fullad Array data for the full array
+ * @param extensioncol Column to extend
  * @param extensions List to which new extensions are added
  * @param oaextend Structure with options
- * @return
+ * @return Number of candidate extensions generated
  */
 int extend_array ( carray_t *origarray,  const arraydata_t *fullad, const colindex_t extensioncol, arraylist_t &extensions, OAextend const &oaextend )
 {

@@ -26,7 +26,6 @@ def oa2graph(al, adata, verbose=1):
     A = al.getarray(verbose=0)
     nrows = adata.N
     ncols = A.shape[1]
-    #nRowVertices = A.shape[0]
     nColumnLevelVertices = sum(adata.getS())
     nVertices = adata.N + ncols + nColumnLevelVertices
     nColVertices = ncols
@@ -118,5 +117,5 @@ def selectIsomorphismClasses(sols, verbose=1):
 
 def test_select_isomorphism():
     ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
-    indices, mm = selectIsomorphismClasses(ll, verbose=0)
+    indices, mm = selectIsomorphismClasses(ll, verbose=1)
     assert(indices[0] == indices[1])

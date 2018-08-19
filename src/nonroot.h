@@ -26,6 +26,8 @@
 lmc_t LMCreduce_non_root ( const array_t * original, const arraydata_t* ad, dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic ) ;
 lmc_t LMCreduce_non_root_j4 ( const array_t * original, const arraydata_t* ad, const dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic );
 
+/// specialized reduction function for 2-level arrays
 lmc_t LMCreduce_non_root_2level ( const array_t * original, const arraydata_t* ad, dyndata_t *dyndata, LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic ) ;
 
+/// check column for row symmetry exchanges
 lmc_t LMC_check_col_rowsymm ( const array_t *arraycol, const arraydata_t *ad, const symmdata &sd, int col, int dverbose=0 );

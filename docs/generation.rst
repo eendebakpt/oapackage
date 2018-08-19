@@ -4,6 +4,14 @@ Generation of designs
 The package can be used to generate several classes of designs. Generated
 designs are available on the website http://www.pietereendebak.nl/oapackage/index.html
 
+The main functions:
+
+.. autosummary::
+
+        oapackage.Doptim.Doptimize
+        oapackage.oalib.generateConferenceExtensions
+        
+        
 Generation of orthogonal arrays
 -------------------------------
 

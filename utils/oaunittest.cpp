@@ -246,6 +246,16 @@ int checkTransformationComposition ( const array_link &al, int verbose=0 )
 
 enum {UGOOD, UERROR};
 
+
+void test_array_manipulation() {
+	array_link al = exampleArray(4,0);
+		 
+	array_link al5 = al.selectFirstColumns(5);
+	assert(al5.n_columns == 5);
+	array_link alx = al5.selectFirstColumns(8);
+	assert(alx.n_columns == al5.n_columns);
+}
+
 /** unittest for oapackage
  *
  * Returns UGOOD if all tests are ok.
@@ -278,6 +288,13 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
 
      }
+
+	 /* constructors */
+	 {
+		 cprintf(verbose, "%s: array manipulation operations\n", bstr);
+
+		 test_array_manipulation();
+	 }
 
      /* double conference matrices */
      {
