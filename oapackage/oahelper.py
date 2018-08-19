@@ -15,6 +15,7 @@ import numpy as np
 import functools
 from collections import Counter
 import operator
+import inspect
 import fileinput
 import traceback
 import re
@@ -647,6 +648,20 @@ def checkFiles(lst, cache=1, verbose=0):
             break
     return c
 
+def test_checkFiles():    
+    def touch(fname):
+        if os.path.exists(fname):
+            os.utime(fname, None)
+        else:
+            open(fname, 'a').close()
+        
+    lst=[tempfile.mktemp()]
+    r= checkFiles(lst, cache=1, verbose=1)
+    assert(r is False)
+    touch(lst[0])
+    r= checkFiles(lst, cache=1, verbose=1)
+    assert(r is True)
+
 #%%
 
 
@@ -899,23 +914,30 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
 
 
 def selectJ(sols0, jj=5, jresults=None, verbose=1):
-    """ Select only arrays with J-characteristics non-zero """
+    """ Select only arrays with J-characteristics non-zero
+    
+    We asssume the designs are in even-odd ordering (i.e. only check the J value of first columns)
+    """
     if jresults is None:
         jresults = oalib.analyseArrays(sols0, verbose, jj)
 
     solseo = oalib.arraylist_t()
     v = []
     for ii, js in enumerate(jresults):
-        v.append(js.vals[0])
+        v.append(js.values[0])
 
     si = [i for (i, j) in sorted(enumerate(v), key=operator.itemgetter(1))]
     for jj in si:
         if v[jj] > 0:
             solseo.append(sols0[jj])
     if verbose:
-        print('selectJ: kept %d/%d solutions' % (solseo.size(), sols0.size()))
+        print('selectJ: kept %d/%d solutions' % (solseo.size(), len(sols0)))
     return solseo
 
+def test_selectJ():
+    al=oapackage.exampleArray(12,1)
+    sols0=[al]
+    r=selectJ(sols0)
 
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
@@ -1047,28 +1069,7 @@ def sortcols(X):
     return sind
 
 
-@deprecated
-def showtriangles(jresults, showindex=1):
-    """ Show triangle of j-values """
-    if isinstance(jresults, oalib.jstruct_t):
-        showindex = 0
-        jresults = (jresults,)
-
-    js = jresults[0]
-    i = 0
-    idx = [i]
-    for j in range(4, js.k + 1):
-        nn = choose(j - 1, 3)
-        i = i + nn
-        idx.append(i)
-    for jj, js in enumerate(jresults):
-        vals = oalib.intArray.frompointer(js.vals)
-        if showindex:
-            print('i: %d' % jj)
-        for kk in range(0, js.k - 3):
-            xx = [vals[v] for v in range(idx[kk], idx[kk + 1])]
-            s = ','.join(map(str, xx))
-            print('%s' % s)
+       
 #%%
 
 

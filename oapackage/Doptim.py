@@ -550,7 +550,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
             print('Doptimize: max score %.3f, max D: %.6f' %
                   (np.max(scores), np.max([A.Defficiency() for A in sols])))
     else:
-        warnings.warn('code not tested....')
+        # optimfunc is a function
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
         sols = []

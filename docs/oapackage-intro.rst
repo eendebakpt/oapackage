@@ -34,7 +34,7 @@ Interfaces
 ----------
 
 The Orthogonal Array package has several interfaces. First of all there
-are command line tools for manipulating arrays and generating. All
+are command line tools for manipulating arrays and generating designs. All
 functions of the package can be used from either C++ or Python.
 
 For the generation of D-optimal designs also Matlab or R can be used, see

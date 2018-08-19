@@ -231,6 +231,8 @@ class TestDoptimize(unittest.TestCase):
         optimfunc = lambda x: x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
 
+        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1, maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
+
     def test_unittest(self):
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
                                                           1, 0, 0], verbose=1, maxtime=9, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
