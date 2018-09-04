@@ -1,5 +1,4 @@
-""" Orthogonal Array package
-
+""" Orthogonal Array package test functions
 """
 
 import numpy as np
@@ -10,7 +9,6 @@ import oapackage
 import oalib
 import oapackage.Doptim
 import oapackage.graphtools
-import unittest
 
 
 def autodoctest():
