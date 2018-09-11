@@ -139,8 +139,29 @@ The arrays can be written in text or binary format. For more details on
 the file format see Section :ref:`File formats`. The header of the
 `arrayfile_t` class is listed below.
  
-.. doxygenclass:: arrayfile_t
+.. see https://breathe.readthedocs.io/en/latest/directives.html
+
+doxygenclass
+
+.. doxygenstruct:: arrayfile_t
+    :project: oapackage
+
+yy
+
+.. doxygenclass:: CandidateGeneratorDouble
+    :members:
+
+.. doxygenclass:: array_link
+    :members:
+
+.. doxygenclass:: Pareto
+
+xxx
+
+.. doxygenfile::  classPareto.xml
     
+doxygenclass done
+
     
 .. code-block:: c++
 

@@ -111,6 +111,7 @@ install:
 
   # for running the jupyter notebooks
   - "%CMD_IN_ENV36% pip install jupyter"
+  - "%CMD_IN_ENV36% pip install matplotlib"
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
   #- IF %ispython36% == True jupyter --version
