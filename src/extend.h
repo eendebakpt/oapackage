@@ -166,16 +166,13 @@ struct extendpos {
 
 /* functions */
 
-//double progress_column(array_t *column, extendpos *p);
-
-
 /* Public part of interface */
 
 /// extend a list of arrays
 int extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend, colindex_t extensioncol, arraylist_t &extensions);
 
 /// extend a list of arrays
-arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend);
+arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend_options);
 
 /// extend a list of arrays with default options
 arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &fullad);
