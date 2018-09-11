@@ -24,6 +24,8 @@
 
 #%% The oapackage cannot be build on rtd. We mock the module
 import os
+import subprocess
+
 rtd = os.environ.get('READTHEDOCS', False)
 
 if rtd:
@@ -40,6 +42,9 @@ if rtd:
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
+if rtd:
+    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    
 #%%
 # -- General configuration ------------------------------------------------
 
