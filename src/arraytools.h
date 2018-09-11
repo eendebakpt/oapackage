@@ -944,17 +944,6 @@ public:
         std::copy ( tmp.begin (), tmp.begin () + n, this->array );
     }
 
-    /// return maximum element of array
-    array_t maxelement () const {
-        array_t maxelem = 0;
-        for ( int i = 0; i < this->n_rows * this->n_columns; i++ ) {
-            if ( this->array[i] > maxelem ) {
-                maxelem = array[i];
-            }
-        }
-        return maxelem;
-    }
-
     /// set column to values
     void setcolumn ( int c, const array_link & al, int sc = 0 ) {
         assert ( c >= 0 );
