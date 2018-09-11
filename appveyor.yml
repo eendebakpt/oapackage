@@ -129,17 +129,22 @@ build_script:
   - "%CMD_IN_ENV% python setup.py build"
   
 test_script:
-  - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
-  - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
-  #- ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
-  #- ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
-  # only run nbconvert for python3.6
-  #- IF %ispython36% == True "%CMD_IN_ENV% jupyter kernelspec list"
-  - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb "
-  #- IF %ispython36% == True "%CMD_IN_ENV% jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb "
-  # --ExecutePreprocessor.kernel_name=%PYTHON%/python
-  #- "%CMD_IN_ENV% jupyter kernelspec list --json | grep display_name"
-
+   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+   - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
+   # only run nbconvert for python3.6
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_inflation.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
+   
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
   - ps: "ls dist"
