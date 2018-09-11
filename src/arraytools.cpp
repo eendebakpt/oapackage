@@ -177,7 +177,6 @@ array_transformation_t::array_transformation_t ( )
  */
 array_transformation_t::array_transformation_t ( const arraydata_t *adp )
 {
-     //printf("array_transformation_t::array_transformation_t: constructor with arraydata_t pointer\n");
      ad = new arraydata_t ( *adp );
      init();
 }
@@ -187,11 +186,8 @@ array_transformation_t::array_transformation_t ( const arraydata_t &adp )
      init();
 }
 
-/// Copy construction
 array_transformation_t::array_transformation_t ( const array_transformation_t &tt )
 {
-
-     //printf("array_transformation_t::array_transformation_t: constructor with array_transformation_t\n");
      ad = new arraydata_t ( * ( tt.ad ) );
 
      init();
@@ -202,7 +198,6 @@ array_transformation_t::array_transformation_t ( const array_transformation_t &t
      for ( colindex_t c=0; c<ad->ncols; c++ ) {
           std::copy ( tt.lperms[c], tt.lperms[c]+ ad->s[c], lperms[c] );
      }
-
 }
 
 void array_transformation_t::reset()
@@ -563,17 +558,13 @@ std::vector<int> getJcounts ( arraylist_t *arraylist, int N, int k, int verbose 
 
 
 /**
- * @brief Default copy constructor, no deep copy of the array for efficiency!!
+ * @brief Default copy constructor
  * @param A
  */
-array_link::array_link ( const array_link &rhs )   //: n_rows(rhs.n_rows), n_columns(rhs.n_columns), index(rhs.index), array(rhs.array)
+array_link::array_link ( const array_link &rhs )  
 {
-#ifdef CLEAN_ARRAY_LINK
      array=0;
      deepcopy ( rhs );
-#else
-     shallowcopy ( rhs );
-#endif
 }
 
 #ifdef SWIGCODE
@@ -699,12 +690,10 @@ array_t array_link::_at ( const rowindex_t r, const colindex_t c ) const
  */
 array_t array_link::at ( const rowindex_t r, const colindex_t c ) const
 {
-//#ifdef OADEBUG
      if ( ( r<0 ) || ( r >= this->n_rows ) || ( c<0 ) || ( c>=this->n_columns ) ) {
           myprintf ( "array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows, this->n_columns );
           return 0;
      }
-//#endif
 
      return this->array[r+this->n_rows*c];
 }
@@ -762,12 +751,10 @@ array_link::array_link() : n_rows ( -1 ), n_columns ( 0 ), index ( INDEX_NONE ),
 
 void array_link::init ( rowindex_t r, colindex_t c )
 {
-#ifdef CLEAN_ARRAY_LINK
      if ( array!=0 ) {
           destroy_array ( array );
           array=0;
      }
-#endif
      n_rows=r;
      n_columns=c;
 
@@ -779,14 +766,10 @@ void array_link::init ( rowindex_t r, colindex_t c )
 //! Default destructor
 array_link::~array_link()
 {
-     //	myprintf("~array_link: index %d\n", this->index);
-     /* we do not destroy the array for efficiency in sorting, this should be done manually! */
-#ifdef CLEAN_ARRAY_LINK
      if ( array!=0 ) {
           destroy_array ( array );
           array=0;
      }
-#endif
 }
 
 //! Create array link with array

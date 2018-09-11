@@ -14,9 +14,6 @@
 #define MAXROWS 2048
 
 
-/* clean memory management */
-#define CLEAN_ARRAY_LINK 1
-
 const int HACK = 0;
 
 /* output analysis data */

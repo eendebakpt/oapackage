@@ -615,8 +615,7 @@ std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int
 
 /*! \brief Wrapper class for an array
 
- The array_link struct is a struct that represents an arrays. Copying of array links
- is done with shallow copy or deep copy depending on compile time options!
+ The array_link struct is a struct that represents an array. 
   */
 struct array_link {
     //! Number of rows in array
@@ -1320,11 +1319,7 @@ inline array_link &
 array_link::operator= ( const array_link & rhs )
 {
 
-#ifdef CLEAN_ARRAY_LINK
     return deepcopy ( rhs );
-#else
-    not implemented
-#endif
 }
 
 inline array_link &
