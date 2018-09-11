@@ -89,4 +89,5 @@ $ coverage run --source='./oapackage' -m pytest
 $ coverage report --omit oapackage/markup.py,oapackage/tests.py,oapackage/deprecated.py
 ```
 
-
+Continuous integration and testing for the C++ library is performed on [Travis](https://travis-ci.org/eendebakpt/oapackage) and for the Python package on
+[AppVeyor](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8).
