@@ -48,7 +48,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "32"
 
-    # http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
+    # For details see http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
     
 matrix:
       fast_finish: true
@@ -96,9 +96,6 @@ install:
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
   - "powershell ./appveyor/install_numpy.ps1"
-  
-  #- "%WITH_COMPILER% pip wheel --wheel-dir=c:\numpy\ numpy"
-  #- "%WITH_COMPILER% pip install numpy"
     
   # This is where I install numpy from the pre-built wheel I compiled either
   # earlier in this session, or in a previous session.
@@ -134,7 +131,6 @@ test_script:
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_inflation.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "

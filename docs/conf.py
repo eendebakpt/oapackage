@@ -59,6 +59,13 @@ extensions += ['sphinxcontrib.napoleon']
 extensions += ['sphinx.ext.intersphinx']
 extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
+
+if not rtd:
+    extensions += ['breathe']
+    breathe_projects = { "oapackage": "../xml/" }
+
+    breathe_default_project = "oapackage"
+
  
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -218,4 +225,5 @@ def run_apidoc(_):
 
 
 def setup(app):
+    print('conf.py: setup')
     app.connect('builder-inited', run_apidoc)
