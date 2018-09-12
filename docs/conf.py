@@ -70,7 +70,7 @@ extensions += ['sphinx.ext.autosummary']
 
 
 extensions += ['breathe']
-breathe_projects = { "oapackage": "/home/eendebakpt/misc/oa/oacode/docs/xml" }
+breathe_projects = { "oapackage": "./xml" }
 
 breathe_default_project = "oapackage"
 
