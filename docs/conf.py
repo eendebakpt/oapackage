@@ -69,11 +69,10 @@ extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
 
 
-if not rtd:
-    extensions += ['breathe']
-    breathe_projects = { "oapackage": "/home/eendebakpt/misc/oa/oacode/docs/xml" }
+extensions += ['breathe']
+breathe_projects = { "oapackage": "/home/eendebakpt/misc/oa/oacode/docs/xml" }
 
-    breathe_default_project = "oapackage"
+breathe_default_project = "oapackage"
 
  
 # Add any paths that contain templates here, relative to this directory.
