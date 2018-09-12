@@ -44,6 +44,8 @@ if rtd:
 
 if rtd:
     subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+else:
+    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
     
 #%%
 # -- General configuration ------------------------------------------------
@@ -62,8 +64,10 @@ extensions += ['sphinxcontrib.bibtex']
 extensions += ['nbsphinx']
 extensions += ['sphinxcontrib.napoleon']
 extensions += ['sphinx.ext.intersphinx']
+extensions += ['sphinx.ext.autosectionlabel']
 extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
+
 
 if not rtd:
     extensions += ['breathe']

@@ -2629,9 +2629,9 @@ std::vector<int> array_link::FvaluesConference ( int jj ) const
 }
 
 #ifdef FULLPACKAGE
-std::vector<double> array_link::PECsequence() const
+std::vector<double> array_link::PECsequence(int verbose) const
 {
-     return ::PECsequence ( *this );
+     return ::PECsequence ( *this, verbose );
 }
 #endif
 

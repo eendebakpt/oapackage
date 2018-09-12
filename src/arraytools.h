@@ -738,7 +738,7 @@ public:
     std::vector < int >Jcharacteristics ( int jj = 4 ) const;
 
     /// Calculate the projective estimation capacity sequence
-    std::vector < double >PECsequence () const;
+    std::vector < double >PECsequence ( int verbose = 0) const;
 
     /// calculate rank of array
     int rank () const;

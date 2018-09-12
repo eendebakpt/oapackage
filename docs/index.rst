@@ -6,7 +6,8 @@
 Welcome to oapackage's documentation!
 =====================================
 
-The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
+The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays,
+optimal designs and conference designs.
 
 
 .. toctree::
