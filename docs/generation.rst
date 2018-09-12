@@ -19,17 +19,22 @@ A list of arrays in LMC form can be extended to a list of arrays in LMC
 form with one additional column. Details for the algorithm are described
 in :cite:`Eendebak2009`.
 
-The main function for array extension is the following:
+The main functions for array extension are the following:
 
-.. code-block:: c++
-   :caption: C++ interface
-   
-    /// extend a list of arrays
-    arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
-                OAextend const &oaextendoptions);
+.. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
+.. doxygenfunction:: extend_arraylist(const arraylist_t&, const arraydata_t&)
 
-Here `fullad` is the structure describing the type of arrays and
-`oaxextendoptions` contains various options for the algorithm.
+                     
+.. comment
+    .. code-block:: c++
+       :caption: C++ interface
+       
+        /// extend a list of arrays
+        arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
+                    OAextend const &oaextendoptions);
+
+Here :code:`arraydata_t` is the structure describing the type of arrays and
+:code:`OAextend` contains various options for the algorithm.
 
 A typical session could be:
 
@@ -76,6 +81,9 @@ in :cite:`wiki:ConferenceMatrix`.
  >>>
  >>> print('number of non-isomorphic conference designs: number of conference designs: %d'  % len(l6) )
  non-isomorphic conference designs: 11
+
+
+. doxygenfile:: conference.h
 
 Calculation of D-optimal designs
 --------------------------------

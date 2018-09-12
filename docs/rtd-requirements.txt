@@ -5,3 +5,4 @@ sphinxcontrib.napoleon
 scanf
 matplotlib
 iPython
+breathe

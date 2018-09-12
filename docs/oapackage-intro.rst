@@ -86,7 +86,7 @@ type:
 This creates the command line utilities and a C++ library.
 
 
-To compile the Python interface using Linux use
+To compile the Python interface use
 
 .. code-block:: console
 
@@ -96,15 +96,6 @@ To compile the Python interface using Linux use
 The Python interface requires Numpy :cite:`NumPy`,
 Matplotlib :cite:`Matplotlib` and Swig. The code has been
 tested with Python 2.7, 3.5 and 3.6.
-
-Using Windows start Cygwin or the Visual Studio command prompt. From the
-package source directory run:
-
-.. code-block:: console
-
-  $ python setup.py bdist\_wininst
-
-This creates a binary installer package.
 
 The R interface to the optimal design functionality of the package is available from CRAN
 http://cran.r-project.org/web/packages/oapackage/index.html.

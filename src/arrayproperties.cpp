@@ -1300,8 +1300,6 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
         vif=0;
         Eeff=0;
 
-        //Eigen::FullPivLU<MatrixXd> lu(x);
-        //rank=lu.rank();
 #ifdef FULLPACKAGE
         int rankold=rank2;
         if ( verbose>=3 ) {
