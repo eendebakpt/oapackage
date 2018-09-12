@@ -24,6 +24,8 @@
 
 #%% The oapackage cannot be build on rtd. We mock the module
 import os
+import subprocess
+
 rtd = os.environ.get('READTHEDOCS', False)
 
 if rtd:
@@ -40,6 +42,11 @@ if rtd:
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
+if rtd:
+    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+else:
+    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    
 #%%
 # -- General configuration ------------------------------------------------
 
@@ -57,8 +64,16 @@ extensions += ['sphinxcontrib.bibtex']
 extensions += ['nbsphinx']
 extensions += ['sphinxcontrib.napoleon']
 extensions += ['sphinx.ext.intersphinx']
+extensions += ['sphinx.ext.autosectionlabel']
 extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
+
+
+extensions += ['breathe']
+breathe_projects = { "oapackage": "./xml" }
+
+breathe_default_project = "oapackage"
+
  
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -218,4 +233,5 @@ def run_apidoc(_):
 
 
 def setup(app):
+    print('conf.py: setup')
     app.connect('builder-inited', run_apidoc)

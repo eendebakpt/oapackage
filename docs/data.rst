@@ -50,55 +50,7 @@ Representing arrays
 The structure containing an orthogonal array is called the
 :py:class:`~oalib.array_link` structure. It consists of a specified number of rows and
 columns, the data (integer values) and an index.
-
-                  
-.. code-block:: c++
-
-    struct array_link
-    {
-        //! Number of rows in array
-        rowindex_t n_rows;
-        //! Number of columns in array
-        colindex_t n_columns;
-        //! Index number
-        int index;
-        //! Pointer to an array data
-        array_t* array;
-
-        /// Constructor functions
-        array_link();
-        array_link(rowindex_t nrows, colindex_t ncols, int index);
-        ~array_link();
-        array_link(const array_link &);
-
-    public:
-        /// print an array to output stream
-        friend std::ostream &operator<<(std::ostream &, const array_link &A);
-
-        /// print array to stdout
-        void showarray() const;
-
-        // manipulation of arrays
         
-        /// return array with selected column removed
-        array_link deleteColumn(int index) const;
-
-        /// return array with first n columns selected
-        array_link selectFirstColumns(int n) const;
-
-        /// return array with last n columns selected
-        array_link selectLastColumns(int n) const;
-
-        /// select columns from an array
-        array_link selectColumns(const std::vector<int> c) const;
-
-        /// return transposed array
-        array_link transposed() const;
-
-        // statistical properties of the array
-
-        ...
-
 In the Python interface the arraylink object can be indexed just as
 normal arrays. It is also possible to return a Numpy array. The
 `array\_link` object implements to Python array interface, so most
@@ -118,6 +70,12 @@ object.
  >>> X 
  array([[0, 0], [0, 0], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1]], dtype=int32)
 
+The C++ class is:
+
+.. doxygenstruct:: array_link
+    :members:
+
+    
 Reading and writing arrays
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -137,8 +95,37 @@ class. For example:
 
 The arrays can be written in text or binary format. For more details on
 the file format see Section :ref:`File formats`. The header of the
-`arrayfile_t` class is listed below.
+``arrayfile_t`` class is listed below.
  
+.. see https://breathe.readthedocs.io/en/latest/directives.html
+
+.. examplecode
+    arraydata_t
+    
+    .. doxygenstruct:: arraydata_t
+        :members:
+    
+    doxygenclass for arrayfile_t
+    
+    .. doxygenclass:: arrayfile::arrayfile_t
+        :members:
+        
+    yy
+    
+    .. doxygenclass:: CandidateGeneratorDouble
+        :members:
+    
+    .. doxygenstruct:: array_link
+        :members:
+    
+    
+    xxx
+    
+    .. doxygenfile::  classPareto.xml
+        
+    doxygenclass done
+
+    
 .. code-block:: c++
 
     struct arrayfile_t
@@ -248,7 +235,7 @@ and column permutations are not commutative.
 Classes of arrays
 ~~~~~~~~~~~~~~~~~
 
-The `arraydata_t` object represents data about a class of orthogonal
+The :code:`arraydata_t` object represents data about a class of orthogonal
 arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 
 .. code-block:: c++

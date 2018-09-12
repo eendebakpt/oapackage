@@ -19,17 +19,22 @@ A list of arrays in LMC form can be extended to a list of arrays in LMC
 form with one additional column. Details for the algorithm are described
 in :cite:`Eendebak2009`.
 
-The main function for array extension is the following:
+The main functions for array extension are the following:
 
-.. code-block:: c++
-   :caption: C++ interface
-   
-    /// extend a list of arrays
-    arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
-                OAextend const &oaextendoptions);
+.. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
+.. doxygenfunction:: extend_arraylist(const arraylist_t&, const arraydata_t&)
 
-Here `fullad` is the structure describing the type of arrays and
-`oaxextendoptions` contains various options for the algorithm.
+                     
+.. comment
+    .. code-block:: c++
+       :caption: C++ interface
+       
+        /// extend a list of arrays
+        arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
+                    OAextend const &oaextendoptions);
+
+Here :code:`arraydata_t` is the structure describing the type of arrays and
+:code:`OAextend` contains various options for the algorithm.
 
 A typical session could be:
 
@@ -77,6 +82,13 @@ in :cite:`wiki:ConferenceMatrix`.
  >>> print('number of non-isomorphic conference designs: number of conference designs: %d'  % len(l6) )
  non-isomorphic conference designs: 11
 
+
+The full interface for conference designs is available
+in the :ref:`Interface for conference designs`.
+
+.. comment 
+    .. doxygenfile:: conference.h
+
 Calculation of D-optimal designs
 --------------------------------
 
@@ -108,9 +120,14 @@ The parameters of the function are documented in the code.
 To calculate properties of designs we can use the following functions.
 For :math:`D`-efficiencies we can use
 
-.. code-block:: c++
+.. doxygenfunction:: array_link::Defficiencies(int)
+    :no-link:
+    :outline:
 
-    std::vector<double> array_link::Defficiencies ( int verbose ) const;
+.. comment
+    .. code-block:: c++
+    
+        std::vector<double> array_link::Defficiencies ( int verbose ) const;
 
 to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
 For details see :cite:`EendebakSO`.
@@ -118,9 +135,12 @@ For details see :cite:`EendebakSO`.
 The projective estimation capacity (PEC) sequence
 from :cite:`loeppky2004ranking` can be calculated with:
 
-.. code-block:: c++
-
-    std::vector<double> PECsequence(const array_link &al, int verbose=1);
+.. doxygenfunction:: PECsequence(const array_link&, int)
+    :no-link:
+    :outline:
+.. doxygenfunction:: array_link::PECsequence()
+    :no-link:
+    :outline:
 
 .. figure:: images/motivating-40-d-2-2-2-2-2-2-2-scatterplot-ndata2.png
 

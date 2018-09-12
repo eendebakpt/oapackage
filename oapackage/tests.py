@@ -1,5 +1,4 @@
-""" Orthogonal Array package
-
+""" Orthogonal Array package test functions
 """
 
 import numpy as np
@@ -10,7 +9,6 @@ import oapackage
 import oalib
 import oapackage.Doptim
 import oapackage.graphtools
-import unittest
 
 
 def autodoctest():
@@ -23,6 +21,16 @@ def autodoctest():
 
     """
     return
+
+
+def test_exampleArray():
+    # test a selection of the example arrays
+    al = oapackage.exampleArray(5)
+    assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
+    al = oapackage.exampleArray(20)
+    assert(np.array(al).shape == (24, 3))
+    al = oapackage.exampleArray(40)
+    assert(np.array(al).shape == (14, 5))
 
 
 def test_scanf():
@@ -155,20 +163,21 @@ class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
     def test_misc_file_operations(self):
         a = tempfile.mktemp(suffix='.oa')
-        lst=[oapackage.exampleArray(4,1)]
+        lst = [oapackage.exampleArray(4, 1)]
         oapackage.writearrayfile(a, lst)
         assert(oapackage.oahelper.oaIsBinary(a) is False)
-        oapackage.writearrayfile(a, oapackage.exampleArray(4,1), oapackage.ABINARY)
-        assert(oapackage.oahelper.oaIsBinary(a) )
-        
+        oapackage.writearrayfile(a, oapackage.exampleArray(4, 1), oapackage.ABINARY)
+        assert(oapackage.oahelper.oaIsBinary(a))
+
         oapackage.oahelper.oainfo(a)
 
     def test_findfilesR(self):
-        _=oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
+        _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
     def test_checkArrayFile(self):
         a = tempfile.mktemp(suffix='.oa')
         self.assertFalse(oapackage.oahelper.checkArrayFile(a))
+
 
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
@@ -177,11 +186,11 @@ class TestOAhelper(unittest.TestCase):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
     def test_argsort():
-        idx=oapackage.oahelper.argsort([1,2,3])
-        assert(idx==[0,1,2])
-        idx=oapackage.oahelper.argsort([2,2,1])
-        assert(idx==[2,0,1])
-        
+        idx = oapackage.oahelper.argsort([1, 2, 3])
+        assert(idx == [0, 1, 2])
+        idx = oapackage.oahelper.argsort([2, 2, 1])
+        assert(idx == [2, 0, 1])
+
     def test_runExtend(self):
         N = 24
         k = 5
@@ -247,7 +256,6 @@ class TestDoptimize(unittest.TestCase):
         self.arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
         self.dds = np.random.rand(20, 3)
         self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
-
 
     def test_custom_optim(self):
         optimfunc = lambda x: x[0] + x[1] + x[2]

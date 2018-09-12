@@ -615,8 +615,7 @@ std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int
 
 /*! \brief Wrapper class for an array
 
- The array_link struct is a struct that represents an arrays. Copying of array links
- is done with shallow copy or deep copy depending on compile time options!
+ The array_link struct is a struct that represents an array. 
   */
 struct array_link {
     //! Number of rows in array
@@ -625,7 +624,7 @@ struct array_link {
     colindex_t n_columns;
     //! Index number
     int index;
-    //! Pointer to an array data
+    //! Pointer to array data
     array_t *array;
 
     static const int INDEX_NONE = 0;
@@ -660,7 +659,7 @@ public:
     /// print array properties to stdout
     void showproperties () const;
 
-    /// return true if the arra is a 2-level array (e.g. only contains 0 and 1)
+    /// return true if the array is a 2-level array (e.g. only contains values 0 and 1)
     bool is2level () const;
 
     /// return true if the array is a +1,0, -1 valued array
@@ -739,7 +738,7 @@ public:
     std::vector < int >Jcharacteristics ( int jj = 4 ) const;
 
     /// Calculate the projective estimation capacity sequence
-    std::vector < double >PECsequence () const;
+    std::vector < double >PECsequence ( int verbose = 0) const;
 
     /// calculate rank of array
     int rank () const;
@@ -772,8 +771,9 @@ public:
     /// apply a random permutation of row
     array_link randomrowperm () const;
 
-    /// This function calculates Helmert contrasts for the factors of an input design.
-    /// implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
+    /** This function calculates Helmert contrasts for the factors of an input design.
+     * Implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
+     */
     MatrixFloat getModelMatrix ( int order, int intercept = 1 ) const;
 
     /* Interal function (public, but not in documentation */
@@ -840,21 +840,28 @@ public:
     inline array_t & atfast ( const rowindex_t r, const colindex_t c ) {
         return this->array[r + this->n_rows * c];
     }
-    array_t _at ( const rowindex_t, const colindex_t ) const;	/// get element at specified position, no error checking
-    array_t _at ( const int index ) const;	/// get element at specified position, no error checking
+    /// get element at specified position, no bounds checking
+    array_t _at ( const rowindex_t, const colindex_t ) const;
+    /// get element at specified position, no bounds checking
+    array_t _at ( const int index ) const;
 
-    array_t at ( const rowindex_t, const colindex_t ) const;	/// get element at specified position
-    array_t at ( const int index ) const;	/// get element at specified position
-    array_t & at ( const rowindex_t, const colindex_t );	/// get element at specified position
+    /// get element at specified position
+    array_t at ( const rowindex_t, const colindex_t ) const;
+    /// get element at specified position
+    array_t at ( const int index ) const;
+    /// get element at specified position
+    array_t & at ( const rowindex_t, const colindex_t );	
 
     /// set all elements in the array to a value
     void setconstant ( array_t val );
 
     /// set value of an array
     void setvalue ( int row, int col, int val );
-    void setvalue ( int row, int col, double val );	/// set value of an array
+    /// set value of an array
+    void setvalue ( int row, int col, double val );	
 
-    void _setvalue ( int row, int col, int val );	/// set value of an array, no error checking!
+    /// set value of an array, no bounds checking!
+    void _setvalue ( int row, int col, int val );	
 
     /// multiply a row by -1
     void negateRow ( rowindex_t r ) {
@@ -871,7 +878,7 @@ public:
         std::stringstream s;
         s << "array_link: " << n_rows << ", " << n_columns << "";
         std::string rs = s.str ();
-        return rs;			//printfstring("index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, array);
+        return rs;
     }
 
     /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
@@ -883,7 +890,7 @@ public:
     /// return index of first different column
     int firstColumnDifference ( const array_link & A ) const;
 
-    /** calculate row and column index of first difference between two arrays
+    /** Calculate row and column index of first difference between two arrays
      *
      * The difference is according to the column-major ordering.
      */
@@ -906,6 +913,7 @@ public:
     /// create root in arraylink
     void create_root ( const arraydata_t & ad, int fill_value = 0 );
 
+    /// return fraction of nonzero elements in array
     double nonzero_fraction () const;
 
     /// fill array with zeros
@@ -924,9 +932,6 @@ public:
             myprintf
             ( "array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n",
               n, this->n_rows, this->n_columns );
-		//for(size_t i=0; i<n; i++) {
-		//    this->array[i]=(array_t) tmp[i];
-		//}
 		std::copy( tmp, tmp + n, this->array );
     }
     /// special method for SWIG interface
@@ -937,16 +942,6 @@ public:
     template < class numtype > void
     setarraydata ( std::vector < numtype > tmp, int n ) {
         std::copy ( tmp.begin (), tmp.begin () + n, this->array );
-    }
-
-    array_t maxelement () const {
-        array_t maxelem = 0;
-        for ( int i = 0; i < this->n_rows * this->n_columns; i++ ) {
-            if ( this->array[i] > maxelem ) {
-                maxelem = array[i];
-            }
-        }
-        return maxelem;
     }
 
     /// set column to values
@@ -1320,11 +1315,7 @@ inline array_link &
 array_link::operator= ( const array_link & rhs )
 {
 
-#ifdef CLEAN_ARRAY_LINK
     return deepcopy ( rhs );
-#else
-    not implemented
-#endif
 }
 
 inline array_link &
