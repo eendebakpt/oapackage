@@ -83,7 +83,11 @@ in :cite:`wiki:ConferenceMatrix`.
  non-isomorphic conference designs: 11
 
 
-. doxygenfile:: conference.h
+The full interface for conference designs is available
+in the :ref:`Interface for conference designs`.
+
+.. comment 
+    .. doxygenfile:: conference.h
 
 Calculation of D-optimal designs
 --------------------------------
@@ -116,9 +120,14 @@ The parameters of the function are documented in the code.
 To calculate properties of designs we can use the following functions.
 For :math:`D`-efficiencies we can use
 
-.. code-block:: c++
+.. doxygenfunction:: array_link::Defficiencies(int)
+    :no-link:
+    :outline:
 
-    std::vector<double> array_link::Defficiencies ( int verbose ) const;
+.. comment
+    .. code-block:: c++
+    
+        std::vector<double> array_link::Defficiencies ( int verbose ) const;
 
 to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
 For details see :cite:`EendebakSO`.
@@ -126,9 +135,12 @@ For details see :cite:`EendebakSO`.
 The projective estimation capacity (PEC) sequence
 from :cite:`loeppky2004ranking` can be calculated with:
 
-.. code-block:: c++
-
-    std::vector<double> PECsequence(const array_link &al, int verbose=1);
+.. doxygenfunction:: PECsequence(const array_link&, int)
+    :no-link:
+    :outline:
+.. doxygenfunction:: array_link::PECsequence()
+    :no-link:
+    :outline:
 
 .. figure:: images/motivating-40-d-2-2-2-2-2-2-2-scatterplot-ndata2.png
 
