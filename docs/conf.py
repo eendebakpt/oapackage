@@ -45,7 +45,9 @@ if rtd:
 if rtd:
     subprocess.call('cd ../; doxygen Doxyfile', shell=True)
 else:
-    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    print('executing doxygen')
+    r=subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    print('executing doxygen done')
     
 #%%
 # -- General configuration ------------------------------------------------

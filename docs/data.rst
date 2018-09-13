@@ -25,8 +25,8 @@ structures and their use.
 
  ``array_link``
     The structure containing an orthogonal array is called the
-    `array_link` structure. Lists of arrays are stored in the
-    `arraylist_t` object, which as a `std::deque` container.
+    :code:`array_link` structure. Lists of arrays are stored in the
+    :code:`arraylist_t` object, which is implemented as a :code:`std::deque` container.
 
   ``arrayfile_t``
     This is an object that allows for reading and writing of arrays to
@@ -34,7 +34,10 @@ structures and their use.
 
   ``arraydata_t``
     The structure describing a certain class of orthogonal arrays or
-    designs.
+    optimal designs.
+
+  ``conference_t``
+    The structure describing a certain class of conference designs.
 
   ``array_transformation_t``
     This describes a transformation of an orthogonal array. This includes the row-,
@@ -45,16 +48,16 @@ structures and their use.
     column- and level-permutations.
 
 Representing arrays
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 The structure containing an orthogonal array is called the
 :py:class:`~oalib.array_link` structure. It consists of a specified number of rows and
-columns, the data (integer values) and an index.
+columns, the data (integer valued) and an index.
         
-In the Python interface the arraylink object can be indexed just as
-normal arrays. It is also possible to return a Numpy array. The
-`array\_link` object implements to Python array interface, so most
-opertations from packages such as Numpy work on the `array\_link`
+In the Python interface the :code:`array_link` object can be indexed just as
+normal arrays. It is also possible to convert to a Numpy array. The
+:code:`array_link` object implements to Python array interface, so most
+opertations from packages such as Numpy work on the :code:`array_link`
 object.
 
 .. code-block:: python
