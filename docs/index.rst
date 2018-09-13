@@ -11,7 +11,7 @@ optimal designs and conference designs.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    oapackage-intro
@@ -20,12 +20,11 @@ optimal designs and conference designs.
    generation
    normalform
    properties
-   references
-   
-   cpplib.rst
-..   fulldocs/conference.rst
-..   fulldocs/Doptim.rst
-..   fulldocs/lmc.rst
+   cpplib
+   references   
+..   cppdocs/conference.rst
+   cppdocs/Doptim.rst
+   cppdocs/lmc.rst
    
    
 Indices and tables
