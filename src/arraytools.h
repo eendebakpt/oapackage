@@ -613,10 +613,10 @@ array_link exampleArray ( int idx = 0, int verbose = 0 );
 /// calculate J-characteristics for a conference design
 std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
-/*! \brief Wrapper class for an array
-
- The array_link struct is a struct that represents an array. 
-  */
+/*** \brief Wrapper class for an array
+ *
+ * The array_link struct is a struct that represents an array. 
+ */
 struct array_link {
     //! Number of rows in array
     rowindex_t n_rows;

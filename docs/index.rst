@@ -22,6 +22,12 @@ optimal designs and conference designs.
    properties
    references
    
+   cpplib.rst
+..   fulldocs/conference.rst
+..   fulldocs/Doptim.rst
+..   fulldocs/lmc.rst
+   
+   
 Indices and tables
 ==================
 

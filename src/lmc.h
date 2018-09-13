@@ -2,13 +2,10 @@
 
 \brief This file contains definitions and functions to perform LMC tests and reductions
 
- C++ Interface: lmc
 
- This file contains definitions are functions to perform LMC tests and reductions
+Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2008
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2008
-
- Copyright: See COPYING file that comes with this distribution
+Copyright: See LICENSE file that comes with this distribution
 */
 
 /*! \mainpage	Orthogonal Arrays

@@ -76,7 +76,8 @@ object.
 The C++ class is:
 
 .. doxygenstruct:: array_link
-    :members:
+    :outline:
+    :no-link:
 
     
 Reading and writing arrays
@@ -400,9 +401,11 @@ These are:
 
 `oaanalyse`
     Calculates various statistics of arrays in a file. The statistics
-    are described in section `Statistical properties of an array`_.
+    are described in section :ref:`Properties of designs`.
 
 
-.. |image| image:: images/oaimage-18_2-3-3-3-3-3-n17.png
+.. figure:: images/oaimage-18_2-3-3-3-3-3-n17.png
+   :alt: alternate text
+   :align: center
 
-
+   Orthogonal array in :math:`\mathrm{OA}(18, 2 3^a, 2)`
