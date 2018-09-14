@@ -2078,6 +2078,7 @@ arrayfile_t *create_arrayfile ( const char *fname, int rows, int cols,
                                 int narrays, arrayfile::arrayfilemode_t mode =
                                     arrayfile::ATEXT, int nbits = 8 );
 
+/// save a list of arrays to disk
 int save_arrays ( arraylist_t & solutions, const arraydata_t * ad,
                   const int n_arrays, const int n_procs,
                   const char *resultprefix, arrayfile::arrayfilemode_t mode =
