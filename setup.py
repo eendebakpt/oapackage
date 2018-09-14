@@ -213,7 +213,7 @@ sources = srcs + ['src/bitarray/bit_array.cpp']
 swig_opts = []
 compile_options = []
 
-sources = ['oalib.i'] + sorted(sources)
+sources = ['oapackage/oalib.i'] + sorted(sources)
 if oadev:
     swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
                   '-Isrc/', '-Idev/']

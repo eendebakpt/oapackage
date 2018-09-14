@@ -9,7 +9,6 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 
 from __future__ import print_function
 
-import oalib
 import os
 import numpy as np
 import time
@@ -20,6 +19,9 @@ try:
     import matplotlib.pyplot as plt
 except:
     pass
+
+import oapackage.oalib as oalib
+
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 
@@ -51,7 +53,6 @@ def array2Dtable(sols, verbose=1, titlestr=None):
         page.td(e.small(gstr), style='padding-right:1px;')
         page.tr.close()
     page.table.close()
-    # page.p.close()
     return page
 
 # %%

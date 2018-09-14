@@ -7,11 +7,11 @@ http://github.com/eendebakpt/oapackage
 
 """
 
-import oalib
+import oapackage.oalib
 import oapackage.Doptim
 
 
-from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
 try:
     from oalib import *

@@ -8,7 +8,8 @@
 from __future__ import print_function
 
 import oapackage
-import oalib
+import oapackage.oalib as oalib
+
 import sys
 import os
 import numpy as np

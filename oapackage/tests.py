@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 import oapackage
-import oalib
+import oapackage.oalib as oalib
 import oapackage.Doptim
 import oapackage.graphtools
 
@@ -22,7 +22,10 @@ def autodoctest():
     """
     return
 
-
+def test_reduceGraphNauty():
+    al=oapackage.exampleArray(3)
+    v=oapackage.reduceGraphNauty(al)
+    
 def test_exampleArray():
     # test a selection of the example arrays
     al = oapackage.exampleArray(5)
