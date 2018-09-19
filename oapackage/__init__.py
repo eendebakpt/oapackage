@@ -12,7 +12,15 @@ _rtd = os.environ.get('READTHEDOCS', False)
 
 if _rtd:
     # fix for RTD
-    oalib = None
+    from unittest.mock import MagicMock
+
+    class Mock(MagicMock):
+
+        @classmethod
+        def __getattr__(cls, name):
+            return MagicMock()
+        
+    oalib = Mock()
     __version__ = 'RTD'
 else:
     import oapackage.oalib as oalib
