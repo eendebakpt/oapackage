@@ -81,7 +81,7 @@ The C++ class is:
 
     
 Reading and writing arrays
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Reading and writing arrays to disk can be done with the `arrayfile\_t`
 class. For example:
@@ -182,7 +182,7 @@ the file format see Section :ref:`File formats`. The header of the
     }
 
 Array transformations
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Transformations of (orthogonal) arrays consist of row permutations,
 level permutations and level transformations. A transformation is
@@ -237,7 +237,7 @@ and column permutations are not commutative.
         ...
 
 Classes of arrays
-~~~~~~~~~~~~~~~~~
+-----------------
 
 The :meth:`~oapackage.oalib.arraydata_t` object represents data about a class of orthogonal
 arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
@@ -281,7 +281,7 @@ format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Arrays are stored in plain text files with extension .oa. The first line
 contains the number of columns, the number of rows and the number of

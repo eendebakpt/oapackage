@@ -7,29 +7,30 @@ http://github.com/eendebakpt/oapackage
 
 """
 
-import oapackage.oalib
-import oapackage.Doptim
+import os
+_rtd = os.environ.get('READTHEDOCS', False)
 
-
-from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
-
-from . oahelper import *
-from . Doptim import *
-from . import scanf
-
-try:
-    from oalib import *
-except:
+if _rtd:
     # fix for RTD
-    pass
+    oalib = None
+    __version__ = 'RTD'
+else:
+    import oapackage.oalib as oalib
+    import oapackage.Doptim
+    from oalib import *
 
+    oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
+    oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
+    __version__ = oapackage.oalib.version()
 
+    from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+    
+    from . oahelper import *
+    from . Doptim import *
+    from . import scanf
 
-oalib.setloglevel(oalib.SYSTEM)
-oalib.log_print(-oalib.SYSTEM, '')
-__version__ = oalib.version()
 
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
-__doc__ = __description__ + " <" + __uri__ + ">"
+#__doc__ = __description__ + " <" + __uri__ + ">"
 
