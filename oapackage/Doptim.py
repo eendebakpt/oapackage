@@ -12,7 +12,7 @@ from __future__ import print_function
 import os
 import numpy as np
 import time
-import warnings
+import logging
 
 try:
     import matplotlib
@@ -32,7 +32,6 @@ from oapackage.markup import oneliner as e
 
 def array2Dtable(sols, verbose=1, titlestr=None):
     """ Generate HTML table with information about for a list of designs """
-    na = len(sols)
     page = markup.page()
     page.table(style=' border-collapse: collapse;')
     page.tr(style='font-weight: bold; border-bottom: solid 1px black;')
@@ -58,12 +57,6 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 # %%
 
 
-try:
-    import brewer2mpl
-except:
-    pass
-
-
 def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
@@ -83,14 +76,11 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     idx = np.unique(colors).astype(int)
 
     try:
+        import brewer2mpl
         mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
     except:
         mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
         pass
-
-    # For remaining spines, thin out their line and change the black to a
-    # slightly off-black dark grey
-    almost_black = '#202020'
 
     figh = plt.figure(fig)  # ,facecolor='red')
     plt.clf()
@@ -125,8 +115,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 
     try:
         oahelper.setWindowRectangle(10, 10, 860, 600)
-    except Exception as e:
+    except Exception as ex:
         print('generateDscatter: setWindowRectangle failed')
+        logging.exception(ex)
         pass
 
     plt.axis('image')
@@ -367,7 +358,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             A._setvalue(r, c, o2)
             A._setvalue(r2, c2, o)
         elif method == oalib.DOPTIM_NONE:
-            tmp = 0
+            pass
         else:
             # flip
             A._setvalue(r, c, 1 - o)
@@ -392,7 +383,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 A._setvalue(r, c, o)
                 A._setvalue(r2, c2, o2)
             elif method == oalib.DOPTIM_NONE:
-                tmp = 0
+                pass
             else:
                 A._setvalue(r, c, o)
         if (ii - lc) > nabort:

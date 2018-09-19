@@ -942,6 +942,7 @@ def test_selectJ():
     al=oapackage.exampleArray(12,1)
     sols0=[al]
     r=selectJ(sols0)
+    assert(len(r)==0)
 
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
@@ -1122,9 +1123,8 @@ def designStandardError(al):
     X = np.matrix(al.getModelMatrix(2))
     k = al.n_columns
 
-    m = 1 + k + k * (k - 1) / 2
+    #m = 1 + k + k * (k - 1) / 2
 
-    # scalefac=np.sqrt(al.n_rows)
     scalefac = 1
     M = (X.transpose() * X / scalefac).I
 
@@ -1136,7 +1136,6 @@ def designStandardError(al):
     m2 = m2[np.argsort(m2)]
     m0 = mm[0]
     return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)
-    # return m0,m1, m2
 
 
 #%%

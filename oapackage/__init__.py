@@ -22,6 +22,15 @@ if _rtd:
         
     oalib = Mock()
     __version__ = 'RTD'
+
+    import oapackage.Doptim
+
+    from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+    
+    from . oahelper import *
+    from . Doptim import *
+    from . import scanf
+
 else:
     import oapackage.oalib as oalib
     import oapackage.Doptim
