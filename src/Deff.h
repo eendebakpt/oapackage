@@ -18,9 +18,14 @@ enum {DOPTIM_UPDATE, DOPTIM_SWAP, DOPTIM_FLIP, DOPTIM_AUTOMATIC, DOPTIM_NONE};
 /** Optimize a design according to the optimization function specified.
  *
  * Arguments:
- * \param arrayclass	structure describing the design class
- * \param alpha			(3x1 array)
- * 	\param verbose		output level
+ * \param A0			Array to be optimized
+ * \param arrayclass	Structure describing the design class
+ * \param alpha			3x1 array with optimization parameters
+ * \param verbose		Verbosity level
+ * \param optimmethod	Optimization method to use
+ * \param niter			Number of iterations
+ * \param nabort		Number of iterations after which to abort
+ * \returns		Optimized designs
  */
 array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, std::vector<double> alpha, int verbose=1, int optimmethod = DOPTIM_AUTOMATIC, int niter=100000, int nabort=0 );
 

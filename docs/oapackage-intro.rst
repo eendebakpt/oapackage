@@ -41,10 +41,10 @@ For the generation of D-optimal designs also Matlab or R can be used, see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_
 and `README.R.md <https://github.com/eendebakpt/oapackage/README.R.md>`_.
 
-License
+License 
 -------
 
-The code is available under a BSD style license, see the file LICENSE
+The code is available under a BSD style license, see the file `LICENSE <https://github.com/eendebakpt/oapackage/blob/master/LICENSE>`_
 for details. If you use this code or any of the results, please cite
 this program as follows:
 
