@@ -15,6 +15,7 @@ dependencies:
   - scanf
   - sphinxcontrib.bibtex
   - sphinxcontrib.napoleon
+  - breathe
 
   
 # conda env create --name oapackage -f condalist.yml
