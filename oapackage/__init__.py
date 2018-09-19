@@ -17,7 +17,7 @@ if _rtd:
 else:
     import oapackage.oalib as oalib
     import oapackage.Doptim
-    from oalib import *
+    from . oalib import *
 
     oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
     oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
