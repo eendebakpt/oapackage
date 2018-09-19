@@ -297,7 +297,7 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd:
+if rtd and 0:
     ext_modules = []
 else:
     if not swig_valid:
