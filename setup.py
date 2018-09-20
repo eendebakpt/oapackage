@@ -301,12 +301,10 @@ if rtd or 1:
     ext_modules = []
     print(os.getcwd())
     os.listdir()
-    
-    s=subprocess.check_output(['where', 'swig'])
-    print('where swig: %s' % s)
-    
+       
     print('swig_executable %s' % swig_executable)
-    swigcmd = 'swig -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i'
+    swigbinary = swig_executable
+    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i' % swigbinary
     #os.system(swigcmd)
     cmd=swigcmd.split(' ')
     print('run swig command: %s' % (swigcmd,))
