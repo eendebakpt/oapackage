@@ -362,11 +362,11 @@ public:
     // set column groups at positions given by argument vector
     void set_colgroups ( const std::vector < int >splits );
 
-    // set column group equal to that of a symmetry group + one remaining component
-    void set_colgroups_jj ( const symmetry_group & sg, int jj );
     /// set column group equal to that of a symmetry group
     void set_colgroups ( const symmetry_group & sg );
-    void show_colgroups () const {
+
+	/// show column groups in the array class
+	void show_colgroups () const {
         myprintf ( "arraydata_t: colgroups: " );
         print_perm ( this->colgroupindex, this->ncolgroups );
         myprintf ( "                  size: " );
