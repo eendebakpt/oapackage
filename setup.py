@@ -297,8 +297,13 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd and 0:
+if rtd:
     ext_modules = []
+    swigcmd = 'swig.exe -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i'
+    #os.system(swigcmd)
+    
+    subprocess.call(swigcmd)
+
 else:
     if not swig_valid:
         raise Exception('could not find a recent version if SWIG')
