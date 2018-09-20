@@ -213,7 +213,7 @@ sources = srcs + ['src/bitarray/bit_array.cpp']
 swig_opts = []
 compile_options = []
 
-sources = ['oapackage/oalib.i'] + sorted(sources)
+sources = ['oalib.i'] + sorted(sources)
 if oadev:
     swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
                   '-Isrc/', '-Idev/']
@@ -299,7 +299,7 @@ packages = find_packages()
 
 if rtd:
     ext_modules = [] # do not build on RTD, this generates a time-out error  
-    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i' % swig_executable
+    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
     print('RTD: run swig command: %s' % (swigcmd,))
     output = subprocess.check_output(swigcmd.split(' '))
     print(output)
@@ -350,7 +350,7 @@ setup(name='OApackage',
       url='http://www.pietereendebak.nl/oapackage/index.html',
       keywords=["orthogonal arrays, design of experiments, conference designs, isomorphism testing"],
       ext_modules=ext_modules,
-      py_modules=['oalib'],
+      #py_modules=['oalib'],
       packages=packages,
       data_files=data_files,
       test_suite="oapackage.tests.unittest",

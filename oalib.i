@@ -449,4 +449,3 @@ double iarray_get(int *a, int index) {
 // see also: http://stackoverflow.com/questions/2209395/in-python-how-to-access-a-uint163-array-wrapped-by-swig-i-e-unwrap-a-pyswigo
 
 %}
-
