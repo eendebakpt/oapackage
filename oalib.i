@@ -261,7 +261,7 @@ def __setitem__(self,index, value):
 
 %feature("autodoc", "1");
 // to generate the oadoxy.i:
-// doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oapackage/oadoxy.i
+// doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i
 // see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
 
 %include "oadoxy.i"

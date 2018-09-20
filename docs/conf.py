@@ -43,7 +43,7 @@ if rtd:
 
 
 if rtd:
-    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i', shell=True)
 else:
     print('executing doxygen')
     r=subprocess.call('cd ../; doxygen Doxyfile', shell=True)

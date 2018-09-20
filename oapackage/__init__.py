@@ -16,7 +16,6 @@ if _rtd and 0:
         from unittest.mock import MagicMock
     
         class Mock(MagicMock):
-    
             @classmethod
             def __getattr__(cls, name):
                 return MagicMock()
@@ -33,16 +32,15 @@ if _rtd and 0:
     from . import scanf
 
 else:
-    import oapackage.oalib as oalib
+    import oalib 
     import oapackage.Doptim
-    from . oalib import *
+    from oalib import *
+    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
     oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
     oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
     __version__ = oapackage.oalib.version()
-
-    from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
-    
+   
     from . oahelper import *
     from . Doptim import *
     from . import scanf
