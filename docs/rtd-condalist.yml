@@ -9,6 +9,8 @@ dependencies:
 - numpy
 - pip
 - swig
+- ipython
+- jupyter
 - matplotlib
 - nbsphinx
 - pip:

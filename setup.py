@@ -298,18 +298,12 @@ packages = find_packages()
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
 if rtd or 1:
-    ext_modules = []
-    print(os.getcwd())
-    os.listdir()
-       
-    print('swig_executable %s' % swig_executable)
-    swigbinary = swig_executable
-    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i' % swigbinary
-    #os.system(swigcmd)
+    ext_modules = []      
+    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i' % swig_executable
     cmd=swigcmd.split(' ')
     print('run swig command: %s' % (swigcmd,))
-    subprocess.call(cmd)
-
+    output = subprocess.check_output(cmd)
+    print(output)
 else:
     if not swig_valid:
         raise Exception('could not find a recent version if SWIG')
