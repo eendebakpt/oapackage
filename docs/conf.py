@@ -38,7 +38,7 @@ if rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    MOCK_MODULES = ['oalib', 'oapackage.oalib']
+    MOCK_MODULES = ['_oalib', 'oalib']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 

@@ -11,17 +11,18 @@ import os
 _rtd = os.environ.get('READTHEDOCS', False)
 
 if _rtd:
-    # fix for RTD
-    from unittest.mock import MagicMock
-
-    class Mock(MagicMock):
-
-        @classmethod
-        def __getattr__(cls, name):
-            return MagicMock()
-        
-    oalib = Mock()
-    __version__ = 'RTD'
+    if 0:
+        # fix for RTD
+        from unittest.mock import MagicMock
+    
+        class Mock(MagicMock):
+    
+            @classmethod
+            def __getattr__(cls, name):
+                return MagicMock()
+            
+        oalib = Mock()
+        __version__ = 'RTD'
 
     import oapackage.Doptim
 
