@@ -297,12 +297,11 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd or 1:
-    ext_modules = []      
+if rtd:
+    ext_modules = [] # do not build on RTD, this generates a time-out error  
     swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oapackage/oalib_wrap.cpp oapackage/oalib.i' % swig_executable
-    cmd=swigcmd.split(' ')
-    print('run swig command: %s' % (swigcmd,))
-    output = subprocess.check_output(cmd)
+    print('RTD: run swig command: %s' % (swigcmd,))
+    output = subprocess.check_output(swigcmd.split(' '))
     print(output)
 else:
     if not swig_valid:

@@ -1617,11 +1617,15 @@ private:
 class conference_transformation_t
 {
 public:
-    std::vector < int > rperm;	/// row permutation
-    std::vector < int > cperm;	/// column permutation
+	/// row permutation of the transformation
+    std::vector < int > rperm;	
+	/// column permutation of the transformation
+	std::vector < int > cperm;	
 
-    std::vector < int > cswitch;	/// sign flips for the columns
-    std::vector < int > rswitch;	/// sign flips for the columns
+	/// sign flips for the columns
+	std::vector < int > cswitch;	
+	/// sign flips for the rows
+    std::vector < int > rswitch;	
 
     int nrows;
     int ncols;

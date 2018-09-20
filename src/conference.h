@@ -43,6 +43,7 @@ void showCandidates ( const std::vector<cperm> &cc );
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
 public:
+	/// list of candidate extentions
     std::vector<std::vector<cperm> > ce;
 
     void info ( int verbose=1 ) const {
@@ -59,16 +60,16 @@ public:
 class conference_t
 {
 public:
-    rowindex_t N;	/** number of runs */
-    colindex_t ncols;	/** total number of columns (factors) in the design */
+    rowindex_t N;	/// number of runs 
+    colindex_t ncols;	/// total number of columns (factors) in the design 
 
     /// Type of conference design 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
     conference_type ctype; /// defines the type of designs
     matrix_isomorphism_t itype; /// defines the isomorphism type
 
-    bool j1zero; /// for the double conference type matrices
-    bool j3zero;
+    bool j1zero; /// if true then J1 values should be zero
+    bool j3zero; /// if true then J3 values should be zero
 
 public:
     /// create new conference_t object
@@ -107,9 +108,9 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 /** Helper structure containing extensions of conference designs
  */
 struct conference_extend_t {
-    std::vector<cperm> first;
-    std::vector<cperm> second;
-    std::vector<cperm> extensions;
+    std::vector<cperm> first; /// list of first block candidate extensions
+    std::vector<cperm> second; /// list of first block candidate extensions
+    std::vector<cperm> extensions; /// list of candidate extensions
 
 public:
 
