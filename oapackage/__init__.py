@@ -10,7 +10,7 @@ http://github.com/eendebakpt/oapackage
 import os
 _rtd = os.environ.get('READTHEDOCS', False)
 
-if _rtd:
+if _rtd and 0:
     if 0:
         # fix for RTD
         from unittest.mock import MagicMock
