@@ -544,8 +544,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         dds = np.zeros((0, 3))
         sols = []
 
+        nrestarts_requested=nrestarts
         nrestarts = 0
-        for ii in range(nrestarts):
+        for ii in range(nrestarts_requested):
             if verbose:
                 oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' %
                                 (ii, nrestarts, time.time() - t0, maxtime), dt=4)
