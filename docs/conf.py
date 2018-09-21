@@ -41,9 +41,13 @@ if rtd:
     MOCK_MODULES = ['_oalib']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
-    os.listdir()
-    
+    print('##############################')
+    print('current directory: %s' % os.getcwd())
+    print(os.listdir())
+    print('##############################')   
     sys.path.append('.')
+    print('##############################')
+
 if rtd:
     subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i', shell=True)
 else:

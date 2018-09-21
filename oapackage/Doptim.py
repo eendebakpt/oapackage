@@ -47,8 +47,8 @@ def array2Dtable(sols, verbose=1, titlestr=None):
         gwlp = al.GWLP()
         page.tr(style='font-weight: normal;')
         page.td('%d' % aidx, style='padding-right:10px;')
-        for v in [D, Ds, D1]:
-            page.td('%.4f' % v, style='padding-right:1px;')
+        for statistic in [D, Ds, D1]:
+            page.td('%.4f' % statistic, style='padding-right:1px;')
         gstr = oahelper.gwlp2str(gwlp)
         page.td(e.small(gstr), style='padding-right:1px;')
         page.tr.close()
@@ -81,7 +81,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
         mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
     except BaseException:
         mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
-        pass
 
     figh = plt.figure(fig)  # ,facecolor='red')
     plt.clf()
@@ -119,7 +118,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     except Exception as ex:
         print('generateDscatter: setWindowRectangle failed')
         logging.exception(ex)
-        pass
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
@@ -138,8 +136,8 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 #%%
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[
-                  1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0],
+                  nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
     """ Helper function to generate web page with D-optimal design results """
     if verbose:
         print('generateDpage: dds %s' % str(dds.shape))
@@ -190,7 +188,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[
                   lang='en', htmlattrs=dict({'xmlns': 'http://www.w3.org/1999/xhtml', 'xml:lang': 'en'}),
                   header="<!-- Start of page -->",
                   bodyattrs=dict({'style': 'padding-left: 3px;'}),
-                  # doctype=markup.doctype.strict,
                        doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
                        metainfo=({'text/html': 'charset=utf-8', 'keywords': 'orthogonal arrays designs',
                                   'robots': 'index, follow', 'description': 'Even-Odd arrays'}),
@@ -199,8 +196,8 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[
     page.h1('Results for array class %s ' % xstr)
 
     # mathjax is not updated properly...
-    ss = 'The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
-    ss = 'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
+    ss = r'The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
+    ss = r'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
     if npareto == 1:
         page.p('Generated %d arrays, %d is Pareto optimal. %s' %
                (narrays, npareto, ss))
@@ -211,7 +208,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[
     if narrays > 0:
 
         scores = calcScore(dds, optimfunc)
-        tmp, dd, sols = selectDn(scores, dds, allarrays, nout=1)
+        _, dd, sols = selectDn(scores, dds, allarrays, nout=1)
         A = sols[0]
         bestdesignfile = os.path.join(outputdir, 'best-design.oa')
         oalib.writearrayfile(bestdesignfile, A)
@@ -317,7 +314,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         s = A0.getarray().max(axis=0) + 1
     else:
         s = arrayclass.getS()
-        arrayclass
     sx = tuple(s.astype(np.int64))
     sx = tuple([int(v) for v in sx])
 
@@ -372,7 +368,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             nx = nx + 1
             # print(alpha)
             dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
-        if (dn >= d):
+        if dn >= d:
             if dn > d:
                 lc = ii
                 d = dn
@@ -604,4 +600,4 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 def test_calcScore():
     dds = np.random.rand(10, 3)
     scores = calcScore(dds, optimfunc=[1, 2, 3])
-    assert(scores.shape == (dds.shape[0], ))
+    assert scores.shape == (dds.shape[0], )
