@@ -331,7 +331,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     k = A0.n_columns
 
     # initialize score
-    if str(type(alpha)) == "<type 'function'>":
+    if str(type(alpha)) == "<type 'function'>" or callable(alpha):
         d = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
