@@ -25,7 +25,7 @@ if _rtd and 0:
 
     import oapackage.Doptim
 
-    from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
     from . oahelper import *
     from . Doptim import *

@@ -66,6 +66,8 @@ def deprecated(func):
 
 try:
     try:
+        import qtpy.QtGui
+        import qtpy.QtWidgets
         from qtpy import QtGui
     except BaseException:
         # no Qt support
@@ -81,14 +83,12 @@ try:
             wa = [
                 [0, 0, user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)]]
         else:
-            _applocalqt = QtGui.QApplication.instance()
+            _applocalqt = qtpy.QtWidgets.QApplication.instance()
             if _applocalqt is None:
-                _applocalqt = QtGui.QApplication([])
-                _qd = QtGui.QDesktopWidget()
+                _applocalqt = qtpy.QtWidgets.QApplication([])
+                _qd = qtpy.QtWidgets.QDesktopWidget()
             else:
-                if 0:
-                    print('get QDesktopWidget()')
-                _qd = QtGui.QDesktopWidget()
+                _qd = qtpy.QtWidgets.QDesktopWidget()
 
             nmon = _qd.screenCount()
             wa = [_qd.screenGeometry(ii) for ii in range(nmon)]

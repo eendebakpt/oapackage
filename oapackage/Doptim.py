@@ -17,6 +17,7 @@ import logging
 try:
     import matplotlib
     import matplotlib.pyplot as plt
+    import matplotlib.cm
 except BaseException:
     pass
 
