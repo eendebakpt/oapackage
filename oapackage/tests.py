@@ -24,14 +24,15 @@ def autodoctest():
     """
     return
 
+
 class TestMisc(unittest.TestCase):
 
     def test_reduceGraphNauty(self):
-        G = np.zeros( (5,5), dtype=int)
-        G[1,0]=G[0,1]=1
+        G = np.zeros((5, 5), dtype=int)
+        G[1, 0] = G[0, 1] = 1
         v = oapackage.reduceGraphNauty(G)
-        assert(len(v)==G.shape[0])
-        
+        assert(len(v) == G.shape[0])
+
     def test_exampleArray(self):
         # test a selection of the example arrays
         al = oapackage.exampleArray(5)
@@ -40,19 +41,17 @@ class TestMisc(unittest.TestCase):
         assert(np.array(al).shape == (24, 3))
         al = oapackage.exampleArray(40)
         assert(np.array(al).shape == (14, 5))
-    
-    
+
     def test_scanf(self):
         r = oapackage.scanf.sscanf('1', '%d')
         assert(r[0] == 1)
-    
-    
+
     def test_oa2graph(self):
         al = oapackage.exampleArray(2, 0)
         adata = oapackage.arraylink2arraydata(al)
         g = oapackage.graphtools.oa2graph(al, adata)
         assert(g[0].shape == (34, 34))
-    
+
 
 def test_numpy_interface(verbose=0):
     A = np.eye(3, 4).astype(int)
@@ -89,6 +88,7 @@ def test_numpy_interface(verbose=0):
     except:
         pass
 
+
 def test_nauty(verbose=0):
     if verbose:
         print('test_nauty: test reduction to normal form')
@@ -97,6 +97,7 @@ def test_nauty(verbose=0):
     tr = oapackage.reduceOAnauty(alr)
     alx = tr.apply(alr)
     assert(alx == al)
+
 
 def miscunittest(verbose=1):
     """ Perform some unit testing, return True if succesfull """
@@ -126,10 +127,10 @@ def miscunittest(verbose=1):
         print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
     aa = oalib.Aefficiencies(al)
-    assert(aa[0]==1.0)
-    assert(aa[1]==1.0)
-    assert(aa[2]==1.0)
-    
+    assert(aa[0] == 1.0)
+    assert(aa[1] == 1.0)
+    assert(aa[2] == 1.0)
+
     if verbose >= 2:
         print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 
@@ -182,7 +183,7 @@ class TestOAfiles(unittest.TestCase):
 
         oapackage.oahelper.oainfo(array_filename)
 
-        _=oapackage.oahelper.compressOAfile(array_filename)
+        _ = oapackage.oahelper.compressOAfile(array_filename)
 
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
@@ -192,10 +193,10 @@ class TestOAfiles(unittest.TestCase):
         self.assertFalse(oapackage.oahelper.checkArrayFile(a))
         self.assertTrue(oapackage.oahelper.checkArrayFile(a, -1))
 
-
     def test_finddirectories(self):
         _ = oapackage.oahelper.finddirectories(os.getcwd())
-        
+
+
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 
@@ -208,11 +209,11 @@ class TestOAhelper(unittest.TestCase):
     def test_array2latex(self):
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
         self.assertEqual(latex_str[0:15], r'\begin{tabular}')
-        
+
     def test_gwlp2str(self):
-        self.assertEqual(oapackage.oahelper.gwlp2str([1,2,3]), '')
-        self.assertEqual(oapackage.oahelper.gwlp2str([1,0,.1]), '1.00,0.00,0.10')
-        
+        self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
+        self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
+
     def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
@@ -221,8 +222,9 @@ class TestOAhelper(unittest.TestCase):
 
     def test_formatC(self):
         c_code = oapackage.oahelper.formatC(self.test_array)
-        self.assertEqual(c_code, '\tarray_link al ( 16,5, 0 );\n\tint tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};' )
-        
+        self.assertEqual(
+            c_code, '\tarray_link al ( 16,5, 0 );\n\tint tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};')
+
     def test_runExtend(self):
         N = 24
         k = 5
@@ -241,7 +243,7 @@ class TestOAhelper(unittest.TestCase):
     def test_checkFiles(self):
         self.assertTrue(oapackage.oahelper.checkFiles([], -1))
         self.assertTrue(oapackage.oahelper.checkFiles(['nosuchfile'], -1))
-        
+
     def test_checkFilesOA(self):
         r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
         self.assertTrue(r)
@@ -262,11 +264,12 @@ class TestOAhelper(unittest.TestCase):
         values = [1, 2, 3]
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
         self.assertEqual(p, values)
-        
+
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
         self.assertAlmostEqual(v[0], 0.3747931073686535)
+
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
 
@@ -298,9 +301,9 @@ class TestDoptimize(unittest.TestCase):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
                                                           maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
-        self.assertEqual( len(scores), n)
-        self.assertEqual( len(dds), n)
-        self.assertEqual( len(sols), n)
+        self.assertEqual(len(scores), n)
+        self.assertEqual(len(dds), n)
+        self.assertEqual(len(sols), n)
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
                                                           maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
@@ -329,7 +332,7 @@ class TestDoptimize(unittest.TestCase):
         dds = np.array([A.Defficiencies() for A in allarrays])
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
-                                           fig=None, optimfunc=[1, 0, 0], nofig=True)
+                                              fig=None, optimfunc=[1, 0, 0], nofig=True)
 
     def test_filterPareto(self):
         dds = self.dds2
