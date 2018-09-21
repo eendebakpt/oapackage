@@ -36,6 +36,7 @@ import oalib
 
 from oapackage import markup
 
+
 def deprecated(func):
     """ This is a decorator which can be used to mark functions
     as deprecated. It will result in a warning being emitted
@@ -61,6 +62,7 @@ def deprecated(func):
     return new_func
 
 #%% Load Qt support
+
 
 try:
     try:
@@ -101,9 +103,11 @@ except:
         return [[0, 0, 1280, 720]]
     pass
 
+
 def test_monitorSizes():
     monitorSizes()
-    
+
+
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
     """ Tile figure windows on a specified area """
     mngr = plt.get_current_fig_manager()
@@ -652,18 +656,19 @@ def checkFiles(lst, cache=1, verbose=0):
             break
     return c
 
-def test_checkFiles():    
+
+def test_checkFiles():
     def touch(fname):
         if os.path.exists(fname):
             os.utime(fname, None)
         else:
             open(fname, 'a').close()
-        
-    lst=[tempfile.mktemp()]
-    r= checkFiles(lst, cache=1, verbose=1)
+
+    lst = [tempfile.mktemp()]
+    r = checkFiles(lst, cache=1, verbose=1)
     assert(r is False)
     touch(lst[0])
-    r= checkFiles(lst, cache=1, verbose=1)
+    r = checkFiles(lst, cache=1, verbose=1)
     assert(r is True)
 
 #%%
@@ -919,7 +924,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
 
 def selectJ(sols0, jj=5, jresults=None, verbose=1):
     """ Select only arrays with J-characteristics non-zero
-    
+
     We asssume the designs are in even-odd ordering (i.e. only check the J value of first columns)
     """
     if jresults is None:
@@ -938,11 +943,13 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
         print('selectJ: kept %d/%d solutions' % (solseo.size(), len(sols0)))
     return solseo
 
+
 def test_selectJ():
-    al=oapackage.exampleArray(12,1)
-    sols0=[al]
-    r=selectJ(sols0)
-    assert(len(r)==0)
+    al = oapackage.exampleArray(12, 1)
+    sols0 = [al]
+    r = selectJ(sols0)
+    assert(len(r) == 0)
+
 
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
@@ -952,20 +959,20 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     sols0.push_back(A)
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
-    assert(n>=len(solsx))
+    assert(n >= len(solsx))
     sys.stdout.flush()
     return solsx
 
 
 def test_extendSingleArray():
-    A=oapackage.exampleArray(4,1)
-    adata=oapackage.arraylink2arraydata(A)
-    B=A.selectFirstColumns(5)
-    ee=extendSingleArray(B, adata, t=2, verbose=1)
-    assert(ee[0].n_columns==B.n_columns+1)
-    assert(ee[1]==A.selectFirstColumns(6))
+    A = oapackage.exampleArray(4, 1)
+    adata = oapackage.arraylink2arraydata(A)
+    B = A.selectFirstColumns(5)
+    ee = extendSingleArray(B, adata, t=2, verbose=1)
+    assert(ee[0].n_columns == B.n_columns + 1)
+    assert(ee[1] == A.selectFirstColumns(6))
 
-    
+
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
     """ Run extension algorithm and return arrays
 
@@ -1084,9 +1091,7 @@ def sortcols(X):
     return sind
 
 
-       
 #%%
-
 
 
 def testHtml(hh=None):

@@ -14,25 +14,25 @@ if _rtd and 0:
     if 0:
         # fix for RTD
         from unittest.mock import MagicMock
-    
+
         class Mock(MagicMock):
             @classmethod
             def __getattr__(cls, name):
                 return MagicMock()
-            
+
         oalib = Mock()
         __version__ = 'RTD'
 
     import oapackage.Doptim
 
     from . oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
-    
+
     from . oahelper import *
     from . Doptim import *
     from . import scanf
 
 else:
-    import oalib 
+    import oalib
     import oapackage.Doptim
     from oalib import *
     from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
@@ -40,7 +40,7 @@ else:
     oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
     oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
     __version__ = oapackage.oalib.version()
-   
+
     from . oahelper import *
     from . Doptim import *
     from . import scanf
@@ -49,4 +49,3 @@ else:
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
 #__doc__ = __description__ + " <" + __uri__ + ">"
-
