@@ -208,7 +208,7 @@ class TestOAhelper(unittest.TestCase):
         self.test_array = oapackage.exampleArray(1, 1)
 
     def test_array2latex(self):
-        
+
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
         self.assertEqual(latex_str[0:15], r'\begin{tabular}')
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='psmallmatrix')
@@ -228,16 +228,16 @@ class TestOAhelper(unittest.TestCase):
 
     def test_plot2Dline(self):
         with mock.patch('matplotlib.pyplot.plot') as MockPlt:
-            _=oapackage.oahelper.plot2Dline([1,0,0])
+            _ = oapackage.oahelper.plot2Dline([1, 0, 0])
             self.assertTrue(MockPlt.called)
-            
+
     def test_deprecated(self):
         def func():
             return 'hi'
         deprecated_function = oapackage.oahelper.deprecated(func)
         with self.assertWarns(Warning):
-            _=deprecated_function()
-        
+            _ = deprecated_function()
+
     def test_formatC(self):
         c_code = oapackage.oahelper.formatC(self.test_array)
         self.assertEqual(
