@@ -3127,28 +3127,11 @@ bool arraydata_t::ismixed() const
      return false;
 }
 
-void arraydata_t::set_colgroups_jj ( const symmetry_group &sg, int jj )
-{
-     delete [] colgroupsize;
-     delete [] colgroupindex;
-
-//   mycheck ( sg.n == this->ncols,  "arraydata_t::set_colgroups: invalid size" );
-     this->ncolgroups = sg.ngroups+1;
-     this->colgroupindex = new colindex_t[this->ncolgroups+1];
-     std::copy ( sg.gstart.begin(), sg.gstart.end(), this->colgroupindex );
-     this->colgroupindex[sg.ngroups]=jj;
-     this->colgroupsize = new colindex_t[this->ncolgroups+1];
-     std::copy ( sg.gsize.begin(), sg.gsize.end(), this->colgroupsize );
-     this->colgroupsize[sg.ngroups]=this->ncols-jj;
-}
-
-
 void arraydata_t::set_colgroups ( const std::vector<int> splits )
 {
      delete [] colgroupsize;
      delete [] colgroupindex;
 
-//   mycheck ( sg.n == this->ncols,  "arraydata_t::set_colgroups: invalid size" );
      this->ncolgroups = splits.size();
      this->colgroupindex = new colindex_t[this->ncolgroups+1];
      std::copy ( splits.begin(), splits.end(), this->colgroupindex );

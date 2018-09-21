@@ -43,8 +43,10 @@ void showCandidates ( const std::vector<cperm> &cc );
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
 public:
+	/// list of candidate extentions for each number of columns
     std::vector<std::vector<cperm> > ce;
 
+	/// print information about the set of candidate extentions
     void info ( int verbose=1 ) const {
         for ( int i=2; i< ( int ) ce.size(); i++ ) {
             if ( verbose ) {
@@ -59,16 +61,16 @@ public:
 class conference_t
 {
 public:
-    rowindex_t N;	/** number of runs */
-    colindex_t ncols;	/** total number of columns (factors) in the design */
+    rowindex_t N;	/// number of runs 
+    colindex_t ncols;	/// total number of columns (factors) in the design 
 
     /// Type of conference design 
     enum conference_type {CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE};
     conference_type ctype; /// defines the type of designs
     matrix_isomorphism_t itype; /// defines the isomorphism type
 
-    bool j1zero; /// for the double conference type matrices
-    bool j3zero;
+    bool j1zero; /// if true then J1 values should be zero
+    bool j3zero; /// if true then J3 values should be zero
 
 public:
     /// create new conference_t object
@@ -107,9 +109,9 @@ conference_transformation_t reduceConferenceTransformation ( const array_link &a
 /** Helper structure containing extensions of conference designs
  */
 struct conference_extend_t {
-    std::vector<cperm> first;
-    std::vector<cperm> second;
-    std::vector<cperm> extensions;
+    std::vector<cperm> first; /// list of first block candidate extensions
+    std::vector<cperm> second; /// list of first block candidate extensions
+    std::vector<cperm> extensions; /// list of candidate extensions
 
 public:
 
@@ -302,24 +304,24 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
  */
-std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose = 1, int filtersymm= 1, int filterj2 =1 );
+std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & conference_type, int zero_index, int verbose = 1, int filtersymm= 1, int filterj2 =1 );
 
 /** Generate candidate extensions for restricted isomorphism classes */
-std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose=1 , int filtersymm=1, int filterip=1 );
+std::vector<cperm> generateConferenceRestrictedExtensions ( const array_link &al, const conference_t & conference_type, int zero_index, int verbose=1 , int filtersymm=1, int filterip=1 );
 
 // generate extensions for double conference matrices in LMC0 form
-std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & ct, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0, int filtersymminline = 1 );
+std::vector<cperm> generateDoubleConferenceExtensions ( const array_link &al, const conference_t & conference_type, int verbose=1 , int filtersymm=1, int filterip=1, int filterJ3=0, int filtersymminline = 1 );
 
 
 // generate extensions for conference matrices in LMC0 form
-std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline = 0 );
+std::vector<cperm> generateSingleConferenceExtensions ( const array_link &al, const conference_t & conference_type, int zero_index, int verbose , int filtersymm, int filterj2, int filterj3, int filtersymminline = 0 );
 
 
 /** return max position of zero in array, returns -1 if no zero is found
  *
  * The parameter k specifies the column to search in. For k=-1 all columns are searched.
  */
-int maxz ( const array_link &al, int k = -1 );
+int maxz ( const array_link &al, int column_index = -1 );
 
 /** Return true of the array is smaller in LMC-0 ordering
  *
@@ -344,7 +346,7 @@ int ipcheck ( const cperm &col, const array_link &al, int cstart=2, int verbose=
 
 
 /// return minimal position of zero in design
-int minz ( const array_link &al, int k );
+int minz ( const array_link &al, int column_index );
 
 /// class to filter single or double conference designs
 class DconferenceFilter

@@ -24,6 +24,8 @@ def oa2graph(al, adata, verbose=1):
 
     """
     A = al.getarray(verbose=0)
+    if verbose:
+        print('oa2graph: array of shape %s' % (A.shape, ))
     nrows = adata.N
     ncols = A.shape[1]
     nColumnLevelVertices = sum(adata.getS())
@@ -65,7 +67,7 @@ def oa2graph(al, adata, verbose=1):
 #%%
 
 def selectIsomorphismClasses(sols, verbose=1):
-    """ Select isomorphism classes from a list of designs 
+    """ Select isomorphism classes from a list of designs
 
     Args:
         sols (list of arrays)
@@ -97,7 +99,6 @@ def selectIsomorphismClasses(sols, verbose=1):
 
         alx = tt.apply(al)
         mm.append(np.array(alx))
-        pass
 
     # perform uniqueness check
     nn = len(mm)
@@ -106,7 +107,7 @@ def selectIsomorphismClasses(sols, verbose=1):
         qq[ii] = mm[ii].flatten()
 
     # Trick to make unique work...
-    a, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)
+    _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)
 
     if verbose >= 1:
         print('selectIsomorphismClasses: reduce %d to %d' %
@@ -119,3 +120,5 @@ def test_select_isomorphism():
     ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
     indices, mm = selectIsomorphismClasses(ll, verbose=1)
     assert(indices[0] == indices[1])
+    assert(len(mm)==2)
+    assert(np.all(mm[0]==mm[1]))

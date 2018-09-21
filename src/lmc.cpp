@@ -2012,21 +2012,6 @@ int jj45split ( carray_t *array, rowindex_t N, int jj, const colperm_t comb,  co
 
     lmc_t ret1;
 
-    if ( 0 ) {
-        // reduce column permutations using the delete-one-factor symmetry group
-        adfix.set_colgroups_jj ( sg, 5 );
-
-        if ( verbose>=2 ) {
-            adfix.show_colgroups();
-        }
-
-        ret = LMCreduce ( array, array, &adfix, &dyndata, &reduction , oaextend );
-        ret1=ret;
-        if ( verbose )
-            myprintf( "  ret %d\n", ret );
-    }
-
-
     std::vector<int> splits = symmetrygroup2splits ( sg, ad.ncols, verbose );
 
     adfix.set_colgroups ( splits );

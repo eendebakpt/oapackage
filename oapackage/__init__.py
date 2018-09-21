@@ -7,30 +7,45 @@ http://github.com/eendebakpt/oapackage
 
 """
 
-import oalib
-import oapackage.Doptim
+import os
+_rtd = os.environ.get('READTHEDOCS', False)
 
+if _rtd and 0:
+    if 0:
+        # fix for RTD
+        from unittest.mock import MagicMock
 
-from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+        class Mock(MagicMock):
+            @classmethod
+            def __getattr__(cls, name):
+                return MagicMock()
 
-try:
+        oalib = Mock()
+        __version__ = 'RTD'
+
+    import oapackage.Doptim
+
+    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
+
+    from . oahelper import *
+    from . Doptim import *
+    from . import scanf
+
+else:
+    import oalib
+    import oapackage.Doptim
     from oalib import *
-except:
-    # fix for RTD
-    pass
+    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
-from . oahelper import *
-from . Doptim import *
-from . import scanf
+    oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
+    oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
+    __version__ = oapackage.oalib.version()
 
-import numpy as np
+    from . oahelper import *
+    from . Doptim import *
+    from . import scanf
 
-oalib.setloglevel(oalib.SYSTEM)
-oalib.log_print(-oalib.SYSTEM, '')
 
-#__all__ = ['oahelper']
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
-__doc__ = __description__ + " <" + __uri__ + ">"
-
-__version__ = oalib.version()
+#__doc__ = __description__ + " <" + __uri__ + ">"

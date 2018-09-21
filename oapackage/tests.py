@@ -5,8 +5,9 @@ import numpy as np
 import tempfile
 import unittest
 
-import oapackage
 import oalib
+import oapackage
+import oapackage.scanf
 import oapackage.Doptim
 import oapackage.graphtools
 
@@ -23,6 +24,12 @@ def autodoctest():
     return
 
 
+def test_reduceGraphNauty():
+    G = np.zeros( (5,5), dtype=int)
+    G[1,0]=G[0,1]=1
+    v = oapackage.reduceGraphNauty(G)
+    assert(len(v)==G.shape[0])
+
 def test_exampleArray():
     # test a selection of the example arrays
     al = oapackage.exampleArray(5)
@@ -34,7 +41,6 @@ def test_exampleArray():
 
 
 def test_scanf():
-    import oapackage
     r = oapackage.scanf.sscanf('1', '%d')
     assert(r[0] == 1)
 
@@ -44,8 +50,6 @@ def test_oa2graph():
     adata = oapackage.arraylink2arraydata(al)
     g = oapackage.graphtools.oa2graph(al, adata)
     assert(g[0].shape == (34, 34))
-
-    # t = graph2arrayTransformation(pp, arrayclass, verbose=0):
 
 
 def test_numpy_interface(verbose=0):
@@ -120,6 +124,10 @@ def miscunittest(verbose=1):
         print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
     aa = oalib.Aefficiencies(al)
+    assert(aa[0]==1.0)
+    assert(aa[1]==1.0)
+    assert(aa[2]==1.0)
+    
     if verbose >= 2:
         print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 
@@ -161,6 +169,7 @@ def miscunittest(verbose=1):
 
 class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
+
     def test_misc_file_operations(self):
         a = tempfile.mktemp(suffix='.oa')
         lst = [oapackage.exampleArray(4, 1)]
@@ -185,7 +194,7 @@ class TestOAhelper(unittest.TestCase):
     # def test_tilefigs(self):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
-    def test_argsort():
+    def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
         idx = oapackage.oahelper.argsort([2, 2, 1])
@@ -195,7 +204,6 @@ class TestOAhelper(unittest.TestCase):
         N = 24
         k = 5
         t = 2
-        l = 2
         r = oapackage.oahelper.runExtend(N, 4, t=t, l=2, verbose=3)
         rx = oapackage.oahelper.runExtend(N, k, t=t, l=2, initsols=r, verbose=3)
         self.assertTrue(len(r) == 10)
@@ -226,11 +234,12 @@ class TestOAhelper(unittest.TestCase):
     def test_create_pareto_element(self):
         values = [1, 2, 3]
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
-
+        self.assertEqual(p, values)
+        
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
-
+        self.assertAlmostEqual(v[0], 0.3747931073686535)
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
 
@@ -240,7 +249,8 @@ class TestOAhelper(unittest.TestCase):
 
     def test_array2html(self):
         X = np.array([[1, 2], [3, 4]], dtype='U200')
-        h = oapackage.oahelper.array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='', tdstyle='', trstyle='', thstyle='')
+        h = oapackage.oahelper.array2html(X, header=1, tablestyle='border-collapse: collapse;',
+                                          trclass='', tdstyle='', trstyle='', thstyle='')
         assert('table' in str(h))
 
     def test_sortrows(self):
@@ -258,20 +268,24 @@ class TestDoptimize(unittest.TestCase):
         self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
 
     def test_custom_optim(self):
-        optimfunc = lambda x: x[0] + x[1] + x[2]
-        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1, maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
-
-        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1, maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
+        def optimfunc(x): return x[0] + x[1] + x[2]
+        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
+                                                          maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
+        self.assertEqual( len(scores), n)
+        self.assertEqual( len(dds), n)
+        self.assertEqual( len(sols), n)
+        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
+                                                          maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
     def test_unittest(self):
-        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
+        scores, dds, sols, _ = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
                                                           1, 0, 0], verbose=1, maxtime=9, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
 
-        r = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
+        result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
 
     def test_optimDeffPython(self):
         al = oapackage.exampleArray(2)
-        r, al = oapackage.Doptim.optimDeffPython(
+        _, al = oapackage.Doptim.optimDeffPython(
             al, arrayclass=None, niter=1000, nabort=1500, verbose=1, alpha=[1, 0, 0], method=0)
 
         for method in [oapackage.oalib.DOPTIM_SWAP, oapackage.oalib.DOPTIM_FLIP, oapackage.oalib.DOPTIM_UPDATE]:
@@ -287,7 +301,8 @@ class TestDoptimize(unittest.TestCase):
         allarrays = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
         dds = np.array([A.Defficiencies() for A in allarrays])
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
-        p = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays, fig=None, optimfunc=[1, 0, 0], nofig=True)
+        page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
+                                           fig=None, optimfunc=[1, 0, 0], nofig=True)
 
     def test_filterPareto(self):
         dds = self.dds2
@@ -303,7 +318,7 @@ class TestDoptimize(unittest.TestCase):
 
     def test_array2Dtable(self):
         sols = [oapackage.exampleArray(9, 0)]
-        t = oapackage.Doptim.array2Dtable(sols, verbose=1, titlestr=None)
+        _ = oapackage.Doptim.array2Dtable(sols, verbose=1, titlestr=None)
 
 
 class TestCppLibrary(unittest.TestCase):

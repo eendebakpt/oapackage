@@ -4,7 +4,7 @@ Properties of designs
 Statistical properties of an array
 ----------------------------------
 
-Most properties of an array can be calculated using the :py:class:`~oapackage.oalib.array_link`
+Most properties of an array can be calculated using the :class:`~oapackage.oalib.array_link`
 object. The interface is listed below.
 
 ::
@@ -40,7 +40,7 @@ The :math:`D`-efficiency, :math:`A`-efficiency and :math:`E`-efficiency
 are calculated by calculating the SVD of the second order interaction
 matrix. The efficiencies can then be calculated using the eigenvalues of
 the SVD. For the definition of the :math:`D`-, :math:`A`- and
-:math:`E`-efficiency see Definition :ref:`DAE`. For the
+:math:`E`-efficiency see Definition :ref:`D-efficiency and average VIF`. For the
 rank of a matrix the LU decomposition of the matrix is calculated using
 the Eigen package :cite:`eigenweb`.
 
@@ -110,10 +110,15 @@ generate MD5 sums of designs.
 
 The C++ functions are:
 
-.. code-block:: c
+.. doxygenfunction::  array_link::md5()
+.. doxygenfunction::  md5(void *, int)
+.. doxygenfunction::  md5(const std::string)
 
-    /// calculate md5 sum of a data block in memory
-    std::string md5(void *data, int numbytes);
-    /// calculate md5 sum of a file on disk
-    std::string md5(const std::string filename);
-
+.. comment
+    .. code-block:: c
+    
+        /// calculate md5 sum of a data block in memory
+        std::string md5(void *data, int numbytes);
+        /// calculate md5 sum of a file on disk
+        std::string md5(const std::string filename);
+    

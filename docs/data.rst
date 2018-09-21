@@ -23,38 +23,41 @@ Data structures
 The package contains several data structures. Here we describe the main
 structures and their use.
 
- ``array_link``
+  :meth:`~oapackage.oalib.array_link`
     The structure containing an orthogonal array is called the
-    `array_link` structure. Lists of arrays are stored in the
-    `arraylist_t` object, which as a `std::deque` container.
+    :meth:`~oapackage.oalib.array_link` structure. Lists of arrays are stored in the
+    :meth:`~oapackage.oalib.arraylist_t` object, which is implemented as a :code:`std::deque` container.
 
-  ``arrayfile_t``
+  :meth:`~oapackage.oalib.arrayfile_t`
     This is an object that allows for reading and writing of arrays to
     disk.
 
-  ``arraydata_t``
+  :meth:`~oapackage.oalib.arraydata_t`
     The structure describing a certain class of orthogonal arrays or
-    designs.
+    optimal designs.
 
-  ``array_transformation_t``
+  :meth:`~oapackage.oalib.conference_t`
+    The structure describing a certain class of conference designs.
+
+  :meth:`~oapackage.oalib.array_transformation_t`
     This describes a transformation of an orthogonal array. This includes the row-,
     column- and level-permutations.
 
-  ``conference_transformation_t``
+  :meth:`~oapackage.oalib.conference_transformation_t`
     This describes a transformation of an array. This includes the row-,
     column- and level-permutations.
 
 Representing arrays
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 The structure containing an orthogonal array is called the
 :py:class:`~oalib.array_link` structure. It consists of a specified number of rows and
-columns, the data (integer values) and an index.
+columns, the data (integer valued) and an index.
         
-In the Python interface the arraylink object can be indexed just as
-normal arrays. It is also possible to return a Numpy array. The
-`array\_link` object implements to Python array interface, so most
-opertations from packages such as Numpy work on the `array\_link`
+In the Python interface the :meth:`array_link` object can be indexed just as
+normal arrays. It is also possible to convert to a Numpy array. The
+:meth:`~oapackage.oalib.array_link` object implements to Python array interface, so most
+opertations from packages such as Numpy work on the :code:`array_link`
 object.
 
 .. code-block:: python
@@ -73,11 +76,12 @@ object.
 The C++ class is:
 
 .. doxygenstruct:: array_link
-    :members:
+    :outline:
+    :no-link:
 
     
 Reading and writing arrays
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Reading and writing arrays to disk can be done with the `arrayfile\_t`
 class. For example:
@@ -178,11 +182,11 @@ the file format see Section :ref:`File formats`. The header of the
     }
 
 Array transformations
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Transformations of (orthogonal) arrays consist of row permutations,
 level permutations and level transformations. A transformation is
-represented by the `array\_transformation\_t` object.
+represented by the :meth:`~oapackage.oalib.array_transformation_t` object.
 
 For a given transformation the column permutations are applied first,
 then the level permutations and finally the row permutations. The level-
@@ -233,9 +237,9 @@ and column permutations are not commutative.
         ...
 
 Classes of arrays
-~~~~~~~~~~~~~~~~~
+-----------------
 
-The :code:`arraydata_t` object represents data about a class of orthogonal
+The :meth:`~oapackage.oalib.arraydata_t` object represents data about a class of orthogonal
 arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 
 .. code-block:: c++
@@ -277,7 +281,7 @@ format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Arrays are stored in plain text files with extension .oa. The first line
 contains the number of columns, the number of rows and the number of
@@ -397,9 +401,11 @@ These are:
 
 `oaanalyse`
     Calculates various statistics of arrays in a file. The statistics
-    are described in section `Statistical properties of an array`_.
+    are described in section :ref:`Properties of designs`.
 
 
-.. |image| image:: images/oaimage-18_2-3-3-3-3-3-n17.png
+.. figure:: images/oaimage-18_2-3-3-3-3-3-n17.png
+   :alt: alternate text
+   :align: center
 
-
+   Orthogonal array in :math:`\mathrm{OA}(18, 2 3^a, 2)`

@@ -25,7 +25,7 @@ Installation: drop markup.py somewhere into your Python path.
 try:
     basestring
     import string
-except:
+except BaseException:
     # python 3
     basestring = str
     string = str
@@ -387,7 +387,7 @@ class page:
             try:
                 for src in mydict:
                     self.script('', src=src, type='text/javascript')
-            except:
+            except BaseException:
                 raise TypeError(
                     "Script should be given a dictionary of src:type pairs or a list of javascript src's.")
 

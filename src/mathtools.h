@@ -1169,7 +1169,7 @@ template <class numtype>
 /**
  * @brief Invert a permutation
  * @param perm Permutation as integer type std::vector
- * @param permout Output permutation
+ * @param iperm Output permutation
  */
 void invert_permutation ( const std::vector<numtype> perm, std::vector<numtype> &iperm )
 {
@@ -1183,7 +1183,7 @@ template <class numtype>
  * @brief Invert a permutation
  * @param perm Pointer to permutation
  * @param len
- * @return Pointer to new permutation that is the inverse of the argument
+ * @param iperm Pointer to new permutation that is the inverse of the argument
  */
 void invert_permutation ( numtype *perm, int len, numtype *iperm )
 {
@@ -1256,7 +1256,7 @@ template <class numtype>
 /**
  * @brief Calculate composition of 2 permutations
  *
- * Calculates C = B \circ A
+ * Calculates C = B &#9675; A
  * @param A
  * @param B
  * @param n Length of permutations
@@ -1273,7 +1273,7 @@ template <class numtype>
 /**
  * @brief Calculate composition of 2 permutations
  *
- * Calculates C = B \circ A
+ * Calculates C = B &#9675; A
  * @param A
  * @param B
  * @param C

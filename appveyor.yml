@@ -91,7 +91,6 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install wheel"
-  #- "%WITH_COMPILER% pip install twine"
   
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
@@ -114,8 +113,9 @@ install:
   - "%CMD_IN_ENV36% pip install matplotlib"
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
-  #- IF %ispython36% == True jupyter --version
-  #- IF %ispython36% == True jupyter kernelspec list
+
+  # lint the code
+  - "%CMD_IN_ENV36% pip install pylint"
   
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -128,7 +128,9 @@ build_script:
   
 test_script:
    - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+   - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
+   - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
@@ -142,6 +144,8 @@ test_script:
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
    
+   #- "%CMD_IN_ENV36% pylint oapackage --errors-only"
+   
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
   - ps: "ls dist"
@@ -149,8 +153,6 @@ after_test:
 artifacts:
   - path: dist\*
     name: binaries
-#  - path: '**\oalib_wrap.cpp'
-#    name: swigwrapper
   
 #on_success:
 #  - TODO: upload the content of dist/*.whl to a public wheelhouse

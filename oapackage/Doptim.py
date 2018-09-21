@@ -9,17 +9,20 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 
 from __future__ import print_function
 
-import oalib
 import os
 import numpy as np
 import time
-import warnings
+import logging
 
 try:
     import matplotlib
     import matplotlib.pyplot as plt
-except:
+    import matplotlib.cm
+except BaseException:
     pass
+
+import oalib
+
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 
@@ -30,7 +33,6 @@ from oapackage.markup import oneliner as e
 
 def array2Dtable(sols, verbose=1, titlestr=None):
     """ Generate HTML table with information about for a list of designs """
-    na = len(sols)
     page = markup.page()
     page.table(style=' border-collapse: collapse;')
     page.tr(style='font-weight: bold; border-bottom: solid 1px black;')
@@ -45,22 +47,15 @@ def array2Dtable(sols, verbose=1, titlestr=None):
         gwlp = al.GWLP()
         page.tr(style='font-weight: normal;')
         page.td('%d' % aidx, style='padding-right:10px;')
-        for v in [D, Ds, D1]:
-            page.td('%.4f' % v, style='padding-right:1px;')
+        for statistic in [D, Ds, D1]:
+            page.td('%.4f' % statistic, style='padding-right:1px;')
         gstr = oahelper.gwlp2str(gwlp)
         page.td(e.small(gstr), style='padding-right:1px;')
         page.tr.close()
     page.table.close()
-    # page.p.close()
     return page
 
 # %%
-
-
-try:
-    import brewer2mpl
-except:
-    pass
 
 
 def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
@@ -82,14 +77,10 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     idx = np.unique(colors).astype(int)
 
     try:
+        import brewer2mpl
         mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
-    except:
+    except BaseException:
         mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
-        pass
-
-    # For remaining spines, thin out their line and change the black to a
-    # slightly off-black dark grey
-    almost_black = '#202020'
 
     figh = plt.figure(fig)  # ,facecolor='red')
     plt.clf()
@@ -124,9 +115,9 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 
     try:
         oahelper.setWindowRectangle(10, 10, 860, 600)
-    except Exception as e:
+    except Exception as ex:
         print('generateDscatter: setWindowRectangle failed')
-        pass
+        logging.exception(ex)
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
@@ -145,7 +136,8 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 #%%
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0],
+                  nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
     """ Helper function to generate web page with D-optimal design results """
     if verbose:
         print('generateDpage: dds %s' % str(dds.shape))
@@ -196,7 +188,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
                   lang='en', htmlattrs=dict({'xmlns': 'http://www.w3.org/1999/xhtml', 'xml:lang': 'en'}),
                   header="<!-- Start of page -->",
                   bodyattrs=dict({'style': 'padding-left: 3px;'}),
-                  # doctype=markup.doctype.strict,
                        doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
                        metainfo=({'text/html': 'charset=utf-8', 'keywords': 'orthogonal arrays designs',
                                   'robots': 'index, follow', 'description': 'Even-Odd arrays'}),
@@ -205,8 +196,8 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
     page.h1('Results for array class %s ' % xstr)
 
     # mathjax is not updated properly...
-    ss = 'The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
-    ss = 'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
+    ss = r'The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
+    ss = r'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
     if npareto == 1:
         page.p('Generated %d arrays, %d is Pareto optimal. %s' %
                (narrays, npareto, ss))
@@ -217,7 +208,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
     if narrays > 0:
 
         scores = calcScore(dds, optimfunc)
-        tmp, dd, sols = selectDn(scores, dds, allarrays, nout=1)
+        _, dd, sols = selectDn(scores, dds, allarrays, nout=1)
         A = sols[0]
         bestdesignfile = os.path.join(outputdir, 'best-design.oa')
         oalib.writearrayfile(bestdesignfile, A)
@@ -323,7 +314,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         s = A0.getarray().max(axis=0) + 1
     else:
         s = arrayclass.getS()
-        arrayclass
     sx = tuple(s.astype(np.int64))
     sx = tuple([int(v) for v in sx])
 
@@ -366,7 +356,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             A._setvalue(r, c, o2)
             A._setvalue(r2, c2, o)
         elif method == oalib.DOPTIM_NONE:
-            tmp = 0
+            pass
         else:
             # flip
             A._setvalue(r, c, 1 - o)
@@ -378,7 +368,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             nx = nx + 1
             # print(alpha)
             dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
-        if (dn >= d):
+        if dn >= d:
             if dn > d:
                 lc = ii
                 d = dn
@@ -391,7 +381,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 A._setvalue(r, c, o)
                 A._setvalue(r2, c2, o2)
             elif method == oalib.DOPTIM_NONE:
-                tmp = 0
+                pass
             else:
                 A._setvalue(r, c, o)
         if (ii - lc) > nabort:
@@ -491,7 +481,8 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
     return scores, dds, sols
 
 
-def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
+def Doptimize(arrayclass, nrestarts=10, optimfunc=[
+              1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
 
 
@@ -609,4 +600,4 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=
 def test_calcScore():
     dds = np.random.rand(10, 3)
     scores = calcScore(dds, optimfunc=[1, 2, 3])
-    assert(scores.shape == (dds.shape[0], ))
+    assert scores.shape == (dds.shape[0], )

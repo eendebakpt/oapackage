@@ -7,13 +7,11 @@
 # %% Load packages
 from __future__ import print_function
 
-import oapackage
-import oalib
 import sys
 import os
+import logging
 import numpy as np
 import functools
-from collections import Counter
 import operator
 import inspect
 import fileinput
@@ -28,12 +26,16 @@ import tempfile
 try:
     import matplotlib
     import matplotlib.pyplot as plt
-except:
+except BaseException:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
-    pass
+
+import oapackage
+import oalib
+
 
 from oapackage import markup
+
 
 def deprecated(func):
     """ This is a decorator which can be used to mark functions
@@ -44,11 +46,11 @@ def deprecated(func):
     def new_func(*args, **kwargs):
         try:
             filename = inspect.getfile(func)
-        except:
+        except BaseException:
             filename = '?'
         try:
             lineno = inspect.getlineno(func)
-        except:
+        except BaseException:
             lineno = -1
         warnings.warn_explicit(
             "Call to deprecated function {}.".format(func.__name__),
@@ -61,10 +63,12 @@ def deprecated(func):
 
 #%% Load Qt support
 
+
 try:
     try:
-        from qtpy import QtGui
-    except:
+        import qtpy.QtGui
+        import qtpy.QtWidgets
+    except BaseException:
         # no Qt support
         pass
 
@@ -78,14 +82,12 @@ try:
             wa = [
                 [0, 0, user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)]]
         else:
-            _applocalqt = QtGui.QApplication.instance()
+            _applocalqt = qtpy.QtWidgets.QApplication.instance()
             if _applocalqt is None:
-                _applocalqt = QtGui.QApplication([])
-                _qd = QtGui.QDesktopWidget()
+                _applocalqt = qtpy.QtWidgets.QApplication([])
+                _qd = qtpy.QtWidgets.QDesktopWidget()
             else:
-                if 0:
-                    print('get QDesktopWidget()')
-                _qd = QtGui.QDesktopWidget()
+                _qd = qtpy.QtWidgets.QDesktopWidget()
 
             nmon = _qd.screenCount()
             wa = [_qd.screenGeometry(ii) for ii in range(nmon)]
@@ -95,14 +97,15 @@ try:
                 for ii, w in enumerate(wa):
                     print('monitor %d: %s' % (ii, str(w)))
         return wa
-except:
+except BaseException:
     def monitorSizes(verbose=0):
         return [[0, 0, 1280, 720]]
-    pass
+    
 
 def test_monitorSizes():
     monitorSizes()
-    
+
+
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
     """ Tile figure windows on a specified area """
     mngr = plt.get_current_fig_manager()
@@ -145,11 +148,10 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
                 fig.canvas.manager.window.resize(w, h)
                 fig.canvas.manager.window.setGeometry(x, y, w, h)
                 # mngr.window.setGeometry(x,y,w,h)
-            except Exception as e:
+            except Exception as ex:
                 print('problem with window manager: ', )
-                print(be)
-                print(e)
-                pass
+                print('backend %s' % (be,))
+                logging.exception(ex)
         if raisewindows:
             mngr.window.raise_()
         if tofront:
@@ -172,7 +174,8 @@ def plot2Dline(line, *args, **kwargs):
 #%% Make nice plots
 # http://blog.olgabotvinnik.com/prettyplotlib/
 
-def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True, tightlayout=True, legend=None, almost_black='#222222'):
+def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
+             tightlayout=True, legend=None, almost_black='#222222'):
     """ Create a good looking plot
 
     The code:
@@ -321,10 +324,8 @@ def timeString(tt=None):
 def findfilesR(p, patt):
     """ Get a list of files (recursive) """
     lst = []
-    for root, dirs, files in os.walk(p, topdown=False):
+    for root, _, files in os.walk(p, topdown=False):
         lst += [os.path.join(root, f) for f in files]
-        # for name in files:
-        #    lst += [name]
     rr = re.compile(patt)
     lst = [l for l in lst if re.match(rr, l)]
     return lst
@@ -409,7 +410,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '  ' + chr(10)
         if ii in hlines:
             ss += '\hline' + chr(10)
-            if hlinespace != None:
+            if hlinespace is not None:
                 ss += '\\rule[+%.2fex]{0pt}{0pt}' % hlinespace
     if header:
         if mode == 'tabular':
@@ -502,7 +503,7 @@ import subprocess
 
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
-    """ Run specified command in external environment 
+    """ Run specified command in external environment
 
     Returns:
         r (int): return value of the shell command
@@ -651,18 +652,19 @@ def checkFiles(lst, cache=1, verbose=0):
             break
     return c
 
-def test_checkFiles():    
+
+def test_checkFiles():
     def touch(fname):
         if os.path.exists(fname):
             os.utime(fname, None)
         else:
             open(fname, 'a').close()
-        
-    lst=[tempfile.mktemp()]
-    r= checkFiles(lst, cache=1, verbose=1)
+
+    lst = [tempfile.mktemp()]
+    r = checkFiles(lst, cache=1, verbose=1)
     assert(r is False)
     touch(lst[0])
-    r= checkFiles(lst, cache=1, verbose=1)
+    r = checkFiles(lst, cache=1, verbose=1)
     assert(r is True)
 
 #%%
@@ -751,8 +753,7 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         sols = oalib.arraylist_t()
         oalib.selectArrays(infile, gidxint, sols, 0)
         af = oalib.arrayfile_t(infile, 1)
-        af.nrows
-        r = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
+        _ = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
         if verbose >= 2:
             print('selectArrays: write array file %s in mode %d' %
                   (outfile, afmode))
@@ -791,9 +792,8 @@ def parseProcessingTime(logfile, verbose=0):
 
     try:
         import dateutil.parser
-    except:
+    except BaseException:
         warnings.warn('oahelper: could not load dateutil package...')
-        pass
 
     fileinput.close()
     tstart = None
@@ -826,7 +826,7 @@ def parseProcessingTime(logfile, verbose=0):
             dtt = dt.total_seconds()
         else:
             dtt = -1
-    except:
+    except BaseException:
         if verbose:
             print('error processing log %s' % logfile)
             traceback.print_exc(file=sys.stdout)
@@ -843,7 +843,7 @@ def safemax(data, default=0):
 
     Args:
         data (array or list): data to return the maximum
-        default (obj): default value 
+        default (obj): default value
     Returns:
         m: maximum value
     """
@@ -895,17 +895,16 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
         return '-'
     if isinstance(gmadata, tuple):
         # do nothing
-        gmadata
+        pass
     else:
         if isinstance(gmadata, list):
             # do nothing
-            gmadata
+            pass
         else:
             gmadata[gmadata < 0] = 0
         if not(np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
             print('warning: data are not good GWPL data!!!!')
             return ''
-            # pdb.set_trace()
     bgma = np.around(gmadata, decimals=12)
     if not t is None:
         bgma = bgma[(t + 1):]
@@ -918,7 +917,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
 
 def selectJ(sols0, jj=5, jresults=None, verbose=1):
     """ Select only arrays with J-characteristics non-zero
-    
+
     We asssume the designs are in even-odd ordering (i.e. only check the J value of first columns)
     """
     if jresults is None:
@@ -937,10 +936,13 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
         print('selectJ: kept %d/%d solutions' % (solseo.size(), len(sols0)))
     return solseo
 
+
 def test_selectJ():
-    al=oapackage.exampleArray(12,1)
-    sols0=[al]
-    r=selectJ(sols0)
+    al = oapackage.exampleArray(12, 1)
+    sols0 = [al]
+    r = selectJ(sols0)
+    assert(len(r) == 0)
+
 
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
@@ -950,20 +952,20 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     sols0.push_back(A)
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
-    assert(n>=len(solsx))
+    assert(n >= len(solsx))
     sys.stdout.flush()
     return solsx
 
 
 def test_extendSingleArray():
-    A=oapackage.exampleArray(4,1)
-    adata=oapackage.arraylink2arraydata(A)
-    B=A.selectFirstColumns(5)
-    ee=extendSingleArray(B, adata, t=2, verbose=1)
-    assert(ee[0].n_columns==B.n_columns+1)
-    assert(ee[1]==A.selectFirstColumns(6))
+    A = oapackage.exampleArray(4, 1)
+    adata = oapackage.arraylink2arraydata(A)
+    B = A.selectFirstColumns(5)
+    ee = extendSingleArray(B, adata, t=2, verbose=1)
+    assert(ee[0].n_columns == B.n_columns + 1)
+    assert(ee[1] == A.selectFirstColumns(6))
 
-    
+
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
     """ Run extension algorithm and return arrays
 
@@ -977,7 +979,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     Returns:
         list: list of generated designs
 
-    >>> r = runExtend(16, 5, 3, verbose=0)    
+    >>> r = runExtend(16, 5, 3, verbose=0)
     """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))
@@ -1082,9 +1084,7 @@ def sortcols(X):
     return sind
 
 
-       
 #%%
-
 
 
 def testHtml(hh=None):
@@ -1096,7 +1096,7 @@ def testHtml(hh=None):
     page.body()
     page.add(hh)
     page.body.close()
-    tmp, f = tempfile.mkstemp('.html')
+    _, f = tempfile.mkstemp('.html')
     with open(f, 'wt') as fname:
         fname.write(str(page))
         fname.close()
@@ -1121,9 +1121,8 @@ def designStandardError(al):
     X = np.matrix(al.getModelMatrix(2))
     k = al.n_columns
 
-    m = 1 + k + k * (k - 1) / 2
+    #m = 1 + k + k * (k - 1) / 2
 
-    # scalefac=np.sqrt(al.n_rows)
     scalefac = 1
     M = (X.transpose() * X / scalefac).I
 
@@ -1135,7 +1134,6 @@ def designStandardError(al):
     m2 = m2[np.argsort(m2)]
     m0 = mm[0]
     return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)
-    # return m0,m1, m2
 
 
 #%%
@@ -1144,11 +1142,11 @@ def DefficiencyBound(D, k, k2):
 
     Args:
         D (float): D-efficiency of the design
-        k (int): numbers of columns 
-        k2 (int): numbers of columns 
+        k (int): numbers of columns
+        k2 (int): numbers of columns
 
     Returns:
-        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns    
+        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1. + k + k * (k - 1) / 2
@@ -1219,7 +1217,7 @@ def formatC(al, wrap=True):
 
 
 def create_pareto_element(values, pareto=None):
-    """ Create a vector of mvalue_t elements 
+    """ Create a vector of mvalue_t elements
     Args:
         vv (list): list with tuples or arrays
     """
@@ -1237,7 +1235,7 @@ def create_pareto_element(values, pareto=None):
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
-        vector_pareto = oalib.vector_mvalue_t_double()  # FIXME: naming of GWLPvalueVector
+        vector_pareto = oalib.vector_mvalue_t_double() 
         for v in values:
             if isinstance(v, (int, float)):
                 # convert to list type

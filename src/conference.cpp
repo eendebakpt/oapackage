@@ -1227,21 +1227,21 @@ std::vector<cperm> filterCandidates ( const std::vector<cperm> &extensions, cons
      return e2;
 }
 
-std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & ct, int kz, int verbose , int filtersymm, int filterip )
+std::vector<cperm> generateConferenceExtensions ( const array_link &al, const conference_t & conference_type, int zero_index, int verbose , int filtersymm, int filterip )
 {
-     if ( ct.ctype==conference_t::DCONFERENCE ) {
-          return generateDoubleConferenceExtensions ( al, ct, verbose,filtersymm,filterip );
+     if ( conference_type.ctype==conference_t::DCONFERENCE ) {
+          return generateDoubleConferenceExtensions ( al, conference_type, verbose,filtersymm,filterip );
      }
 
-     if ( ct.itype==CONFERENCE_RESTRICTED_ISOMORPHISM ) {
-          return generateConferenceRestrictedExtensions ( al, ct, kz, verbose,filtersymm,filterip );
+     if ( conference_type.itype==CONFERENCE_RESTRICTED_ISOMORPHISM ) {
+          return generateConferenceRestrictedExtensions ( al, conference_type, zero_index, verbose,filtersymm,filterip );
      }
 
 
      int filterj2=1;
      int filterj3 = 0;
      int filtersymminline=1;
-     std::vector<cperm> ee = generateSingleConferenceExtensions ( al, ct, kz, verbose, filtersymm,  filterj2,  filterj3,  filtersymminline );
+     std::vector<cperm> ee = generateSingleConferenceExtensions ( al, conference_type, zero_index, verbose, filtersymm,  filterj2,  filterj3,  filtersymminline );
      return ee;
 }
 

@@ -251,18 +251,27 @@ enum ordering_t {
  * Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
  */
 struct arraydata_t {
-    rowindex_t N;		/** number of runs */
-    colindex_t ncols;		/** total number of columns (factors) in the design */
-    colindex_t strength;		/** strength of the design */
-    array_t *s;	    /** pointer to levels of the array */
+	/** number of runs */
+	rowindex_t N;
+	/** total number of columns (factors) in the design */
+	colindex_t ncols;
+	/** strength of the design */
+    colindex_t strength;		
+	/** pointer to factor levels of the array */
+    array_t *s;	   
 
-    ordering_t order;		/** Ordering used for arrays */
+	/** Ordering used for arrays */
+    ordering_t order;		
 
     /* derived data */
-    colindex_t ncolgroups;	/// number of groups of columns with the same number of levels
-    colindex_t *colgroupindex;	/// specifies for each column the index of the column group
-    colindex_t *colgroupsize;
-    int oaindex;			/* index of the array */
+	/// number of groups of columns with the same number of levels
+    colindex_t ncolgroups;	
+	/// specifies for each column the index of the column group
+    colindex_t *colgroupindex;	
+	/// specifies for each column the size of the column group
+	colindex_t *colgroupsize;
+	/// index of the array
+	int oaindex;			
 
 public:
     /// create new arraydata_t object
@@ -272,12 +281,15 @@ public:
                   colindex_t strength, colindex_t ncols );
     arraydata_t ( const array_t * s_, rowindex_t N, colindex_t strength,
                   colindex_t ncols );
-    arraydata_t ( const arraydata_t & adp );	/// copy constructor
+	/// copy constructor
+	arraydata_t ( const arraydata_t & adp );
 
-    arraydata_t ( const arraydata_t * adp, colindex_t newncols );	/// copy constructor
-    arraydata_t ();		/// dummy constructor
+	/// copy constructor
+	arraydata_t ( const arraydata_t * adp, colindex_t newncols );	
+	/// dummy constructor
+	arraydata_t ();		
 
-    ~arraydata_t ();		/// destructor
+	~arraydata_t ();		
 
     /// return true if the array is of mixed type
     bool ismixed () const;
@@ -339,6 +351,7 @@ public:
     std::string idstr () const;
     std::string idstrseriesfull () const;
     std::string fullidstr ( int series = 0 ) const;
+	/// return latex string describing the class
     std::string latexstr ( int cmd = 0, int series = 0 ) const;
 
 public:
@@ -362,11 +375,11 @@ public:
     // set column groups at positions given by argument vector
     void set_colgroups ( const std::vector < int >splits );
 
-    // set column group equal to that of a symmetry group + one remaining component
-    void set_colgroups_jj ( const symmetry_group & sg, int jj );
     /// set column group equal to that of a symmetry group
     void set_colgroups ( const symmetry_group & sg );
-    void show_colgroups () const {
+
+	/// show column groups in the array class
+	void show_colgroups () const {
         myprintf ( "arraydata_t: colgroups: " );
         print_perm ( this->colgroupindex, this->ncolgroups );
         myprintf ( "                  size: " );
@@ -389,6 +402,7 @@ public:
     /// return the root array for the class
     array_link create_root (int n_columns = -1, int fill_value = 0) const;
 
+	/// return the factor level for the specified column return -1 if the column index is invalid
     int getfactorlevel ( int idx ) const {
         if ( idx < 0 ) {
             return -1;
@@ -399,6 +413,7 @@ public:
         return this->s[idx];
     }
 
+	/// return factor levels
     std::vector < int >getS () const {
         std::vector < int >s ( this->ncols );
         for ( int i = 0; i < this->ncols; i++ ) {
@@ -613,10 +628,10 @@ array_link exampleArray ( int idx = 0, int verbose = 0 );
 /// calculate J-characteristics for a conference design
 std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int verbose = 0 );
 
-/*! \brief Wrapper class for an array
-
- The array_link struct is a struct that represents an array. 
-  */
+/*** \brief Wrapper class for an array
+ *
+ * The array_link struct is a struct that represents an array. 
+ */
 struct array_link {
     //! Number of rows in array
     rowindex_t n_rows;
@@ -1617,11 +1632,15 @@ private:
 class conference_transformation_t
 {
 public:
-    std::vector < int > rperm;	/// row permutation
-    std::vector < int > cperm;	/// column permutation
+	/// row permutation of the transformation
+    std::vector < int > rperm;	
+	/// column permutation of the transformation
+	std::vector < int > cperm;	
 
-    std::vector < int > cswitch;	/// sign flips for the columns
-    std::vector < int > rswitch;	/// sign flips for the columns
+	/// sign flips for the columns
+	std::vector < int > cswitch;	
+	/// sign flips for the rows
+    std::vector < int > rswitch;	
 
     int nrows;
     int ncols;
@@ -2078,6 +2097,7 @@ arrayfile_t *create_arrayfile ( const char *fname, int rows, int cols,
                                 int narrays, arrayfile::arrayfilemode_t mode =
                                     arrayfile::ATEXT, int nbits = 8 );
 
+/// save a list of arrays to disk
 int save_arrays ( arraylist_t & solutions, const arraydata_t * ad,
                   const int n_arrays, const int n_procs,
                   const char *resultprefix, arrayfile::arrayfilemode_t mode =

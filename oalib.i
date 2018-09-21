@@ -1,4 +1,8 @@
-/* File: example.i */
+/* File: oalib.i
+ * 
+ * Defines the Python interface to the OApackage
+ *
+ */
 %module(docstring="Python Orthogonal Array interface") oalib
 
 
@@ -6,8 +10,6 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "std_deque.i"
-
-#define NEWINTERFACE
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -61,10 +63,6 @@ import_array();
 #include "oadevelop.h"
 #endif
 %}
-
-/* Instantiate a few different versions of the template */
-//%template(EigenMatrix) Eigen::MatrixXd;
-
 
 %typemap(in) Eigen::MatrixXd (Eigen::MatrixXd inputEigen)
 {
@@ -127,19 +125,24 @@ import_array();
 %pythoncode %{
 import sys
 import numpy as np
+import copy
 
-def reduceGraphNauty(G, colors, verbose=1):
+def reduceGraphNauty(G, colors=None, verbose=1):
   """ Return vertex transformation reducing array to normal form
   
   The reduction is calculated using `Nauty <http://users.cecs.anu.edu.au/~bdm/nauty/>`_
 
   Args:
-      G (numpy array) :	the graph in incidence matrix form
+      G (numpy array or array_link) :	the graph in incidence matrix form
       colors (list or None): an optional vertex coloring
+  Returns:
+      v: relabelling of the vertices
   """
-  
-  al=array_link()
-  al.setarray(G)
+  if isinstance(G, np.ndarray):
+      al=array_link()
+      al.setarray(G)
+  else:
+      al = copy.copy(G)
   if colors is None:
     colors = [0] * G.shape[0]
   v = _oalib.reduceNauty ( al, colors, verbose )
@@ -173,7 +176,6 @@ def transformGraphMatrix(G, tr, verbose=1):
     $result = PyLong_FromVoidPtr($1);
 }
 
-
 %extend array_link {
 %insert("python") %{
 
@@ -206,6 +208,11 @@ def getarray(self, verbose=0, *args):
   return x.reshape((self.n_columns, self.n_rows)).transpose()
   #$action
 def setarray(self, X, verbose=0):
+  """ Update the array link object with a Numpy array
+
+  Args:
+     X (numpy array): array to be copied to the object
+  """
   self.init(X.shape[0], X.shape[1])
   self.index=-1
   iv = intVector(X.T.astype(int).flatten().tolist())
@@ -292,10 +299,6 @@ namespace std {
 
 
 // prevent memory leaks
-
-//%newobject readarrayfile;
-//arraylist_t & readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 
-
 %newobject readarrayfile;
 arraylist_t readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 
 
@@ -371,7 +374,6 @@ mvalueVector = vector_mvalue_t_long
 %}
 
 
-
 %template(cpermVector) std::vector< cperm >;
 
 %template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
@@ -425,17 +427,12 @@ public:
     }
 } 
 
-
-// Full Doxygen documentation
-//%include "./swig_doc.i"
-
-
 #ifdef SWIGPYTHON
 // Add module docstring
 %pythoncode  
 %{
 __doc__ = """
-Python Orthogonal Array Interface 2
+Python Orthogonal Array Interface 
 """
 %}
 #endif
@@ -452,4 +449,3 @@ double iarray_get(int *a, int index) {
 // see also: http://stackoverflow.com/questions/2209395/in-python-how-to-access-a-uint163-array-wrapped-by-swig-i-e-unwrap-a-pyswigo
 
 %}
-

@@ -42,6 +42,11 @@ namespace nauty
  *
  * The transformation returned is from the normal form to the specified graph.
  *
+ * \param G Graph in incidence matrix form
+ * \param colors Colors of the graph nodes
+ * \param verbose Verbosity level
+ * \return Relabelling of the graph vertices
+ * 
  */
 std::vector<int> reduceNauty ( const array_link &G, std::vector<int> colors, int verbose=0 );
 

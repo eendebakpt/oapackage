@@ -4,17 +4,20 @@ channels:
 - defaults
 - intel
 dependencies:
-- python=3.5 # rtd python version
+- python=3.6 
 - mkl
 - numpy
 - pip
 - swig
+- ipython
+- jupyter
 - matplotlib
 - nbsphinx
 - pip:
   - scanf
   - sphinxcontrib.bibtex
   - sphinxcontrib.napoleon
+  - breathe
 
   
 # conda env create --name oapackage -f condalist.yml

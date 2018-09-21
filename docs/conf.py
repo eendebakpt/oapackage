@@ -38,14 +38,22 @@ if rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    MOCK_MODULES = ['oalib']
+    MOCK_MODULES = ['_oalib']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+    print('##############################')
+    print('current directory: %s' % os.getcwd())
+    print(os.listdir())
+    print('##############################')   
+    sys.path.append('.')
+    print('##############################')
 
 if rtd:
-    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i', shell=True)
 else:
-    subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    print('executing doxygen')
+    r=subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+    print('executing doxygen done')
     
 #%%
 # -- General configuration ------------------------------------------------
