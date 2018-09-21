@@ -396,8 +396,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         else:
             print('optimDeff: final Deff %.4f' % A.Defficiency())
 
-    if verbose >= 2:
-        print('nx %d' % nx)
     return d, A
 
 

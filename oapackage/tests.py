@@ -5,6 +5,7 @@ import os
 import numpy as np
 import tempfile
 import unittest
+import mock
 
 import oalib
 import oapackage
@@ -207,8 +208,13 @@ class TestOAhelper(unittest.TestCase):
         self.test_array = oapackage.exampleArray(1, 1)
 
     def test_array2latex(self):
+        
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
         self.assertEqual(latex_str[0:15], r'\begin{tabular}')
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='psmallmatrix')
+        self.assertEqual(latex_str[0:15], r'\begin{psmallma')
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='pmatrix')
+        self.assertEqual(latex_str[0:15], r'\begin{pmatrix}')
 
     def test_gwlp2str(self):
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
@@ -220,6 +226,18 @@ class TestOAhelper(unittest.TestCase):
         idx = oapackage.oahelper.argsort([2, 2, 1])
         assert(idx == [2, 0, 1])
 
+    def test_plot2Dline(self):
+        with mock.patch('matplotlib.pyplot.plot') as MockPlt:
+            _=oapackage.oahelper.plot2Dline([1,0,0])
+            self.assertTrue(MockPlt.called)
+            
+    def test_deprecated(self):
+        def func():
+            return 'hi'
+        deprecated_function = oapackage.oahelper.deprecated(func)
+        with self.assertWarns(Warning):
+            _=deprecated_function()
+        
     def test_formatC(self):
         c_code = oapackage.oahelper.formatC(self.test_array)
         self.assertEqual(

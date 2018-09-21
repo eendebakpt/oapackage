@@ -54,7 +54,7 @@ def deprecated(func):
             lineno = -1
         warnings.warn_explicit(
             "Call to deprecated function {}.".format(func.__name__),
-            category=DeprecationWarning,
+            category=UserWarning,
             filename=filename,
             lineno=lineno,
         )
