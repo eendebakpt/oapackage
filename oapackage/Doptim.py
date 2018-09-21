@@ -330,8 +330,9 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     N = A0.n_rows
     k = A0.n_columns
 
+    alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
     # initialize score
-    if str(type(alpha)) == "<type 'function'>" or callable(alpha):
+    if alpha_is_function:
         d = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
@@ -360,7 +361,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             # flip
             A._setvalue(r, c, 1 - o)
 
-        if str(type(alpha)) == "<type 'function'>":
+        if alpha_is_function:
             dn = alpha(A)
         else:
             D, Ds, D1 = A.Defficiencies()
