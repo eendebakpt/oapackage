@@ -5,7 +5,7 @@ import os
 import numpy as np
 import tempfile
 import unittest
-import mock
+import unittest.mock as mock
 
 import oalib
 import oapackage

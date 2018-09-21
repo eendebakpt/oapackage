@@ -452,7 +452,9 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         list of designs
     nout : integer or None
         Number of results to return. None means return all results
-
+    sortfull : boolean
+        If True, then sort on both the scores and the dds values
+   
     Returns
     -------
     scores, dds, sols : sorted arrays
@@ -462,8 +464,8 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         return scores, dds, sols
 
     if sortfull:
-        idx = np.lexsort([dds[:, ii]
-                          for ii in range(dds.shape[1])[::-1]] + [scores])[::-1]
+        full_sorting_data = [dds[:, ii] for ii in list(range(dds.shape[1]))[::-1]] + [scores]
+        idx = np.lexsort(full_sorting_data)[::-1]
     else:
         idx = np.argsort(-scores.flatten())
     scores = scores[idx]
