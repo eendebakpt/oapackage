@@ -144,7 +144,7 @@ test_script:
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
    
-   - "%CMD_IN_ENV36% pylint oapackage --errors-only"
+   #- "%CMD_IN_ENV36% pylint oapackage --errors-only"
    
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
