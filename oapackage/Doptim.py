@@ -20,7 +20,7 @@ try:
 except:
     pass
 
-import oapackage.oalib as oalib
+import oalib
 
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper

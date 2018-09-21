@@ -7,14 +7,10 @@
 # %% Load packages
 from __future__ import print_function
 
-import oapackage
-import oapackage.oalib as oalib
-
 import sys
 import os
 import numpy as np
 import functools
-from collections import Counter
 import operator
 import inspect
 import fileinput
@@ -33,6 +29,10 @@ except:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
     pass
+
+import oapackage
+import oalib
+
 
 from oapackage import markup
 

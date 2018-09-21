@@ -5,8 +5,8 @@ import numpy as np
 import tempfile
 import unittest
 
+import oalib
 import oapackage
-import oapackage.oalib as oalib
 import oapackage.Doptim
 import oapackage.graphtools
 
