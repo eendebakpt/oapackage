@@ -3132,7 +3132,6 @@ void arraydata_t::set_colgroups ( const std::vector<int> splits )
      delete [] colgroupsize;
      delete [] colgroupindex;
 
-//   mycheck ( sg.n == this->ncols,  "arraydata_t::set_colgroups: invalid size" );
      this->ncolgroups = splits.size();
      this->colgroupindex = new colindex_t[this->ncolgroups+1];
      std::copy ( splits.begin(), splits.end(), this->colgroupindex );

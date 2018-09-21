@@ -114,8 +114,8 @@ install:
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
-   # lint the code
-   - "%CMD_IN_ENV36% pip install pylint"
+  # lint the code
+  - "%CMD_IN_ENV36% pip install pylint"
   
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
