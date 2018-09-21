@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import sys
 import os
+import logging
 import numpy as np
 import functools
 import operator
@@ -28,7 +29,6 @@ try:
 except BaseException:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
-    pass
 
 import oapackage
 import oalib
@@ -68,7 +68,6 @@ try:
     try:
         import qtpy.QtGui
         import qtpy.QtWidgets
-        from qtpy import QtGui
     except BaseException:
         # no Qt support
         pass
@@ -101,8 +100,7 @@ try:
 except BaseException:
     def monitorSizes(verbose=0):
         return [[0, 0, 1280, 720]]
-    pass
-
+    
 
 def test_monitorSizes():
     monitorSizes()
@@ -150,11 +148,10 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
                 fig.canvas.manager.window.resize(w, h)
                 fig.canvas.manager.window.setGeometry(x, y, w, h)
                 # mngr.window.setGeometry(x,y,w,h)
-            except Exception as e:
+            except Exception as ex:
                 print('problem with window manager: ', )
-                print(be)
-                print(e)
-                pass
+                print('backend %s' % (be,))
+                logging.exception(ex)
         if raisewindows:
             mngr.window.raise_()
         if tofront:
@@ -327,10 +324,8 @@ def timeString(tt=None):
 def findfilesR(p, patt):
     """ Get a list of files (recursive) """
     lst = []
-    for root, dirs, files in os.walk(p, topdown=False):
+    for root, _, files in os.walk(p, topdown=False):
         lst += [os.path.join(root, f) for f in files]
-        # for name in files:
-        #    lst += [name]
     rr = re.compile(patt)
     lst = [l for l in lst if re.match(rr, l)]
     return lst
@@ -758,8 +753,7 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         sols = oalib.arraylist_t()
         oalib.selectArrays(infile, gidxint, sols, 0)
         af = oalib.arrayfile_t(infile, 1)
-        af.nrows
-        r = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
+        _ = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
         if verbose >= 2:
             print('selectArrays: write array file %s in mode %d' %
                   (outfile, afmode))
@@ -800,7 +794,6 @@ def parseProcessingTime(logfile, verbose=0):
         import dateutil.parser
     except BaseException:
         warnings.warn('oahelper: could not load dateutil package...')
-        pass
 
     fileinput.close()
     tstart = None
@@ -902,17 +895,16 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
         return '-'
     if isinstance(gmadata, tuple):
         # do nothing
-        gmadata
+        pass
     else:
         if isinstance(gmadata, list):
             # do nothing
-            gmadata
+            pass
         else:
             gmadata[gmadata < 0] = 0
         if not(np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
             print('warning: data are not good GWPL data!!!!')
             return ''
-            # pdb.set_trace()
     bgma = np.around(gmadata, decimals=12)
     if not t is None:
         bgma = bgma[(t + 1):]
@@ -1104,7 +1096,7 @@ def testHtml(hh=None):
     page.body()
     page.add(hh)
     page.body.close()
-    tmp, f = tempfile.mkstemp('.html')
+    _, f = tempfile.mkstemp('.html')
     with open(f, 'wt') as fname:
         fname.write(str(page))
         fname.close()
@@ -1243,7 +1235,7 @@ def create_pareto_element(values, pareto=None):
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
-        vector_pareto = oalib.vector_mvalue_t_double()  # FIXME: naming of GWLPvalueVector
+        vector_pareto = oalib.vector_mvalue_t_double() 
         for v in values:
             if isinstance(v, (int, float)):
                 # convert to list type
