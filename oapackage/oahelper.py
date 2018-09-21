@@ -25,7 +25,7 @@ import tempfile
 try:
     import matplotlib
     import matplotlib.pyplot as plt
-except:
+except BaseException:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
     pass
@@ -46,11 +46,11 @@ def deprecated(func):
     def new_func(*args, **kwargs):
         try:
             filename = inspect.getfile(func)
-        except:
+        except BaseException:
             filename = '?'
         try:
             lineno = inspect.getlineno(func)
-        except:
+        except BaseException:
             lineno = -1
         warnings.warn_explicit(
             "Call to deprecated function {}.".format(func.__name__),
@@ -67,7 +67,7 @@ def deprecated(func):
 try:
     try:
         from qtpy import QtGui
-    except:
+    except BaseException:
         # no Qt support
         pass
 
@@ -98,7 +98,7 @@ try:
                 for ii, w in enumerate(wa):
                     print('monitor %d: %s' % (ii, str(w)))
         return wa
-except:
+except BaseException:
     def monitorSizes(verbose=0):
         return [[0, 0, 1280, 720]]
     pass
@@ -177,7 +177,8 @@ def plot2Dline(line, *args, **kwargs):
 #%% Make nice plots
 # http://blog.olgabotvinnik.com/prettyplotlib/
 
-def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True, tightlayout=True, legend=None, almost_black='#222222'):
+def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
+             tightlayout=True, legend=None, almost_black='#222222'):
     """ Create a good looking plot
 
     The code:
@@ -414,7 +415,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '  ' + chr(10)
         if ii in hlines:
             ss += '\hline' + chr(10)
-            if hlinespace != None:
+            if hlinespace is not None:
                 ss += '\\rule[+%.2fex]{0pt}{0pt}' % hlinespace
     if header:
         if mode == 'tabular':
@@ -507,7 +508,7 @@ import subprocess
 
 
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
-    """ Run specified command in external environment 
+    """ Run specified command in external environment
 
     Returns:
         r (int): return value of the shell command
@@ -797,7 +798,7 @@ def parseProcessingTime(logfile, verbose=0):
 
     try:
         import dateutil.parser
-    except:
+    except BaseException:
         warnings.warn('oahelper: could not load dateutil package...')
         pass
 
@@ -832,7 +833,7 @@ def parseProcessingTime(logfile, verbose=0):
             dtt = dt.total_seconds()
         else:
             dtt = -1
-    except:
+    except BaseException:
         if verbose:
             print('error processing log %s' % logfile)
             traceback.print_exc(file=sys.stdout)
@@ -849,7 +850,7 @@ def safemax(data, default=0):
 
     Args:
         data (array or list): data to return the maximum
-        default (obj): default value 
+        default (obj): default value
     Returns:
         m: maximum value
     """
@@ -986,7 +987,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     Returns:
         list: list of generated designs
 
-    >>> r = runExtend(16, 5, 3, verbose=0)    
+    >>> r = runExtend(16, 5, 3, verbose=0)
     """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))
@@ -1149,11 +1150,11 @@ def DefficiencyBound(D, k, k2):
 
     Args:
         D (float): D-efficiency of the design
-        k (int): numbers of columns 
-        k2 (int): numbers of columns 
+        k (int): numbers of columns
+        k2 (int): numbers of columns
 
     Returns:
-        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns    
+        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1. + k + k * (k - 1) / 2
@@ -1224,7 +1225,7 @@ def formatC(al, wrap=True):
 
 
 def create_pareto_element(values, pareto=None):
-    """ Create a vector of mvalue_t elements 
+    """ Create a vector of mvalue_t elements
     Args:
         vv (list): list with tuples or arrays
     """

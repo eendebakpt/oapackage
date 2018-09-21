@@ -191,7 +191,7 @@ class TestOAhelper(unittest.TestCase):
     # def test_tilefigs(self):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
-    def test_argsort():
+    def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
         idx = oapackage.oahelper.argsort([2, 2, 1])
@@ -201,7 +201,6 @@ class TestOAhelper(unittest.TestCase):
         N = 24
         k = 5
         t = 2
-        l = 2
         r = oapackage.oahelper.runExtend(N, 4, t=t, l=2, verbose=3)
         rx = oapackage.oahelper.runExtend(N, k, t=t, l=2, initsols=r, verbose=3)
         self.assertTrue(len(r) == 10)

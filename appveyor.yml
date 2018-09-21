@@ -113,6 +113,9 @@ install:
   - "%CMD_IN_ENV36% pip install matplotlib"
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
+
+   # lint the code
+   - "%CMD_IN_ENV36% pip install pylint"
   
   # https://chocolatey.org, --allow-empty-checksums
   - cinst -y swig
@@ -140,6 +143,8 @@ test_script:
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
+   
+   - "%CMD_IN_ENV36% pylint oapackage --errors-only"
    
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"

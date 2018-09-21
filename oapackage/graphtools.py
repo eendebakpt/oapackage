@@ -65,7 +65,7 @@ def oa2graph(al, adata, verbose=1):
 #%%
 
 def selectIsomorphismClasses(sols, verbose=1):
-    """ Select isomorphism classes from a list of designs 
+    """ Select isomorphism classes from a list of designs
 
     Args:
         sols (list of arrays)

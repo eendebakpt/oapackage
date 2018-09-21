@@ -17,7 +17,7 @@ import logging
 try:
     import matplotlib
     import matplotlib.pyplot as plt
-except:
+except BaseException:
     pass
 
 import oalib
@@ -78,7 +78,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     try:
         import brewer2mpl
         mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
-    except:
+    except BaseException:
         mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
         pass
 
@@ -137,7 +137,8 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 #%%
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[
+                  1, 0, 0], nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
     """ Helper function to generate web page with D-optimal design results """
     if verbose:
         print('generateDpage: dds %s' % str(dds.shape))
@@ -483,7 +484,8 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
     return scores, dds, sols
 
 
-def Doptimize(arrayclass, nrestarts=10, optimfunc=[1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
+def Doptimize(arrayclass, nrestarts=10, optimfunc=[
+              1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
 
 
