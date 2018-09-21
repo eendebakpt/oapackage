@@ -1,5 +1,5 @@
-Interface for normal forms
-==========================
+Interface for LMC normal forms
+==============================
 
 .. doxygenfile:: lmc.h
 
