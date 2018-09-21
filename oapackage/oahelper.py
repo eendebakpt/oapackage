@@ -379,8 +379,6 @@ def choose(n, k):
     for t in range(min(k, n - k)):
         ntok = ntok * (n - t) // (t + 1)
     return ntok
-#    return fac(n)/(fac(n-k)*fac(k))
-
 
 def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
     """ Convert numpy array to Latex tabular """
@@ -1178,15 +1176,11 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.resize(w, h)
     elif be == 'module://IPython.kernel.zmq.pylab.backend_inline':
         pass
-        # mngr.canvas.manager.window.setGeometry(x,y,w,h)
-        #mngr.canvas.manager.window.SetPosition((x, y))
-        #mngr.canvas.manager.window.resize(w, h)
     else:
         # assume Qt canvas
         mngr.canvas.manager.window.move(x, y)
         mngr.canvas.manager.window.resize(w, h)
         mngr.canvas.manager.window.setGeometry(x, y, w, h)
-        # mngr.window.setGeometry(x,y,w,h)
 
 
 def makearraylink(al):

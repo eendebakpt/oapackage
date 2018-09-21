@@ -1,6 +1,7 @@
 """ Orthogonal Array package test functions
 """
 
+import os
 import numpy as np
 import tempfile
 import unittest
@@ -23,34 +24,35 @@ def autodoctest():
     """
     return
 
+class TestMisc(unittest.TestCase):
 
-def test_reduceGraphNauty():
-    G = np.zeros( (5,5), dtype=int)
-    G[1,0]=G[0,1]=1
-    v = oapackage.reduceGraphNauty(G)
-    assert(len(v)==G.shape[0])
-
-def test_exampleArray():
-    # test a selection of the example arrays
-    al = oapackage.exampleArray(5)
-    assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
-    al = oapackage.exampleArray(20)
-    assert(np.array(al).shape == (24, 3))
-    al = oapackage.exampleArray(40)
-    assert(np.array(al).shape == (14, 5))
-
-
-def test_scanf():
-    r = oapackage.scanf.sscanf('1', '%d')
-    assert(r[0] == 1)
-
-
-def test_oa2graph():
-    al = oapackage.exampleArray(2, 0)
-    adata = oapackage.arraylink2arraydata(al)
-    g = oapackage.graphtools.oa2graph(al, adata)
-    assert(g[0].shape == (34, 34))
-
+    def test_reduceGraphNauty(self):
+        G = np.zeros( (5,5), dtype=int)
+        G[1,0]=G[0,1]=1
+        v = oapackage.reduceGraphNauty(G)
+        assert(len(v)==G.shape[0])
+        
+    def test_exampleArray(self):
+        # test a selection of the example arrays
+        al = oapackage.exampleArray(5)
+        assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
+        al = oapackage.exampleArray(20)
+        assert(np.array(al).shape == (24, 3))
+        al = oapackage.exampleArray(40)
+        assert(np.array(al).shape == (14, 5))
+    
+    
+    def test_scanf(self):
+        r = oapackage.scanf.sscanf('1', '%d')
+        assert(r[0] == 1)
+    
+    
+    def test_oa2graph(self):
+        al = oapackage.exampleArray(2, 0)
+        adata = oapackage.arraylink2arraydata(al)
+        g = oapackage.graphtools.oa2graph(al, adata)
+        assert(g[0].shape == (34, 34))
+    
 
 def test_numpy_interface(verbose=0):
     A = np.eye(3, 4).astype(int)
@@ -76,7 +78,7 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    if 0:
+    try:
         # not possible right now...
         if verbose:
             print('direct float')
@@ -84,7 +86,8 @@ def test_numpy_interface(verbose=0):
         al = oapackage.array_link(A)
         if verbose:
             al.showarray()
-
+    except:
+        pass
 
 def test_nauty(verbose=0):
     if verbose:
@@ -94,7 +97,6 @@ def test_nauty(verbose=0):
     tr = oapackage.reduceOAnauty(alr)
     alx = tr.apply(alr)
     assert(alx == al)
-
 
 def miscunittest(verbose=1):
     """ Perform some unit testing, return True if succesfull """
@@ -171,14 +173,16 @@ class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
 
     def test_misc_file_operations(self):
-        a = tempfile.mktemp(suffix='.oa')
+        array_filename = tempfile.mktemp(suffix='.oa')
         lst = [oapackage.exampleArray(4, 1)]
-        oapackage.writearrayfile(a, lst)
-        assert(oapackage.oahelper.oaIsBinary(a) is False)
-        oapackage.writearrayfile(a, oapackage.exampleArray(4, 1), oapackage.ABINARY)
-        assert(oapackage.oahelper.oaIsBinary(a))
+        oapackage.writearrayfile(array_filename, lst)
+        assert(oapackage.oahelper.oaIsBinary(array_filename) is False)
+        oapackage.writearrayfile(array_filename, oapackage.exampleArray(4, 1), oapackage.ABINARY)
+        assert(oapackage.oahelper.oaIsBinary(array_filename))
 
-        oapackage.oahelper.oainfo(a)
+        oapackage.oahelper.oainfo(array_filename)
+
+        _=oapackage.oahelper.compressOAfile(array_filename)
 
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
@@ -186,20 +190,39 @@ class TestOAfiles(unittest.TestCase):
     def test_checkArrayFile(self):
         a = tempfile.mktemp(suffix='.oa')
         self.assertFalse(oapackage.oahelper.checkArrayFile(a))
+        self.assertTrue(oapackage.oahelper.checkArrayFile(a, -1))
 
 
+    def test_finddirectories(self):
+        _ = oapackage.oahelper.finddirectories(os.getcwd())
+        
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 
     # def test_tilefigs(self):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
+    def setUp(self):
+        self.test_array = oapackage.exampleArray(1, 1)
+
+    def test_array2latex(self):
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
+        self.assertEqual(latex_str[0:15], r'\begin{tabular}')
+        
+    def test_gwlp2str(self):
+        self.assertEqual(oapackage.oahelper.gwlp2str([1,2,3]), '')
+        self.assertEqual(oapackage.oahelper.gwlp2str([1,0,.1]), '1.00,0.00,0.10')
+        
     def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
         idx = oapackage.oahelper.argsort([2, 2, 1])
         assert(idx == [2, 0, 1])
 
+    def test_formatC(self):
+        c_code = oapackage.oahelper.formatC(self.test_array)
+        self.assertEqual(c_code, '\tarray_link al ( 16,5, 0 );\n\tint tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};' )
+        
     def test_runExtend(self):
         N = 24
         k = 5
@@ -215,6 +238,10 @@ class TestOAhelper(unittest.TestCase):
         l = oapackage.oahelper.joinArrayLists([l1, l2])
         assert(len(l) == len(l1) + len(l2))
 
+    def test_checkFiles(self):
+        self.assertTrue(oapackage.oahelper.checkFiles([], -1))
+        self.assertTrue(oapackage.oahelper.checkFiles(['nosuchfile'], -1))
+        
     def test_checkFilesOA(self):
         r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
         self.assertTrue(r)
