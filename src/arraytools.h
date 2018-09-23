@@ -1027,22 +1027,22 @@ typedef std::vector < signed char > cperm;
 typedef std::vector <cperm > cperm_list;
 
 
-// concatenate 2 arrays in vertical direction
+/// concatenate 2 arrays in vertical direction
 array_link hstack ( const array_link & al, const array_link & b );
 
-// concatenate 2 arrays in vertical direction
+/// concatenate 2 arrays in vertical direction
 array_link hstack ( const array_link & al, const cperm & b );
 
-// concatenate 2 arrays in horizontal direction
+/// concatenate 2 arrays in horizontal direction
 array_link hstack ( const array_link & al, const array_link & b );
-// concatenate the last column of array B to array A
+/// concatenate the last column of array B to array A
 array_link hstacklastcol ( const array_link & A, const array_link & B );
 
 
+/// concatenate two permutations
 inline cperm vstack ( const cperm & A, const cperm & B )
 {
-    cperm
-    c ( A.size () + B.size () );
+    cperm c ( A.size () + B.size () );
 
     std::copy ( A.begin (), A.end (), c.begin () );
     std::copy ( B.begin (), B.end (), c.begin () + A.size () );
@@ -1063,11 +1063,9 @@ arraydata_t arraylink2arraydata ( const array_link & al, int extracols = 0, int 
 
 /// container with arrays
 typedef std::deque <array_link > arraylist_t;
-/* // //typedef std::vector<array_link> arraylist_t; */
 
 /// add a constant value to all arrays in a list
-inline arraylist_t
-addConstant ( const arraylist_t & lst, int v )
+inline arraylist_t addConstant ( const arraylist_t & lst, int v )
 {
     arraylist_t out ( lst.size () );
 
@@ -1267,7 +1265,6 @@ public:
 
         }
         return 1;
-
     }
 };
 
@@ -1284,7 +1281,6 @@ public:
         calcJvalues ( N, jj );
         calc ( al );
     }
-    //~jstruct_t ();
 private:
     void calcJvalues ( int N, int jj ) {
         assert ( jj==4 );
@@ -1450,8 +1446,6 @@ inline int fastJupdateValue ( rowindex_t N, carray_t * tmpval )
 /// helper function to calculate J-values
 inline void fastJupdate ( const array_t * array, rowindex_t N, const int J, const colindex_t * pp, array_t * tmp )
 {
-    //int jval=0;
-
     for ( int i = 0; i < J; i++ ) {
         carray_t *cp = array + N * pp[i];
         for ( rowindex_t r = 0; r < N; r++ ) {
@@ -1628,8 +1622,10 @@ public:
 	/// sign flips for the rows
     std::vector < int > rswitch;	
 
+	/// number of rows
     int nrows;
-    int ncols;
+	/// number of columns
+	int ncols;
 
 public:
     conference_transformation_t ();	/// default constructor
@@ -1679,7 +1675,6 @@ public:
 
         const conference_transformation_t & lhs = *this;
 
-
         // perform the rows permutations       
         composition_perm ( rhs.rperm, lhs.rperm, c.rperm );
         
@@ -1703,8 +1698,6 @@ public:
         return c;
     }
 
-    //void show ( std::ostream &out ) const;
-
     void setrowperm ( std::vector < int >rp ) {
         rperm = rp;
     };
@@ -1715,7 +1708,6 @@ public:
 private:
     void init ( int nr, int nc );	/// initialize permutation structures
 };
-
 
 
 /** functions for working with array files*/
@@ -1755,6 +1747,9 @@ public:
     afilerw_t rwmode;
 
     // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
+
+
+	/// number of arrays in the file
     int narrays;
 
     int narraycounter;
@@ -1861,6 +1856,7 @@ public:
         }
     }
 
+	/// return current position in file
     size_t pos () const {
         return narraycounter;
     }
@@ -2126,7 +2122,6 @@ template < class Container, class IntType > void
 keepElements ( Container & al, std::vector < IntType > &idx )
 {
     for ( int jj = idx.size () - 1; jj >= 0; jj-- ) {
-        //myprintf("keepElements: %d\n", jj);
         if ( !idx[jj] ) {
             al.erase ( al.begin () + jj );
         }
