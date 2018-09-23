@@ -350,7 +350,7 @@ setup(name='OApackage',
       data_files=data_files,
       test_suite="oapackage.tests.unittest",
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'unittest'],
       zip_safe=False,
       install_requires=['numpy>=1.13', 'scanf'],
       extras_require={
