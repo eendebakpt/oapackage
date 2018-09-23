@@ -98,25 +98,12 @@ VectorFloat;
 typedef double
 eigenFloat;
 
-// use long double
-//typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixFloat; typedef Eigen::Array<long double, Eigen::Dynamic, Eigen::Dynamic> ArrayFloat; typedef Eigen::Matrix<long double, Eigen::Dynamic, 1> VectorFloat; typedef long double eigenFloat;
-
-
-
-
 /// show information about Eigen matrix
-//void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );
-void
-eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
+void eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
 
 
 // helper function for Python interface
-void
-eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
-
-
-Eigen::VectorXd dummy ();
-Eigen::MatrixXd dummy2 ();
+void eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
 
 #ifdef USEZLIB
 #include <zlib.h>
@@ -789,18 +776,17 @@ public:
     /** This function calculates Helmert contrasts for the factors of an input design.
      * Implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
      */
-    MatrixFloat getModelMatrix ( int order, int intercept = 1 ) const;
+    MatrixFloat getModelMatrix ( int order, int intercept = 1, int verbose = 0 ) const;
 
-    /* Interal function (public, but not in documentation */
-
-    array_link & operator= ( const array_link & rhs );	// assignment
-    array_link & deepcopy ( const array_link & rhs );	// assignment
-    array_link & shallowcopy ( const array_link & rhs );	// assignment
+    array_link & operator= ( const array_link & rhs );	
+    array_link & deepcopy ( const array_link & rhs );	
+    array_link & shallowcopy ( const array_link & rhs );	
     int operator== ( const array_link & rhs ) const;
     int operator!= ( const array_link & rhs ) const;
     int operator< ( const array_link & rhs ) const;
     int operator> ( const array_link & rhs ) const;
 
+	/// return true of two array have the same dimensions
     int equalsize ( const array_link & rhs ) const {
         return ( this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns );
     }
