@@ -1,12 +1,16 @@
 """ Orthogonal Array package test functions
 """
 
+import sys
 import os
 import numpy as np
 import tempfile
 import unittest
-import unittest.mock as mock
-
+if sys.version_info >= (3, 4):
+    import unittest.mock as mock
+else:
+    import mock
+    
 import oalib
 import oapackage
 import oapackage.scanf
