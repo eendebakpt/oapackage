@@ -268,23 +268,23 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 #%%
 
 
-def _optimDeffhelper(classdata):
-    """ Helper function that is suitable for the multi-processing framework """
-
-    N = classdata[0]
-    k = classdata[1]
-    alpha = classdata[2]
-    method = classdata[3]
-    p = classdata[4]
-    nabort = p.get('nabort', 2500)
-    niter = p.get('nabort', 12000)
-
-    arrayclass = oalib.arraydata_t(2, N, 1, k)
-    al = arrayclass.randomarray(1)
-
-    vv = optimDeffPython(
-        al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
-    return vv[0], vv[1].getarray()
+#def _optimDeffhelper(classdata):
+#    """ Helper function that is suitable for the multi-processing framework """
+#
+#    N = classdata[0]
+#    k = classdata[1]
+#    alpha = classdata[2]
+#    method = classdata[3]
+#    p = classdata[4]
+#    nabort = p.get('nabort', 2500)
+#    niter = p.get('nabort', 12000)
+#
+#    arrayclass = oalib.arraydata_t(2, N, 1, k)
+#    al = arrayclass.randomarray(1)
+#
+#    vv = optimDeffPython(
+#        al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
+#    return vv[0], vv[1].getarray()
 
 
 def calcScore(dds, optimfunc):
@@ -330,8 +330,9 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     N = A0.n_rows
     k = A0.n_columns
 
+    alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
     # initialize score
-    if str(type(alpha)) == "<type 'function'>":
+    if alpha_is_function:
         d = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
@@ -344,7 +345,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         r2 = np.random.randint(N)
         # make sure c2 is in proper column
         c2 = gstart[gidx[c]] + oalib.fastrand() % gsize[gidx[c]]
-        # print('  %d,%d <--> %d,%d' % (r,c,r2,c2))
 
         o = A._at(r, c)
         o2 = A._at(r2, c2)  # no extra error checking
@@ -361,12 +361,11 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             # flip
             A._setvalue(r, c, 1 - o)
 
-        if str(type(alpha)) == "<type 'function'>":
+        if alpha_is_function:
             dn = alpha(A)
         else:
             D, Ds, D1 = A.Defficiencies()
             nx = nx + 1
-            # print(alpha)
             dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
         if dn >= d:
             if dn > d:
@@ -398,8 +397,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         else:
             print('optimDeff: final Deff %.4f' % A.Defficiency())
 
-    if verbose >= 2:
-        print('nx %d' % nx)
     return d, A
 
 
@@ -455,7 +452,9 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         list of designs
     nout : integer or None
         Number of results to return. None means return all results
-
+    sortfull : boolean
+        If True, then sort on both the scores and the dds values
+   
     Returns
     -------
     scores, dds, sols : sorted arrays
@@ -465,8 +464,8 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         return scores, dds, sols
 
     if sortfull:
-        idx = np.lexsort([dds[:, ii]
-                          for ii in range(dds.shape[1])[::-1]] + [scores])[::-1]
+        full_sorting_data = [dds[:, ii] for ii in list(range(dds.shape[1]))[::-1]] + [scores]
+        idx = np.lexsort(full_sorting_data)[::-1]
     else:
         idx = np.argsort(-scores.flatten())
     scores = scores[idx]
@@ -546,8 +545,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         dds = np.zeros((0, 3))
         sols = []
 
+        nrestarts_requested=nrestarts
         nrestarts = 0
-        for ii in range(nrestarts):
+        for ii in range(nrestarts_requested):
             if verbose:
                 oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' %
                                 (ii, nrestarts, time.time() - t0, maxtime), dt=4)

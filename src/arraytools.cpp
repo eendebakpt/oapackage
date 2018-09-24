@@ -2030,7 +2030,7 @@ void create_root ( const arraydata_t *ad, arraylist_t &solutions )
 }
 
 
-
+/// calculate number of model parameters
 std::vector<int> numberModelParams ( const array_link &al, int order=2 )
 
 {
@@ -2049,6 +2049,7 @@ std::vector<int> numberModelParams ( const array_link &al, int order=2 )
 
      /* main effect contrasts */
      int mesize = std::accumulate ( df.begin(),df.end(),0 );
+	 n[1] = mesize;
 
      /* 2fi*/
      int n2fi=0;
@@ -2058,27 +2059,31 @@ std::vector<int> numberModelParams ( const array_link &al, int order=2 )
           }
      }
 
-     n[1]=mesize;
-     n[2]=n2fi;
+	 if (order>=2)
+	     n[2]=n2fi;
      return n;
 }
 
-MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const
+MatrixFloat array_link::getModelMatrix ( int order, int intercept, int verbose ) const
 {
-     int verbose=0;
      int N = this->n_rows;
-     std::pair<MatrixFloat,MatrixFloat> mmx = array2eigenModelMatrixMixed ( *this, 0 );
+	 MatrixFloat intcpt = MatrixFloat::Zero(N, 1);
+	 intcpt.setConstant(1);
 
-     std::vector<int> np= numberModelParams ( *this, order );
+	 std::vector<int> np = numberModelParams(*this, order);
+	 if (verbose >= 1) {
+		 myprintf("array_link::getModelMatrix numberModelParams: ");
+		 printf_vector(np, "%d", " ");
+		 myprintf("\n");
+	 }
 
-     MatrixFloat intcpt =MatrixFloat::Zero ( N, 1 );
-     intcpt.setConstant ( 1 );
+	 std::pair<MatrixFloat,MatrixFloat> mmx = array2eigenModelMatrixMixed ( *this, 0 );
 
-     if ( order==2 ) {
-          if ( verbose>=2 ) {
-               myprintf ( "array_link::getModelMatrix %d+%d+%d\n", np[0], np[1], np[2] );
-          }
-     }
+ 	 if ( verbose>=2 ) {
+		myprintf ( "array_link::model matrices\n");
+		eigenInfo(mmx.first, "mmx.first");
+		eigenInfo(mmx.second, "mmx.second");
+	 }
      if ( order==0 ) {
           return intcpt;
      }
@@ -2089,11 +2094,8 @@ MatrixFloat array_link::getModelMatrix ( int order, int intercept ) const
      }
      if ( order==2 ) {
           MatrixFloat mm ( N, np[0]+np[1]+np[2] );
-          //eigenInfo(mm, "mm");
           //std::cout << "gr\n" << mmx.first << std::endl << mmx.second << std::endl;
           mm << intcpt, mmx.first, mmx.second;
-          //std::cout << "#### gr\n" << mm << std::endl;
-
           return mm;
      }
 
@@ -2169,40 +2171,18 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 }
 
 
-Eigen::VectorXd dummy()
-{
-     myprintf ( "dummy: create VectorXd\n" );
-     Eigen::VectorXd v ( 3 );
-     v[0]=1;
-     v[1]=2;
-     v[2]=4;
-     return v;
-}
-Eigen::MatrixXd dummy2()
-{
-#ifdef FULLPACKAGE
-     myprintf ( "dummy2: create MatrixXd\n" );
-     fflush ( stdout );
-#endif
-     Eigen::MatrixXd m ( 2,2 );
-     m ( 0,0 ) = 3;
-     m ( 1,0 ) = 2.5;
-     m ( 0,1 ) = -1;
-//	myprintf("dummy2: return MatrixXd\n"); fflush(stdout);
-     return m;
-}
-
 // helper function for Python interface
 void eigen2numpyHelper ( double* pymat1, int n, const Eigen::MatrixXd &m )
 {
-     //for(size_t i=0; i<n; i++) {
-     //    pymat[i]=this->array[i];
-     //}
-     //eigenInfo ( m );
      myprintf ( "pymat1 %p\n", ( void * ) pymat1 );
      std::copy ( m.data(),m.data() +m.size(), pymat1 );
 }
 
+/** Print information about an Eigen matrix
+ *
+ * \param m Matrix about which to print information 
+ * \param str String to prepend in output
+ */
 void eigenInfo ( const MatrixFloat m, const char *str, int verbose )
 {
      if ( verbose==1 ) {
@@ -2234,7 +2214,8 @@ MatrixFloat array2eigenME ( const array_link &al, int verbose )
 // code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_link &al, int verbose )
 {
-     //verbose=2;
+	assert(al.min() >= 0);
+
      if ( verbose>=2 ) {
           myprintf ( "array2eigenModelMatrixMixed: start" );
      }
@@ -2249,23 +2230,22 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
      if ( verbose>=2 ) {
           arrayclass.show();
-          myprintf ( "array2eigenME: N %d, k %d\n", N, k );
+          myprintf ( "array2eigenModelMatrixMixed: N %d, k %d\n", N, k );
           myprintf ( "df " );
           printf_vector ( df, "%d " );
           myprintf ( "\n" );
 
      }
-     MatrixFloat  AA = al.getEigenMatrix();
+     MatrixFloat AA = al.getEigenMatrix();
 
      /* main effect contrasts */
-     if ( verbose>=2 ) {
-          printfd ( "main effects\n" );
+	 int mesize = std::accumulate(df.begin(), df.end(), 0);
+	 if ( verbose>=2 ) {
+          printfd ( "main effects: size %dx%d\n", N, mesize );
      }
-
-     int mesize = std::accumulate ( df.begin(),df.end(),0 );
-
+	 
      std::vector<int> np = numberModelParams ( al, 2 );
-     MatrixFloat ME = MatrixFloat::Zero ( N, mesize );
+     MatrixFloat main_effects = MatrixFloat::Zero ( N, mesize );
 
      int meoffset=0;
      for ( int c=0; c<k; c++ ) {
@@ -2327,8 +2307,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
                tmp=Z.col ( ii+1 ).transpose() * Z.col ( ii+1 );
 
-               //eigenInfo ( tmp, "denom" );
-               ME.col ( meoffset+ii ) =sqrt ( double ( N ) ) *Z.col ( ii+1 ) / sqrt ( double ( tmp ( 0,0 ) ) );
+               main_effects.col ( meoffset+ii ) =sqrt ( double ( N ) ) *Z.col ( ii+1 ) / sqrt ( double ( tmp ( 0,0 ) ) );
           }
 
 #ifdef FULLPACKAGE
@@ -2370,7 +2349,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
                     for ( int qq=0; qq<n2; qq++ ) {
                          //if (verbose) printfd("create 2fi: \n");	eigenInfo(ME.col(pp), "ME.col(pp)");
 
-                         tfi.col ( tel ) =ME.col ( pp+po ).cwiseProduct ( ME.col ( qq+qo ) );
+                         tfi.col ( tel ) =main_effects.col ( pp+po ).cwiseProduct ( main_effects.col ( qq+qo ) );
                          tel++;
                     }
                }
@@ -2385,7 +2364,7 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
      }
 
 
-     return std::pair<MatrixFloat,MatrixFloat> ( ME, tfi );
+     return std::pair<MatrixFloat,MatrixFloat> ( main_effects, tfi );
 }
 
 MatrixFloat array2eigenX1 ( const array_link &al, int intercept )
@@ -2448,8 +2427,8 @@ MatrixFloat array2eigenX1 ( const array_link &al )
      return mymatrix;
 }
 
-//Eigen::MatrixXd array2eigenME ( const array_link &al, int verbose );
 
+/// specialized version array2eigenModelMatrix returning integer valued matrix
 Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 {
      int k = al.n_columns;
@@ -2519,18 +2498,13 @@ double array_link::DsEfficiency ( int verbose ) const
      }
 
      const array_link &al = *this;
-     //int k = al.n_columns;
      int k1 = al.n_columns+1;
      int n = al.n_rows;
      //int m = 1 + k + k* ( k-1 ) /2;
-     //int N = n;
 
-     //Eigen::MatrixXd X1 = array2eigenX1(al);
      MatrixFloat X2 = array2eigenX2 ( al );
      MatrixFloat X = array2eigenModelMatrix ( al );
 
-#define SCALEN
-#ifdef SCALEN
      MatrixFloat tmp = ( X.transpose() *X/n );
      double f1 = tmp.determinant();
      double f2 = ( X2.transpose() *X2/n ).determinant();
@@ -2545,15 +2519,6 @@ double array_link::DsEfficiency ( int verbose ) const
      if ( verbose ) {
           myprintf ( "f1 %e, f2 %e, Ds %f\n", f1, f2, Ds );
      }
-#else
-     MatrixFloat tmp = ( X.transpose() *X );
-     double f1 = tmp.determinant();
-     double f2 = ( X2.transpose() *X2 ).determinant();
-     double Ds = pow ( ( f1/f2 ), 1./k1 ) /n;
-     if ( verbose ) {
-          myprintf ( "scale after: f1 %f, f2 %f, Ds %f\n", f1, f2, Ds );
-     }
-#endif
 
      return Ds;
 }

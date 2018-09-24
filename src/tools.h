@@ -415,13 +415,18 @@ void display_vector(const std::vector<atype> &v)
 #endif
 
 template <class atype>
-/// print vector using printf function
-void printf_vector ( const std::vector<atype> &v, const char *format, const char *sep ="" )
+/** print vector using printf function
+ *
+ * \param vector Vector to be displayed
+ * \param format Format to use in printf
+ * \param separator Separator symbol to use
+ */
+void printf_vector ( const std::vector<atype> &vector, const char *format, const char *separator ="" )
 {
-    for ( unsigned int i=0; i<v.size(); i++ ) {
-        myprintf ( format, v[i] );
-		if (i<v.size()-1)
-			myprintf ("%s", sep );
+    for ( unsigned int i=0; i<vector.size(); i++ ) {
+        myprintf ( format, vector[i] );
+		if (i<vector.size()-1)
+			myprintf ("%s", separator );
 }
 }
 

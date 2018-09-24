@@ -5,7 +5,6 @@ setup.py file for OApackage
 """
 
 # %% Load packages
-# Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.test import test as TestCommand
@@ -103,7 +102,6 @@ def get_version_info(verbose=0):
         if os.path.exists('src/version.h'):
             with open('src/version.h') as f:
                 ln = f.readline()
-                # print(ln)
                 m = re.search('.* "(.*)"', ln)
                 FULLVERSION = (m.group(1))
         else:
@@ -113,8 +111,6 @@ def get_version_info(verbose=0):
     if verbose:
         print('get_version_info: %s' % FULLVERSION)
     return FULLVERSION, GIT_REVISION
-
-# print(get_version_info())
 
 try:
     from distutils.version import LooseVersion
@@ -190,7 +186,6 @@ class OATest(TestCommand):
 
         oapackage.tests.miscunittest(verbose=1)
         errno = 0
-        #errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
 
@@ -355,8 +350,7 @@ setup(name='OApackage',
       data_files=data_files,
       test_suite="oapackage.tests.unittest",
       scripts=scripts,
-      # nose and coverage are only for tests
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0'],
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
       zip_safe=False,
       install_requires=['numpy>=1.13', 'scanf'],
       extras_require={
