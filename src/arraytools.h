@@ -822,8 +822,6 @@ public:
             this->array[i] += val;
         }
         return *this;
-
-
     }
     array_link operator -= ( array_t val ) {
         int NN = this->n_rows * this->n_columns;
@@ -1009,7 +1007,6 @@ public:
                                               rhs.array + c2 * n_rows + n_rows,
                                               array + c1 * n_rows,
                                               array + c1 * n_rows + n_rows );
-
     }
 
     std::string showarrayS () const;
@@ -1150,7 +1147,6 @@ public:
             }
         }
         return 1;
-
     }
 };
 

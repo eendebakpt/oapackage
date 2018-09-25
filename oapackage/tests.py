@@ -404,6 +404,21 @@ class TestCppLibrary(unittest.TestCase):
         seq = oapackage.PECsequence(al)
         numpy.testing.assert_equal(seq, (1.0,) * len(seq))
 
+    def test_arraylink_slicing(self):
+        numpy_array=(20*np.random.rand( 6,10)).astype(int)
+        
+        al=oapackage.makearraylink(numpy_array)
+        assert(al[0]==numpy_array.flatten()[0])
+        assert(al[0,1]==numpy_array[0,1])
+        assert(al[4,2]==numpy_array[4,2])   
+        np.testing.assert_equal(al[0:4,1:5], np.array(al)[0:4, 1:5] )
+        np.testing.assert_equal(al[0:1,0:10:2], np.array(al)[0:1,0:10:2] )
+
+        with self.assertRaises(IndexError):
+            al[-1,1]
+
+        with self.assertRaises(NotImplementedError):
+            al[2,3::]
 
 if __name__ == '__main__':
     """ Test code """
