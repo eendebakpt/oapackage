@@ -120,5 +120,5 @@ def test_select_isomorphism():
     ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
     indices, mm = selectIsomorphismClasses(ll, verbose=1)
     assert(indices[0] == indices[1])
-    assert(len(mm)==2)
-    assert(np.all(mm[0]==mm[1]))
+    assert(len(mm) == 2)
+    assert(np.all(mm[0] == mm[1]))

@@ -11,7 +11,7 @@ if sys.version_info >= (3, 4):
     import unittest.mock as mock
 else:
     import mock
-    
+
 import oalib
 import oapackage
 import oapackage.scanf
@@ -379,31 +379,31 @@ class TestCppLibrary(unittest.TestCase):
     def test_miscunittest(self):
         miscunittest()
 
-
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 1)
-        al=al.selectFirstColumns(3)
-        assert(al.n_columns==3)
-    
+        al = al.selectFirstColumns(3)
+        assert(al.n_columns == 3)
+
         al = oapackage.exampleArray(1000, 1)
-          
+
         with self.assertRaises(RuntimeError):
-            al=al.selectFirstColumns(1)
-        
+            al = al.selectFirstColumns(1)
+
     def test_mycheck_handler(self):
         oapackage.mycheck_handler('a', 'b', 1, 1, 'bla')
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
-        
+
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 1)
-        d=oapackage.projDeff(al, 3, 1)
-        D=al.selectFirstColumns(3).Defficiency()
-        assert(D==d[0])
+        d = oapackage.projDeff(al, 3, 1)
+        D = al.selectFirstColumns(3).Defficiency()
+        assert(D == d[0])
         numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
-        
-        seq=oapackage.PECsequence(al)
-        numpy.testing.assert_equal(seq, (1.0,)*len(seq))
+
+        seq = oapackage.PECsequence(al)
+        numpy.testing.assert_equal(seq, (1.0,) * len(seq))
+
 
 if __name__ == '__main__':
     """ Test code """
