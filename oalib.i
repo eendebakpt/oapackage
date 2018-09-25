@@ -312,6 +312,7 @@ namespace std {
     SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
   }
 }
+
 // prevent memory leaks
 %newobject readarrayfile;
 arraylist_t readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 

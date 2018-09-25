@@ -409,8 +409,8 @@ void myassert(int condition, const char *error_message)
 			myprintf("myassert: error\n");
 		else
 			myprintf("myassert: %s", error_message);
-#ifdef RPACKAGE
-		throw;
+#ifdef SWIGPYTHON
+		throw std::runtime_error(error_message);
 #else
 		throw std::runtime_error(error_message);
 #endif
