@@ -682,13 +682,13 @@ public:
     array_link deleteColumn ( int index ) const;
 
     /// return array with first n rows
-    array_link selectFirstRows ( int n ) const;
+    array_link selectFirstRows ( int nrows ) const;
 
     /// return array with first n columns selected
-    array_link selectFirstColumns ( int n ) const;
+    array_link selectFirstColumns ( int ncolumns ) const;
 
     /// return array with last n columns selected
-    array_link selectLastColumns ( int n ) const;
+    array_link selectLastColumns ( int ncolumns) const;
 
     /// select columns from an array
     array_link selectColumns ( const std::vector < int >c ) const;
@@ -1710,11 +1710,13 @@ private:
 };
 
 
-/** functions for working with array files*/
+/* functions for working with array files*/
+
+
+/// print a list of arrays to stdout
+void showArrayList ( const arraylist_t & lst );
 
 #ifdef FULLPACKAGE
-
-void showArrayList ( const arraylist_t & lst );
 
 namespace arrayfile
 {

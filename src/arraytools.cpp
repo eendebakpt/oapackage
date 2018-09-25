@@ -834,7 +834,6 @@ std::string array_link::md5() const
 #endif
 }
 
-#ifdef FULLPACKAGE
 
 void showArrayList ( const arraylist_t &lst )
 {
@@ -843,6 +842,8 @@ void showArrayList ( const arraylist_t &lst )
           lst[i].showarray();
      }
 }
+
+#ifdef FULLPACKAGE
 
 /**
  * @brief Print an array to a stream (formatted)
@@ -4978,9 +4979,8 @@ void arrayfile_t::read_array_binary ( array_t *array, const int nrows, const int
  */
 void arrayfile_t::write_array_binary_diff ( const array_link &A )
 {
-     myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
-
-     myassertdebug ( A.maxelement() <= 1, "arrayfile_t::write_array_binary_diff: array is not binary" );
+     myassert ( this->rwmode == WRITE || this->rwmode == READWRITE, "error: arrayfile_t not in write mode" );
+     myassert ( A.max() <= 1, "arrayfile_t::write_array_binary_diff: array is not binary" );
 
      int ngood=0;
 
@@ -5017,7 +5017,7 @@ void arrayfile_t::write_array_binary_diff ( const array_link &A )
  */
 void arrayfile_t::write_array_binary_diffzero ( const array_link &A )
 {
-     myassertdebug ( this->rwmode == WRITE, "error: arrayfile_t not in write mode" );
+     myassert ( this->rwmode == WRITE || this->rwmode == READWRITE, "error: arrayfile_t not in write mode" );
      int ngood=0;
 
      rowindex_t N = this->nrows;

@@ -297,7 +297,21 @@ namespace std {
    
 };
 
-
+%include "exception.i"
+%exception array_link::selectFirstColumns {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
+%exception mycheck_handler {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
 // prevent memory leaks
 %newobject readarrayfile;
 arraylist_t readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 

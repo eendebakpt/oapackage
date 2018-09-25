@@ -94,59 +94,27 @@ std::ostream& logstream ( int level );
 
 std::string system_uname();
 
-inline void mycheck_handler ( const char *file, const char* func, int line, int condition, const char* message, ... )
-{
-    if ( condition==0 ) {
-        va_list		va;
-        va_start ( va, message );
-        myprintf ( "mycheck: %s: %s (line %d): ", file,func, line );
-#ifdef RPACKAGE
-        myprintf("(not implemented) %s", message);
-#else
-        vprintf ( message, va );
-#endif
-        va_end ( va );
-#ifdef RPACKAGE
-        throw;
-#else
-        exit ( 1 );
-#endif
-    }
-
-
-}
+/// handler for error messages. throws an std::runtime_error exception
+void mycheck_handler(const char *file, const char* func, int line, int condition, const char* message, ...);
 
 
 #define mycheck(...) mycheck_handler(__FILE__,__FUNCTION__, __LINE__, __VA_ARGS__)
 
-inline void myassert ( int condition, const char *str = 0 )
-{
-    if ( condition==0 ) {
-        if (str==0)
-            myprintf ( "myassert: error\n" );
-        else
-            myprintf ( "myassert: %s", str );
-#ifdef RPACKAGE
-        throw;
-#else
-        exit ( 1 );
-#endif
-    }
-}
+void myassert(int condition, const char *str = 0);
 
-#ifdef OADEBUG
-inline void myassertdebug ( int condition, const char *str )
-{
-    if ( condition==0 ) {
-        myprintf ( "myassert: %s", str );
-        myprintf ( "... aborting\n" );
-        exit ( 1 );
-    }
-}
-#else
-#define myassertdebug(a,b)
-inline void myassertdebug2 ( int condition, const char *str ) {}
-#endif
+//#ifdef OADEBUG
+//inline void myassertdebug ( int condition, const char *str )
+//{
+//    if ( condition==0 ) {
+//        myprintf ( "myassert: %s", str );
+//        myprintf ( "... aborting\n" );
+//        exit ( 1 );
+//    }
+//}
+//#else
+//#define myassertdebug(a,b)
+//inline void myassertdebug2 ( int condition, const char *str ) {}
+//#endif
 
 inline int cprintf ( int check, const char *message, ... )
 {
