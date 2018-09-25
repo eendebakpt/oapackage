@@ -218,21 +218,22 @@ def setarray(self, X, verbose=0):
   iv = intVector(X.T.astype(int).flatten().tolist())
   self.setarraydata(iv, X.size)
 
-@staticmethod
-def _slice2range(slice):
+def _slice2range(self, slice, max_value):
+    if isinstance(slice, int):
+        return [slice]
     if slice.start  is None:
         start = 0
     else:
         start = slice.start
     if slice.stop is None:
-        raise NotImplementedError('slice stop not specified')
+        stop = maxvalue
     else:
         stop = slice.stop
     if slice.step is None:
         step = 1
     else:
         step = slice.step
-    return list(range(slice.start, stop, step))
+    return list(range(start, stop, step))
 
 def _ranges2subarray(self, row_range, col_range):
       al=array_link(len(row_range), len(col_range), array_link.INDEX_DEFAULT )
@@ -248,7 +249,7 @@ def __getitem__(self, index):
         raise IndexError('index out of bounds')
       return self.at(index)
   elif isinstance(index, slice):
-      indices=list(range(index.start, index.stop, index.step))
+      indices=self._slice2range(index, self.n_rows*self.n_columns)
       return np.array( [self.at(a) for a in indices])
   else:
       if len(index)==2:
@@ -262,17 +263,17 @@ def __getitem__(self, index):
             return self.at(index0, index1)	  
           elif isinstance(index0, int) and isinstance(index1, slice):
               row_range=[index0]
-              col_range=self._slice2range(index1)
+              col_range=self._slice2range(index1, self.n_columns)
               
               return self._ranges2subarray(row_range, col_range)
           elif isinstance(index0, slice) and isinstance(index1, int):
-              row_range=self._slice2range(index0)
+              row_range=self._slice2range(index0, self.n_rows)
               col_range=[index1]
               
               return self._ranges2subarray(row_range, col_range)
           elif isinstance(index0, slice) and isinstance(index1, slice):
-              row_range=self._slice2range(index0)
-              col_range=self._slice2range(index1)
+              row_range=self._slice2range(index0, self.n_rows)
+              col_range=self._slice2range(index1, self.n_columns)
               
               return self._ranges2subarray(row_range, col_range)
           else:
