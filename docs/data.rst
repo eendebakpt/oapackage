@@ -51,13 +51,13 @@ Representing arrays
 -------------------
 
 The structure containing an orthogonal array is called the
-:py:class:`~oalib.array_link` structure. It consists of a specified number of rows and
+:class:`~oalib.array_link` structure. It consists of a specified number of rows and
 columns, the data (integer valued) and an index.
         
 In the Python interface the :meth:`array_link` object can be indexed just as
 normal arrays. It is also possible to convert to a Numpy array. The
-:meth:`~oalib.array_link` object implements to Python array interface, so most
-opertations from packages such as Numpy work on the :code:`array_link`
+:class:`~oalib.array_link` object implements to Python array interface, so most
+opertations from packages such as Numpy work on the :meth:`~oalib.array_link`
 object.
 
 .. code-block:: python
@@ -83,7 +83,7 @@ The C++ class is:
 Reading and writing arrays
 --------------------------
 
-Reading and writing arrays to disk can be done with the `arrayfile\_t`
+Reading and writing arrays to disk can be done with the :meth:`oalib.arrayfile_t`
 class. For example:
 
 .. code-block:: python
@@ -91,45 +91,25 @@ class. For example:
 
    >>> import oapackage
    >>> al=oapackage.exampleArray()
-   >>> af=oapackage.arrayfile\_t('test.oa', al.n\_rows, al.n\_columns)
-   >>> af.append\_array(al)
+   >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
+   >>> af.append_array(al)
    >>> print(af)
    file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
    >>> af.closefile()
 
 The arrays can be written in text or binary format. For more details on
-the file format see Section :ref:`File formats`. The header of the
-``arrayfile_t`` class is listed below.
- 
+the file format see Section :ref:`File formats`.
+
+The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
+
 .. see https://breathe.readthedocs.io/en/latest/directives.html
 
-.. examplecode
-    arraydata_t
-    
-    .. doxygenstruct:: arraydata_t
-        :members:
-    
-    doxygenclass for arrayfile_t
-    
-    .. doxygenclass:: arrayfile::arrayfile_t
-        :members:
-        
-    yy
-    
-    .. doxygenclass:: CandidateGeneratorDouble
-        :members:
-    
-    .. doxygenstruct:: array_link
-        :members:
-    
-    
-    xxx
-    
-    .. doxygenfile::  classPareto.xml
-        
-    doxygenclass done
+.. doxygenstruct:: arrayfile::arrayfile_t
 
-    
+The header of the
+``arrayfile_t`` class is listed below.
+ 
+   
 .. code-block:: c++
 
     struct arrayfile_t
@@ -281,7 +261,7 @@ format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Arrays are stored in plain text files with extension .oa. The first line
 contains the number of columns, the number of rows and the number of
@@ -386,7 +366,7 @@ These are:
 `oacat`
     Show the contents of an array file or data file.
 
-    Usage: oacat [OPTIONS] [FILES]
+    Usage: ``oacat [OPTIONS] [FILES]``
 
 `oajoin`
     Read one or more files from disk and join all the array files into a
