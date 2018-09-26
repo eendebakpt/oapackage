@@ -356,7 +356,6 @@ typedef std::tr1::shared_ptr<symmdata> symmdataPointer;
 typedef symmdata * symmdataPointer;
 #endif
 
-//typedef std::vector<std::vector<int> > arraysymmetry;
 typedef std::vector< arraysymmetry > symmetryset;
 
 // hack: add documentation here!
