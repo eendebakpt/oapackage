@@ -40,11 +40,11 @@ The :math:`D`-efficiency, :math:`A`-efficiency and :math:`E`-efficiency
 are calculated by calculating the SVD of the second order interaction
 matrix. The efficiencies can then be calculated using the eigenvalues of
 the SVD. For the definition of the :math:`D`-, :math:`A`- and
-:math:`E`-efficiency see Definition :ref:`D-efficiency and average VIF`. For the
+:math:`E`-efficiency see Definition :ref:`DAE`. For the
 rank of a matrix the LU decomposition of the matrix is calculated using
 the Eigen package :cite:`eigenweb`.
 
-.. topic:: D-efficiency and average VIF
+.. topic:: Definition: D-efficiency and average VIF
    :name: DAE
 
    Let :math:`X` be an :math:`N\times k` :math:`2`-factor
@@ -111,9 +111,12 @@ generate MD5 sums of designs.
 The C++ functions are:
 
 .. doxygenfunction::  array_link::md5()
+    :no-link:
 .. doxygenfunction::  md5(void *, int)
+    :no-link:
 .. doxygenfunction::  md5(const std::string)
-
+    :no-link:
+    
 .. comment
     .. code-block:: c
     

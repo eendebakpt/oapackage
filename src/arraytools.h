@@ -1198,13 +1198,18 @@ public:
 class jstruct_t
 {
 public:
-    /// number of rows
+    /// number of rows in array
     int N;
+	/// number of columns in array
     int k;
+	/// J-characteristic that is calculated
     int jj;
+	/// number of column combinations possible
     int nc;
+	/// contains calculated J-values
     std::vector < int >values;
-    double A;                   // abberation
+	/// calculated abberation
+    double A;                   
 
 public:
     /// Create an object to calculate J-characteristics
@@ -1239,7 +1244,6 @@ public:
 
     // calculate aberration value
     void calculateAberration () {
-        // TODO: find reference
         jstruct_t *js = this;
         js->A = 0;
         for ( int i = 0; i < js->nc; i++ ) {
@@ -1252,13 +1256,12 @@ public:
     void showdata ();
     std::string showstr ();
 
-    /// return 1 if all vals are zero
+    /// return 1 if all J values are zero, otherwise return 0
     int allzero () {
         for ( int i = 0; i < this->nc; ++i ) {
             if ( this->values[i] != 0 ) {
                 return 0;
             }
-
         }
         return 1;
     }
@@ -2246,12 +2249,18 @@ write_array_latex ( std::ostream & ss, const atype * array, const int nrows,
 struct arraywriter_t {
 public:
 
-    // since depth_extend is a depth first approach we need to store arrays with a different number of columns
+    /** Pointers to different data files.
+	 * 
+	 * Since depth_extend is a depth first approach we need to store arrays with a different number of columns
+	 */
     std::vector < arrayfile_t * >afiles;
 
-    bool writearrays; /// only write arrays if this variable is true
-    int nwritten;     /// number of arrays written to disk
-    int verbose; /// verbosity level
+	/// only write arrays if this variable is true
+    bool writearrays; 
+	/// number of arrays written to disk
+    int nwritten;
+	/// verbosity level
+    int verbose; 
 
 public:
     arraywriter_t () {
@@ -2264,6 +2273,7 @@ public:
         closeafiles ();
     }
 
+	/// flush all output files
     void flush () {
         for ( size_t i = 0; i < afiles.size (); i++ ) {
             arrayfile_t *af = afiles[i];
@@ -2296,7 +2306,7 @@ public:
         }
     }
 
-    // write a list of arrays to disk
+    /// write a list of arrays to disk
     void writeArray ( const arraylist_t & lst ) {
         for ( size_t j = 0; j < lst.size (); j++ ) {
             const array_link & A = lst[j];
@@ -2304,7 +2314,7 @@ public:
         }
     }
 
-    // initialize the result files
+    /// initialize the result files
     void initArrayFiles ( const arraydata_t & ad, int kstart,
                           const std::string prefix, arrayfilemode_t mode =
                               ABINARY_DIFF ) {

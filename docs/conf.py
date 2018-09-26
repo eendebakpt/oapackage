@@ -43,7 +43,7 @@ if rtd:
 
     print('##############################')
     print('current directory: %s' % os.getcwd())
-    print(os.listdir())
+    print(sorted(os.listdir()))
     print('##############################')   
     sys.path.append('.')
     print('##############################')
@@ -219,6 +219,8 @@ def run_apidoc(_):
         'get_artifacts.py',
         'untitled*.py', 'setup.py', 'doxy2swig.py',
     ]
+    ignore_paths = [os.path.join('..', file) for file in ignore_paths]
+    
 
     argv = [
         "-f",
@@ -226,9 +228,12 @@ def run_apidoc(_):
         #        "-e",
         "-M",
         "-o", ".",
-        "../oapackage"
+        ".."
     ] + ignore_paths
 
+    if rtd:
+        print('sphinx-apidoc ' + ' '.join(argv))
+    
     try:
         # Sphinx 1.7+
         from sphinx.ext import apidoc

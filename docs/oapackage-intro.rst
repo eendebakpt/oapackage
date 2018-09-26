@@ -93,12 +93,12 @@ To compile the Python interface use
   $ python setup.py build 
   $ python setup.py install --user
 
-The Python interface requires Numpy :cite:`NumPy`,
+The Python interface requires Numpy :cite:`NumPy2012`,
 Matplotlib :cite:`Matplotlib` and Swig. The code has been
 tested with Python 2.7, 3.5 and 3.6.
 
-The R interface to the optimal design functionality of the package is available from CRAN
-http://cran.r-project.org/web/packages/oapackage/index.html.
+The R interface to the optimal design functionality of the package is available from
+`CRAN <http://cran.r-project.org/web/packages/oapackage/index.html>`_.
 For the Matlab and Octave interface to the optimal design functionality see the 
 file `README.Matlab.md <https://github.com/eendebakpt/oapackage/blob/master/README.Matlab.md>`_.
 

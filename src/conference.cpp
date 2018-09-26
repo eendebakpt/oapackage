@@ -2078,6 +2078,8 @@ int selectZmax ( int maxzpos, const conference_t::conference_type &ctype, const 
      return maxzpos;
 }
 
+std::vector<cperm> generateDoubleConferenceExtensionsInflate(const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart = 2);
+
 conference_extend_t extend_double_conference_matrix ( const array_link &al, const conference_t & ct,  CandidateGeneratorDouble &cgenerator, int extcol, int verbose, int maxzpos )
 {
      conference_extend_t ce;
@@ -2090,17 +2092,11 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
      if ( verbose )
           printf ( "--- extend_double_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype );
 
-     //ct.j1zero
-
      int filterip=1;
      int filtersymm=1;
      std::vector<cperm> cc;
 
-     //cgenerator.generateDoubleConferenceExtensions(al, ct, verbose, filterip, 1);
-
      if ( k>=3 && filtersymm && filterip && ct.j1zero==1 && 1 ) {
-          //cgenerator.last_valid=0;
-          // FIXME: for large symmetry blocks start with k higher!
           cc = cgenerator.generateCandidates ( al );
      } else {
           if ( k>3 && ct.j1zero==1 ) {
@@ -2114,16 +2110,13 @@ conference_extend_t extend_double_conference_matrix ( const array_link &al, cons
      }
 
      if ( ct.j3zero ) {
-          //printfd("filter on j3 values\n");
           cc = filterJ3 ( cc, al, verbose );
      }
 
      ce.extensions = cc;
-
      return ce;
 }
 
-//conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose=1, int maxzpos=-1 );
 conference_extend_t extend_conference_matrix ( const array_link &al, const conference_t &ct, int extcol, int verbose, int maxzpos )
 {
      conference_extend_t ce;
@@ -2207,9 +2200,6 @@ conference_extend_t extend_conference_matrix_generator ( const array_link &al, c
      return ce;
 }
 
-// OPTIMIZE: implement a local_symmetry check
-// OPTIMIZE: implement partial j2 checking for cached conference matrices
-
 /// sort rows in an array
 array_link sortrows ( const array_link &al )
 {
@@ -2286,8 +2276,6 @@ conf_candidates_t generateCandidateExtensions ( const conference_t ctype, int ve
                     printfd ( "not implemented!\n" );
                     break;
                }
-
-
           }
 
           if ( ( long ) vectorsizeof ( ee ) > ( long ( 1 ) *1024*1024*1024 ) / ( long ) ctype.N ) {

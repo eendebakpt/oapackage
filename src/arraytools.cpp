@@ -3448,9 +3448,8 @@ void jstruct_t::init ( int N_, int k_, int jj_ )
           jj=0;
      }
 
-     this->nc = ncombs ( k_, jj_ );
+     this->nc = ncombs<long> ( k_, jj_ );
      values = std::vector<int> ( nc );
-//  myprintf("jstruct_t(N,k,jj): vals %d\n", this->vals);
      this->A=-1;
 }
 

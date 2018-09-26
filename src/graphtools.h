@@ -58,6 +58,7 @@ array_link transformGraph ( const array_link &G, const std::vector<int> tr, int 
 /// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
 array_transformation_t reduceOAnauty(const array_link &al, int verbose=0);
 
+/// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
 array_transformation_t reduceOAnauty(const array_link &al, int verbose, const arraydata_t &ad);
 
 /**  Convert orthogonal array to graph representation
