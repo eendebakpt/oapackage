@@ -281,7 +281,7 @@ format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Arrays are stored in plain text files with extension .oa. The first line
 contains the number of columns, the number of rows and the number of
