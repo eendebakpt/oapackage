@@ -98,25 +98,12 @@ VectorFloat;
 typedef double
 eigenFloat;
 
-// use long double
-//typedef Eigen::Matrix<long double, Eigen::Dynamic, Eigen::Dynamic> MatrixFloat; typedef Eigen::Array<long double, Eigen::Dynamic, Eigen::Dynamic> ArrayFloat; typedef Eigen::Matrix<long double, Eigen::Dynamic, 1> VectorFloat; typedef long double eigenFloat;
-
-
-
-
 /// show information about Eigen matrix
-//void eigenInfo ( const Eigen::MatrixXd m, const char *str="eigen", int verbose=1 );
-void
-eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
+void eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
 
 
 // helper function for Python interface
-void
-eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
-
-
-Eigen::VectorXd dummy ();
-Eigen::MatrixXd dummy2 ();
+void eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
 
 #ifdef USEZLIB
 #include <zlib.h>
@@ -695,13 +682,13 @@ public:
     array_link deleteColumn ( int index ) const;
 
     /// return array with first n rows
-    array_link selectFirstRows ( int n ) const;
+    array_link selectFirstRows ( int nrows ) const;
 
     /// return array with first n columns selected
-    array_link selectFirstColumns ( int n ) const;
+    array_link selectFirstColumns ( int ncolumns ) const;
 
     /// return array with last n columns selected
-    array_link selectLastColumns ( int n ) const;
+    array_link selectLastColumns ( int ncolumns) const;
 
     /// select columns from an array
     array_link selectColumns ( const std::vector < int >c ) const;
@@ -789,18 +776,17 @@ public:
     /** This function calculates Helmert contrasts for the factors of an input design.
      * Implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
      */
-    MatrixFloat getModelMatrix ( int order, int intercept = 1 ) const;
+    MatrixFloat getModelMatrix ( int order, int intercept = 1, int verbose = 0 ) const;
 
-    /* Interal function (public, but not in documentation */
-
-    array_link & operator= ( const array_link & rhs );	// assignment
-    array_link & deepcopy ( const array_link & rhs );	// assignment
-    array_link & shallowcopy ( const array_link & rhs );	// assignment
+    array_link & operator= ( const array_link & rhs );	
+    array_link & deepcopy ( const array_link & rhs );	
+    array_link & shallowcopy ( const array_link & rhs );	
     int operator== ( const array_link & rhs ) const;
     int operator!= ( const array_link & rhs ) const;
     int operator< ( const array_link & rhs ) const;
     int operator> ( const array_link & rhs ) const;
 
+	/// return true of two array have the same dimensions
     int equalsize ( const array_link & rhs ) const {
         return ( this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns );
     }
@@ -836,8 +822,6 @@ public:
             this->array[i] += val;
         }
         return *this;
-
-
     }
     array_link operator -= ( array_t val ) {
         int NN = this->n_rows * this->n_columns;
@@ -1023,7 +1007,6 @@ public:
                                               rhs.array + c2 * n_rows + n_rows,
                                               array + c1 * n_rows,
                                               array + c1 * n_rows + n_rows );
-
     }
 
     std::string showarrayS () const;
@@ -1041,22 +1024,22 @@ typedef std::vector < signed char > cperm;
 typedef std::vector <cperm > cperm_list;
 
 
-// concatenate 2 arrays in vertical direction
+/// concatenate 2 arrays in vertical direction
 array_link hstack ( const array_link & al, const array_link & b );
 
-// concatenate 2 arrays in vertical direction
+/// concatenate 2 arrays in vertical direction
 array_link hstack ( const array_link & al, const cperm & b );
 
-// concatenate 2 arrays in horizontal direction
+/// concatenate 2 arrays in horizontal direction
 array_link hstack ( const array_link & al, const array_link & b );
-// concatenate the last column of array B to array A
+/// concatenate the last column of array B to array A
 array_link hstacklastcol ( const array_link & A, const array_link & B );
 
 
+/// concatenate two permutations
 inline cperm vstack ( const cperm & A, const cperm & B )
 {
-    cperm
-    c ( A.size () + B.size () );
+    cperm c ( A.size () + B.size () );
 
     std::copy ( A.begin (), A.end (), c.begin () );
     std::copy ( B.begin (), B.end (), c.begin () + A.size () );
@@ -1077,11 +1060,9 @@ arraydata_t arraylink2arraydata ( const array_link & al, int extracols = 0, int 
 
 /// container with arrays
 typedef std::deque <array_link > arraylist_t;
-/* // //typedef std::vector<array_link> arraylist_t; */
 
 /// add a constant value to all arrays in a list
-inline arraylist_t
-addConstant ( const arraylist_t & lst, int v )
+inline arraylist_t addConstant ( const arraylist_t & lst, int v )
 {
     arraylist_t out ( lst.size () );
 
@@ -1166,7 +1147,6 @@ public:
             }
         }
         return 1;
-
     }
 };
 
@@ -1218,13 +1198,18 @@ public:
 class jstruct_t
 {
 public:
-    /// number of rows
+    /// number of rows in array
     int N;
+	/// number of columns in array
     int k;
+	/// J-characteristic that is calculated
     int jj;
+	/// number of column combinations possible
     int nc;
+	/// contains calculated J-values
     std::vector < int >values;
-    double A;                   // abberation
+	/// calculated abberation
+    double A;                   
 
 public:
     /// Create an object to calculate J-characteristics
@@ -1259,7 +1244,6 @@ public:
 
     // calculate aberration value
     void calculateAberration () {
-        // TODO: find reference
         jstruct_t *js = this;
         js->A = 0;
         for ( int i = 0; i < js->nc; i++ ) {
@@ -1272,16 +1256,14 @@ public:
     void showdata ();
     std::string showstr ();
 
-    /// return 1 if all vals are zero
+    /// return 1 if all J values are zero, otherwise return 0
     int allzero () {
         for ( int i = 0; i < this->nc; ++i ) {
             if ( this->values[i] != 0 ) {
                 return 0;
             }
-
         }
         return 1;
-
     }
 };
 
@@ -1298,7 +1280,6 @@ public:
         calcJvalues ( N, jj );
         calc ( al );
     }
-    //~jstruct_t ();
 private:
     void calcJvalues ( int N, int jj ) {
         assert ( jj==4 );
@@ -1464,8 +1445,6 @@ inline int fastJupdateValue ( rowindex_t N, carray_t * tmpval )
 /// helper function to calculate J-values
 inline void fastJupdate ( const array_t * array, rowindex_t N, const int J, const colindex_t * pp, array_t * tmp )
 {
-    //int jval=0;
-
     for ( int i = 0; i < J; i++ ) {
         carray_t *cp = array + N * pp[i];
         for ( rowindex_t r = 0; r < N; r++ ) {
@@ -1642,8 +1621,10 @@ public:
 	/// sign flips for the rows
     std::vector < int > rswitch;	
 
+	/// number of rows
     int nrows;
-    int ncols;
+	/// number of columns
+	int ncols;
 
 public:
     conference_transformation_t ();	/// default constructor
@@ -1693,7 +1674,6 @@ public:
 
         const conference_transformation_t & lhs = *this;
 
-
         // perform the rows permutations       
         composition_perm ( rhs.rperm, lhs.rperm, c.rperm );
         
@@ -1717,8 +1697,6 @@ public:
         return c;
     }
 
-    //void show ( std::ostream &out ) const;
-
     void setrowperm ( std::vector < int >rp ) {
         rperm = rp;
     };
@@ -1731,12 +1709,13 @@ private:
 };
 
 
+/* functions for working with array files*/
 
-/** functions for working with array files*/
+
+/// print a list of arrays to stdout
+void showArrayList ( const arraylist_t & lst );
 
 #ifdef FULLPACKAGE
-
-void showArrayList ( const arraylist_t & lst );
 
 namespace arrayfile
 {
@@ -1769,6 +1748,9 @@ public:
     afilerw_t rwmode;
 
     // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
+
+
+	/// number of arrays in the file
     int narrays;
 
     int narraycounter;
@@ -1875,6 +1857,7 @@ public:
         }
     }
 
+	/// return current position in file
     size_t pos () const {
         return narraycounter;
     }
@@ -2140,7 +2123,6 @@ template < class Container, class IntType > void
 keepElements ( Container & al, std::vector < IntType > &idx )
 {
     for ( int jj = idx.size () - 1; jj >= 0; jj-- ) {
-        //myprintf("keepElements: %d\n", jj);
         if ( !idx[jj] ) {
             al.erase ( al.begin () + jj );
         }
@@ -2267,12 +2249,18 @@ write_array_latex ( std::ostream & ss, const atype * array, const int nrows,
 struct arraywriter_t {
 public:
 
-    // since depth_extend is a depth first approach we need to store arrays with a different number of columns
+    /** Pointers to different data files.
+	 * 
+	 * Since depth_extend is a depth first approach we need to store arrays with a different number of columns
+	 */
     std::vector < arrayfile_t * >afiles;
 
-    bool writearrays; /// only write arrays if this variable is true
-    int nwritten;     /// number of arrays written to disk
-    int verbose; /// verbosity level
+	/// only write arrays if this variable is true
+    bool writearrays; 
+	/// number of arrays written to disk
+    int nwritten;
+	/// verbosity level
+    int verbose; 
 
 public:
     arraywriter_t () {
@@ -2285,6 +2273,7 @@ public:
         closeafiles ();
     }
 
+	/// flush all output files
     void flush () {
         for ( size_t i = 0; i < afiles.size (); i++ ) {
             arrayfile_t *af = afiles[i];
@@ -2317,7 +2306,7 @@ public:
         }
     }
 
-    // write a list of arrays to disk
+    /// write a list of arrays to disk
     void writeArray ( const arraylist_t & lst ) {
         for ( size_t j = 0; j < lst.size (); j++ ) {
             const array_link & A = lst[j];
@@ -2325,7 +2314,7 @@ public:
         }
     }
 
-    // initialize the result files
+    /// initialize the result files
     void initArrayFiles ( const arraydata_t & ad, int kstart,
                           const std::string prefix, arrayfilemode_t mode =
                               ABINARY_DIFF ) {

@@ -14,9 +14,6 @@
 #include "tools.h"
 #include "lmc.h"
 
-#define stringify( name ) # name
-
-
 #ifdef SWIG
 %ignore extendpos;
 %ignore progress_column;

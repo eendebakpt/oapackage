@@ -206,7 +206,7 @@ def getarray(self, verbose=0, *args):
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))
   x=self.getarraydata( int(self.n_rows*self.n_columns) )
   return x.reshape((self.n_columns, self.n_rows)).transpose()
-  #$action
+
 def setarray(self, X, verbose=0):
   """ Update the array link object with a Numpy array
 
@@ -216,26 +216,71 @@ def setarray(self, X, verbose=0):
   self.init(X.shape[0], X.shape[1])
   self.index=-1
   iv = intVector(X.T.astype(int).flatten().tolist())
-  #iv =_oalib.intVector(X.flatten().tolist())
   self.setarraydata(iv, X.size)
-def __getitem__(self,index):
+
+def _slice2range(self, slice, max_value):
+    if isinstance(slice, int):
+        return [slice]
+    if slice.start  is None:
+        start = 0
+    else:
+        start = slice.start
+    if slice.stop is None:
+        stop = maxvalue
+    else:
+        stop = slice.stop
+    if slice.step is None:
+        step = 1
+    else:
+        step = slice.step
+    return list(range(start, stop, step))
+
+def _ranges2subarray(self, row_range, col_range):
+      al=array_link(len(row_range), len(col_range), array_link.INDEX_DEFAULT )
+      for ii, row in enumerate(row_range):
+          for jj, col in enumerate(col_range):
+              al[ii, jj]=self.at(row, col)
+      return al
+
+def __getitem__(self, index):
   """ Return element of array """
   if type(index)==int:
       if index<0 or index > self.n_rows*self.n_columns:
         raise IndexError('index out of bounds')
       return self.at(index)
+  elif isinstance(index, slice):
+      indices=self._slice2range(index, self.n_rows*self.n_columns)
+      return np.array( [self.at(a) for a in indices])
   else:
       if len(index)==2:
-        # FIXME: error checking
-        a=index[0]
-        b=index[1]
-        if a<0 or a >= self.n_rows:
-          raise IndexError('index out of bounds')
-        if b<0 or b >= self.n_columns:
-          raise IndexError('index out of bounds')
-        return self.at(a, b)	  
+          index0=index[0]
+          index1=index[1]
+          if isinstance(index0, int) and isinstance(index1, int):
+            if index0<0 or index0 >= self.n_rows:
+              raise IndexError('index out of bounds')
+            if index1<0 or index1 >= self.n_columns:
+              raise IndexError('index out of bounds')
+            return self.at(index0, index1)	  
+          elif isinstance(index0, int) and isinstance(index1, slice):
+              row_range=[index0]
+              col_range=self._slice2range(index1, self.n_columns)
+              
+              return self._ranges2subarray(row_range, col_range)
+          elif isinstance(index0, slice) and isinstance(index1, int):
+              row_range=self._slice2range(index0, self.n_rows)
+              col_range=[index1]
+              
+              return self._ranges2subarray(row_range, col_range)
+          elif isinstance(index0, slice) and isinstance(index1, slice):
+              row_range=self._slice2range(index0, self.n_rows)
+              col_range=self._slice2range(index1, self.n_columns)
+              
+              return self._ranges2subarray(row_range, col_range)
+          else:
+              raise NotImplementedError('slice indexing not supported')
       else:
         raise IndexError('invalid index')
+
 def __setitem__(self,index, value):
   if type(index)==int:
       if index<0 or index > self.n_rows*self.n_columns:
@@ -297,6 +342,21 @@ namespace std {
    
 };
 
+%include "exception.i"
+%exception array_link::selectFirstColumns {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
+%exception mycheck_handler {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
 
 // prevent memory leaks
 %newobject readarrayfile;

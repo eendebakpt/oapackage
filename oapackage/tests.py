@@ -1,9 +1,16 @@
 """ Orthogonal Array package test functions
 """
 
+import sys
+import os
 import numpy as np
+import numpy
 import tempfile
 import unittest
+if sys.version_info >= (3, 4):
+    import unittest.mock as mock
+else:
+    import mock
 
 import oalib
 import oapackage
@@ -24,32 +31,32 @@ def autodoctest():
     return
 
 
-def test_reduceGraphNauty():
-    G = np.zeros( (5,5), dtype=int)
-    G[1,0]=G[0,1]=1
-    v = oapackage.reduceGraphNauty(G)
-    assert(len(v)==G.shape[0])
+class TestMisc(unittest.TestCase):
 
-def test_exampleArray():
-    # test a selection of the example arrays
-    al = oapackage.exampleArray(5)
-    assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
-    al = oapackage.exampleArray(20)
-    assert(np.array(al).shape == (24, 3))
-    al = oapackage.exampleArray(40)
-    assert(np.array(al).shape == (14, 5))
+    def test_reduceGraphNauty(self):
+        G = np.zeros((5, 5), dtype=int)
+        G[1, 0] = G[0, 1] = 1
+        v = oapackage.reduceGraphNauty(G)
+        assert(len(v) == G.shape[0])
 
+    def test_exampleArray(self):
+        # test a selection of the example arrays
+        al = oapackage.exampleArray(5)
+        assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
+        al = oapackage.exampleArray(20)
+        assert(np.array(al).shape == (24, 3))
+        al = oapackage.exampleArray(40)
+        assert(np.array(al).shape == (14, 5))
 
-def test_scanf():
-    r = oapackage.scanf.sscanf('1', '%d')
-    assert(r[0] == 1)
+    def test_scanf(self):
+        r = oapackage.scanf.sscanf('1', '%d')
+        assert(r[0] == 1)
 
-
-def test_oa2graph():
-    al = oapackage.exampleArray(2, 0)
-    adata = oapackage.arraylink2arraydata(al)
-    g = oapackage.graphtools.oa2graph(al, adata)
-    assert(g[0].shape == (34, 34))
+    def test_oa2graph(self):
+        al = oapackage.exampleArray(2, 0)
+        adata = oapackage.arraylink2arraydata(al)
+        g = oapackage.graphtools.oa2graph(al, adata)
+        assert(g[0].shape == (34, 34))
 
 
 def test_numpy_interface(verbose=0):
@@ -76,7 +83,7 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    if 0:
+    try:
         # not possible right now...
         if verbose:
             print('direct float')
@@ -84,6 +91,8 @@ def test_numpy_interface(verbose=0):
         al = oapackage.array_link(A)
         if verbose:
             al.showarray()
+    except:
+        pass
 
 
 def test_nauty(verbose=0):
@@ -124,10 +133,10 @@ def miscunittest(verbose=1):
         print('unittest: calculate efficiencies')
     Deff = al.Defficiency()
     aa = oalib.Aefficiencies(al)
-    assert(aa[0]==1.0)
-    assert(aa[1]==1.0)
-    assert(aa[2]==1.0)
-    
+    assert(aa[0] == 1.0)
+    assert(aa[1] == 1.0)
+    assert(aa[2] == 1.0)
+
     if verbose >= 2:
         print('## oapackage test: example array %d: Deff %.3f' % (ii, Deff))
 
@@ -171,14 +180,16 @@ class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
 
     def test_misc_file_operations(self):
-        a = tempfile.mktemp(suffix='.oa')
+        array_filename = tempfile.mktemp(suffix='.oa')
         lst = [oapackage.exampleArray(4, 1)]
-        oapackage.writearrayfile(a, lst)
-        assert(oapackage.oahelper.oaIsBinary(a) is False)
-        oapackage.writearrayfile(a, oapackage.exampleArray(4, 1), oapackage.ABINARY)
-        assert(oapackage.oahelper.oaIsBinary(a))
+        oapackage.writearrayfile(array_filename, lst)
+        assert(oapackage.oahelper.oaIsBinary(array_filename) is False)
+        oapackage.writearrayfile(array_filename, oapackage.exampleArray(4, 1), oapackage.ABINARY)
+        assert(oapackage.oahelper.oaIsBinary(array_filename))
 
-        oapackage.oahelper.oainfo(a)
+        oapackage.oahelper.oainfo(array_filename)
+
+        _ = oapackage.oahelper.compressOAfile(array_filename)
 
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
@@ -186,6 +197,10 @@ class TestOAfiles(unittest.TestCase):
     def test_checkArrayFile(self):
         a = tempfile.mktemp(suffix='.oa')
         self.assertFalse(oapackage.oahelper.checkArrayFile(a))
+        self.assertTrue(oapackage.oahelper.checkArrayFile(a, -1))
+
+    def test_finddirectories(self):
+        _ = oapackage.oahelper.finddirectories(os.getcwd())
 
 
 class TestOAhelper(unittest.TestCase):
@@ -194,11 +209,44 @@ class TestOAhelper(unittest.TestCase):
     # def test_tilefigs(self):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
+    def setUp(self):
+        self.test_array = oapackage.exampleArray(1, 1)
+
+    def test_array2latex(self):
+
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
+        self.assertEqual(latex_str[0:15], r'\begin{tabular}')
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='psmallmatrix')
+        self.assertEqual(latex_str[0:15], r'\begin{psmallma')
+        latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='pmatrix')
+        self.assertEqual(latex_str[0:15], r'\begin{pmatrix}')
+
+    def test_gwlp2str(self):
+        self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
+        self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
+
     def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
         idx = oapackage.oahelper.argsort([2, 2, 1])
         assert(idx == [2, 0, 1])
+
+    def test_plot2Dline(self):
+        with mock.patch('matplotlib.pyplot.plot') as MockPlt:
+            _ = oapackage.oahelper.plot2Dline([1, 0, 0])
+            self.assertTrue(MockPlt.called)
+
+    def test_deprecated(self):
+        def func():
+            return 'hi'
+        deprecated_function = oapackage.oahelper.deprecated(func)
+        with self.assertWarns(Warning):
+            _ = deprecated_function()
+
+    def test_formatC(self):
+        c_code = oapackage.oahelper.formatC(self.test_array)
+        self.assertEqual(
+            c_code, '\tarray_link al ( 16,5, 0 );\n\tint tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};')
 
     def test_runExtend(self):
         N = 24
@@ -214,6 +262,10 @@ class TestOAhelper(unittest.TestCase):
         l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
         l = oapackage.oahelper.joinArrayLists([l1, l2])
         assert(len(l) == len(l1) + len(l2))
+
+    def test_checkFiles(self):
+        self.assertTrue(oapackage.oahelper.checkFiles([], -1))
+        self.assertTrue(oapackage.oahelper.checkFiles(['nosuchfile'], -1))
 
     def test_checkFilesOA(self):
         r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
@@ -235,11 +287,12 @@ class TestOAhelper(unittest.TestCase):
         values = [1, 2, 3]
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
         self.assertEqual(p, values)
-        
+
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
         self.assertAlmostEqual(v[0], 0.3747931073686535)
+
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
 
@@ -271,9 +324,9 @@ class TestDoptimize(unittest.TestCase):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
                                                           maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
-        self.assertEqual( len(scores), n)
-        self.assertEqual( len(dds), n)
-        self.assertEqual( len(sols), n)
+        self.assertEqual(len(scores), n)
+        self.assertEqual(len(dds), n)
+        self.assertEqual(len(sols), n)
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
                                                           maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
@@ -302,7 +355,7 @@ class TestDoptimize(unittest.TestCase):
         dds = np.array([A.Defficiencies() for A in allarrays])
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
-                                           fig=None, optimfunc=[1, 0, 0], nofig=True)
+                                              fig=None, optimfunc=[1, 0, 0], nofig=True)
 
     def test_filterPareto(self):
         dds = self.dds2
@@ -325,6 +378,47 @@ class TestCppLibrary(unittest.TestCase):
 
     def test_miscunittest(self):
         miscunittest()
+
+    def test_selectFirstColumns(self):
+        al = oapackage.exampleArray(41, 1)
+        al = al.selectFirstColumns(3)
+        assert(al.n_columns == 3)
+
+        al = oapackage.exampleArray(1000, 1)
+
+        with self.assertRaises(RuntimeError):
+            al = al.selectFirstColumns(1)
+
+    def test_mycheck_handler(self):
+        oapackage.mycheck_handler('a', 'b', 1, 1, 'bla')
+        with self.assertRaises(RuntimeError):
+            oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
+
+    def test_projection_efficiencies(self):
+        al = oapackage.exampleArray(11, 1)
+        d = oapackage.projDeff(al, 3, 1)
+        D = al.selectFirstColumns(3).Defficiency()
+        assert(D == d[0])
+        numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
+
+        seq = oapackage.PECsequence(al)
+        numpy.testing.assert_equal(seq, (1.0,) * len(seq))
+
+    def test_arraylink_slicing(self):
+        numpy_array=np.arange(0, 6*10).reshape( (6,10))
+        
+        al=oapackage.makearraylink(numpy_array)
+        assert(al[0]==numpy_array.flatten()[0])
+        assert(al[0,1]==numpy_array[0,1])
+        assert(al[4,2]==numpy_array[4,2])   
+        np.testing.assert_equal(al[0:4,1:5], np.array(al)[0:4, 1:5] )
+        np.testing.assert_equal(al[0:1,0:10:2], np.array(al)[0:1,0:10:2] )
+        np.testing.assert_equal(al[3,3::], np.array(al)[3:4,3::] )
+        np.testing.assert_equal(al[2,:8:2], np.array(al)[2:3,:8:2] )
+        np.testing.assert_equal(al[2:3,:8:2], np.array(al)[2:3,:8:2] )
+
+        with self.assertRaises(IndexError):
+            al[-1,1]
 
 
 if __name__ == '__main__':

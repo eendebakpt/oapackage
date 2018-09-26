@@ -54,7 +54,7 @@ def deprecated(func):
             lineno = -1
         warnings.warn_explicit(
             "Call to deprecated function {}.".format(func.__name__),
-            category=DeprecationWarning,
+            category=UserWarning,
             filename=filename,
             lineno=lineno,
         )
@@ -100,7 +100,7 @@ try:
 except BaseException:
     def monitorSizes(verbose=0):
         return [[0, 0, 1280, 720]]
-    
+
 
 def test_monitorSizes():
     monitorSizes()
@@ -379,7 +379,6 @@ def choose(n, k):
     for t in range(min(k, n - k)):
         ntok = ntok * (n - t) // (t + 1)
     return ntok
-#    return fac(n)/(fac(n-k)*fac(k))
 
 
 def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
@@ -1178,15 +1177,11 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.resize(w, h)
     elif be == 'module://IPython.kernel.zmq.pylab.backend_inline':
         pass
-        # mngr.canvas.manager.window.setGeometry(x,y,w,h)
-        #mngr.canvas.manager.window.SetPosition((x, y))
-        #mngr.canvas.manager.window.resize(w, h)
     else:
         # assume Qt canvas
         mngr.canvas.manager.window.move(x, y)
         mngr.canvas.manager.window.resize(w, h)
         mngr.canvas.manager.window.setGeometry(x, y, w, h)
-        # mngr.window.setGeometry(x,y,w,h)
 
 
 def makearraylink(al):
@@ -1235,7 +1230,7 @@ def create_pareto_element(values, pareto=None):
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
-        vector_pareto = oalib.vector_mvalue_t_double() 
+        vector_pareto = oalib.vector_mvalue_t_double()
         for v in values:
             if isinstance(v, (int, float)):
                 # convert to list type

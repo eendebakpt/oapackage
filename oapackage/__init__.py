@@ -1,49 +1,24 @@
 """ Orthogonal Array package
 
-The Orthogonal Array package is a pacakge to generate and analyse orthogonal
+The Orthogonal Array package is a package to generate and analyse orthogonal
 arrays, optimal designs and conference matrices. For more information see
 
 http://github.com/eendebakpt/oapackage
 
 """
 
-import os
-_rtd = os.environ.get('READTHEDOCS', False)
+import oalib
+import oapackage.Doptim
+from oalib import *
+from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 
-if _rtd and 0:
-    if 0:
-        # fix for RTD
-        from unittest.mock import MagicMock
+oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
+oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
+__version__ = oapackage.oalib.version()
 
-        class Mock(MagicMock):
-            @classmethod
-            def __getattr__(cls, name):
-                return MagicMock()
-
-        oalib = Mock()
-        __version__ = 'RTD'
-
-    import oapackage.Doptim
-
-    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
-
-    from . oahelper import *
-    from . Doptim import *
-    from . import scanf
-
-else:
-    import oalib
-    import oapackage.Doptim
-    from oalib import *
-    from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
-
-    oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
-    oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
-    __version__ = oapackage.oalib.version()
-
-    from . oahelper import *
-    from . Doptim import *
-    from . import scanf
+from . oahelper import *
+from . Doptim import *
+from . import scanf
 
 
 __description__ = "Orthogonal Array package"

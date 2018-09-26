@@ -356,10 +356,8 @@ typedef std::tr1::shared_ptr<symmdata> symmdataPointer;
 typedef symmdata * symmdataPointer;
 #endif
 
-//typedef std::vector<std::vector<int> > arraysymmetry;
 typedef std::vector< arraysymmetry > symmetryset;
 
-// hack: add documentation here!
 enum INIT_STATE {INIT_STATE_INVALID, COPY, INIT, SETROOT};
 
 /// helper function
@@ -682,33 +680,25 @@ public:
     }
     void setColperm(const larray<colindex_t> &perm )
     {
-        // todo: make check on size
         std::copy(perm.d, perm.d+perm.n, this->colperm);
     }
 
     void setColperm(const std::vector<colindex_t> &perm )
     {
-        // todo: make check on size
         std::copy(perm.begin(), perm.end(), this->colperm);
     }
 
     /// initialize the rowsort structure from an arraysymmetry object
     void initsymmetry(const arraysymmetry &arraysymm, const symmdata &sd, int ncols)
     {
-
         const array_t *w = sd.rowvalue.array+(ncols-1)*N;
         for(int i=0; i<N; i++) {
             rowsort[i].r=arraysymm.rowperm->at(i);
-            //rowsort[i].val=sd.rowvalue.at(i, ncols-1);
             rowsort[i].val=w[i];
-
-            // TODO: where to set the level permutations? these are needed because we store them finally in the array_transformation_t!
         }
-
     }
 
-
-    /// set lightweight row permutation
+    /// get lightweight row permutation
     void getRowperm(rowpermtypelight &rp) const
     {
         rp.resize(this->N);
@@ -731,7 +721,6 @@ public:
             for ( rowindex_t x=0; x<this->N; x++ )
                 rperm[x] = this->rowsortl[x];
         }
-        // printfd("getRowperm: after "); print_perm(rperm, this->N);
     }
 
     /// return lightweight row permutation
@@ -741,7 +730,6 @@ public:
         this->getRowperm(rp);
         return rp;
     }
-
 
     /// return column permutation
     colpermtypelight getColperm() const
@@ -754,7 +742,6 @@ public:
     {
         cp.resize(this->col+1);
         std::copy(this->colperm, this->colperm+this->col+1, cp.d);
-
     }
 
     /// allocate lightweight rowsort structure
@@ -772,7 +759,6 @@ public:
             //delete [] this->rowsortl;
             this->rowsortl=0;
         }
-
     }
     void initrowsortl()
     {
