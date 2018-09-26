@@ -77,9 +77,9 @@ The C++ interface to delete-one-factor projection form is:
 Reduction using graph isomorphisms
 ----------------------------------
 
-To reduce a general graph to Nauty canonical form one can use :py:meth:`~oapackage.oalib.reduceGraphNauty`. For orthogonal arrays we can
+To reduce a general graph to Nauty canonical form one can use :py:meth:`~oalib.reduceGraphNauty`. For orthogonal arrays we can
 encode the array structure as a graph. The reduction can then be done
-with :py:meth:`~oapackage.oalib.reduceOAnauty`.
+with :py:meth:`~oalib.reduceOAnauty`.
 
 
 .. code-block:: python
