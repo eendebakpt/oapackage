@@ -386,7 +386,7 @@ These are:
 `oacat`
     Show the contents of an array file or data file.
 
-    Usage: oacat [OPTIONS] [FILES]
+    Usage: ``oacat [OPTIONS] [FILES]``
 
 `oajoin`
     Read one or more files from disk and join all the array files into a
