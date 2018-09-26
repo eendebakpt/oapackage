@@ -1198,13 +1198,18 @@ public:
 class jstruct_t
 {
 public:
-    /// number of rows
+    /// number of rows in array
     int N;
+	/// number of columns in array
     int k;
+	/// J-characteristic that is calculated
     int jj;
+	/// number of column combinations possible
     int nc;
+	/// contains calculated J-values
     std::vector < int >values;
-    double A;                   // abberation
+	/// calculated abberation
+    double A;                   
 
 public:
     /// Create an object to calculate J-characteristics
@@ -1239,7 +1244,6 @@ public:
 
     // calculate aberration value
     void calculateAberration () {
-        // TODO: find reference
         jstruct_t *js = this;
         js->A = 0;
         for ( int i = 0; i < js->nc; i++ ) {
@@ -1252,13 +1256,12 @@ public:
     void showdata ();
     std::string showstr ();
 
-    /// return 1 if all vals are zero
+    /// return 1 if all J values are zero, otherwise return 0
     int allzero () {
         for ( int i = 0; i < this->nc; ++i ) {
             if ( this->values[i] != 0 ) {
                 return 0;
             }
-
         }
         return 1;
     }
