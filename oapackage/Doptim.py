@@ -268,7 +268,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 #%%
 
 
-#def _optimDeffhelper(classdata):
+# def _optimDeffhelper(classdata):
 #    """ Helper function that is suitable for the multi-processing framework """
 #
 #    N = classdata[0]
@@ -454,7 +454,7 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         Number of results to return. None means return all results
     sortfull : boolean
         If True, then sort on both the scores and the dds values
-   
+
     Returns
     -------
     scores, dds, sols : sorted arrays
@@ -464,8 +464,9 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
         return scores, dds, sols
 
     if sortfull:
-        full_sorting_data = [dds[:, ii] for ii in list(range(dds.shape[1]))[::-1]] + [scores]
+        full_sorting_data = [dds[:, ii] for ii in list(range(dds.shape[1]))[::-1]] + [np.array(scores).flatten()]
         idx = np.lexsort(full_sorting_data)[::-1]
+        idx = np.lexsort(np.array(full_sorting_data))[::-1]
     else:
         idx = np.argsort(-scores.flatten())
     scores = scores[idx]
@@ -545,7 +546,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         dds = np.zeros((0, 3))
         sols = []
 
-        nrestarts_requested=nrestarts
+        nrestarts_requested = nrestarts
         nrestarts = 0
         for ii in range(nrestarts_requested):
             if verbose:

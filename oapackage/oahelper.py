@@ -100,7 +100,7 @@ try:
 except BaseException:
     def monitorSizes(verbose=0):
         return [[0, 0, 1280, 720]]
-    
+
 
 def test_monitorSizes():
     monitorSizes()
@@ -379,6 +379,7 @@ def choose(n, k):
     for t in range(min(k, n - k)):
         ntok = ntok * (n - t) // (t + 1)
     return ntok
+
 
 def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
     """ Convert numpy array to Latex tabular """
@@ -1229,7 +1230,7 @@ def create_pareto_element(values, pareto=None):
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoMultiDoubleLong):
-        vector_pareto = oalib.vector_mvalue_t_double() 
+        vector_pareto = oalib.vector_mvalue_t_double()
         for v in values:
             if isinstance(v, (int, float)):
                 # convert to list type

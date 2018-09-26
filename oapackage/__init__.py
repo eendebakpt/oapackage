@@ -6,7 +6,7 @@ arrays, optimal designs and conference matrices. For more information see
 http://github.com/eendebakpt/oapackage
 
 """
-      
+
 import oalib
 import oapackage.Doptim
 from oalib import *
