@@ -380,6 +380,43 @@ int log_print ( const int level, const char *message, ... )
     return result;
 }
 
+void mycheck_handler(const char *file, const char* func, int line, int condition, const char* message, ...)
+{
+	if (condition == 0) {
+		va_list		va;
+		va_start(va, message);
+		myprintf("mycheck: %s: %s (line %d): ", file, func, line); fflush(0);
+#ifdef RPACKAGE
+		myprintf("(not implemented) %s", message);
+#else
+		vprintf(message, va);
+#endif
+		va_end(va);
+#ifdef RPACKAGE
+		throw;
+#else
+		std::string error_message = printfstring("exception: %s: %s (line %d): ", file, func, line);
+		error_message += message;
+		throw std::runtime_error(error_message);
+#endif
+	}
+}
+
+void myassert(int condition, const char *error_message)
+{
+	if (condition == 0) {
+		if (error_message == 0)
+			myprintf("myassert: error\n");
+		else
+			myprintf("myassert: %s", error_message);
+#ifdef SWIGPYTHON
+		throw std::runtime_error(error_message);
+#else
+		throw std::runtime_error(error_message);
+#endif
+	}
+}
+
 inline char path_separator()
 {
 #ifdef _WIN32
