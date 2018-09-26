@@ -99,13 +99,12 @@ DoptimReturn Doptimize ( const arraydata_t &arrayclass, int nrestartsmax, std::v
     return a;
 }
 
-double scoreD ( const std::vector<double> dd, const std::vector<double> alpha )
+double scoreD ( const std::vector<double> efficiencies, const std::vector<double> alpha )
 {
     double v=0;
-    for ( size_t i=0; i<dd.size();  i++ )
-        v+= dd[i]*alpha[i];
+    for ( size_t i=0; i<efficiencies.size();  i++ )
+        v+= efficiencies[i]*alpha[i];
     return v;
-
 }
 
 DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector<double> alpha, int verbose, int nabort )
@@ -163,10 +162,6 @@ DoptimReturn DoptimizeMixed ( const arraylist_t &sols, const arraydata_t &arrayc
 
             nimproved=nimproved+1;
         }
-
-        //if ( verbose>=2 ) {
-        //	myprintf ( "DoptimizeMixed: iteration %d/%d: %f %f %f\n", i, nn, dd[0], dd[1], dd[2] );
-        //}
     }
 
     double dt = get_time_ms()-t0;
