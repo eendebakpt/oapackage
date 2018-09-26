@@ -1703,12 +1703,17 @@ std::vector<int> argsort(const std::vector<numtype> vv)
 class symmetry_group
 {
 public:
-    std::vector<int> gidx;
-    std::vector<int> gstart;	/// start of the subgroups
-    std::vector<int> gsize; 	/// size of the subgroups
-    int ngroups; /// number of subgroups
-    int n; /// number of elements
-    bool ascending; /// ordering of elements
+	std::vector<int> gidx;
+	/// start of the subgroups
+    std::vector<int> gstart;	
+	/// size of the subgroups
+    std::vector<int> gsize; 	
+	/// number of subgroups
+    int ngroups; 
+	/// number of elements
+    int n; 
+	/// ordering of elements
+    bool ascending; 
 
 public:
     symmetry_group ( const std::vector<int> &vals, bool ascending = true, int verbose=0 );
@@ -1718,10 +1723,10 @@ public:
     symmetry_group ( const std::vector<unsigned int> &vals, bool ascending = true,int verbose=0 );
     symmetry_group ( const std::vector<mvalue_t<double> > &vals, bool ascending = true,int verbose=0 );
     symmetry_group ( const std::vector<mvalue_t<int> > &vals, bool ascending = true,int verbose=0 );
-    symmetry_group ( const symmetry_group &sgx ); /// copy constructor
-    symmetry_group ( ); /// default constructor
+    symmetry_group ( const symmetry_group &sgx );
+    /// default constructor
+	symmetry_group ( ); 
 
-    //	symmetry_group(const std::vector<int> vals, int verbose=0);
 private:
     template<class Type>
     void init ( const std::vector<Type> vals, bool ascending = true, int verbose=0 );
@@ -1732,7 +1737,7 @@ public:
 #ifdef FULLPACKAGE
 
     typedef long perm_return_type;
-    /** return size of the group of all permutations respecting the symmetry
+    /** Return size of the group of all permutations respecting the symmetry
 	  *
 	  * The return type can overflow quickly. For larger group sizes use permsize_large
 	  */
@@ -1742,7 +1747,6 @@ public:
         for ( int i=0; i<ngroups; i++ ) {
             perm_return_type f = factorial<long> ( gsize[i] );
 
-            //myprintf("i %d: f %ld, s %ld s int %d, max %ld\n", i,f, s, (int)(s), std::numeric_limits< long long>::max() );
             if ( f != 0 && ( std::numeric_limits< perm_return_type>::max() / f ) < s ) {
                 // multiplication would exceed range of unsigned
                 myprintf ( "symmetry_group::init: group size outside limits, please use permsize_large\n" );
@@ -1790,7 +1794,6 @@ public:
         ss << "symmetry group: " << n << " elements, " << ngroups << " subgroups: ";
         for ( int i=0; i<ngroups; i++ )
             ss << gsize[i] << " ";
-        // ss << std::endl;
 
         std::string s = ss.str();
         return s;
@@ -1820,8 +1823,6 @@ public:
 
         }
     }
-    // void symmetry_group< int >(std::vector< int > vals, int verbose);
-
 };
 
 
