@@ -43,7 +43,7 @@ if rtd:
 
     print('##############################')
     print('current directory: %s' % os.getcwd())
-    print(os.listdir())
+    print(sorted(os.listdir()))
     print('##############################')   
     sys.path.append('.')
     print('##############################')

@@ -302,8 +302,8 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
 /** Generate candidate extensions (wrapper function)
  *
  * \param al Design to be extended
- * \param ct Class of conference designs
- * \param kz index of zero in candidate column
+ * \param conference_type Class of conference designs
+ * \param zero_index index of zero in candidate column
  * \param verbose Verbosity level
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
