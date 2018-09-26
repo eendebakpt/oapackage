@@ -23,27 +23,27 @@ Data structures
 The package contains several data structures. Here we describe the main
 structures and their use.
 
-  :meth:`~oapackage.oalib.array_link`
+  :meth:`~oalib.array_link`
     The structure containing an orthogonal array is called the
-    :meth:`~oapackage.oalib.array_link` structure. Lists of arrays are stored in the
-    :meth:`~oapackage.oalib.arraylist_t` object, which is implemented as a :code:`std::deque` container.
+    :meth:`~oalib.array_link` structure. Lists of arrays are stored in the
+    :meth:`~oalib.arraylist_t` object, which is implemented as a :code:`std::deque` container.
 
-  :meth:`~oapackage.oalib.arrayfile_t`
+  :meth:`~oalib.arrayfile_t`
     This is an object that allows for reading and writing of arrays to
     disk.
 
-  :meth:`~oapackage.oalib.arraydata_t`
+  :meth:`~oalib.arraydata_t`
     The structure describing a certain class of orthogonal arrays or
     optimal designs.
 
-  :meth:`~oapackage.oalib.conference_t`
+  :meth:`~oalib.conference_t`
     The structure describing a certain class of conference designs.
 
-  :meth:`~oapackage.oalib.array_transformation_t`
+  :meth:`~oalib.array_transformation_t`
     This describes a transformation of an orthogonal array. This includes the row-,
     column- and level-permutations.
 
-  :meth:`~oapackage.oalib.conference_transformation_t`
+  :meth:`~oalib.conference_transformation_t`
     This describes a transformation of an array. This includes the row-,
     column- and level-permutations.
 
@@ -56,7 +56,7 @@ columns, the data (integer valued) and an index.
         
 In the Python interface the :meth:`array_link` object can be indexed just as
 normal arrays. It is also possible to convert to a Numpy array. The
-:meth:`~oapackage.oalib.array_link` object implements to Python array interface, so most
+:meth:`~oalib.array_link` object implements to Python array interface, so most
 opertations from packages such as Numpy work on the :code:`array_link`
 object.
 
@@ -186,7 +186,7 @@ Array transformations
 
 Transformations of (orthogonal) arrays consist of row permutations,
 level permutations and level transformations. A transformation is
-represented by the :meth:`~oapackage.oalib.array_transformation_t` object.
+represented by the :meth:`~oalib.array_transformation_t` object.
 
 For a given transformation the column permutations are applied first,
 then the level permutations and finally the row permutations. The level-
@@ -239,7 +239,7 @@ and column permutations are not commutative.
 Classes of arrays
 -----------------
 
-The :meth:`~oapackage.oalib.arraydata_t` object represents data about a class of orthogonal
+The :meth:`~oalib.arraydata_t` object represents data about a class of orthogonal
 arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 
 .. code-block:: c++
