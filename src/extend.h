@@ -16,8 +16,6 @@
 
 #ifdef SWIG
 %ignore extendpos;
-%ignore progress_column;
-%ignore check_block_exchange;
 %ignore init_column;
 #endif
 
@@ -62,11 +60,8 @@ private:
     algorithm_t algmode;	// MODE_ORIGINAL: original, MODE_J4: j4 check, ...
 
 public:
-    OAextend() : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
+    OAextend() : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_AUTOSELECT)
     {
-#ifdef OADEV
-        algmode = MODE_AUTOSELECT;
-#endif
     };
     OAextend( const OAextend &o) : singleExtendTime(o.singleExtendTime)
     {
@@ -82,12 +77,8 @@ public:
         // we do NOT copy the storefile: this->storefile = o.storefile;
 
     };
-    OAextend( arraydata_t &ad) : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_ORIGINAL)
+    OAextend( arraydata_t &ad) : singleExtendTime(10.0), nLMC(40000), checkarrays(1), check_maximal(0), use_row_symmetry(1), init_column_previous(1), extendarraymode(APPENDFULL), j5structure(J5_45), algmode(MODE_AUTOSELECT)
     {
-
-#ifdef OADEV
-        algmode = MODE_AUTOSELECT;
-#endif
         setAlgorithmAuto(&ad);
     };
     /// Set the algorithm to use for LMC checks
@@ -161,29 +152,36 @@ struct extendpos {
 #endif
 };
 
-/* functions */
-
-/* Public part of interface */
-
-/// extend a list of arrays
+/// extend a list of orthogonal arrays
 int extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend, colindex_t extensioncol, arraylist_t &extensions);
 
-/// extend a list of arrays
+/// extend a list of orthogonal arrays
 arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad,   OAextend const &oaextend_options);
 
-/// extend a list of arrays with default options
+/** Extend a list of arrays with default options
+*
+* @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+*/
 arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &fullad);
 
-/// extend a single array
+/** Extend a single orthogonal array
+ *
+ * \param al The array to be extended
+ * \param fullad Class of arrays to generate
+ * \param oaextend Parameters for the extension algorithm
+ */
 arraylist_t extend_array(const array_link &al, arraydata_t &fullad,   OAextend const &oaextend);
 
-/// extend a single array with the default LMC algorithm
+/** Extend a single orthogonal array with the default LMC algorithm
+ *
+ * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ */
 arraylist_t extend_array(const array_link &al, arraydata_t &arrayclass);
 
 /// extend an array with a single column
 int extend_array(carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions, OAextend const &oaextend );
 
-/// simple wrapper function
+/// Run the extension algorithm starting from the array root
 arraylist_t runExtendRoot(arraydata_t adata, int nmax, int verbose=0);
 
 
