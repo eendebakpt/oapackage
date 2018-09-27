@@ -197,14 +197,11 @@ void symmetry_group_walker::show ( int verbose ) const
 
 bool symmetry_group_walker::nextsub ( int g )
 {
-//myprintf("symmetry_group_walker::nextsub: %d\n", g);
-//print_perm(perms[g]);
     bool of = next_perm ( perms[g] );
     if ( of && g>0 )
         of = nextsub ( g-1 );
 
     return of;
-
 }
 
 std::vector<int> symmetry_group_walker::fullperm() const
