@@ -1217,5 +1217,4 @@ arraylist_t runExtendRoot (  arraydata_t adata, int nmax, int verbose )
 
     }
     return sols;
-
 }
