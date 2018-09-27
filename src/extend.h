@@ -194,7 +194,7 @@ enum {DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI};
 enum {DCALC_ALWAYS, DCALC_COND};
 
 
-/** @brief Helper structure for dynamic extension
+/** @brief Helper structure for dynamic extension of arrays based on D-efficiencies
  *
  *
  *
@@ -241,10 +241,12 @@ struct dextend_t {
     /// filter the arrays based on values in filter
     std::vector<int> filterArrays(const array_link &al, const arraylist_t &earrays, arraylist_t &earraysout, std::vector<std::vector<double> > &edata, int verbose=1);
 
-    // output
-    long ntotal; /// total number of arrays found
-    long nlmc; /// total number of arrays found in LMC form
-    long n; /// total number of arrays found passing all tests
+	/// total number of arrays found
+	long ntotal; 
+	/// total number of arrays found in LMC form
+	long nlmc; 
+	/// total number of arrays found passing all tests
+    long n; 
 
     double DmaxDiscard;
     long nmaxrnktotal;	// total number of arrays found with max rank
