@@ -55,8 +55,6 @@ int main ( int argc, char *argv[] ) {
 
     double t0 = get_time_ms(), dt = 0;
     int randvalseed = opt.getIntValue ( 'r', 1 );
-    //int jj = opt.getIntValue ( "jj", 5 );
-
     int xx = opt.getIntValue ( 'x', 0 );
     int niter  = opt.getIntValue ( "niter", 2 );
     int verbose  = opt.getIntValue ( "verbose", 1 );
@@ -102,7 +100,6 @@ int main ( int argc, char *argv[] ) {
     std::vector<int> rr ( nn );
     t0 = get_time_ms();
     for ( size_t i = 0; i < ll.size(); i++ ) {
-        //printf("i %d\n", i);
         array_link A = ll[i];
         array_link B = array2xf ( A );
         int r1 = arrayrankColPivQR ( B );
