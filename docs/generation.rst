@@ -33,8 +33,8 @@ The main functions for array extension are the following:
         arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
                     OAextend const &oaextendoptions);
 
-Here :meth:`~oapackage.oalib.arraydata_t` is the structure describing the type of arrays and
-:meth:`~oapackage.oalib.OAextend` contains various options for the algorithm.
+Here :meth:`~oalib.arraydata_t` is the structure describing the type of arrays and
+:meth:`~oalib.OAextend` contains various options for the algorithm.
 
 A typical session could be:
 

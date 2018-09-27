@@ -510,49 +510,51 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
 }
 
 #ifdef FULLPACKAGE
-/** Calculate D-efficiencies for all projection designs */
-std::vector<double> projDeff ( const array_link &al, int kp, int verbose=0 )
+/** Calculate D-efficiencies for all projection designs 
+ * 
+ * \param al Design to calculate D-efficiencies for
+ * \param number_of_factors Number of factors into which to project
+ * \returns Vector with calculated D-efficiencies
+ */
+std::vector<double> projDeff ( const array_link &al, int number_of_factors, int verbose=0 )
 {
+	assert(al.is2level());
 
-    int kk = al.n_columns;
-    //colperm_t cp = new_comb_init<int>(kp);
-    std::vector<int> cp ( kp );
-    for ( int i=0; i<kp; i++ )
+    int number_of_columns = al.n_columns;
+    std::vector<int> cp ( number_of_factors );
+    for ( int i=0; i<number_of_factors; i++ )
         cp[i]=i;
-    int64_t ncomb = ncombsm<int64_t> ( kk, kp );
+    int64_t ncomb = ncombsm<int64_t> ( number_of_columns, number_of_factors );
 
     std::vector<double> dd ( ncomb );
 
-    int m = 1 + kp + kp* ( kp-1 ) /2;
+    int m = 1 + number_of_factors + number_of_factors* ( number_of_factors-1 ) /2;
     int N = al.n_rows;
 
     if ( verbose )
-        myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", kk, kp, ( long ) ncomb );
+        myprintf ( "projDeff: k %d, kp %d: start with %ld combinations \n", number_of_columns, number_of_factors, ( long ) ncomb );
 
-    for ( int64_t i=0; i<ncomb; i++ ) {
-
-        array_link alsub = al.selectColumns ( cp );
-        if ( m>N )
-            dd[i]=0;
-        else
-            dd[i] = alsub.Defficiency();
-
+	for (int64_t i = 0; i < ncomb; i++) {
+		if (m > N)
+			dd[i] = 0;
+		else {
+			array_link alsub = al.selectColumns(cp);
+			dd[i] = alsub.Defficiency();
+		}
         if ( verbose>=2 )
-            myprintf ( "projDeff: k %d, kp %d: i %ld, D %f\n", kk, kp, ( long ) i, dd[i] );
-        next_comb ( cp ,kp, kk );
-
+            myprintf ( "projDeff: k %d, kp %d: i %ld, D %f\n", number_of_columns, number_of_factors, ( long ) i, dd[i] );
+        next_comb ( cp ,number_of_factors, number_of_columns );
     }
 
     if ( verbose )
-        myprintf ( "projDeff: k %d, kp %d: done\n", kk, kp );
+        myprintf ( "projDeff: k %d, kp %d: done\n", number_of_columns, number_of_factors );
 
     return dd;
 }
 
-/**
+/**Calculate the projection estimation capacity sequence for a design.
  *
- * Calculate the projection estimation capacity sequence for a design.
- *
+ * The PEC of a design is the fraction of estimable second-order models in x factors.
  * See "Ranking Non-regular Designs", J.L. Loeppky
  *
  */
@@ -561,10 +563,10 @@ std::vector<double> PECsequence ( const array_link &al, int verbose )
 
     int N = al.n_rows;
 
-    int kk = al.n_columns;
-    std::vector<double> pec ( kk );
+    int number_of_factors = al.n_columns;
+    std::vector<double> pec ( number_of_factors );
 
-    if ( kk>=20 ) {
+    if ( number_of_factors>=20 ) {
         myprintf ( "PECsequence: error: not defined for 20 or more columns\n" );
         pec[0]=-1;
         return pec;
@@ -573,11 +575,12 @@ std::vector<double> PECsequence ( const array_link &al, int verbose )
 #ifdef DOOPENMP
     #pragma omp parallel for
 #endif
-    for ( int i=0; i<kk; i++ ) {
+    for ( int i=0; i<number_of_factors; i++ ) {
         int kp = i+1;
         int m = 1 + kp + kp* ( kp-1 ) /2;
 
         if ( m>N ) {
+			// if size of model is larger than number of runs the model cannot be estimated
             pec[i]=0;
         } else {
             std::vector<double> dd = projDeff ( al, kp, verbose>=2 );

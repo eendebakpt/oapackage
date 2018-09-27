@@ -156,10 +156,6 @@ void cleanGlobalStaticIndexed()
 }
 
 
-
-
-//
-
 LMC_static_struct_t::~LMC_static_struct_t()
 {
 #ifdef OADEBUG
@@ -176,12 +172,6 @@ static int LMC_static_count = 0;
 
 LMC_static_struct_t::LMC_static_struct_t()
 {
-#ifdef OADEBUG
-    //myprintf("LMC_static_struct_t::LMC_static_struct_t()\n");
-//#pragma omp atomic
-    //id = LMC_static_count;
-    //LMC_static_count++;
-#endif
     /* initialize static structure values to zero */
     this->LMC_non_root_init = 0;
     this->LMC_root_init = 0;
@@ -237,8 +227,6 @@ std::string algnames ( algorithm_t m )
     //myprintf("%d: %s", m, str.c_str() );
     return str;
 }
-
-
 
 /**
 * @brief Perform a row permutation on an array using a rowsort_t structure

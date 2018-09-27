@@ -164,12 +164,15 @@ inline bool checkZeroPosition(const cperm &p, int zero_position)
 class CandidateGeneratorBase
 {
 public:
-    conference_t ct; // type of designs
-    int verbose; // output level
+	/// type of designs to generate
+    conference_t ct; 
+	/// verbosity level
+	int verbose; 
 
-
+	/// last array analyzed
     mutable array_link al;
-    mutable int last_valid; // index of last valid column
+	/// index of last valid column
+    mutable int last_valid; 
 
 protected:
     /// list of candidate extensions. the elements of candidate_list[k] correspond to columns with index k-1
@@ -233,6 +236,7 @@ class CandidateGeneratorConference  : public CandidateGeneratorBase
 public:
     CandidateGeneratorConference ( const array_link &al, const conference_t &ct );
 
+	/// Generate a list of candidate extensions for the specified design
     const std::vector<cperm> & generateCandidates ( const array_link &al ) const;
     
     /// generate all candidate extensions with a zero at the specified position
@@ -253,7 +257,7 @@ public:
 
     CandidateGeneratorDouble ( const array_link &al, const conference_t &ct );
 
-    /** Generate candidates with caching
+    /** Generate a list of candidate extensions for the specified design
      * 
      * This method uses symmetry inflation, assumes j1=0 and j2=0. Optimal performance is achieved when the arrays
      * to be extended have identical first columns.
@@ -298,8 +302,8 @@ arraylist_t  selectLMC0 ( const arraylist_t &list, int verbose,  const conferenc
 /** Generate candidate extensions (wrapper function)
  *
  * \param al Design to be extended
- * \param ct Class of conference designs
- * \param kz index of zero in candidate column
+ * \param conference_type Class of conference designs
+ * \param zero_index index of zero in candidate column
  * \param verbose Verbosity level
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
@@ -352,17 +356,27 @@ int minz ( const array_link &al, int column_index );
 class DconferenceFilter
 {
 public:
-    array_link als;
-    int filtersymm; // filter based on symmetry
-    int filterj2; /// filter based on j2 value
-    int filterj3; /// filter based on j3 value
-    int filterfirst; /// filter only columns with first value >=0
-    int filterzero; /// filter based on first occurence of zero in a column
+	/// filter based on symmetry
+    int filtersymm; 
+	/// filter based on j2 value
+	int filterj2; 
+	/// filter based on j3 value
+    int filterj3; 
+	/// filter only columns with first value >=0
+    int filterfirst;
+	/// filter based on first occurence of zero in a column
+    int filterzero; 
+
+	array_link als;
 
     mutable long ngood;
+
+
 private:
-    array_link dtable; /// table of J2 vectors for J3 filter
-    array_link inline_dtable; /// table of J2 vectors for inline J3 filter
+	/// table of J2 vectors for J3 filter
+    array_link dtable; 
+	/// table of J2 vectors for inline J3 filter
+    array_link inline_dtable; 
 
     /// indices to check for symmetry check
     std::vector<int> check_indices;
@@ -375,14 +389,12 @@ public:
 
 public:
     DconferenceFilter ( const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1 ) : als ( _als ), filtersymm ( filtersymm_ ), filterj2 ( filterj2_ ), filterj3 ( filterj3_ ), filterfirst ( 0 ), filterzero ( 0 ), ngood ( 0 ), sd ( als ) {
-        //sd = symmdata( als );
 
         check_indices = sd.checkIdx();
-
         dtable = createJ2tableConference ( als );
 
         if ( als.n_columns>=2 ) {
-            inline_dtable = als.selectColumns ( 0 )-als.selectColumns ( 1 ); // createJ2tableConference ( als.selectFirstColumns(2) );
+            inline_dtable = als.selectColumns ( 0 )-als.selectColumns ( 1 ); 
             inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) +1 );
             inline_dtable = hstack ( inline_dtable, als.selectColumns ( 0 ) *als.selectColumns ( 0 )-1 );
             inline_dtable = hstack ( inline_dtable, als.selectColumns ( 1 ) *als.selectColumns ( 1 )-1 );
@@ -408,9 +420,11 @@ public:
         }
     }
 
+	/// print object to stdout
     void show() const {
      myprintf("DconferenceFilter: filterj1 -, filterj2 %d, filterj3 %d, filtersymm %d\n", filterj2, filterj3, filtersymm);   
     }
+
     /// filter a list of cperms using the filter method
     std::vector<cperm> filterList ( const std::vector<cperm> &lst, int verbose=0 ) const {
         std::vector<cperm> out;
@@ -595,7 +609,6 @@ public:
      * This means that the first entries of the extension do not contain a zero.
      */
     bool filterZero ( const cperm &c ) const {
-        // TODO: minzvalue-1?
         for ( int i=0; i<minzvalue-1; i++ ) {
             if ( c[i]==0 ) {
                 return false;
@@ -608,8 +621,6 @@ public:
 private:
 
 };
-
-std::vector<cperm> generateDoubleConferenceExtensionsInflate ( const array_link &al, const conference_t &ct, int verbose, int filterj2, int filterj3, int kstart=2 );
 
 /** Inflate a candidate column
  *
