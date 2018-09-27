@@ -134,7 +134,7 @@ inline int cprintf ( int check, const char *message, ... )
 }
 
 /// flush to stdout
-inline void ff()
+inline void flush_stdout()
 {
 #ifdef RPACKAGE
 #else

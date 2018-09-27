@@ -44,9 +44,8 @@ std::vector<int> dextend_t::filterArrays ( const array_link &al, const arraylist
     array_link tmparray ( al.n_rows, al.n_columns+1,-1 );
     std::copy ( al.array, al.array+al.n_columns*al.n_rows, tmparray.array );
 
-//    if ( dextend.filtermode>0 ) {
     cprintf ( verbose>=3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double ( ngoodcombined ) /nn, ngoodcombined, nn );
-    ff();
+    flush_stdout();
     const int lastcolx=al.n_columns;
 
     for ( size_t idx=0; idx<ctype.size(); idx++ ) {
@@ -91,10 +90,6 @@ void dextend_t::DefficiencyFilter ( double Dfinal, int k, int kfinal, double Lma
             break;
         }
         dextend.filter[ii] = chk;
-        if ( dextend.lmctype[ii]==LMC_MORE ) {
-            //	printf("dextend.filtermode %d, chk %d: %.10e %.10e %e %e - %d %f\n", dextend.filtermode, chk, Ci, Cfinal, Cfinalmulti, pow(Lmax, kfinal-kn), kfinal-kn, Lmax);
-//	 myprintf("      chk: Lmax"); printdoubleasbits(Lmax);
-        }
     }
 
 
@@ -187,8 +182,7 @@ void OAextend::setAlgorithm ( algorithm_t algorithm,  arraydata_t *ad )
     this->updateArraydata ( ad );
 }
 
-/// check number of branches, if multiple push to stack
-int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stack, array_t &first, int use_row_symmetry );
+//int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stack, array_t &first, int use_row_symmetry );
 
 /// Find the range of the elements that are allowed
 void get_range ( array_t *array, extendpos *p, extend_data_t* es, int use_row_symmetry );
@@ -219,7 +213,10 @@ static inline array_t row_rank_partial ( carray_t *array, const colindex_t start
  *
  * @param array
  * @param ad
- * @param
+ * @param col
+ * @param gidx
+ * @param gstart
+ * @param gsize
  */
 rowindex_t find_row_symm ( carray_t *array, const arraydata_t *ad, const colindex_t col, rowindex_t *& gidx, rowindex_t *&gstart, rowindex_t *& gsize )
 {
@@ -234,19 +231,7 @@ rowindex_t find_row_symm ( carray_t *array, const arraydata_t *ad, const colinde
         rowvalues[i] = row_rank_partial ( array, 0, col, i, ad->N, vindex );
     }
 
-    if ( 0 ) {
-        std::vector<int> xx ( rowvalues, rowvalues+ad->N );
-        symmetry_group sg ( xx, false );
-        nsg = sg.ngroups;
-        gidx = new rowindex_t[ad->ncolgroups+1];
-        std::copy ( sg.gidx.begin(), sg.gidx.end(), gidx );
-        gstart = new rowindex_t[ad->ncolgroups+1];
-        std::copy ( sg.gstart.begin(), sg.gstart.end(), gstart );
-        gsize = new rowindex_t[ad->ncolgroups+1];
-        std::copy ( sg.gsize.begin(), sg.gsize.end(), gsize );
-    } else {
-        nsg = symm_group_index_plain ( rowvalues, ad->N, gidx, gstart, gsize );
-    }
+    nsg = symm_group_index_plain ( rowvalues, ad->N, gidx, gstart, gsize );
 
     delete [] rowvalues;
     delete [] vindex;
@@ -255,13 +240,10 @@ rowindex_t find_row_symm ( carray_t *array, const arraydata_t *ad, const colinde
 
 int compare_array_block ( carray_p A, carray_p B, rowindex_t N, rowindex_t rs1, rowindex_t rs2, rowindex_t nrows, colindex_t cs, colindex_t ncols )
 {
-    //printf("compare_array_block: nrows %d, ncols %d, cs %d\n", nrows, ncols, cs);
-
     for ( int y=0; y<ncols; y++ ) {
         int coloffset = ( cs+y ) *N;
         for ( int x=0; x<nrows; x++ ) {
             if ( A[x+rs1+coloffset] < B[x+rs2+coloffset] ) {
-                //printf("compare_array_block: less at %d, %d\n", x+rs1, cs+y);
                 return -1;
             }
             if ( A[x+rs1+coloffset] > B[x+rs2+coloffset] ) {
@@ -310,7 +292,6 @@ inline array_t stack_next_element ( const split *stack )
 }
 
 
-
 /**
  * We check for all possible extensions. There are several criteria that can be used to check whether an element is valid or not.
  * These are: strength check, strength 1 check (i.e. the number of elements), range check (due to LMC test)
@@ -357,7 +338,6 @@ int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stac
 #endif
             p->value = i; // TODO: eliminate value from pos structure?
             /* strength t check */
-            // TODO: use _2level version of this function
             if ( valid_element ( es, p, array ) ) {
                 stack->valid[stack->count][npos]=p->value;
                 npos++;
@@ -590,10 +570,6 @@ void init_column_previous ( array_t *array, extendpos *p, int &col_offset, split
 
         array_t firstpos;
         int npos = check_branch ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
-        //int npos = check_branch_2level ( es, array, p, stack, firstpos, oaextend.use_row_symmetry );
-
-        //log_print(NOFINAL, "init_column_previous: row %d: nr branches %d, firstpos: %d\n", j, npos, firstpos);
-        //stack->print();
 
         if ( npos>1 ) {
             /* a branch was created, update the data tables */
@@ -630,7 +606,6 @@ void init_column_previous ( array_t *array, extendpos *p, int &col_offset, split
     }
 
     /* we set this for designs with strength 1 (here columns can be repeated) */
-    // XXX: this function could be set up more elegant
     array[col_offset+N-1]=-1;
 }
 
@@ -690,11 +665,6 @@ inline lmc_t quick_lmc_test ( carray_t* orig, const extendpos *p )
     arraydata_t *adfix = new arraydata_t ( * ( p->ad ) );
     adfix->complete_arraydata_fixlast();
 
-    //cout << "after complete_arraydata_fixlast: " << endl;
-    //print_perm(adfix->colgroupsize, adfix->ncolgroups);
-    //print_perm(adfix->colgroupindex, adfix->ncolgroups);
-
-
     dyndata_t *dynd = new dyndata_t ( adfix->N );
     LMCreduction_t *reduction = new LMCreduction_t ( adfix );
 
@@ -710,18 +680,6 @@ inline lmc_t quick_lmc_test ( carray_t* orig, const extendpos *p )
         cout << __FILE__ << " line "<<__LINE__ << ": quick_lmc_test: Unequal!" << printfstring ( "test %d, reduce %d\n", lmc2, lmc );
     }
 
-    //reduction->mode = LMC_REDUCE;
-    //lmc_t lmc2 = LMCreduce(array, array, adfix, dynd, reduction);
-
-
-// 	if(0 && lmc!=lmc2) {
-// 		cout << "lmc reduce: " << lmc << ", test: " << lmc2 << endl;
-// 		reduction->transformation->print(cout);
-// 		cout << "original" << endl;
-// 		print_array(array, p->ad->N, p->ad->ncols);
-// 		cout << "reduced" << endl;
-// 		print_array(reduction->array, p->ad->N, p->ad->ncols);
-// 	}
 
     if ( 1 && reduction->state==REDUCTION_CHANGED ) {
         cout << "reduction found " << endl;
