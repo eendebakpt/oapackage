@@ -256,14 +256,14 @@ arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 File formats
 ------------
 
-The Orthogonal Array packagestored orthogonal arrays in a custom file
+The Orthogonal Array package stores arrays in a custom file
 format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Arrays are stored in plain text files with extension .oa. The first line
+Arrays are stored in plain text files with extension ``.oa``. The first line
 contains the number of columns, the number of rows and the number of
 arrays (or -1 if the number of arrays is not specified). Then for each
 array a single line with the index of the array, followed by N lines
@@ -308,30 +308,33 @@ number is specified in the header):
 
 .. code-block:: c
 
-  [INT32] Index [Nxk elements] The elements contain b bits
+  [INT32] Index
+  [Nxk elements] The elements contain b bits
 
 If the number of bits per number is 1 (e.g. a 2-level array) then the
 data is padded with zeros to a multiple of 64 bits. The data of the
 array is stored in column-major order. The binary file format allows for
-random access reading and writing. The `binary diff` and `binary diff
-zero` formats are special formats.
+random access reading and writing. The ``binary diff`` and ``binary diff
+zero`` formats are special formats.
 
 A binary array file can be compressed using gzip. Most tools in the
-Orthogonal Array packagecan read these compressed files transparently.
+Orthogonal Array package can read these compressed files transparently.
 Writing to compressed array files is not supported at the moment.
 
 Data files
 ~~~~~~~~~~
 
-The analysis tool (`oaanalyse`) writes data to disk in binary format.
+The analysis tool (``oaanalyse``) writes data to disk in binary format.
 The format is consists of a binary header:
 
 ::
 
-  [FLOAT64] Magic number 30397995; [FLOAT64] Magic number 12224883;
-  [FLOAT64] nc: Number of rows [FLOAT64] nr: Number of columns
+  [FLOAT64] Magic number 30397995;
+  [FLOAT64] Magic number 12224883;
+  [FLOAT64] nc: Number of rows
+  [FLOAT64] nr: Number of columns
 
-After the header there follow `nc*nr [FLOAT64]` values.
+After the header there follow ``nc*nr [FLOAT64]`` values.
 
 
 
@@ -339,8 +342,8 @@ Command line interface
 ----------------------
 
 Included in the packages are several command line tools. For each tool
-help can be obtained from the command line by using the switch `-h`.
-These are:
+help can be obtained from the command line by using the switch ``-h``.
+The tools are:
 
 `oainfo`
     This program reads Orthogonal Array packagedata files and reports

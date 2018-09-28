@@ -1728,7 +1728,8 @@ enum afilerw_t
 
 /** @brief Structure for reading or writing a file with arrays
  *
- * The format of array files is described in the file FORMAT.txt
+ * The format of the file is determined by the ``arrayfilemode_t``
+ * The format described in detail in the documentation of the OApackage https://oapackage.readthedocs.io/en/latest/.
  *
  */
 struct arrayfile_t {
