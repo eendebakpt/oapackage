@@ -45,7 +45,7 @@ structures and their use.
 
   :meth:`~oalib.conference_transformation_t`
     This describes a transformation of an array. This includes the row-,
-    column- and level-permutations.
+    and column permutations and row- and column sign switches.
 
 Representing arrays
 -------------------
@@ -105,61 +105,6 @@ The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 .. see https://breathe.readthedocs.io/en/latest/directives.html
 
 .. doxygenstruct:: arrayfile::arrayfile_t
-
-The header of the
-``arrayfile_t`` class is listed below.
- 
-   
-.. code-block:: c++
-
-    struct arrayfile_t
-    {
-
-    public:
-        std::string filename;
-        int iscompressed;
-        int nrows;
-        int ncols;
-
-        /// number of bits used when storing an array
-        int nbits;
-
-        /// file mode, can be ATEXT or ABINARY
-        arrayfilemode_t mode;
-        /// file opened for reading or writing
-        afilerw_t rwmode;
-
-        int narrays;
-        int narraycounter;
-
-    public:
-
-        /// open existing array file
-        arrayfile_t(const std::string fname, int verbose = 1);
-        /// open new array file for writing
-        arrayfile_t(const std::string fname, int nrows, int ncols,
-                     int narrays=-1, arrayfilemode_t m = ATEXT, int nb = 8);
-        /// destructor function, closes all filehandles
-        ~arrayfile_t();
-
-        /// close the array file
-        void closefile();
-        /// return true if file is open
-        int isopen() const;
-        /// seek to specified array position
-        int seek(int pos);
-        /// read array and return index
-        int read_array(array_link &a);
-        /// return true if the file has binary format
-        bool isbinary() const;
-        /// append arrays to the file
-        int append_arrays(const arraylist_t &arrays, int startidx);
-        /// append a single array to the file
-        void append_array(const array_link &a, int specialindex=-1);
-
-        ...
-        
-    }
 
 Array transformations
 ---------------------
