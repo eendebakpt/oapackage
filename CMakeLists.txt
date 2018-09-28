@@ -233,10 +233,10 @@ set(graphsrc )
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
-list(APPEND progs oacheck oastreaming oaunittest)
+list(APPEND progs oacheck oastreaming oaunittest oaranktest)
 
 if(OADEV)
-  list(APPEND progs oatest oaranktest oa_depth_extend oaclustergather) # oaextendA
+  list(APPEND progs oatest oaclustergather oa_depth_extend) # oaextendA
 endif()
    
 if (WIN32)

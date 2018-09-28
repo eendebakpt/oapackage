@@ -159,7 +159,7 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
 
         if ( verbose>=3 ) {
             myprintf ( "depth_extend_array: calling depth_extend! %ld arrays, %ld/%ld extensions, extcol %d\n", goodarrays.size(), dextendsub.valididx.size(), dextend.extension_column_list.size(), extensioncol );
-            ff();
+            flush_stdout();
         }
 #ifdef DOOPENMP
 //printfd("entry to depth_extend_omp: extesioncol %d\n", extensioncol );
@@ -173,7 +173,7 @@ void processDepth ( const arraylist_t &goodarrays, depth_alg_t depthalg, depth_e
     case DEPTH_DIRECT: {
         if ( verbose>=1 ) {
             myprintf ( "processDepth: calling depth_extend_direct! %ld  arrays, %ld extensions, extcol %d\n", goodarrays.size(),dextend.extension_column_list.size(), extensioncol );
-            ff();
+            flush_stdout();
         }
 
         OAextend oaextendDirect = dextend.oaextend;
@@ -218,7 +218,7 @@ void depth_extend_hybrid ( const arraylist_t &alist,  depth_extend_t &dextend, i
 
         if ( dextend.showprogress ( 1, extcol ) ) {
             myprintf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
-            ff();
+            flush_stdout();
         }
 
         if ( ps>=4000 ) {
@@ -261,13 +261,13 @@ void depth_extend_direct ( const arraylist_t &alist,  depth_extend_t &dextend, i
         if ( verbose>=2 || extcol<=dextend.loglevelcol ) {
             // log if extcol is small enough
             myprintf ( "%sdepth_extend_direct column %d->%d, parse array %d/%d\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size() );
-            ff();
+            flush_stdout();
         } else {
             if ( verbose &&  extcol<=dextend.loglevelcol+9 ) {
                 // log at certain time intervals if extcol is small enough
                 if ( dextend.showprogress ( 1, extcol ) ) {
                     myprintf ( "%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size() );
-                    ff();
+                    flush_stdout();
                 }
             }
         }
@@ -409,13 +409,13 @@ void depth_extend_log ( int i, const arraylist_t &alist, int nn, depth_extend_t 
     if ( verbose>=2 || extcol<=dextend.loglevelcol ) {
         // log if extcol is small enough
         myprintf ( "%sdepth_extend column %d->%d, parse array %d/%d (%d extend cols)\n", sp.c_str(), extcol, extcol+1, ( int ) i, ( int ) alist.size(), nn );
-        ff();
+        flush_stdout();
     } else {
         if ( verbose ) {
             // log at certain time intervals if extcol is small enough
             if ( dextend.showprogress ( 1, extcol ) ) {
                 // myprintf ( "%sdepth_extend: column %d, array %d/%d (%zu extend cols)\n", sp.c_str(), extcol, ( int ) i, ( int ) alist.size(), nn );
-                ff();
+                flush_stdout();
                 if ( i>2 ) {
                     //   exit(0);
                 }
