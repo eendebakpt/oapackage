@@ -118,8 +118,8 @@ install:
   - "%CMD_IN_ENV36% pip install pylint"
 
   - "%CMD_IN_ENV36% pip install prompt_toolkit"
-  - "%CMD_IN_ENV% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
-  - "%CMD_IN_ENV36% pip install --upgrade prompt_toolkit"
+  - "%CMD_IN_ENV36% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
+  - "%CMD_IN_ENV% pip install --upgrade prompt_toolkit"
   - "%CMD_IN_ENV% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
 
 
