@@ -45,7 +45,7 @@ structures and their use.
 
   :meth:`~oalib.conference_transformation_t`
     This describes a transformation of an array. This includes the row-,
-    column- and level-permutations.
+    and column permutations and row- and column sign switches.
 
 Representing arrays
 -------------------
@@ -105,61 +105,6 @@ The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 .. see https://breathe.readthedocs.io/en/latest/directives.html
 
 .. doxygenstruct:: arrayfile::arrayfile_t
-
-The header of the
-``arrayfile_t`` class is listed below.
- 
-   
-.. code-block:: c++
-
-    struct arrayfile_t
-    {
-
-    public:
-        std::string filename;
-        int iscompressed;
-        int nrows;
-        int ncols;
-
-        /// number of bits used when storing an array
-        int nbits;
-
-        /// file mode, can be ATEXT or ABINARY
-        arrayfilemode_t mode;
-        /// file opened for reading or writing
-        afilerw_t rwmode;
-
-        int narrays;
-        int narraycounter;
-
-    public:
-
-        /// open existing array file
-        arrayfile_t(const std::string fname, int verbose = 1);
-        /// open new array file for writing
-        arrayfile_t(const std::string fname, int nrows, int ncols,
-                     int narrays=-1, arrayfilemode_t m = ATEXT, int nb = 8);
-        /// destructor function, closes all filehandles
-        ~arrayfile_t();
-
-        /// close the array file
-        void closefile();
-        /// return true if file is open
-        int isopen() const;
-        /// seek to specified array position
-        int seek(int pos);
-        /// read array and return index
-        int read_array(array_link &a);
-        /// return true if the file has binary format
-        bool isbinary() const;
-        /// append arrays to the file
-        int append_arrays(const arraylist_t &arrays, int startidx);
-        /// append a single array to the file
-        void append_array(const array_link &a, int specialindex=-1);
-
-        ...
-        
-    }
 
 Array transformations
 ---------------------
@@ -256,14 +201,14 @@ arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 File formats
 ------------
 
-The Orthogonal Array packagestored orthogonal arrays in a custom file
+The Orthogonal Array package stores arrays in a custom file
 format. There is a text format with is easily readable by humans and a
 binary format with is faster to process and memory efficient.
 
 Plain text array files
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Arrays are stored in plain text files with extension .oa. The first line
+Arrays are stored in plain text files with extension ``.oa``. The first line
 contains the number of columns, the number of rows and the number of
 arrays (or -1 if the number of arrays is not specified). Then for each
 array a single line with the index of the array, followed by N lines
@@ -308,30 +253,33 @@ number is specified in the header):
 
 .. code-block:: c
 
-  [INT32] Index [Nxk elements] The elements contain b bits
+  [INT32] Index
+  [Nxk elements] The elements contain b bits
 
 If the number of bits per number is 1 (e.g. a 2-level array) then the
 data is padded with zeros to a multiple of 64 bits. The data of the
 array is stored in column-major order. The binary file format allows for
-random access reading and writing. The `binary diff` and `binary diff
-zero` formats are special formats.
+random access reading and writing. The ``binary diff`` and ``binary diff
+zero`` formats are special formats.
 
 A binary array file can be compressed using gzip. Most tools in the
-Orthogonal Array packagecan read these compressed files transparently.
+Orthogonal Array package can read these compressed files transparently.
 Writing to compressed array files is not supported at the moment.
 
 Data files
 ~~~~~~~~~~
 
-The analysis tool (`oaanalyse`) writes data to disk in binary format.
+The analysis tool (``oaanalyse``) writes data to disk in binary format.
 The format is consists of a binary header:
 
 ::
 
-  [FLOAT64] Magic number 30397995; [FLOAT64] Magic number 12224883;
-  [FLOAT64] nc: Number of rows [FLOAT64] nr: Number of columns
+  [FLOAT64] Magic number 30397995;
+  [FLOAT64] Magic number 12224883;
+  [FLOAT64] nc: Number of rows
+  [FLOAT64] nr: Number of columns
 
-After the header there follow `nc*nr [FLOAT64]` values.
+After the header there follow ``nc*nr [FLOAT64]`` values.
 
 
 
@@ -339,8 +287,8 @@ Command line interface
 ----------------------
 
 Included in the packages are several command line tools. For each tool
-help can be obtained from the command line by using the switch `-h`.
-These are:
+help can be obtained from the command line by using the switch ``-h``.
+The tools are:
 
 `oainfo`
     This program reads Orthogonal Array packagedata files and reports

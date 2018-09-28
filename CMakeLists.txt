@@ -458,7 +458,7 @@ foreach(prog ${extendprogs})
 	install (TARGETS ${prog} DESTINATION bin)
 endforeach()
 install (TARGETS oalib DESTINATION lib)
-install (FILES README.md FORMAT.txt LICENSE DESTINATION doc)
+install (FILES README.md LICENSE DESTINATION doc)
 install (FILES oaconfig.txt DESTINATION bin)
 
 
