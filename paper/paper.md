@@ -25,7 +25,7 @@ bibliography: paper.bib
 
 # Summary
 
-Orthogonal arrays, optimal designs and conference designs are important tools in the design of
+Orthogonal arrays, optimal designs and conference designs are important tools for the design of
 experiments [@Elster1995], [@Hedayat1999], [@Wu2009]. The Orthogonal Array package contains functionality 
 to generate and analyse these types of designs. More specifically, the Ortogonal Array package allows 
 the user to:
@@ -34,8 +34,8 @@ the user to:
 * Reduce the designs to their normal form and perform isomophism testing 
 * Calculate a wide variety of statistical properties of the designs
 
-To generate the orthogonal arrays and conference designs, the Orthogonal Array package uses exhaustive 
-generation of designs with ismorphism pruning [@Eendebak2009], [@IsomorphismPaper]. To generate the
+To generate orthogonal arrays and conference designs, the Orthogonal Array package uses an exhaustive 
+generation procedure with ismorphism pruning [@Eendebak2009], [@IsomorphismPaper]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
 optimization algorithm [@Eendebak2015].
 
@@ -46,7 +46,7 @@ Array package provides a generic interface to the graph reduction algorithms to 
 testing and reduction to normal form effectively.
 
 The Orthogonal Array package evaluates the designs using sensible statistical criteria. For instance,
-the package calculates generalized wordlength patterns [@Tang1999], J_k-characteristics [@Deng1999] 
+the package calculates the generalized wordlength pattern [@Tang1999], the J_k-characteristics [@Deng1999] 
 and the number of degrees of freedom available for estimating selected factors' effects.
 
 The Orthogonal Array package consists of a C++ library with an user-friendly Python interface generated
@@ -55,8 +55,8 @@ generation and analysis of designs are available in the OApackage documentation 
 
 The Orthogonal Array package website [@EendebakOA] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
-the website of Neil Sloane [@Sloanewebsite]. Finally, the analysis of data from the designs is left to exising packages such as
-R [@Rpackage] and JMP [@wiki:JMP].
+the website of Neil Sloane [@Sloanewebsite]. Finally, the analysis of data from the designs is left to 
+exising packages such as R [@Rpackage] and JMP [@wiki:JMP].
 
 # Acknowledgements
 
