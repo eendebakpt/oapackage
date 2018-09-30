@@ -24,21 +24,22 @@ template <class Type>
 void vectorvector2file(const std::string fname, const std::vector<std::vector<Type> > vals)
 {
     FILE *fid = fopen(fname.c_str(), "wb");
-    if (fid==0)
+    if (fid == 0)
     {
         cout << "error with file " << fname << std::endl;
         exit(1);
     }
-    for (unsigned int i=0; i<vals.size(); i++) {
+    for (unsigned int i = 0; i < vals.size(); i++)
+    {
         std::vector<Type> x = vals[i];
 
-        for (unsigned int j=0; j<x.size(); j++) {
+        for (unsigned int j = 0; j < x.size(); j++)
+        {
             fprintf(fid, "%f ", x[j]);
         }
         fprintf(fid, "\n");
     }
     fclose(fid);
-
 }
 
 /// Write a vector of vector  elements to binary file
@@ -65,19 +66,18 @@ template <class Type>
 void intvector2file(std::string fname, std::vector<Type> vals)
 {
     FILE *fid = fopen(fname.c_str(), "wb");
-    if (fid==0)
+    if (fid == 0)
     {
         cout << "error with file " << fname << std::endl;
         exit(1);
     }
-    for (unsigned int i=0; i<vals.size(); i++) {
+    for (unsigned int i = 0; i < vals.size(); i++)
+    {
         Type x = vals[i];
         fprintf(fid, "%d\n", x);
     }
     fclose(fid);
-
 }
-
 
 /**
  * @brief Read in files with arrays and join them into a single file

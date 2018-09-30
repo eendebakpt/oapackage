@@ -256,6 +256,7 @@ public:
             myprintf ( "dextend_sub_t: selected %d/%d arrays\n", ( int ) ga.size (),
                      ( int ) elist.size () );
         return ga;
+        
     }
 
     inline void info () const {
