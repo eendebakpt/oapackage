@@ -142,8 +142,6 @@ inline void flush_stdout()
 #endif
 }
 
-/******************/
-
 template<class A>
 /**
  * Delete a pointer and set to zero.
@@ -180,7 +178,6 @@ int next_comb ( std::vector<Type> &comb, int k, int n )
 {
     int             i;// = k - 1;
     const int       offset = n - k + 1;
-    //comb[k - 1] = n - 1;
     i = k - 1;
     comb[i]++;
     while ( ( comb[i] >= offset + i ) && ( i > 0 ) ) {
@@ -285,14 +282,10 @@ DataType **malloc2d ( const numtype nrows, const int rowsize )
     DataType **data;
 
     data = new DataType* [nrows];
-    // if debugging, check for memory allocation
     if ( data==0 ) {
-        myprintf ( "malloc2d: error with memory allocation\n" );
-        throw;
-        //exit(0);
+        throw std::runtime_error("malloc2d: error with memory allocation");
     }
 
-    //myprintf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);
     data[0] = new DataType [nrows*rowsize];
 
     int offset = 0;
@@ -488,51 +481,51 @@ inline std::string printtime()
 
 template <class Object>
 /**
- * @brief Tempalate for insertionSort
- * @param x[]
- * @param length
+ * @brief Template for insertionSort
+ * @param array Data to be sorted
+ * @param length Length of array
  */
-inline void insertionSort ( Object x[],int length )
+inline void insertionSort ( Object array[], int length )
 {
     Object key;
     int i;
     for ( int j=1; j<length; j++ ) {
-        key=x[j];
+        key=array[j];
         i=j-1;
-        while ( x[i]>key && i>=0 ) {
-            x[i+1]=x[i];
+        while ( array[i]>key && i>=0 ) {
+            array[i+1]=array[i];
             i--;
         }
-        x[i+1]=key;
+        array[i+1]=key;
     }
 }
 
 template <class itemType, class indexType>
 /// sort arrays using bubbleSort
-inline void bubbleSort ( itemType a[], indexType l, indexType r )
+inline void bubbleSort ( itemType a[], indexType left, indexType right )
 {
     indexType i, j;
 
-    for ( i=r; i>l; --i )
-        for ( j=l; j<i; ++j )
+    for ( i=right; i>left; --i )
+        for ( j=left; j<i; ++j )
             if ( a[j] > a[j+1] )
                 std::swap ( a[j], a[j+1] );
 }
 
 template <class itemType, class indexType>
-/** sorting similar to bubblesort but fast for sorted arrays
+/** Sorting similar to bubblesort but fast for sorted arrays
  * 
- * The indices l and r are inclusive.
+ * The indices left and right are inclusive.
  */
-inline void flipSort ( itemType a[], indexType l, indexType r )
+inline void flipSort ( itemType a[], indexType left, indexType right )
 {
     indexType i, j;
 
-    i = r;
-    while ( i>l ) {
+    i = right;
+    while ( i>left ) {
         indexType ii = i;
-        i=l;
-        for ( j=l; j<ii; ++j ) {
+        i=left;
+        for ( j=left; j<ii; ++j ) {
             if ( a[j] > a[j+1] ) {
                 std::swap ( a[j], a[j+1] );
                 i=j;
@@ -544,19 +537,19 @@ inline void flipSort ( itemType a[], indexType l, indexType r )
 template <class Object, class indexType>
 /**
  * @brief Template for bubble sort
- * @param obj[]
- * @param array_size
+ * @param array Array to be sorted
+ * @param array_size Size of the array
  */
-inline void bubbleSort2 ( Object obj[], indexType array_size )
+inline void bubbleSort2 ( Object array[], indexType array_size )
 {
     Object temp;
 
     for ( indexType i = ( array_size - 1 ); i >= 0; i-- ) {
         for ( indexType j = 1; j <= i; j++ ) {
-            if ( obj[j] < obj[j-1] ) {
-                temp = obj[j-1];
-                obj[j-1] = obj[j];
-                obj[j] = temp;
+            if ( array[j] < array[j-1] ) {
+                temp = array[j-1];
+                array[j-1] = array[j];
+                array[j] = temp;
             }
         }
     }
@@ -564,71 +557,71 @@ inline void bubbleSort2 ( Object obj[], indexType array_size )
 
 template<class T>
 /// sort list using quickSort
-void quickSort ( T a[], const int& leftarg, const int& rightarg )
+void quickSort ( T array[], const int& leftarg, const int& rightarg )
 {
     if ( leftarg < rightarg ) {
 
-        T pivotvalue = a[leftarg];
+        T pivotvalue = array[leftarg];
         int left = leftarg - 1;
         int right = rightarg + 1;
 
         for ( ;; ) {
 
-            while ( a[--right] > pivotvalue ) {
+            while ( array[--right] > pivotvalue ) {
             };
-            while ( a[++left] < pivotvalue ) {
+            while ( array[++left] < pivotvalue ) {
             };
 
             if ( left >= right )
                 break;
 
-            T temp = a[right];
-            a[right] = a[left];
-            a[left] = temp;
+            T temp = array[right];
+            array[right] = array[left];
+            array[left] = temp;
         }
 
         int pivot = right;
-        quickSort ( a, leftarg, pivot );
-        quickSort ( a, pivot + 1, rightarg );
+        quickSort ( array, leftarg, pivot );
+        quickSort ( array, pivot + 1, rightarg );
     }
 }
 
 template <class itemType, class indexType>
 /*** sort list using shellSort
- * The indices l and r are inclusive.
+ * The indices left and right are inclusive.
  */
-void shellSort ( itemType a[], indexType l, indexType r )
+void shellSort ( itemType array[], indexType left, indexType right )
 {
     static indexType i, j, h;
     static itemType v;
 
-    for ( h=1; h<= ( r-l ) /9; h=3*h+1 ) {
+    for ( h=1; h<= ( right-left ) /9; h=3*h+1 ) {
     };
     for ( ; h>0; h/=3 ) {
-        for ( i=l+h; i<=r; ++i ) {
-            for ( j=i-h, v=a[i]; j>=l && a[j]>v; a[j+h]=a[j], j-=h ) {
+        for ( i=left+h; i<=right; ++i ) {
+            for ( j=i-h, v=array[i]; j>=left && array[j]>v; array[j+h]=array[j], j-=h ) {
             };
-            a[j+h] = v;
+            array[j+h] = v;
         }
     }
 }
 
 /// replace all occurces of a substring in a string
 inline std::string replaceString ( std::string subject, const std::string& search,
-                                   const std::string& replace )
+                                   const std::string& replacement )
 {
     size_t pos = 0;
     while ( ( pos = subject.find ( search, pos ) ) != std::string::npos ) {
-        subject.replace ( pos, search.length(), replace );
-        pos += replace.length();
+        subject.replace ( pos, search.length(), replacement );
+        pos += replacement.length();
     }
     return subject;
 }
 
 /// print a double value as bits
-inline void printdoubleasbits ( double decker )
+inline void printdoubleasbits ( double double_value )
 {
-    unsigned char * desmond = ( unsigned char * ) & decker;
+    unsigned char * desmond = ( unsigned char * ) & double_value;
     for ( size_t i = 0; i < sizeof ( double ); i++ ) {
         myprintf ( "%02X ", desmond[i] );
     }

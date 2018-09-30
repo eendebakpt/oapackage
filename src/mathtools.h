@@ -143,10 +143,6 @@ class object_pool
         else
         {
             rr++;
-            if (rr % 5000 == 0)
-            {
-                //myprintf("object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr);
-            }
             if (verbose)
             {
                 myprintf("  object_pool::New(): re-use object (nn %d, rr %d)\n", nn, rr);
@@ -219,7 +215,6 @@ class larray
 
     ~larray()
     {
-        //  myprintf("larray::~larray n %d d %ld\n", this->n, (long)this->d );
         if (d != 0)
         {
             delete[] d;
@@ -611,7 +606,6 @@ static void print_perm(std::ostream &out, const permutationType *s, const int le
 
     if (len == 0)
     {
-        // corner case
         out << "}\n";
     }
     else
@@ -886,7 +880,6 @@ bool next_perm(std::vector<permutationType> &s)
 {
     int len = s.size();
     int i = len - 1, j = len;
-    //permutationType	tmp;
 
     while (i > 0 && (s[i - 1] >= s[i]))
         i--;
