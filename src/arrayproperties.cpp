@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 
-#include "printfheader.h"	// with stdio
+#include "printfheader.h"	
 #include "mathtools.h"
 #include "tools.h"
 #include "arraytools.h"
@@ -25,6 +25,26 @@
 
 using namespace Eigen;
 
+mvalue_t < long > A3A4(const array_link & al)
+{
+	const int N = al.n_rows;
+
+	std::vector < double > gwlp = al.GWLP();
+	long w3 = 0;
+	if (gwlp.size() > 3) {
+		w3 = N * N * gwlp[3];    // the maximum value for w3 is N*choose(k, jj)
+	}
+	long w4 = 0;
+	if (gwlp.size() > 4) {
+		w4 = N * N * gwlp[4];
+	}
+	std::vector < long >w;
+	w.push_back(w3);
+	w.push_back(w4);
+
+	mvalue_t < long >wm(w, mvalue_t < long >::LOW);
+	return wm;
+}
 
 template<class Type>
 /** helper class: n-dimensional array
@@ -43,17 +63,13 @@ public:
     std::vector<int> cumdims;
     std::vector<int> cumprod;
 
-private:
-    //std::vector<int> tmpidx;
 public:
     ndarray ( std::vector<int> dimsx, int verbose=0 )
     {
-        //verbose=2;
         k = dimsx.size();
         dims = dimsx;
         cumdims.resize ( k+1 );
         cumprod.resize ( k+1 );
-        //tmpidx.resize ( k );
         n=1;
         for ( int i=0; i<k; i++ )
             n*= dims[i];
@@ -115,7 +131,6 @@ public:
             int vi = xx.rem;
             int vj=xx.quot;
             nidx[i] = vj;
-            //std::vector<int> *p = ( std::vector<int> * ) &tmpidx; p->at ( i ) = vj;
             ndx = vi;
         }
     }
@@ -279,9 +294,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
     int n = al.n_columns;
 
     // calculate distance distribution
-
-    //printf("distance_distribution\n");
-    std::vector<double> dd ( n+1 );
+	std::vector<double> dd ( n+1 );
 
     arraydata_t ad = arraylink2arraydata ( al );
 
@@ -289,14 +302,12 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
 
 
     int *dh = new int[sg.ngroups];
-//std::fill(dh, dh+sg.ngroups, 0);
-//printfd("dh: %d, %d\n", sg.ngroups, ad.ncolgroups);
 
     std::vector<int> dims ( ad.ncolgroups );
     for ( size_t i=0; i<dims.size(); i++ )
         dims[i] = ad.colgroupsize[i];
     if ( verbose>=3 ) {
-        myprintf ( "distance_distribution_mixed before: \n" ); //display_vector(dd); std::cout << std::endl;
+        myprintf ( "distance_distribution_mixed before: \n" );
         B.show();
     }
 
@@ -320,7 +331,7 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
         }
     }
     if ( verbose>=3 ) {
-        myprintf ( "distance_distribution_mixed low: \n" ); //display_vector(dd); std::cout << std::endl;
+        myprintf ( "distance_distribution_mixed low: \n" ); 
         B.show();
     }
 
@@ -336,7 +347,6 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
     }
 
     for ( int x=0; x<B.n; x++ ) {
-        // myprintf("xxxx %d/ %d\n", x, B.n);
         B.data[x] /= N;
     }
 
@@ -346,18 +356,6 @@ void distance_distribution_mixed ( const array_link &al, ndarray<double> &B, int
     }
 
     delete [] dh;
-
-    /*
-    	if ( 0 ) {
-    		myprintf ( "test: " );
-    		int tmp[100];
-    		int li0= 1;
-    		B.linear2idx ( li0, tmp );
-    		int li = B.getlinearidx ( tmp );
-    		print_perm ( tmp, sg.ngroups );
-    		myprintf ( " linear index: %d -> %d\n", li0, li );
-    	}
-    */
 }
 
 template <class Type>
@@ -365,13 +363,11 @@ template <class Type>
 std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
 {
     int n = B.size()-1;
-    // printfd("macwilliams_transform: %d\n", n);
     std::vector<double> Bp ( n+1 );
 
     if ( s==2 ) {
         if ( n <= Combinations::ncombscacheNumber() ) {
             // use cached version of krawtchouks
-            //printfd("macwilliams_transform: using krawtchouksCache\n");
             for ( int j=0; j<=n; j++ ) {
                 Bp[j]=0;
                 for ( int i=0; i<=n; i++ ) {
@@ -410,7 +406,6 @@ std::vector<double> distance_distribution ( const array_link &al )
     int n = al.n_columns;
 
     // calculate distance distribution
-
     std::vector<double> dd ( n+1 );
 
     for ( int r1=0; r1<N; r1++ ) {
@@ -441,7 +436,7 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
         myprintf ( "\n" );
     }
 
-    int jprod = B.n; // std::accumulate(sg.gsize.begin(), sg.gsize.begin()+sg.ngroups, 1, multiplies<int>());
+    int jprod = B.n;
 
     int *bi = new int[sg.ngroups];
     int *iout = new int[sg.ngroups];
@@ -451,14 +446,11 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
     for ( int i=0; i<sg.ngroups; i++ )
         iout[i]=0;
 
-//--------------
-
     for ( int j=0; j<Bout.n; j++ ) {
         //if (verbose)
 //	myprintf("macwilliams_transform_mixed: Bout[%d]= %d\n", j, 0 );
 
         Bout.linear2idx ( j, iout );
-        //myprintf("  j %d: iout[0] %d\n", j, iout[0]);
         Bout.setlinear ( j, 0 ); // [j]=0;
 
         for ( int i=0; i<B.n; i++ ) {
@@ -470,7 +462,6 @@ std::vector<double> macwilliams_transform_mixed ( const ndarray<double> &B, cons
                 long ii = bi[f];
                 long ni = B.dims[f]-1;
                 long si = sx[f];
-                //myprintf("  f %d ji %d, ni %ld, ni %ld, si %d\n", f, (int)ji, ii, ni, si);
                 fac *= krawtchouk ( ji,ii, ni, si );
                 if ( verbose>=4 )
                     myprintf ( "  Bout[%d] += %.1f * %ld (%d %d %d)\n", j , ( double ) B.data[i] , fac, ( int ) ji, ( int ) ii, ( int ) ni );
@@ -610,8 +601,6 @@ std::vector<double> GWLPmixed ( const array_link &al, int verbose, int truncate 
 {
     arraydata_t adata = arraylink2arraydata ( al );
     symmetry_group sg ( adata.getS(), false );
-    //myprintf(" adata.ncolgroups: %d/%d\n", adata.ncolgroups, sg.ngroups);
-
 
     std::vector<int> dims ( adata.ncolgroups );
     for ( unsigned int i=0; i<dims.size(); i++ )
@@ -659,18 +648,15 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
     int k ;
     for ( k=0; k<al.n_columns; k++ ) {
         array_t *mine = std::max_element ( al.array+N*k, al.array+ ( N* ( k+1 ) ) );
-        // myprintf( "s %d, %d\n", s, *mine+1);
         if ( *mine+1 != s )
             break;
     }
     int domixed= ( k<al.n_columns );
-    //domixed=1;
     if ( verbose )
         myprintf ( "GWLP: N %d, s %d, domixed %d\n", N, s, domixed );
 
 
     if ( domixed ) {
-        // see: "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run Sizes", Xu
         std::vector<double> gma = GWLPmixed ( al, verbose, truncate );
         return gma;
     } else {
@@ -689,7 +675,6 @@ std::vector<double> GWLP ( const array_link &al, int verbose, int truncate )
                 gma[i]=round ( N*N*gma[i] ) / ( N*N );
                 if ( gma[i]==0 )
                     gma[i]=0;	 // fix minus zero
-
             }
         }
 
@@ -703,13 +688,7 @@ inline double GWPL2val ( GWLPvalue x )
     double r=0;
     for ( int i=x.size()-1; i>0; i-- )
         r = r/10 + x.v[i];
-    if ( 0 ) {
-        r=0;
-        for ( int i=x.size()-1; i>=0; i-- ) {
-            //double fac=choose(x.size(),i);
-            // r = r/fac + x[i];
-        }
-    }
+    
     return r;
 }
 
@@ -717,16 +696,9 @@ inline double GWPL2val ( GWLPvalue x )
 inline double GWPL2val ( std::vector<double> x )
 {
     double r=0;
-    //for ( size_t i=0; i<x.size(); i++ ) r = r/10 + x[i];
     for ( int i=x.size()-1; i>0; i-- )
         r = r/10 + x[i];
-    if ( 0 ) {
-        r=0;
-        for ( int i=x.size()-1; i>=0; i-- ) {
-            //double fac=choose(x.size(),i);
-            // r = r/fac + x[i];
-        }
-    }
+    
     return r;
 }
 
