@@ -235,24 +235,18 @@ int fastrand()
     g_seed = ( 214013*g_seed+2531011 );
     return ( g_seed>>16 ) &0x7FFF;
 }
+
+/// calculate a random integer modulo K
 int fastrandK ( int K )
 {
     return fastrand() % K;
 }
 
-// cached data
+int Combinations::ncombscachemax = 0;
+long **Combinations::ncombsdata = 0;
 
-long **ncombsdata = 0;
-int ncombscachemax=0;
-
-int ncombscacheNumber()
+void Combinations::initncombscache(int N)
 {
-    return 	ncombscachemax;
-}
-void initncombscache(int N)
-{
-
-
     if(N<=ncombscacheNumber() )
         return;
 #ifdef OADEBUG
@@ -272,7 +266,6 @@ void initncombscache(int N)
         // if debugging, check for memory allocation
         assert(ncombsdata);
 
-        //myprintf("nrows*rowsize: %d * %d = %d\n", nrows, rowsize, nrows*rowsize);
         ncombsdata[0] = new long [nrows*rowsize];
 
         int offset = 0;
@@ -283,24 +276,26 @@ void initncombscache(int N)
 
         for(int i=0; i<nrows; i++) {
             for(int j=0; j<rowsize; j++) {
-                //myprintf("i j %d %d, %d\n", i, j, N);
                 ncombsdata[i][j]=ncombs(i,j);
             }
-
             ncombscachemax=N;
         }
     }
 
 }
-long ncombscache(int n, int k)
+
+int Combinations::ncombscacheNumber()
+{
+	return 	Combinations::ncombscachemax;
+}
+
+long Combinations::ncombscache(int n, int k)
 {
 #ifdef OADEBUG
-    assert(ncombsdata!=0);
-    //assert(n<=ncombscacheValue() );
-    //assert(k<=ncombscacheValue() );
+    assert(Combinations::ncombsdata!=0);
 #endif
-    //printf("ncombscache: %d %d\n", n, k);
-    return ncombsdata[n][k];
+    return Combinations::ncombsdata[n][k];
 }
+
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

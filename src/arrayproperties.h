@@ -68,20 +68,30 @@ distance_distribution ( const array_link & al );
 std::vector < int >
 Jcharacteristics ( const array_link & al, int jj = 4, int verbose = 0 );
 
-/** @brief calculate GWLP (generalized wordlength pattern)
+/** @brief Calculate GWLP (generalized wordlength pattern)
  *
  *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical fractional factorial desings"
  *  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run Sizes", Xu
  *
+ * \param al Array to calculate the GWLP value for
+ * \param verbose Verbosity level
+ * \param truncate If True then round values near zero to solve double precision errors
  */
-std::vector < double >
-GWLP ( const array_link & al, int verbose = 0, int truncate = 1 );
+std::vector < double > GWLP ( const array_link & al, int verbose = 0, int truncate = 1 );
 
-std::vector < double >
-GWLPmixed ( const array_link & al, int verbose = 0, int truncate = 1 );
+/** @brief Calculate GWLP (generalized wordlength pattern)
+*
+*  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical fractional factorial desings"
+*  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run Sizes", Xu
+*
+* \param al Array to calculate the GWLP value for
+* \param verbose Verbosity level
+* \param truncate If True then round values near zero to solve double precision errors
+*
+*/
+std::vector < double > GWLPmixed ( const array_link & al, int verbose = 0, int truncate = 1 );
 
 // SWIG has some issues with typedefs, so we use a define
-//typedef mvalue_t<double> GWLPvalue;
 #define GWLPvalue mvalue_t<double>
 
 typedef mvalue_t < double >DOFvalue;
@@ -146,12 +156,14 @@ public:
 public:
     array_link alsub;
     int r;
-    int verbose;			/// verbosity level
-    int ks;			/// number of columns of subarray in cache
-
-    int nsub;			/// number of columns to subtract from array when updating cache
-
-    int id;			/// used for debugging
+	/// verbosity level
+    int verbose;	
+	/// number of columns of subarray in cache
+    int ks;			
+	/// number of columns to subtract from array when updating cache
+    int nsub;			
+	/// used for debugging
+    int id;			
 
 private:
     /// decomposition of subarray
@@ -261,29 +273,12 @@ Pareto < mvalue_t < long >, long >parsePareto ( const arraylist_t & arraylist,
         paretomethod_t paretomethod =
             PARETOFUNCTION_DEFAULT );
 
-/// calculate A3 and A4 value for array
-inline mvalue_t < long >
-A3A4 ( const array_link & al )
-{
-    const int N = al.n_rows;
-
-    std::vector < double >gwlp = al.GWLP ();
-    long w3 = 0;
-    if ( gwlp.size () > 3 ) {
-        w3 = N * N * gwlp[3];    // the maximum value for w3 is N*choose(k, jj)
-    }
-    long w4 = 0;
-    if ( gwlp.size () > 4 ) {
-        w4 = N * N * gwlp[4];
-    }
-    //long xmax=N*ncombs ( k, 4 );
-    std::vector < long >w;
-    w.push_back ( w3 );
-    w.push_back ( w4 );		// )); = xmax*w3+w4;
-
-    mvalue_t < long >wm ( w, mvalue_t < long >::LOW );
-    return wm;
-}
+/** calculate A3 and A4 value for array
+ *
+ * \param al Array for which to calculate A3 and A4
+ * \returns Object with A3 and A4
+ */
+mvalue_t < long > A3A4 ( const array_link & al );
 
 /// calculate F4 value for 2-level array
 inline mvalue_t < long >
@@ -318,29 +313,20 @@ inline typename Pareto < mvalue_t < long >, IndexType >::pValue
 calculateArrayParetoRankFA ( const array_link & al, int verbose )
 {
     int N = al.n_rows;
-    int r = arrayrankFullPivLU ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
-    mvalue_t < long >wm = A3A4 ( al );
-    mvalue_t < long >f4 = F4 ( al );
-
-#ifdef OADEBUG
-    {
-        int r1 = arrayrankColPivQR ( array2xf ( al ) );
-        int r2 = arrayrankColPivQR ( array2secondorder ( al ) ) + 1 + al.n_columns;
-        printfd ( "calculateArrayParetoRankFA: rank check %d %d\n", r1, r2 );
-        assert ( r2 == r1 );
-    }
-#endif
+    int model_rank = arrayrankFullPivLU ( array2secondorder ( al ), 1e-12 ) + 1 + al.n_columns;    // valid for 2-level arrays of strength at least 3
+    mvalue_t < long > a3a4_values = A3A4 ( al );
+    mvalue_t < long > f4 = F4 ( al );
 
     // add the 3 values to the combined value
     typename Pareto < mvalue_t < long >, IndexType >::pValue p;
-    p.push_back ( r );		// rank of second order interaction matrix
-    p.push_back ( wm );		// A3, A4
-    p.push_back ( f4 );		// F
+    p.push_back ( model_rank );		
+    p.push_back ( a3a4_values );		
+    p.push_back ( f4 );		
 
     if ( verbose >= 2 ) {
         if ( verbose >= 3 ) {
             std::vector < double >gwlp = al.GWLP ();
-            myprintf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", wm.v[1], gwlp[4] );
+            myprintf ( "parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.v[1], gwlp[4] );
         }
 
         myprintf ( "  parseArrayPareto: rank %d, verbose %d\n", al.rank (), verbose );
@@ -401,8 +387,7 @@ parseArrayPareto ( const array_link & al, IndexType i,
 #endif // FULLPACKAGE
 
 /// convert C value to D-efficiency value
-inline double
-Cvalue2Dvalue ( double C, int ka )
+inline double Cvalue2Dvalue ( double C, int ka )
 {
     double ma = 1 + ka + ka * ( ka - 1 ) / 2;
     double A = pow ( C, 1. / ma );
@@ -411,8 +396,7 @@ Cvalue2Dvalue ( double C, int ka )
 }
 
 /// convert D-efficiency value to C value
-inline double
-Dvalue2Cvalue ( double A, int ka )
+inline double Dvalue2Cvalue ( double A, int ka )
 {
     int ma = 1 + ka + ka * ( ka - 1 ) / 2;
     double C = pow ( A, ma );
