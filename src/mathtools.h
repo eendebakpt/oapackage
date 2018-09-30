@@ -845,16 +845,25 @@ inline Type ncombs(const Type n, const Type k)
     return sol / fact(k);
 }
 
-int ncombscacheNumber();
+class Combinations
+{
+public:
 
-/// initialize datastructure, this function is not thread safe
-void initncombscache(int N);
+	/// return max number of N that can be calculated with ncombscache
+	static int ncombscacheNumber();
 
-/** return number of combinations from previously calculated results
- *
- *  The results should be calculated with initncombscache
- */
-long ncombscache(int n, int k);
+	/// initialize datastructure for ncombscache, this function is not thread safe
+	static void initncombscache(int N);
+
+	/** Return number of combinations from previously calculated results
+	*
+	*  The results should be initialized with initncombscache
+	*/
+	static long ncombscache(int n, int k);
+private:
+	static long **ncombsdata ;
+	static int ncombscachemax ;
+};
 
 template <class Type>
 /// calculate using multiplicative formula, see http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
@@ -885,8 +894,7 @@ bool next_perm(std::vector<permutationType> &s)
 
     if (i == 0)
     {
-        // last permutation reached!
-        // myprintf("last permutation reached\n");
+        // last permutation reached
         for (int k = 0; k < (len / 2); k++)
         {
             std::swap(s[k], s[len - k - 1]);
@@ -2065,10 +2073,6 @@ inline Type krawtchouk(Type j, Type x, Type n, Type s, int verbose = 0)
 
     for (Type i = 0; i <= j; i++)
     {
-        //printf("       ncombs(%d, %d) %d\n", x,i, ncombs(x, i) );
-
-        // TODO: implement dynamic programming for this function
-        //val += powmo(i) * std::pow ((double)s-1, j-i) * ncombs(x, i) * ncombs(n-x, j-i);
         val += powmo(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
         if (verbose)
         {
@@ -2088,14 +2092,16 @@ inline Type krawtchouksCache(Type j, Type x, Type n)
 
     for (Type i = 0; i <= j; i++)
     {
-        val += powmo(i) * ncombscache(x, i) * ncombscache(n - x, j - i);
+        val += powmo(i) * Combinations::ncombscache(x, i) * Combinations::ncombscache(n - x, j - i);
     }
-    //printf("krawtchouks: %d, %d, %d, %ld\n", (int) j, (int)x, (int)n, val);
     return val;
 }
 
 template <class Type>
-/// calculate value of Krawtchouk polynomial
+/** calculate value of Krawtchouk polynomial
+ *
+ * @see https://en.wikipedia.org/wiki/Kravchuk_polynomials
+ */
 inline Type krawtchouks(Type j, Type x, Type n)
 {
     Type val = 0;
@@ -2104,7 +2110,6 @@ inline Type krawtchouks(Type j, Type x, Type n)
     {
         val += powmo(i) * ncombs(x, i) * ncombs(n - x, j - i);
     }
-    //printf("krawtchouks: %d, %d, %d, %ld\n", (int) j, (int)x, (int)n, val);
     return val;
 }
 

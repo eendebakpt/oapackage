@@ -369,7 +369,7 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
     std::vector<double> Bp ( n+1 );
 
     if ( s==2 ) {
-        if ( n <= ncombscacheNumber() ) {
+        if ( n <= Combinations::ncombscacheNumber() ) {
             // use cached version of krawtchouks
             //printfd("macwilliams_transform: using krawtchouksCache\n");
             for ( int j=0; j<=n; j++ ) {
@@ -384,8 +384,7 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
             for ( int j=0; j<=n; j++ ) {
                 Bp[j]=0;
                 for ( int i=0; i<=n; i++ ) {
-                    //myprintf("  B[i] %.1f krawtchouk(%d, %d, %d, %d) %ld \n", B[i], j,i,n,s, krawtchouk<long>(j, i, n, s));
-                    Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); // pow(s, -n)
+                    Bp[j] +=  B[i] * krawtchouks<long> ( j, i, n ); 
                 }
                 Bp[j] /= N;
             }
@@ -395,7 +394,7 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
         for ( int j=0; j<=n; j++ ) {
             Bp[j]=0;
             for ( int i=0; i<=n; i++ ) {
-                Bp[j] +=  B[i] * krawtchouk<long> ( j, i, n, s ); // pow(s, -n)
+                Bp[j] +=  B[i] * krawtchouk<long> ( j, i, n, s ); 
             }
             Bp[j] /= N;
         }
