@@ -273,7 +273,7 @@ int oaunittest ( int verbose, int writetests=0, int randval = 0 )
 
      int allgood=UGOOD;
 
-     initncombscache ( 20 );
+     Combinations::initncombscache ( 20 );
 
      /* constructors */
      {
