@@ -869,7 +869,6 @@ template <class Type>
 /// calculate using multiplicative formula, see http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
 inline Type ncombsm(const Type &n, const Type &k)
 {
-    //if (k > n) throw std::logic_error("k can not be larger than n");
     Type result = 1;
     for (Type i = 1; i <= k; i++)
     {
