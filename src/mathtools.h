@@ -1785,8 +1785,8 @@ class symmetry_group
     symmetry_group(const std::vector<float> &vals, bool ascending = true, int verbose = 0);
     symmetry_group(const std::vector<short int> &vals, bool ascending = true, int verbose = 0);
     symmetry_group(const std::vector<unsigned int> &vals, bool ascending = true, int verbose = 0);
-    symmetry_group(const std::vector<mvalue_t<double>> &vals, bool ascending = true, int verbose = 0);
-    symmetry_group(const std::vector<mvalue_t<int>> &vals, bool ascending = true, int verbose = 0);
+    symmetry_group(const std::vector<mvalue_t<double> > &vals, bool ascending = true, int verbose = 0);
+    symmetry_group(const std::vector<mvalue_t<int> > &vals, bool ascending = true, int verbose = 0);
     symmetry_group(const symmetry_group &sgx);
     /// default constructor
     symmetry_group();
@@ -1904,7 +1904,7 @@ class symmetry_group_walker
     symmetry_group sg;
 
     /// current element of the symmetry group
-    std::vector<std::vector<int>> perms;
+    std::vector<std::vector<int> > perms;
 
     symmetry_group_walker(symmetry_group sg)
     {
@@ -2112,7 +2112,7 @@ template <class Type>
 /// return the condition number of a matrix
 double conditionNumber(const Eigen::Matrix<Type, -1, -1> A)
 {
-    Eigen::JacobiSVD<Eigen::Matrix<Type, -1, -1>> svd(A);
+    Eigen::JacobiSVD<Eigen::Matrix<Type, -1, -1> > svd(A);
     double cond = svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size() - 1);
     return cond;
 }
