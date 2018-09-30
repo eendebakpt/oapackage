@@ -75,7 +75,7 @@ int main ( int argc, char* argv[] ) {
     int nc=0;
     int nn;
 
-    initncombscache ( 20 );
+    Combinations::initncombscache ( 20 );
 
     std::vector<std::string> infiles;
     for ( int i = 0 ; i < opt.getArgc() ; i++ ) {
@@ -85,7 +85,6 @@ int main ( int argc, char* argv[] ) {
         arrayfileinfo ( opt.getArgv ( i ), nn, nr, nc );
         if ( verbose>=3 )
             std::cout << "   has " << nn << printfstring ( " array(s) (size %d %d)", nr, nc ) << std::endl;
-
     }
     calculateParetoEvenOdd ( infiles, outputprefix, verbose, afmode, nr, nc, paretoj5 );
 
