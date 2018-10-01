@@ -245,12 +245,12 @@ int fastrandK ( int K )
 int Combinations::ncombscachemax = 0;
 long **Combinations::ncombsdata = 0;
 
-void Combinations::initncombscache(int N)
+void Combinations::initialize_number_combinations(int N)
 {
-    if(N<=ncombscacheNumber() )
+    if(N<=number_combinaties_max_n() )
         return;
 #ifdef OADEBUG
-    myprintf("initncombscache: value %d\n", N);
+    myprintf("initialize_number_combinations: value %d\n", N);
 #endif
 
     #pragma omp critical
@@ -284,12 +284,12 @@ void Combinations::initncombscache(int N)
 
 }
 
-int Combinations::ncombscacheNumber()
+int Combinations::number_combinaties_max_n()
 {
 	return 	Combinations::ncombscachemax;
 }
 
-long Combinations::ncombscache(int n, int k)
+long Combinations::number_combinations(int n, int k)
 {
 #ifdef OADEBUG
     assert(Combinations::ncombsdata!=0);

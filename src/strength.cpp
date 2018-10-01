@@ -23,7 +23,6 @@ vindex_t **set_indices ( colindex_t **colcombs, basetype *bases, const int k, co
     indices = malloc2d<int> ( ncolcombs, k );
 
     for ( int j = 0; j < ncolcombs; j++ ) {
-        //numtype* init_valueindex_forward(numtype *valueindex, const numtype *bases, const numtype n)
         prod = 1;
         for ( int i = 0; i < k; i++ ) {
             indices[j][i] = prod;

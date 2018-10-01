@@ -366,7 +366,7 @@ std::vector<double> macwilliams_transform ( std::vector<Type> B, int N, int s )
     std::vector<double> Bp ( n+1 );
 
     if ( s==2 ) {
-        if ( n <= Combinations::ncombscacheNumber() ) {
+        if ( n <= Combinations::number_combinaties_max_n() ) {
             // use cached version of krawtchouks
             for ( int j=0; j<=n; j++ ) {
                 Bp[j]=0;

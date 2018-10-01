@@ -960,7 +960,6 @@ rowperm_t* create_root_permutations_index ( const arraydata_t *ad, int &totalper
 rowperm_t* create_root_permutations_index_full ( const arraydata_t *ad, int &totalpermsr )
 {
     if ( ! ( ad->colgroupsize[0]>=ad->strength ) ) {
-        // myprintf("mixed array, not allocating\n");
         if ( log_print ( NORMAL, "" ) ) {
             myprintf( "mixed array, not allocating\n" );
             myprintf( "ad->strength %d, ad->colgroupsize[0] %d\n", ad->strength, ad->colgroupsize[0] );
@@ -969,8 +968,6 @@ rowperm_t* create_root_permutations_index_full ( const arraydata_t *ad, int &tot
         }
         return 0;
     }
-    //   assert ( ad->colgroupsize[0]>=ad->strength );	// make sure root is uniform
-    //assert(ad->s[0]==2);	// make sure we are dealing with 2-factor arrays
 
     totalpermsr = static_cast<int> ( pow ( 2.0, ad->strength ) * factorial<int> ( ad->strength ) );
 
@@ -1010,7 +1007,31 @@ rowperm_t* create_root_permutations_index_full ( const arraydata_t *ad, int &tot
     return rperms;
 }
 
+template <class numtype, class objecttype> 
+										   /** Convert number to a permutation and apply to an array
+										   * See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations
+										   * @param permutation_index Index of permutation to apply
+										   * @param array Array of objects to be permuted
+										   * @param length Length of array
+										   * @return
+										   */
+void permutationLex(numtype k, objecttype *array, numtype length)
+{
+	numtype fact = factorial(length - 1);
+	objecttype tempj, temps;
 
+	for (int j = 0; j < length - 1; j++)
+	{
+		tempj = (k / fact) % (length - j);
+		temps = array[j + tempj];
+		for (int i = j + tempj; i >= j + 1; i--)
+		{
+			array[i] = array[i - 1]; // shift the chain right
+		}
+		array[j] = temps;
+		fact = fact / (length - (j + 1));
+	}
+}
 
 /**
 * @brief From a given permutation index construct the corresponding level permutations
@@ -1020,7 +1041,6 @@ rowperm_t* create_root_permutations_index_full ( const arraydata_t *ad, int &tot
 */
 void root_row_permutation_from_index ( int permindex,  const arraydata_t *ad, levelperm_t *lperms )
 {
-    //myprintf("permindex: %d\n", permindex);
     for ( colindex_t i=0; i<ad->strength; i++ ) {
         const int col = ad->strength-i-1;
         int fac = factorial<int> ( ad->s[col] );
@@ -1039,10 +1059,7 @@ void root_row_permutation_from_index ( int permindex,  const arraydata_t *ad, le
 template <class numtype>
 /* create permutation that induces a certain combination selection at a starting point */
 void create_perm_from_comb2 ( numtype *perm, const numtype *comb, int k, int ncols )
-{
-    // initialize
-    // init_perm ( perm, ncols );
-
+{   
     int *tmpperm = new_perm_init<int> ( ncols );
     for ( int i=0; i<k; i++ ) {
         perm[i]=tmpperm[comb[i]];
@@ -1050,7 +1067,6 @@ void create_perm_from_comb2 ( numtype *perm, const numtype *comb, int k, int nco
     }
     int j=0;
     for ( int i=k; i<ncols; i++ ) {
-        //myprintf("i %d: j %d, tmpperm[j] %d\n", i, j, tmpperm[j]);
         while ( tmpperm[j]<0 )
             j++;
         perm[i]=tmpperm[j];
