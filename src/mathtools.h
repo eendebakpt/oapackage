@@ -22,7 +22,7 @@
 #include <string.h>
 #include <deque>
 #include <cmath>
-#include <sstream> // std::stringstream
+#include <sstream> 
 
 #include <iomanip>
 #include <ostream>
@@ -51,13 +51,16 @@ template <class TYPE>
 class object_pool
 {
     std::vector<TYPE *> pool;
-    //std::queue<size_t> avail;
-    int maxpoolsize; /// maximum size of the pool
-    int nn;          /// number newly created objects
-    int rr;          /// re-used object count
+    /// maximum size of the pool
+    int maxpoolsize; 
+    /// number newly created objects
+    int nn;          
+    /// re-used object count
+    int rr;          
 
   public:
-    int verbose; // for debugging
+    /// verbosity level
+    int verbose;
 
   public:
     typedef typename std::vector<TYPE>::iterator iterator;
@@ -129,10 +132,7 @@ class object_pool
         if ((pool.size()) == 0)
         { // no reusable object
             nn++;
-            if (nn % 10000 == 0)
-            {
-                //   myprintf("object_pool::New(): allocate object # %d\n", nn );
-            }
+
             if (verbose)
             {
                 myprintf("  object_pool::New(): allocate object # %d\n", nn);
@@ -1454,15 +1454,12 @@ numtype *new_perm_init(int len)
     return perm;
 }
 
-//#include <iostream>
-//#include <iterator>
 
 template <typename _ForwardIterator>
 inline bool issorted(_ForwardIterator first, const _ForwardIterator last)
 {
     if (first == last)
         return true;
-    //    _ForwardIterator first = __first;
     _ForwardIterator __next = first;
     for (++__next; __next != last; first = __next, ++__next)
         if (*__next < *first)
@@ -1489,7 +1486,6 @@ returntype *new_valueindex(const basetype *bases, const numtype n)
     for (int i = n - 2; i >= 0; i--)
         valueindex[i] = valueindex[i + 1] * bases[i + 1];
 
-    //return valueindex[0]*bases[0];	// return max value
     return valueindex;
 }
 
