@@ -773,13 +773,14 @@ int compare_matrix(const numtype *A, const numtype *B, int r, int c)
 }
 
 /*!
- *	A small function that calculates the factorial of a number. Can be inlined if the compiler decides
- *	it is faster. Returns one if the number is smaller or equal to 1
+ *	A small function that calculates the factorial of a number. 
+    Returns one if the argument is smaller or equal to 1
  	\brief Calculates factorial
- *	\param f	Number to calculate the factorial of
+ *	\param number	Number to calculate the factorial of
+ *  \returns Factorial of specified number
  */
 template <class Type>
-inline Type fact(const Type f)
+inline Type factorial(const Type f)
 {
     if (f <= 1)
         return 1;
@@ -789,7 +790,7 @@ inline Type fact(const Type f)
 #ifdef OAOVERFLOW
         if (sol > std::numeric_limits<Type>::max() / 100)
         {
-            myprintf("fact: f %ld, i %d:  %ld, %ld\n", (long)f, i, (long)sol, (long)std::numeric_limits<Type>::max());
+            myprintf("fact: number %ld, i %d:  %ld, %ld\n", (long)f, i, (long)sol, (long)std::numeric_limits<Type>::max());
         }
 #endif
         sol *= i;
@@ -797,25 +798,26 @@ inline Type fact(const Type f)
     return sol;
 }
 
-/*!
+/*! A small function that calculates the factorial of a number.
   This inline factorial function is the same as the standard factorial calculation, except that the
   return type is generic
-  \brief Calculates factorial of type numtype
-  \param f number to calculate factorial of
-  */
-template <class numtype, class argtype>
-static inline numtype factorial(const argtype f)
-{
-    numtype sol = 1;
+  Returns one if the argument is smaller or equal to 1
 
-    if (f <= 1)
+  \param number number to calculate factorial of
+  */
+template <class return_type, class argtype>
+static inline return_type factorial_return_argument(const argtype number)
+{
+	return_type sol = 1;
+
+    if (number <= 1)
         return 1;
-    for (argtype i = 2; i <= f; i++)
+    for (argtype i = 2; i <= number; i++)
     {
 #ifdef OAOVERFLOW
-        if (sol > std::numeric_limits<numtype>::max() / (4 * i))
+        if (sol > std::numeric_limits<return_type>::max() / (4 * i))
         {
-            std::cout << "factorial: possible numberic overflow: f " << f << ", i " << i << ":  " << sol << ", " << std::numeric_limits<int>::max() << std::endl;
+            std::cout << "factorial: possible numberic overflow: number " << f << ", i " << i << ":  " << sol << ", " << std::numeric_limits<int>::max() << std::endl;
         }
 #endif
         sol *= i;
@@ -833,27 +835,27 @@ template <class Type>
 inline Type ncombs(const Type n, const Type k)
 {
     register int i;
-    Type sol = 1;                    ///n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!
+    Type sol = 1;                    // n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!
     for (i = n - k + 1; i <= n; i++) // since n-k > k usually
         sol *= i;
-    return sol / fact(k);
+    return sol / factorial<>(k);
 }
 
 class Combinations
 {
 public:
 
-	/// return max number of N that can be calculated with ncombscache
-	static int ncombscacheNumber();
+	/// return max number of N that can be calculated with number_combinations
+	static int number_combinaties_max_n();
 
-	/// initialize datastructure for ncombscache, this function is not thread safe
-	static void initncombscache(int N);
+	/// initialize datastructure for number_combinations, this function is not thread safe
+	static void initialize_number_combinations(int N);
 
 	/** Return number of combinations from previously calculated results
 	*
-	*  The results should be initialized with initncombscache
+	*  The results should be initialized with initialize_number_combinations
 	*/
-	static long ncombscache(int n, int k);
+	static long number_combinations(int n, int k);
 private:
 	static long **ncombsdata ;
 	static int ncombscachemax ;
@@ -995,47 +997,20 @@ void next_perm(permutationType *s, const int len)
     }
 }
 
-template <class numtype, class objecttype> /* permtype should be a numeric type, i.e. int or long */
-/**
- * See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations
- * @param k
- * @param s
- * @param n
- * @return
- */
-numtype *permutationLex(numtype k, objecttype *s, numtype n)
-{
-    numtype fact = factorial<numtype, int>(n - 1);
-    objecttype tempj, temps;
-
-    for (int j = 0; j < n - 1; j++)
-    {
-#ifdef OADEBUG
-        if (fact == 0)
-            myprintf("division by zero: j %d, fact %d, k %d\n", j, fact, k);
-#endif
-        tempj = (k / fact) % (n - j);
-        //printf("j %d, fact %d, tempj %d\n", j, fact, tempj);
-        temps = s[j + tempj];
-        for (int i = j + tempj; i >= j + 1; i--)
-        {
-            s[i] = s[i - 1]; // shift the chain right
-        }
-        s[j] = temps;
-        fact = fact / (n - (j + 1));
-    }
-    return s;
-}
-
 template <class objecttype, class numtype>
 /** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
+ *
+ * The permutation is peformed inplace.
+ *
+ * \param array Array of objects
+ * \param length Length of array
  */
-void random_perm(objecttype *s, numtype len)
+void random_perm(objecttype *array, numtype length)
 {
-    for (numtype i = 0; i < len - 1; i++)
+    for (numtype i = 0; i < length - 1; i++)
     {
-        numtype j = i + myrand() % (len - i);
-        std::swap(s[i], s[j]);
+        numtype j = i + myrand() % (length - i);
+        std::swap(array[i], array[j]);
     }
 }
 
@@ -1949,7 +1924,7 @@ std::vector<Type> permute(const std::vector<Type> x, const std::vector<IndexType
     std::vector<Type> y(x.size());
     for (size_t i = 0; i < x.size(); i++)
     {
-        //myprintf ( " permute %d: y[%d]=x[%d]=%f\n", i, i, indices[i], x[indices[i]] );
+        //myprintf ( " permute %d: y[%d]=x[%d]=%number\n", i, i, indices[i], x[indices[i]] );
         y[i] = x[indices[i]];
     }
     return y;
@@ -2052,23 +2027,29 @@ inline unsigned int ipow(unsigned int x, unsigned int p)
 }
 
 /// -1 to the power n (integer)
-inline int powmo(int n)
+inline int power_minus_one(int n)
 {
     return (n % 2 == 0) ? 1 : -1;
 }
 
-template <class Type>
-/// calculate value of Krawtchouk polynomial
-inline Type krawtchouk(Type j, Type x, Type n, Type s, int verbose = 0)
+/// -1 to the power n (integer)
+inline long power_minus_one(long n)
 {
-    Type val = 0;
+    return (n % 2 == 0) ? 1 : -1;
+}
 
-    for (Type i = 0; i <= j; i++)
+template <class IntegerType>
+/// calculate value of Krawtchouk polynomial
+inline IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0)
+{
+    IntegerType val = 0;
+
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+        val += power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
         if (verbose)
         {
-            Type tt = std::pow(double(-1), (double)i) * std::pow((double)(s - 1), (double)(j - i)) * ncombs(x, i) * ncombs(n - x, j - i);
+            IntegerType tt = std::pow(double(-1), (double)i) * std::pow((double)(s - 1), (double)(j - i)) * ncombs(x, i) * ncombs(n - x, j - i);
             myprintf("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n, (int)s, (int)i, (int)tt, (int)std::pow((double)-1, (double)i), (int)std::pow((double)s - 1, (double)(j - i)), (int)ncombs(x, i), (int)ncombs(n - x, j - i));
             myprintf("   ncombs(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)ncombs(n - x, j - i));
         }
@@ -2076,31 +2057,31 @@ inline Type krawtchouk(Type j, Type x, Type n, Type s, int verbose = 0)
     return val;
 }
 
-template <class Type>
+template <class IntegerType>
 /// calculate value of Krawtchouk polynomial
-inline Type krawtchouksCache(Type j, Type x, Type n)
+inline IntegerType krawtchouksCache(IntegerType j, IntegerType x, IntegerType n)
 {
-    Type val = 0;
+    IntegerType val = 0;
 
-    for (Type i = 0; i <= j; i++)
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * Combinations::ncombscache(x, i) * Combinations::ncombscache(n - x, j - i);
+        val += power_minus_one(i) * Combinations::number_combinations(x, i) * Combinations::number_combinations(n - x, j - i);
     }
     return val;
 }
 
-template <class Type>
+template <class IntegerType>
 /** calculate value of Krawtchouk polynomial
  *
  * @see https://en.wikipedia.org/wiki/Kravchuk_polynomials
  */
-inline Type krawtchouks(Type j, Type x, Type n)
+inline IntegerType krawtchouks(IntegerType j, IntegerType x, IntegerType n)
 {
-    Type val = 0;
+    IntegerType val = 0;
 
-    for (Type i = 0; i <= j; i++)
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * ncombs(x, i) * ncombs(n - x, j - i);
+        val += power_minus_one(i) * ncombs(x, i) * ncombs(n - x, j - i);
     }
     return val;
 }

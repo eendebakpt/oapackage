@@ -78,33 +78,7 @@ int main(int argc, char* argv[])
 	if (verbose)
 	  printf("oaconvert: output mode %d, nr %d nc %d\n", mode, nr, nc);
 	
-    if (0) {
-	bool sortarrays = opt.getFlag('s');
-        /* read in the arrays */
-        arraylist_t *arraylist = new arraylist_t;
-        if (verbose)
-            std::cout << "oaconvert: reading " << opt.getArgc() << " file(s)" << endl;
-        int n = readarrayfile( infile.c_str(), arraylist);
-
-
-        /* perform operations on arrays */
-        if (sortarrays) {
-            if (verbose)
-                std::cout << "Sorting arrays" << endl;
-            sort(arraylist->begin(), arraylist->end());
-        }
-
-        /* write arrays to file */
-
-        if (verbose)
-            std::cout << "oaconvert: writing " << arraylist->size() << " arrays to file " << outfile << std::endl;
-
-
-        writearrayfile(outfile.c_str(), arraylist, mode, nr, nc);
-
-        /* free allocated structures */
-        delete arraylist;
-    } else {
+    {
 		// streaming mode
 		
         int narrays=af.narrays;

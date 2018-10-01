@@ -190,9 +190,7 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
     }
 
     int nx=0;
-    //#get factor levels
     std::vector<int> s = arrayclass.getS();
-
     if ( optimmethod==DOPTIM_UPDATE ) {
         if ( arrayclass.is2level() )
             optimmethod=DOPTIM_FLIP;
@@ -220,7 +218,6 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
     int updateidx = 0;
 
 
-//#pragma omp for
     for ( int ii=0; ii<niter; ii++ ) {
         // select random row and column
         int r = updatepos[updateidx] % N;
@@ -228,8 +225,6 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
         updateidx= ( updateidx+1 ) % ( nn );
 
         int r2 = fastrandK ( N );
-
-        //r=rand()%N; c=rand()%k; r2=rand()%N;
 
         // make sure column is proper column group
         int c2 = sg.gstart[sg.gidx[c]] + fastrandK ( sg.gsize[gidx[c]] );
@@ -314,7 +309,6 @@ array_link  optimDeff ( const array_link &A0,  const arraydata_t &arrayclass, co
         if ( ( ii-lc ) >nabort ) {
             if ( verbose>=2 )
                 myprintf ( "optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, ( ii-lc ) );
-            //abort=true;
             break;
         }
 

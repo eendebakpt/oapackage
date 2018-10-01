@@ -75,7 +75,7 @@ int main ( int argc, char* argv[] ) {
     int nc=0;
     int nn;
 
-    Combinations::initncombscache ( 20 );
+    Combinations::initialize_number_combinations ( 20 );
 
     std::vector<std::string> infiles;
     for ( int i = 0 ; i < opt.getArgc() ; i++ ) {

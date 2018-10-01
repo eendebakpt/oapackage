@@ -273,11 +273,7 @@ int main ( int argc, char* argv[] )
 else {
             AA[ii]=Defficiency ( arraylist->at ( ii ), 0 );
 }
-	    if (0) {
-            arraylist->at ( ii ).DsEfficiency(1);
-            std::vector<double> dd = arraylist->at ( ii ).Defficiencies(1);
-	  printf("  dd %f %f %f\n", dd[0], dd[1], dd[2] );
-	    }
+
 	    #pragma omp critical
             {
                 if ( AA[ii]>maxA ) {
