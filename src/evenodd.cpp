@@ -540,9 +540,6 @@ void depth_extend_omp ( const arraylist_t &alist,  depth_extend_t &dextend, dept
         dextend.setposition ( extcol, i, alist.size(), nn, alocal.size() );
 #endif
 
-        if ( extcol==11 && 0 ) {
-            myprintf ( " dextend.setposition: %d, %d, %d\n", extcol, ( int ) i, ( int ) alist.size() );
-        }
         dextend.counter->addNfound ( extcol+1, alocal.size() );
         dextend.arraywriter->writeArray ( alocal );
         dextend.maxArrayCheck();

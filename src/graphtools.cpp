@@ -42,7 +42,6 @@ template<class Type>
 std::vector<Type> uniquevec ( const std::vector<Type> &v )
 {
     std::vector<Type> w = v;
-	// OPTIMIE: better method for this?
 	std::sort( w.begin(), w.end() );
     typename std::vector< Type >::iterator last = std::unique ( w.begin(), w.end() );
     w.erase ( last,  w.end() );

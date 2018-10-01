@@ -1485,25 +1485,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
           print_cperm ( tmp );
           printf ( "\n" );
      }
-     /*
-         if ( blocksize>8 && 0) {
 
-             double tx0=get_time_ms();
-             std::vector<cperm> cc = debug_branch0 ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
-             double tx1=get_time_ms();
-             std::vector<cperm> ccd = debug_branch ( candidate,  gstart, gend, block, blocksize,  check_indices, 0 );
-             double tx2=get_time_ms();
-
-
-             printfd ( "## debug branching %ld -> %ld (%.3f %.3f)\n",(long) cc.size(), ( long ) ccd.size(), tx1-tx0, tx2-tx1 );
-
-             printf ( " ---> orig list\n" );
-             showCandidates ( cc );
-             printf ( " ---> debug list\n" );
-             showCandidates ( ccd );
-             exit(0);
-         }
-     */
      // FIXME: enable the other branch!!!!!!!
      if ( verbose>=2 )
           printfd ( "  split\n" );
@@ -1544,7 +1526,7 @@ void inflateCandidateExtensionHelper ( std::vector<cperm> &list, const cperm &ba
           if ( verbose>=2 )
                printfd ( "nbc block %d: %d/%ld\n", block, nbc, iter );
 
-          if ( blocksize>10 && 0 ) {
+          if ( blocksize>10 && (verbose>=4) ) {
                printfd ( "block %d: nbc %ld\n", block, ( long ) nbc ) ;
                debug_candidate ( candidate, check_indices, "..." );
           }

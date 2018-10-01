@@ -1797,19 +1797,6 @@ std::vector<int> symmetrygroup2splits ( const symmetry_group &sg, int ncols, int
     if ( ncols>jj ) {
         splits.push_back ( jj );
     }
-    if ( sg.ngroups<2 && 0 ) {
-        myprintf( "symmetrygroup2splits: ? " );
-        display_vector ( splits );
-        myprintf( "\n" );
-
-        splits.clear();
-        splits.push_back ( 0 );
-        splits.push_back ( jj );
-
-        myprintf( "symmetrygroup2splits: after " );
-        display_vector ( splits );
-        myprintf( "\n" );
-    }
     return splits;
 }
 
@@ -3341,36 +3328,6 @@ array_transformation_t reductionDOP ( const array_link &al, int verbose )
 
 
     std::vector< GWLPvalue > dopgwp = projectionGWLPs ( al );
-    if ( 0 ) { // hack
-        printfd ( "hack\n" );
-        for ( int i=0; i<5; i++ ) {
-            array_link d = al.deleteColumn ( i );
-            std::vector<double> gma = GWLP ( d );
-            printfd ( " i %d\n", i );
-            al.show();
-            if ( i<3 ) {
-                std::copy ( al.array, al.array+al.n_rows* ( 5-1 ), d.array );
-            }
-            if ( i==3 && 0 ) {
-                std::copy ( al.array, al.array+al.n_rows* ( 5-1 ), d.array );
-
-            }
-            gma = GWLP ( d );
-            if ( gma[3]==1.1 ) {
-                myprintf( "huh?\n" );
-
-            }
-            for ( int j=0; j<0; j++ )
-                gma[4]=i;
-            myprintf( "gma %d: ", i );
-            display_vector ( gma );
-            myprintf( "\n" );
-            dopgwp[i]= gma;
-
-            //dopgwp[i]=i;
-        }
-    }
-
     indexsort is ( dopgwp );
 
 
