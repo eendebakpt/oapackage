@@ -3524,7 +3524,7 @@ void reduceArraysGWLP ( const arraylist_t *arraylist, arraylist_t &earrays, int 
             myprintf( "  delete-1-factor values sorted: " );
             display_vector< DOFvalue > ( sdofvalues );
 
-			myprintf("\n")
+			myprintf("\n");
         }
 
         symmetry_group sg ( sdofvalues, 0 );
