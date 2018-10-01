@@ -803,7 +803,7 @@ inline Type fact(const Type f)
   \brief Calculates factorial of type numtype
   \param f number to calculate factorial of
   */
-template <class numtype, class argtype>
+template <class numtype, class argtype = numtype>
 static inline numtype factorial(const argtype f)
 {
     numtype sol = 1;
@@ -833,7 +833,7 @@ template <class Type>
 inline Type ncombs(const Type n, const Type k)
 {
     register int i;
-    Type sol = 1;                    ///n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!
+    Type sol = 1;                    // n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!
     for (i = n - k + 1; i <= n; i++) // since n-k > k usually
         sol *= i;
     return sol / fact(k);
@@ -2052,23 +2052,29 @@ inline unsigned int ipow(unsigned int x, unsigned int p)
 }
 
 /// -1 to the power n (integer)
-inline int powmo(int n)
+inline int power_minus_one(int n)
 {
     return (n % 2 == 0) ? 1 : -1;
 }
 
-template <class Type>
-/// calculate value of Krawtchouk polynomial
-inline Type krawtchouk(Type j, Type x, Type n, Type s, int verbose = 0)
+/// -1 to the power n (integer)
+inline long power_minus_one(long n)
 {
-    Type val = 0;
+    return (n % 2 == 0) ? 1 : -1;
+}
 
-    for (Type i = 0; i <= j; i++)
+template <class IntegerType>
+/// calculate value of Krawtchouk polynomial
+inline IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0)
+{
+    IntegerType val = 0;
+
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+        val += power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
         if (verbose)
         {
-            Type tt = std::pow(double(-1), (double)i) * std::pow((double)(s - 1), (double)(j - i)) * ncombs(x, i) * ncombs(n - x, j - i);
+            IntegerType tt = std::pow(double(-1), (double)i) * std::pow((double)(s - 1), (double)(j - i)) * ncombs(x, i) * ncombs(n - x, j - i);
             myprintf("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n, (int)s, (int)i, (int)tt, (int)std::pow((double)-1, (double)i), (int)std::pow((double)s - 1, (double)(j - i)), (int)ncombs(x, i), (int)ncombs(n - x, j - i));
             myprintf("   ncombs(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)ncombs(n - x, j - i));
         }
@@ -2076,31 +2082,31 @@ inline Type krawtchouk(Type j, Type x, Type n, Type s, int verbose = 0)
     return val;
 }
 
-template <class Type>
+template <class IntegerType>
 /// calculate value of Krawtchouk polynomial
-inline Type krawtchouksCache(Type j, Type x, Type n)
+inline IntegerType krawtchouksCache(IntegerType j, IntegerType x, IntegerType n)
 {
-    Type val = 0;
+    IntegerType val = 0;
 
-    for (Type i = 0; i <= j; i++)
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * Combinations::ncombscache(x, i) * Combinations::ncombscache(n - x, j - i);
+        val += power_minus_one(i) * Combinations::ncombscache(x, i) * Combinations::ncombscache(n - x, j - i);
     }
     return val;
 }
 
-template <class Type>
+template <class IntegerType>
 /** calculate value of Krawtchouk polynomial
  *
  * @see https://en.wikipedia.org/wiki/Kravchuk_polynomials
  */
-inline Type krawtchouks(Type j, Type x, Type n)
+inline IntegerType krawtchouks(IntegerType j, IntegerType x, IntegerType n)
 {
-    Type val = 0;
+    IntegerType val = 0;
 
-    for (Type i = 0; i <= j; i++)
+    for (IntegerType i = 0; i <= j; i++)
     {
-        val += powmo(i) * ncombs(x, i) * ncombs(n - x, j - i);
+        val += power_minus_one(i) * ncombs(x, i) * ncombs(n - x, j - i);
     }
     return val;
 }
