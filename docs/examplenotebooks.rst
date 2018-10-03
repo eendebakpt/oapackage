@@ -3,7 +3,7 @@ Example notebooks
 
 .. _example_notebooks_section:
 
-The example Jupyter notebooks can be found on github https://github.com/eendebakpt/oapackage/tree/master/docs/examples.
+This section contains several examples for generating, manipulating and analyzing designs using the Orthogonal Arrays package. The  examples are shown using Jupyter notebooks, which can be found on github https://github.com/eendebakpt/oapackage/tree/master/docs/examples.
 
 .. toctree::
     :caption: List of example notebooks
