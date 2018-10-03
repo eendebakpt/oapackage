@@ -2442,7 +2442,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 
      // create data in integer type (we are working with 2-level arrays, convert them later */
      Eigen::MatrixXi mymatrix = Eigen::MatrixXi::Zero ( n,m );
-     int *data = mymatrix.data();
+     int *modelmatrix_raw_data = mymatrix.data();
 
 
      // init first column
@@ -2455,11 +2455,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
      ww=1;
      for ( int c=0; c<k; ++c ) {
           int ci = c*n;
-
-          std::copy ( al.array+ci, al.array+ci+n, data+ ( ww+c ) *n );
-          for ( int r=0; r<n; ++r ) {
-               //mymatrix ( r, ww+c ) = al.array[r+ci];
-          }
+          std::copy ( al.array+ci, al.array+ci+n, modelmatrix_raw_data+ ( ww+c ) *n );
      }
 
      // init interactions
@@ -2471,9 +2467,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
                int ci2 = c2*n;
 
                for ( int r=0; r<n; ++r ) {
-                    //mymatrix ( r, ww ) = ( al.array[r+ci]+al.array[r+ci2] ) %2;
-                    data[r+ww*n] = ( al.array[r+ci]+al.array[r+ci2] ) %2;
-                    //if (mymatrix(r,ww) != ( al.array[r+ci]+al.array[r+ci2] ) %2 ) exit(1);
+                    modelmatrix_raw_data[r+ww*n] = ( al.array[r+ci]+al.array[r+ci2] ) %2;
                }
                ww++;
           }
@@ -2481,10 +2475,8 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 
      mymatrix.array() *=2;
      mymatrix.array() -= 1;
-     //mymatrix.array() -= .5; mymatrix.array() *= 2;
 
      return mymatrix;
-     //return mymatrix;
 }
 
 MatrixFloat array2eigenModelMatrix ( const array_link &al )
