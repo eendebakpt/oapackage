@@ -818,7 +818,6 @@ int arrayrank ( const array_link &al )
 }
 
 
-/// return rank, maxPivot etc.
 int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
 {
     if (verbose) {
@@ -864,10 +863,8 @@ int arrayrankInfo ( const Eigen::MatrixXd &mymatrix, int verbose )
     return rank;
 }
 
-/// return rank of an array based on Eigen::FullPivLU
 int arrayrankInfo ( const array_link &al, int verbose )
 {
-	printfd("xxx\n"); al.show(); fflush(stdout);
     Eigen::MatrixXd mymatrix = arraylink2eigen ( al );
     int rank = arrayrankInfo( mymatrix, verbose );
     return rank;
@@ -1044,11 +1041,10 @@ Eigen::MatrixXd array2xfeigen ( const array_link &al )
 
     // init first column
     int ww=0;
-    //mymatrix.col(0).setConstant(1);
     for ( int r=0; r<n; ++r ) {
         mymatrix ( r, 0 ) =1;
     }
-    // init array
+    // set main effects
     ww=1;
     for ( int c=0; c<k; ++c ) {
         int ci = c*n;
@@ -1057,9 +1053,7 @@ Eigen::MatrixXd array2xfeigen ( const array_link &al )
         }
     }
 
-    //	mymatrix.block(0,0, n, k+1).array() -= 1;
-
-    // init interactions
+    // set interactions
     ww=k+1;
     for ( int c=0; c<k; ++c ) {
         int ci = c+1;
@@ -1164,8 +1158,6 @@ array_link array2xf ( const array_link &al )
     const int k = al.n_columns;
     const int n = al.n_rows;
     const int m = 1 + k + k* ( k-1 ) /2;
-	//assert(k>=0);
-	//assert(n>=0);
 
 	array_link out ( n, m, array_link::INDEX_DEFAULT );
 
@@ -1210,7 +1202,7 @@ using namespace Eigen;
 #include <Eigen/LU>
 
 
-void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose )
+void DAEefficiencyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose )
 {
     // printfd("start\n");
 
@@ -1319,13 +1311,8 @@ void DAEefficiecyWithSVD ( const Eigen::MatrixXd &x, double &Deff, double &vif, 
 }
 
 
-/** Calculate the rank of an orthogonal array (rank of [I X X_2] )
- *
- * The vector ret is filled with the rank, Defficiency, VIF efficiency and Eefficiency
- */
 int array_rank_D_B ( const array_link &al, std::vector<double> *ret  , int verbose )
 {
-    //printfd("start\n");
     int k = al.n_columns;
     int n = al.n_rows;
     int m = 1 + k + k* ( k-1 ) /2;
@@ -1338,8 +1325,7 @@ int array_rank_D_B ( const array_link &al, std::vector<double> *ret  , int verbo
     double Eeff;
     int rank;
 
-    //ABold(mymatrix, A, B, rank, verbose);
-    DAEefficiecyWithSVD ( mymatrix, Deff, B, Eeff, rank, verbose );
+    DAEefficiencyWithSVD ( mymatrix, Deff, B, Eeff, rank, verbose );
 
     if ( ret!=0 ) {
         ret->push_back ( rank );
@@ -1348,10 +1334,6 @@ int array_rank_D_B ( const array_link &al, std::vector<double> *ret  , int verbo
         ret->push_back ( Eeff );
     }
     return rank;
-
-//	   cout << "Here is the matrix A:\n" << A << endl;
-    // FullPivLU<Matrix3f> lu_decomp(A);
-    //cout << "The rank of A is " << lu_decomp.rank() << endl;
 }
 
 std::vector<double> Aefficiencies ( const array_link &al, int verbose )
@@ -1439,12 +1421,7 @@ std::vector<int> Jcharacteristics ( const array_link &al, int jj, int verbose )
 double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
 {
     double dd=-1;
-    //int n = mymatrix.rows();
     int m = mymatrix.cols();
-    //int N = n;
-
-    //    Eigen::FullPivLU< Eigen::MatrixXd> lu_decomp(mymatrix);
-    //  int rank = lu_decomp.rank();
 
     Eigen::MatrixXd mm = mymatrix.transpose() * mymatrix;
     SelfAdjointEigenSolver<Eigen::MatrixXd> es;
@@ -1455,7 +1432,6 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
     if ( S[m-1]<1e-15 ) {
         if ( verbose>=2 ) {
             myprintf ( "   array is singular, setting det to zero\n" );
-
         }
         dd=0;
         return dd;
@@ -1475,8 +1451,6 @@ double detXtX ( const Eigen::MatrixXd &mymatrix, int verbose )
     Eigen::ArrayXd Sa=Smat.array();
     dd = exp ( 2*Sa.log().sum() );
 
-    //
-
     if ( S[0]<1e-15 ) {
         if ( verbose>=2 )
             myprintf ( "Avalue: singular matrix\n" );
@@ -1491,6 +1465,7 @@ typedef Eigen::ArrayXf MyArrayf;
 typedef Eigen::VectorXf MyVectorf;
 
 
+/// calculate determinant of X^T X by using the SVD
 double detXtXfloat ( const MyMatrixf &mymatrix, int verbose )
 {
     double dd=-1;
@@ -1561,18 +1536,8 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
     int nme = -1;	/// number of main effects in contrast matrix
 
     if ( arrayclass.is2level() ) {
-        //Eigen::MatrixXi Xint =  array2eigenModelMatrixInt ( al );
-        //matXtX = ( Xint.transpose() *(Xint) ).cast<eigenFloat>() /n;
 
         X = array2eigenModelMatrix ( al );
-
-
-
-        //X1i = array2eigenX1 ( al, 1 );
-        //	X2 = array2eigenX2 ( al );
-        //X2 = X.block ( 0, 1+k, N, k* ( k-1 ) /2 );
-        //std::cout << "X2\n" << X2 << std::endl; std::cout << "X2a\n" << X2a << std::endl;
-        //if (X2a==X2) myprintf("equal!"); exit(0);
 
         n2fi =  k* ( k-1 ) /2;
         nme = k;
@@ -1582,21 +1547,13 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
         std::pair<MyMatrix,MyMatrix> mm = array2eigenModelMatrixMixed ( al, 0 );
         const MyMatrix &X1=mm.first;
         const MyMatrix &X2=mm.second;
-        //eigenInfo(X1i, "X1i");
-        //X1i.resize ( N, 1+X1.cols() );
-        //X1i << MyMatrix::Constant ( N, 1, 1 ),  X1;
-        //X2=mm.second;
         X.resize ( N, 1+X1.cols() +X2.cols() );
         X << MyMatrix::Constant ( N, 1, 1 ),  X1, X2;
 
         n2fi = X2.cols();
         nme = X1.cols();
-
-
     }
     MyMatrix matXtX = ( X.transpose() * ( X ) ) /n;
-
-    //Matrix X1i =  X.block(0,0,N, 1+nme);
 
     /*
     // https://forum.kde.org/viewtopic.php?f=74&t=85616&p=146569&hilit=multiply+transpose#p146569
@@ -1612,33 +1569,18 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
     matXtX.triangularView<Eigen::StrictlyLower>() = matXtX.transpose();
     */
 
-    if ( 0 ) {
-        Eigen::MatrixXf dummy = matXtX.cast<float>();
-        double dum1 = matXtX.determinant();
-        double dum2 = dummy.determinant();
-        myprintf ( "%f %f\n", dum1, dum2 );
-    }
-    double f1 = matXtX.determinant();
-    //double f2 = ( matXtX.block(1+nme, 1+nme, n2fi, n2fi) ).determinant();
 
+    double f1 = matXtX.determinant();
 
     int nm = 1+nme+n2fi;
 
-    //if (1) {
     MyMatrix tmp ( nm,1+n2fi ); //tmp.resize ( nm, 1+n2fi);
     tmp << matXtX.block ( 0, 0, nm, 1 ), matXtX.block ( 0, 1+nme, nm, n2fi );
     MyMatrix mX2i ( 1+n2fi, 1+n2fi ); //X2i.resize ( 1+n2fi, 1+n2fi);
     mX2i << tmp.block ( 0, 0, 1, 1+n2fi ), tmp.block ( 1+nme, 0, n2fi, 1+n2fi );
 
     double f2i = ( mX2i ).determinant();
-    //double f2i = ((X2i.transpose()*X2i)/n ).determinant();
-
-    //if (fabs(f2i)<1e-15) { std::cout << mX2i << std::endl; exit(1); }
-
-
-    //double f2 = ( X2.transpose() *X2/n ).determinant();
     double t = ( matXtX.block ( 0,0,1+nme, 1+nme ) ).determinant();
-    //double t = ( X1i.transpose() *X1i/n ).determinant();
 
     double D=0, Ds=0, D1=0;
     int rank = m;
@@ -1671,13 +1613,6 @@ std::vector<double> Defficiencies ( const array_link &al, const arraydata_t & ar
     if ( verbose>=2 ) {
         myprintf ( "Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1 );
     }
-
-    /*
-    if ( 0 ) {
-    	double dd = detXtX( X/sqrt ( double ( n ) ) );
-    	double Dnew = pow ( dd, 1./m );
-    	myprintf ( "D %.15f -> %.15f\n", D, Dnew );
-    } */
 
     std::vector<double> d ( 3 );
     d[0]=D;

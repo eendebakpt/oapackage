@@ -2414,7 +2414,7 @@ doublevector2binfile ( const std::string fname, std::vector < Type > vals,
 
 }
 
-/// Write a vector of vector  elements to binary file
+/// Write a vector of vector elements to binary file
 inline void
 vectorvector2binfile ( const std::string fname,
                        const std::vector < std::vector < double > >vals,
@@ -2452,19 +2452,35 @@ vectorvector2binfile ( const std::string fname,
     fclose ( fid );
 }
 
-/* Convertion to Eigen matrices */
+/* Conversion to Eigen matrices */
 
 
-/// convert 2-level array to second order interaction matrix in Eigen format
-MatrixFloat array2eigenX2 ( const array_link & al );
+/** convert 2-level array to main effects in Eigen format
+ *
+ * \param al Array to convert
+ * \param intercept If True, then include the intercept
+ * \returns The main effects model
+ */
 MatrixFloat array2eigenX1 ( const array_link & al, int intercept = 1 );
+
+/** Convert 2-level array to second order interaction matrix in Eigen format
+ *
+ * The intercept and main effects are not included.
+ *
+ * \param al Array to convert
+ * \returns The second order interaction model
+ */
+MatrixFloat array2eigenX2(const array_link & al);
 
 /// convert 2-level array to second order model matrix (intercept, X1, X2)
 MatrixFloat array2eigenModelMatrix ( const array_link & al );
 
 
-/// convert array to model matrix in Eigen format
-MatrixFloat array2eigenME ( const array_link & al, int verbose = 1 );
+/** Convert array to model matrix in Eigen format
+ *
+ * @see array2eigenModelMatrixMixed
+ */
+MatrixFloat array2eigenMainEffects( const array_link & al, int verbose = 1 );
 
 /// create first and second order model matrix for mixed-level array
 std::pair < MatrixFloat,
@@ -2472,11 +2488,23 @@ std::pair < MatrixFloat,
             int verbose = 1 );
 
 
-/// return index of specified array in a file. returns -1 if array is not found
-int arrayInFile ( const array_link &al, const char *afile, int verbose=1 );
+/** return index of specified array in a file. returns -1 if array is not found
+ *
+ * \param array Array to find
+ * \param array_file Location if file with arrays
+ * \param verbose Verbosity level
+ * \returns Position of array in list
+ */
+int arrayInFile ( const array_link &array, const char *array_file, int verbose=1 );
 
-/// return index of specified array in a list. returns -1 if array is not found
-int arrayInList ( const array_link &al, const arraylist_t &ll, int verbose=1 );
+/** return index of specified array in a list. returns -1 if array is not found
+ *
+ * \param al Array to find
+ * \param arrays List of arrays
+ * \param verbose Verbosity level
+ * \returns Position of array in list
+ */
+int arrayInList ( const array_link &al, const arraylist_t &arrays, int verbose=1 );
 
 #endif
 

@@ -2147,7 +2147,6 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 {
      int k = al.n_columns;
      int n = al.n_rows;
-     //int m = 1 + k + k* ( k-1 ) /2;
 
      MatrixFloat mymatrix = MatrixFloat::Zero ( n,k* ( k-1 ) /2 );
 
@@ -2205,7 +2204,7 @@ void eigenInfoF ( const Eigen::MatrixXf m, const char *str, int verbose )
 
 }
 
-MatrixFloat array2eigenME ( const array_link &al, int verbose )
+MatrixFloat array2eigenMainEffects ( const array_link &al, int verbose )
 {
      std::pair<MatrixFloat,MatrixFloat> mm = array2eigenModelMatrixMixed ( al, verbose );
      return mm.first;
@@ -2387,34 +2386,6 @@ MatrixFloat array2eigenX1 ( const array_link &al, int intercept )
           ww+=1;
      }
      // init array
-     for ( int c=0; c<k; ++c ) {
-          int ci = c*n;
-          for ( int r=0; r<n; ++r ) {
-               mymatrix ( r, ww+c ) = al.array[r+ci];
-          }
-     }
-
-     mymatrix.array() -= .5;
-     mymatrix.array() *= 2;
-
-     return mymatrix;
-}
-
-MatrixFloat array2eigenX1 ( const array_link &al )
-{
-     int k = al.n_columns;
-     int n = al.n_rows;
-
-     MatrixFloat mymatrix = MatrixFloat::Zero ( n, 1+k );
-
-     // init first column
-     int ww=0;
-     for ( int r=0; r<n; ++r ) {
-          mymatrix ( r, ww ) = 1;
-     }
-
-     // init array
-     ww=1;
      for ( int c=0; c<k; ++c ) {
           int ci = c*n;
           for ( int r=0; r<n; ++r ) {

@@ -18,16 +18,18 @@
 
 #define stringify( name ) # name
 
-/// calculate determinant of X^T X by using the SVD
-double detXtX ( const Eigen::MatrixXd & mymatrix, int verbose = 1 );
-
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
-void DAEefficiecyWithSVD ( const Eigen::MatrixXd & x, double &Deff,
+void DAEefficiencyWithSVD ( const Eigen::MatrixXd & x, double &Deff,
                            double &vif, double &Eeff, int &rank, int verbose );
 
-/// Calculate the rank of the second order interaction matrix of an orthogonal array, the rank, D-efficiency, VIF-efficiency and E-efficiency are appended to the second argument
-int array_rank_D_B ( const array_link & al, std::vector < double >*ret =
-                         0, int verbose = 0 );
+/** Calculate the rank of the second order interaction matrix of an orthogonal array
+ *
+ * The model is the intercept, main effects and interaction effects
+ * The rank, D-efficiency, VIF-efficiency and E-efficiency are appended to the second argument
+ *
+ * The vector ret is filled with the rank, Defficiency, VIF efficiency and Eefficiency
+ */
+int array_rank_D_B ( const array_link & al, std::vector < double >*ret = 0, int verbose = 0 );
 
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition
 double Defficiency ( const array_link & al, int verbose = 0 );
@@ -46,18 +48,15 @@ double Aefficiency ( const array_link & al, int verbose = 0 );
 double Eefficiency ( const array_link & al, int verbose = 0 );
 
 /// calculate various A-efficiencies
-std::vector < double >
-Aefficiencies ( const array_link & al, int verbose = 0 );
+std::vector < double > Aefficiencies ( const array_link & al, int verbose = 0 );
 
 
 #ifdef FULLPACKAGE
 /// Return the D-efficiencies for the projection designs
-std::vector < double >
-projDeff ( const array_link & al, int kp, int verbose );
+std::vector < double > projDeff ( const array_link & al, int kp, int verbose );
 
 /// Return the projection estimation capacity sequence of a design
-std::vector < double >
-PECsequence ( const array_link & al, int verbose = 0 );
+std::vector < double > PECsequence ( const array_link & al, int verbose = 0 );
 #endif
 
 /// Return the distance distribution of a design
@@ -102,40 +101,54 @@ std::vector < GWLPvalue > projectionGWLPs ( const array_link & al );
 std::vector < GWLPvalue > sortGWLP ( std::vector < GWLPvalue > );
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
-std::vector < double >
-projectionGWLPvalues ( const array_link & al );
+std::vector < double > projectionGWLPvalues ( const array_link & al );
 
-/** calculate centered L2-discrepancy
+/** calculate centered L2-discrepancy of a design
  *
  * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000
  */
 double CL2discrepancy ( const array_link & al );
 
-/// calculate second order interaction matrix for 2-level array (does not include intercept and matrix itself)
+/** Calculate second order interaction model for 2-level array
+*
+* \param array Array to calculate second order interaction model from
+* \returns Array interaction effects
+*/
 array_link array2secondorder ( const array_link & al );
 
-/// add intercept and second order interactions to a 2-level array
+/** calculate second order interaction model for 2-level array
+ *
+ * \param array Array to calculate second order interaction model from
+ * \returns Array with intercept, main effects and interaction effects
+ */
 array_link array2xf ( const array_link & al );
 
-/// add intercept and second order interactions to an array
+/** calculate second order interaction model for 2-level array
+*
+* \param array Array to calculate second order interaction model from
+* \returns Array with intercept, main effects and interaction effects
+*/
 Eigen::MatrixXd array2xfeigen ( const array_link & al );
 
-/// return rank of an array based on FullPivHouseholderQR (defined at compile time)
+/// return rank of an array based on FullPivHouseholderQR
 int arrayrankFullPivQR ( const array_link &al, double threshold = -1 );
 
-/// return rank of an array based on ColPivHouseholderQR (defined at compile time)
+/// return rank of an array based on ColPivHouseholderQR 
 int arrayrankColPivQR ( const array_link & al, double threshold = -1 );
 
+/// return rank of an array based on arrayrankFullPivLU 
 int arrayrankFullPivLU ( const array_link &al, double threshold = -1 );
+
+/// return rank of an array based on Eigen::JacobiSVD 
 int arrayrankSVD ( const array_link &al, double threshold = -1 );
 
 /// calculate the rank of an array
 int arrayrank ( const array_link & al );
 
-/// return rank of an array based on Eigen::FullPivLU
+/// Return rank of an array. Information about the different methods for rank calculation is printed to stdout
 int arrayrankInfo ( const Eigen::MatrixXd &, int verbose = 1 );
 
-/// print information related to rank calculations
+/// Return rank of an array. Information about the different methods for rank calculation is printed to stdout
 int arrayrankInfo ( const array_link &al, int verbose=1 );
 
 /// convert array_link to Eigen matrix
@@ -246,7 +259,7 @@ public:
     int rankxf ( const array_link & al );
 };
 
-/// return the condition number of a matrix
+/// Return the condition number of a matrix
 double conditionNumber ( const array_link &M );
 
 #ifdef FULLPACKAGE
