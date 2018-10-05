@@ -75,30 +75,23 @@ typedef (unsigned __int64) uint64_t;
 
 #include <Eigen/Core>
 
-namespace Eigen
-{
-typedef Eigen::Matrix < long double, Eigen::Dynamic,
-        Eigen::Dynamic > MatrixXld;
-}
-
-/// default float matrix type used
-//typedef Eigen::MatrixXf MatrixFloat; typedef Eigen::ArrayXf ArrayFloat; typedef float eigenFloat;
+//namespace Eigen
+//{
+//typedef Eigen::Matrix < long double, Eigen::Dynamic, Eigen::Dynamic > MatrixXld;
+//}
 
 
-// use double
-typedef
-Eigen::MatrixXd
-MatrixFloat;
-typedef
-Eigen::ArrayXd
-ArrayFloat;
-typedef
-Eigen::VectorXd
-VectorFloat;
-typedef double
-eigenFloat;
+// float types used for Eigen calculations
+typedef Eigen::MatrixXd MatrixFloat;
+typedef Eigen::ArrayXd ArrayFloat;
+typedef Eigen::VectorXd VectorFloat;
+typedef double eigenFloat;
 
-/// show information about Eigen matrix
+/** Print information about an Eigen matrix
+*
+* \param m Matrix about which to print information
+* \param str String to prepend in output
+*/
 void eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
 
 
@@ -124,7 +117,6 @@ void eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
 %ignore::write_array;
 %ignore::write_array_latex;
 %ignore::finish_arrayfile;
-//%ignore append_arrays;
 %ignore arrayfile_t::arrayNbits;
 %ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
@@ -173,12 +165,7 @@ typedef const int const_colindex_t;		    /** constant version of type used for c
 typedef array_t * array_p;			/** pointer to array */
 typedef carray_t * carray_p;			/** point to constant array */
 
-//#define XX
-#ifdef XX
-  typedef std::vector < int > rowperm_t;				/** type of row permutation */
-#else
-  typedef rowindex_t * rowperm_t;			/** type of row permutation */
-#endif
+typedef rowindex_t * rowperm_t;			/** type of row permutation */
 typedef colindex_t * colperm_t;		       /** type of column permutation */
 typedef array_t * levelperm_t;		       /** type of level permutation */
 
@@ -197,9 +184,7 @@ struct arraydata_t;
 int sizeof_array_t();
 
 /// possible values for J-values of 2-level design
-inline
-std::vector < int >
-Fval ( int N, int strength )
+inline std::vector < int > possible_F_values ( int N, int strength )
 {
     int x = pow ( ( double ) 2, strength + 1 );	// TODO: replace by integer power
     int nn = floor ( ( double ) N / x ) + 1;
@@ -445,8 +430,7 @@ arraydata_t *readConfigFile ( const char *file );
  * @return
  */
 inline
-std::string
-printfstring ( const char *message, ... )
+std::string printfstring ( const char *message, ... )
 {
     char buf[8 * 1024];
 
@@ -467,13 +451,10 @@ printfstring ( const char *message, ... )
 /**
  * @brief Make a copy of an array
  */
-inline void
-copy_array ( const array_t * src, array_t * const dst, const int nrows,
-             const int ncols )
+inline void copy_array ( const array_t * src, array_t * const dst, const int nrows, const int ncols )
 {
     memcpy ( dst, src, sizeof ( array_t ) * nrows * ncols );
 }
-
 
 
 /**
@@ -481,8 +462,7 @@ copy_array ( const array_t * src, array_t * const dst, const int nrows,
  * @param array
  * @return
  */
-inline int
-destroy_array ( array_t * array )
+inline int destroy_array ( array_t * array )
 {
     free ( array );
     return 0;
@@ -494,10 +474,8 @@ destroy_array ( array_t * array )
  * @param ncols Number of columns
  * @return
  */
-static inline array_t *
-create_array ( const int nrows, const int ncols )
+static inline array_t * create_array ( const int nrows, const int ncols )
 {
-    //myprintf("  create_array: size %d (%d %d)\n", nrows*ncols, nrows, ncols);
     array_t *array = ( array_t * ) malloc ( nrows * ncols * sizeof ( array_t ) );
 
 #ifdef OADEBUG
@@ -529,8 +507,7 @@ create_array ( const arraydata_t * ad )
  * @param rend
  * @return
  */
-inline int
-equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
+inline int equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
                    rowindex_t nrows, rowindex_t rstart, rowindex_t rend )
 {
     return std::equal ( A + col * nrows + rstart, A + col * nrows + rend,
@@ -540,8 +517,7 @@ equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
 /**
  * @brief Clone an array
  */
-inline array_t *
-clone_array ( const array_t * const array, const rowindex_t nrows,
+inline array_t * clone_array ( const array_t * const array, const rowindex_t nrows,
               const colindex_t ncols )
 {
     array_t *clone = create_array ( nrows, ncols );
@@ -551,16 +527,15 @@ clone_array ( const array_t * const array, const rowindex_t nrows,
 }
 
 
-/**
- * @brief Perform inverse column permutation on an array
+/** @brief Perform inverse column permutation on an array
+ *
  * @param source
  * @param target
  * @param perm
  * @param nrows
  * @param ncols
  */
-inline void
-perform_inv_column_permutation ( const array_t * source, array_t * target,
+inline void perform_inv_column_permutation ( const array_t * source, array_t * target,
                                  colperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ ) {
@@ -569,8 +544,15 @@ perform_inv_column_permutation ( const array_t * source, array_t * target,
     }
 }
 
-inline void
-perform_column_permutation ( carray_t * source, array_t * target,
+/** @brief Perform column permutation on an array
+*
+* @param source
+* @param target
+* @param perm
+* @param nrows
+* @param ncols
+*/
+inline void perform_column_permutation ( carray_t * source, array_t * target,
                              colperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ ) {
@@ -580,16 +562,15 @@ perform_column_permutation ( carray_t * source, array_t * target,
 }
 
 
-/**
- * @brief Perform a row permutation
+/** @brief Perform a row permutation
+ *
  * @param source Source array
  * @param target Target array
  * @param perm Permutation to perform
  * @param nrows Number of rows
  * @param ncols Numer of columns
  */
-inline void
-perform_row_permutation ( const array_t * source, array_t * target,
+inline void perform_row_permutation ( const array_t * source, array_t * target,
                           rowperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ )
@@ -598,9 +579,15 @@ perform_row_permutation ( const array_t * source, array_t * target,
         }
 }
 
-/// apply inverse row permutation
-inline void
-perform_inv_row_permutation ( const array_t * source, array_t * target,
+/** @brief Perform a row permutation
+*
+* @param source Source array
+* @param target Target array
+* @param perm Permutation to perform
+* @param nrows Number of rows
+* @param ncols Numer of columns
+*/
+inline void perform_inv_row_permutation ( const array_t * source, array_t * target,
                               rowperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ )
@@ -681,13 +668,13 @@ public:
     /// return array with selected column removed
     array_link deleteColumn ( int index ) const;
 
-    /// return array with first n rows
+    /// return array with first number_of_arrays rows
     array_link selectFirstRows ( int nrows ) const;
 
-    /// return array with first n columns selected
+    /// return array with first number_of_arrays columns selected
     array_link selectFirstColumns ( int ncolumns ) const;
 
-    /// return array with last n columns selected
+    /// return array with last number_of_arrays columns selected
     array_link selectLastColumns ( int ncolumns) const;
 
     /// select columns from an array
@@ -1073,7 +1060,7 @@ inline arraylist_t addConstant ( const arraylist_t & lst, int v )
     return out;
 }
 
-/** Return number of arrays with j_{2n+1}=0 for n<m */
+/** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
 std::vector < int > getJcounts ( arraylist_t * arraylist, int N, int k, int verbose = 1 );
 
 
@@ -1555,32 +1542,12 @@ public:
         return c;
     }
 
-    /// apply transformation to an array
+    /// apply transformation to an array (inplace)
     void apply ( array_t * sourcetarget );
 
     /// apply transformation to an array
-    void apply ( const array_t * source, array_t * target ) const {
-
-        array_t *tmp = create_array ( ad );
-
-        /* column permutations */
-        perform_inv_column_permutation ( source, tmp, cperm, ad->N, ad->ncols );
-
-        /* level permutations */
-        for ( colindex_t c = 0; c < ad->ncols; c++ ) {
-#ifdef SAFELPERM
-            safe_perform_level_perm ( tmp + c * ad->N, ad->N, lperms[c], ad->s[c] );
-#else
-            perform_level_perm ( tmp + c * ad->N, ad->N, lperms[c] );
-#endif
-        }
-
-        /* row permutations */
-        perform_inv_row_permutation ( tmp, target, rperm, ad->N, ad->ncols );
-
-        destroy_array ( tmp );
-    }
-
+	void apply(const array_t * source, array_t * target) const;
+	
     /// apply transformation and show resulting array
     void print_transformed ( carray_t * source ) const;
 
@@ -1666,37 +1633,8 @@ public:
      * E.g. (T1*T2)(x) = T1(T2(x))
      * 
      */
-    conference_transformation_t operator* ( const conference_transformation_t &rhs ) const {
-        const int N = this->nrows;
-        const int ncols = this->ncols;
-
-        conference_transformation_t c ( N, ncols );
-
-        const conference_transformation_t & lhs = *this;
-
-        // perform the rows permutations       
-        composition_perm ( rhs.rperm, lhs.rperm, c.rperm );
-        
-        // perform the column permutations
-        composition_perm ( rhs.cperm, lhs.cperm, c.cperm );
-
-        /* rowsign switches */
-        for ( rowindex_t ri = 0; ri < N; ri++ ) {
-            int riz = rhs.rperm[ri];
-            int rix = c.rperm[ri];
-            c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
-        }
-
-        /* column sign switches */
-        for ( colindex_t ci = 0; ci < ncols; ci++ ) {
-            int ciz = rhs.cperm[ci];
-            int cix = c.cperm[ci];
-            c.cswitch[cix] =  lhs.cswitch[cix] * rhs.cswitch[ciz];
-        }
-
-        return c;
-    }
-
+	conference_transformation_t operator* (const conference_transformation_t &rhs) const;
+	
     void setrowperm ( std::vector < int >rp ) {
         rperm = rp;
     };
@@ -1749,7 +1687,6 @@ public:
     afilerw_t rwmode;
 
     // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
-
 
 	/// number of arrays in the file
     int narrays;
@@ -1990,7 +1927,7 @@ public:
     static int arrayNbits ( const arraydata_t & ad ) {
         int m = 0;
         for ( int i = 0; i < ad.ncols; ++i ) {
-            //myprintf("s[i]: %d\n", ad.s[i]);
+            //myprintf("s[i]: %d\number_of_arrays", ad.s[i]);
             if ( ad.s[i] > m ) {
                 m = ad.s[i];
             }
@@ -2033,39 +1970,39 @@ using namespace arrayfile;
 /// return number of arrays in an array file
 long nArrays ( const char *fname );
 
-/// return number of arrays in an array file
-inline void
-arrayfileinfo ( const char *fname, int &n, int &nr, int &nc )
+/** return information about file with arrays
+ *
+ * \param fname Filename of array file
+ * \param number_of_arrays Variable is set with number of arrays
+ * \param number_of_rows Variable is set with number of rows
+ * \param number_of_columns Variable is set with number of columns
+ */
+inline void arrayfileinfo ( const char *fname, int &number_of_arrays, int &number_of_rows, int &number_of_columns )
 {
     arrayfile_t af ( fname, 0 );
-    n = af.narrays;
-    nr = af.nrows;
-    nc = af.ncols;
+    number_of_arrays = af.narrays;
+    number_of_rows = af.nrows;
+    number_of_columns = af.ncols;
     af.closefile ();
 }
 
 /// read list of arrays from file and append to list
-int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose =
-                        1, int *setcols = 0, rowindex_t * setrows =
-                        0, int *setbits = 0 );
+int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose = 1, int *setcols = 0, rowindex_t * setrows = 0, int *setbits = 0 );
+
 /// read list of arrays from file
-arraylist_t readarrayfile ( const char *fname, int verbose = 1, int *setcols =
-                                0 );
+arraylist_t readarrayfile ( const char *fname, int verbose = 1, int *setcols = 0 );
 
 const int NRAUTO = 0;
 /// write a list of arrays to file on disk
 int writearrayfile ( const char *fname, const arraylist_t * arraylist,
-                     arrayfile::arrayfilemode_t mode =
-                         arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
+                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
 
 /// write a list of arrays to file on disk
 int writearrayfile ( const char *fname, const arraylist_t arraylist,
-                     arrayfile::arrayfilemode_t mode =
-                         arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
+                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
 
 /// write a single array to file
-int writearrayfile ( const char *fname, const array_link & al,
-                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );
+int writearrayfile ( const char *fname, const array_link & al, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );
 
 /// append a single array to an array file. creates a new file if no file exists
 int appendarrayfile ( const char *fname, const array_link al );
@@ -2114,10 +2051,8 @@ arraylist_t selectArrays ( const arraylist_t & al, std::vector < int >&idx );
 arraylist_t selectArrays ( const arraylist_t & al, std::vector < long >&idx );
 
 /// Make a selection of arrays, append to list
-void selectArrays ( const arraylist_t & al, std::vector < int >&idx,
-                    arraylist_t & fl );
-void selectArrays ( const arraylist_t & al, std::vector < long >&idx,
-                    arraylist_t & fl );
+void selectArrays ( const arraylist_t & al, std::vector < int >&idx, arraylist_t & fl );
+void selectArrays ( const arraylist_t & al, std::vector < long >&idx, arraylist_t & fl );
 
 /// Make a selection of arrays, keep
 template < class Container, class IntType > void
@@ -2131,20 +2066,18 @@ keepElements ( Container & al, std::vector < IntType > &idx )
 }
 
 /// Make a selection of arrays, remove
-template < class Container, class IntType > void
-removeElements ( Container & al, std::vector < IntType > &idx )
+template < class Container, class IntType > void removeElements(Container & al, std::vector < IntType > &idx)
 {
-    for ( int jj = idx.size () - 1; jj >= 0; jj-- ) {
-        if ( idx[jj] ) {
-            al.erase ( al.begin () + jj );
-        }
-    }
+	for (int jj = idx.size() - 1; jj >= 0; jj--) {
+		if (idx[jj]) {
+			al.erase(al.begin() + jj);
+		}
+	}
 }
 
 template < class MType >
 /// Make a selection of arrays from a list, append to list
-void
-selectArraysMask ( const arraylist_t & al, std::vector < MType > &mask,
+void selectArraysMask ( const arraylist_t & al, std::vector < MType > &mask,
                    arraylist_t & rl )
 {
     assert ( al.size () == mask.size () );
@@ -2367,7 +2300,7 @@ inline bool readbinheader ( FILE * fid, int &nr, int &nc )
     nr = ( int ) h[2];
     nc = ( int ) h[3];
 
-    //myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
+    //myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
     bool valid = false;
 
     // check 2 numbers of the magic header
@@ -2414,7 +2347,7 @@ doublevector2binfile ( const std::string fname, std::vector < Type > vals,
 
 }
 
-/// Write a vector of vector  elements to binary file
+/// Write a vector of vector elements to binary file
 inline void
 vectorvector2binfile ( const std::string fname,
                        const std::vector < std::vector < double > >vals,
@@ -2452,19 +2385,35 @@ vectorvector2binfile ( const std::string fname,
     fclose ( fid );
 }
 
-/* Convertion to Eigen matrices */
+/* Conversion to Eigen matrices */
 
 
-/// convert 2-level array to second order interaction matrix in Eigen format
-MatrixFloat array2eigenX2 ( const array_link & al );
+/** convert 2-level array to main effects in Eigen format
+ *
+ * \param al Array to convert
+ * \param intercept If True, then include the intercept
+ * \returns The main effects model
+ */
 MatrixFloat array2eigenX1 ( const array_link & al, int intercept = 1 );
+
+/** Convert 2-level array to second order interaction matrix in Eigen format
+ *
+ * The intercept and main effects are not included.
+ *
+ * \param al Array to convert
+ * \returns The second order interaction model
+ */
+MatrixFloat array2eigenX2(const array_link & al);
 
 /// convert 2-level array to second order model matrix (intercept, X1, X2)
 MatrixFloat array2eigenModelMatrix ( const array_link & al );
 
 
-/// convert array to model matrix in Eigen format
-MatrixFloat array2eigenME ( const array_link & al, int verbose = 1 );
+/** Convert array to model matrix in Eigen format
+ *
+ * @see array2eigenModelMatrixMixed
+ */
+MatrixFloat array2eigenMainEffects( const array_link & al, int verbose = 1 );
 
 /// create first and second order model matrix for mixed-level array
 std::pair < MatrixFloat,
@@ -2472,11 +2421,23 @@ std::pair < MatrixFloat,
             int verbose = 1 );
 
 
-/// return index of specified array in a file. returns -1 if array is not found
-int arrayInFile ( const array_link &al, const char *afile, int verbose=1 );
+/** return index of specified array in a file. returns -1 if array is not found
+ *
+ * \param array Array to find
+ * \param array_file Location if file with arrays
+ * \param verbose Verbosity level
+ * \returns Position of array in list
+ */
+int arrayInFile ( const array_link &array, const char *array_file, int verbose=1 );
 
-/// return index of specified array in a list. returns -1 if array is not found
-int arrayInList ( const array_link &al, const arraylist_t &ll, int verbose=1 );
+/** return index of specified array in a list. returns -1 if array is not found
+ *
+ * \param al Array to find
+ * \param arrays List of arrays
+ * \param verbose Verbosity level
+ * \returns Position of array in list
+ */
+int arrayInList ( const array_link &al, const arraylist_t &arrays, int verbose=1 );
 
 #endif
 

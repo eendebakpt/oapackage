@@ -321,6 +321,28 @@ void array_transformation_t::apply ( array_t *sourcetarget )
      destroy_array ( tmp );
 }
 
+void array_transformation_t::apply(const array_t * source, array_t * target) const {
+
+	array_t *tmp = create_array(ad);
+
+	/* column permutations */
+	perform_inv_column_permutation(source, tmp, cperm, ad->N, ad->ncols);
+
+	/* level permutations */
+	for (colindex_t c = 0; c < ad->ncols; c++) {
+#ifdef SAFELPERM
+		safe_perform_level_perm(tmp + c * ad->N, ad->N, lperms[c], ad->s[c]);
+#else
+		perform_level_perm(tmp + c * ad->N, ad->N, lperms[c]);
+#endif
+	}
+
+	/* row permutations */
+	perform_inv_row_permutation(tmp, target, rperm, ad->N, ad->ncols);
+
+	destroy_array(tmp);
+}
+
 
 /// initialize to a random transformation
 void array_transformation_t::randomize()
@@ -2147,7 +2169,6 @@ MatrixFloat array2eigenX2 ( const array_link &al )
 {
      int k = al.n_columns;
      int n = al.n_rows;
-     //int m = 1 + k + k* ( k-1 ) /2;
 
      MatrixFloat mymatrix = MatrixFloat::Zero ( n,k* ( k-1 ) /2 );
 
@@ -2179,11 +2200,6 @@ void eigen2numpyHelper ( double* pymat1, int n, const Eigen::MatrixXd &m )
      std::copy ( m.data(),m.data() +m.size(), pymat1 );
 }
 
-/** Print information about an Eigen matrix
- *
- * \param m Matrix about which to print information 
- * \param str String to prepend in output
- */
 void eigenInfo ( const MatrixFloat m, const char *str, int verbose )
 {
      if ( verbose==1 ) {
@@ -2205,7 +2221,7 @@ void eigenInfoF ( const Eigen::MatrixXf m, const char *str, int verbose )
 
 }
 
-MatrixFloat array2eigenME ( const array_link &al, int verbose )
+MatrixFloat array2eigenMainEffects ( const array_link &al, int verbose )
 {
      std::pair<MatrixFloat,MatrixFloat> mm = array2eigenModelMatrixMixed ( al, verbose );
      return mm.first;
@@ -2261,7 +2277,6 @@ std::pair<MatrixFloat, MatrixFloat> array2eigenModelMatrixMixed ( const array_li
 
           // make Helmert contrasts (these are automatically orthogonal)
           for ( int r=0; r<N; r++ ) {
-               //myprintf("r: %d\n", r);
                int v = AA ( r,c );
                Z ( r, 0 ) = 1;
                if ( v>0 ) {
@@ -2400,34 +2415,6 @@ MatrixFloat array2eigenX1 ( const array_link &al, int intercept )
      return mymatrix;
 }
 
-MatrixFloat array2eigenX1 ( const array_link &al )
-{
-     int k = al.n_columns;
-     int n = al.n_rows;
-
-     MatrixFloat mymatrix = MatrixFloat::Zero ( n, 1+k );
-
-     // init first column
-     int ww=0;
-     for ( int r=0; r<n; ++r ) {
-          mymatrix ( r, ww ) = 1;
-     }
-
-     // init array
-     ww=1;
-     for ( int c=0; c<k; ++c ) {
-          int ci = c*n;
-          for ( int r=0; r<n; ++r ) {
-               mymatrix ( r, ww+c ) = al.array[r+ci];
-          }
-     }
-
-     mymatrix.array() -= .5;
-     mymatrix.array() *= 2;
-
-     return mymatrix;
-}
-
 
 /// specialized version array2eigenModelMatrix returning integer valued matrix
 Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
@@ -2442,7 +2429,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 
      // create data in integer type (we are working with 2-level arrays, convert them later */
      Eigen::MatrixXi mymatrix = Eigen::MatrixXi::Zero ( n,m );
-     int *data = mymatrix.data();
+     int *modelmatrix_raw_data = mymatrix.data();
 
 
      // init first column
@@ -2455,11 +2442,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
      ww=1;
      for ( int c=0; c<k; ++c ) {
           int ci = c*n;
-
-          std::copy ( al.array+ci, al.array+ci+n, data+ ( ww+c ) *n );
-          for ( int r=0; r<n; ++r ) {
-               //mymatrix ( r, ww+c ) = al.array[r+ci];
-          }
+          std::copy ( al.array+ci, al.array+ci+n, modelmatrix_raw_data+ ( ww+c ) *n );
      }
 
      // init interactions
@@ -2471,9 +2454,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
                int ci2 = c2*n;
 
                for ( int r=0; r<n; ++r ) {
-                    //mymatrix ( r, ww ) = ( al.array[r+ci]+al.array[r+ci2] ) %2;
-                    data[r+ww*n] = ( al.array[r+ci]+al.array[r+ci2] ) %2;
-                    //if (mymatrix(r,ww) != ( al.array[r+ci]+al.array[r+ci2] ) %2 ) exit(1);
+                    modelmatrix_raw_data[r+ww*n] = ( al.array[r+ci]+al.array[r+ci2] ) %2;
                }
                ww++;
           }
@@ -2481,10 +2462,8 @@ Eigen::MatrixXi array2eigenModelMatrixInt ( const array_link &al )
 
      mymatrix.array() *=2;
      mymatrix.array() -= 1;
-     //mymatrix.array() -= .5; mymatrix.array() *= 2;
 
      return mymatrix;
-     //return mymatrix;
 }
 
 MatrixFloat array2eigenModelMatrix ( const array_link &al )
@@ -2501,7 +2480,6 @@ double array_link::DsEfficiency ( int verbose ) const
      const array_link &al = *this;
      int k1 = al.n_columns+1;
      int n = al.n_rows;
-     //int m = 1 + k + k* ( k-1 ) /2;
 
      MatrixFloat X2 = array2eigenX2 ( al );
      MatrixFloat X = array2eigenModelMatrix ( al );
@@ -2589,7 +2567,6 @@ std::vector<int> array_link::FvaluesConference ( int jj ) const
 
      const int N = this->n_rows;
      jstructconference_t js ( *this, jj );
-     //printf("---\n"); js.showdata(2);
      std::vector<int> FF=js.calculateF();
      return FF;
 }
@@ -2650,7 +2627,6 @@ std::vector<int> Jcharacteristics_conference ( const array_link &al, int jj, int
      for ( int x=0; x<nc; x++ ) {
           int jv = jvalue_conference ( al, jj, pp ); // slow version
           vals[x]=jv;
-          //print_perm(pp, jj); printf(" value: %d\n", jv);
           next_comb_s ( pp, jj, k );
      }
 
@@ -2823,8 +2799,7 @@ void arraydata_t::writeConfigFile ( const char *file ) const
      outFile.open ( file );
      if ( !outFile ) {
           myprintf ( "writeConfigFile: unable to open file %s\n", file );
-          //throw -1;
-          //exit(1); // terminate with error
+		  throw std::runtime_error("writeConfigFile: unable to open file");
           return;
      }
 
@@ -2845,9 +2820,7 @@ void arraydata_t::writeConfigFile ( const char *file ) const
      outFile.close();
 }
 
-/**
- * @brief Show array data
- */
+
 void arraydata_t::show ( int verbose ) const
 {
      myprintf ( "%s\n", showstr().c_str() );
@@ -2859,9 +2832,6 @@ void arraydata_t::show ( int verbose ) const
      }
 }
 
-/**
- * @brief Show array data
- */
 std::string arraydata_t::showstr() const
 {
      std::stringstream ss;
@@ -2873,22 +2843,16 @@ std::string arraydata_t::showstr() const
      return s;
 }
 
-/**
- * @brief Show array data
- */
 std::string arraydata_t::latexstr ( int cmd, int series ) const
 {
      std::stringstream ss;
      if ( cmd ) {
-          //ss << printfstring ( "\\OA(%d, %d, ", this->N, this->strength );
           ss << printfstring ( "\\oadesign{%d}{%d}{", this->N, this->strength );
      } else {
           ss << printfstring ( "\\mathrm{OA}(%d, %d, ", this->N, this->strength );
      }
 
      for ( int i=0; i<this->ncolgroups; ++i ) {
-          //int s = this->s[this->colgroupindex[i]];
-          //printf("this->colgroupindex[i] %d \n", this->colgroupindex[i]);
           int cgi=this->colgroupindex[i];
           int s=this->s[cgi];
           if ( series>0 && i==this->ncolgroups-1 &&  this->colgroupsize[i]>1 ) {
@@ -2912,8 +2876,6 @@ std::string arraydata_t::idstrseriesfull() const
 {
      std::string fname = "";
      fname += itos ( N );
-
-//    char xstr="abcdefg";
 
      for ( int i=0; i<this->ncolgroups; ++i ) {
           int cgi=this->colgroupindex[i];
@@ -2984,7 +2946,6 @@ void arraydata_t::complete_arraydata()
           if ( verbose>=2 ) {
                myprintf ( "arraydata_t: warning strength < 1\n" );
           }
-          //this->strength=1;
      }
      arraydata_t *ad = this;
      this->calcoaindex ( ad->strength );
@@ -2993,10 +2954,8 @@ void arraydata_t::complete_arraydata()
      std::vector<int> xx ( ad->s, ad->s+ad->ncols );
 
      symmetry_group sg ( xx, 0 );
-     //myprintf("-- arraydata_t::complete_arraydata\n"); sg.show(2);
 
      ad->ncolgroups = sg.ngroups;
-     //myprintf("ncolgroups %d\n", ad->ncolgroups);
      ad->colgroupindex = new colindex_t[ad->ncolgroups+1];
      std::copy ( sg.gstart.begin(), sg.gstart.end(), ad->colgroupindex );
      ad->colgroupsize = new colindex_t[ad->ncolgroups+1];
@@ -3035,7 +2994,6 @@ array_link arraydata_t::randomarray ( int strength, int ncols ) const
      array_link al ( this->N, this->ncols, -1 );
      al.setconstant ( 0 );
 
-     //al.show(); myprintf("----\n"); al.showarray();
      for ( int i=0; i<this->ncols; i++ ) {
           int coloffset = this->N*i;
           array_t s = this->getfactorlevel ( i );
@@ -5512,6 +5470,37 @@ int conference_transformation_t::operator== ( const conference_transformation_t 
      if ( this->cswitch != rhs.cswitch ) return 0;
 
      return 1;
+}
+
+conference_transformation_t conference_transformation_t::operator* (const conference_transformation_t &rhs) const {
+	const int N = this->nrows;
+	const int ncols = this->ncols;
+
+	conference_transformation_t c(N, ncols);
+
+	const conference_transformation_t & lhs = *this;
+
+	// perform the rows permutations       
+	composition_perm(rhs.rperm, lhs.rperm, c.rperm);
+
+	// perform the column permutations
+	composition_perm(rhs.cperm, lhs.cperm, c.cperm);
+
+	/* rowsign switches */
+	for (rowindex_t ri = 0; ri < N; ri++) {
+		int riz = rhs.rperm[ri];
+		int rix = c.rperm[ri];
+		c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
+	}
+
+	/* column sign switches */
+	for (colindex_t ci = 0; ci < ncols; ci++) {
+		int ciz = rhs.cperm[ci];
+		int cix = c.cperm[ci];
+		c.cswitch[cix] = lhs.cswitch[cix] * rhs.cswitch[ciz];
+	}
+
+	return c;
 }
 
 void conference_transformation_t::init ( int nr, int nc )

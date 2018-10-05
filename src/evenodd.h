@@ -752,7 +752,7 @@ private:
     void init ( int N, int jj, int k = -1 ) {
         this->N = N;
         this->jj = jj;
-        this->fvals = Fval ( N, 3 );
+        this->fvals = possible_F_values ( N, 3 );
         this->dt = 0;
 
         maxJcounts.clear ();
