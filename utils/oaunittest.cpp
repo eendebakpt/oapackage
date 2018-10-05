@@ -14,6 +14,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "lmc.h"
 #include "Deff.h"
 #include "anyoption.h"
 #include "arrayproperties.h"

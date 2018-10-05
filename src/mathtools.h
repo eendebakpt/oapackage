@@ -1690,7 +1690,6 @@ int symm_group_index_plain (const numtype *vec, const int n, itype *&idx, itype 
                 gsize[i] = gstart[i + 1] - gstart[i];
         }
 
-        // printf("symm_grp:\n"); print_perm(vec,n); print_perm(idx, n); print_perm(gstart, nsg);
         return nsg;
 }
 
