@@ -75,30 +75,23 @@ typedef (unsigned __int64) uint64_t;
 
 #include <Eigen/Core>
 
-namespace Eigen
-{
-typedef Eigen::Matrix < long double, Eigen::Dynamic,
-        Eigen::Dynamic > MatrixXld;
-}
-
-/// default float matrix type used
-//typedef Eigen::MatrixXf MatrixFloat; typedef Eigen::ArrayXf ArrayFloat; typedef float eigenFloat;
+//namespace Eigen
+//{
+//typedef Eigen::Matrix < long double, Eigen::Dynamic, Eigen::Dynamic > MatrixXld;
+//}
 
 
-// use double
-typedef
-Eigen::MatrixXd
-MatrixFloat;
-typedef
-Eigen::ArrayXd
-ArrayFloat;
-typedef
-Eigen::VectorXd
-VectorFloat;
-typedef double
-eigenFloat;
+// float types used for Eigen calculations
+typedef Eigen::MatrixXd MatrixFloat;
+typedef Eigen::ArrayXd ArrayFloat;
+typedef Eigen::VectorXd VectorFloat;
+typedef double eigenFloat;
 
-/// show information about Eigen matrix
+/** Print information about an Eigen matrix
+*
+* \param m Matrix about which to print information
+* \param str String to prepend in output
+*/
 void eigenInfo ( const MatrixFloat m, const char *str = "eigen", int verbose = 1 );
 
 
