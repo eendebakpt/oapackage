@@ -22,7 +22,7 @@
 #include <string.h>
 #include <deque>
 #include <cmath>
-#include <sstream> // std::stringstream
+#include <sstream> 
 
 #include <iomanip>
 #include <ostream>
@@ -51,13 +51,16 @@ template <class TYPE>
 class object_pool
 {
     std::vector<TYPE *> pool;
-    //std::queue<size_t> avail;
-    int maxpoolsize; /// maximum size of the pool
-    int nn;          /// number newly created objects
-    int rr;          /// re-used object count
+    /// maximum size of the pool
+    int maxpoolsize; 
+    /// number newly created objects
+    int nn;          
+    /// re-used object count
+    int rr;          
 
   public:
-    int verbose; // for debugging
+    /// verbosity level
+    int verbose;
 
   public:
     typedef typename std::vector<TYPE>::iterator iterator;
@@ -129,10 +132,7 @@ class object_pool
         if ((pool.size()) == 0)
         { // no reusable object
             nn++;
-            if (nn % 10000 == 0)
-            {
-                //   myprintf("object_pool::New(): allocate object # %d\n", nn );
-            }
+
             if (verbose)
             {
                 myprintf("  object_pool::New(): allocate object # %d\n", nn);
@@ -1078,7 +1078,6 @@ numtype next_combination(numtype *comb, int k, int n)
     comb[i]++;
     while ((comb[i] >= offset + i) && (i > 0))
     {
-        //myprintf("next_combination: while 1: i %d, comb[i] %d\n", i, comb[i]);
         i--;
         comb[i]++;
     }
@@ -1334,7 +1333,6 @@ inline void perform_perm(const object *const src, object *const target, const in
 template <class object, class numtype>
 inline std::vector<object> perform_perm(const std::vector<object> src, const std::vector<numtype> perm)
 {
-    //myprintf("perform_perm: src %d, perm %d\n", src.size(), perm.size() );
     std::vector<object> dst(src.size());
     for (size_t i = 0; i < perm.size(); i++)
     {
@@ -1456,15 +1454,12 @@ numtype *new_perm_init(int len)
     return perm;
 }
 
-//#include <iostream>
-//#include <iterator>
 
 template <typename _ForwardIterator>
 inline bool issorted(_ForwardIterator first, const _ForwardIterator last)
 {
     if (first == last)
         return true;
-    //    _ForwardIterator first = __first;
     _ForwardIterator __next = first;
     for (++__next; __next != last; first = __next, ++__next)
         if (*__next < *first)
@@ -1477,7 +1472,6 @@ inline bool issorted(_ForwardIterator first, const _ForwardIterator last)
 template <class returntype, class basetype, class numtype>
 returntype *new_valueindex(const basetype *bases, const numtype n)
 {
-    //myprintf("init_valueindex: n %d\n", n);
     returntype *valueindex = new returntype[n * sizeof(returntype)];
     assert(valueindex != 0);
 #ifdef OADEBUG
@@ -1492,7 +1486,6 @@ returntype *new_valueindex(const basetype *bases, const numtype n)
     for (int i = n - 2; i >= 0; i--)
         valueindex[i] = valueindex[i + 1] * bases[i + 1];
 
-    //return valueindex[0]*bases[0];	// return max value
     return valueindex;
 }
 
@@ -1682,10 +1675,8 @@ class indexsort
     std::vector<Type> sorted(const std::vector<Type> &vals) const
     {
         std::vector<Type> s(n);
-        //myprintf("here\n");
         for (int i = 0; i < n; i++)
             s[i] = vals[indices[i]];
-        //myprintf("here 2\n");
         return s;
     }
     template <class ContainerType>
@@ -1924,7 +1915,6 @@ std::vector<Type> permute(const std::vector<Type> x, const std::vector<IndexType
     std::vector<Type> y(x.size());
     for (size_t i = 0; i < x.size(); i++)
     {
-        //myprintf ( " permute %d: y[%d]=x[%d]=%number\n", i, i, indices[i], x[indices[i]] );
         y[i] = x[indices[i]];
     }
     return y;
@@ -1977,7 +1967,6 @@ int symm_group_index_plain(const numtype *vec, const int n, itype *&idx, itype *
     nsg = 0;
     for (i = 0; i < n; i++)
     {
-        //myprintf("symm_group_index: nsg: %d i %d\n", nsg, i);
         if (vec[i] != prev)
         {
             gstart[nsg] = i;
