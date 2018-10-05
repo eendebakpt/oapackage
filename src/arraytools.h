@@ -117,7 +117,6 @@ void eigen2numpyHelper ( double *pymat1, int n, const MatrixFloat & m );
 %ignore::write_array;
 %ignore::write_array_latex;
 %ignore::finish_arrayfile;
-//%ignore append_arrays;
 %ignore arrayfile_t::arrayNbits;
 %ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
@@ -166,12 +165,7 @@ typedef const int const_colindex_t;		    /** constant version of type used for c
 typedef array_t * array_p;			/** pointer to array */
 typedef carray_t * carray_p;			/** point to constant array */
 
-//#define XX
-#ifdef XX
-  typedef std::vector < int > rowperm_t;				/** type of row permutation */
-#else
-  typedef rowindex_t * rowperm_t;			/** type of row permutation */
-#endif
+typedef rowindex_t * rowperm_t;			/** type of row permutation */
 typedef colindex_t * colperm_t;		       /** type of column permutation */
 typedef array_t * levelperm_t;		       /** type of level permutation */
 
@@ -190,9 +184,7 @@ struct arraydata_t;
 int sizeof_array_t();
 
 /// possible values for J-values of 2-level design
-inline
-std::vector < int >
-Fval ( int N, int strength )
+inline std::vector < int > possible_F_values ( int N, int strength )
 {
     int x = pow ( ( double ) 2, strength + 1 );	// TODO: replace by integer power
     int nn = floor ( ( double ) N / x ) + 1;
@@ -438,8 +430,7 @@ arraydata_t *readConfigFile ( const char *file );
  * @return
  */
 inline
-std::string
-printfstring ( const char *message, ... )
+std::string printfstring ( const char *message, ... )
 {
     char buf[8 * 1024];
 
@@ -460,13 +451,10 @@ printfstring ( const char *message, ... )
 /**
  * @brief Make a copy of an array
  */
-inline void
-copy_array ( const array_t * src, array_t * const dst, const int nrows,
-             const int ncols )
+inline void copy_array ( const array_t * src, array_t * const dst, const int nrows, const int ncols )
 {
     memcpy ( dst, src, sizeof ( array_t ) * nrows * ncols );
 }
-
 
 
 /**
@@ -474,8 +462,7 @@ copy_array ( const array_t * src, array_t * const dst, const int nrows,
  * @param array
  * @return
  */
-inline int
-destroy_array ( array_t * array )
+inline int destroy_array ( array_t * array )
 {
     free ( array );
     return 0;
@@ -487,10 +474,8 @@ destroy_array ( array_t * array )
  * @param ncols Number of columns
  * @return
  */
-static inline array_t *
-create_array ( const int nrows, const int ncols )
+static inline array_t * create_array ( const int nrows, const int ncols )
 {
-    //myprintf("  create_array: size %d (%d %d)\n", nrows*ncols, nrows, ncols);
     array_t *array = ( array_t * ) malloc ( nrows * ncols * sizeof ( array_t ) );
 
 #ifdef OADEBUG
@@ -522,8 +507,7 @@ create_array ( const arraydata_t * ad )
  * @param rend
  * @return
  */
-inline int
-equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
+inline int equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
                    rowindex_t nrows, rowindex_t rstart, rowindex_t rend )
 {
     return std::equal ( A + col * nrows + rstart, A + col * nrows + rend,
@@ -533,8 +517,7 @@ equal_array_cols ( carray_t * A, colindex_t col, colindex_t col2,
 /**
  * @brief Clone an array
  */
-inline array_t *
-clone_array ( const array_t * const array, const rowindex_t nrows,
+inline array_t * clone_array ( const array_t * const array, const rowindex_t nrows,
               const colindex_t ncols )
 {
     array_t *clone = create_array ( nrows, ncols );
@@ -544,16 +527,15 @@ clone_array ( const array_t * const array, const rowindex_t nrows,
 }
 
 
-/**
- * @brief Perform inverse column permutation on an array
+/** @brief Perform inverse column permutation on an array
+ *
  * @param source
  * @param target
  * @param perm
  * @param nrows
  * @param ncols
  */
-inline void
-perform_inv_column_permutation ( const array_t * source, array_t * target,
+inline void perform_inv_column_permutation ( const array_t * source, array_t * target,
                                  colperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ ) {
@@ -562,8 +544,15 @@ perform_inv_column_permutation ( const array_t * source, array_t * target,
     }
 }
 
-inline void
-perform_column_permutation ( carray_t * source, array_t * target,
+/** @brief Perform column permutation on an array
+*
+* @param source
+* @param target
+* @param perm
+* @param nrows
+* @param ncols
+*/
+inline void perform_column_permutation ( carray_t * source, array_t * target,
                              colperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ ) {
@@ -573,16 +562,15 @@ perform_column_permutation ( carray_t * source, array_t * target,
 }
 
 
-/**
- * @brief Perform a row permutation
+/** @brief Perform a row permutation
+ *
  * @param source Source array
  * @param target Target array
  * @param perm Permutation to perform
  * @param nrows Number of rows
  * @param ncols Numer of columns
  */
-inline void
-perform_row_permutation ( const array_t * source, array_t * target,
+inline void perform_row_permutation ( const array_t * source, array_t * target,
                           rowperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ )
@@ -591,9 +579,15 @@ perform_row_permutation ( const array_t * source, array_t * target,
         }
 }
 
-/// apply inverse row permutation
-inline void
-perform_inv_row_permutation ( const array_t * source, array_t * target,
+/** @brief Perform a row permutation
+*
+* @param source Source array
+* @param target Target array
+* @param perm Permutation to perform
+* @param nrows Number of rows
+* @param ncols Numer of columns
+*/
+inline void perform_inv_row_permutation ( const array_t * source, array_t * target,
                               rowperm_t perm, int nrows, int ncols )
 {
     for ( int i = 0; i < ncols; i++ )
@@ -1548,32 +1542,12 @@ public:
         return c;
     }
 
-    /// apply transformation to an array
+    /// apply transformation to an array (inplace)
     void apply ( array_t * sourcetarget );
 
     /// apply transformation to an array
-    void apply ( const array_t * source, array_t * target ) const {
-
-        array_t *tmp = create_array ( ad );
-
-        /* column permutations */
-        perform_inv_column_permutation ( source, tmp, cperm, ad->N, ad->ncols );
-
-        /* level permutations */
-        for ( colindex_t c = 0; c < ad->ncols; c++ ) {
-#ifdef SAFELPERM
-            safe_perform_level_perm ( tmp + c * ad->N, ad->N, lperms[c], ad->s[c] );
-#else
-            perform_level_perm ( tmp + c * ad->N, ad->N, lperms[c] );
-#endif
-        }
-
-        /* row permutations */
-        perform_inv_row_permutation ( tmp, target, rperm, ad->N, ad->ncols );
-
-        destroy_array ( tmp );
-    }
-
+	void apply(const array_t * source, array_t * target) const;
+	
     /// apply transformation and show resulting array
     void print_transformed ( carray_t * source ) const;
 
@@ -1659,37 +1633,8 @@ public:
      * E.g. (T1*T2)(x) = T1(T2(x))
      * 
      */
-    conference_transformation_t operator* ( const conference_transformation_t &rhs ) const {
-        const int N = this->nrows;
-        const int ncols = this->ncols;
-
-        conference_transformation_t c ( N, ncols );
-
-        const conference_transformation_t & lhs = *this;
-
-        // perform the rows permutations       
-        composition_perm ( rhs.rperm, lhs.rperm, c.rperm );
-        
-        // perform the column permutations
-        composition_perm ( rhs.cperm, lhs.cperm, c.cperm );
-
-        /* rowsign switches */
-        for ( rowindex_t ri = 0; ri < N; ri++ ) {
-            int riz = rhs.rperm[ri];
-            int rix = c.rperm[ri];
-            c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
-        }
-
-        /* column sign switches */
-        for ( colindex_t ci = 0; ci < ncols; ci++ ) {
-            int ciz = rhs.cperm[ci];
-            int cix = c.cperm[ci];
-            c.cswitch[cix] =  lhs.cswitch[cix] * rhs.cswitch[ciz];
-        }
-
-        return c;
-    }
-
+	conference_transformation_t operator* (const conference_transformation_t &rhs) const;
+	
     void setrowperm ( std::vector < int >rp ) {
         rperm = rp;
     };

@@ -321,6 +321,28 @@ void array_transformation_t::apply ( array_t *sourcetarget )
      destroy_array ( tmp );
 }
 
+void array_transformation_t::apply(const array_t * source, array_t * target) const {
+
+	array_t *tmp = create_array(ad);
+
+	/* column permutations */
+	perform_inv_column_permutation(source, tmp, cperm, ad->N, ad->ncols);
+
+	/* level permutations */
+	for (colindex_t c = 0; c < ad->ncols; c++) {
+#ifdef SAFELPERM
+		safe_perform_level_perm(tmp + c * ad->N, ad->N, lperms[c], ad->s[c]);
+#else
+		perform_level_perm(tmp + c * ad->N, ad->N, lperms[c]);
+#endif
+	}
+
+	/* row permutations */
+	perform_inv_row_permutation(tmp, target, rperm, ad->N, ad->ncols);
+
+	destroy_array(tmp);
+}
+
 
 /// initialize to a random transformation
 void array_transformation_t::randomize()
@@ -5448,6 +5470,37 @@ int conference_transformation_t::operator== ( const conference_transformation_t 
      if ( this->cswitch != rhs.cswitch ) return 0;
 
      return 1;
+}
+
+conference_transformation_t conference_transformation_t::operator* (const conference_transformation_t &rhs) const {
+	const int N = this->nrows;
+	const int ncols = this->ncols;
+
+	conference_transformation_t c(N, ncols);
+
+	const conference_transformation_t & lhs = *this;
+
+	// perform the rows permutations       
+	composition_perm(rhs.rperm, lhs.rperm, c.rperm);
+
+	// perform the column permutations
+	composition_perm(rhs.cperm, lhs.cperm, c.cperm);
+
+	/* rowsign switches */
+	for (rowindex_t ri = 0; ri < N; ri++) {
+		int riz = rhs.rperm[ri];
+		int rix = c.rperm[ri];
+		c.rswitch[rix] = lhs.rswitch[rix] * rhs.rswitch[riz];
+	}
+
+	/* column sign switches */
+	for (colindex_t ci = 0; ci < ncols; ci++) {
+		int ciz = rhs.cperm[ci];
+		int cix = c.cperm[ci];
+		c.cswitch[cix] = lhs.cswitch[cix] * rhs.cswitch[ciz];
+	}
+
+	return c;
 }
 
 void conference_transformation_t::init ( int nr, int nc )
