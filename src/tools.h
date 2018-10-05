@@ -7,103 +7,95 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <stdarg.h>
+#include <algorithm>
+#include <iomanip>
+#include <iterator>
 #include <list>
 #include <ostream>
-#include <iomanip>
-#include <string>
 #include <sstream>
+#include <stdarg.h>
+#include <string>
 #include <time.h>
-#include <algorithm>
-#include <iterator>
 
 #ifdef FULLPACKAGE
 #endif
 #include "printfheader.h"
 
-inline std::string base_name ( std::string const & path )
-{
-    return path.substr ( path.find_last_of ( "/\\" ) + 1 );
-}
+inline std::string base_name (std::string const &path) { return path.substr (path.find_last_of ("/\\") + 1); }
 
-inline void printfd_handler ( const char *file, const char* func, int line, const char* message, ... )
-{
-    std::string s = file;
-    s=base_name ( s );
+inline void printfd_handler (const char *file, const char *func, int line, const char *message, ...) {
+        std::string s = file;
+        s = base_name (s);
 
-    const char *fileshort = s.c_str();
-    myprintf ( "file %s: function %s: line %d: ", fileshort, func, line );
+        const char *fileshort = s.c_str ();
+        myprintf ("file %s: function %s: line %d: ", fileshort, func, line);
 #ifdef FULLPACKAGE
-	char buf[64 * 1024];
+        char buf[64 * 1024];
 
-    va_list va;
-    va_start ( va, message );
-    //vprintf ( message, va );
-    vsprintf ( buf, message, va );
-    va_end ( va );
-	myprintf("%s", buf);
+        va_list va;
+        va_start (va, message);
+        // vprintf ( message, va );
+        vsprintf (buf, message, va);
+        va_end (va);
+        myprintf ("%s", buf);
 #else
-    myprintf("printfd_handler not implemented");
+        myprintf ("printfd_handler not implemented");
 #endif
 }
 
 //#define printfd(MESSAGE) printfd_handler(__FILE__, __LINE__, MESSAGE)
-#define printfd(...) printfd_handler(__FILE__,__FUNCTION__, __LINE__, __VA_ARGS__)
+#define printfd(...) printfd_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #include "arraytools.h"
 #include "mathtools.h"
 
 #if (_MSC_VER >= 100)
-#pragma warning(disable: 4018)
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4018)
+#pragma warning(disable : 4996)
 #endif
 
 #ifdef SWIG
-%ignore nullStream;
-%ignore logstream;
-%ignore next_comb;
-%ignore next_comb2;
-%ignore init_restart;
-%ignore addelement;
-%ignore row_rank_partial;
-%ignore row_rank;
+% ignore nullStream;
+% ignore logstream;
+% ignore next_comb;
+% ignore next_comb2;
+% ignore init_restart;
+% ignore addelement;
+% ignore row_rank_partial;
+% ignore row_rank;
 #endif
 
 //! Loglevel definitions. The loglevel determines to amount of output to stdout
-enum loglevel_t {LOGERROR, SYSTEM, QUIET, NORMAL, DEBUG, EXTRADEBUG};
+enum loglevel_t { LOGERROR, SYSTEM, QUIET, NORMAL, DEBUG, EXTRADEBUG };
 
+int log_print (const int level, const char *message, ...);
 
-int log_print ( const int level, const char *message, ... );
-
-//struct split;
-int getloglevel();
-void setloglevel ( int n );
-bool checkloglevel ( int l );
-
+// struct split;
+int getloglevel ();
+void setloglevel (int n);
+bool checkloglevel (int l);
 
 /** \brief Null stream */
-class nullStream : public std::ostream
-{
-public:
-    nullStream () : std::ostream ( NULL ) {}
+class nullStream : public std::ostream {
+      public:
+        nullStream () : std::ostream (NULL) {}
 };
 
 #ifdef FULLPACKAGE
-std::ostream& logstream ( int level );
+std::ostream &logstream (int level);
 #endif
 
-std::string system_uname();
+std::string system_uname ();
 
 /// handler for error messages. throws an std::runtime_error exception
-void mycheck_handler(const char *file, const char* func, int line, int condition, const char* message, ...);
+void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...);
 
+#define mycheck(...) mycheck_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#define mycheck(...) mycheck_handler(__FILE__,__FUNCTION__, __LINE__, __VA_ARGS__)
-
-void myassert(int condition, const char *str = 0);
+void myassert (int condition, const char *str = 0);
 
 //#ifdef OADEBUG
-//inline void myassertdebug ( int condition, const char *str )
+// inline void myassertdebug ( int condition, const char *str )
 //{
 //    if ( condition==0 ) {
 //        myprintf ( "myassert: %s", str );
@@ -113,59 +105,55 @@ void myassert(int condition, const char *str = 0);
 //}
 //#else
 //#define myassertdebug(a,b)
-//inline void myassertdebug2 ( int condition, const char *str ) {}
+// inline void myassertdebug2 ( int condition, const char *str ) {}
 //#endif
 
-inline int cprintf ( int check, const char *message, ... )
-{
-    int n=0;
-    if ( check ) {
-        va_list va;
-        va_start ( va, message );
+inline int cprintf (int check, const char *message, ...) {
+        int n = 0;
+        if (check) {
+                va_list va;
+                va_start (va, message);
 #ifdef RPACKAGE
-        n = -1;
-        myprintf("cprintf: not implemented\n");
+                n = -1;
+                myprintf ("cprintf: not implemented\n");
 #else
-        n = vprintf ( message, va );
+                n = vprintf (message, va);
 #endif
-        va_end ( va );
-    }
-    return n;
+                va_end (va);
+        }
+        return n;
 }
 
 /// flush to stdout
-inline void flush_stdout()
-{
+inline void flush_stdout () {
 #ifdef RPACKAGE
 #else
-    fflush ( stdout );
+        fflush (stdout);
 #endif
 }
 
-template<class A>
+template < class A >
 /**
  * Delete a pointer and set to zero.
  */
-inline void safedelete ( A *p )
-{
-    if ( p!=0 )
-        delete p;
-    p=0;
+inline void safedelete (A *p) {
+        if (p != 0)
+                delete p;
+        p = 0;
 }
 
-template<class A>
+template < class A >
 /**
  * Delete array and set pointer to zero
  * @param p
  */
-inline void safedeletearray ( A *p )
-{
-    if ( p!=0 )
-        delete [] p;
-    p=0;
+inline void safedeletearray (A *p) {
+        if (p != 0)
+                delete[] p;
+        p = 0;
 }
 
-template <class Type>
+template < class Type >
 /*!
   Gives next combination for k elements out of n based on an algorithm from wikipedia.
   The generate is sorted.
@@ -174,89 +162,83 @@ template <class Type>
   \param k Number of the current combination
   \param n Number of elements in combination
   */
-int next_comb ( std::vector<Type> &comb, int k, int n )
-{
-    int             i;// = k - 1;
-    const int       offset = n - k + 1;
-    i = k - 1;
-    comb[i]++;
-    while ( ( comb[i] >= offset + i ) && ( i > 0 ) ) {
-        i--;
+int next_comb (std::vector< Type > &comb, int k, int n) {
+        int i; // = k - 1;
+        const int offset = n - k + 1;
+        i = k - 1;
         comb[i]++;
-    }
+        while ((comb[i] >= offset + i) && (i > 0)) {
+                i--;
+                comb[i]++;
+        }
 
-    if ( comb[0] > n - k )
-        return 0; /* No more combinations can be generated */
+        if (comb[0] > n - k)
+                return 0; /* No more combinations can be generated */
 
-    /* comb now looks like (…, x, n, n, n, …, n).
-       Turn it into (…, x, x + 1, x + 2, …) */
-    for ( i++; i < k; i++ )
-        comb[i] = comb[i - 1] + 1;
+        /* comb now looks like (…, x, n, n, n, …, n).
+           Turn it into (…, x, x + 1, x + 2, …) */
+        for (i++; i < k; i++)
+                comb[i] = comb[i - 1] + 1;
 
-    return 1;
+        return 1;
 }
 
-
 /** Go to next combination in sequence */
-int next_comb ( int *comb, int k, int n );
+int next_comb (int *comb, int k, int n);
 /** Go to next combination in sequence */
-int next_comb_s ( int *comb, int k, int n );
+int next_comb_s (int *comb, int k, int n);
 
-template <class Object>
+template < class Object >
 /**
  * @brief Template to swap two objects of arbitrary datatype
  * Please use std::swap instead
  * @param a
  * @param b
  */
-void swap_object ( Object &a, Object &b )
-{
-    Object tmp;
-    tmp = a;
-    a = b;
-    b = tmp;
+void swap_object (Object &a, Object &b) {
+        Object tmp;
+        tmp = a;
+        a = b;
+        b = tmp;
 }
 
-template <class rtype>
+template < class rtype >
 /** Calculate the number of elements in a 2D table with rows with different sizes */
-inline int malloc2d_nelements ( const int nrows, const rtype *rowsizes )
-{
-    int nelements = 0;
-    for ( int i=0; i<nrows; i++ )
-        nelements += rowsizes[i];
-    return nelements;
+inline int malloc2d_nelements (const int nrows, const rtype *rowsizes) {
+        int nelements = 0;
+        for (int i = 0; i < nrows; i++)
+                nelements += rowsizes[i];
+        return nelements;
 }
 
-
-template <class DataType, class rtype>
+template < class DataType, class rtype >
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows
  * @param nrows Number of rows in the table
  * @param rowsizes Size of each row
  * @return
  */
-DataType **malloc2d_irr ( const int nrows, const rtype *rowsizes )
-{
-    //Create a 2D array, but with unequal rows (hence irregular -> irr)
-    register int i;
-    DataType **data;
+DataType **malloc2d_irr (const int nrows, const rtype *rowsizes) {
+        // Create a 2D array, but with unequal rows (hence irregular -> irr)
+        register int i;
+        DataType **data;
 
-    int nelements = malloc2d_nelements ( nrows, rowsizes );
+        int nelements = malloc2d_nelements (nrows, rowsizes);
 
-    data = new DataType* [nrows];
-    data[0] = new DataType [nelements];
-    memset ( data[0] , 0, sizeof ( DataType ) * nelements );
+        data = new DataType *[nrows];
+        data[0] = new DataType[nelements];
+        memset (data[0], 0, sizeof (DataType) * nelements);
 
-    int offset = 0;
-    for ( i = 0; i < nrows; i++ ) {
-        data[i] = data[0]+offset;
-        offset += rowsizes[i];
-    }
+        int offset = 0;
+        for (i = 0; i < nrows; i++) {
+                data[i] = data[0] + offset;
+                offset += rowsizes[i];
+        }
 
-    return data;
+        return data;
 }
 
-template <class DataType, class rtype>
+template < class DataType, class rtype >
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows, return size of allocated space
  * @param nrows Number of rows in the table
@@ -264,378 +246,344 @@ template <class DataType, class rtype>
  * @param nelements This parameter is initialized with the size of the array allocated
  * @return
  */
-DataType **malloc2d_irr ( const int nrows, const rtype *rowsizes, int &nelements )
-{
-    nelements = malloc2d_nelements ( nrows, rowsizes );
-    return malloc2d_irr<DataType> ( nrows, rowsizes );
+DataType **malloc2d_irr (const int nrows, const rtype *rowsizes, int &nelements) {
+        nelements = malloc2d_nelements (nrows, rowsizes);
+        return malloc2d_irr< DataType > (nrows, rowsizes);
 }
 
-template <class DataType, class numtype>
+template < class DataType, class numtype >
 /**
  * @brief Allocate a 2-dimensional array of specified size
  * @param nrows
  * @param rowsize
  * @return
  */
-DataType **malloc2d ( const numtype nrows, const int rowsize )
-{
-    DataType **data;
+DataType **malloc2d (const numtype nrows, const int rowsize) {
+        DataType **data;
 
-    data = new DataType* [nrows];
-    if ( data==0 ) {
-        throw std::runtime_error("malloc2d: error with memory allocation");
-    }
+        data = new DataType *[nrows];
+        if (data == 0) {
+                throw std::runtime_error ("malloc2d: error with memory allocation");
+        }
 
-    data[0] = new DataType [nrows*rowsize];
+        data[0] = new DataType[nrows * rowsize];
 
-    int offset = 0;
-    for ( int i = 0; i < nrows; i++ ) {
-        data[i] = data[0]+offset;
-        offset += rowsize;
-    }
+        int offset = 0;
+        for (int i = 0; i < nrows; i++) {
+                data[i] = data[0] + offset;
+                offset += rowsize;
+        }
 
-    return data;
+        return data;
 }
 
-template <class DataType>
+template < class DataType >
 /**
  * @brief Release a 2-dimensional array
  * @param data
  * @param nrows
  */
-void free2d ( DataType **data, const int nrows )
-{
-    delete [] data[0];
-    delete [] data;
-    data = 0;
+void free2d (DataType **data, const int nrows) {
+        delete[] data[0];
+        delete[] data;
+        data = 0;
 }
 
-template <class DataType>
+template < class DataType >
 /**
  * @brief Release a 2-dimensional array
  * @param data
  */
-void free2d ( DataType **data )
-{
-    delete [] data[0];
-    delete [] data;
-    data = 0;
+void free2d (DataType **data) {
+        delete[] data[0];
+        delete[] data;
+        data = 0;
 }
 
-template <class DataType>
+template < class DataType >
 /**
  * @brief Release a 2-dimensional non-uniform array
  * @param data
  */
-void free2d_irr ( DataType **data )
-{
-    free2d ( data );
+void free2d_irr (DataType **data) {
+        free2d (data);
 }
-template <class DataType>
+template < class DataType >
 /**
  * @brief Release a 2-dimensional non-uniform array
  * @param data
  * @param nrows
  */
-void free2d_irr ( DataType **data, const int nrows )
-{
-    free2d ( data );
+void free2d_irr (DataType **data, const int nrows) {
+        free2d (data);
 }
 
-
-//void show_array(carray_t *array, const int x, const int y);
-void print_array ( const char *str, const array_t *array, const rowindex_t r, const colindex_t c );
-void print_array ( const array_t *array, const rowindex_t r, const colindex_t c );
+// void show_array(carray_t *array, const int x, const int y);
+void print_array (const char *str, const array_t *array, const rowindex_t r, const colindex_t c);
+void print_array (const array_t *array, const rowindex_t r, const colindex_t c);
 /// Print array to stdout
-void print_array ( const array_link &A );
+void print_array (const array_link &A);
 
 #ifdef FULLPACKAGE
-template <class atype>
+template < class atype >
 /// print vector using generic std::cout print functionality
-void display_vector ( const std::vector<atype> &v )
-{
-    const char *sep = " ";
-    std::copy ( v.begin(), v.end(), std::ostream_iterator<atype> ( std::cout, sep ) );
+void display_vector (const std::vector< atype > &v) {
+        const char *sep = " ";
+        std::copy (v.begin (), v.end (), std::ostream_iterator< atype > (std::cout, sep));
 }
 #else
-template <class atype>
-void display_vector ( const std::vector<atype> &v )
-{
-    // dummy
-	myprintf("vector(...)");
+template < class atype > void display_vector (const std::vector< atype > &v) {
+        // dummy implementation
+        myprintf ("vector(...)");
 }
-template <int atype>
-void display_vector(const std::vector<atype> &v)
-{
-	for (int i = 0; i < v.size(); i++) {
-		myprintf("%d", v[i]);
-		if (i<v.size()-1)
-			myprintf("%s", sep);
-	}
+template < int atype > void display_vector (const std::vector< atype > &v) {
+        for (int i = 0; i < v.size (); i++) {
+                myprintf ("%d", v[i]);
+                if (i < v.size () - 1)
+                        myprintf ("%s", sep);
+        }
 }
 #endif
 
-template <class atype>
+template < class atype >
 /** print vector using printf function
  *
  * \param vector Vector to be displayed
  * \param format Format to use in printf
  * \param separator Separator symbol to use
  */
-void printf_vector ( const std::vector<atype> &vector, const char *format, const char *separator ="" )
-{
-    for ( unsigned int i=0; i<vector.size(); i++ ) {
-        myprintf ( format, vector[i] );
-		if (i<vector.size()-1)
-			myprintf ("%s", separator );
-}
+void printf_vector (const std::vector< atype > &vector, const char *format, const char *separator = "") {
+        for (unsigned int i = 0; i < vector.size (); i++) {
+                myprintf (format, vector[i]);
+                if (i < vector.size () - 1)
+                        myprintf ("%s", separator);
+        }
 }
 
 #ifdef FULLPACKAGE
-template <class atype>
-void show_array_dyn ( const atype *array, const int x, const int y )
-{
-    register int	i,j,k;
+template < class atype > void show_array_dyn (const atype *array, const int x, const int y) {
+        register int i, j, k;
 
-    for ( i = 0; i < y; i++ ) {
-        k = i;
-        for ( j = 0; j < x; j++ ) {
-            std::cout << std::setw ( 3 ) <<  array[k];
-            k += y;
+        for (i = 0; i < y; i++) {
+                k = i;
+                for (j = 0; j < x; j++) {
+                        std::cout << std::setw (3) << array[k];
+                        k += y;
+                }
+                std::cout << "\n";
         }
-        std::cout << "\n";
-    }
 }
 #endif
 
 /// Counts the number of occurences of each value in an array
-void countelements ( carray_t* array, const int nelements, const int maxval, int* elements );
+void countelements (carray_t *array, const int nelements, const int maxval, int *elements);
 
 /**
  * @brief Add element to element counter
  * @param elem
  * @param elements
  */
-inline void addelement ( const array_t elem, int* elements )
-{
-    elements[elem]++;
-}
-
+inline void addelement (const array_t elem, int *elements) { elements[elem]++; }
 
 /// return time with milisecond precision
-double get_time_ms();
+double get_time_ms ();
 
 /// return time difference with milisecond precision
-double get_time_ms ( double t0 );
+double get_time_ms (double t0);
 
 /// trim a string by removing the specified characters from the left and right
-void trim ( std::string& str, const std::string& trimChars = "" );
+void trim (std::string &str, const std::string &trimChars = "");
 
 /// return the current time as a string
-inline std::string currenttime()
-{
-    time_t seconds;
-    struct tm *tminfo;
-    time ( &seconds );
-    tminfo = localtime ( &seconds );
-    std::string ts = asctime ( tminfo );
-    trim ( ts );
-    return ts;
+inline std::string currenttime () {
+        time_t seconds;
+        struct tm *tminfo;
+        time (&seconds);
+        tminfo = localtime (&seconds);
+        std::string ts = asctime (tminfo);
+        trim (ts);
+        return ts;
 }
 
-
 /// return string describing array
-std::string oafilestring ( const arraydata_t *ad );
+std::string oafilestring (const arraydata_t *ad);
 /// return string describing array
-std::string oafilestring ( rowindex_t rows, colindex_t cols, array_t *s );
+std::string oafilestring (rowindex_t rows, colindex_t cols, array_t *s);
 
-
-template <class numtype>
+template < class numtype >
 /** @brief Convert integer to C++ string
  *
  * @param i Integer
  * @return String representation of the integer
  */
-inline std::string itos ( numtype i )
-{
-    std::stringstream s;
-    s << i;
-    return s.str();
+inline std::string itos (numtype i) {
+        std::stringstream s;
+        s << i;
+        return s.str ();
 }
 
 /// printf-style function that returns std::string
-std::string printfstring ( const char *message, ... );
+std::string printfstring (const char *message, ...);
 
+inline std::string printtime () {
+        time_t rawtime;
+        struct tm *timeinfo;
 
-inline std::string printtime()
-{
-    time_t rawtime;
-    struct tm * timeinfo;
-
-    time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-    return printfstring ( "%s", asctime ( timeinfo ) );
+        time (&rawtime);
+        timeinfo = localtime (&rawtime);
+        return printfstring ("%s", asctime (timeinfo));
 }
 
 /* sorting templates */
 
-template <class Object>
+template < class Object >
 /**
  * @brief Template for insertionSort
  * @param array Data to be sorted
  * @param length Length of array
  */
-inline void insertionSort ( Object array[], int length )
-{
-    Object key;
-    int i;
-    for ( int j=1; j<length; j++ ) {
-        key=array[j];
-        i=j-1;
-        while ( array[i]>key && i>=0 ) {
-            array[i+1]=array[i];
-            i--;
+inline void insertionSort (Object array[], int length) {
+        Object key;
+        int i;
+        for (int j = 1; j < length; j++) {
+                key = array[j];
+                i = j - 1;
+                while (array[i] > key && i >= 0) {
+                        array[i + 1] = array[i];
+                        i--;
+                }
+                array[i + 1] = key;
         }
-        array[i+1]=key;
-    }
 }
 
-template <class itemType, class indexType>
+template < class itemType, class indexType >
 /// sort arrays using bubbleSort
-inline void bubbleSort ( itemType a[], indexType left, indexType right )
-{
-    indexType i, j;
+inline void bubbleSort (itemType a[], indexType left, indexType right) {
+        indexType i, j;
 
-    for ( i=right; i>left; --i )
-        for ( j=left; j<i; ++j )
-            if ( a[j] > a[j+1] )
-                std::swap ( a[j], a[j+1] );
+        for (i = right; i > left; --i)
+                for (j = left; j < i; ++j)
+                        if (a[j] > a[j + 1])
+                                std::swap (a[j], a[j + 1]);
 }
 
-template <class itemType, class indexType>
+template < class itemType, class indexType >
 /** Sorting similar to bubblesort but fast for sorted arrays
- * 
+ *
  * The indices left and right are inclusive.
  */
-inline void flipSort ( itemType a[], indexType left, indexType right )
-{
-    indexType i, j;
+inline void flipSort (itemType a[], indexType left, indexType right) {
+        indexType i, j;
 
-    i = right;
-    while ( i>left ) {
-        indexType ii = i;
-        i=left;
-        for ( j=left; j<ii; ++j ) {
-            if ( a[j] > a[j+1] ) {
-                std::swap ( a[j], a[j+1] );
-                i=j;
-            }
+        i = right;
+        while (i > left) {
+                indexType ii = i;
+                i = left;
+                for (j = left; j < ii; ++j) {
+                        if (a[j] > a[j + 1]) {
+                                std::swap (a[j], a[j + 1]);
+                                i = j;
+                        }
+                }
         }
-    }
 }
 
-template <class Object, class indexType>
+template < class Object, class indexType >
 /**
  * @brief Template for bubble sort
  * @param array Array to be sorted
  * @param array_size Size of the array
  */
-inline void bubbleSort2 ( Object array[], indexType array_size )
-{
-    Object temp;
+inline void bubbleSort2 (Object array[], indexType array_size) {
+        Object temp;
 
-    for ( indexType i = ( array_size - 1 ); i >= 0; i-- ) {
-        for ( indexType j = 1; j <= i; j++ ) {
-            if ( array[j] < array[j-1] ) {
-                temp = array[j-1];
-                array[j-1] = array[j];
-                array[j] = temp;
-            }
+        for (indexType i = (array_size - 1); i >= 0; i--) {
+                for (indexType j = 1; j <= i; j++) {
+                        if (array[j] < array[j - 1]) {
+                                temp = array[j - 1];
+                                array[j - 1] = array[j];
+                                array[j] = temp;
+                        }
+                }
         }
-    }
 }
 
-template<class T>
+template < class T >
 /// sort list using quickSort
-void quickSort ( T array[], const int& leftarg, const int& rightarg )
-{
-    if ( leftarg < rightarg ) {
+void quickSort (T array[], const int &leftarg, const int &rightarg) {
+        if (leftarg < rightarg) {
 
-        T pivotvalue = array[leftarg];
-        int left = leftarg - 1;
-        int right = rightarg + 1;
+                T pivotvalue = array[leftarg];
+                int left = leftarg - 1;
+                int right = rightarg + 1;
 
-        for ( ;; ) {
+                for (;;) {
 
-            while ( array[--right] > pivotvalue ) {
-            };
-            while ( array[++left] < pivotvalue ) {
-            };
+                        while (array[--right] > pivotvalue) {
+                        };
+                        while (array[++left] < pivotvalue) {
+                        };
 
-            if ( left >= right )
-                break;
+                        if (left >= right)
+                                break;
 
-            T temp = array[right];
-            array[right] = array[left];
-            array[left] = temp;
+                        T temp = array[right];
+                        array[right] = array[left];
+                        array[left] = temp;
+                }
+
+                int pivot = right;
+                quickSort (array, leftarg, pivot);
+                quickSort (array, pivot + 1, rightarg);
         }
-
-        int pivot = right;
-        quickSort ( array, leftarg, pivot );
-        quickSort ( array, pivot + 1, rightarg );
-    }
 }
 
-template <class itemType, class indexType>
+template < class itemType, class indexType >
 /*** sort list using shellSort
  * The indices left and right are inclusive.
  */
-void shellSort ( itemType array[], indexType left, indexType right )
-{
-    static indexType i, j, h;
-    static itemType v;
+void shellSort (itemType array[], indexType left, indexType right) {
+        static indexType i, j, h;
+        static itemType v;
 
-    for ( h=1; h<= ( right-left ) /9; h=3*h+1 ) {
-    };
-    for ( ; h>0; h/=3 ) {
-        for ( i=left+h; i<=right; ++i ) {
-            for ( j=i-h, v=array[i]; j>=left && array[j]>v; array[j+h]=array[j], j-=h ) {
-            };
-            array[j+h] = v;
+        for (h = 1; h <= (right - left) / 9; h = 3 * h + 1) {
+        };
+        for (; h > 0; h /= 3) {
+                for (i = left + h; i <= right; ++i) {
+                        for (j = i - h, v = array[i]; j >= left && array[j] > v; array[j + h] = array[j], j -= h) {
+                        };
+                        array[j + h] = v;
+                }
         }
-    }
 }
 
 /// replace all occurces of a substring in a string
-inline std::string replaceString ( std::string subject, const std::string& search,
-                                   const std::string& replacement )
-{
-    size_t pos = 0;
-    while ( ( pos = subject.find ( search, pos ) ) != std::string::npos ) {
-        subject.replace ( pos, search.length(), replacement );
-        pos += replacement.length();
-    }
-    return subject;
+inline std::string replaceString (std::string subject, const std::string &search, const std::string &replacement) {
+        size_t pos = 0;
+        while ((pos = subject.find (search, pos)) != std::string::npos) {
+                subject.replace (pos, search.length (), replacement);
+                pos += replacement.length ();
+        }
+        return subject;
 }
 
 /// print a double value as bits
-inline void printdoubleasbits ( double double_value )
-{
-    unsigned char * desmond = ( unsigned char * ) & double_value;
-    for ( size_t i = 0; i < sizeof ( double ); i++ ) {
-        myprintf ( "%02X ", desmond[i] );
-    }
-    myprintf ( "\n" );
+inline void printdoubleasbits (double double_value) {
+        unsigned char *desmond = (unsigned char *)&double_value;
+        for (size_t i = 0; i < sizeof (double); i++) {
+                myprintf ("%02X ", desmond[i]);
+        }
+        myprintf ("\n");
 }
 
 /// calculate directory name for job splitted into parts
-std::string splitDir(std::vector < int >ii);
+std::string splitDir (std::vector< int > ii);
 
 /// calculate file name of job splitted into parts
-std::string splitFile(std::vector < int >ii);
+std::string splitFile (std::vector< int > ii);
 
 /// calculate tag for job splitted into parts
-std::string splitTag(std::vector < int >ii);
+std::string splitTag (std::vector< int > ii);
 
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

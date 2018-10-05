@@ -462,7 +462,7 @@ int main(int argc, char *argv[])
 	std::vector < long >na(kmax + 1);	/// number of arrays
 	std::vector < long >npareto(kmax + 1);	/// total number of pareto arrays
 
-	initncombscache(30);
+	Combinations::initialize_number_combinations(30);
 
 
 	// loop over all columns
