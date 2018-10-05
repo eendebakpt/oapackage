@@ -668,13 +668,13 @@ public:
     /// return array with selected column removed
     array_link deleteColumn ( int index ) const;
 
-    /// return array with first n rows
+    /// return array with first number_of_arrays rows
     array_link selectFirstRows ( int nrows ) const;
 
-    /// return array with first n columns selected
+    /// return array with first number_of_arrays columns selected
     array_link selectFirstColumns ( int ncolumns ) const;
 
-    /// return array with last n columns selected
+    /// return array with last number_of_arrays columns selected
     array_link selectLastColumns ( int ncolumns) const;
 
     /// select columns from an array
@@ -1060,7 +1060,7 @@ inline arraylist_t addConstant ( const arraylist_t & lst, int v )
     return out;
 }
 
-/** Return number of arrays with j_{2n+1}=0 for n<m */
+/** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
 std::vector < int > getJcounts ( arraylist_t * arraylist, int N, int k, int verbose = 1 );
 
 
@@ -1688,7 +1688,6 @@ public:
 
     // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
 
-
 	/// number of arrays in the file
     int narrays;
 
@@ -1928,7 +1927,7 @@ public:
     static int arrayNbits ( const arraydata_t & ad ) {
         int m = 0;
         for ( int i = 0; i < ad.ncols; ++i ) {
-            //myprintf("s[i]: %d\n", ad.s[i]);
+            //myprintf("s[i]: %d\number_of_arrays", ad.s[i]);
             if ( ad.s[i] > m ) {
                 m = ad.s[i];
             }
@@ -1971,39 +1970,39 @@ using namespace arrayfile;
 /// return number of arrays in an array file
 long nArrays ( const char *fname );
 
-/// return number of arrays in an array file
-inline void
-arrayfileinfo ( const char *fname, int &n, int &nr, int &nc )
+/** return information about file with arrays
+ *
+ * \param fname Filename of array file
+ * \param number_of_arrays Variable is set with number of arrays
+ * \param number_of_rows Variable is set with number of rows
+ * \param number_of_columns Variable is set with number of columns
+ */
+inline void arrayfileinfo ( const char *fname, int &number_of_arrays, int &number_of_rows, int &number_of_columns )
 {
     arrayfile_t af ( fname, 0 );
-    n = af.narrays;
-    nr = af.nrows;
-    nc = af.ncols;
+    number_of_arrays = af.narrays;
+    number_of_rows = af.nrows;
+    number_of_columns = af.ncols;
     af.closefile ();
 }
 
 /// read list of arrays from file and append to list
-int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose =
-                        1, int *setcols = 0, rowindex_t * setrows =
-                        0, int *setbits = 0 );
+int readarrayfile ( const char *fname, arraylist_t * arraylist, int verbose = 1, int *setcols = 0, rowindex_t * setrows = 0, int *setbits = 0 );
+
 /// read list of arrays from file
-arraylist_t readarrayfile ( const char *fname, int verbose = 1, int *setcols =
-                                0 );
+arraylist_t readarrayfile ( const char *fname, int verbose = 1, int *setcols = 0 );
 
 const int NRAUTO = 0;
 /// write a list of arrays to file on disk
 int writearrayfile ( const char *fname, const arraylist_t * arraylist,
-                     arrayfile::arrayfilemode_t mode =
-                         arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
+                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
 
 /// write a list of arrays to file on disk
 int writearrayfile ( const char *fname, const arraylist_t arraylist,
-                     arrayfile::arrayfilemode_t mode =
-                         arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
+                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO );
 
 /// write a single array to file
-int writearrayfile ( const char *fname, const array_link & al,
-                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );
+int writearrayfile ( const char *fname, const array_link & al, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT );
 
 /// append a single array to an array file. creates a new file if no file exists
 int appendarrayfile ( const char *fname, const array_link al );
@@ -2052,10 +2051,8 @@ arraylist_t selectArrays ( const arraylist_t & al, std::vector < int >&idx );
 arraylist_t selectArrays ( const arraylist_t & al, std::vector < long >&idx );
 
 /// Make a selection of arrays, append to list
-void selectArrays ( const arraylist_t & al, std::vector < int >&idx,
-                    arraylist_t & fl );
-void selectArrays ( const arraylist_t & al, std::vector < long >&idx,
-                    arraylist_t & fl );
+void selectArrays ( const arraylist_t & al, std::vector < int >&idx, arraylist_t & fl );
+void selectArrays ( const arraylist_t & al, std::vector < long >&idx, arraylist_t & fl );
 
 /// Make a selection of arrays, keep
 template < class Container, class IntType > void
@@ -2069,20 +2066,18 @@ keepElements ( Container & al, std::vector < IntType > &idx )
 }
 
 /// Make a selection of arrays, remove
-template < class Container, class IntType > void
-removeElements ( Container & al, std::vector < IntType > &idx )
+template < class Container, class IntType > void removeElements(Container & al, std::vector < IntType > &idx)
 {
-    for ( int jj = idx.size () - 1; jj >= 0; jj-- ) {
-        if ( idx[jj] ) {
-            al.erase ( al.begin () + jj );
-        }
-    }
+	for (int jj = idx.size() - 1; jj >= 0; jj--) {
+		if (idx[jj]) {
+			al.erase(al.begin() + jj);
+		}
+	}
 }
 
 template < class MType >
 /// Make a selection of arrays from a list, append to list
-void
-selectArraysMask ( const arraylist_t & al, std::vector < MType > &mask,
+void selectArraysMask ( const arraylist_t & al, std::vector < MType > &mask,
                    arraylist_t & rl )
 {
     assert ( al.size () == mask.size () );
@@ -2305,7 +2300,7 @@ inline bool readbinheader ( FILE * fid, int &nr, int &nc )
     nr = ( int ) h[2];
     nc = ( int ) h[3];
 
-    //myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\n", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
+    //myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],  h[0]==30397995, h[1]==12224883);
     bool valid = false;
 
     // check 2 numbers of the magic header
