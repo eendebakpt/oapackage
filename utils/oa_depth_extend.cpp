@@ -241,7 +241,7 @@ int main ( int argc, char* argv[] )
 
 		if ( verbose>=3 || ( verbose>=2 && ai%40==0 ) )
 			printf ( "oa_depth_extend: array %d/%ld (%d %d): time %.1f [s]\n", ai, arraylist->size(), al.n_rows, al.n_columns, get_time_ms()-t0 );
-		ff();
+		flush_stdout();
 
 
 		depth_extend_t dextendloop ( dextend );
@@ -271,7 +271,7 @@ int main ( int argc, char* argv[] )
 			const array_link &al = arraylist->at ( ai );
 			if ( verbose>=3 || ( verbose>=2 && ai%40==0 ) )
 				printf ( "oa_depth_extend process: array %ld/%ld (%d %d): time %.1f [s]\n", ai, arraylist->size(), al.n_rows, al.n_columns, get_time_ms()-t0 );
-			ff();
+			flush_stdout();
 			int extensioncol = al.n_columns+1;
 
 			depth_extend_t dextendloop ( dextend );
@@ -281,7 +281,6 @@ int main ( int argc, char* argv[] )
 
 			processDepth ( ds->goodarrayslist[ai], ds->depthalglist[ai], dextendloop, ds->dextendsubList[ai], extensioncol, verbose );
 
-//		dextendloop.showprogress(1, extensioncol, 1);
 		}
 	}
 

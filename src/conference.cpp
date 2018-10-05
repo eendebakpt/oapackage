@@ -363,8 +363,6 @@ array_link conference_t::create_root () const {
 }
 
 bool isConferenceFoldover (const array_link &al, int verbose) {
-        // FIXME: implement reduce to conference matrix
-
         array_link alt = al.transposed ();
         array_link alt2 = alt * -1;
 
@@ -1376,7 +1374,6 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                                       const std::vector< int > &check_indices, const conference_t &ct, int verbose,
                                       const DconferenceFilter &filter, long &ntotal) {
         const symmdata &sd = filter.sd;
-        // TODO: inline symmetry checks
         int nblocks = alsg.ngroups;
 
         if (block == nblocks) {
@@ -1394,8 +1391,7 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
 
         const int blocksize = alsg.gsize[block];
 
-        // FIXME: test this feature
-        if (block > nblocks - 8 && blocksize > 1 && 1) {
+        if (block > nblocks - 8 && blocksize > 1 ) {
                 int r = alsg.gstart[block] - 1;
 
                 bool check = filter.filterJpartial (candidate, r);
@@ -1406,7 +1402,6 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                 if (!check)
                         return;
         }
-        // printfd("sg.gstart.size() %d, block %d: blocksize %d\n", sg.gstart.size(), block, sg.gsize[block]);
         if (verbose >= 2)
                 printfd ("inflateCandidateExtensionHelper: block %d/%d: blocksize %d\n", block, alsg.gsize.size (),
                          blocksize);
@@ -1428,7 +1423,6 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                 printf ("\n");
         }
 
-        // FIXME: enable the other branch!!!!!!!
         if (verbose >= 2)
                 printfd ("  split\n");
         if (blocksize < 3 || (block > 1 && 0)) {
@@ -1451,10 +1445,7 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                                 printf ("    : check: ");
                                 print_cperm (xxc);
                                 printf (" ---> %d\n", satisfy_symm (candidate, check_indices, gstart, gend));
-                                // if (blocksize>20)
-                                //	exit(0);
                         }
-                        // cout << s1 << endl;
                         iter++;
 
                         // TODO: smart symmetry generation
@@ -1676,9 +1667,6 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                         bnew.row++;
                         bnew.rval = bvals[i];
                         bnew.nvals[i]--;
-                        // printf("push new branch: i %d\n", i);
-                        // NOTE: make direct push possible
-                        // NOTE: can we eliminate the branches object altogether?
                         branches.push (bnew);
                 }
 
@@ -1695,8 +1683,10 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
         if (verbose) {
                 printfd ("%s: %.3f [s]: generated %ld/%ld/%ld perms (len %ld)\n", __FUNCTION__, get_time_ms () - t0,
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
-                // al.show();
-                // al.transposed().showarray(); showCandidates ( cc );
+                if (verbose>=3) {
+                 al.show();
+                 al.transposed().showarray(); showCandidates ( cc );
+                }
         }
         return cc;
 }
@@ -1754,8 +1744,6 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
                 }
                 if (b.row == N - 1) {
                         n++;
-                        // verbose=2;
-                        // dfilter.filterReason(c);
                         if (dfilter.filter (c)) {
                                 if (verbose >= 2) {
                                         printfd ("## push candindate   : ");
@@ -1789,9 +1777,6 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
                         bnew.row++;
                         bnew.rval = bvals[i];
                         bnew.nvals[i]--;
-                        // printf("push new branch: i %d\n", i);
-                        // NOTE: make direct push possible
-                        // NOTE: can we eliminate the branches object altogether?
                         branches.push (bnew);
                 }
 
@@ -1848,7 +1833,6 @@ std::vector< cperm > generateDoubleConferenceExtensions2 (const array_link &al, 
                 std::sort (c.begin (), c.end ());
 
                 do {
-                        // cout << s1 << endl;
                         n++;
 
                         if (dfilter.filter (c)) {
@@ -1873,7 +1857,6 @@ std::vector< cperm > generateConferenceRestrictedExtensions (const array_link &a
                                                              int verbose, int filtersymm, int filterip) {
 
         const int extcol = al.n_columns;
-        // const int N = al.n_rows;
         const int N = ct.N;
 
         // special case
@@ -2981,34 +2964,6 @@ lmc_t lmc0_compare_zeropos_block (const array_link &al, const int x1, const int 
         }
         return LMC_EQUAL;
 }
-
-// lmc_t lmc0_compare_zeropos_blockX ( const array_link &al, const int x1, const int x2, rowsort_t *rowperm, const
-// std::vector<int> &colperm, int column, const std::vector<int> &rowsignperm, const std::vector<int> &colsignperm,
-// const int nrows )
-// {
-//
-//      /* Get zero position in the original array*/
-//      int al_position_zero = nrows+1;
-//
-//      for ( int i = x1; i < x2; i++ ) {
-//           if ( al.atfast ( i, column ) == 0 ) {
-//                al_position_zero = i; // changed from rowperm[r].r
-//           }
-//      }
-//
-//      /* Check position of zeros */
-//      int position_zero = get_zero_pos_blockX ( al, x1, x2, rowperm, colperm, column, nrows );
-//
-//      if ( position_zero > al_position_zero ) {
-//           return LMC_MORE;
-//      }
-//      if ( position_zero < al_position_zero ) {
-//           return LMC_LESS;
-//      }
-//
-//      return LMC_NONSENSE;
-//
-// }
 
 /* Compare two columns with the zero elements in the same position */
 lmc_t compare_conf_columns (const array_link &al, rowsort_t *rowperm, const std::vector< int > &colperm, int column,
