@@ -523,3 +523,5 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # cmake -DCMAKE_INSTALL_PREFIX:PATH=~vsc20149 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
 
+# source formatting: clang-format -style="{BasedOnStyle: llvm, IndentWidth: 8, ColumnLimit: 119, SpaceBeforeParens: Always, SpacesInAngles: true}" -i  *.h *.cpp
+# also see: http://cf.monofraps.net/
