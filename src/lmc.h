@@ -911,16 +911,19 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
 rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
 void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level,
-                                            int &permcounter);
-
-void print_rowsort (rowsort_t *rowsort, int N);
-void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N);
-
-void print_fracs (int logl = NORMAL);
-void clear_fracs ();
 
 #ifdef SWIG
 %ignore print_rowsort;
 #endif
+
+int &permcounter);
+/**
+* @brief Print the contents of a rowsort structure
+* @param rowsort Pointer to rowsort structure
+* @param N Number of elements
+*/
+void print_rowsort (rowsort_t *rowsort, int N);
+void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N);
+
 
 #endif

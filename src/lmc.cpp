@@ -1478,16 +1478,6 @@ vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int v
         return check;
 }
 
-static int nfrac1 = 0;
-static int nfrac2 = 0;
-void print_fracs (int logl) {
-        log_print (logl, "#### LMCcheckj4: total %d discard %d: gain %.2f\n ", nfrac1, nfrac2,
-                   double(nfrac2) / nfrac1);
-}
-void clear_fracs () {
-        nfrac1 = 0;
-        nfrac2 = 0;
-}
 
 /** @brief Calculate J-characteristic for a column combination
 *
