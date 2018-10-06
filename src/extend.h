@@ -15,8 +15,7 @@
 #include "tools.h"
 
 #ifdef SWIG
-% ignore extendpos;
-% ignore init_column;
+%ignore extendpos;
 #endif
 
 /** @brief Options for the extend code

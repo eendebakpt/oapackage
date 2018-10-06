@@ -59,9 +59,9 @@ class OAextend;
 #define stringify(name) #name
 
 #ifdef SWIG
-% ignore check_root_update;
-% ignore LMCreduceFull;
-% ignore dyndata_t::dyndata_t (dyndata_t const &);
+%ignore check_root_update;
+%ignore LMCreduceFull;
+%ignore dyndata_t::dyndata_t (dyndata_t const &);
 #endif
 
 #ifdef LMCSTATS
@@ -784,7 +784,6 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
         array_t *root = create_array (ad.N, ad.strength);
         create_root (root, &ad);
         if (!std::equal (original, original + ad.N * ad.strength, root)) {
-                // printf("check_root_update: copying!\n");
                 copy_array (root, target, ad.N, ad.strength);
                 for (int j = 0; j < ad.N; j++)
                         target[ad.N * ad.strength + j] = ad.s[ad.strength] + 100;
@@ -907,8 +906,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
                                     LMCreduction_t *reduction);
 #endif
 
-void root_row_permutation_from_index (int permindex, const arraydata_t *ad, levelperm_t *lperms);
-// void root_row_permutation(int *perm, arraydata_t *ad, int num);
 
 /* helper functions */
 
@@ -923,10 +920,7 @@ void print_fracs (int logl = NORMAL);
 void clear_fracs ();
 
 #ifdef SWIG
-% ignore print_rowsort;
-% ignore root_row_permutation_from_index;
-% ignore create_root_permutations_index;
-% ignore create_root_permutations_index_helper;
+%ignore print_rowsort;
 #endif
 
 #endif

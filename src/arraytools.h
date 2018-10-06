@@ -107,14 +107,14 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
 #ifdef SWIG
 // only export high level IO functions
-% ignore::array_diff;
-% ignore::write_array;
-% ignore::write_array_latex;
-% ignore::finish_arrayfile;
-% ignore arrayfile_t::arrayNbits;
-% ignore foldtest;
-% ignore arraydata_t::complete_arraydata_splitn;
-% ignore::writebinheader;
+%ignore::array_diff;
+%ignore::write_array;
+%ignore::write_array_latex;
+%ignore::finish_arrayfile;
+%ignore arrayfile_t::arrayNbits;
+%ignore foldtest;
+%ignore arraydata_t::complete_arraydata_splitn;
+%ignore::writebinheader;
 #endif
 
 extern "C" {}

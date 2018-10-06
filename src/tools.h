@@ -55,14 +55,10 @@ inline void printfd_handler (const char *file, const char *func, int line, const
 #endif
 
 #ifdef SWIG
-% ignore nullStream;
-% ignore logstream;
-% ignore next_comb;
-% ignore next_comb2;
-% ignore init_restart;
-% ignore addelement;
-% ignore row_rank_partial;
-% ignore row_rank;
+%ignore nullStream;
+%ignore logstream;
+%ignore next_comb;
+%ignore addelement;
 #endif
 
 //! Loglevel definitions. The loglevel determines to amount of output to stdout

@@ -3002,11 +3002,7 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
         return ret;
 }
 
-/**
-* @brief Print the contents of a rowsort structure
-* @param rowsort Pointer to rowsort structure
-* @param N Number of elements
-*/
+
 void print_rowsort (rowsort_t *rowsort, int N) {
         myprintf ("row: ");
         for (int x = 0; x < N; x++)
@@ -3017,13 +3013,13 @@ void print_rowsort (rowsort_t *rowsort, int N) {
         myprintf ("\n");
 }
 
-void print_column_rowsort2 (const array_t *arraycol, const array_t *arraycol2, rowsort_t *rowsort, levelperm_t lperm,
-                            int N) {
-        myprintf ("column: \n");
-        for (int x = 0; x < N; x++)
-                myprintf ("row %d: %d (orig %d) (value %ld)\n", x, lperm[arraycol[rowsort[x].r]], arraycol2[x],
-                          (long)rowsort[x].val);
-}
+// void print_column_rowsort2 (const array_t *arraycol, const array_t *arraycol2, rowsort_t *rowsort, levelperm_t lperm,
+//                             int N) {
+//         myprintf ("column: \n");
+//         for (int x = 0; x < N; x++)
+//                 myprintf ("row %d: %d (orig %d) (value %ld)\n", x, lperm[arraycol[rowsort[x].r]], arraycol2[x],
+//                           (long)rowsort[x].val);
+// }
 
 void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N) {
         myprintf ("column: \n");
