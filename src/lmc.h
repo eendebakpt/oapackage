@@ -877,8 +877,6 @@ array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
 
 void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose = 1);
 
-/* Public interface */
-
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &al);
 
@@ -911,10 +909,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
 rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
 void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level,
-
-#ifdef SWIG
-%ignore print_rowsort;
-#endif
 
 int &permcounter);
 /**

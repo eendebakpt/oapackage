@@ -201,6 +201,50 @@ std::string algnames (algorithm_t m) {
         return str;
 }
 
+template < class numtype, class objecttype >
+/** Convert number to a permutation and apply to an array
+* See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations
+* @param permutation_index Index of permutation to apply
+* @param array Array of objects to be permuted
+* @param length Length of array
+* @return
+*/
+void permutationLex (numtype permutation_index, objecttype *array, numtype length) {
+        numtype fact = factorial (length - 1);
+        objecttype tempj, temps;
+
+        for (int j = 0; j < length - 1; j++) {
+                tempj = (permutation_index / fact) % (length - j);
+                temps = array[j + tempj];
+                for (int i = j + tempj; i >= j + 1; i--) {
+                        array[i] = array[i - 1]; // shift the chain right
+                }
+                array[j] = temps;
+                fact = fact / (length - (j + 1));
+        }
+}
+
+/**
+* @brief From a given permutation index construct the corresponding level permutations
+* @param permindex
+* @param ad
+* @param lperms
+*/
+void root_row_permutation_from_index (int permindex, const arraydata_t *ad, levelperm_t *lperms) {
+        for (colindex_t i = 0; i < ad->strength; i++) {
+                const int col = ad->strength - i - 1;
+                int fac = factorial< int > (ad->s[col]);
+
+                int idx = (permindex % fac);
+                int rem = (permindex / fac);
+
+                init_perm (lperms[col], ad->s[col]);
+
+                permutationLex< array_t > (idx, lperms[col], ad->s[col]);
+                permindex = rem;
+        }
+}
+
 /**
 * @brief Perform a row permutation on an array using a rowsort_t structure
 * @param source
@@ -220,32 +264,6 @@ void perform_row_permutation (const carray_t *source, array_t *target, rowsort_t
         }
 }
 
-/* Debugging functions */
-void debug_print_xxx (lmc_t ret, int cpoffset, int nlevels, const dyndata_t *dyndata, levelperm_t lperm,
-                      const LMCreduction_t *reduction, carray_t *original, const arraydata_t *ad) {
-        if (0 && (ret == LMC_LESS)) {
-                // if (1 && (ret==LMC_LESS || ret==LMC_MORE)) {
-                myprintf ("### decision: ret %d\n", ret);
-                reduction->transformation->show ();
-                print_array ("original\n", original, ad->N, ad->ncols);
-                // reduction->transformation->apply ( original, reduction->array );
-                print_array ("update:\n", reduction->array, ad->N, ad->ncols);
-
-                /// Compare 2 arrays and return position of first difference
-                rowindex_t rpos;
-                colindex_t cpos;
-                int vv =
-                    array_diff (original + cpoffset, reduction->array + dyndata->col * ad->N, ad->N, 1, rpos, cpos);
-                myprintf ("   array_diff result: dyndata->col %d, rpos %d, cpos %d, cpoffset %d, vv %d\n",
-                          dyndata->col, rpos, cpos, cpoffset, vv);
-
-                myprintf ("lperm: ");
-                print_perm (lperm, nlevels);
-                print_perm (original + cpoffset, ad->N);
-                print_perm (reduction->array + dyndata->col * ad->N, ad->N);
-                dyndata->show ();
-        }
-}
 
 void debug_show_reduction (LMCreduction_t *reduction, carray_t *original, const arraydata_t *ad,
                            const char *str = "##\n") {
@@ -288,11 +306,9 @@ object_pool< larray< rowindex_t > > arraysymmetry::rowpermpool =
 arraysymmetry::~arraysymmetry () {
 #ifdef USE_ROWPERM_POOL
         arraysymmetry::rowpermpool.Delete (rowperm);
-// rowperm=0;
 #else
         delete rowperm;
         rowperm = 0;
-// rowperm = new larray<rowindex_t>;
 #endif
 
         rowperm = 0;
@@ -337,8 +353,6 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata)
         int n = dyndata->col + 1;
         // myprintf("LMCreduction_t::storeSymmetryPermutation: insert symmetry at %d\n", n);
         arraysymmetry as (dyndata);
-        //   myprintf("LMCreduction_t::storeSymmetryPermutation: calling insertUnique %d %d %d\n", as.rowperm.n,
-        //   as.colperm.n, as.lperm.n);
         insertUnique (symmetries[n], as);
 
         if (symmetries[n].size () % 500000 == 0) {
@@ -354,7 +368,6 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata)
                 myprintf ("LMCreduction_t::storeSymmetryPermutation: raw data size %.1f [MB]\n",
                           double(es) / (1024 * 1024));
         }
-        //   myprintf("LMCreduction_t::storeSymmetryPermutation: calling insertUnique ... done\n");
 }
 
 LMCreduction_t::LMCreduction_t (const arraydata_t *adp) {
@@ -412,10 +425,7 @@ LMCreduction_t::LMCreduction_t (const LMCreduction_t &at) {
         sd = symmdataPointer ((symmdata *)0);
 
         symms = at.symms;
-        // symms.store=at.symms.store;
-        // colperms=at.colperms;
-        // colcombs=at.colcombs;
-        // symmetries=at.symmetries;
+
 
         transformation = new array_transformation_t (*(at.transformation));
         array = create_array (transformation->ad);
@@ -438,12 +448,7 @@ LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at) /// Assignm
         staticdata = at.staticdata; // ??
 
         symms = at.symms;
-        // store=at.store;
-        // colperms=at.colperms;
-        // colcombs=at.colcombs;
-        // symmetries=at.symmetries;
 
-        // myprintf("LMCreduction_t::operator=: colperms.size() %zu\n", colperms.size() );
         free ();
 
         transformation = new array_transformation_t (*(at.transformation));
@@ -493,8 +498,6 @@ void LMCreduction_t::updateTransformation (const arraydata_t &ad, const dyndata_
         /* copy column permutation */
         copy_perm (dyndatacpy.colperm, this->transformation->cperm, ad.ncols);
 
-        // @pte
-        // void debug_show_reduction(reduction, original,  ad, "####3 new reduction:\n");
 }
 
 void LMCreduction_t::updateFromLoop (const arraydata_t &ad, const dyndata_t &dyndatacpy, levelperm_t *lperm_p,
@@ -882,50 +885,6 @@ rowperm_t *create_root_permutations_index_full (const arraydata_t *ad, int &tota
 
         free2d (lperms); // we do not need to store the lperms
         return rperms;
-}
-
-template < class numtype, class objecttype >
-/** Convert number to a permutation and apply to an array
-* See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations
-* @param permutation_index Index of permutation to apply
-* @param array Array of objects to be permuted
-* @param length Length of array
-* @return
-*/
-void permutationLex (numtype permutation_index, objecttype *array, numtype length) {
-        numtype fact = factorial (length - 1);
-        objecttype tempj, temps;
-
-        for (int j = 0; j < length - 1; j++) {
-                tempj = (permutation_index / fact) % (length - j);
-                temps = array[j + tempj];
-                for (int i = j + tempj; i >= j + 1; i--) {
-                        array[i] = array[i - 1]; // shift the chain right
-                }
-                array[j] = temps;
-                fact = fact / (length - (j + 1));
-        }
-}
-
-/**
-* @brief From a given permutation index construct the corresponding level permutations
-* @param permindex
-* @param ad
-* @param lperms
-*/
-void root_row_permutation_from_index (int permindex, const arraydata_t *ad, levelperm_t *lperms) {
-        for (colindex_t i = 0; i < ad->strength; i++) {
-                const int col = ad->strength - i - 1;
-                int fac = factorial< int > (ad->s[col]);
-
-                int idx = (permindex % fac);
-                int rem = (permindex / fac);
-
-                init_perm (lperms[col], ad->s[col]);
-
-                permutationLex< array_t > (idx, lperms[col], ad->s[col]);
-                permindex = rem;
-        }
 }
 
 template < class numtype >
@@ -1570,12 +1529,9 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         colperm_t pp = new_perm_init< colindex_t > (jj);
 
         for (int i = 0; i < nc; i++) {
-                nfrac1++;
-
                 int jval = abs (jvaluefast (array, ad.N, jj, comb));
 
                 if (jval > goodj) {
-                        nfrac2++;
                         // this combination will lead to LMC less
                         if (reduction.mode >= OA_REDUCE) {
                                 ret = LMC_EQUAL;
@@ -1586,7 +1542,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                                 break;
                         }
                 } else if (jval < goodj) {
-                        nfrac2++;
                         // this combination can only lead to LMC more
 
                         next_combination (comb, jj, ad.ncols); // increase combination
@@ -1656,9 +1611,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         myprintf ("returning %d\n", ret);
 #endif
 
-        if (nfrac1 % 40000 == 0) {
-                print_fracs ();
-        }
         return ret;
 }
 
@@ -2298,8 +2250,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                 for (int j = 0; j < (int)reductionsub.symms.colcombs[i].size (); j++) {
                         std::vector< int > w = reductionsub.symms.colcombs[i][j];
                         w.push_back (newcol);
-                        // myprintf("comb2perm: i %d: al %d %d: reductionsub.symms %d, comb size %zu, ad.ncols %d: ",
-                        // i, al.n_rows, al.n_columns, reductionsub.symms.ncols, w.size(), ad.ncols ); print_perm(w);
                         std::vector< colindex_t > ww = comb2perm< colindex_t > (w, ad.ncols);
 
                         // initialize dyndata with w
@@ -2335,9 +2285,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                 print_perm (dyndata.colperm, ad.ncols);
                                 adfix.show_colgroups ();
 
-                                if (special) {
-                                        // exit(0);
-                                }
                         }
 
                         if (r == LMC_LESS) {
@@ -2364,7 +2311,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                 for (int j = 0; j < (int)reductionsub.symms.colperms[i].size (); j++) {
                         std::vector< int > w = reductionsub.symms.colperms[i][j];
                         w.push_back (newcol);
-                        // std::vector<colindex_t> ww = perform_perm(pinit, w);
                         std::vector< colindex_t > ww = comb2perm< colindex_t > (w, ad.ncols);
 
                         if (dverbose >= 2 || i == 23) {
@@ -2399,9 +2345,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                 print_perm (dyndata.colperm, ad.ncols);
                                 adfix.show_colgroups ();
 
-                                if (special) {
-                                        // exit(0);
-                                }
                         }
 
                         if (r == LMC_LESS) {
@@ -2495,13 +2438,6 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
                 return reductionsub;
 
         lmc_t r;
-        if (0) {
-                LMCreduction_t reduction (&adata);
-                reductionsub.symms.store = 0;
-                r = LMCcheck (al, adata, oaextend, reduction);
-                reductionsub.symms.store = 0;
-                r = LMCcheck (alsub, adatasub, oaextend, reductionsub);
-        }
 
         OAextend x = oaextend;
         x.setAlgorithm (MODE_J5ORDERXFAST, &adatasub);
@@ -2509,8 +2445,6 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
         if (dverbose)
                 myprintf ("calculateSymmetryGroups: LMCcheck complete...\n");
 
-        // reductionsub=LMCreduction_t(&adatasub);
-        // r = LMCcheck(alsub, adatasub, oaextend, reductionsub) ;
         if (dverbose)
                 myprintf ("calculateColpermsGroup: sub lmc_t %d\n", (int)r);
         if (dverbose >= 2 || 0) {
@@ -2521,8 +2455,6 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
 
         if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDERXFAST ||
             oaextend.getAlgorithm () == MODE_LMC_SYMMETRY) {
-                // reductionsub.symms.showColcombs();
-
                 for (int i = 0; i < 5; i++) {
                         reductionsub.symms.symmetries[i].clear ();
                 }
@@ -2558,9 +2490,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
         dyndata_t dynd = dyndata_t (ad.N);
 
         if (reduction.init_state == INIT_STATE_INVALID) {
-                myprintf ("LMCcheck: reduction.init_state is INVALID, please set it to COPY or INIT!\n");
-                // oaextend.info();
-                throw;
+                throw std::runtime_error("LMCcheck: reduction.init_state is INVALID, please set it to COPY or INIT");
         }
         if (reduction.init_state == SETROOT) {
                 log_print (DEBUG, "LMCcheck: reduction.init_state is SETROOT\n");
@@ -2580,12 +2510,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
         } break;
         case MODE_J4: {
                 array_link al (array, ad.N, ad.ncols, -20);
-                // if(reduction.init_state!=COPY) {
-                //     myprintf("LMCcheck: warning: MODE_J4: reduction.init_state!=COPY (reduction.init_state %d)\n",
-                //     reduction.init_state);
-                // }
-                // copy_array ( array, reduction.array, ad.N, ad.ncols );
-                // reduction.sd = symmdataPointer(new symmdata(al, 1) );
+
                 lmc = LMCcheckj4 (al, ad, reduction, oaextend);
         } break;
         case MODE_J5ORDER: {

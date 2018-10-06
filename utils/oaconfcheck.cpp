@@ -58,7 +58,7 @@ int main (int argc, char *argv[]) {
         int niter = opt.getIntValue ("niter", 10);
         int verbose = opt.getIntValue ("verbose", 1);
 
-        char *input = opt.getValue ('I');
+        const char *input = opt.getValue ('I');
         if (input == 0)
                 input = "pexample_two.oa";
 

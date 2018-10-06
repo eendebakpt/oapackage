@@ -434,10 +434,6 @@ int main (int argc, char *argv[]) {
                                 logstream (NORMAL) << "Discriminant: " << endl;
                                 print_discriminant (ad->N, current_col + 1);
 #endif
-
-                                // log_print(NORMAL, "final: ");
-                                // print_fracs(NORMAL);
-                                clear_fracs ();
                         }
                         /*------------------------*/
                         time (&seconds);
@@ -462,8 +458,6 @@ int main (int argc, char *argv[]) {
 #ifdef OAEXTEND_MPI
         MPI_Finalize ();
 #endif
-
-        // lmc_stats();
 
         return 0;
 }
