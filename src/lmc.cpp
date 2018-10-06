@@ -2544,17 +2544,8 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                         reductionsub.symms.show ();
                         myprintf (" dt symmetry group: %.1f [ms]\n", 1e3 * (get_time_ms () - t0));
                 } else {
-                        // symmetryPointer;
-                        // myprintf("LMCcheck: MODE_LMC_SYMMETRY: skipping calculation of symmetries... (symms.ncols
-                        // %d, al.ncols %d, symms.symmetries[4].size() %zu, symms.symmetries[5].size() %zu)\n",
-                        // reduction.symms.ncols, al.n_columns, reduction.symms.symmetries[4].size(),
-                        // reduction.symms.symmetries[5].size()  );
-                        // reductionsub.symms.show();
-                        // vector<symmetryset> vs = reduction.symmetries.get();
-
                         // NOTE: copy symmetries, but extend with new columns as well!
                         reductionsub.symms = reduction.symms;
-                        // symmetries = reduction.symmetries;
                 }
                 if (dverbose) {
                         myprintf ("LMCcheck: MODE_LMC_SYMMETRY: testing: strength %d, al ", ad.strength);
@@ -2623,8 +2614,6 @@ lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduct
 */
 lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
                           LMCreduction_t *reduction, const OAextend &oaextend) {
-        // OPTIMIZE: analyze this code for efficiency
-
         lmc_t ret = LMC_NONSENSE;
         int n;
         colindex_t *cols;
@@ -2692,13 +2681,11 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 
                 *(reduction->transformation) = (*(reductiontmp.transformation)) * (*(reduction->transformation));
         }
-        // myprintf("LMCreduction_train: final iteration\n");
         /* final iteration */
         copy_array (reductiontmp.array, atmp, ad->N, ad->ncols);
         reduction->maxdepth = -1;
         reductiontmp.transformation->reset ();
 
-        // array_link alxx(atmp, ad->N, ad->ncols); myprintf("  atmp\n"); alxx.showarray();
         ret = LMCreduce (atmp, atmp, ad, dyndata, &reductiontmp, oaextend);
 
         if (verbose >= 2) {
@@ -2725,8 +2712,8 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 /// full reduction, no root-trick
 lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *adx, const dyndata_t *dyndata,
                      LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic) {
-        arraydata_t *ad = new arraydata_t (*adx); // NOTE: is this needed?
-        ad->oaindex = ad->N;                      // NOTE: hack to prevent processing on blocks in LMC_check_col
+        arraydata_t *ad = new arraydata_t (*adx); 
+        ad->oaindex = ad->N;                      // NOTE: this is to prevent processing on blocks in LMC_check_col
 
         if (dyndata->col == 0) {
                 /* update information of static variables */
@@ -2782,9 +2769,7 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
                 tmpStatic.update (ad);
 
                 if (reduction->init_state == INIT_STATE_INVALID) {
-                        // TODO: remove this code
-                        myprintf ("LMCreduce: reduction.init_state is INIT_STATE_INVALID\n");
-                        throw;
+                        throw std::runtime_error("LMCreduce: reduction.init_state is INIT_STATE_INVALID");
                 }
 
                 if (reduction->init_state == COPY) {
@@ -2792,7 +2777,6 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
                         reduction->init_state = COPY;
                 }
 
-                //#ifdef OADEBUG
                 bool rootform = check_root_form (reduction->array, *ad);
 
                 if (!rootform) {
@@ -2809,7 +2793,6 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
                                 print_array (reduction->array, ad->N, ad->ncols);
                         }
                 }
-                //#endif
         }
 
 #ifdef OACHECK
@@ -2844,8 +2827,6 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
 #else
                 ret = LMCreduce_root_level_perm (original, ad, dyndata, reduction, oaextend, tmpStatic);
 #endif
-                // logstream(DEBUG) << printfstring("  return from LMCreduce_root_level_perm: column %d\n",
-                // reduction->lastcol);
 
                 return ret;
         }
@@ -2869,12 +2850,10 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
         /* loop over all possible column combinations for the root */
 
         for (int i = 0; i < nc; i++) {
-// if(dyndata->col==0 && (i%10)==0) {
 #ifdef OAEXTRA
                 logstream (DEBUG) << printfstring ("LMCreduce: root stage (col %d): column comb: %d/%d\n",
-                                                   dyndata->col, i, nc); // print_perm(comb, k);
+                                                   dyndata->col, i, nc); 
 #endif
-                //}
 
                 create_perm_from_comb< colindex_t > (localcolperm, comb, k, ad->ncols, col);
 
@@ -2927,14 +2906,6 @@ void print_rowsort (rowsort_t *rowsort, int N) {
                 myprintf ("%2ld ", static_cast< long > (rowsort[x].val));
         myprintf ("\n");
 }
-
-// void print_column_rowsort2 (const array_t *arraycol, const array_t *arraycol2, rowsort_t *rowsort, levelperm_t lperm,
-//                             int N) {
-//         myprintf ("column: \n");
-//         for (int x = 0; x < N; x++)
-//                 myprintf ("row %d: %d (orig %d) (value %ld)\n", x, lperm[arraycol[rowsort[x].r]], arraycol2[x],
-//                           (long)rowsort[x].val);
-// }
 
 void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N) {
         myprintf ("column: \n");
