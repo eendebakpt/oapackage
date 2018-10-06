@@ -174,8 +174,6 @@ struct depth_extend_sub_t {
                 for (size_t i = 0; i < lmctype.size (); i++) {
                         // we need proper strength
                         if (strengthcheck[i]) {
-                                // myprintf("##  depth_extend_sub_t.updateExtensionPointers: i %zu, lastcol %d extcol
-                                // %d \n", i, lastcol[i], extcol);
                                 if (lastcol[i] >= extcol || lastcol[i] == -1 || extcol < 5) {
                                         pointers.push_back (valididx[i]);
                                 }
@@ -308,7 +306,6 @@ struct depth_extend_t {
         };
 
         depth_extend_t (const depth_extend_t &de) {
-                // myprintf("depth_extend_t: copy constructor\n"); myprintf(" searchpath: "); de.searchpath.show(16);
                 verbose = de.verbose;
                 oaextend = de.oaextend;
                 ad = de.ad;

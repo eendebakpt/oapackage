@@ -5,6 +5,7 @@
 
 #include <map>
 #include <printfheader.h>
+#include <stdio.h>
 
 #include "arrayproperties.h"
 #include "arraytools.h"
@@ -325,7 +326,6 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 }
 
                 dextendsub.resize (extensions0.size ());
-                // dextendsub.verbose=2; //
                 dextend.extension_column_list = dextendsub.initialize (extensions0, adfull, oaextendx);
                 dextendsub.info ();
 
@@ -360,10 +360,6 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
 
         extensioncol++;
 
-        // TODO: use row symmetry check to reduce arrays
-        // TODO: use lastrow to reduce arrays (related to init_column_previous)
-
-        // printfd ( "number of extensions: %zu\n", extensions0.size() );
         if (ds != 0) {
 #pragma omp critical
                 { ds->set (dsidx, goodarrays, dextend.extension_column_list, depthalg, dextendsub); }
@@ -386,8 +382,6 @@ void depth_extend_log (int i, const arraylist_t &alist, int nn, depth_extend_t &
                 if (verbose) {
                         // log at certain time intervals if extcol is small enough
                         if (dextend.showprogress (1, extcol)) {
-                                // myprintf ( "%sdepth_extend: column %d, array %d/%d (%zu extend cols)\n", sp.c_str(),
-                                // extcol, ( int ) i, ( int ) alist.size(), nn );
                                 flush_stdout ();
                         }
                 }
@@ -417,7 +411,6 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
         // loop over all arrays
         for (size_t i = 0; i < alist.size (); i++) {
-                // printfd ( "i %d/%d\n", i, alist.size() );
                 const array_link &al = alist[i];
 #ifdef OADEBUG
                 if (al.n_columns + 1 > dextend.ad->ncols) {
@@ -438,7 +431,6 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
                 depth_extend_log (i, alist, nn, dextend, extcol, verbose);
 
-                // myprintf("dextend.discardJ5 %d, extcol %d\n", dextend.discardJ5, extcol);
                 if (dextend.discardJ5 >= 0 && (dextend.discardJ5 <= extcol)) {
                         std::vector< int > j5 = al.Jcharacteristics (5);
                         for (size_t i = 0; i < j5.size (); i++) {
@@ -468,10 +460,6 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                 LMCreduction_t reductionsub (&adsub);
 
                 // check possible extensions
-                // printfd("## start of omp for loop: extcol %d: i %d: loop over %d elements\n", extcol, (int)i,
-                // (int)nn);
-                // omp_set_num_threads(4);
-                //#pragma omp parallel for
                 for (size_t j = 0; j < nn; j++) {
                         if (dlocal.verbose >= 2) {
                                 myprintf ("%sdepth_extend: col %d: j %ld: %d %ld\n", sp.c_str (), extcol, j,
@@ -506,7 +494,6 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                                 double dt;
                                 lmc_t lmc;
 
-                                // reduction.reset();
                                 reduction.init_state = COPY;
                                 t0 = get_time_ms ();
                                 lmc = LMCcheck (ee, (adlocal), dextend.oaextend, reduction);
@@ -670,7 +657,6 @@ void addArraysToPareto (Pareto< mvalue_t< long >, array_link > &pset, pareto_cb_
 #else
                 int tid = 0;
 #endif
-                // parseArrayPareto ( al, al, pset, verbose );
                 Pareto< mvalue_t< long >, array_link >::pValue p = paretofunction (al, verbose >= 3, rs[tid]);
 
 #pragma omp critical
