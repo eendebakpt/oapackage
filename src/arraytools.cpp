@@ -1792,15 +1792,6 @@ array_link array_link::reduceLMC () const {
 
         reduction.init_state = SETROOT;
 
-        if (0) {
-                myprintf ("\n## array_link::reduceLMC()\n");
-                oaextend.info ();
-                myprintf ("array_link::reduceLMC: strength %d, reduction.init_state %d \n", strength,
-                          reduction.init_state); // al2.showarray();
-
-                reduction.show ();
-        }
-
         LMCcheck (*this, ad, oaextend, reduction);
 
         return reduction.getArray ();
@@ -1812,7 +1803,6 @@ symmetry_group array_link::row_symmetry_group () const {
 
         std::vector< mvalue_t< int > > rr (this->n_rows);
         for (int i = 0; i < this->n_rows; i++) {
-                // mvalue_t<int> m;
                 mvalue_t< int > &m = rr[i];
                 m.v.resize (nc);
 
@@ -3964,7 +3954,6 @@ int arrayfile_t::read_array (array_link &a) {
                 break;
         case arrayfile::ABINARY_DIFF: {
                 int result = afread (&index, sizeof (int32_t), 1);
-                // myprintf("   arrayfile::ABINARY_DIFF %d %d\n", result, index);
                 if (result != 1) {
                         // error reading array, we could have reached the end of the file
                         if (this->narrays == -1) {
@@ -3975,11 +3964,7 @@ int arrayfile_t::read_array (array_link &a) {
                         a.index = index;
                         break;
                 }
-                /*
-                if ( index==-1 ) {
-                      myprintf ( "arrayfile_t::read_array: updating index (-1 is invalid)\n" );
-                      index=0;
-                }*/
+
                 int32_t nrest;
                 result = afread (&nrest, 1, sizeof (int32_t));
 
@@ -3987,12 +3972,7 @@ int arrayfile_t::read_array (array_link &a) {
                 int ncols = a.n_columns;
                 int ngood = ncols - nrest;
                 copy_array (diffarray.array, a.array, nrows, ngood);
-                // a=diffarray;
 
-                if (0) {
-                        myprintf ("arrayfile_t::read_array: nrows %d, ncols %d,  nrest %d, ngood %d\n", nrows, ncols,
-                                  nrest, ngood);
-                }
                 this->read_array_binary (a.array + nrows * ngood, nrows, nrest);
                 a.index = index;
                 diffarray = a;
@@ -4369,13 +4349,7 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
         } else {
                 this->iscompressed = 0;
                 this->nfid = fopen (fname.c_str (), "r+b");
-                // printfd(" opened file: nfid %d (mode r+b)\n", this->nfid);
-                if (0) {
-                        fseek (nfid, 0, SEEK_SET);
-                        char buf[4] = {0, 1, 3, 4};
-                        int r = fwrite (buf, 1, 4, nfid);
-                        printfd ("written %d bytes...\n", r);
-                }
+
                 this->gzfid = 0;
                 if (verbose >= 2) {
                         myprintf ("   opened file |%s|: nfid %ld, gzfid %ld\n", fname.c_str (), (long)this->nfid,
@@ -4898,41 +4872,17 @@ int appendarrayfile (const char *fname, const array_link al) {
                 if (dverbose) {
                         printfd ("file is at position %d\n", ftell (afile->nfid));
                 }
-                if (0) {
-                        // afile->nfid = fopen(fname, "r+b");
 
-                        fseek (afile->nfid, 0, SEEK_SET);
-                        myprintf ("  ");
-                        printfd ("file is at position %d\n", ftell (afile->nfid));
-
-                        char buf[4] = {1, 2, 3, 4};
-                        int p = fseek (afile->nfid, 0, SEEK_END);
-                        myprintf ("  p %d, afile->nfid %ld\n", p, (long)afile->nfid);
-                        myprintf (" fseek errno: %s\n", strerror (errno));
-                        int rr = fread (buf, 1, 4, afile->nfid);
-                        myprintf ("rr %d, something went wrong with fread()? %s\n", rr, strerror (errno));
-                        int pp = ftell (afile->nfid);
-                        fseek (afile->nfid, 0, SEEK_CUR);
-                        rr = fwrite (buf, 1, 4, afile->nfid);
-                        myprintf ("rr %d, something went wrong with fwrite()! %s\n", rr, strerror (errno));
-                        myprintf ("  written rr %d\n", rr);
-                        afile->seek (afile->narrays);
-                }
         }
 
-        // printf("before seek: afile->narrays %d, narraycounter %d\n", afile->narrays, afile->narraycounter);
         afile->seek (afile->narrays);
-
-        //		int fs = get_file_status ( afile->nfid );
-        //		printf ( "# file status %d (O_RDONLY %d, O_RDWR %d, O_APPEND %d)\n", fs, O_RDONLY , O_RDWR,
-        //O_APPEND );
 
         if (!afile->isopen ()) {
                 myprintf ("writearrayfile: problem with file %s\n", fname);
                 return 0;
         }
 
-        int i = afile->append_arrays (arraylist, 1); // append_arrays ( afile, *arraylist, 1 );
+        int i = afile->append_arrays (arraylist, 1); 
         afile->narrays = -1;
         afile->rwmode = READWRITE;
 

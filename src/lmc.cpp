@@ -515,27 +515,10 @@ void LMCreduction_t::updateFromLoop (const arraydata_t &ad, const dyndata_t &dyn
         /* copy column permutation */
         copy_perm (dyndatacpy.colperm, this->transformation->cperm, ad.ncols);
 
-        // @pte
-        // void debug_show_reduction(reduction, original,  ad, "####3 new reduction:\n");
-
         /* update array used for comparing */
 
         this->transformation->apply (original, this->array);
 
-        if (0) {
-                myprintf ("LMCreduction_t::updateFromLoop (red %ld): colperm ", nred);
-                print_perm (this->transformation->cperm, this->transformation->ad->ncols);
-                myprintf ("new array:\n");
-                print_array (this->array, ad.N, ad.ncols);
-        }
-        if (0) {
-                array_link tmp (original, ad.N, ad.ncols);
-                array_link tmp2 (this->array, ad.N, ad.ncols);
-
-                int rr, cc;
-                tmp.firstDiff (tmp2, rr, cc);
-                myprintf ("updateFromLoop: first diff col %d, row %d\n", cc, rr);
-        }
 }
 
 void random_transformation (array_t *array, const arraydata_t *adp) {
@@ -1342,9 +1325,6 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
                                                   tmpStatic); // TODO: this should be a call to j4/tplus code
 
                 if (ret == LMC_LESS) {
-                        if (0) {
-                                myprintf ("LMC_non_root: l %d returned LMC_LESS\ntransformed array:\n", l);
-                        }
                         break;
                 }
         }
@@ -1404,13 +1384,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
                 delete dyndatatmp;
 
                 if (ret == LMC_LESS) {
-                        if (0 && checkloglevel (NORMAL)) {
-                                myprintf ("LMC_non_root: np %d returned LMC_LESS\ntransformed array:\n", np);
-                                show_array (original, ad->ncols, ad->N, dyndata->colperm, dyndata->rowsort);
-                                print_array ("original:\n", original, ad->N, ad->ncols);
-                                myprintf ("------\n");
-                                print_array ("LMC_non_root: reduction->array:\n", reduction->array, ad->N, ad->ncols);
-                        }
                         break;
                 }
                 np = next_permutation (lperm_p[col], lperm_p[col] + ad->s[col]);
@@ -1577,20 +1550,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
                         } else {
                                 if (ret == LMC_LESS) {
-                                        if (0) {
-                                                myprintf ("LMCcheckj4: reduction changed: ");
-                                                print_perm (dyndata.colperm, 4);
-                                                reduction.show ();
-                                                reduction.transformation->show ();
-
-                                                myprintf ("xxx %d\n", reduction.getArray () == al);
-
-                                                myprintf ("original array:\n");
-                                                print_array (array, ad.N, ad.ncols);
-                                                myprintf ("   full transform:\n");
-                                                // show_array ( array, ad.ncols, ad.N, dyndata.colperm, dyndata.rowsort
-                                                // );
-                                        }
                                         break;
                                 }
                         }
@@ -1990,8 +1949,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 #endif
                 }
 
-                //    reduction.storeColumnPermutation(firstcolcomb, jj);
-
                 if (dverbose >= 2) {
                         myprintf ("   LMCcheckj5 column comb %d/%d : going to jjsplit\n", i, nc);
                 }
@@ -2036,23 +1993,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                         }
                 }
                 ret = (lmc_t) (int)retx;
-
-#ifdef OADEBUG
-                if (0) {
-                        if (ret != retx) {
-                                printfd ("##  final ret x %d (new method %d) ##\n", ret, (int)retx);
-                                myprintf ("   comb: ");
-                                print_perm (firstcolcomb, jj);
-                                myprintf ("   colperm: ");
-                                print_perm (perm, ad.ncols);
-                                setloglevel (DEBUG);
-
-                                double retx =
-                                    jj45split (array, ad.N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction, 2);
-                                throw;
-                        }
-                }
-#endif
 
                 if (ret == LMC_LESS) {
                         // myprintf("LMCcheckj5: found LMC_LESS\n");
@@ -2558,17 +2498,6 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                 reduction.updateSDpointer (al);
 
                 lmc = LMCcheckSymmetryMethod (al, ad, xx, reduction, reductionsub, dverbose);
-
-                if (0) {
-                        lmc_t lmcorig = lmc;
-                        LMCreduction_t reductionx = reduction;
-                        lmcorig = LMCreduce (array, array, &ad, &dynd, &reductionx, oaextend);
-
-                        if (lmcorig != lmc) {
-                                myprintf ("MODE_LMC_SYMMETRY: difference! lmcorig %d, lmc new %d\n", (int)lmcorig,
-                                          (int)lmc);
-                        }
-                }
 
         } break;
         case MODE_J5ORDERX: {
