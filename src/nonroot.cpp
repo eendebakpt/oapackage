@@ -912,8 +912,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                         }
 
                         // OPTIMIZE: combine sorting and comparing
-                        // other sort functions: insertionSort, bubbleSort2, quickSort, shellSort, std::sort,
-                        // std::__insertion_sort
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
                 }
 
@@ -957,9 +955,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                 if (ret != LMC_EQUAL)
                         break;
         }
-
-// printf("LMC_check_col: at col %d, ret %d (LMC_EQUAL 1, LMC_LESS 0)\n", dd->col,ret); printf("sorted column: \n");
-// print_col_sorted(array, lperm, rowsort, ad->N);
 
 #ifdef OAANALYZE_DISCR
         analyse_discriminant (cur_row, dd->col, ret, ad->N, ad->ncols);
@@ -1050,7 +1045,6 @@ inline lmc_t LMC_check_col_complete (const array_t *original, carray_t *array, c
                                 int cur_row = j * oaindex + k;
                                 int rowp = rowsort[cur_row].r;
 
-                                /* OPTIMIZE: the multiplication can be taken out of this function */
                                 rowsort[cur_row].val = ad->s[dd->col] * rowsort[cur_row].val + array[rowp];
                         }
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
@@ -1077,12 +1071,8 @@ inline lmc_t LMC_check_col_complete (const array_t *original, carray_t *array, c
 /** Check column with ordering based on j5 */
 inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *array, levelperm_t lperm,
                                     const arraydata_t *ad, const dyndata_t *dd) {
-        //   myprintf("LMC_check_col_j5order: check code path...\n");
 
-        // OPTIMIZE: pre-calculate J5 values!
-        // OPTIMIZE: use first m rows to calculate j5?
         assert (ad->order == ORDER_J5);
-        // myprintf("LMC_check_col_j5order!\n");
 
         const int cpoffset = ad->N * dd->colperm[dd->col];
         if (dd->col < 4) { // XXX
@@ -1094,8 +1084,6 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
                 log_print (NORMAL, "LMC_check_col_j5order col %d, colperm: ", dd->col);
                 print_perm (dd->colperm, ad->ncols);
         }
-
-        // reduction->array+dyndata->col*+ad->N, original+cpoffset
 
         colperm_t pp = new_perm_init< colindex_t > (5);
 
@@ -1197,7 +1185,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
 
                         /* LMC_check_col performs level permutations, updates the sorting structure and compares with
                          * the original array on blocks of oaindex */
-                        // prefetch(reduction->array);
 
                         if (reduction->mode >= OA_REDUCE) {
                         /* for reduce check perform full column perm!!!! */ /* NOTE: why? */
@@ -1207,8 +1194,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
 #else
                                 perform_level_perm (original + cpoffset, colbuffer, ad->N, lperm);
 #endif
-                                // ret = LMC_check_col_complete ( reduction->array+dyndata->col*ad->N, colbuffer, ad,
-                                // dyndatacpy );
                                 ret = LMC_check_col_less (reduction->array + dyndata->col * +ad->N,
                                                           original + cpoffset, lperm, ad, dyndatacpy);
 
@@ -1217,8 +1202,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
                                 if (ad->order == ORDER_LEX) {
 // TODO: clean this up
 #ifdef TPLUSCOLUMN
-                                        // ret =  LMC_check_col ( reduction->array+dyndata->col*+ad->N,
-                                        // original+cpoffset, lperm, ad, dyndatacpy );
                                         ret = LMC_check_col_tplus (reduction->array + dyndata->col * +ad->N,
                                                                    original + cpoffset, lperm, ad, dyndatacpy);
 #else
@@ -1226,7 +1209,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
                                                              original + cpoffset, lperm, ad, dyndatacpy);
 #endif
                                 } else {
-                                        // myprintf("j5 order\n");
                                         ret =
                                             LMC_check_col_j5order (reduction->array, original, lperm, ad, dyndatacpy);
                                 }
@@ -1317,23 +1299,18 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
 #endif
 
         // OPTIMIZE: use buffer for rowsort values to take multiplication out of LMC_check_col
-        // OPTIMIZE: check whether changing order of this loop makes a difference
         lmc_t ret = LMC_MORE;
         init_perm< colindex_t > (colpermloop, remsize); // intialize for entire loop
         const int col = dyndata->col;
         for (int i = 0; i < ncolsremgroup; i++) {
                 std::swap (colpermloop[0], colpermloop[i]); // swap 2 columns, we swap them back at the end of the loop
                                                             // so we do not need to initialize each time
-                //	 printf("\n\n## colperm loop i=%d (col %d):\n", i, dyndata->col);
 
                 // keep track of applied column permutation
                 copy_perm (dyndata->colperm, dyndatacpy->colperm, ad->ncols);
                 perform_inv_perm< colindex_t > (dyndata->colperm + col, dyndatacpy->colperm + col, remsize,
                                                 colpermloop);
 
-                // OPTIMIZE: this yields too many level perms, we can reduce it by pre-selecting the first row
-                // OPTIMIZE: even better: if there are no row symmetries any more, we can just select the best
-                // permutation
                 const int nlevelperms = init_perm_n< array_t, int > (lperm, nlevels);
                 const int cpoffset = ad->N * dyndatacpy->colperm[dyndata->col];
 
@@ -1347,7 +1324,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
 
                         /* LMC_check_col performs level permutations, updates the sorting structure and compares with
                          * the original array on blocks of oaindex */
-                        // prefetch(reduction->array);
 
                         if (reduction->mode >= OA_REDUCE) {
                                 /* for reduce check perform full column perm!!!! */ /* NOTE: why? */
@@ -1368,8 +1344,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
 #else
                                         perform_level_perm (original + cpoffset, colbuffer, ad->N, lperm);
 #endif
-                                        // printfd("...\n");
-
                                         ret = LMC_check_col_complete (reduction->array + dyndata->col * ad->N,
                                                                       colbuffer, ad, dyndatacpy);
                                 }
@@ -1382,11 +1356,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                                 myassert (reduction->sd != 0, "LMC_check_col_ft");
                                                 ret = LMC_check_col_ft_2level (
                                                     reduction->array + dyndata->col * +ad->N, original + cpoffset,
-                                                    lperm, ad, dyndatacpy, *(reduction->sd));
-                                                //                     			  cpy_dyndata_rowsort ( dyndata, dyndatacpy
-                                                //                     );
-                                                //    ret =  LMC_check_col ( reduction->array+dyndata->col*+ad->N,
-                                                //    original+cpoffset, lperm, ad, dyndatacpy );
+                                                    lperm, ad, dyndatacpy, *(reduction->sd)); 
                                         } else {
                                                 ret = LMC_check_col (reduction->array + dyndata->col * +ad->N,
                                                                      original + cpoffset, lperm, ad, dyndatacpy);
@@ -1399,11 +1369,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                 }
                         }
 
-                        // myprintf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j,
-                        // ret);
-
                         if (ret == LMC_LESS) {
-                                // logstream ( DEBUG ) << printfstring ( "  LMC_LESS: column %d\n", col );
                                 reduction->lastcol = col;
                         }
 
@@ -1440,7 +1406,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                         }
                                 }
                         }
-                        //}
                         if (ret == LMC_LESS) {
                                 // logstream(DEBUG) << printfstring("  LMC_LESS: column %d\n", col);
                                 break; // break from levelperms loop
@@ -1510,10 +1475,7 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
         const int cg = ad->get_col_group (dyndata->col); /* current column group */
         /* number of columns remaining in this group */
         const int ncolsremgroup = ad->colgroupsize[cg] + ad->colgroupindex[cg] - dyndata->col;
-        // myprintf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n",
-        // ad->colgroupsize[cg], ad->colgroupindex[cg]);
 
-        // debug_print_transformations(reduction, original, *array, ad, dyndata);
 
         lmc_t ret = LMC_MORE;
         // init_perm<colindex_t> ( colpermloopXX, remsize );	// intialize for entire loop
@@ -1522,8 +1484,6 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
 
         const int nlevelperms = 2; // special case for 2-level arrays
         for (int i = 0; i < ncolsremgroup; i++) {
-                // if (i==0) printfd(" col %d: ncolsremgroup %d\n", dyndata->col, ncolsremgroup);
-
                 // keep track of applied column permutation
                 std::swap (dyndatacpy->colperm[col], dyndatacpy->colperm[col + i]);
 
@@ -1575,16 +1535,11 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                                 }
                         }
 
-                        // myprintf("LMCreduce_non_root: column permutation %d, level permutation %d, ret %d\n", i,j,
-                        // ret);
-
                         if (ret == LMC_LESS) {
                                 reduction->lastcol = col;
                         }
 
                         if (ret == LMC_EQUAL) {
-                                // myprintf("equal colgroup: "); print_perm( dyndatacpy->colperm, dyndatacpy->col+1 );
-                                // // @PTE
                                 reduction->symms.storeSymmetryPermutation (dyndatacpy);
 
                                 // this column could not decide, go one level deeper
@@ -1601,30 +1556,8 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                                                                                  oaextend, tmpStatic);
                                         }
                                 }
-                                /*
-                                // special case for check of 2-level arrays: if the first permutation is LMC_EQUAL,
-                                then the second permutation can only be LMC_MORE
-                                if(ret==LMC_MORE && 0) {
-                                myprintf("early brake: col %d\n", dyndata->col);
-                                         dyndatacpy->rowsortl2rowsort();
-                                         reduction->updateTransformation( *ad, dyndatacpy, lperm_p, original );
-                                         array_link tmp(original, ad->N, ad->ncols);
-                                         array_link ww = reduction->transformation->apply(tmp);
-                                         ww.selectFirstColumns(dyndata->col+1).showarray();
-                                        }
-                                        if (specialf) {
-                                         array_link ww(original, ad->N, ad->ncols);
-                                         myprintf("at col %d: level perm leads to same value\n", dyndata->col);
-                                         ww.selectFirstColumns(dyndata->col+2).showarray();
-
-                                        }
-                                         if(ret==LMC_MORE) {
-                                          specialf=1;
-                                         }
-                                           //  break;
-                                             */
+                                
                         }
-                        //}
                         if (ret == LMC_LESS) {
                                 break; // break from levelperms loop
                         }
