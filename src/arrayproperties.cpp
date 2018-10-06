@@ -1162,30 +1162,6 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, 
                 if (verbose >= 2) {
                         myprintf ("   array is singular, setting D-efficiency to zero\n");
 
-                        if (0) {
-                                Eigen::MatrixXd mymatrix = x;
-                                Eigen::MatrixXd mm = mymatrix.transpose () * mymatrix;
-                                SelfAdjointEigenSolver< Eigen::MatrixXd > es;
-                                es.compute (mm);
-                                const Eigen::VectorXd evs = es.eigenvalues ();
-                                Eigen::VectorXd S = evs; // sqrt(S);
-                                for (int j = 0; j < m; j++) {
-                                        if (S[j] < 1e-14) {
-                                                if (verbose >= 3)
-                                                        myprintf ("  singular!\n");
-                                                S[j] = 0;
-                                        } else {
-
-                                                S[j] = sqrt (S[j]);
-                                        }
-                                }
-
-                                Eigen::MatrixXd Smat (S);
-                                Eigen::ArrayXd Sa = Smat.array ();
-                                double DeffDirect = exp (2 * Sa.log ().sum () / m) / N;
-
-                                myprintf ("  DeffDirect %f\n", DeffDirect);
-                        }
                 }
                 Deff = 0;
                 vif = 0;

@@ -515,15 +515,10 @@ bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array
         // OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a
         // difference for cases with high strength and high number of columns
         for (int z = 0; z < es->ncolcombs; z++) {
-                if (0) {
-                        // int freq_pos = freqpositions[z];
-                        // if(es->freqtable[z][freq_pos] + 1 > es->lambda[z])
-                        //	return false;
-                } else {
-                        ;
+                
                         if (freqtable0[freqpositions2[z]] + 1 > es->lambda[z])
                                 return false;
-                }
+                
         }
         return true;
 #else
@@ -533,7 +528,6 @@ bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array
         array_t *acolp = &array[p->ad->N * p->col];
 
         acolp[p->row] = p->value;
-        // for(int i = es->r_index->nr_elements-1; i >=0; i--)	//loop over all column combinations
         for (int i = 0; i < es->r_index->nr_elements; i++) { // loop over all column combinations
                 cur_combi = es->r_index->index[i];
                 // freq_pos is the value for this column combination
