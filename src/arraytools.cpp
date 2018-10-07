@@ -2427,6 +2427,9 @@ const double NaN = std::numeric_limits< double >::quiet_NaN ();
 std::vector< double > array_link::Defficiencies (int verbose, int addDs0) const {
         const array_link &al = *this;
 
+        if (this->is_conference() ) {
+             
+        }
         if (this->min () < 0) {
                 myprintf ("Defficiencies: error: input array should have elements ranging from 0 to s-1\n");
                 std::vector< double > x (3 + addDs0);

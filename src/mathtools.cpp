@@ -8,7 +8,6 @@ void set_srand (unsigned int s) { srand (s); }
 #endif
 
 template < class Type > void symmetry_group::init (const std::vector< Type > vals, bool ascendingx, int verbose) {
-// verbose=2;
 #ifdef RPACKAGE
 #else
         if (verbose >= 2) {
@@ -88,7 +87,6 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         nsg = 0;
         int i;
         for (i = 0; i < n; i++) {
-                // printf("symm_group_index: nsg: %d i %d\n", nsg, i);
                 if (vals[i] != prev || i == 0) {
                         gstart[nsg] = i;
                         nsg++;
@@ -217,7 +215,7 @@ int Combinations::ncombscachemax = 0;
 long **Combinations::ncombsdata = 0;
 
 void Combinations::initialize_number_combinations (int N) {
-        if (N <= number_combinaties_max_n ())
+        if (N <= number_combinations_max_n ())
                 return;
 #ifdef OADEBUG
         myprintf ("initialize_number_combinations: value %d\n", N);
@@ -253,7 +251,7 @@ void Combinations::initialize_number_combinations (int N) {
         }
 }
 
-int Combinations::number_combinaties_max_n () { return Combinations::ncombscachemax; }
+int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
 
 long Combinations::number_combinations (int n, int k) {
 #ifdef OADEBUG
