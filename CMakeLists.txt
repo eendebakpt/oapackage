@@ -59,7 +59,7 @@ endif()
 message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
 
-set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h src/evenodd.h)
+set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h src/evenodd.h src/version.h)
 set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/graphtools.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/Deff.cpp src/evenodd.cpp)
 
 set(headers ${headers} src/conference.h)

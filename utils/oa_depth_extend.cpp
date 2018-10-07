@@ -138,12 +138,6 @@ int main (int argc, char *argv[]) {
 #ifdef _OPENMP
         printf ("  openmp: num threads %d, max num threads %d\n", omp_get_num_threads (), omp_get_max_threads ());
 
-        if (0) {
-                // printf ( "openmp: omp_get_dynamic() %d, omp_get_nested() %d, omp_get_max_active_levels() %d\n",
-                // omp_get_dynamic(), omp_get_nested(), omp_get_max_active_levels() );
-                omp_set_nested (1);
-                printf ("openmp: num threads %d\n", omp_get_max_threads ());
-        }
         if (omp_get_nested () != 0)
                 printf ("note: omp_get_nested()=%d, make sure to set OMP_THREAD_LIMIT!\n", omp_get_nested ());
 #endif
@@ -214,7 +208,6 @@ int main (int argc, char *argv[]) {
         dextend.loglevelcol = 7;
 
         setloglevel (SYSTEM);
-        // setloglevel (QUIET );
 
         double t0 = get_time_ms ();
 
