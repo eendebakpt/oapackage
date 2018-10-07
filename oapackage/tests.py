@@ -379,7 +379,7 @@ class TestCppLibrary(unittest.TestCase):
     def test_miscunittest(self):
         miscunittest()
 
-    def test_array2eigenModelMatrixMixed():
+    def test_array2eigenModelMatrixMixed(self):
         al=oapackage.oalib.exampleArray(18,1)
     
         with self.assertRaises():

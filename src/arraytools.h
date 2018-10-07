@@ -57,7 +57,6 @@ typedef(unsigned __int64) uint64_t;
 #include <iostream>
 #endif
 
-#include "printfheader.h"
 #include <assert.h>
 #include <deque>
 #include <fstream>
@@ -73,10 +72,10 @@ typedef(unsigned __int64) uint64_t;
 
 #include <Eigen/Core>
 
-// namespace Eigen
-//{
-// typedef Eigen::Matrix < long double, Eigen::Dynamic, Eigen::Dynamic > MatrixXld;
-//}
+#include "printfheader.h"
+
+void throw_runtime_exception (const std::string exception_message); // forward declaration to throw_runtime_exception in tools.cpp
+
 
 // float types used for Eigen calculations
 typedef Eigen::MatrixXd MatrixFloat;

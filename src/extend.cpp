@@ -27,6 +27,22 @@
 
 using namespace std;
 
+/*!
+ * Counts the occurence of each element in array
+ * @brief Counts elements
+ * @param array Pointer to array where elements are counted in
+ * @param nelements
+ * @param maxval Maximum value that can occur
+ * @param elements
+ */
+void countelements (carray_t *array, const int nelements, const int maxval, int *elements) {
+
+        memset (elements, 0, maxval * sizeof (int));
+
+        for (int i = 0; i < nelements; i++)
+                elements[array[i]]++;
+}
+
 std::vector< int > dextend_t::filterArrays (const array_link &al, const arraylist_t &earrays, arraylist_t &earraysout,
                                             std::vector< std::vector< double > > &edata, int verbose) {
         dextend_t &dextend = *this;
