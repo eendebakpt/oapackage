@@ -238,7 +238,6 @@ bool checkloglevel (int l) {
         bool b;
 #pragma omp critical
         {
-                //#pragma omp atomic
                 b = l <= streamloglvl;
         }
         return b;

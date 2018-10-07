@@ -573,8 +573,6 @@ void init_column_previous (array_t *array, extendpos *p, int &col_offset, split 
                         /* the current branch is empty, this happend for strength > 1 since the current column and
                            * the previous one cannot be equal */
                         firstpos = -1;
-
-                        // printf("   setting firstpos to -2: row %d, ar=%d\n", p->row, array[col_offset+p->row]);
                 }
                 if (firstpos != array[col_offset + p->row]) {
                         /* trace back */
@@ -656,7 +654,7 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
         static long _nloops[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         int tid = omp_get_thread_num ();
         _nloops[tid % 16]++;
-        long nloops = _nloops[tid % 16]; // printf("here");
+        long nloops = _nloops[tid % 16]; 
 #else
         static long nloops = 0;
         nloops++;
@@ -733,8 +731,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
         init_frequencies (es, array);
 #endif
 
-        // printf("test p->col %d, INIT_COL_PREVIOUS %d!\n", p->col, INIT_COL_PREVIOUS);
-
         /* check whether we are in the same column group */
         int col_offset;
         if (oaextend.init_column_previous == INITCOLUMN_PREVIOUS && ad->s[p->col] == ad->s[p->col - 1]) {
@@ -767,8 +763,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
 #ifdef COUNTELEMENTCHECK
         countelements (array_colstart, 0, p->ad->s[p->col], es->elements);
 #endif
-        // printf("  at start of extension: stack and array: p->row: %d\n", p->row); stack->print(); print_array(array,
-        // ad->N, ad->ncols);
 
         const rowindex_t N = p->ad->N;
 #ifdef OAEXTEND_MULTICORE
@@ -798,7 +792,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
 #ifdef SYMMBLOCKS
                         const int bsize = N / p->ad->s[0];
 
-                        // printf("test check_block_exchange: bsize %d, p->row %d\n", bsize, p->row);
                         if (((p->row % bsize) == 0) && (p->row > (bsize * 2))) {
                                 int bidx1 = (p->row / bsize) - 2;
                                 int bidx2 = (p->row / bsize) - 1;
@@ -863,9 +856,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
                                 stack->cvalidpos[stack->count - 1]++;
 
                                 if (stack->cvalidpos[stack->count - 1] == stack->nvalid[stack->count - 1]) {
-                                        // log_print(DEBUG+1, "reached end of current branch: %d\n",
-                                        // stack->cvalidpos[stack->count-1]);
-
                                         array_colstart[p->row] = -1; /* should be done in return_stack ? */
                                         stack->count--;              /* remove element from stack */
                                         more_branches = return_stack (stack, p, array, col_offset);

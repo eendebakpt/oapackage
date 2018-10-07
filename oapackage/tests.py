@@ -379,11 +379,17 @@ class TestCppLibrary(unittest.TestCase):
     def test_miscunittest(self):
         miscunittest()
 
-    def test_array2eigenModelMatrixMixed(self):
-        al=oapackage.oalib.exampleArray(18,1)
+    def test_exception_handling(self):
+        with self.assertRaises(RuntimeError):
+            oapackage.mycheck_handler("file","function", 10, 0, "hi")
+        oapackage.mycheck_handler("file","function", 10, 1, "hi")       
     
-        with self.assertRaises():
-            mm = oapackage.array2eigenModelMatrixMixed (al, 2);
+        with self.assertRaises(RuntimeError):
+            oapackage.throw_runtime_exception("dsfs")
+    
+        al=oapackage.oalib.exampleArray(18,1)
+        with self.assertRaises(RuntimeError("array cannot have negative elements")):
+            _ = oapackage.array2eigenModelMatrixMixed (al, 2);
 
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 1)

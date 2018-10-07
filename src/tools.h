@@ -95,7 +95,6 @@ void myassert (int condition, const char *str = 0);
  */
 void throw_runtime_exception (const std::string exception_message);
 
-
 inline int cprintf (int check, const char *message, ...) {
         int n = 0;
         if (check) {
