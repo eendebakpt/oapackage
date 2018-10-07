@@ -693,7 +693,7 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
 #ifdef OACHECK
         if (fullad->strength < 1) {
                 log_print (SYSTEM, " extend_array: error: function not defined for strength < 1\n");
-                throw;
+                throw_runtime_exception("extend_array: strength should be >=1");
         }
 #endif
 
@@ -774,7 +774,7 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
                         array_link al (origarray, ad->N, extensioncol);
                         myprintf ("row symmetry group of array: \n");
                         al.row_symmetry_group ().show ();
-                        throw - 1;
+                        throw_runtime_exception("number of extensions too large");
                 }
 
                 if (p->row < N) { /*column is not yet full */

@@ -451,7 +451,7 @@ static inline array_t *create_array (const int nrows, const int ncols) {
 #ifdef OADEBUG
         if (array == NULL) {
                 myprintf ("problem with malloc %d %d, exiting!!!\n", nrows, ncols);
-                throw;
+                throw_runtime_exception("create_array: problem with malloc");
         }
 #endif
         return array;
@@ -2140,7 +2140,7 @@ void doublevector2binfile (const std::string fname, std::vector< Type > vals, in
         FILE *fid = fopen (fname.c_str (), "wb");
         if (fid == 0) {
                 fprintf (stderr, "doublevector2binfile: error with file %s\n", fname.c_str ());
-                throw;
+                throw_runtime_exception("doublevector2binfile: error with file");
         }
         if (writeheader) {
                 writebinheader (fid, vals.size (), 1);
@@ -2160,7 +2160,7 @@ inline void vectorvector2binfile (const std::string fname, const std::vector< st
         if (fid == 0) {
                 fprintf (stderr, "vectorvector2binfile: error with file %s\n", fname.c_str ());
 
-                throw;
+                throw_runtime_exception("vectorvector2binfile: error with file");
         }
 
         if (na == -1) {

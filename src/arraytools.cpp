@@ -2011,7 +2011,7 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
         n[1] = al.n_columns;
 
         if (order > 2) {
-                throw std::runtime_error ("numberModelParams: not implemented for order > 2\n");
+                throw_runtime_exception("numberModelParams: not implemented for order > 2\n");
         }
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
         std::vector< int > s = arrayclass.getS ();
@@ -2157,7 +2157,7 @@ MatrixFloat array2eigenMainEffects (const array_link &al, int verbose) {
 // code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose) {
         if ( !(al.min () >= 0) )
-             throw std::runtime_error("array cannot have negative elements");
+             throw_runtime_exception("array cannot have negative elements");
 
         if (verbose >= 2) {
                 myprintf ("array2eigenModelMatrixMixed: start");
@@ -2467,7 +2467,7 @@ std::vector< int > array_link::Fvalues (int jj) const {
 
 std::vector< int > array_link::FvaluesConference (int jj) const {
         if (! this->is_conference ())
-             throw std::runtime_error("array is not a conference design");
+             throw_runtime_exception("array is not a conference design");
 
         const int N = this->n_rows;
         jstructconference_t js (*this, jj);
@@ -2684,8 +2684,7 @@ void arraydata_t::writeConfigFile (const char *file) const {
         outFile.open (file);
         if (!outFile) {
                 myprintf ("writeConfigFile: unable to open file %s\n", file);
-                throw std::runtime_error ("writeConfigFile: unable to open file");
-                return;
+                throw_runtime_exception ("writeConfigFile: unable to open file");
         }
 
         /* read design specifications: runs, strength, number of factors */

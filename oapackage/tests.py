@@ -379,6 +379,12 @@ class TestCppLibrary(unittest.TestCase):
     def test_miscunittest(self):
         miscunittest()
 
+    def test_array2eigenModelMatrixMixed():
+        al=oapackage.oalib.exampleArray(18,1)
+    
+        with self.assertRaises():
+            mm = oapackage.array2eigenModelMatrixMixed (al, 2);
+
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 1)
         al = al.selectFirstColumns(3)

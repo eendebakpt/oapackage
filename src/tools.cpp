@@ -339,6 +339,10 @@ int log_print (const int level, const char *message, ...) {
         return result;
 }
 
+void throw_runtime_exception (const std::string exception_message) {
+	throw std::runtime_error (exception_message);
+}
+
 void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...) {
         if (condition == 0) {
                 va_list va;
@@ -352,11 +356,11 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 #endif
                 va_end (va);
 #ifdef RPACKAGE
-                throw;
+                throw_runtime_exception("");
 #else
                 std::string error_message = printfstring ("exception: %s: %s (line %d): ", file, func, line);
                 error_message += message;
-                throw std::runtime_error (error_message);
+                throw_runtime_exception(error_message);
 #endif
         }
 }
@@ -367,11 +371,7 @@ void myassert (int condition, const char *error_message) {
                         myprintf ("myassert: error\n");
                 else
                         myprintf ("myassert: %s", error_message);
-#ifdef SWIGPYTHON
-                throw std::runtime_error (error_message);
-#else
-                throw std::runtime_error (error_message);
-#endif
+                throw_runtime_exception (error_message);
         }
 }
 

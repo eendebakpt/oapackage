@@ -90,19 +90,12 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 
 void myassert (int condition, const char *str = 0);
 
-//#ifdef OADEBUG
-// inline void myassertdebug ( int condition, const char *str )
-//{
-//    if ( condition==0 ) {
-//        myprintf ( "myassert: %s", str );
-//        myprintf ( "... aborting\n" );
-//        exit ( 1 );
-//    }
-//}
-//#else
-//#define myassertdebug(a,b)
-// inline void myassertdebug2 ( int condition, const char *str ) {}
-//#endif
+/** Throw a runtime_error exception with specified error message
+ * 
+ * This exception is caught in the SWIG interface.
+ */
+void throw_runtime_exception (const std::string exception_message);
+
 
 inline int cprintf (int check, const char *message, ...) {
         int n = 0;
@@ -259,7 +252,7 @@ DataType **malloc2d (const numtype nrows, const int rowsize) {
 
         data = new DataType *[nrows];
         if (data == 0) {
-                throw std::runtime_error ("malloc2d: error with memory allocation");
+                throw_runtime_exception ("malloc2d: error with memory allocation");
         }
 
         data[0] = new DataType[nrows * rowsize];
