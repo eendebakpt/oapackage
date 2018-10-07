@@ -2011,7 +2011,7 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
         n[1] = al.n_columns;
 
         if (order > 2) {
-                std::runtime_error ("numberModelParams: not implemented for order > 2\n");
+                throw std::runtime_error ("numberModelParams: not implemented for order > 2\n");
         }
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
         std::vector< int > s = arrayclass.getS ();
@@ -2157,7 +2157,7 @@ MatrixFloat array2eigenMainEffects (const array_link &al, int verbose) {
 // code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose) {
         if ( !(al.min () >= 0) )
-             std::runtime_error("array cannot have negative elements");
+             throw std::runtime_error("array cannot have negative elements");
 
         if (verbose >= 2) {
                 myprintf ("array2eigenModelMatrixMixed: start");
@@ -2424,9 +2424,6 @@ const double NaN = std::numeric_limits< double >::quiet_NaN ();
 std::vector< double > array_link::Defficiencies (int verbose, int addDs0) const {
         const array_link &al = *this;
 
-        if (this->is_conference() ) {
-             
-        }
         if (this->min () < 0) {
                 myprintf ("Defficiencies: error: input array should have elements ranging from 0 to s-1\n");
                 std::vector< double > x (3 + addDs0);
@@ -2469,7 +2466,8 @@ std::vector< int > array_link::Fvalues (int jj) const {
 }
 
 std::vector< int > array_link::FvaluesConference (int jj) const {
-        assert (this->is_conference ());
+        if (! this->is_conference ())
+             throw std::runtime_error("array is not a conference design");
 
         const int N = this->n_rows;
         jstructconference_t js (*this, jj);

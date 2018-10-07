@@ -601,10 +601,10 @@ struct array_link {
         /// return true if the array is a 2-level array (e.g. only contains values 0 and 1)
         bool is2level () const;
 
-        /// return true if the array is a +1,0, -1 valued array
+        /// return true if the array is a +1, 0, -1 valued array
         bool is_conference () const;
 
-        /// return true if the array is a +1,0, -1 valued array, with specialindex number of zeros in each column
+        /// return true if the array is a +1, 0, -1 valued array, with specialindex number of zeros in each column
         bool is_conference (int nz) const;
 
         /// return true if the array is symmetric
@@ -652,7 +652,7 @@ struct array_link {
         /// calculate main effect robustness (or Ds-optimality)
         double DsEfficiency (int verbose = 0) const;
 
-        /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency
+        /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency for an orthogonal array
         std::vector< double > Defficiencies (int verbose = 0, int addDs0 = 0) const;
 
         /*** calculate average variation inflation factor
