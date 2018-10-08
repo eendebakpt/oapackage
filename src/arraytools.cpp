@@ -3817,24 +3817,15 @@ int arrayfile_t::seek (int pos) {
 }
 
 int arrayfile_t::read_array_binary_zero (array_link &a) {
-        const int dbg = 0;
 
         // no index is written or read (to save disk space
         a.index = array_link::INDEX_NONE;
         int index = array_link::INDEX_NONE;
 
-        if (dbg) {
-                myprintf (" arrayfile_t::read_array_binary_zero: gp\n");
-        }
-
         if (a.n_columns != diffarray.n_columns && diffarray.n_columns != -1 && diffarray.n_columns != 0) {
                 myprintf ("arrayfile_t::read_array_binary_zero: error different number of columns %d %d\n",
                           diffarray.n_columns, a.n_columns);
                 return array_link::INDEX_ERROR;
-        }
-
-        if (dbg) {
-                myprintf (" arrayfile_t::read_array_binary_zero: reading nrest\n");
         }
 
         int16_t nrest;
@@ -3853,31 +3844,15 @@ int arrayfile_t::read_array_binary_zero (array_link &a) {
         int nrows = a.n_rows;
         int ncols = a.n_columns;
         int ngood = ncols - nrest;
-        if (dbg) {
-                diffarray.show ();
-                a.show ();
-                myprintf (" arrayfile_t::read_array_binary_zero: xxx nrows %d, ngood %d\n", nrows, ngood);
-        }
         if (diffarray.n_columns > 0) {
                 copy_array (diffarray.array, a.array, nrows, ngood);
         } else {
                 // diffarray not initialized yet...
         }
-        if (dbg) {
-                myprintf ("arrayfile_t::read_array: nrows %d, ncols %d,  nrest %d, ngood %d\n", nrows, ncols, nrest,
-                          ngood);
-        }
         this->read_array_binary (a.array + nrows * ngood, nrows, nrest);
 
-        if (dbg) {
-                myprintf ("arrayfile_t::read_array:read_array_binary done: %d %d\n", a.n_columns, diffarray.n_columns);
-                a.showarray ();
-        }
         if (a.n_columns == diffarray.n_columns) {
                 // update array
-                if (dbg) {
-                        myprintf ("  here: %d\n", a.n_columns);
-                }
 
                 int N = a.n_rows;
                 for (int i = 0; i < nrest; i++) {
@@ -3889,9 +3864,6 @@ int arrayfile_t::read_array_binary_zero (array_link &a) {
                 }
         }
         diffarray = a;
-        if (dbg) {
-                myprintf ("  arrayfile_t::read_array:read_array_binary_zero: xxx\n");
-        }
         return index;
 }
 

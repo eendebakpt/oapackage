@@ -1548,10 +1548,14 @@ enum afilerw_t { READ, WRITE, READWRITE };
 struct arrayfile_t {
 
       public:
+		/// location of file on disk
         std::string filename;
-        int iscompressed;
+		/// True of the file is compressed with gzip
+		int iscompressed;
+		/// number of rows of the arrays 
         int nrows;
-        int ncols;
+		/// number of columns of the arrays 
+		int ncols;
 
         /// number of bits used when storing an array
         int nbits;
@@ -1568,7 +1572,8 @@ struct arrayfile_t {
 
         int narraycounter;
 
-        static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; /* maximum number of arrays in structure */
+		/// maximum number of arrays in structure
+        static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
 
       public:
         /// default constructor
