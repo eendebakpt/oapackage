@@ -304,7 +304,7 @@ template < class IndexType >
  *
  * 1) Rank (higher is better)
  * 2) A3, A4 (lower is better)
- * 3) F4 (?? is better, sum of elements is constant)
+ * 3) F4 (lower is better, sum of elements is constant)
  *
  * Valid for 2-level arrays of strength at least 3
  *

@@ -322,7 +322,6 @@ struct arraysymmetry {
 
 #include <memory>
 typedef std::shared_ptr< symmdata > symmdataPointer;
-// typedef std::shared_ptr<symmdata> symmdataPointer;
 
 #elif defined(__APPLE__)
 

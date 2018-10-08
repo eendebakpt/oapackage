@@ -1339,18 +1339,24 @@ std::vector< jstruct_t > analyseArrays (const arraylist_t &arraylist, const int 
  */
 class array_transformation_t {
       public:
-        rowperm_t rperm;       /// row permutation
-        colperm_t cperm;       /// column permutation
-        levelperm_t *lperms;   /// level permutations
-        const arraydata_t *ad; /// type of array
+		/// row permutation
+        rowperm_t rperm;       
+		/// column permutation
+        colperm_t cperm;       
+		/// level permutations
+        levelperm_t *lperms;   
+		/// type of array
+        const arraydata_t *ad; 
 
       public:
         array_transformation_t (const arraydata_t *ad);
         array_transformation_t (const arraydata_t &ad);
-        array_transformation_t ();                                            /// default constructor
-        array_transformation_t (const array_transformation_t &at);            /// copy constructor
-        array_transformation_t &operator= (const array_transformation_t &at); /// assignment operator
-        ~array_transformation_t ();                                           /// destructor
+        array_transformation_t ();                                           
+		/// copy constructor
+        array_transformation_t (const array_transformation_t &at);            
+		/// assignment operator
+		array_transformation_t &operator= (const array_transformation_t &at); 
+        ~array_transformation_t ();                                          
 
         /// show the array transformation
         void show () const;
@@ -1430,17 +1436,25 @@ class array_transformation_t {
 
         void show (std::ostream &out) const;
 
-        std::vector< int > rowperm () const;      /// return the row permutation of the transformation
-        std::vector< int > colperm () const;      /// return the column permutation of the transformation
-        std::vector< int > lvlperm (int c) const; /// return the level permutations of the transformation
+		/// return the row permutation of the transformation
+        std::vector< int > rowperm () const;      
+		/// return the column permutation of the transformation
+        std::vector< int > colperm () const;      
+		/// return the level permutations of the transformation
+        std::vector< int > lvlperm (int c) const; 
 
-        void setrowperm (std::vector< int > rp);
-        void setcolperm (std::vector< int > colperm);
-        void setlevelperm (int colindex, std::vector< int > lvlperm);
+		/// set the row permutation of the transformation
+        void setrowperm (std::vector< int > row_permutation);
+		/// set the column permutation of the transformation
+		void setcolperm (std::vector< int > column_permutation);
+		/// set the level permutation of the transformation
+		void setlevelperm (int column_index, std::vector< int > lvl_permutation);
 
       private:
-        void init (); /// initialize permutation structures
-        void free (); /// free permutation structures and arraydata_t structure
+		/// initialize permutation structures
+        void init (); 
+		/// free permutation structures and arraydata_t structure
+        void free (); 
 };
 
 /** \brief Contains a transformation of a conference matrix
@@ -1678,14 +1692,17 @@ struct arrayfile_t {
         bool hasrandomaccess () const { return (this->mode == ABINARY); }
 
       private:
-      public: // hack
+      public: 
         FILE *nfid;
 #ifdef USEZLIB
+		/// pointer to compressed file
         gzFile gzfid;
 #else
-        int gzfid; // dummy
+		/// pointer to compressed file
+		int gzfid;
 #endif
 
+		/// verbosity level
         int verbose;
 
       private:
