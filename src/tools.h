@@ -17,8 +17,7 @@
 #include <string>
 #include <time.h>
 
-#ifdef FULLPACKAGE
-#endif
+
 #include "printfheader.h"
 
 inline std::string base_name (std::string const &path) { return path.substr (path.find_last_of ("/\\") + 1); }
@@ -90,19 +89,11 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 
 void myassert (int condition, const char *str = 0);
 
-//#ifdef OADEBUG
-// inline void myassertdebug ( int condition, const char *str )
-//{
-//    if ( condition==0 ) {
-//        myprintf ( "myassert: %s", str );
-//        myprintf ( "... aborting\n" );
-//        exit ( 1 );
-//    }
-//}
-//#else
-//#define myassertdebug(a,b)
-// inline void myassertdebug2 ( int condition, const char *str ) {}
-//#endif
+/** Throw a runtime_error exception with specified error message
+ * 
+ * This exception is caught in the SWIG interface.
+ */
+void throw_runtime_exception (const std::string exception_message);
 
 inline int cprintf (int check, const char *message, ...) {
         int n = 0;
@@ -259,7 +250,7 @@ DataType **malloc2d (const numtype nrows, const int rowsize) {
 
         data = new DataType *[nrows];
         if (data == 0) {
-                throw std::runtime_error ("malloc2d: error with memory allocation");
+                throw_runtime_exception ("malloc2d: error with memory allocation");
         }
 
         data[0] = new DataType[nrows * rowsize];
@@ -314,9 +305,9 @@ void free2d_irr (DataType **data, const int nrows) {
         free2d (data);
 }
 
-// void show_array(carray_t *array, const int x, const int y);
 void print_array (const char *str, const array_t *array, const rowindex_t r, const colindex_t c);
 void print_array (const array_t *array, const rowindex_t r, const colindex_t c);
+
 /// Print array to stdout
 void print_array (const array_link &A);
 
@@ -371,15 +362,7 @@ template < class atype > void show_array_dyn (const atype *array, const int x, c
 }
 #endif
 
-/// Counts the number of occurences of each value in an array
-void countelements (carray_t *array, const int nelements, const int maxval, int *elements);
-
-/**
- * @brief Add element to element counter
- * @param elem
- * @param elements
- */
-inline void addelement (const array_t elem, int *elements) { elements[elem]++; }
+//inline void addelement (const array_t elem, int *elements) { elements[elem]++; }
 
 /// return time with milisecond precision
 double get_time_ms ();
@@ -403,8 +386,6 @@ inline std::string currenttime () {
 
 /// return string describing array
 std::string oafilestring (const arraydata_t *ad);
-/// return string describing array
-std::string oafilestring (rowindex_t rows, colindex_t cols, array_t *s);
 
 template < class numtype >
 /** @brief Convert integer to C++ string

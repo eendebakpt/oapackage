@@ -57,7 +57,6 @@ typedef(unsigned __int64) uint64_t;
 #include <iostream>
 #endif
 
-#include "printfheader.h"
 #include <assert.h>
 #include <deque>
 #include <fstream>
@@ -73,10 +72,10 @@ typedef(unsigned __int64) uint64_t;
 
 #include <Eigen/Core>
 
-// namespace Eigen
-//{
-// typedef Eigen::Matrix < long double, Eigen::Dynamic, Eigen::Dynamic > MatrixXld;
-//}
+#include "printfheader.h"
+
+void throw_runtime_exception (const std::string exception_message); // forward declaration to throw_runtime_exception in tools.cpp
+
 
 // float types used for Eigen calculations
 typedef Eigen::MatrixXd MatrixFloat;
@@ -451,7 +450,7 @@ static inline array_t *create_array (const int nrows, const int ncols) {
 #ifdef OADEBUG
         if (array == NULL) {
                 myprintf ("problem with malloc %d %d, exiting!!!\n", nrows, ncols);
-                throw;
+                throw_runtime_exception("create_array: problem with malloc");
         }
 #endif
         return array;
@@ -601,10 +600,10 @@ struct array_link {
         /// return true if the array is a 2-level array (e.g. only contains values 0 and 1)
         bool is2level () const;
 
-        /// return true if the array is a +1,0, -1 valued array
+        /// return true if the array is a +1, 0, -1 valued array
         bool is_conference () const;
 
-        /// return true if the array is a +1,0, -1 valued array, with specialindex number of zeros in each column
+        /// return true if the array is a +1, 0, -1 valued array, with specialindex number of zeros in each column
         bool is_conference (int nz) const;
 
         /// return true if the array is symmetric
@@ -652,7 +651,7 @@ struct array_link {
         /// calculate main effect robustness (or Ds-optimality)
         double DsEfficiency (int verbose = 0) const;
 
-        /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency
+        /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency for an orthogonal array
         std::vector< double > Defficiencies (int verbose = 0, int addDs0 = 0) const;
 
         /*** calculate average variation inflation factor
@@ -2140,7 +2139,7 @@ void doublevector2binfile (const std::string fname, std::vector< Type > vals, in
         FILE *fid = fopen (fname.c_str (), "wb");
         if (fid == 0) {
                 fprintf (stderr, "doublevector2binfile: error with file %s\n", fname.c_str ());
-                throw;
+                throw_runtime_exception("doublevector2binfile: error with file");
         }
         if (writeheader) {
                 writebinheader (fid, vals.size (), 1);
@@ -2160,7 +2159,7 @@ inline void vectorvector2binfile (const std::string fname, const std::vector< st
         if (fid == 0) {
                 fprintf (stderr, "vectorvector2binfile: error with file %s\n", fname.c_str ());
 
-                throw;
+                throw_runtime_exception("vectorvector2binfile: error with file");
         }
 
         if (na == -1) {

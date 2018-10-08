@@ -357,6 +357,23 @@ namespace std {
     SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
   }
 }
+%exception throw_runtime_exception {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
+
+%exception {
+  try {
+    $action
+  } 
+  SWIG_CATCH_STDEXCEPT // catch std::exception
+  catch (...) {
+     SWIG_exception_fail(SWIG_UnknownError, "Unknown exception");
+  }
+}
 
 // prevent memory leaks
 %newobject readarrayfile;

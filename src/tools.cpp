@@ -93,25 +93,6 @@ void print_array (const array_link &A) {
 }
 
 /*!
- * Counts the occurence of each element in array
- * @brief Counts elements
- * @param array Pointer to array where elements are counted in
- * @param nelements
- * @param maxval Maximum value that can occur
- * @param elements
- */
-void countelements (carray_t *array, const int nelements, const int maxval, int *elements) {
-        // NOTE: use ideas from
-        // http://codereview.stackexchange.com/questions/47566/optimization-for-histogram-computation-algorithm-in-c
-
-        memset (elements, 0, maxval * sizeof (int));
-
-        for (int i = 0; i < nelements; i++)
-                elements[array[i]]++;
-        //	  printf("countelements: done\n");
-}
-
-/*!
   Gives next combination for k elements out of n based on an algorithm from wikipedia.
   The generate is sorted.
   \brief Gives next combination
@@ -169,12 +150,6 @@ int next_comb_s (int *comb, int k, int n) {
 
 /** @brief Construct file string from a design
  *
- * @return std::string
- */
-std::string oafilestring (const arraydata_t *ad) { return oafilestring (ad->N, ad->ncols, ad->s); }
-
-/** @brief Construct file string from a design
- *
  * @return String
  */
 string oafilestring (rowindex_t rows, colindex_t cols, array_t *s) {
@@ -192,6 +167,12 @@ string oafilestring (rowindex_t rows, colindex_t cols, array_t *s) {
 
         return fname;
 }
+
+/** @brief Construct file string from a design
+ *
+ * @return std::string
+ */
+std::string oafilestring (const arraydata_t *ad) { return oafilestring (ad->N, ad->ncols, ad->s); }
 
 #define XPFS
 #ifndef XPFS
@@ -257,7 +238,6 @@ bool checkloglevel (int l) {
         bool b;
 #pragma omp critical
         {
-                //#pragma omp atomic
                 b = l <= streamloglvl;
         }
         return b;
@@ -339,6 +319,10 @@ int log_print (const int level, const char *message, ...) {
         return result;
 }
 
+void throw_runtime_exception (const std::string exception_message) {
+	throw std::runtime_error (exception_message);
+}
+
 void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...) {
         if (condition == 0) {
                 va_list va;
@@ -352,11 +336,11 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 #endif
                 va_end (va);
 #ifdef RPACKAGE
-                throw;
+                throw_runtime_exception("");
 #else
                 std::string error_message = printfstring ("exception: %s: %s (line %d): ", file, func, line);
                 error_message += message;
-                throw std::runtime_error (error_message);
+                throw_runtime_exception(error_message);
 #endif
         }
 }
@@ -367,11 +351,7 @@ void myassert (int condition, const char *error_message) {
                         myprintf ("myassert: error\n");
                 else
                         myprintf ("myassert: %s", error_message);
-#ifdef SWIGPYTHON
-                throw std::runtime_error (error_message);
-#else
-                throw std::runtime_error (error_message);
-#endif
+                throw_runtime_exception (error_message);
         }
 }
 

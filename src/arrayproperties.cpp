@@ -330,7 +330,7 @@ std::vector< double > macwilliams_transform (std::vector< Type > B, int N, int s
         std::vector< double > Bp (n + 1);
 
         if (s == 2) {
-                if (n <= Combinations::number_combinaties_max_n ()) {
+                if (n <= Combinations::number_combinations_max_n ()) {
                         // use cached version of krawtchouks
                         for (int j = 0; j <= n; j++) {
                                 Bp[j] = 0;
@@ -1409,11 +1409,6 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
                 return std::vector< double > (3);
         }
 
-        // if ( al.min()<0 ) {
-        //	myprintf ( "Defficiencies: array elements should range from 0 to s-1\n" );
-        //	return std::vector<double> ( 3 );
-        //}
-
         int k = al.n_columns;
         int k1 = al.n_columns + 1;
         int n = al.n_rows;
@@ -1444,20 +1439,6 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
                 nme = X1.cols ();
         }
         MyMatrix matXtX = (X.transpose () * (X)) / n;
-
-        /*
-        // https://forum.kde.org/viewtopic.php?f=74&t=85616&p=146569&hilit=multiply+transpose#p146569
-        MyMatrix matXtX(X.cols(), X.cols());
-        //		matXtX.setZero();
-        //		myprintf("assign triangularView\n");
-        matXtX.triangularView<Eigen::Upper>() = X.transpose() *X/n;
-
-        //		matXtX.sefladjointView<Upper>().rankUpdate(X.transpose() );
-
-        //		myprintf("assign triangularView (lower)\n");
-
-        matXtX.triangularView<Eigen::StrictlyLower>() = matXtX.transpose();
-        */
 
         double f1 = matXtX.determinant ();
 

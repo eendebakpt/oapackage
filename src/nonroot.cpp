@@ -558,11 +558,6 @@ lmc_t LMC_check_col_ft_2level_rowsymm (const array_t *originalcol, const array_t
                 for (int j = 0; j < nb; j++) {
                         int x1 = sdp[2 * j];
                         int x2 = sdp[2 * j + 1];
-                        if (x1 == x2 && 0) {
-                                myprintf ("\n### \n");
-                                sd.ft.showarray ();
-                                myprintf ("calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2);
-                        }
                         sortzerooneR (rowsort, x1, x2 - 1, arraycol);
                 }
         }
@@ -617,239 +612,12 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
                 for (int j = 0; j < nb; j++) {
                         int x1 = sdp[2 * j];
                         int x2 = sdp[2 * j + 1];
-                        if (x1 == x2 && 0) {
-                                myprintf ("\n### \n");
-                                sd.ft.showarray ();
-                                myprintf ("calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1, x2);
-                        }
                         sortzerooneR (rowsort, x1, x2 - 1, arraycol);
                 }
         }
 
         return ret;
 }
-
-// lmc_t LMC_check_col_ft_testing (const array_t *originalcol, carray_t *arraycol, levelperm_t lperm,
-//                                 const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose) {
-// 
-//         lmc_t ret = LMC_EQUAL;
-//         const int nrows = ad->N;
-//         const int scol = dd->col - 1;
-//         rowsort_t *rowsort = dd->rowsort;
-// 
-//         int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); // myprintf("LMC_check_col_ft: nb %d\n",nb);
-//         array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
-// 
-//         /* we check in blocks determined by the ft */
-//         for (int j = 0; j < nb; j++) {
-//                 // int x1 = sd.ft.atfast(2*j, scol); int x2 = sd.ft.atfast(2*j+1, scol);
-//                 int x1 = sdp[2 * j];
-//                 int x2 = sdp[2 * j + 1];
-//                 // if (col>4) 	    myprintf("  calling checkLMChelper: %d to %d (inclusive)\n", x1, x2-1);
-// 
-//                 ret = checkLMChelper (x1, x2 - 1, originalcol, arraycol, lperm, ad, rowsort);
-//                 if (ret != LMC_EQUAL) {
-//                         return ret;
-//                 }
-//         }
-// 
-//         // we have LMC_EQUAL: prepare data for deeper levels
-//         if (0) {
-//                 const rowsort_value_t sval = ad->s[dd->col];
-// 
-//                 for (int cur_row = 0; cur_row < ad->N; cur_row++) {
-//                         int rowp = rowsort[cur_row].r;
-//                         rowsort[cur_row].val = lperm[arraycol[rowp]];
-//                         // rowsort[cur_row].val = sval*rowsort[cur_row].val+lperm[arraycol[rowp]];
-//                 }
-//         }
-// 
-//         if (0) {
-//                 for (int j = 0; j < nb; j++) {
-//                         int x1 = sdp[2 * j];
-//                         int x2 = sdp[2 * j + 1];
-//                         if ((x2 - x1) <= 1)
-//                                 continue;
-//                         // int x1 = sd.ft.atfast(2*j, scol);  int x2 = sd.ft.atfast(2*j+1, scol);
-//                         for (int cur_row = x1; cur_row < x2; cur_row++) {
-//                                 rowsort[cur_row].val = lperm[arraycol[rowsort[cur_row].r]];
-//                         }
-//                         oacolSort (rowsort, x1, x2 - 1);
-//                 }
-//         } else {
-//                 // new method
-// 
-//                 if (lperm[0] == 0) {
-//                         for (int j = 0; j < nb; j++) {
-//                                 int x1 = sdp[2 * j];
-//                                 int x2 = sdp[2 * j + 1];
-//                                 sortzeroone (rowsort, x1, x2 - 1, arraycol);
-//                         }
-//                 } else {
-//                         for (int j = 0; j < nb; j++) {
-//                                 int x1 = sdp[2 * j];
-//                                 int x2 = sdp[2 * j + 1];
-//                                 if (x1 == x2 && 0) {
-//                                         myprintf ("\n### \n");
-//                                         sd.ft.showarray ();
-//                                         myprintf ("calling sortzerooneR: scol %d, j %d, x1 %d, x2 %d\n", scol, j, x1,
-//                                                   x2);
-//                                 }
-//                                 sortzerooneR (rowsort, x1, x2 - 1, arraycol);
-//                         }
-//                 }
-//         }
-// 
-//         return ret;
-// }
-
-// inline lmc_t LMC_check_col_ft_X (const array_t *originalcol, carray_t *arraycol, levelperm_t lperm,
-//                                  const arraydata_t *ad, const dyndata_t *dd, const symmdata *sd, int dverbose) {
-//         const int newalg = 1;
-// 
-//         lmc_t ret = LMC_EQUAL;
-//         int cur_row, rowp;
-//         const int oaindex = ad->oaindex;
-//         const int nrows = ad->N;
-//         rowsort_t *rowsort = dd->rowsort;
-//         const rowsort_value_t sval = ad->s[dd->col];
-// 
-//         // lmc_t rete=LMC_EQUAL; int fh=0;
-// 
-//         /* we check in blocks of oaindex */
-//         for (int j = 0; j < (nrows / oaindex); j++) {
-//                 /* sort rows according to new information */
-//                 rowsort_value_t prevvalue = rowsort[j * oaindex].val;
-//                 int previndex = 0;
-//                 for (int k = 0; k < oaindex; k++) {
-//                         cur_row = j * oaindex + k; // OPTIMIZE: use cur_row++
-//                         rowp = rowsort[cur_row].r;
-// 
-//                         // if (dverbose) {
-//                         //		myprintf("##\nk %d: prevvalue %d, rowsort[cur_row].val %d\n", k, prevvalue,
-//                         //rowsort[cur_row].val);
-//                         //	      }
-// 
-//                         if (rowsort[cur_row].val != prevvalue) {
-//                                 if (newalg) {
-//                                         //  if ( ( (k-1)-previndex)>-2) {
-//                                         lmc_t v = checkLMChelper (j * oaindex + previndex, j * oaindex + k - 1,
-//                                                                   originalcol, arraycol, lperm, ad, rowsort);
-//                                         if (v != LMC_EQUAL) {
-//                                                 ret = v;
-//                                                 return ret;
-//                                         }
-//                                         //  }
-//                                 } else {
-//                                         oacolSort (rowsort + (j * oaindex), previndex, k - 1);
-// 
-//                                         for (int kk = previndex; kk < k; kk++) {
-//                                                 int cur_row2 = j * oaindex + kk;
-//                                                 int rowp2 = rowsort[cur_row2].r;
-// 
-//                                                 if (originalcol[cur_row2] != lperm[arraycol[rowp2]]) {
-// 
-//                                                         if (originalcol[cur_row2] < lperm[arraycol[rowp2]]) {
-//                                                                 if (dverbose) {
-//                                                                         myprintf ("early abort MORE: j %d, k %d, "
-//                                                                                   "previndex %d, kk %d\n",
-//                                                                                   j, k, previndex, kk);
-//                                                                         myprintf ("  %d %d (arraycol[rowp2] %d %d)\n",
-//                                                                                   originalcol[cur_row2],
-//                                                                                   lperm[arraycol[rowp2]],
-//                                                                                   arraycol[rowp2], rowp2);
-//                                                                 }
-//                                                                 // continue;
-//                                                                 // if (!fh) {   rete = LMC_MORE;  fh=1;  }
-//                                                                 ret = LMC_MORE;
-// 
-//                                                                 return ret;
-//                                                                 break;
-//                                                         } else if (originalcol[cur_row2] > lperm[arraycol[rowp2]]) {
-//                                                                 // continue;
-//                                                                 if (dverbose) {
-//                                                                         myprintf ("early abort: LESS j %d, k %d, "
-//                                                                                   "previndex %d, kk %d\n",
-//                                                                                   j, k, previndex, kk);
-//                                                                 }
-//                                                                 // if (!fh) { fh=1;  rete = LMC_LESS;  }
-//                                                                 ret = LMC_LESS;
-//                                                                 return ret;
-//                                                                 break;
-//                                                         }
-//                                                 }
-//                                         }
-//                                 }
-//                                 previndex = k;
-//                                 prevvalue = rowsort[cur_row].val;
-//                         }
-// 
-//                         // if (dverbose)
-//                         //   myprintf("k: %d, rowsort.val %d->%d (val array %d)\n", k, rowsort[cur_row].val,
-//                         //   sval*rowsort[cur_row].val+lperm[arraycol[rowp]], lperm[arraycol[rowp]] );
-//                         if (!newalg) {
-//                                 rowsort[cur_row].val = sval * rowsort[cur_row].val + lperm[arraycol[rowp]];
-//                                 if (ret != LMC_EQUAL)
-//                                         break;
-//                         }
-//                 }
-//                 // if (ret!=LMC_EQUAL) break;
-// 
-//                 if (newalg) {
-//                         lmc_t v = checkLMChelper (j * oaindex + previndex, j * oaindex + oaindex - 1, originalcol,
-//                                                   arraycol, lperm, ad, rowsort);
-//                         if (v != LMC_EQUAL) {
-//                                 ret = v;
-//                                 return ret;
-//                         }
-//                         // oacolSort ( rowsort+ ( j*oaindex ), 0, oaindex-1 );
-//                 } else {
-//                         // oacolSort ( rowsort+ ( j*oaindex ), previndex, oaindex-1 );
-//                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
-// 
-//                         // myprintf("previndex %d, oaindex %d\n", previndex, oaindex);
-//                         int k;
-//                         for (k = previndex; k < oaindex; k++) {
-//                                 cur_row = j * oaindex + k;
-//                                 rowp = rowsort[cur_row].r;
-// 
-//                                 // OPTIMIZE: use != method for other functions as well
-//                                 if (originalcol[cur_row] != lperm[arraycol[rowp]]) {
-//                                         if (originalcol[cur_row] < lperm[arraycol[rowp]]) {
-//                                                 ret = LMC_MORE;
-//                                                 break;
-//                                         } else if (originalcol[cur_row] >
-//                                                    lperm[arraycol[rowp]]) { // the permuted array is lex. less than
-//                                                                             // original
-//                                                 ret = LMC_LESS;
-//                                                 break;
-//                                         }
-//                                 }
-//                         }
-//                         if (ret != LMC_EQUAL) {
-//                                 if (dverbose) {
-//                                         myprintf ("abort: j %d, k %d, row %d, ret %d\n", j, k, j * oaindex + k, ret);
-//                                 }
-//                                 break;
-//                         }
-//                 }
-//         }
-// 
-//         if (newalg) {
-//                 // we have LMC_EQUAL: prepare data for deeper levels
-//                 // TODO: this can be blocked (so we do not need the rowsort values any more!!
-//                 for (int i = 0; i < ad->N; i++) {
-//                         cur_row = i;
-//                         int rowp = rowsort[i].r;
-//                         rowsort[i].val = sval * rowsort[i].val + lperm[arraycol[rowp]];
-//                 }
-//                 for (int j = 0; j < (nrows / oaindex); j++) {
-//                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
-//                 }
-//         }
-// 
-//         return ret;
-// }
 
 /**
 * @brief Perform LMC check on a single column, also apply a level transformation
@@ -865,7 +633,6 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
 */
 inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                             const arraydata_t *ad, const dyndata_t *dd) {
-        // myprintf("LMC_check_col: start\n");
         lmc_t ret = LMC_EQUAL;
         int cur_row, rowp;
 #ifdef OAANALYZE_DISCR

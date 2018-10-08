@@ -2011,7 +2011,7 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
         n[1] = al.n_columns;
 
         if (order > 2) {
-                myprintf ("numberModelParams: not implemented for order > 2\n");
+                throw_runtime_exception("numberModelParams: not implemented for order > 2\n");
         }
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
         std::vector< int > s = arrayclass.getS ();
@@ -2023,15 +2023,15 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
         n[1] = mesize;
 
         /* 2fi*/
-        int n2fi = 0;
+        int number_of_2factor_interactions = 0;
         for (int ii = 0; ii < k - 1; ii++) {
                 for (int jj = ii + 1; jj < k; jj++) {
-                        n2fi += df[ii] * df[jj];
+                        number_of_2factor_interactions += df[ii] * df[jj];
                 }
         }
 
         if (order >= 2)
-                n[2] = n2fi;
+                n[2] = number_of_2factor_interactions;
         return n;
 }
 
@@ -2064,7 +2064,6 @@ MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) c
         }
         if (order == 2) {
                 MatrixFloat mm (N, np[0] + np[1] + np[2]);
-                // std::cout << "gr\n" << mmx.first << std::endl << mmx.second << std::endl;
                 mm << intcpt, mmx.first, mmx.second;
                 return mm;
         }
@@ -2157,7 +2156,8 @@ MatrixFloat array2eigenMainEffects (const array_link &al, int verbose) {
 
 // code from Eric Schoen, adapted to work for arrays of strength < 1
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose) {
-        assert (al.min () >= 0);
+        if ( !(al.min () >= 0) )
+             throw_runtime_exception("array cannot have negative elements");
 
         if (verbose >= 2) {
                 myprintf ("array2eigenModelMatrixMixed: start");
@@ -2289,9 +2289,6 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 
                         for (int pp = 0; pp < n1; pp++) {
                                 for (int qq = 0; qq < n2; qq++) {
-                                        // if (verbose) printfd("create 2fi: \n");	eigenInfo(ME.col(pp),
-                                        // "ME.col(pp)");
-
                                         tfi.col (tel) =
                                             main_effects.col (pp + po).cwiseProduct (main_effects.col (qq + qo));
                                         tel++;
@@ -2469,7 +2466,8 @@ std::vector< int > array_link::Fvalues (int jj) const {
 }
 
 std::vector< int > array_link::FvaluesConference (int jj) const {
-        assert (this->is_conference ());
+        if (! this->is_conference ())
+             throw_runtime_exception("array is not a conference design");
 
         const int N = this->n_rows;
         jstructconference_t js (*this, jj);
@@ -2686,8 +2684,7 @@ void arraydata_t::writeConfigFile (const char *file) const {
         outFile.open (file);
         if (!outFile) {
                 myprintf ("writeConfigFile: unable to open file %s\n", file);
-                throw std::runtime_error ("writeConfigFile: unable to open file");
-                return;
+                throw_runtime_exception ("writeConfigFile: unable to open file");
         }
 
         /* read design specifications: runs, strength, number of factors */

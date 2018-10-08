@@ -1445,30 +1445,19 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                           "or INIT!\n");
                 fflush (stdout);
                 std::cout.flush ();
-                //	sleep(2);
-                //	std::cout.flush();
-                throw;
+                throw_runtime_exception("LMCreduce: reduction.init_state is INIT_STATE_INVALID");
         }
         if (reduction.init_state == COPY) {
                 reduction.setArray (al);
-
-                // myprintf("LMCreduce: copy array: %d %d\n", reduction->nrows, reduction->ncols);
-                // reduction->getArray().showarray();
         }
 
-        // myprintf("LMCcheckj4: ad.ncols %d\n", ad.ncols);
         assert (adin.ncolgroups == 1);
         assert (adin.s[0] == 2);
         assert (jj >= adin.strength);
         if (adin.strength != 3) {
-                myprintf ("LMCcheckj4: error: strength not equal to 3\n");
-                throw;
+                throw_runtime_exception ("LMCcheckj4: error: strength not equal to 3\n");
         }
 
-        // 	printf("entering LMCcheckj4:\n");
-        // 	print_array("al.array\n", al.array, adin.N, adin.ncols);
-        // 	print_array("reduction.array\n", reduction.array, adin.N, adin.ncols);
-        //
         if (al.n_columns < jj) {
                 // fall back to original method
                 dyndata_t dyndata (adin.N);
@@ -1814,9 +1803,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                 reduction.init_state = COPY;
         }
         if (reduction.init_state == INIT_STATE_INVALID) {
-                // TODO: remove this code
-                myprintf ("LMCcheckj5: reduction.init_state is INVALID\n");
-                throw;
+                throw_runtime_exception ("LMCcheckj5: reduction.init_state is INVALID\n");
         }
 
         // NOTE: the reduction.array is reduced, so reduction.array is a good value to start from.
@@ -2144,9 +2131,8 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                                                *tmpStatic);
 
                         } else {
-                                myprintf ("oaextend problem: ");
                                 oaextend.info ();
-                                throw;
+                                throw_runtime_exception("oaextend problem: invalid algorithm");
                                 r = LMCreduce_non_root (al.array, &adfix, &dyndata, &reduction, oaextend, *tmpStatic);
                         }
 
@@ -2430,7 +2416,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
         dyndata_t dynd = dyndata_t (ad.N);
 
         if (reduction.init_state == INIT_STATE_INVALID) {
-                throw std::runtime_error("LMCcheck: reduction.init_state is INVALID, please set it to COPY or INIT");
+                throw_runtime_exception("LMCcheck: reduction.init_state is INVALID, please set it to COPY or INIT");
         }
         if (reduction.init_state == SETROOT) {
                 log_print (DEBUG, "LMCcheck: reduction.init_state is SETROOT\n");
@@ -2698,7 +2684,7 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
                 tmpStatic.update (ad);
 
                 if (reduction->init_state == INIT_STATE_INVALID) {
-                        throw std::runtime_error("LMCreduce: reduction.init_state is INIT_STATE_INVALID");
+                        throw_runtime_exception("LMCreduce: reduction.init_state is INIT_STATE_INVALID");
                 }
 
                 if (reduction->init_state == COPY) {

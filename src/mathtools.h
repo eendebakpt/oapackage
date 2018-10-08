@@ -674,9 +674,10 @@ template < class Type > inline Type ncombs (const Type n, const Type k) {
 }
 
 class Combinations {
+	
       public:
         /// return max number of N that can be calculated with number_combinations
-        static int number_combinaties_max_n ();
+        static int number_combinations_max_n ();
 
         /// initialize datastructure for number_combinations, this function is not thread safe
         static void initialize_number_combinations (int N);
