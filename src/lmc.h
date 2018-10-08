@@ -115,8 +115,6 @@ std::string algnames (algorithm_t m);
 struct dyndata_t;
 
 // NOTE: unsigned long is enough for 2-factor arrays up to 60 columns
-// typedef unsigned char rowsort_value_t; /** type for value for sorting rows*/
-// typedef unsigned long rowsort_value_t; /** type for value for sorting rows*/
 typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
                                       /*!
                                        * @brief structure to perform row sorting
@@ -171,8 +169,6 @@ struct LMC_static_struct_t {
         /* variable data */
         int LMC_non_root_init;
         int LMC_root_init;
-        // int LMC_reduce_non_root_init;
-        // int LMC_reduce_root_init;
         int LMC_reduce_root_rowperms_init;
 
         /* data structures used by functions */
@@ -387,7 +383,7 @@ struct LMCreduction_t {
         //! counter for number of reductions made
         long nred;
 
-        int targetcol; // NOTE: document this
+        int targetcol; 
         int mincol;    // used in debugging
 
         int nrows, ncols;
