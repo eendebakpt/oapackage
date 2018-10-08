@@ -1234,9 +1234,8 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
         const int nlevels = 2;                        // ad->s[dyndata->col];	/* number of levels at this column */
 
         levelperm_t lperm = lperm_p[dyndata->col];
-        // colperm_t colpermloopXX = localcolperm_p[dyndata->col];
         dyndata_t *dyndatacpy = dynd_p[dyndata->col];
-        dyndatacpy->allocrowsortl ();
+        dyndatacpy->allocate_rowsortl ();
         dyndatacpy->col = dyndata->col; // TODO: needed?
 
         const int cg = ad->get_col_group (dyndata->col); /* current column group */
@@ -1245,7 +1244,6 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
 
 
         lmc_t ret = LMC_MORE;
-        // init_perm<colindex_t> ( colpermloopXX, remsize );	// intialize for entire loop
         const int col = dyndata->col;
         copy_perm (dyndata->colperm, dyndatacpy->colperm, ad->ncols);
 
@@ -1259,7 +1257,6 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                 const int cpoffset = ad->N * dyndatacpy->colperm[dyndata->col];
                 const array_t *reductionarrayoffset = reduction->array + dyndata->col * ad->N;
 
-                // bool specialf=false;
                 /* loop over all level permutations */
                 for (int j = 0; j < nlevelperms; j++) {
                         /* copy dyndata rowsort data */
@@ -1283,18 +1280,12 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                                                 ret = LMC_check_col_ft_2level_rowsymm (
                                                     reductionarrayoffset, original + cpoffset, lperm, ad, dyndatacpy,
                                                     *(reduction->sd), 0);
-                                                //  myprintf("LMCreduce_non_root_2level: special check for final
-                                                //  column: col %d (ncols %d) return %d!!!!\n", dyndatacpy->col,
-                                                //  ad->ncols, ret);
-
                                         } else {
-
-                                                //#define OADEBUGL
                                                 ret = LMC_check_col_ft_2level (reductionarrayoffset,
                                                                                original + cpoffset, lperm, ad,
                                                                                dyndatacpy, *(reduction->sd), 0);
                                         }
-                                        dyndatacpy->col = dyndata->col; // TODO: needed?
+                                        dyndatacpy->col = dyndata->col; 
 
                                 } else {
                                         ret =

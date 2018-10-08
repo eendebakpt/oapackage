@@ -394,8 +394,6 @@ struct LMCreduction_t {
 
         LMC_static_struct_t *staticdata;
 
-        //! store column permutations from array symmetry group
-        // std::vector< std::vector< std::vector<int> > > colperms;
         class symm_t {
               public:
                 int store;
@@ -526,7 +524,6 @@ struct LMCreduction_t {
         }
 
         void updateSDpointer (const array_link al, bool cache = false) {
-// reduction.sd = symmdataPointer(new symmdata(al) );
 #ifdef SDSMART
                 symmdata *sdp = this->sd.get ();
 #else
@@ -707,7 +704,7 @@ struct dyndata_t {
         }
 
         /// allocate lightweight rowsort structure
-        void allocrowsortl () {
+        void allocate_rowsortl () {
                 if (this->rowsortl == 0) {
                         this->rowsortl = new_perm< rowindex_t > (this->N);
                 }
@@ -716,13 +713,13 @@ struct dyndata_t {
         void deleterowsortl () {
                 if (this->rowsortl != 0) {
                         delete_perm (this->rowsortl);
-                        // delete [] this->rowsortl;
                         this->rowsortl = 0;
                 }
         }
+
+		/// initialize rowsortl from rowsort
         void initrowsortl () {
                 if (this->rowsortl != 0) {
-                        // delete [] this->rowsortl;
                         for (int i = 0; i < this->N; i++) {
                                 this->rowsortl[i] = this->rowsort[i].r;
                         }
@@ -734,7 +731,7 @@ struct dyndata_t {
                 }
         }
 
-        /// helper function
+        /// copy rowsortl variable to rowsrt
         void rowsortl2rowsort () {
                 for (int i = 0; i < this->N; i++) {
                         this->rowsort[i].r = this->rowsortl[i];
