@@ -65,15 +65,10 @@ LMC_static_struct_t *getGlobalStatic () {
         return pp;
 #endif
 
-#ifdef OADEBUGMORE
-        staticDataPool.verbose = 1;
-#endif
 
         LMC_static_struct_t *p = 0;
-// printfd("enter critical: %d\n", omp_get_thread_num() );
 #pragma omp critical
         { p = staticDataPool.New (); }
-        // printfd("leave critical: %d\n", omp_get_thread_num() );
         return p;
 }
 void releaseGlobalStatic (LMC_static_struct_t *p) {
@@ -82,11 +77,9 @@ void releaseGlobalStatic (LMC_static_struct_t *p) {
         return;
 #endif
 
-// printfd("releaseGlobalStatic: enter critical: %d\n", omp_get_thread_num() );
 #pragma omp critical
         {
                 staticDataPool.Delete (p);
-                // printfd("   releaseGlobalStatic: pool size %d\n", staticDataPool.size() );
         }
 }
 
@@ -933,10 +926,7 @@ void LMC_static_struct_t::freeall () {
         /* clear old structures */
         if (this->current_trans != 0) {
                 delete this->current_trans;
-
-#ifdef OADEBUG
                 this->current_trans = 0;
-#endif
         }
 
         if (this->colperm_p != 0) {
@@ -1670,9 +1660,6 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
 
         double ww[6];
 
-#ifdef OADEBUG
-        assert (N <= MAXROWS);
-#endif
         array_t tmpval[MAXROWS];
 
         std::fill (tmpval, tmpval + N, 0);

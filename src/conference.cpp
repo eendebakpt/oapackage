@@ -1240,9 +1240,6 @@ class lightstack_t {
 
         bool empty () const { return current_position == 0; }
         void push (const object_t &o) {
-#ifdef OADEBUG
-                assert (this->n < this->size);
-#endif
                 this->stack[current_position] = o;
                 current_position++;
         }
@@ -1588,14 +1585,8 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
         // push initial branches
         branch_t b1 = {0, 1, {1, N / 2 - 1, N / 2 - 1}}; // branches starting with a 1
         branches.push (b1);
-// branch_t b0 = {0, 0, {1,N/2-1,N/2-1} };
-// branches.push ( b0 );
 
-#ifdef OADEBUG
-        std::vector< long > nb (N + 1);
-#endif
-
-        // TODO: inline kz filtering, TODO: partial J2 filter with second column
+        std::vector< long > branch_count (N + 1);
 
         long n = 0;
         do {
@@ -1605,9 +1596,8 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                 if (verbose >= 3) {
                         b.show ();
                 }
-#ifdef OADEBUG
-                nb[b.row]++;
-#endif
+                branch_count[b.row]++;
+                
                 branches.pop ();
                 c[b.row] = b.rval; // update column vector
 
@@ -1619,8 +1609,6 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                 }
                 if (b.row == N - 1) {
                         n++;
-                        // verbose=2;
-                        // dfilter.filterReason(c);
                         if (verbose >= 3) {
                                 myprintf ("n %d: filter %d: ", (int)n, dfilter.filter (c));
                                 print_cperm (c);
@@ -1642,7 +1630,7 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                                 }
                                 cc.push_back (c);
                         } else {
-                                // printfd ( "## discard candindate: " );
+                                // discard candindate
                         }
                         continue;
                 }
@@ -1672,15 +1660,13 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
 
         } while (!branches.empty ());
 
-#ifdef OADEBUG
-        if (1) {
-                printf ("branch count:\n");
-                for (int i = 0; i <= N; i++) {
-                        printf ("  %d: %ld\n", i, nb[i]);
-                }
-        }
-#endif
         if (verbose) {
+               if (verbose>=2) {
+                         printf ("branch count:\n");
+                         for (int i = 0; i <= N; i++) {
+                              printf ("  %d: %ld\n", i, branch_count[i]);
+                         }
+               }
                 printfd ("%s: %.3f [s]: generated %ld/%ld/%ld perms (len %ld)\n", __FUNCTION__, get_time_ms () - t0,
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
                 if (verbose>=3) {
@@ -1699,7 +1685,7 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
                     "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n",
                     filtersymm, filtersymminline, filterj2, filterj3);
 
-        assert (ct.j1zero == 1);
+        myassert (ct.j1zero == 1);
 
         const int N = al.n_rows;
         DconferenceFilter dfilter (al, filtersymm, filterj2);
@@ -1722,17 +1708,13 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
         branches.push (b0);
         double t0 = get_time_ms ();
 
-#ifdef OADEBUG
-        std::vector< long > nb (N + 1);
-#endif
+        std::vector< long > branch_count (N + 1);
 
         long n = 0;
         do {
 
                 branch_t b = branches.top ();
-#ifdef OADEBUG
-                nb[b.row]++;
-#endif
+                branch_count[b.row]++;
                 branches.pop (); // TODO: use reference and pop later
                 c[b.row] = b.rval;
 
@@ -1782,19 +1764,15 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
 
         } while (!branches.empty ());
 
-#ifdef OADEBUG
-        if (1) {
-                printf ("branch count:\n");
-                for (int i = 0; i <= N; i++) {
-                        printf ("  %d: %ld\n", i, nb[i]);
-                }
-        }
-#endif
         if (verbose) {
+               if (verbose>=2) {
+                         printf ("branch count:\n");
+                         for (int i = 0; i <= N; i++) {
+                              printf ("  %d: %ld\n", i, branch_count[i]);
+                         }
+               }
                 printfd ("generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n",
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
-                // al.show();
-                // al.transposed().showarray(); showCandidates ( cc );
         }
         return cc;
 }
