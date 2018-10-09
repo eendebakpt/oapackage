@@ -699,7 +699,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
 * @return
 */
 lmc_t LMC_check_col (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dd) {
-        // myprintf("LMC_check_col: start\n");
         lmc_t ret = LMC_EQUAL;
         int cur_row, rowp;
         int oaindex = ad->oaindex;
@@ -723,11 +722,9 @@ lmc_t LMC_check_col (const array_t *original, const array_t *array, const arrayd
                                                            "rowsort[cur_row].val=%ld\n",
                                                    ad->s[dd->col], (long)rowsort[cur_row].val);
 #endif
-                                /* OPTIMIZE: the multiplication can be taken out of the function */
                                 rowsort[cur_row].val = ad->s[dd->col] * rowsort[cur_row].val + array[rowp];
                         }
 
-                        // OPTIMIZE: select best sort algorithm
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
                 }
 
@@ -881,13 +878,11 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
         const int ncolsremgroup = ad->colgroupsize[cg] + ad->colgroupindex[cg] - dyndata->col;
 
 
-        // OPTIMIZE: check whether changing order of this loop makes a difference
         lmc_t ret = LMC_MORE;
         init_perm< colindex_t > (colpermloop, remsize);
         const int col = dyndata->col;
         for (int i = 0; i < ncolsremgroup; i++) {
                 std::swap (colpermloop[0], colpermloop[i]);
-                //	 myprintf("\n\n## colperm loop i=%d (col %d):\n", i, dyndata->col);
 
                 // keep track of applied column permutation
                 copy_perm (dyndata->colperm, dyndatacpy->colperm, ad->ncols);
@@ -900,8 +895,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
                 /* loop over all level permutations */
                 for (int j = 0; j < nlevelperms; j++) {
                         /* copy dyndata rowsort data */
-                        // OPTIMIZE: eliminate this copy by moving it into check_col, saves up to 15% for large run
-                        // sizes
                         cpy_dyndata_rowsort (dyndata, dyndatacpy);
                         dyndatacpy->col = dyndata->col; // TODO: needed?
 
@@ -922,7 +915,6 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
                         } else {
 
                                 if (ad->order == ORDER_LEX) {
-// TODO: clean this up
 #ifdef TPLUSCOLUMN
                                         ret = LMC_check_col_tplus (reduction->array + dyndata->col * +ad->N,
                                                                    original + cpoffset, lperm, ad, dyndatacpy);
@@ -1064,7 +1056,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
 
                                         if ((oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
                                              oaextend.getAlgorithm () == MODE_J5ORDERXFAST) &&
-                                            reduction->sd != 0) { // || oaextend.getAlgorithm()==MODE_J4) {
+                                            reduction->sd != 0) { 
                                                 myassert (reduction->sd != 0, "LMC_check_col_ft");
                                                 ret = LMC_check_col_ft_2level (
                                                     reduction->array + dyndata->col * +ad->N, original + cpoffset,
@@ -1073,7 +1065,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                                 ret = LMC_check_col (reduction->array + dyndata->col * +ad->N,
                                                                      original + cpoffset, lperm, ad, dyndatacpy);
                                         }
-                                        dyndatacpy->col = dyndata->col; // TODO: needed?
+                                        dyndatacpy->col = dyndata->col; 
 
                                 } else {
                                         ret =
@@ -1095,8 +1087,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                 ret = LMC_EQUAL; /* since the best array so far is updated, we need to continue */
 
                                 reduction->mincol = std::min (reduction->mincol, col);
-
-                                
                         }
                         if (ret == LMC_EQUAL) {
                                 reduction->symms.storeSymmetryPermutation (dyndatacpy);

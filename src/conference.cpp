@@ -403,7 +403,6 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
         }
 
         arraydata_t arrayclass (3, al.n_rows, 1, al.n_columns);
-        // printfd("run %d ", i); arrayclass.show();
         array_transformation_t at = reduceOAnauty (al + 1, verbose >= 2, arrayclass);
 
         conference_transformation_t t (al);
@@ -412,8 +411,8 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
 
         for (int c = 0; c < al.n_columns; c++) {
                 std::vector< int > lp = at.lvlperm (c);
-                assert (lp[1] == 1);                  // 0 should go to 0
-                t.cswitch[c] = (lp[0] == 0) ? 1 : -1; // FIXME!
+                myassert (lp[1] == 1);                  // 0 should go to 0
+                t.cswitch[c] = (lp[0] == 0) ? 1 : -1; 
         }
 
         return t;
@@ -2088,7 +2087,6 @@ conference_extend_t extend_conference_matrix_generator (const array_link &al, co
                                     cl, al, verbose); // not needed, but might make calculations faster
                                 extensionsX = filterCandidates (extensionsX, al, 1, 1, verbose);
                         } else {
-                                // FIXME: for cached generated candidates we could remove the filterj2 check
                                 extensionsX = filterCandidates (cl, al, 1, 1, verbose);
                         }
                 }
@@ -2906,20 +2904,19 @@ void init_lmc0_rowsort (const array_link &al, int sutk_col, rowsort_t *rowperm, 
         std::stable_sort (rowperm, rowperm + al.n_rows);
 }
 
-int get_zero_pos_blockX (const array_link &al, const int x1, const int x2, rowsort_t *rowperm,
-                         const std::vector< int > &colperm, int column, const int nrows) {
-        /// FIXME: remove dead function
-
-        int position_zero = nrows + 1;
-        for (int i = x1; i < x2; i++) {
-                int current_val = al.atfast (rowperm[i].r, colperm[column]);
-                if (current_val == 0) {
-                        position_zero = i;
-                }
-        }
-
-        return position_zero;
-}
+// int get_zero_pos_blockX (const array_link &al, const int x1, const int x2, rowsort_t *rowperm,
+//                          const std::vector< int > &colperm, int column, const int nrows) {
+// 
+//         int position_zero = nrows + 1;
+//         for (int i = x1; i < x2; i++) {
+//                 int current_val = al.atfast (rowperm[i].r, colperm[column]);
+//                 if (current_val == 0) {
+//                         position_zero = i;
+//                 }
+//         }
+// 
+//         return position_zero;
+// }
 
 /*** compare zero positions in a block of a design
  *
@@ -2999,7 +2996,6 @@ lmc_t LMC0_sortrows_compare (const array_link &al, int column, rowsort_t *rowper
                 int x1 = sd.ft.atfast (2 * j, scol);
                 int x2 = sd.ft.atfast (2 * j + 1, scol);
 
-                // OPTIMIZE: put this check in sd.ft generation
                 if ((x2 - x1) > 1) {
 
                         for (int i = x1; i < x2; i++) {
@@ -3011,7 +3007,6 @@ lmc_t LMC0_sortrows_compare (const array_link &al, int column, rowsort_t *rowper
                         flipSort (rowperm, x1, x2 - 1);
                 }
 
-                // OPTIMIZE: direct pointers?
                 // Compare blocks wrt zero position
                 r = lmc0_compare_zeropos_block (al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm);
                 if (r == LMC_LESS || r == LMC_MORE) {
