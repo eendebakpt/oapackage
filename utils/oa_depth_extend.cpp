@@ -23,12 +23,6 @@
 
 #include "oadevelop.h"
 
-#ifdef OADEBUG
-
-#else
-//#define DOOPENMP
-#endif
-
 #ifdef DOOPENMP
 #include "omp.h"
 #endif

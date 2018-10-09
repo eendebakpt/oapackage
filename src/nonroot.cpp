@@ -12,27 +12,27 @@ inline void cpy_dyndata_rowsort (const dyndata_t *src, dyndata_t *dest) {
 #ifdef OADEBUG
         if (src->N != dest->N) {
                 myprintf ("error: source and target dyndata_t have unequal number of rows!\n");
-                exit (0);
+                throw_runtime_exception ("error: source and target dyndata_t have unequal number of rows!");
         }
 #endif
 
         memcpy (dest->rowsort, src->rowsort, sizeof (rowsort_t) * dest->N);
 }
 
+/// copy rowsortl variable of dyndata_t
 inline void cpy_dyndata_rowsortl (const dyndata_t *src, dyndata_t *dest) {
 #ifdef OADEBUG
         if (src->N != dest->N) {
                 myprintf ("error: source and target dyndata_t have unequal number of rows!\n");
-                exit (0);
+                throw_runtime_exception("");
         }
         if (src->rowsortl == 0) {
                 myprintf ("cpy_dyndata_rowsortl: ERROR: source %ld\n", (long)src->rowsortl);
-                exit (0);
+                throw_runtime_exception("");
         }
         if (dest->rowsortl == 0) {
                 myprintf ("cpy_dyndata_rowsortl: ERROR: target %ld\n", (long)dest->rowsortl);
-                exit (0);
-                return;
+                throw_runtime_exception("");
         }
 #endif
 
@@ -54,9 +54,6 @@ void debug_check_rowsort_overflow (const arraydata_t *ad, const rowsort_t *rowso
 #endif
 }
 
-/* internal functions */
-// inline lmc_t LMC_check_col_tplusplus(const array_t *original, const array_t *array, levelperm_t lperm, const
-// arraydata_t *ad, const dyndata_t *dd);
 /// Perform LMC check on a single column (t+1), also apply a level transformation
 inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array, levelperm_t lperm,
                                   const arraydata_t *ad, const dyndata_t *dd);
@@ -66,8 +63,6 @@ lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol, levelp
 /// Perform LMC check on a single column, special case for 2-level arrays
 lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                                const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose = 0);
-// lmc_t __attribute__ ((noinline))   LMC_check_col_ft ( const array_t *originalcol, carray_t *arraycol, levelperm_t
-// lperm, const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose=0 );
 
 /// compare 2 columns
 inline lmc_t LMC_check_col (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dd);
@@ -1040,7 +1035,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                        "LMC_non_root this code should not be reached!  dyndata->col!=ad->ncols\n");
 #endif
 
-        // OPTIMIZE: use buffer for rowsort values to take multiplication out of LMC_check_col
         lmc_t ret = LMC_MORE;
         init_perm< colindex_t > (colpermloop, remsize); // intialize for entire loop
         const int col = dyndata->col;
@@ -1059,8 +1053,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                 /* loop over all level permutations */
                 for (int j = 0; j < nlevelperms; j++) {
                         /* copy dyndata rowsort data */
-                        // OPTIMIZE: eliminate this copy by moving it into check_col, saves up to 15% for large run
-                        // sizes
                         cpy_dyndata_rowsort (dyndata, dyndatacpy);
                         dyndatacpy->col = dyndata->col; // TODO: needed?
 
@@ -1068,17 +1060,10 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                          * the original array on blocks of oaindex */
 
                         if (reduction->mode >= OA_REDUCE) {
-                                /* for reduce check perform full column perm!!!! */ /* NOTE: why? */
-                                // OPTIMIZE: in case of LMC_MORE we do not need the full column
-                                // NOTE: VERY important for random LMC reductions!
-
                                 if (1) {
                                         ret = LMC_check_col_less (reduction->array + dyndata->col * +ad->N,
                                                                   original + cpoffset, lperm, ad, dyndatacpy);
 
-                                        if (ret == LMC_LESS) {
-                                                // printfd("less! "); dyndatacpy->show();
-                                        }
                                 } else {
 #ifdef SAFELPERM
                                         safe_perform_level_perm< array_t > (original + cpoffset, colbuffer, ad->N,
@@ -1131,9 +1116,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                         if (ret == LMC_EQUAL) {
                                 reduction->symms.storeSymmetryPermutation (dyndatacpy);
 
-                                // reduction->storeColumnPermutation(dyndatacpy->colperm, dyndatacpy->col+1 );
                                 // this column could not decide, go one level deeper
-
                                 dyndatacpy->col += 1;
                                 if (dyndatacpy->col == ad->ncols) {
                                         /* this was the last column */
@@ -1149,7 +1132,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
                                 }
                         }
                         if (ret == LMC_LESS) {
-                                // logstream(DEBUG) << printfstring("  LMC_LESS: column %d\n", col);
                                 break; // break from levelperms loop
                         }
                         // else: LMC_MORE or LMC_EQUAL, continue with loop
@@ -1196,22 +1178,17 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
 
         tmpStatic.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, ad);
 
-#ifdef OADEBUG
         if (dynd_p == 0) {
-                printfd ("dyndata->col %d\n", dyndata->col);
-                tmpStatic.ad->show ();
-                printfd ("error: dynd_p not initialized!  tmpStatic.dyndata_p %ld \n", (long)tmpStatic.dyndata_p);
+                throw_runtime_exception ("error: dynd_p not initialized!");
         }
 
-#endif
-
         const int remsize = ad->ncols - dyndata->col; /* number of columns remaining */
-        const int nlevels = 2;                        // ad->s[dyndata->col];	/* number of levels at this column */
+        const int nlevels = 2; 		/* number of levels at this column */
 
         levelperm_t lperm = lperm_p[dyndata->col];
         dyndata_t *dyndatacpy = dynd_p[dyndata->col];
         dyndatacpy->allocate_rowsortl ();
-        dyndatacpy->col = dyndata->col; // TODO: needed?
+        dyndatacpy->col = dyndata->col;
 
         const int cg = ad->get_col_group (dyndata->col); /* current column group */
         /* number of columns remaining in this group */
@@ -1248,9 +1225,6 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                         } else {
                                 if (ad->order == ORDER_LEX) {
 
-#ifdef OADEBUG
-                                        myassert (reduction->sd != 0, "LMC_check_col_ft: reduction->sd is not set");
-#endif
                                         if (dyndatacpy->col == ad->ncols - 1) {
                                                 ret = LMC_check_col_ft_2level_rowsymm (
                                                     reductionarrayoffset, original + cpoffset, lperm, ad, dyndatacpy,
