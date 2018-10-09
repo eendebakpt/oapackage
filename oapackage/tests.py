@@ -346,8 +346,13 @@ class TestDoptimize(unittest.TestCase):
                 al, arrayclass=None, niter=100, nabort=200, verbose=0, alpha=[1, 0, 0], method=method)
 
     def test_generateDscatter(self):
+        try:
+            import matplotlib
+            fig = 20
+        except:
+            fig = None
         r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None,
-                                              ndata=3, nofig=True, fig=20, scatterarea=80)
+                                              ndata=3, nofig=True, fig=fig, scatterarea=80)
 
     def test_generateDpage(self):
         outputdir = tempfile.mkdtemp()
