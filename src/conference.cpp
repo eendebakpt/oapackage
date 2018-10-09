@@ -2321,7 +2321,7 @@ class ConferenceIsomorphismSelector {
 
         size_t size () const { return candidates.size (); }
 
-        /** Add a set of arrays to the lis of isomorphism classes
+        /** Add a set of arrays to the list of isomorphism classes
          */
         void add (const arraylist_t &lst) {
 
