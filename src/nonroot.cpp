@@ -147,9 +147,6 @@ inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array,
                                 } else if (original[cur_row] >
                                            lperm[array[rowp]]) { // the permuted array is lex. less than original
                                         ret = LMC_LESS;
-                                        // myprintf("ret: %d, cur_row %d= j(%d)*oaindex(%d)+k(%d);", ret,
-                                        // cur_row,j,oaindex,k);
-                                        // myprintf(" val %d    val %d\n",  original[cur_row ] ,  lperm[array[rowp]] );
                                         break;
                                 }
 #endif
@@ -160,9 +157,7 @@ inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array,
                 }
         }
 
-#ifdef OAANALYZE_DISCR
-        analyse_discriminant (cur_row, dd->col, ret, ad->N, ad->ncols);
-#endif
+
         return ret;
 }
 
@@ -224,12 +219,7 @@ inline lmc_t LMC_check_col_less (const array_t *original, const array_t *array, 
                         break;
         }
 
-// myprintf("LMC_check_col: at col %d, ret %d (LMC_EQUAL 1, LMC_LESS 0)\n", dd->col,ret); printf("sorted column: \n");
-// print_col_sorted(array, lperm, rowsort, ad->N);
 
-#ifdef OAANALYZE_DISCR
-        analyse_discriminant (cur_row, dd->col, ret, ad->N, ad->ncols);
-#endif
         return ret;
 }
 
@@ -630,9 +620,7 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                             const arraydata_t *ad, const dyndata_t *dd) {
         lmc_t ret = LMC_EQUAL;
         int cur_row, rowp;
-#ifdef OAANALYZE_DISCR
-        cur_row = 0;
-#endif
+
         const int oaindex = ad->oaindex;
         const int nrows = ad->N;
         rowsort_t *rowsort = dd->rowsort;
@@ -699,9 +687,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                         break;
         }
 
-#ifdef OAANALYZE_DISCR
-        analyse_discriminant (cur_row, dd->col, ret, ad->N, ad->ncols);
-#endif
         return ret;
 }
 

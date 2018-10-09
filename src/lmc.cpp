@@ -1233,10 +1233,6 @@ lmc_t LMCreduce_root_level_perm_full (carray_t const *original, const arraydata_
 lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad, const dyndata_t *dyndata,
                                  LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic) {
 
-#ifdef OAANALYZE_DISCR
-        analysis_increase_counter ("root_level_perm");
-#endif
-
         lmc_t ret = LMC_EQUAL;
         rowsort_t *rowsort = dyndata->rowsort;
 
@@ -1253,14 +1249,11 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
 
         for (int l = 0; l < totalperms; l++) { // loop over root permutations (in levels)
                 // update sort structure
-                // OPTIMIZE: only perform partial copy
 
-                // TODO: update dyndatatmp rowsort with generic function (e.g. rowsortl if needed)
                 for (rowindex_t k = 0; k < ad->N; k++) {
                         // TODO: is this valid if the root is not properly sorted?
                         // 	this assumes that after the LMC_root_sort the root is already in blocks
                         dyndatatmp.rowsort[rootrowperms[l][k]].r = rowsort[k].r;
-
                 }
 
                 // update level permutations structure
