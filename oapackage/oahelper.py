@@ -946,6 +946,7 @@ def test_selectJ():
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
     oaoptions = oalib.OAextend()
+    oaoptions.setAlgorithmAuto(adata)
     sols0 = oalib.arraylist_t()
     solsx = oalib.arraylist_t()
     sols0.push_back(A)
