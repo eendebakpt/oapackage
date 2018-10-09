@@ -41,16 +41,10 @@ using namespace std;
 // legacy global static object
 LMC_static_struct_t _globalStaticX;
 LMC_static_struct_t &getGlobalStaticOne () {
-#ifdef OADEBUG
-//  printfd("  return _globalStaticX...\n");
-#endif
         return _globalStaticX;
 }
 
 LMC_static_struct_t *getGlobalStaticOnePointer () {
-#ifdef OADEBUG
-//  printfd("  return globalStaticOne\n");
-#endif
         return &_globalStaticX;
 }
 
@@ -60,7 +54,7 @@ static object_pool< LMC_static_struct_t > staticDataPool;
 
 #ifdef OADEBUG
 int getGlobalStaticNumber (LMC_static_struct_t *p) {
-        return p->id; // staticDataPool.id(p);
+        return p->id; 
 }
 #endif
 
@@ -135,9 +129,6 @@ void cleanGlobalStaticIndexed () {
 }
 
 LMC_static_struct_t::~LMC_static_struct_t () {
-#ifdef OADEBUG
-//  myprintf("LMC_static_struct_t::~LMC_static_struct_t: last ref %s\n", ref.c_str() );
-#endif
 
         // call free() function (need to extrect from init code)
         this->freeall ();
@@ -895,7 +886,6 @@ void create_perm_from_comb ( numtype *perm, const numtype *comb, int k, int ncol
         // initialize
         init_perm (perm, ncols);
 
-// this assumes comb is ordered!!??
 #ifdef OADEBUG
         for (int i = 0; i < (k - 1); i++)
                 if (comb[i] >= comb[i + 1])
@@ -939,13 +929,9 @@ void LMC_static_struct_t::init_root_stage (levelperm_t *&lperm_p, colperm_t *&co
 * @param adp
 */
 void LMC_static_struct_t::freeall () {
-        // arraydata_t *adp = this->ad;
-        // log_print ( DEBUG, "LMC_static_struct_t::free: adp->ncols %d, adp->strength %d\n", adp->ncols, adp->strength
-        // );
 
         /* clear old structures */
         if (this->current_trans != 0) {
-                // cout << "LMC_static_struct_t::current_trans " << LMC_static_struct_t::current_trans << endl;
                 delete this->current_trans;
 
 #ifdef OADEBUG
@@ -1266,12 +1252,6 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
 
         /* perform initial sorting of the root */
         LMC_root_sort (original, ad, dyndata);
-#ifdef OADEBUG2
-        myprintf ("##### LMCreduce_root_level_perm\n");
-        print_array (original, ad->N, ad->ncols);
-        dyndata->show ();
-        reduction->show (1);
-#endif
 
         int totalperms = 0;
         rowperm_t *rootrowperms = 0; // pointer to root row permutations
@@ -1280,12 +1260,6 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
 
         /* perform fake level permutations */
         dyndata_t dyndatatmp = dyndata_t (dyndata);
-
-#ifdef OADEBUG
-// oaextend.info();
-#endif
-        //      myprintf("#############################\nLMCreduce_root_level_perm: totalperms %d colperm ",
-        //      totalperms); print_perm(dyndata->colperm, ad->ncols);
 
         for (int l = 0; l < totalperms; l++) { // loop over root permutations (in levels)
                 // update sort structure
@@ -1297,15 +1271,7 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
                         // 	this assumes that after the LMC_root_sort the root is already in blocks
                         dyndatatmp.rowsort[rootrowperms[l][k]].r = rowsort[k].r;
 
-#ifdef OADEBUG
-                        if (dyndatatmp.rowsort[rootrowperms[l][k]].r >= ad->N) {
-                                printfd ("error with rowsort values");
-                                exit (0);
-                        }
-#endif
                 }
-
-                // printfd("l %d/%d\n", l, totalperms); reduction->show();
 
                 // update level permutations structure
                 if (reduction->mode >= OA_REDUCE) {
@@ -1313,16 +1279,15 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
                 }
 
                 /* pass to non-root stage */
-                // oaextend.info();
                 if (oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
                     (oaextend.getAlgorithm () == MODE_J5ORDERX && reduction->sd != 0) ||
                     (oaextend.getAlgorithm () == MODE_J5ORDERXFAST && reduction->sd != 0)) {
                         dyndatatmp.initrowsortl ();
                         ret = LMCreduce_non_root_2level (original, ad, &dyndatatmp, reduction, oaextend,
-                                                         tmpStatic); // TODO: this should be a call to j4/tplus code
+                                                         tmpStatic); 
                 } else
                         ret = LMCreduce_non_root (original, ad, &dyndatatmp, reduction, oaextend,
-                                                  tmpStatic); // TODO: this should be a call to j4/tplus code
+                                                  tmpStatic); 
 
                 if (ret == LMC_LESS) {
                         break;
@@ -1343,8 +1308,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
         logstream (DEBUG + 1) << "LMCreduce_root_level_perm_ME: col " << dyndata->col << endl;
         if (dyndata->col == 0) {
-                // print_array("LMCreduce_root_level_perm_ME: array\n", array, ad->N, ad->ncols);
-
                 /* perform initial sorting of the root */
                 LMC_root_sort (original, ad, dyndata);
 
@@ -1366,7 +1329,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
                         dyndatatmp.rowsort[rp[k]].r = dyndata->rowsort[k].r;
 
                 /* pass to non-root stage */
-                // reduction->show();
                 ret = LMCreduce_non_root (original, ad, &dyndatatmp, reduction);
 
                 return ret;
@@ -1509,11 +1471,7 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                         next_combination (comb, jj, ad.ncols); // increase combination
                         continue;
                 }
-// do classic check
 
-#ifdef OADEBUG2
-                myprintf ("#### LMCcheckj4: jval %d, classic checks:\n ", jval);
-#endif
 
                 init_comb (combroot, ad.strength, jj);
                 for (int kk = 0; kk < nrootcombs; kk++) {
@@ -1555,9 +1513,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         delete_comb (combroot);
         delete_comb (comb);
 
-#ifdef OADEBUG2
-        myprintf ("returning %d\n", ret);
-#endif
 
         return ret;
 }
@@ -2670,9 +2625,7 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
         LMC_static_struct_t *tpp = 0;
         if (reduction->staticdata == 0) {
                 tpp = getGlobalStaticOnePointer ();
-#ifdef OADEBUG
-                printfd ("LMCreduce (debugging): acquired LMC_static_struct_t from single global object\n");
-#endif
+
         } else {
                 tpp = (reduction->staticdata);
         }

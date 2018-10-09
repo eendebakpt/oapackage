@@ -118,25 +118,6 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
 extern "C" {}
 
-#ifdef OADEBUG
-
-typedef int array_t; /** type of array elements,  should be signed! */
-
-#ifdef SWIGR
-typedef int carray_t; /* array_t should be signed! */
-#else
-typedef const int carray_t; /* array_t should be signed! */
-#endif
-
-/* change definition below together with array_t !!!! */
-#define MPI_ARRAY_T MPI_INT
-/*other options for MPI_ARRAY_T are: char: MPI_CHAR, short: MPI_SHORT, int: MPI_INT, long: MPI_LONG */
-
-typedef int rowindex_t;             /** type used for row indexing */
-typedef int colindex_t;             /** type used for column indexing */
-typedef const int const_colindex_t; /** constant version of type used for column indexing */
-
-#else
 
 typedef short int array_t; /** type of elements in an orthogonal array */ /* array_t should be signed! */
 typedef const short int carray_t;                                         /** constant version of array_t */
@@ -148,8 +129,6 @@ typedef const short int carray_t;                                         /** co
 typedef short int rowindex_t;       /** type used for row indexing */
 typedef int colindex_t;             /** type used for column indexing */
 typedef const int const_colindex_t; /** constant version of type used for column indexing */
-
-#endif /* OADEBUG */
 
 typedef array_t *array_p;   /** pointer to array */
 typedef carray_t *carray_p; /** point to constant array */
@@ -447,12 +426,9 @@ inline int destroy_array (array_t *array) {
 static inline array_t *create_array (const int nrows, const int ncols) {
         array_t *array = (array_t *)malloc (nrows * ncols * sizeof (array_t));
 
-#ifdef OADEBUG
         if (array == NULL) {
-                myprintf ("problem with malloc %d %d, exiting!!!\n", nrows, ncols);
                 throw_runtime_exception("create_array: problem with malloc");
         }
-#endif
         return array;
 }
 
@@ -718,6 +694,11 @@ struct array_link {
         array_link &operator= (const array_link &rhs);
         array_link &deepcopy (const array_link &rhs);
         array_link &shallowcopy (const array_link &rhs);
+        /** @brief Return True if both arrays are equal
+         * 
+         * \param rhs Array to compare to
+         * \returns 1 if arrays are equal. 0 otherwise. Returns 0 if arrays have different sizes
+         */
         int operator== (const array_link &rhs) const;
         int operator!= (const array_link &rhs) const;
         int operator< (const array_link &rhs) const;
@@ -912,12 +893,10 @@ struct array_link {
         /// return true of specified column is smaller than column in another array
         inline int columnGreater (int c1, const array_link &rhs, int c2) const {
 
-#ifdef OADEBUG
                 if ((this->n_rows != rhs.n_rows) || c1 < 0 || c2 < 0 || (c1 > this->n_columns - 1)) {
                         myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
                         return 0;
                 }
-#endif
 
                 int n_rows = this->n_rows;
                 return std::lexicographical_compare (rhs.array + c2 * n_rows, rhs.array + c2 * n_rows + n_rows,
@@ -930,6 +909,9 @@ struct array_link {
 #ifdef SWIGCODE
         void *data (); /// return pointer to data, needed for swig interface
 #endif
+private:
+    /// return true if both arrays have the same size
+    bool equal_size(const array_link &array) const;
 };
 
 // simple permutation type
@@ -1234,14 +1216,11 @@ inline array_link &array_link::deepcopy (const array_link &rhs) {
  * @brief Comparision operator for the array link
  */
 inline int array_link::operator< (const array_link &rhs) const {
-#ifdef OADEBUG
-        if ((this->n_rows != rhs.n_rows) || (this->n_columns != rhs.n_columns)) {
+        if ( ! this->equal_size(rhs) ) {
                 myprintf ("array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
                           this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
                 return 0;
         }
-#endif
-
         return std::lexicographical_compare (array, array + n_rows * n_columns, rhs.array,
                                              rhs.array + n_rows * n_columns);
 }
@@ -1250,13 +1229,11 @@ inline int array_link::operator< (const array_link &rhs) const {
  * @brief Comparision operator for the array link
  */
 inline int array_link::operator> (const array_link &rhs) const {
-#ifdef OADEBUG
-        if ((this->n_rows != rhs.n_rows) || (this->n_columns != rhs.n_columns)) {
-                myprintf ("array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
+        if ( ! this->equal_size(rhs) ) {
+                myprintf ("array_link::operator> comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
                           this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
                 return 0;
         }
-#endif
 
         return std::lexicographical_compare (rhs.array, rhs.array + n_rows * n_columns, array,
                                              array + n_rows * n_columns);
@@ -1265,30 +1242,24 @@ inline int array_link::operator> (const array_link &rhs) const {
 /**
  * @brief Comparision operator for the array link
  */
-inline int array_link::operator== (const array_link &b) const {
-        if ((this->n_rows != b.n_rows) || (this->n_columns != b.n_columns)) {
-#ifdef OADEBUG
-                myprintf ("array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
-                          this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns);
-#endif
+inline int array_link::operator== (const array_link &rhs_array) const {
+        if ( ! this->equal_size(rhs_array) ) {
                 return 0;
         }
-        return std::equal (array, array + n_rows * n_columns, b.array);
+        return std::equal (array, array + n_rows * n_columns, rhs_array.array);
 }
 
 /**
  * @brief Comparision operator for the array link
  */
-inline int array_link::operator!= (const array_link &b) const {
-        if ((this->n_rows != b.n_rows) || (this->n_columns != b.n_columns)) {
-#ifdef OADEBUG
+inline int array_link::operator!= (const array_link &rhs_array) const {
+        if ( ! this->equal_size(rhs_array) ) {
                 myprintf ("array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
-                          this->index, b.index, this->n_rows, this->n_columns, b.n_rows, b.n_columns);
-#endif
+                          this->index, rhs_array.index, this->n_rows, this->n_columns, rhs_array.n_rows, rhs_array.n_columns);
                 return 0;
         }
 
-        return (!std::equal (array, array + n_rows * n_columns, b.array));
+        return (!std::equal (array, array + n_rows * n_columns, rhs_array.array));
 }
 
 /// Compare 2 arrays and return position of first difference

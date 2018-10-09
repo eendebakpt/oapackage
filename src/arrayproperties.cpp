@@ -1505,8 +1505,6 @@ typedef MatrixFloat DMatrix;
 typedef VectorFloat DVector;
 typedef ArrayFloat DArray;
 
-// typedef Eigen::MatrixXd DMatrix; typedef Eigen::VectorXd DVector; typedef  Eigen::ArrayXd DArray;
-
 double Defficiency (const array_link &al, int verbose) {
         int k = al.n_columns;
         int n = al.n_rows;

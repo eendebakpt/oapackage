@@ -645,16 +645,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
         prefetch (rowsort);
 #endif
 
-#ifdef OADEBUG
-        for (int xx = 0; xx < nrows; xx++) {
-                int rowp = rowsort[xx].r;
-                if (rowp >= nrows) {
-                        printfd ("error: rowp %d >= nrows %d\n", rowp, nrows);
-                        exit (0);
-                }
-        }
-#endif
-
         const rowsort_value_t sval = ad->s[dd->col];
 
         /* we check in blocks of oaindex */
@@ -682,15 +672,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
                 }
 
-#ifdef OADEBUG
-                for (int xx = 0; xx < nrows; xx++) {
-                        int rowp = rowsort[xx].r;
-                        if (rowp >= nrows) {
-                                printfd ("error: row %d: rowp %d >= nrows %d\n", xx, rowp, nrows);
-                                exit (0);
-                        }
-                }
-#endif
 
                 for (int k = 0; k < oaindex; k++) {
                         cur_row = j * oaindex + k;
@@ -918,13 +899,7 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
         const int cg = ad->get_col_group (dyndata->col); /* current column group */
         /* number of columns remaining in this group */
         const int ncolsremgroup = ad->colgroupsize[cg] + ad->colgroupindex[cg] - dyndata->col;
-// myprintf("LMCreduce_non_root:   ad->colgroupsize[cg] %d, ad->colgroupindex[cg] %d, \n", ad->colgroupsize[cg],
-// ad->colgroupindex[cg]);
 
-#ifdef OADEBUG
-        myassertdebug (dyndata->col != ad->ncols,
-                       "LMC_non_root this code should not be reached! dyndata->col!=ad->ncols\n");
-#endif
 
         // OPTIMIZE: check whether changing order of this loop makes a difference
         lmc_t ret = LMC_MORE;

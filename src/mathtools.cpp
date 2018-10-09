@@ -217,9 +217,6 @@ long **Combinations::ncombsdata = 0;
 void Combinations::initialize_number_combinations (int N) {
         if (N <= number_combinations_max_n ())
                 return;
-#ifdef OADEBUG
-        myprintf ("initialize_number_combinations: value %d\n", N);
-#endif
 
 #pragma omp critical
         {

@@ -412,14 +412,12 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
         // loop over all arrays
         for (size_t i = 0; i < alist.size (); i++) {
                 const array_link &al = alist[i];
-#ifdef OADEBUG
                 if (al.n_columns + 1 > dextend.ad->ncols) {
                         myprintf ("depth_extend_omp: error extension has too many columns: extcol %d, al.n_columns "
                                   "%d, dextend.ad->ncols %d\n",
                                   extcol, al.n_columns, dextend.ad->ncols);
-                        exit (1);
+                        throw_runtime_exception("depth_extend_omp: error extension has too many columns");
                 }
-#endif
 
                 depth_extend_sub_t dlocal = dextendsub;
                 size_t nn = dlocal.valididx.size ();

@@ -1885,23 +1885,21 @@ void array_link::showproperties () const {
 void array_link::debug () const { myprintf ("debug: %ld %p %p", (long)this->array, (void *)array, (void *)array); }
 #ifdef SWIGCODE
 void *array_link::data () {
-        // return ( static_cast<long>( (void *) array ) );
         return ((void *)(this->array));
 }
 #else
 #endif
 
-/*
-void array_link::initswig()
-{
-        //myprintf("initswig! C side\n");
-}
-*/
 std::string array_link::showarrayS () const {
         std::stringstream ss;
         ss << "array: \n";
         write_array_format (ss, array, this->n_rows, this->n_columns);
         return ss.str ();
+}
+
+bool array_link::equal_size(const array_link &rhs_array) const {
+     if( (this->n_rows != rhs_array.n_rows) || (this->n_columns != rhs_array.n_columns) ) return false;
+     else return true;
 }
 
 void array_link::showarraycompact () const {
@@ -1915,8 +1913,6 @@ void array_link::showarraycompact () const {
 
 void array_link::showarray () const {
         myprintf ("array: \n");
-        // write_array_format ( std::cout, array, this->n_rows, this->n_columns );	// does not work with
-        // ipython...
         write_array_format (array, this->n_rows, this->n_columns);
 }
 
@@ -1926,9 +1922,6 @@ void perform_column_permutation (const array_link source, array_link &target, co
         for (int i = 0; i < ncols; i++) {
                 memcpy (target.array + (perm[i] * nrows), source.array + i * nrows, nrows * sizeof (array_t));
         }
-        // printfd("results:\n");
-        // source.showarray();
-        // target.showarray();
 }
 
 void perform_row_permutation (const array_link source, array_link &target, const std::vector< int > perm) {
@@ -2662,14 +2655,6 @@ arraydata_t::arraydata_t (const arraydata_t &adp)
         complete_arraydata ();
 }
 arraydata_t::~arraydata_t () {
-#ifdef OADEBUG
-        if (s == 0) {
-                printfd ("s is zero\n");
-        }
-        if (colgroupindex == 0) {
-                printfd ("colgroupindex is zero\n");
-        }
-#endif
         delete[] s;
         delete[] colgroupindex;
         delete[] colgroupsize;
@@ -2677,7 +2662,6 @@ arraydata_t::~arraydata_t () {
 
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
-        //***open config file***
         colindex_t ncols = ad.ncols;
         std::ofstream outFile;
 
@@ -3450,14 +3434,10 @@ int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *p
 
 /** @brief Calculate J-characteristic for a column combination
 *
-* We assume the array has values 0 and 1
+* We assume the array has values 0 and 1. No bounds checks
 */
 int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *pp) {
         array_t tmpval[MAXROWS];
-
-#ifdef OADEBUG
-        assert (N <= MAXROWS);
-#endif
 
         std::fill_n (tmpval, N, 0);
         fastJupdate (array, N, J, pp, tmpval);
@@ -4742,7 +4722,9 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
 }
 
 /// Write an array in binary mode to a file
-void arrayfile_t::write_array_binary (const array_link &A) { write_array_binary (A.array, A.n_rows, A.n_columns); }
+void arrayfile_t::write_array_binary (const array_link &A) { 
+     write_array_binary (A.array, A.n_rows, A.n_columns);     
+}
 
 /**
  * @brief Write an array in binary mode to a file
@@ -4752,7 +4734,6 @@ void arrayfile_t::write_array_binary (const array_link &A) { write_array_binary 
  * @param ncols
  */
 void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const int ncols) {
-#ifdef OADEBUG
         int m = 0;
         for (int i = 0; i < nrows * ncols; ++i)
                 if (array[i] > m) {
@@ -4763,7 +4744,6 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
                         myprintf ("arrayfile_t::write_array_binary: ERROR!\n");
                 }
         }
-#endif
 
         if (sizeof (array_t) == sizeof (int32_t) && this->nbits == 32) {
                 int n = fwrite ((const void *)array, sizeof (int32_t), nrows * ncols, nfid);

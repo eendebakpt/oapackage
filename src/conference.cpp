@@ -1231,26 +1231,26 @@ class lightstack_t {
         object_t *stack;
 
       private:
-        int size;
-        int n;
+        int stack_max_size;
+        int current_position;
 
       public:
-        lightstack_t (int sz) : size (sz), n (0) { stack = new object_t[sz]; }
+        lightstack_t (int sz) : stack_max_size (sz), current_position (0) { stack = new object_t[sz]; }
         ~lightstack_t () { delete[] stack; }
 
-        bool empty () const { return n == 0; }
+        bool empty () const { return current_position == 0; }
         void push (const object_t &o) {
 #ifdef OADEBUG
                 assert (this->n < this->size);
 #endif
-                this->stack[n] = o;
-                n++;
+                this->stack[current_position] = o;
+                current_position++;
         }
         object_t &top () const {
-                assert (n > 0);
-                return this->stack[n - 1];
+                assert (current_position > 0);
+                return this->stack[current_position - 1];
         }
-        void pop () { n--; }
+        void pop () { current_position--; }
 };
 
 /// add new branches to a stack of branches
