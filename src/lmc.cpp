@@ -574,12 +574,12 @@ dyndata_t::dyndata_t (int N_, int col_) {
         this->N = N_;
         this->col = col_;
         this->rowsort = (rowsort_t *)malloc (sizeof (rowsort_t) * this->N);
-        this->colperm = new_perm_init< colindex_t > (this->N); // TODO: initialization with N is nonsense?
+        this->colperm = new_perm_init< colindex_t > (this->N); // TODO: initialization with N too large
         this->rowsortl = 0;
 
         for (int i = 0; i < N; i++) {
                 this->rowsort[i].r = i;
-                this->rowsort[i].val = 0; // TODO: not always needed
+                this->rowsort[i].val = 0; 
         }
 }
 
@@ -832,7 +832,7 @@ rowperm_t *create_root_permutations_index_full (const arraydata_t *ad, int &tota
                 // loop over all columns permutations
                 for (int j = 0; j < pow (double(2), ad->strength); j++) {
                         // loop over all possible level permutations
-                        root_row_permutation_from_index (j, ad, lperms); // TODO: this can be done faster
+                        root_row_permutation_from_index (j, ad, lperms); 
 
                         cperm_lperms_to_rowsort (tmprperm, lperms, rperms[permcounter], cp, ad);
                         permcounter++;
@@ -1385,7 +1385,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         assert (jj < maxjj);
 
         if (reduction.init_state == INIT_STATE_INVALID) {
-                // TODO: remove this code
                 myprintf ("LMCreduce: reduction.init_state is INIT_STATE_INVALID, please set it to INIT_STATE::COPY "
                           "or INIT!\n");
                 fflush (stdout);
@@ -1414,7 +1413,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         arraydata_t ad (adin);
         ad.complete_arraydata_splitn (jj); // split column group!
 
-        // TODO: this bites with ad and adin, they are different?!
         tmpStatic.update (&ad);
 
         int nc = ncombs (ad.ncols, jj);
@@ -1539,8 +1537,6 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
                 myprintf ("jj45split: init comb ");
                 print_perm (comb, 5);
         }
-
-        // TODO: replace this block with functions
 
         /* calculate the J4 values */
         colindex_t lc[4];
@@ -1818,8 +1814,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         for (int i = 0; i < nc; i++) {
 
                 // determine the J-characteristic for the selected combination
-                int j5val = abs (jvaluefast (array, ad.N, jj,
-                                             firstcolcomb)); // TODO: this can be made faster by caching sub results...
+                int j5val = abs (jvaluefast (array, ad.N, jj, firstcolcomb));
 
                 if (dverbose >= 2) {
                         myprintf ("   LMCcheckj5 column comb %d/%d (jj=%d): j5val %d, jbase %d\n", i, nc, jj, j5val,
@@ -1988,8 +1983,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
 
         lmc_t r = LMC_EQUAL;
 
-        // TODO: add assert to type of adata
-
         std::vector< colindex_t > pinit = permutation< colindex_t > (ad.ncols);
 
         int newcol = ad.ncols - 1;
@@ -2004,7 +1997,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
 
         LMC_static_struct_t *tmpStatic = &reduction.getStaticReference ();
 
-        //    LMC_static_struct_t *tmpStatic = getGlobalStatic();
         tmpStatic->update (&ad);
 
         reduction.setArray (al);
@@ -2018,7 +2010,7 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                   (long)reductionsub.symms.symmetries[i].size (), 1e3 * dt);
                 }
                 // split column groups
-                std::vector< int > splits; // = symmetrygroup2splits(sg, ad.ncols, verbose);
+                std::vector< int > splits; 
                 for (int k = 0; k <= i + 1; k++)
                         splits.push_back (k);
                 adfix.set_colgroups (splits); // should not be needed
@@ -2029,21 +2021,12 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                 larray< colindex_t > wtmp (ad.ncols);
                 for (int j = 0; j < (int)reductionsub.symms.symmetries[i].size (); j++) {
                         cprintf (dverbose >= 2, "LMCcheckSymmetryMethod: testing symmetry %d: newcol %d\n", j, newcol);
-                        //            std::vector<colindex_t> w = reductionsub.symmetries[i][j].colperm;
-                        //            w.push_back(newcol);
-                        // larray<colindex_t> w = reductionsub.symmetries[i][j].colperm.addelement(newcol);
-
+                      
                         combadd2perm (reductionsub.symms.symmetries[i][j].colperm, newcol, ad.ncols, ww,
                                       wtmp); // expensive
-                        // larray<colindex_t> ww = comb2perm<colindex_t>(w, ad.ncols);
-
-                        // cprintf(dverbose>=2, "newcol %d, i %d. w.size() %d\n", newcol, i, w.size());
-
-                        // initialize dyndata with w
-                        // dyndata.reset();
+                        
                         dyndata.col = ad.strength; // set at col after root
                         dyndata.col = i;           // trick
-                        // dyndata.col=i+1; //
 
                         dyndata.setColperm (ww);
 
@@ -2391,7 +2374,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                 OAextend x = oaextend;
                 arraydata_t adx (ad);
                 x.setAlgorithm (MODE_J5ORDERX, &adx);
-                x.setAlgorithm (MODE_J5ORDERXFAST, &adx); // TODO: work this out
+                x.setAlgorithm (MODE_J5ORDERXFAST, &adx); 
                 if (dverbose) {
                         myprintf ("LMCcheck: MODE_LMC_SYMMETRY: calculateSymmetryGroups ");
                 }

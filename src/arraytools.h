@@ -585,8 +585,6 @@ struct array_link {
         /// return true if the array is symmetric
         bool isSymmetric () const;
 
-        // manipulation of arrays
-
         /// make the array symmetric by copying the upper-right to the lower-left
         void makeSymmetric ();
 
@@ -612,6 +610,7 @@ struct array_link {
         void setColumn (int c, const std::vector< int > v) {
                 std::copy (v.begin (), v.end (), this->array + c * this->n_rows);
         }
+        /// set a column of the array to the given vector
         void setColumn (int c, const std::vector< signed char > v) {
                 std::copy (v.begin (), v.end (), this->array + c * this->n_rows);
         }
@@ -642,8 +641,10 @@ struct array_link {
         /// calculate E-efficiency
         double Eefficiency () const;
 
-        /// Calculate F-values of a 2-level matrix. This assumes the strength is at least 3. Otherwise use the
-        /// jstruct_t object
+        /** Calculate F-values of a 2-level matrix.
+         *
+         * This assumes the strength is at least 3. Otherwise use the jstruct_t object
+         */
         std::vector< int > Fvalues (int jj) const;
 
         /// Calculate F-values of a conference design
@@ -709,7 +710,9 @@ struct array_link {
                 return (this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns);
         }
 
+        /// elementwise addition
         array_link operator+ (const array_link &) const;
+        /// elementwise addition
         array_link operator+ (array_t v) const;
         array_link operator- (const array_link &) const;
         array_link operator- (array_t v) const;

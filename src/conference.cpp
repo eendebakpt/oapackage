@@ -1373,12 +1373,9 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
         int nblocks = alsg.ngroups;
 
         if (block == nblocks) {
-                // TODO: make this loop in n-1 case?
-
                 ntotal++;
                 const int j2start = std::max (0, al.n_columns - 2);
-                // TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm
-                // check)
+
                 if (filter.filterJlast (candidate, j2start)) {
                         list.push_back (candidate);
                 }
@@ -1444,14 +1441,12 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                         }
                         iter++;
 
-                        // TODO: smart symmetry generation
                         if (satisfy_symm (candidate, check_indices, gstart, gend)) {
                                 nbc++;
                                 inflateCandidateExtensionHelper (list, basecandidate, candidate, block + 1, al, alsg,
                                                                  check_indices, ct, verbose, filter, ntotal);
                         } else {
                         }
-                        // TODO: run inline filter
                 } while (std::next_permutation (candidate.begin () + gstart, candidate.begin () + gend));
                 if (verbose >= 2)
                         printfd ("nbc block %d: %d/%ld\n", block, nbc, iter);
@@ -1601,7 +1596,6 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                 c[b.row] = b.rval; // update column vector
 
                 if (b.row == dfilter.inline_row && filterj3) {
-                        // TODO: inline_row can be one earlier?
                         if (!dfilter.filterJ3inline (c))
                                 // discard branch
                                 continue;
@@ -1714,11 +1708,10 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
 
                 branch_t b = branches.top ();
                 branch_count[b.row]++;
-                branches.pop (); // TODO: use reference and pop later
+                branches.pop ();
                 c[b.row] = b.rval;
 
                 if (b.row == dfilter.inline_row && filterj3) {
-                        // TODO: inline_row can be one earlier?
                         if (!dfilter.filterJ3inline (c))
                                 // discard branch
                                 continue;
@@ -1913,13 +1906,11 @@ std::vector< cperm > generateConferenceRestrictedExtensions (const array_link &a
         for (size_t i = 0; i < ce.first.size (); i++) {
                 int ip = innerprod (c0, ce.first[i]);
 
-                // TODO: cache this function call
                 int target = -ip;
 
                 std::vector< cperm > ff2 = get_second (N, kz, target, verbose >= 2);
                 ce.second = ff2;
 
-                // printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
                 for (size_t j = 0; j < ff2.size (); j++) {
                         cperm c = ce.combine (i, j);
@@ -2309,7 +2300,6 @@ array_link reduceMatrix (const array_link &al, matrix_isomorphism_t itype, int v
  * By performing the isomorphism check incrementally we can save memory
  */
 class ConferenceIsomorphismSelector {
-        // IDEA: special array_link with reduced size could safe more memory
       public:
         matrix_isomorphism_t itype;
         int verbose;
@@ -2349,10 +2339,6 @@ class ConferenceIsomorphismSelector {
                         if (nadd % 1000 == 0) {
                                 // reduce...
                                 std::vector< int > ridx = selectUniqueArrayIndices (reductions, verbose);
-
-                                // TODO: efficient removal of entries
-                                // see
-                                // http://stackoverflow.com/questions/596162/can-you-remove-elements-from-a-stdlist-while-iterating-through-it
 
                                 arraylist_t tmp;
                                 arraylist_t tmpr;
@@ -2768,7 +2754,6 @@ const std::vector< cperm > &CandidateGeneratorConference::generateCandidates (co
                 last_valid = START_COL + 1;
                 kstart = startcol - 1;
         } else {
-                // TODO: check this bound is sharp
                 ccX = this->candidate_list[startcol];
                 last_valid = startcol;
                 kstart = startcol - 1;
@@ -2787,8 +2772,7 @@ const std::vector< cperm > &CandidateGeneratorConference::generateCandidates (co
                                   tag, kx + 1, (int)ccX.size (), kx + 1, kx + 2);
 
                 cci = extensionInflate (ccX, als, alx, filter, ct, (verbose >= 2) * (verbose - 1));
-                // OPTIMIZE: use the following?
-                // cci = filter.filterListZero ( cci );
+
 
                 if (verbose >= 2) {
                         myprintf ("## %s: at %d columns: total inflated: %ld\n", tag, kx + 1, cci.size ());
