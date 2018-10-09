@@ -226,7 +226,7 @@ def _slice2range(self, slice, max_value):
     else:
         start = slice.start
     if slice.stop is None:
-        stop = maxvalue
+        stop = max_value
     else:
         stop = slice.stop
     if slice.step is None:

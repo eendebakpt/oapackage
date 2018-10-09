@@ -106,8 +106,9 @@ install:
 
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
-  # part of the requirements
+  # part of the testing requirements
   - "%CMD_IN_ENV% pip install scanf"
+  - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
   - "%CMD_IN_ENV36% pip install jupyter"
@@ -134,6 +135,7 @@ test_script:
    - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
+   - "%CMD_IN_ENV% pytest ./oapackage"
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "

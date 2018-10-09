@@ -125,116 +125,110 @@ template < class numtype >
 /// lightweight array class
 class larray {
       public:
-        numtype *d;
-        int n;
+        numtype *data_pointer;
+        int data_size;
 
         larray () {
-                d = 0;
-                n = -1;
+                data_pointer = 0;
+                data_size = -1;
         }
 
-        larray (const numtype *data, int nn) : d (0) {
-#ifdef OADEBUG
-                if (nn <= 0)
-                        myprintf ("larray: constructor from pointer: nn %d\n", nn);
-#endif
-                alloc (nn);
-                std::copy (data, data + nn, this->d);
+        larray (const numtype *data, int data_size) : data_pointer (0) {
+                allocate_memory (data_size);
+                std::copy (data, data + data_size, this->data_pointer);
         }
 
-        larray (int nn) : d (0) {
-#ifdef OADEBUG
-                if (nn <= 0)
-                        myprintf ("larray: constructor nn %d\n", nn);
-#endif
-                alloc (nn);
+        larray (int size) : data_pointer (0) {
+                allocate_memory (size);
         }
 
-        numtype *begin () { return d; }
+        numtype *begin () { return data_pointer; }
 
         larray (const larray &rhs) {
-                if (rhs.n < 0) {
-                        this->n = -1;
-                        this->d = 0;
+                if (rhs.data_size < 0) {
+                        this->data_size = -1;
+                        this->data_pointer = 0;
                         return;
                 }
-                alloc (rhs.n);
-                std::copy (rhs.d, rhs.d + n, this->d);
+                allocate_memory (rhs.data_size);
+                std::copy (rhs.data_pointer, rhs.data_pointer + data_size, this->data_pointer);
         }
 
         ~larray () {
-                if (d != 0) {
-                        delete[] d;
-                        n = -3;
+                if (data_pointer != 0) {
+                        delete[] data_pointer;
+                        data_size = -1;
                 }
-                this->d = 0;
+                this->data_pointer = 0;
         }
 
-        void resize (size_t n) {
-                if (this->n != (int)n)
-                        alloc (n);
+        void resize (size_t data_size) {
+                if (this->data_size != (int)data_size)
+                        allocate_memory (data_size);
         }
-        size_t size () const { return n; }
+        size_t size () const { return data_size; }
         // Copy assignment operator
         larray &operator= (const larray &rhs) {
-                if (this->n != rhs.n) {
+                if (this->data_size != rhs.data_size) {
                         release ();
-                        alloc (rhs.n);
+                        allocate_memory (rhs.data_size);
                 }
-                std::copy (rhs.d, rhs.d + n, this->d);
+                std::copy (rhs.data_pointer, rhs.data_pointer + data_size, this->data_pointer);
 
                 return *this;
         }
 
-        // Copy assignemnt operator
+        // Copy assignment operator
         larray &operator= (const std::vector< numtype > &rhs) {
                 int nn = rhs.size ();
                 release ();
-                this->alloc (nn);
+                this->allocate_memory (nn);
                 for (int i = 0; i < nn; i++) {
-                        this->d[i] = rhs[i];
+                        this->data_pointer[i] = rhs[i];
                 }
                 return *this;
         }
 
-        numtype operator[] (int i) const { return d[i]; }
+        numtype operator[] (int i) const { return data_pointer[i]; }
 
-        numtype &at (size_t i) { return d[i]; }
+        numtype &at (size_t i) { return data_pointer[i]; }
 
-        numtype &operator[] (int i) { return d[i]; }
+        numtype &operator[] (int i) { return data_pointer[i]; }
         bool operator== (const larray &rhs) const {
-                if (this->n != rhs.n)
+                if (this->data_size != rhs.data_size)
                         return false;
-                for (int i = 0; i < n; i++) {
-                        if (this->d[i] != rhs.d[i])
+                for (int i = 0; i < data_size; i++) {
+                        if (this->data_pointer[i] != rhs.data_pointer[i])
                                 return false;
                 }
                 return true;
         }
 
         bool operator!= (const larray &rhs) const { return !(*this == rhs); }
+        
+        /// add constant value to the elements of the array
         larray addelement (numtype v) const {
-                larray l (this->n + 1);
-                for (int i = 0; i < n; i++) {
-                        l.d[i] = this->d[i];
+                larray l (this->data_size + 1);
+                for (int i = 0; i < data_size; i++) {
+                        l.data_pointer[i] = this->data_pointer[i];
                 }
-                l.d[l.n - 1] = v;
+                l.data_pointer[l.data_size - 1] = v;
                 return l;
         }
 
       private:
-        void alloc (int nn) {
+        void allocate_memory (int nn) {
                 if (nn <= 0)
                         myprintf ("larray: alloc %d\n", nn);
-                this->n = nn;
-                this->d = new numtype[nn];
+                this->data_size = nn;
+                this->data_pointer = new numtype[nn];
         }
         void release () {
-                if (d != 0) {
-                        delete[] d;
-                        n = -2;
+                if (data_pointer != 0) {
+                        delete[] data_pointer;
+                        data_size = -2;
                 }
-                this->d = 0;
+                this->data_pointer = 0;
         }
 };
 
@@ -1237,12 +1231,6 @@ template < class returntype, class basetype, class numtype >
 returntype *new_valueindex (const basetype *bases, const numtype n) {
         returntype *valueindex = new returntype[n * sizeof (returntype)];
         assert (valueindex != 0);
-#ifdef OADEBUG
-        if (n == 0) {
-                myprintf ("valueindex of size 0\n");
-                exit (0);
-        }
-#endif
         valueindex[n - 1] = 1;
 
         for (int i = n - 2; i >= 0; i--)

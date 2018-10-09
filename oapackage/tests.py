@@ -388,7 +388,7 @@ class TestCppLibrary(unittest.TestCase):
             oapackage.throw_runtime_exception("dsfs")
     
         al=oapackage.oalib.exampleArray(18,1)
-        with self.assertRaises(RuntimeError("array cannot have negative elements")):
+        with self.assertRaisesRegexp(RuntimeError, "array cannot have negative elements"):
             _ = oapackage.array2eigenModelMatrixMixed (al, 2);
 
     def test_selectFirstColumns(self):

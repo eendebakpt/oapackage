@@ -643,7 +643,7 @@ struct dyndata_t {
 
         void reset ();
         void setColperm (const colperm_t perm, int n) { copy_perm (perm, this->colperm, n); }
-        void setColperm (const larray< colindex_t > &perm) { std::copy (perm.d, perm.d + perm.n, this->colperm); }
+        void setColperm (const larray< colindex_t > &perm) { std::copy (perm.data_pointer, perm.data_pointer + perm.data_size, this->colperm); }
 
         void setColperm (const std::vector< colindex_t > &perm) {
                 std::copy (perm.begin (), perm.end (), this->colperm);
@@ -696,7 +696,7 @@ struct dyndata_t {
         /// set column permutation
         void getColperm (colpermtypelight &cp) const {
                 cp.resize (this->col + 1);
-                std::copy (this->colperm, this->colperm + this->col + 1, cp.d);
+                std::copy (this->colperm, this->colperm + this->col + 1, cp.data_pointer);
         }
 
         /// allocate lightweight rowsort structure
@@ -787,9 +787,6 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 }
 
 typedef double jj45_t;
-
-/// return value based on J4-J5 ordering
-jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val = -1, int dosort = 1);
 
 /** Apply a random transformation to an array **/
 void random_transformation (array_t *array, const arraydata_t *adp);

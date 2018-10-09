@@ -102,7 +102,7 @@ except BaseException:
         return [[0, 0, 1280, 720]]
 
 
-def test_monitorSizes():
+def guitest_monitorSizes():
     monitorSizes()
 
 
