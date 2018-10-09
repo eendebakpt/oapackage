@@ -140,7 +140,7 @@ test_script:
    - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
-   - "%CMD_IN_ENV% pytest ./oapackage"
+   - "%CMD_IN_ENV% pytest .\\oapackage"
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
