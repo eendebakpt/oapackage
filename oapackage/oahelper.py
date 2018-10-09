@@ -959,7 +959,7 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 
 def test_extendSingleArray():
     A = oapackage.exampleArray(4, 1)
-    adata = oapackage.arraylink2arraydata(A)
+    adata = oapackage.arraylink2arraydata(A, extracols=2)
     B = A.selectFirstColumns(5)
     ee = extendSingleArray(B, adata, t=2, verbose=1)
     assert(ee[0].n_columns == B.n_columns + 1)
