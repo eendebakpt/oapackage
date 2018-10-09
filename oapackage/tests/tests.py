@@ -384,6 +384,11 @@ class TestCppLibrary(unittest.TestCase):
     def test_miscunittest(self):
         miscunittest()
 
+    def test_splits(self):
+        self.assertEqual(oapackage.splitTag([10,12]), '10.12')
+        self.assertEqual(oapackage.splitFile([]), '')
+        self.assertEqual(oapackage.splitDir([1,2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
+        
     def test_exception_handling(self):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler("file","function", 10, 0, "hi")
