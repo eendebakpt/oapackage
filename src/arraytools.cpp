@@ -117,6 +117,11 @@ void array_transformation_t::setlevelperm (int colindex, std::vector< int > lvlp
  * @param out
  */
 void array_transformation_t::show (std::ostream &out) const {
+     
+          if(this->ad==0) {
+               out << "array transformation: no class defined "<< std::endl;
+           return;    
+          }
         out << "array transformation: N " << ad->N;
         if (this->isIdentity ()) {
                 out << ": identity transformation" << std::endl;

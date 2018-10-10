@@ -268,6 +268,9 @@ int main (int argc, char *argv[]) {
             ad.show();
             
             array_transformation_t tt = reduceOAnauty(al, 3);
+            tt.show();
+              array_transformation_t tt2;
+              tt2.show();
     return 0;
         }
         

@@ -211,7 +211,9 @@ array_transformation_t reduceOAnauty (const array_link &al, int verbose) {
 }
 
 array_transformation_t reduceOAnauty (const array_link &al, int verbose, const arraydata_t &arrayclass) {
-        // printfd("here: "); arrayclass.show();
+        if (verbose >= 2) {
+			myprintf ("reduceOAnauty: running on class:\n"); arrayclass.show();
+		}
         std::pair< array_link, std::vector< int > > Gc = array2graph (al, verbose, arrayclass);
 
         array_link &G = Gc.first;
@@ -230,7 +232,8 @@ array_transformation_t reduceOAnauty (const array_link &al, int verbose, const a
         }
         array_transformation_t ttm = oagraph2transformation (tr, arrayclass, verbose >= 2);
         if (verbose >= 2) {
-                myprintf ("reduceOAnauty: returning array_transformation_t\n");
+			ttm.show();
+			myprintf ("reduceOAnauty: returning array_transformation_t\n");
         }
 
         return ttm;

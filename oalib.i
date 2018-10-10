@@ -472,7 +472,10 @@ public:
 %extend array_transformation_t {
 public:
     std::string __repr__() {
-      return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      if($self->ad!=0)
+	return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      else
+	return printfstring("array_transformation_t: no class defined");      
     }
 } 
 
