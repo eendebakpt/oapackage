@@ -260,8 +260,14 @@ int main (int argc, char *argv[]) {
                 srand (randvalseed);
         }
 
-        // print_options(); exit(0);
-
+        {
+            //array_link al = exampleArray(0);
+            array_link al(3,4,0);
+            al.setconstant(0);
+               array_transformation_t tt = reduceOAnauty(al, 3);
+    return 0;
+        }
+        
         {
                 setloglevel (DEBUG);
 

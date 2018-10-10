@@ -225,7 +225,13 @@ array_transformation_t reduceOAnauty (const array_link &al, int verbose, const a
         std::vector< int > tr = nauty::reduceNauty (G, colors);
         tr = invert_permutation (tr);
 
+        if (verbose >= 2) {
+                myprintf ("reduceOAnauty: calculate array_transformation_t from nauty relabelling\n");
+        }
         array_transformation_t ttm = oagraph2transformation (tr, arrayclass, verbose >= 2);
+        if (verbose >= 2) {
+                myprintf ("reduceOAnauty: returning array_transformation_t\n");
+        }
 
         return ttm;
 }

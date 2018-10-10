@@ -351,11 +351,11 @@ class TestDoptimize(unittest.TestCase):
 
     def test_generateDscatter(self):
         try:
-            import matplotlib
-            fig = 20
-        except:
+            import matplotlib.pyplot
             fig = None
-        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None,
+        except:
+            fig = 100
+        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 
     def test_generateDpage(self):
@@ -365,7 +365,20 @@ class TestDoptimize(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
                                               fig=None, optimfunc=[1, 0, 0], nofig=True)
-
+        guitest = True
+        try:
+            import matplotlib.pyplot
+        except:
+            matplotlib = None    
+            guitest = False
+        if guitest:
+            print('test_generateDpage: run gui test')
+            #page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
+            #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
+            try:
+                matplotlib.pyplot.close(100)
+            except:
+                pass
     def test_filterPareto(self):
         dds = self.dds2
         scores = np.arange(dds.shape[0])
@@ -402,7 +415,7 @@ class TestCppLibrary(unittest.TestCase):
             oapackage.throw_runtime_exception("dsfs")
     
         al=oapackage.oalib.exampleArray(18,1)
-        with self.assertRaisesRegexp(RuntimeError, "array cannot have negative elements"):
+        with self.assertRaisesRegex(RuntimeError, "array cannot have negative elements"):
             _ = oapackage.array2eigenModelMatrixMixed (al, 2);
 
     def test_selectFirstColumns(self):

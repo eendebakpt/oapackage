@@ -427,7 +427,7 @@ static inline array_t *create_array (const int nrows, const int ncols) {
         array_t *array = (array_t *)malloc (nrows * ncols * sizeof (array_t));
 
         if (array == NULL) {
-                throw_runtime_exception("create_array: problem with malloc");
+                throw_runtime_exception(printfstring("create_array: problem with malloc of size %dx%d", nrows, ncols));
         }
         return array;
 }
