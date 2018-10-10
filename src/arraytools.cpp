@@ -729,6 +729,7 @@ array_link::~array_link () {
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
+        this->setconstant(0);
 }
 
 //! Create array link with array

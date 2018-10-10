@@ -117,22 +117,7 @@ def selectIsomorphismClasses(sols, verbose=1):
 
 
 def test_select_isomorphism():
-    import oapackage
-    print('start');
-    print(oapackage)
-    print(oapackage.oalib)
-    print(oapackage.oalib._oalib)
-    #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
-    al=oapackage.array_link(4,4,0)
-    adata=oapackage.arraylink2arraydata(al)
-    
-    al.setconstant(0)
-    al.setconstant(-1)
-    
-    #al=oapackage.exampleArray(0)
-    tt = oapackage.reduceOAnauty(al, 2)
-    print('end'); return
-         
+    ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]        
     indices, mm = selectIsomorphismClasses(ll, verbose=3)
     assert(indices[0] == indices[1])
     assert(len(mm) == 2)

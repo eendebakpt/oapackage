@@ -261,14 +261,13 @@ int main (int argc, char *argv[]) {
         }
 
         {
-            //array_link al = exampleArray(0);
-            array_link al(3,4,0);
-            al.setconstant(0);
-            al.setconstant(-1);
+            array_link al = exampleArray(0);
+            //array_link al(3,4,0);
+            //al.setconstant(0);
             arraydata_t ad = arraylink2arraydata(al);
             ad.show();
             
-               array_transformation_t tt = reduceOAnauty(al, 3);
+            array_transformation_t tt = reduceOAnauty(al, 3);
     return 0;
         }
         
