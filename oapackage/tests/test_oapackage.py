@@ -294,8 +294,8 @@ class TestOAhelper(unittest.TestCase):
         self.assertAlmostEqual(v[0], 0.3747931073686535)
         al = oapackage.exampleArray(9, 0)
         v = oapackage.oahelper.designStandardError(al)
-        np.testing.assert_array_almost_equal(v[1], np.array([0.1679305 , 0.17229075, 0.17286095, 0.17287786, 0.17303912,
-        0.17353519, 0.17548291])) 
+        np.testing.assert_array_almost_equal(v[1], np.array([0.1679305, 0.17229075, 0.17286095, 0.17287786, 0.17303912,
+                                                             0.17353519, 0.17548291]))
 
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
@@ -369,16 +369,17 @@ class TestDoptimize(unittest.TestCase):
         try:
             import matplotlib.pyplot
         except:
-            matplotlib = None    
+            matplotlib = None
             guitest = False
         if guitest:
             print('test_generateDpage: run gui test')
-            #page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
+            # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
             #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
             try:
                 matplotlib.pyplot.close(100)
             except:
                 pass
+
     def test_filterPareto(self):
         dds = self.dds2
         scores = np.arange(dds.shape[0])

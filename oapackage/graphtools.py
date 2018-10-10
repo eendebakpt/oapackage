@@ -117,11 +117,11 @@ def selectIsomorphismClasses(sols, verbose=1):
 
 
 def test_select_isomorphism():
-    ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]        
+    ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
     indices, mm = selectIsomorphismClasses(ll, verbose=3)
     assert(indices[0] == indices[1])
     assert(len(mm) == 2)
     assert(np.all(mm[0] == mm[1]))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     test_select_isomorphism()

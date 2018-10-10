@@ -89,7 +89,6 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     figh.set_facecolor('w')
     ax = plt.subplot(111)
 
-
     ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
