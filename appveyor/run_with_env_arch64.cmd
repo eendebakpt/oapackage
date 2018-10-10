@@ -69,12 +69,6 @@ IF %MAJOR_PYTHON_VERSION% == 2 (
     )
 )
 
-set branch=%APPVEYOR_REPO_BRANCH%
-echo "current branch is:%branch%"
-
-IF %MAJOR_PYTHON_VERSION% == 3 (
-IF %MINOR_PYTHON_VERSION% == 6 (
-
 IF %PYTHON_ARCH% == 64 (
     IF %SET_SDK_64% == Y (
         ECHO Configuring Windows SDK %WINDOWS_SDK_VERSION% for Python %MAJOR_PYTHON_VERSION% on a 64 bit architecture
@@ -92,5 +86,4 @@ IF %PYTHON_ARCH% == 64 (
 ) ELSE (
     ECHO No execution
 )
-)
-)
+

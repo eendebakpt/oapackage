@@ -364,8 +364,7 @@ int main (int argc, char *argv[]) {
                         reduction->mode = OA_TEST;
                         reduction->init_state = COPY;
                         if (1) {
-                                // TODO: make special MODE for this
-                                array_link al (array, ad.N, ad.ncols, -10);
+                                array_link al (array, ad.N, ad.ncols, al.INDEX_NONE);
                                 reduction->updateSDpointer (al);
                         }
                         result = LMCcheck (al, ad, oaextend, *reduction);

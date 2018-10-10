@@ -82,6 +82,9 @@ std::ostream &logstream (int level);
 
 std::string system_uname ();
 
+/// return path separator symbol for the current platform
+char path_separator ();
+
 /// handler for error messages. throws an std::runtime_error exception
 void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...);
 

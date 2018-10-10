@@ -109,9 +109,6 @@ void OAextend::updateArraydata (arraydata_t *ad) const {
         if (ad == 0)
                 return;
 
-        // TODO: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be
-        // static in more places)
-
         switch (this->algmode) {
         case MODE_LMC_SYMMETRY:
         case MODE_ORIGINAL:
@@ -165,7 +162,6 @@ void OAextend::setAlgorithm (algorithm_t algorithm, arraydata_t *ad) {
         case MODE_J5ORDER:
         case MODE_J5ORDERX:
         case MODE_J5ORDERXFAST:
-                // printf("set init column to J5 mode\n");
                 init_column_previous = INITCOLUMN_J5;
                 j5structure = J5_45;
                 break;
@@ -174,7 +170,6 @@ void OAextend::setAlgorithm (algorithm_t algorithm, arraydata_t *ad) {
         case MODE_ORIGINAL:
         case MODE_J4:
                 init_column_previous = INITCOLUMN_PREVIOUS;
-                //	printf("setAlgorithm: init_column_previous %d\n", init_column_previous);
                 break;
         case MODE_AUTOSELECT:
                 init_column_previous = INITCOLUMN_PREVIOUS;
@@ -188,8 +183,6 @@ void OAextend::setAlgorithm (algorithm_t algorithm, arraydata_t *ad) {
         this->updateArraydata (ad);
 }
 
-// int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stack, array_t &first, int
-// use_row_symmetry );
 
 /// Find the range of the elements that are allowed
 void get_range (array_t *array, extendpos *p, extend_data_t *es, int use_row_symmetry);
@@ -328,7 +321,6 @@ int check_branch (extend_data_t *es, carray_t *array, extendpos *p, split *stack
         const array_t vmax = p->ad->s[p->col] - 1;
 #endif
 
-        // printf("range: %d %d\n", esdyn->range, esdyn->range_high);
         /* loop over all positions specified by range */
         for (int i = vmin; i <= vmax; i++) {
 #ifdef COUNTELEMENTCHECK
@@ -337,7 +329,7 @@ int check_branch (extend_data_t *es, carray_t *array, extendpos *p, split *stack
 #else
                 if (1) {
 #endif
-                        p->value = i; // TODO: eliminate value from pos structure?
+                        p->value = i; 
                         /* strength t check */
                         if (valid_element (es, p, array)) {
                                 stack->valid[stack->count][npos] = p->value;
@@ -393,7 +385,6 @@ int check_branch_2level (extend_data_t *es, carray_t *array_colstart, extendpos 
 
         const array_t vmax = 1;
 
-        // printf("range: %d %d %d %d\n", es->range_low, es->range_high, vmin, vmax);
         /* loop over all positions specified by range */
         for (int i = vmin; i <= vmax; i++) {
 #ifdef COUNTELEMENTCHECK
@@ -402,7 +393,7 @@ int check_branch_2level (extend_data_t *es, carray_t *array_colstart, extendpos 
 #else
                 if (1) {
 #endif
-                        p->value = i; // TODO: eliminate value from pos structure?
+                        p->value = i; 
                         /* strength t check */
                         if (valid_element_2level (es, p)) {
                                 stack->valid[stack->count][npos] = p->value;

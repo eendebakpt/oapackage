@@ -117,6 +117,11 @@ void array_transformation_t::setlevelperm (int colindex, std::vector< int > lvlp
  * @param out
  */
 void array_transformation_t::show (std::ostream &out) const {
+     
+          if(this->ad==0) {
+               out << "array transformation: no class defined" << std::endl;
+           return;    
+          }
         out << "array transformation: N " << ad->N;
         if (this->isIdentity ()) {
                 out << ": identity transformation" << std::endl;
@@ -188,7 +193,8 @@ void array_transformation_t::reset () {
 }
 
 void array_transformation_t::init () {
-        // printf("array_transformation_t::init\n");
+        if (ad==0)
+               throw_runtime_exception("need valid arraydata_t structure");
         rperm = new_perm_init< rowindex_t > (ad->N);
         cperm = new_perm_init< colindex_t > (ad->ncols);
 
@@ -214,12 +220,25 @@ void array_transformation_t::free () {
         if (ad != 0) {
                 delete ad;
         }
+        ad=0;
+        rperm=0;
+        cperm=0;
+        lperms=0;
 }
 
 /// Assignment operator
 array_transformation_t &array_transformation_t::operator= (const array_transformation_t &tt) {
-        // TODO: check we have transformations of similar type?
-
+          // TODO: check we have transformations of similar type?
+       if (tt.ad==0) {
+        free ();
+        
+        return *this;
+       }
+       if(ad!=0) {
+          //myassert(this->ad->N==tt.ad->N);
+          //throw_runtime_exception("for assignment need equal values of N");
+       }
+        
         free ();
 
         ad = new arraydata_t (*(tt.ad));
@@ -384,6 +403,9 @@ void get_factors (array_t *s, carray_t *array, const rowindex_t N, const colinde
 arraydata_t arraylink2arraydata (const array_link &al, int extracols, int strength) {
         int verbose = 0;
 
+        if(al.min()<0) {
+         throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
+        }
         // create arraydatya
         int ncols0 = al.n_columns;
         int N = al.n_rows;
@@ -725,6 +747,7 @@ array_link::~array_link () {
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
+        this->setconstant(0);
 }
 
 //! Create array link with array
@@ -1885,23 +1908,21 @@ void array_link::showproperties () const {
 void array_link::debug () const { myprintf ("debug: %ld %p %p", (long)this->array, (void *)array, (void *)array); }
 #ifdef SWIGCODE
 void *array_link::data () {
-        // return ( static_cast<long>( (void *) array ) );
         return ((void *)(this->array));
 }
 #else
 #endif
 
-/*
-void array_link::initswig()
-{
-        //myprintf("initswig! C side\n");
-}
-*/
 std::string array_link::showarrayS () const {
         std::stringstream ss;
         ss << "array: \n";
         write_array_format (ss, array, this->n_rows, this->n_columns);
         return ss.str ();
+}
+
+bool array_link::equal_size(const array_link &rhs_array) const {
+     if( (this->n_rows != rhs_array.n_rows) || (this->n_columns != rhs_array.n_columns) ) return false;
+     else return true;
 }
 
 void array_link::showarraycompact () const {
@@ -1915,8 +1936,6 @@ void array_link::showarraycompact () const {
 
 void array_link::showarray () const {
         myprintf ("array: \n");
-        // write_array_format ( std::cout, array, this->n_rows, this->n_columns );	// does not work with
-        // ipython...
         write_array_format (array, this->n_rows, this->n_columns);
 }
 
@@ -1926,9 +1945,6 @@ void perform_column_permutation (const array_link source, array_link &target, co
         for (int i = 0; i < ncols; i++) {
                 memcpy (target.array + (perm[i] * nrows), source.array + i * nrows, nrows * sizeof (array_t));
         }
-        // printfd("results:\n");
-        // source.showarray();
-        // target.showarray();
 }
 
 void perform_row_permutation (const array_link source, array_link &target, const std::vector< int > perm) {
@@ -2587,16 +2603,16 @@ arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colind
         memcpy ((void *)s, (const void *)s_, sizeof (array_t) * nc);
         complete_arraydata ();
 }
-arraydata_t::arraydata_t (const std::vector< int > s_, rowindex_t N_, colindex_t t, colindex_t nc)
+arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
         s = new array_t[ncols];
-        assert (s_.size () > 0);
-        if ((int)s_.size () < nc) {
-                myprintf ("arraydata_t: warning: in constructor: size s < number of columns nc)\n");
-                nc = s_.size ();
-                std::fill (s, s + ncols, s_[s_.size () - 1]);
+        assert (factor_levels.size () > 0);
+        if ((int)factor_levels.size () < nc) {
+                myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
+                nc = factor_levels.size ();
+                std::fill (s, s + ncols, factor_levels[factor_levels.size () - 1]);
         }
-        std::copy (s_.begin (), s_.end (), s);
+        std::copy (factor_levels.begin (), factor_levels.end (), s);
         complete_arraydata ();
 }
 
@@ -2621,7 +2637,6 @@ arraydata_t::arraydata_t (array_t s_, rowindex_t N_, colindex_t t, colindex_t nc
 
 arraydata_t::arraydata_t ()
     : N (0), ncols (0), strength (0), s (0), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        // printfd("hit dummy constructor...\n");
 }
 
 arraydata_t::arraydata_t (const arraydata_t *adp, colindex_t newncols) {
@@ -2650,8 +2665,6 @@ arraydata_t::arraydata_t (const arraydata_t *adp, colindex_t newncols) {
                 memcpy (s, adp->s, sizeof (array_t) * ncols);
         }
         complete_arraydata ();
-
-        // printfd("created arraydata_t with pointer constructor:\n"); this->show(3);
 }
 
 /// @brief copy constructor
@@ -2662,14 +2675,6 @@ arraydata_t::arraydata_t (const arraydata_t &adp)
         complete_arraydata ();
 }
 arraydata_t::~arraydata_t () {
-#ifdef OADEBUG
-        if (s == 0) {
-                printfd ("s is zero\n");
-        }
-        if (colgroupindex == 0) {
-                printfd ("colgroupindex is zero\n");
-        }
-#endif
         delete[] s;
         delete[] colgroupindex;
         delete[] colgroupsize;
@@ -2677,7 +2682,6 @@ arraydata_t::~arraydata_t () {
 
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
-        //***open config file***
         colindex_t ncols = ad.ncols;
         std::ofstream outFile;
 
@@ -3043,7 +3047,7 @@ int jstruct_t::maxJ () const {
 }
 
 std::vector< int > jstruct_t::Fval (int strength) const {
-        int x = pow ((double)2, strength + 1); // TODO: replace by integer power
+        int x = pow ((double)2, strength + 1); 
         int nn = floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
@@ -3055,7 +3059,7 @@ std::vector< int > jstruct_t::Fval (int strength) const {
 std::vector< int > jstruct_t::calculateF (int strength) const {
         int Nmax = N;
 
-        int x = pow (double(2), strength + 1); // TODO: replace by integer power
+        int x = pow (double(2), strength + 1); 
         int nn = floor ((double)N / x) + 1;
         std::vector< int > F (nn);
 
@@ -3392,10 +3396,8 @@ symmdata::symmdata (const array_link &al, int minlen) {
                 }
         }
 
-        // TODO: make this into one-pass algoritm
         ft = array_link (2 * al.n_rows + 2, al.n_columns, -1);
         ft.setconstant (0);
-        // printf("symmdata::symmdata: ft " ); ft.show();
         size_t nfrow = ft.n_rows - 1;
         for (int c = 0; c < al.n_columns; c++) {
                 array_t v = rowvalue.at (0, c);
@@ -3428,18 +3430,16 @@ symmdata::symmdata (const array_link &al, int minlen) {
 int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *pp) {
         int jval = 0;
 
-        // const array_t **cp = new const array_t* [J];
         const array_t *cp[MAXCOLS];
 
         for (int i = 0; i < J; i++) {
                 cp[i] = array + N * pp[i];
         }
 
-        // OPTIMIZE: change order of loops (with cache for tmp variable)
         for (rowindex_t r = 0; r < N; r++) {
                 array_t tmp = 0;
                 for (int i = 0; i < J; i++) {
-                        tmp += cp[i][r]; //+ ppN[i]];
+                        tmp += cp[i][r]; 
                 }
                 tmp %= 2;
                 jval += tmp;
@@ -3450,14 +3450,10 @@ int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *p
 
 /** @brief Calculate J-characteristic for a column combination
 *
-* We assume the array has values 0 and 1
+* We assume the array has values 0 and 1. No bounds checks
 */
 int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *pp) {
         array_t tmpval[MAXROWS];
-
-#ifdef OADEBUG
-        assert (N <= MAXROWS);
-#endif
 
         std::fill_n (tmpval, N, 0);
         fastJupdate (array, N, J, pp, tmpval);
@@ -3817,24 +3813,15 @@ int arrayfile_t::seek (int pos) {
 }
 
 int arrayfile_t::read_array_binary_zero (array_link &a) {
-        const int dbg = 0;
 
         // no index is written or read (to save disk space
         a.index = array_link::INDEX_NONE;
         int index = array_link::INDEX_NONE;
 
-        if (dbg) {
-                myprintf (" arrayfile_t::read_array_binary_zero: gp\n");
-        }
-
         if (a.n_columns != diffarray.n_columns && diffarray.n_columns != -1 && diffarray.n_columns != 0) {
                 myprintf ("arrayfile_t::read_array_binary_zero: error different number of columns %d %d\n",
                           diffarray.n_columns, a.n_columns);
                 return array_link::INDEX_ERROR;
-        }
-
-        if (dbg) {
-                myprintf (" arrayfile_t::read_array_binary_zero: reading nrest\n");
         }
 
         int16_t nrest;
@@ -3853,31 +3840,15 @@ int arrayfile_t::read_array_binary_zero (array_link &a) {
         int nrows = a.n_rows;
         int ncols = a.n_columns;
         int ngood = ncols - nrest;
-        if (dbg) {
-                diffarray.show ();
-                a.show ();
-                myprintf (" arrayfile_t::read_array_binary_zero: xxx nrows %d, ngood %d\n", nrows, ngood);
-        }
         if (diffarray.n_columns > 0) {
                 copy_array (diffarray.array, a.array, nrows, ngood);
         } else {
                 // diffarray not initialized yet...
         }
-        if (dbg) {
-                myprintf ("arrayfile_t::read_array: nrows %d, ncols %d,  nrest %d, ngood %d\n", nrows, ncols, nrest,
-                          ngood);
-        }
         this->read_array_binary (a.array + nrows * ngood, nrows, nrest);
 
-        if (dbg) {
-                myprintf ("arrayfile_t::read_array:read_array_binary done: %d %d\n", a.n_columns, diffarray.n_columns);
-                a.showarray ();
-        }
         if (a.n_columns == diffarray.n_columns) {
                 // update array
-                if (dbg) {
-                        myprintf ("  here: %d\n", a.n_columns);
-                }
 
                 int N = a.n_rows;
                 for (int i = 0; i < nrest; i++) {
@@ -3889,9 +3860,6 @@ int arrayfile_t::read_array_binary_zero (array_link &a) {
                 }
         }
         diffarray = a;
-        if (dbg) {
-                myprintf ("  arrayfile_t::read_array:read_array_binary_zero: xxx\n");
-        }
         return index;
 }
 
@@ -4770,7 +4738,9 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
 }
 
 /// Write an array in binary mode to a file
-void arrayfile_t::write_array_binary (const array_link &A) { write_array_binary (A.array, A.n_rows, A.n_columns); }
+void arrayfile_t::write_array_binary (const array_link &A) { 
+     write_array_binary (A.array, A.n_rows, A.n_columns);     
+}
 
 /**
  * @brief Write an array in binary mode to a file
@@ -4780,7 +4750,6 @@ void arrayfile_t::write_array_binary (const array_link &A) { write_array_binary 
  * @param ncols
  */
 void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const int ncols) {
-#ifdef OADEBUG
         int m = 0;
         for (int i = 0; i < nrows * ncols; ++i)
                 if (array[i] > m) {
@@ -4791,7 +4760,6 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
                         myprintf ("arrayfile_t::write_array_binary: ERROR!\n");
                 }
         }
-#endif
 
         if (sizeof (array_t) == sizeof (int32_t) && this->nbits == 32) {
                 int n = fwrite ((const void *)array, sizeof (int32_t), nrows * ncols, nfid);

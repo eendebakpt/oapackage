@@ -115,8 +115,6 @@ std::string algnames (algorithm_t m);
 struct dyndata_t;
 
 // NOTE: unsigned long is enough for 2-factor arrays up to 60 columns
-// typedef unsigned char rowsort_value_t; /** type for value for sorting rows*/
-// typedef unsigned long rowsort_value_t; /** type for value for sorting rows*/
 typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
                                       /*!
                                        * @brief structure to perform row sorting
@@ -171,8 +169,6 @@ struct LMC_static_struct_t {
         /* variable data */
         int LMC_non_root_init;
         int LMC_root_init;
-        // int LMC_reduce_non_root_init;
-        // int LMC_reduce_root_init;
         int LMC_reduce_root_rowperms_init;
 
         /* data structures used by functions */
@@ -322,7 +318,6 @@ struct arraysymmetry {
 
 #include <memory>
 typedef std::shared_ptr< symmdata > symmdataPointer;
-// typedef std::shared_ptr<symmdata> symmdataPointer;
 
 #elif defined(__APPLE__)
 
@@ -354,11 +349,10 @@ typedef std::vector< arraysymmetry > symmetryset;
 
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
-/// helper function
-template < class Type > void insertUnique (std::vector< Type > &cp, const Type &cpv) {
+/// Append element to vector if the element the element is not at the end of vector
+template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &cpv) {
         if (cp.size () > 0) {
                 if (!(cp.back () == cpv))
-                        // cp.emplace_back(cpv);
                         cp.push_back (cpv);
         } else {
                 cp.push_back (cpv);
@@ -388,17 +382,16 @@ struct LMCreduction_t {
         //! counter for number of reductions made
         long nred;
 
-        int targetcol; // NOTE: document this
-        int mincol;    // used in debugging
+        int targetcol; 
+        int mincol;    
 
         int nrows, ncols;
 
         LMC_static_struct_t *staticdata;
 
-        //! store column permutations from array symmetry group
-        // std::vector< std::vector< std::vector<int> > > colperms;
         class symm_t {
               public:
+		/// which kind of data to store
                 int store;
                 int ncols;
                 std::vector< colpermset > colperms;
@@ -447,19 +440,19 @@ struct LMCreduction_t {
                         if (store < 2)
                                 return;
                         int n = cpv.size ();
-                        insertUnique (colcombs[n], cpv);
+                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
                 }
                 void storeColumnCombination (const colperm_t cp, int n) {
                         if (store < 2)
                                 return;
                         colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insertUnique (colcombs[n], cpv);
+                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
                 }
                 void storeColumnPermutation (const colperm_t cp, int n) {
                         if (store < 2)
                                 return;
                         colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insertUnique (colperms[n], cpv);
+                        insert_if_not_at_end_of_vector (colperms[n], cpv);
                 }
                 void showColperms (int verbose = 1) const {
                         for (size_t i = 0; i <= (size_t)ncols; i++) {
@@ -526,16 +519,14 @@ struct LMCreduction_t {
                 std::copy (array, array + ncols * nrows, this->array);
         }
 
+        /// update the pointer to the symmetry data based on the specified array
         void updateSDpointer (const array_link al, bool cache = false) {
-// reduction.sd = symmdataPointer(new symmdata(al) );
 #ifdef SDSMART
                 symmdata *sdp = this->sd.get ();
 #else
                 symmdata *sdp = sd;
 #endif
-                if (sdp != 0 && cache) { //&& (reduction.sd->orig == al) ) {
-                                         // do nothing
-                        //  myprintf("using cached symmdata!\n");
+                if (sdp != 0 && cache) { 
                 } else {
                         // update symmetry data
                         this->sd = symmdataPointer (new symmdata (al, 1));
@@ -651,7 +642,7 @@ struct dyndata_t {
 
         void reset ();
         void setColperm (const colperm_t perm, int n) { copy_perm (perm, this->colperm, n); }
-        void setColperm (const larray< colindex_t > &perm) { std::copy (perm.d, perm.d + perm.n, this->colperm); }
+        void setColperm (const larray< colindex_t > &perm) { std::copy (perm.data_pointer, perm.data_pointer + perm.data_size, this->colperm); }
 
         void setColperm (const std::vector< colindex_t > &perm) {
                 std::copy (perm.begin (), perm.end (), this->colperm);
@@ -704,11 +695,11 @@ struct dyndata_t {
         /// set column permutation
         void getColperm (colpermtypelight &cp) const {
                 cp.resize (this->col + 1);
-                std::copy (this->colperm, this->colperm + this->col + 1, cp.d);
+                std::copy (this->colperm, this->colperm + this->col + 1, cp.data_pointer);
         }
 
         /// allocate lightweight rowsort structure
-        void allocrowsortl () {
+        void allocate_rowsortl () {
                 if (this->rowsortl == 0) {
                         this->rowsortl = new_perm< rowindex_t > (this->N);
                 }
@@ -717,13 +708,13 @@ struct dyndata_t {
         void deleterowsortl () {
                 if (this->rowsortl != 0) {
                         delete_perm (this->rowsortl);
-                        // delete [] this->rowsortl;
                         this->rowsortl = 0;
                 }
         }
+
+		/// initialize rowsortl from rowsort
         void initrowsortl () {
                 if (this->rowsortl != 0) {
-                        // delete [] this->rowsortl;
                         for (int i = 0; i < this->N; i++) {
                                 this->rowsortl[i] = this->rowsort[i].r;
                         }
@@ -735,7 +726,7 @@ struct dyndata_t {
                 }
         }
 
-        /// helper function
+        /// copy rowsortl variable to rowsrt
         void rowsortl2rowsort () {
                 for (int i = 0; i < this->N; i++) {
                         this->rowsort[i].r = this->rowsortl[i];
@@ -795,9 +786,6 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 }
 
 typedef double jj45_t;
-
-/// return value based on J4-J5 ordering
-jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val = -1, int dosort = 1);
 
 /** Apply a random transformation to an array **/
 void random_transformation (array_t *array, const arraydata_t *adp);

@@ -226,7 +226,7 @@ def _slice2range(self, slice, max_value):
     else:
         start = slice.start
     if slice.stop is None:
-        stop = maxvalue
+        stop = max_value
     else:
         stop = slice.stop
     if slice.step is None:
@@ -328,7 +328,7 @@ def __setitem__(self,index, value):
 #pragma SWIG nowarn=454
 
 namespace std {
-   %template(arraylist_t) deque<array_link>; // arraylist_t
+   %template(arraylist_t) deque<array_link>; 
    %template(jstructArray) vector<jstruct_t>; // results list
    %template(uint8Vector) std::vector<unsigned char>;
    %template(charVector) std::vector<signed char>;
@@ -472,7 +472,10 @@ public:
 %extend array_transformation_t {
 public:
     std::string __repr__() {
-      return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      if($self->ad!=0)
+	return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      else
+	return printfstring("array_transformation_t: no class defined");      
     }
 } 
 
@@ -493,7 +496,7 @@ public:
 %extend std::deque<array_link> {
 public:
     std::string __repr__() {
-      return printfstring("arraylink array with %d elements", $self->size() ); // $self->showstr();
+      return printfstring("list of array_link objects with %d elements", $self->size() ); 
     }
 }
 

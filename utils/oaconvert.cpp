@@ -64,12 +64,12 @@ int main (int argc, char *argv[]) {
         std::string infile = opt.getArgv (0);
         std::string outfile = opt.getArgv (1);
 
-        arrayfile_t af (infile.c_str ());
-        int nc = af.ncols;
-        int nr = af.nrows;
+        arrayfile_t input_array_file (infile.c_str ());
+        int nc = input_array_file.ncols;
+        int nr = input_array_file.nrows;
         array_link al (nr, nc, -1);
 
-        if (!af.isopen ()) {
+        if (!input_array_file.isopen ()) {
                 fprintf (stderr, "oaconvert: could not open input file, aborting...\n");
                 return 1;
         }
@@ -78,15 +78,14 @@ int main (int argc, char *argv[]) {
 
         {
                 // streaming mode
-
-                int narrays = af.narrays;
-                int nb = 8; // TODO: we have not read any arrays so far, so nb is hard to predict
+                int narrays = input_array_file.narrays;
+                int nb = 8; // we have not read any arrays so far, so nb is hard to predict
                 if (mode == ABINARY_DIFFZERO)
                         nb = 1;
 
                 arrayfile_t afout (outfile.c_str (), nr, nc, narrays, mode, nb);
 
-                if (af.narrays < 0) {
+                if (input_array_file.narrays < 0) {
                         narrays = arrayfile_t::NARRAYS_MAX;
                         printf ("warning: untested code! (number of arrays undefined)\n");
                 }
@@ -94,11 +93,10 @@ int main (int argc, char *argv[]) {
                 int index;
                 for (long i = 0; i < narrays; i++) {
                         if ((i % 10000 == 0 && verbose) || (verbose >= 3)) {
-                                log_print (QUIET, "oaconvert: loading arrays: %d/%d\n", i, af.narrays);
+                                log_print (QUIET, "oaconvert: loading arrays: %d/%d\n", i, input_array_file.narrays);
                         }
 
-                        // al.show();
-                        int g = af.read_array (al);
+                        int g = input_array_file.read_array (al);
                         if (g < 0) {
                                 if (verbose)
                                         printf ("   oaconvert: read_array returned index %d, end of file\n", g);

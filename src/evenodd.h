@@ -8,11 +8,6 @@
 
 #pragma once
 
-#ifdef OADEBUG
-#else
-//#define DOOPENMP
-#endif
-
 #include <algorithm>
 #include <map>
 

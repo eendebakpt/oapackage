@@ -403,7 +403,6 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
         }
 
         arraydata_t arrayclass (3, al.n_rows, 1, al.n_columns);
-        // printfd("run %d ", i); arrayclass.show();
         array_transformation_t at = reduceOAnauty (al + 1, verbose >= 2, arrayclass);
 
         conference_transformation_t t (al);
@@ -412,8 +411,8 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
 
         for (int c = 0; c < al.n_columns; c++) {
                 std::vector< int > lp = at.lvlperm (c);
-                assert (lp[1] == 1);                  // 0 should go to 0
-                t.cswitch[c] = (lp[0] == 0) ? 1 : -1; // FIXME!
+                myassert (lp[1] == 1);                  // 0 should go to 0
+                t.cswitch[c] = (lp[0] == 0) ? 1 : -1; 
         }
 
         return t;
@@ -1231,26 +1230,23 @@ class lightstack_t {
         object_t *stack;
 
       private:
-        int size;
-        int n;
+        int stack_max_size;
+        int current_position;
 
       public:
-        lightstack_t (int sz) : size (sz), n (0) { stack = new object_t[sz]; }
+        lightstack_t (int sz) : stack_max_size (sz), current_position (0) { stack = new object_t[sz]; }
         ~lightstack_t () { delete[] stack; }
 
-        bool empty () const { return n == 0; }
+        bool empty () const { return current_position == 0; }
         void push (const object_t &o) {
-#ifdef OADEBUG
-                assert (this->n < this->size);
-#endif
-                this->stack[n] = o;
-                n++;
+                this->stack[current_position] = o;
+                current_position++;
         }
         object_t &top () const {
-                assert (n > 0);
-                return this->stack[n - 1];
+                assert (current_position > 0);
+                return this->stack[current_position - 1];
         }
-        void pop () { n--; }
+        void pop () { current_position--; }
 };
 
 /// add new branches to a stack of branches
@@ -1377,12 +1373,9 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
         int nblocks = alsg.ngroups;
 
         if (block == nblocks) {
-                // TODO: make this loop in n-1 case?
-
                 ntotal++;
                 const int j2start = std::max (0, al.n_columns - 2);
-                // TODO: this can probably be a restricted filter (e.g. inner product check only last col and no symm
-                // check)
+
                 if (filter.filterJlast (candidate, j2start)) {
                         list.push_back (candidate);
                 }
@@ -1448,14 +1441,12 @@ void inflateCandidateExtensionHelper (std::vector< cperm > &list, const cperm &b
                         }
                         iter++;
 
-                        // TODO: smart symmetry generation
                         if (satisfy_symm (candidate, check_indices, gstart, gend)) {
                                 nbc++;
                                 inflateCandidateExtensionHelper (list, basecandidate, candidate, block + 1, al, alsg,
                                                                  check_indices, ct, verbose, filter, ntotal);
                         } else {
                         }
-                        // TODO: run inline filter
                 } while (std::next_permutation (candidate.begin () + gstart, candidate.begin () + gend));
                 if (verbose >= 2)
                         printfd ("nbc block %d: %d/%ld\n", block, nbc, iter);
@@ -1588,14 +1579,8 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
         // push initial branches
         branch_t b1 = {0, 1, {1, N / 2 - 1, N / 2 - 1}}; // branches starting with a 1
         branches.push (b1);
-// branch_t b0 = {0, 0, {1,N/2-1,N/2-1} };
-// branches.push ( b0 );
 
-#ifdef OADEBUG
-        std::vector< long > nb (N + 1);
-#endif
-
-        // TODO: inline kz filtering, TODO: partial J2 filter with second column
+        std::vector< long > branch_count (N + 1);
 
         long n = 0;
         do {
@@ -1605,22 +1590,18 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                 if (verbose >= 3) {
                         b.show ();
                 }
-#ifdef OADEBUG
-                nb[b.row]++;
-#endif
+                branch_count[b.row]++;
+                
                 branches.pop ();
                 c[b.row] = b.rval; // update column vector
 
                 if (b.row == dfilter.inline_row && filterj3) {
-                        // TODO: inline_row can be one earlier?
                         if (!dfilter.filterJ3inline (c))
                                 // discard branch
                                 continue;
                 }
                 if (b.row == N - 1) {
                         n++;
-                        // verbose=2;
-                        // dfilter.filterReason(c);
                         if (verbose >= 3) {
                                 myprintf ("n %d: filter %d: ", (int)n, dfilter.filter (c));
                                 print_cperm (c);
@@ -1642,7 +1623,7 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
                                 }
                                 cc.push_back (c);
                         } else {
-                                // printfd ( "## discard candindate: " );
+                                // discard candindate
                         }
                         continue;
                 }
@@ -1672,15 +1653,13 @@ std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, c
 
         } while (!branches.empty ());
 
-#ifdef OADEBUG
-        if (1) {
-                printf ("branch count:\n");
-                for (int i = 0; i <= N; i++) {
-                        printf ("  %d: %ld\n", i, nb[i]);
-                }
-        }
-#endif
         if (verbose) {
+               if (verbose>=2) {
+                         printf ("branch count:\n");
+                         for (int i = 0; i <= N; i++) {
+                              printf ("  %d: %ld\n", i, branch_count[i]);
+                         }
+               }
                 printfd ("%s: %.3f [s]: generated %ld/%ld/%ld perms (len %ld)\n", __FUNCTION__, get_time_ms () - t0,
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
                 if (verbose>=3) {
@@ -1699,7 +1678,7 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
                     "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n",
                     filtersymm, filtersymminline, filterj2, filterj3);
 
-        assert (ct.j1zero == 1);
+        myassert (ct.j1zero == 1);
 
         const int N = al.n_rows;
         DconferenceFilter dfilter (al, filtersymm, filterj2);
@@ -1722,22 +1701,17 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
         branches.push (b0);
         double t0 = get_time_ms ();
 
-#ifdef OADEBUG
-        std::vector< long > nb (N + 1);
-#endif
+        std::vector< long > branch_count (N + 1);
 
         long n = 0;
         do {
 
                 branch_t b = branches.top ();
-#ifdef OADEBUG
-                nb[b.row]++;
-#endif
-                branches.pop (); // TODO: use reference and pop later
+                branch_count[b.row]++;
+                branches.pop ();
                 c[b.row] = b.rval;
 
                 if (b.row == dfilter.inline_row && filterj3) {
-                        // TODO: inline_row can be one earlier?
                         if (!dfilter.filterJ3inline (c))
                                 // discard branch
                                 continue;
@@ -1782,19 +1756,15 @@ std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, c
 
         } while (!branches.empty ());
 
-#ifdef OADEBUG
-        if (1) {
-                printf ("branch count:\n");
-                for (int i = 0; i <= N; i++) {
-                        printf ("  %d: %ld\n", i, nb[i]);
-                }
-        }
-#endif
         if (verbose) {
+               if (verbose>=2) {
+                         printf ("branch count:\n");
+                         for (int i = 0; i <= N; i++) {
+                              printf ("  %d: %ld\n", i, branch_count[i]);
+                         }
+               }
                 printfd ("generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n",
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
-                // al.show();
-                // al.transposed().showarray(); showCandidates ( cc );
         }
         return cc;
 }
@@ -1936,13 +1906,11 @@ std::vector< cperm > generateConferenceRestrictedExtensions (const array_link &a
         for (size_t i = 0; i < ce.first.size (); i++) {
                 int ip = innerprod (c0, ce.first[i]);
 
-                // TODO: cache this function call
                 int target = -ip;
 
                 std::vector< cperm > ff2 = get_second (N, kz, target, verbose >= 2);
                 ce.second = ff2;
 
-                // printfd("ce.second[0] "); display_vector( ce.second[0]); printf("\n");
 
                 for (size_t j = 0; j < ff2.size (); j++) {
                         cperm c = ce.combine (i, j);
@@ -2110,7 +2078,6 @@ conference_extend_t extend_conference_matrix_generator (const array_link &al, co
                                     cl, al, verbose); // not needed, but might make calculations faster
                                 extensionsX = filterCandidates (extensionsX, al, 1, 1, verbose);
                         } else {
-                                // FIXME: for cached generated candidates we could remove the filterj2 check
                                 extensionsX = filterCandidates (cl, al, 1, 1, verbose);
                         }
                 }
@@ -2333,7 +2300,6 @@ array_link reduceMatrix (const array_link &al, matrix_isomorphism_t itype, int v
  * By performing the isomorphism check incrementally we can save memory
  */
 class ConferenceIsomorphismSelector {
-        // IDEA: special array_link with reduced size could safe more memory
       public:
         matrix_isomorphism_t itype;
         int verbose;
@@ -2355,7 +2321,7 @@ class ConferenceIsomorphismSelector {
 
         size_t size () const { return candidates.size (); }
 
-        /** Add a set of arrays to the lis of isomorphism classes
+        /** Add a set of arrays to the list of isomorphism classes
          */
         void add (const arraylist_t &lst) {
 
@@ -2373,10 +2339,6 @@ class ConferenceIsomorphismSelector {
                         if (nadd % 1000 == 0) {
                                 // reduce...
                                 std::vector< int > ridx = selectUniqueArrayIndices (reductions, verbose);
-
-                                // TODO: efficient removal of entries
-                                // see
-                                // http://stackoverflow.com/questions/596162/can-you-remove-elements-from-a-stdlist-while-iterating-through-it
 
                                 arraylist_t tmp;
                                 arraylist_t tmpr;
@@ -2792,7 +2754,6 @@ const std::vector< cperm > &CandidateGeneratorConference::generateCandidates (co
                 last_valid = START_COL + 1;
                 kstart = startcol - 1;
         } else {
-                // TODO: check this bound is sharp
                 ccX = this->candidate_list[startcol];
                 last_valid = startcol;
                 kstart = startcol - 1;
@@ -2811,8 +2772,7 @@ const std::vector< cperm > &CandidateGeneratorConference::generateCandidates (co
                                   tag, kx + 1, (int)ccX.size (), kx + 1, kx + 2);
 
                 cci = extensionInflate (ccX, als, alx, filter, ct, (verbose >= 2) * (verbose - 1));
-                // OPTIMIZE: use the following?
-                // cci = filter.filterListZero ( cci );
+
 
                 if (verbose >= 2) {
                         myprintf ("## %s: at %d columns: total inflated: %ld\n", tag, kx + 1, cci.size ());
@@ -2928,20 +2888,19 @@ void init_lmc0_rowsort (const array_link &al, int sutk_col, rowsort_t *rowperm, 
         std::stable_sort (rowperm, rowperm + al.n_rows);
 }
 
-int get_zero_pos_blockX (const array_link &al, const int x1, const int x2, rowsort_t *rowperm,
-                         const std::vector< int > &colperm, int column, const int nrows) {
-        /// FIXME: remove dead function
-
-        int position_zero = nrows + 1;
-        for (int i = x1; i < x2; i++) {
-                int current_val = al.atfast (rowperm[i].r, colperm[column]);
-                if (current_val == 0) {
-                        position_zero = i;
-                }
-        }
-
-        return position_zero;
-}
+// int get_zero_pos_blockX (const array_link &al, const int x1, const int x2, rowsort_t *rowperm,
+//                          const std::vector< int > &colperm, int column, const int nrows) {
+// 
+//         int position_zero = nrows + 1;
+//         for (int i = x1; i < x2; i++) {
+//                 int current_val = al.atfast (rowperm[i].r, colperm[column]);
+//                 if (current_val == 0) {
+//                         position_zero = i;
+//                 }
+//         }
+// 
+//         return position_zero;
+// }
 
 /*** compare zero positions in a block of a design
  *
@@ -3021,7 +2980,6 @@ lmc_t LMC0_sortrows_compare (const array_link &al, int column, rowsort_t *rowper
                 int x1 = sd.ft.atfast (2 * j, scol);
                 int x2 = sd.ft.atfast (2 * j + 1, scol);
 
-                // OPTIMIZE: put this check in sd.ft generation
                 if ((x2 - x1) > 1) {
 
                         for (int i = x1; i < x2; i++) {
@@ -3033,7 +2991,6 @@ lmc_t LMC0_sortrows_compare (const array_link &al, int column, rowsort_t *rowper
                         flipSort (rowperm, x1, x2 - 1);
                 }
 
-                // OPTIMIZE: direct pointers?
                 // Compare blocks wrt zero position
                 r = lmc0_compare_zeropos_block (al, x1, x2, rowperm, colperm, column, rowsignperm, colsignperm);
                 if (r == LMC_LESS || r == LMC_MORE) {

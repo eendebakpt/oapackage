@@ -404,11 +404,7 @@ void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *a
                 freq_pos =
                     freq_position (N, activerow, strength, es->colcombs[cur_combi], es->indices[cur_combi], array);
 
-#ifdef OADEBUG
-                if (freq_pos < 0) {
-                        myprintf ("add_element: this code should not be executed\n");
-                }
-#endif
+
                 (freqtable[cur_combi][freq_pos])++; // add occurence of combination
         }
 }
@@ -579,9 +575,7 @@ bool valid_element_2level (const extend_data_t *es, const extendpos *p)
 #endif
 
 bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
-#ifdef OADEBUG
         myassert (ad.ncols >= al.n_columns, "strength_check: array has too many columns");
-#endif
 
         if (ad.strength == 0)
                 return true;

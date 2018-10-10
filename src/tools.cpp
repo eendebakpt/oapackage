@@ -285,7 +285,6 @@ int log_print (const int level, const char *message, ...) {
         int result = 0;
 
 #ifdef FULLPACKAGE
-// TODO: convert loglevel to more generic streamloglvl...
 #ifdef SWIGPYTHON
         static int _loglevel = (int)SYSTEM;
 #else
@@ -355,7 +354,7 @@ void myassert (int condition, const char *error_message) {
         }
 }
 
-inline char path_separator () {
+char path_separator () {
 #ifdef _WIN32
         return '\\';
 #else

@@ -102,7 +102,7 @@ except BaseException:
         return [[0, 0, 1280, 720]]
 
 
-def test_monitorSizes():
+def guitest_monitorSizes():
     monitorSizes()
 
 
@@ -946,6 +946,7 @@ def test_selectJ():
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
     oaoptions = oalib.OAextend()
+    oaoptions.setAlgorithmAuto(adata)
     sols0 = oalib.arraylist_t()
     solsx = oalib.arraylist_t()
     sols0.push_back(A)
@@ -958,7 +959,7 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 
 def test_extendSingleArray():
     A = oapackage.exampleArray(4, 1)
-    adata = oapackage.arraylink2arraydata(A)
+    adata = oapackage.arraylink2arraydata(A, extracols=2)
     B = A.selectFirstColumns(5)
     ee = extendSingleArray(B, adata, t=2, verbose=1)
     assert(ee[0].n_columns == B.n_columns + 1)
@@ -1117,13 +1118,11 @@ def designStandardError(al):
 
     """
 
-    X = np.matrix(al.getModelMatrix(2))
+    X = np.array(al.getModelMatrix(2))
     k = al.n_columns
 
-    #m = 1 + k + k * (k - 1) / 2
-
     scalefac = 1
-    M = (X.transpose() * X / scalefac).I
+    M = np.linalg.inv(X.transpose().dot(X) / scalefac)
 
     mm = np.array(M.diagonal()).flatten()
 
