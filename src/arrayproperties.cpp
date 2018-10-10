@@ -390,7 +390,6 @@ std::vector< double > distance_distribution (const array_link &al) {
 std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, const symmetry_group &sg,
                                                    std::vector< int > sx, int N, ndarray< double > &Bout,
                                                    int verbose = 0) {
-        // TODO: calculation is not very efficient
         if (verbose) {
                 myprintf ("macwilliams_transform_mixed:\n");
                 myprintf ("sx: ");
@@ -409,9 +408,6 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
                 iout[i] = 0;
 
         for (int j = 0; j < Bout.n; j++) {
-                // if (verbose)
-                //	myprintf("macwilliams_transform_mixed: Bout[%d]= %d\n", j, 0 );
-
                 Bout.linear2idx (j, iout);
                 Bout.setlinear (j, 0); // [j]=0;
 

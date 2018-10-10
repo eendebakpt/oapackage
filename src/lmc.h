@@ -519,15 +519,14 @@ struct LMCreduction_t {
                 std::copy (array, array + ncols * nrows, this->array);
         }
 
+        /// update the pointer to the symmetry data based on the specified array
         void updateSDpointer (const array_link al, bool cache = false) {
 #ifdef SDSMART
                 symmdata *sdp = this->sd.get ();
 #else
                 symmdata *sdp = sd;
 #endif
-                if (sdp != 0 && cache) { //&& (reduction.sd->orig == al) ) {
-                                         // do nothing
-                        //  myprintf("using cached symmdata!\n");
+                if (sdp != 0 && cache) { 
                 } else {
                         // update symmetry data
                         this->sd = symmdataPointer (new symmdata (al, 1));

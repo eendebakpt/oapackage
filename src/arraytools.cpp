@@ -218,8 +218,9 @@ void array_transformation_t::free () {
 
 /// Assignment operator
 array_transformation_t &array_transformation_t::operator= (const array_transformation_t &tt) {
-        // TODO: check we have transformations of similar type?
-
+          // TODO: check we have transformations of similar type?
+        myassert(this->ad->N==tt.ad->N);
+        
         free ();
 
         ad = new arraydata_t (*(tt.ad));
@@ -3027,7 +3028,7 @@ int jstruct_t::maxJ () const {
 }
 
 std::vector< int > jstruct_t::Fval (int strength) const {
-        int x = pow ((double)2, strength + 1); // TODO: replace by integer power
+        int x = pow ((double)2, strength + 1); 
         int nn = floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
@@ -3039,7 +3040,7 @@ std::vector< int > jstruct_t::Fval (int strength) const {
 std::vector< int > jstruct_t::calculateF (int strength) const {
         int Nmax = N;
 
-        int x = pow (double(2), strength + 1); // TODO: replace by integer power
+        int x = pow (double(2), strength + 1); 
         int nn = floor ((double)N / x) + 1;
         std::vector< int > F (nn);
 
@@ -3376,10 +3377,8 @@ symmdata::symmdata (const array_link &al, int minlen) {
                 }
         }
 
-        // TODO: make this into one-pass algoritm
         ft = array_link (2 * al.n_rows + 2, al.n_columns, -1);
         ft.setconstant (0);
-        // printf("symmdata::symmdata: ft " ); ft.show();
         size_t nfrow = ft.n_rows - 1;
         for (int c = 0; c < al.n_columns; c++) {
                 array_t v = rowvalue.at (0, c);
@@ -3412,18 +3411,16 @@ symmdata::symmdata (const array_link &al, int minlen) {
 int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *pp) {
         int jval = 0;
 
-        // const array_t **cp = new const array_t* [J];
         const array_t *cp[MAXCOLS];
 
         for (int i = 0; i < J; i++) {
                 cp[i] = array + N * pp[i];
         }
 
-        // OPTIMIZE: change order of loops (with cache for tmp variable)
         for (rowindex_t r = 0; r < N; r++) {
                 array_t tmp = 0;
                 for (int i = 0; i < J; i++) {
-                        tmp += cp[i][r]; //+ ppN[i]];
+                        tmp += cp[i][r]; 
                 }
                 tmp %= 2;
                 jval += tmp;
