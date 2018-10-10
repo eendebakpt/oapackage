@@ -193,7 +193,8 @@ void array_transformation_t::reset () {
 }
 
 void array_transformation_t::init () {
-        // printf("array_transformation_t::init\n");
+        if (ad==0)
+               throw_runtime_exception("need valid arraydata_t structure");
         rperm = new_perm_init< rowindex_t > (ad->N);
         cperm = new_perm_init< colindex_t > (ad->ncols);
 
