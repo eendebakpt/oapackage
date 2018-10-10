@@ -184,7 +184,7 @@ class OATest(TestCommand):
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.tests.miscunittest(verbose=1)
+        oapackage.tests.test_oapackage.miscunittest(verbose=1)
         errno = 0
         sys.exit(errno)
 
@@ -348,7 +348,6 @@ setup(name='OApackage',
       py_modules=['oalib'],
       packages=packages,
       data_files=data_files,
-      test_suite="oapackage.tests.unittest",
       scripts=scripts,
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
       zip_safe=False,
