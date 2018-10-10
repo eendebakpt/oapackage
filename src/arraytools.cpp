@@ -385,6 +385,9 @@ void get_factors (array_t *s, carray_t *array, const rowindex_t N, const colinde
 arraydata_t arraylink2arraydata (const array_link &al, int extracols, int strength) {
         int verbose = 0;
 
+        if(al.min()<0) {
+         throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
+        }
         // create arraydatya
         int ncols0 = al.n_columns;
         int N = al.n_rows;

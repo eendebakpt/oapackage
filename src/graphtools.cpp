@@ -281,7 +281,7 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
         int nrows = al.n_rows;
         int ncols = al.n_columns;
         const std::vector< int > s = arrayclass.getS ();
-
+		
         int nRowVertices = nrows;
         int nColVertices = ncols;
         int nColumnLevelVertices = std::accumulate (s.begin (), s.end (), 0);

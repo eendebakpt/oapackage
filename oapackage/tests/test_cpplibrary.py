@@ -22,6 +22,21 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(oapackage.splitFile([]), '')
         self.assertEqual(oapackage.splitDir([1,2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
         
+        
+        
+    def test_arraylink2arraydata(self):
+        #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
+        al=oapackage.exampleArray(0)
+        adata=oapackage.arraylink2arraydata(al)
+        self.assertEqual(str(adata), r'arrayclass: N 8, k 2, strength 2, s {2,2}, order 0' )
+        al=oapackage.array_link(4,4,0)
+        al.setconstant(0)
+        adata=oapackage.arraylink2arraydata(al)
+        al.setconstant(-1)
+        with self.assertRaises(RuntimeError):
+            _=oapackage.arraylink2arraydata(al)
+
+
     def test_exception_handling(self):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler("file","function", 10, 0, "hi")
