@@ -349,11 +349,10 @@ typedef std::vector< arraysymmetry > symmetryset;
 
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
-/// helper function
-template < class Type > void insertUnique (std::vector< Type > &cp, const Type &cpv) {
+/// Append element to vector if the element the element is not at the end of vector
+template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &cpv) {
         if (cp.size () > 0) {
                 if (!(cp.back () == cpv))
-                        // cp.emplace_back(cpv);
                         cp.push_back (cpv);
         } else {
                 cp.push_back (cpv);
@@ -384,7 +383,7 @@ struct LMCreduction_t {
         long nred;
 
         int targetcol; 
-        int mincol;    // used in debugging
+        int mincol;    
 
         int nrows, ncols;
 
@@ -392,6 +391,7 @@ struct LMCreduction_t {
 
         class symm_t {
               public:
+		/// which kind of data to store
                 int store;
                 int ncols;
                 std::vector< colpermset > colperms;
@@ -440,19 +440,19 @@ struct LMCreduction_t {
                         if (store < 2)
                                 return;
                         int n = cpv.size ();
-                        insertUnique (colcombs[n], cpv);
+                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
                 }
                 void storeColumnCombination (const colperm_t cp, int n) {
                         if (store < 2)
                                 return;
                         colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insertUnique (colcombs[n], cpv);
+                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
                 }
                 void storeColumnPermutation (const colperm_t cp, int n) {
                         if (store < 2)
                                 return;
                         colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insertUnique (colperms[n], cpv);
+                        insert_if_not_at_end_of_vector (colperms[n], cpv);
                 }
                 void showColperms (int verbose = 1) const {
                         for (size_t i = 0; i <= (size_t)ncols; i++) {

@@ -337,7 +337,7 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata)
         int n = dyndata->col + 1;
         // myprintf("LMCreduction_t::storeSymmetryPermutation: insert symmetry at %d\n", n);
         arraysymmetry as (dyndata);
-        insertUnique (symmetries[n], as);
+        insert_if_not_at_end_of_vector (symmetries[n], as);
 
         if (symmetries[n].size () % 500000 == 0) {
                 int nrows = symmetries[n][0].rowperm->size ();
