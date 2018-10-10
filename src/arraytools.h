@@ -1328,8 +1328,8 @@ class array_transformation_t {
         array_transformation_t ();                                           
 		/// copy constructor
         array_transformation_t (const array_transformation_t &at);            
-		/// assignment operator
-		array_transformation_t &operator= (const array_transformation_t &at); 
+	/// assignment operator
+	array_transformation_t &operator= (const array_transformation_t &at); 
         ~array_transformation_t ();                                          
 
         /// show the array transformation

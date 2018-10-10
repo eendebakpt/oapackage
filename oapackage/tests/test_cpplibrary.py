@@ -8,8 +8,13 @@ import numpy
 import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
+    import io
+    from unittest.mock import patch
+    python3=True
 else:
     import mock
+    python3=False
+
 
 import oapackage
 
@@ -22,7 +27,21 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(oapackage.splitFile([]), '')
         self.assertEqual(oapackage.splitDir([1,2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
         
-        
+
+    def test_array_transformation_t(self):
+        at=oapackage.array_transformation_t()
+        if python3:
+            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+                at.show()
+                std_output = mock_stdout.getvalue()
+                self.assertEqual(std_output, 'array transformation: no class defined\n')
+
+        al=oapackage.exampleArray(0)
+        arrayclass=oapackage.arraylink2arraydata(al)
+        at=oapackage.array_transformation_t(arrayclass)
+        at.setcolperm([1,0])
+        _=at.show()
+        self.assertEqual(at.colperm(), (1,0))
         
     def test_arraylink2arraydata(self):
         #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]

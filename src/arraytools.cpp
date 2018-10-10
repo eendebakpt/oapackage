@@ -119,7 +119,7 @@ void array_transformation_t::setlevelperm (int colindex, std::vector< int > lvlp
 void array_transformation_t::show (std::ostream &out) const {
      
           if(this->ad==0) {
-               out << "array transformation: no class defined "<< std::endl;
+               out << "array transformation: no class defined" << std::endl;
            return;    
           }
         out << "array transformation: N " << ad->N;
@@ -220,12 +220,24 @@ void array_transformation_t::free () {
         if (ad != 0) {
                 delete ad;
         }
+        ad=0;
+        rperm=0;
+        cperm=0;
+        lperms=0;
 }
 
 /// Assignment operator
 array_transformation_t &array_transformation_t::operator= (const array_transformation_t &tt) {
           // TODO: check we have transformations of similar type?
-        myassert(this->ad->N==tt.ad->N);
+       if (tt.ad==0) {
+        free ();
+        
+        return *this;
+       }
+       if(ad!=0) {
+          //myassert(this->ad->N==tt.ad->N);
+          //throw_runtime_exception("for assignment need equal values of N");
+       }
         
         free ();
 
