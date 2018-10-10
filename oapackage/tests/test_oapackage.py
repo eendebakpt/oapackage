@@ -292,6 +292,10 @@ class TestOAhelper(unittest.TestCase):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
         self.assertAlmostEqual(v[0], 0.3747931073686535)
+        al = oapackage.exampleArray(9, 0)
+        v = oapackage.oahelper.designStandardError(al)
+        np.testing.assert_array_almost_equal(v[1], np.array([0.1679305 , 0.17229075, 0.17286095, 0.17287786, 0.17303912,
+        0.17353519, 0.17548291])) 
 
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)

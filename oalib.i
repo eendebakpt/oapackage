@@ -328,7 +328,7 @@ def __setitem__(self,index, value):
 #pragma SWIG nowarn=454
 
 namespace std {
-   %template(arraylist_t) deque<array_link>; // arraylist_t
+   %template(arraylist_t) deque<array_link>; 
    %template(jstructArray) vector<jstruct_t>; // results list
    %template(uint8Vector) std::vector<unsigned char>;
    %template(charVector) std::vector<signed char>;
@@ -493,7 +493,7 @@ public:
 %extend std::deque<array_link> {
 public:
     std::string __repr__() {
-      return printfstring("arraylink array with %d elements", $self->size() ); // $self->showstr();
+      return printfstring("list of array_link objects with %d elements", $self->size() ); 
     }
 }
 

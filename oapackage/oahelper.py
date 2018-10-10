@@ -1118,13 +1118,11 @@ def designStandardError(al):
 
     """
 
-    X = np.matrix(al.getModelMatrix(2))
+    X = np.array(al.getModelMatrix(2))
     k = al.n_columns
 
-    #m = 1 + k + k * (k - 1) / 2
-
     scalefac = 1
-    M = (X.transpose() * X / scalefac).I
+    M = np.linalg.inv(X.transpose().dot(X) / scalefac)
 
     mm = np.array(M.diagonal()).flatten()
 
