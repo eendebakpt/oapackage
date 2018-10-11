@@ -2216,10 +2216,6 @@ arraylist_t extend_conference_restricted (const arraylist_t &lst, const conferen
 
         int vb = std::max (0, verbose - 1);
 
-        int ncstart = 3;
-        if (lst.size () > 0)
-                ncstart = lst[0].n_columns + 1;
-
         for (size_t i = 0; i < lst.size (); i++) {
                 const array_link &al = lst[i];
                 int extcol = al.n_columns;
