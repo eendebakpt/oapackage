@@ -90,6 +90,17 @@ class TestCppLibrary(unittest.TestCase):
         seq = oapackage.PECsequence(al)
         numpy.testing.assert_equal(seq, (1.0,) * len(seq))
 
+    def test_arraylink(self):
+        al=oapackage.exampleArray(0)
+        self.assertEqual(al.at(0,1), 0)
+        self.assertEqual(al.at(0), 0)
+        with self.assertRaises(IndexError):
+            al.at(-1,0)
+        with self.assertRaises(IndexError):
+            al.at(-1)
+        with self.assertRaises(IndexError):
+            al.at(0,al.n_columns)
+            
     def test_arraylink_slicing(self):
         numpy_array = np.arange(0, 6 * 10).reshape((6, 10))
 

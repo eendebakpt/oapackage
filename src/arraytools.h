@@ -915,6 +915,10 @@ struct array_link {
 private:
     /// return true if both arrays have the same size
     bool equal_size(const array_link &array) const;
+    
+    bool _valid_index (const rowindex_t r, const colindex_t c) const;
+    bool _valid_index (int index) const;
+
 };
 
 // simple permutation type
@@ -1426,9 +1430,9 @@ class array_transformation_t {
 
       private:
 		/// initialize permutation structures
-        void init (); 
+        void allocate_data_structures (); 
 		/// free permutation structures and arraydata_t structure
-        void free (); 
+        void free_data_structures ();         
 };
 
 /** \brief Contains a transformation of a conference matrix
