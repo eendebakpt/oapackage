@@ -714,14 +714,12 @@ array_link::~array_link () {
         }
 }
 
-//! Create array link with array
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
         this->setconstant(0);
 }
 
-//! Create array link with array
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_, carray_t *data)
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);

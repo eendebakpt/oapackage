@@ -533,13 +533,13 @@ std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, in
  * The array_link struct is a struct that represents an array.
  */
 struct array_link {
-        //! Number of rows in array
+        /// Number of rows in array
         rowindex_t n_rows;
-        //! Number of columns in array
+        /// Number of columns in array
         colindex_t n_columns;
-        //! Index number
+        /// Index number
         int index;
-        //! Pointer to array data
+        /// Pointer to array data
         array_t *array;
 
         static const int INDEX_NONE = 0;
@@ -548,15 +548,18 @@ struct array_link {
 
         /// Constructor functions
         array_link ();
+        /// Create array link filled with zeros
         array_link (rowindex_t nrows, colindex_t ncols, int index);
+        /// create array_link structure with data from raw data
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-        ~array_link ();
+        /// create array_link structure with data from another array_link structure
         array_link (const array_link &);
+        /// create array_link structure with data from Eigen matrix
         array_link (Eigen::MatrixXd &m);
+        ~array_link ();
 
 #ifdef SWIGCODE
         array_link (long *pymatinput, int nrows, int ncols);
-// array_link( double* pymatinput, int nrows, int ncols);
 #endif
         array_link clone () const;
 
