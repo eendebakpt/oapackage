@@ -32,11 +32,11 @@ calculate some of their statistical properties. The following example shows how 
    1  0
    1  1
    1  1
-   >>> D = al.Defficiency() # Calculate the D-efficiency for estimating the [main-effects model?]
-   >>> r = al.rank() # Calculate the rank of the [design or model matrix?]
-   >>> print('D-efficiency D-efficiency %f, rank %d’ % (D, r) )
+   >>> D = al.Defficiency() # calculate the D-efficiency for estimating the [main-effects model?]
+   >>> array_rank = al.rank() # calculate the rank of the design
+   >>> print('D-efficiency D-efficiency %f, rank %d' % (D, array_rank) )
    D-efficiency 1.000000, rank 2
-   >>> gwlp = al.GWLP() # Calculate the generalized word length pattern
+   >>> gwlp = al.GWLP() # calculate the generalized word length pattern
    >>> print('Generalized wordlength pattern: %s' % gwlp )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
