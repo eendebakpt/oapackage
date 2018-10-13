@@ -1,50 +1,59 @@
 Introduction
 ============
 
-Orthogonal arrays are an important tool in the design of
-experiments :cite:`Hedayat1999`. The Orthogonal Array
-package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs. The algorithms and methods in this package
-have been described in :cite:`Eendebak2009`. A large
+Orthogonal arrays, optimal designs and conference designs are important tools for the design of
+experiments :cite:`Elster1995` :cite:`Hedayat1999` :cite:`Wu2009`. The Orthogonal Array
+package contains functionality to generate and analyse these types of designs. The algorithms and methods in this package
+are described in :cite:`Eendebak2009` and :cite:`EendebakSO`. A large
 collection of arrays can be found on the Orthogonal Array
-packagewebsite :cite:`EendebakOA` or on the website of Neil
+package website :cite:`EendebakOA`. An alternative collection of orthogonal arrays can be found on the website of Neil
 Sloane :cite:`Sloanewebsite`.
 
 
 Example usage
 -------------
 
-The Orthogonal Array package can be used to work with arrays and
-calculate statistical properties. For example to calculate the
-:math:`D`-efficiency and rank of a design we can use:
-
+The Orthogonal Array package can be used to generate and manipulate designs. Additionally, it can
+calculate some of their statistical properties. The following example shows how to generate an orthogonal array with
+8 runs and 2 factors, and calculate three relevant statistical properties:
 
 .. code-block:: python
    :caption: Calculate D-efficiency 
 
    >>> import oapackage
-   >>> al=oapackage.exampleArray(0)
-   >>> al.showarray()
-   array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
-   >>> print('D-efficiency D-efficiency %f, rank %d’ % (al.Defficiency(), al.rank()) )
+   >>> al=oapackage.exampleArray(0) # Generate an orthogonal array 
+   >>> al.showarray() 
+   array: 
+   0  0
+   0  0 
+   0  1 
+   0  1
+   1  0
+   1  0
+   1  1
+   1  1
+   >>> D = al.Defficiency() # Calculate the D-efficiency for estimating the [main-effects model?]
+   >>> r = al.rank() # Calculate the rank of the [design or model matrix?]
+   >>> print('D-efficiency D-efficiency %f, rank %d’ % (D, r) )
    D-efficiency 1.000000, rank 2
-   >>> print('Generalized wordlength pattern: %s' % al.GWLP() )
+   >>> gwlp = al.GWLP() # Calculate the generalized word length pattern
+   >>> print('Generalized wordlength pattern: %s' % gwlp )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
 Interfaces
 ----------
 
-The Orthogonal Array package has several interfaces. First of all there
-are command line tools for manipulating arrays and generating designs. All
-functions of the package can be used from either C++ or Python.
+The Orthogonal Array package has interfaces in C++ and Python. These interfaces include command line 
+tools for generating, manipulating and analyzing all the types of designs. 
 
-For the generation of D-optimal designs also Matlab or R can be used, see
+For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab and R interfaces; see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_
 and `README.R.md <https://github.com/eendebakpt/oapackage/README.R.md>`_.
 
 License 
 -------
 
-The code is available under a BSD style license, see the file `LICENSE <https://github.com/eendebakpt/oapackage/blob/master/LICENSE>`_
+The code is available under a BSD style license; see the file `LICENSE <https://github.com/eendebakpt/oapackage/blob/master/LICENSE>`_
 for details. If you use this code or any of the results, please cite
 this program as follows:
 
