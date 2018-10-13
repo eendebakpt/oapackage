@@ -114,21 +114,21 @@ double CL2discrepancy (const array_link &al);
 * \param array Array to calculate second order interaction model from
 * \returns Array interaction effects
 */
-array_link array2secondorder (const array_link &al);
+array_link array2secondorder (const array_link &array);
 
 /** calculate second order interaction model for 2-level array
  *
  * \param array Array to calculate second order interaction model from
  * \returns Array with intercept, main effects and interaction effects
  */
-array_link array2xf (const array_link &al);
+array_link array2xf (const array_link &array);
 
 /** calculate second order interaction model for 2-level array
 *
 * \param array Array to calculate second order interaction model from
 * \returns Array with intercept, main effects and interaction effects
 */
-Eigen::MatrixXd array2xfeigen (const array_link &al);
+Eigen::MatrixXd array2xfeigen (const array_link &array);
 
 /// return rank of an array based on FullPivHouseholderQR
 int arrayrankFullPivQR (const array_link &al, double threshold = -1);

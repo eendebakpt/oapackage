@@ -605,21 +605,21 @@ int compare_matrix (const numtype *A, const numtype *B, int r, int c) {
         return 1;
 }
 
-/*!
+/*! \brief Calculates factorial
  *	A small function that calculates the factorial of a number.
-    Returns one if the argument is smaller or equal to 1
-        \brief Calculates factorial
- *	\param number	Number to calculate the factorial of
+ *   Returns one if the argument is smaller or equal to 1
+ *     
+ *	\param number Number to calculate the factorial of
  *  \returns Factorial of specified number
  */
-template < class Type > inline Type factorial (const Type f) {
-        if (f <= 1)
+template < class Type > inline Type factorial (const Type number) {
+        if (number <= 1)
                 return 1;
         Type sol = 1;
-        for (int i = f; i > 1; i--) {
+        for (int i = number; i > 1; i--) {
 #ifdef OAOVERFLOW
                 if (sol > std::numeric_limits< Type >::max () / 100) {
-                        myprintf ("fact: number %ld, i %d:  %ld, %ld\n", (long)f, i, (long)sol,
+                        myprintf ("fact: number %ld, i %d:  %ld, %ld\n", (long)number, i, (long)sol,
                                   (long)std::numeric_limits< Type >::max ());
                 }
 #endif
