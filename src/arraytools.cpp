@@ -118,10 +118,10 @@ void array_transformation_t::setlevelperm (int colindex, std::vector< int > lvlp
  */
 void array_transformation_t::show (std::ostream &out) const {
      
-          if(this->ad==0) {
-               out << "array transformation: no class defined" << std::endl;
+        if(this->ad==0) {
+           out << "array transformation: no class defined" << std::endl;
            return;    
-          }
+        }
         out << "array transformation: N " << ad->N;
         if (this->isIdentity ()) {
                 out << ": identity transformation" << std::endl;
@@ -142,10 +142,8 @@ void array_transformation_t::show (std::ostream &out) const {
 
 void array_transformation_t::show () const {
 #ifdef FULLPACKAGE
-        // ofstream mycout = ofstream(stdout);
         std::stringstream ss;
         this->show (ss);
-        // std::cout << ss.str();
         myprintf ("%s", ss.str ().c_str ());
 #endif
 }
@@ -163,17 +161,17 @@ array_transformation_t::array_transformation_t () {
  */
 array_transformation_t::array_transformation_t (const arraydata_t *adp) {
         ad = new arraydata_t (*adp);
-        init ();
+        allocate_data_structures ();
 }
 array_transformation_t::array_transformation_t (const arraydata_t &adp) {
         ad = new arraydata_t (adp);
-        init ();
+        allocate_data_structures ();
 }
 
 array_transformation_t::array_transformation_t (const array_transformation_t &tt) {
         ad = new arraydata_t (*(tt.ad));
 
-        init ();
+        allocate_data_structures ();
 
         // copy data
         std::copy (tt.rperm, tt.rperm + ad->N, rperm);
@@ -192,7 +190,7 @@ void array_transformation_t::reset () {
         }
 }
 
-void array_transformation_t::init () {
+void array_transformation_t::allocate_data_structures () {
         if (ad==0)
                throw_runtime_exception("need valid arraydata_t structure");
         rperm = new_perm_init< rowindex_t > (ad->N);
@@ -204,7 +202,7 @@ void array_transformation_t::init () {
         }
 }
 
-void array_transformation_t::free () {
+void array_transformation_t::free_data_structures () {
         if (ad == 0) {
                 return;
         }
@@ -216,7 +214,6 @@ void array_transformation_t::free () {
         }
         delete[] lperms;
 
-        // myprintf("array_transformation_t::free: delete ad\n");
         if (ad != 0) {
                 delete ad;
         }
@@ -228,23 +225,17 @@ void array_transformation_t::free () {
 
 /// Assignment operator
 array_transformation_t &array_transformation_t::operator= (const array_transformation_t &tt) {
-          // TODO: check we have transformations of similar type?
        if (tt.ad==0) {
-        free ();
+        free_data_structures ();
         
         return *this;
        }
-       if(ad!=0) {
-          //myassert(this->ad->N==tt.ad->N);
-          //throw_runtime_exception("for assignment need equal values of N");
-       }
         
-        free ();
+        free_data_structures ();
 
         ad = new arraydata_t (*(tt.ad));
-        init ();
+        allocate_data_structures ();
 
-        // copy data
         std::copy (tt.rperm, tt.rperm + ad->N, rperm);
         std::copy (tt.cperm, tt.cperm + ad->ncols, cperm);
         for (colindex_t c = 0; c < ad->ncols; c++) {
@@ -258,7 +249,6 @@ array_transformation_t &array_transformation_t::operator= (const array_transform
  * @brief array_transformation_t destructor
  */
 array_transformation_t::~array_transformation_t () {
-        // this->print(cout);
         delete_perm (rperm);
         delete_perm (cperm);
         if (lperms != 0) {
@@ -343,8 +333,6 @@ void array_transformation_t::randomize () {
         /* level permutation */
         for (colindex_t c = 0; c < ad->ncols; c++) {
                 random_perm (lperms[c], ad->s[c]);
-
-                // myprintf("randomize: col %d: \n", c); print_perm(lperms[c], ad->s[c] );
         }
 }
 
@@ -473,8 +461,6 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
                 for (int ii = cb; ii < jj; ii++) {
                         for (int r = 0; r < N; r++) {
                                 tmpcol[ii + 1][r] = tmpcol[ii][r] + al.array[r + pp[ii] * N];
-                                // printf(    "         %d = %d + %d\n", tmpcol[ii+1][r], tmpcol[ii][r],
-                                // al.array[r+pp[ii]*N]);
                         }
                 }
 
@@ -484,7 +470,6 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
                 for (int r = 0; r < N; r++) {
                         tmp = tmpcol[jj][r];
                         tmp %= 2;
-                        // tmp *=2; tmp--;
                         jval += tmp;
                 }
                 jval = -(2 * jval - N);
@@ -496,7 +481,6 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
                 if (verbose >= 2) {
                         myprintf ("comb %d: jval %d\n", x, jval);
                 }
-                //  cout << printfstring("   J value %d\n", jv);
         }
 
         free2d (tmpcol, jj + 1);
@@ -567,23 +551,6 @@ array_link::array_link (const array_link &rhs) {
 }
 
 #ifdef SWIGCODE
-/*
-    array_link::array_link ( double* pymatdoubleinput, int nrows, int ncols )
-    {
-     this->index=INDEX_DEFAULT;
-     this->n_columns=ncols;
-     this->n_rows=nrows;
-     this->array = create_array ( this->n_rows, this->n_columns );
-     int i=0;
-          for(int row=0; row<this->n_rows; row++ ) {
-     for ( int col=0; col<this->n_columns;col++) {
-               this->array[row+col*this->n_rows] = (array_t)pymatdoubleinput[i];
-          i++;
-     }
-     }
-    }
-*/
-
 array_link::array_link (long *pymatinput, int nrows, int ncols) {
         this->index = INDEX_DEFAULT;
         this->n_columns = ncols;
@@ -612,11 +579,9 @@ array_link::array_link (Eigen::MatrixXd &m) {
 
 /// create an array by permuting columns
 array_link::array_link (const array_link &rhs, const std::vector< int > &colperm) : array (0) {
-        // printfd("array_link: constructor: %dx%d\n",  rhs.n_rows,  rhs.n_columns);
         init (rhs.n_rows, rhs.n_columns);
         for (int c = 0; c < rhs.n_columns; c++) {
                 int cp = colperm[c];
-                // cp=c; //hack
                 std::copy (rhs.array + n_rows * cp, rhs.array + n_rows * (cp + 1), this->array + c * n_rows);
         }
 }
@@ -625,14 +590,14 @@ array_link::array_link (const array_link &rhs, const std::vector< int > &colperm
  * @brief Element access
  */
 array_t array_link::at (const int index) const {
-        if (index < 0 || index > this->n_rows * this->n_columns - 1) {
-                return -1;
-        } else {
-                return this->array[index];
+        if ( ! this->_valid_index(index) ) {
+                throw std::out_of_range (printfstring("array_link error: index %dout of bounds\n", index));
         }
+        return this->_at(index);
 }
 
 array_t array_link::_at (const int index) const { return this->array[index]; }
+
 array_link array_link::clone () const {
 
         array_link al (*this);
@@ -663,16 +628,29 @@ void array_link::setvalue (int r, int c, double val) {
 
 void array_link::_setvalue (int r, int c, int val) { this->array[r + this->n_rows * c] = val; }
 
+bool array_link::_valid_index (int index) const {
+        if ((index < 0) || (index >= this->n_rows*this->n_columns)) {
+                return false;
+        }
+        return true;
+}
+
+bool array_link::_valid_index (const rowindex_t r, const colindex_t c) const {
+        if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
+                return false;
+        }
+        return true;
+}
+
 array_t array_link::_at (const rowindex_t r, const colindex_t c) const { return this->array[r + this->n_rows * c]; }
 
 /**
  * @brief Element access
  */
 array_t array_link::at (const rowindex_t r, const colindex_t c) const {
-        if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
-                myprintf ("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
-                          this->n_columns);
-                return 0;
+        if ( ! this->_valid_index(r, c) ) {
+                throw std::out_of_range (printfstring("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                          this->n_columns));
         }
 
         return this->array[r + this->n_rows * c];
@@ -682,13 +660,10 @@ array_t array_link::at (const rowindex_t r, const colindex_t c) const {
  * @brief Element access
  */
 array_t &array_link::at (const rowindex_t r, const colindex_t c) {
-#ifdef OADEBUG
-        if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
-                myprintf ("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
-                          this->n_columns);
-                return this->array[0];
+        if ( ! this->_valid_index(r, c) ) {
+                throw std::out_of_range (printfstring("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                          this->n_columns));
         }
-#endif
 
         return this->array[r + this->n_rows * c];
 }
@@ -701,10 +676,8 @@ void array_link::setconstant (array_t value) { std::fill (this->array, this->arr
 //! Create array link with clone of an array
 array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
-        // myprintf("array_link::constructor: from array (index %d)\n", index);
         this->array = clone_array (array, nrows, ncols);
 
-        // initswig();
 }
 
 //! Create array link from vector
@@ -714,14 +687,12 @@ array_link::array_link (const std::vector< int > &v, rowindex_t nrows, colindex_
                 myprintf ("array_link: error size of vector does not match number of rows and columns\n");
                 return;
         }
-        // myprintf("array_link::constructor: from array (index %d)\n", index);
         this->array = create_array (nrows, ncols);
         std::copy (v.begin (), v.begin () + nrows * ncols, this->array);
 }
 
 //! Default constructor
 array_link::array_link () : n_rows (-1), n_columns (0), index (INDEX_NONE), array (0) {
-        // myprintf("array_link::default constructor\n");
 }
 
 void array_link::init (rowindex_t r, colindex_t c) {
@@ -743,17 +714,14 @@ array_link::~array_link () {
         }
 }
 
-//! Create array link with array
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
         this->setconstant(0);
 }
 
-//! Create array link with array
 array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_, carray_t *data)
     : n_rows (nrows), n_columns (ncols), index (index_) {
-        // myprintf("array_link::array_link: nrows %d, ncols %d\n", nrows, ncols);
         this->array = create_array (nrows, ncols);
         this->setarraydata (data, nrows * ncols);
 }

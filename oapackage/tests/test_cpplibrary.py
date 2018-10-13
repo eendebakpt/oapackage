@@ -90,6 +90,17 @@ class TestCppLibrary(unittest.TestCase):
         seq = oapackage.PECsequence(al)
         numpy.testing.assert_equal(seq, (1.0,) * len(seq))
 
+    def test_arraylink(self):
+        al=oapackage.exampleArray(0)
+        self.assertEqual(al.at(0,1), 0)
+        self.assertEqual(al.at(0), 0)
+        with self.assertRaises(IndexError):
+            al.at(-1,0)
+        with self.assertRaises(IndexError):
+            al.at(-1)
+        with self.assertRaises(IndexError):
+            al.at(0,al.n_columns)
+            
     def test_arraylink_slicing(self):
         numpy_array = np.arange(0, 6 * 10).reshape((6, 10))
 
@@ -105,6 +116,18 @@ class TestCppLibrary(unittest.TestCase):
 
         with self.assertRaises(IndexError):
             al[-1, 1]
+
+    def test_conference_generation(self):
+        
+        al=oapackage.exampleArray(42)
+        lst=[al]
+        conference_type=oapackage.conference_t(al.n_rows, al.n_rows, 0)
+        
+        extensions = oapackage.extend_conference_restricted (lst, conference_type, verbose=1)
+        self.assertEqual(len(extensions), 10)
+
+        self.assertEqual(extensions[0].md5(), 'f759e75d3ce6adda5489fed4c528a6fb')
+        self.assertEqual(extensions[-1].md5(), 'ec13ed02c70dbc9975a99e70e23154b3')
 
 
 if __name__ == '__main__':
