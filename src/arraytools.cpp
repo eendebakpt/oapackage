@@ -4065,6 +4065,13 @@ long nArrays (const char *fname) {
         return n;
 }
 
+/// Append set of arrays to existing list
+inline void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst) {
+	for (arraylist_t::const_iterator it = arrays_to_append.begin(); it < arrays_to_append.end(); ++it) {
+		dst.push_back(*it);
+	}
+}
+
 arraylist_t readarrayfile (const char *fname, int verbose, int *setcols) {
         arraylist_t v;
         readarrayfile (fname, &v, verbose, setcols);

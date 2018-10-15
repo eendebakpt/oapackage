@@ -925,7 +925,6 @@ private:
 
 };
 
-// simple permutation type
 typedef signed char conf_t;
 typedef std::vector< conf_t > conference_column;
 typedef std::vector< conference_column > conference_column_list;
@@ -984,21 +983,19 @@ inline int predictJ (const array_t *array, const int N, const int k) {
         int t = N / 4;
         int tt = t / 2;
 
-        // x1 is the number of + entries in (s)
-        int x1 = 0;
+        int number_of_plus_values = 0;
         for (int i = 0; i < tt; i++) {
                 if (array[k * N + i] == 0) {
-                        x1++;
+                        number_of_plus_values++;
                 }
         }
         for (int i = tt; i < t; i++) {
-                // TODO: value for second loop can be calculated from result of first loop
                 if (array[k * N + i] == 1) {
-                        x1++;
+                        number_of_plus_values++;
                 }
         }
 
-        return 8 * x1 - N;
+        return 8 * number_of_plus_values - N;
 }
 
 #include <map>
@@ -1737,7 +1734,7 @@ struct arrayfile_t {
                 if (this->mode == ATEXT) {
                         fprintf (this->nfid, "-1\n");
                 }
-                this->closefile (); // afile);
+                this->closefile ();
         }
 
         void setVerbose (int v) { this->verbose = v; }
@@ -1745,9 +1742,9 @@ struct arrayfile_t {
       private:
         int read_array_binary_zero (array_link &a);
         void write_array_binary (carray_t *array, const int nrows, const int ncols);
-        void write_array_binary (const array_link &A);          // write an array in binary mode to a file
-        void write_array_binary_diff (const array_link &A);     // write an array in binary mode to a file
-        void write_array_binary_diffzero (const array_link &A); // write an array in binary mode to a file
+        void write_array_binary (const array_link &A);          
+        void write_array_binary_diff (const array_link &A);     
+        void write_array_binary_diffzero (const array_link &A); 
 
       public:
         int getnbits () { return nbits; }
@@ -1784,7 +1781,6 @@ struct arrayfile_t {
         static int arrayNbits (const arraydata_t &ad) {
                 int m = 0;
                 for (int i = 0; i < ad.ncols; ++i) {
-                        // myprintf("s[i]: %d\number_of_arrays", ad.s[i]);
                         if (ad.s[i] > m) {
                                 m = ad.s[i];
                         }
@@ -1937,12 +1933,8 @@ void appendArrays (const arraylist_t &al, const typename std::vector< IndexType 
         }
 }
 
-/// Append selection of arrays to existing list
-inline void appendArrays (const arraylist_t &al, arraylist_t &dst) {
-        for (arraylist_t::const_iterator it = al.begin (); it < al.end (); ++it) {
-                dst.push_back (*it);
-        }
-}
+/// Append set of arrays to existing list
+void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst);
 
 /** Write a formatted array
  */
@@ -2192,7 +2184,7 @@ inline void vectorvector2binfile (const std::string fname, const std::vector< st
 
 /** convert 2-level array to main effects in Eigen format
  *
- * \param al Array to convert
+ * \param arrays_to_append Array to convert
  * \param intercept If True, then include the intercept
  * \returns The main effects model
  */
@@ -2202,7 +2194,7 @@ MatrixFloat array2eigenX1 (const array_link &al, int intercept = 1);
  *
  * The intercept and main effects are not included.
  *
- * \param al Array to convert
+ * \param arrays_to_append Array to convert
  * \returns The second order interaction model
  */
 MatrixFloat array2eigenX2 (const array_link &al);
@@ -2230,7 +2222,7 @@ int arrayInFile (const array_link &array, const char *array_file, int verbose = 
 
 /** return index of specified array in a list. returns -1 if array is not found
  *
- * \param al Array to find
+ * \param arrays_to_append Array to find
  * \param arrays List of arrays
  * \param verbose Verbosity level
  * \returns Position of array in list

@@ -451,7 +451,7 @@ mvalueVector = vector_mvalue_t_long
 %}
 
 
-%template(cpermVector) std::vector< cperm >;
+%template(conference_columnVector) std::vector< conference_column >;
 
 %template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
 %template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
