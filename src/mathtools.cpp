@@ -248,6 +248,10 @@ void Combinations::initialize_number_combinations (int N) {
         }
 }
 
+Combinations::~Combinations() {
+	// we define the empty destructor because swig otherwise generates an error
+}
+
 int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
 
 long Combinations::number_combinations (int n, int k) {

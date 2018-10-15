@@ -140,7 +140,7 @@ void checkGenerators (int verbose = 1) {
         cgenerator.verbose = 0;
         for (int i = 0; i < 2; i++) {
                 {
-                        const std::vector< cperm > &cl = cgenerator.generateCandidates (al);
+                        const std::vector< conference_column > &cl = cgenerator.generateCandidates (al);
                         myassert (cl.size () == 3, "unittest error: inverse of array transformation\n");
 
                         if (verbose >= 2) {
@@ -166,7 +166,7 @@ void checkGenerators (int verbose = 1) {
                 int filterj2 = 1;
                 int filtersymminline = 1;
                 int averbose = verbose;
-                std::vector< cperm > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
+                std::vector< conference_column > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
                                                                                ct.j3zero, filtersymminline);
                 if (verbose >= 2) {
 
@@ -178,7 +178,7 @@ void checkGenerators (int verbose = 1) {
                         CandidateGenerator cgenerator (array_link (), ct);
                         int kz = maxz (al) + 1;
                         cgenerator.verbose = verbose;
-                        std::vector< cperm > ee = cgenerator.generateCandidatesZero (al, kz);
+                        std::vector< conference_column > ee = cgenerator.generateCandidatesZero (al, kz);
                         printf ("ee.size() %d\n", (int)ee.size ());
                         myassert (ee.size () == 1, "number of candidnates generated");
                         if (verbose >= 2) {

@@ -87,6 +87,7 @@ typedef double eigenFloat;
 *
 * \param m Matrix about which to print information
 * \param str String to prepend in output
+* \param verbose Verbosity level
 */
 void eigenInfo (const MatrixFloat m, const char *str = "eigen", int verbose = 1);
 
@@ -925,15 +926,15 @@ private:
 };
 
 // simple permutation type
-typedef signed char cperm_t;
-typedef std::vector< signed char > cperm;
-typedef std::vector< cperm > cperm_list;
+typedef signed char conf_t;
+typedef std::vector< conf_t > conference_column;
+typedef std::vector< conference_column > conference_column_list;
 
 /// concatenate 2 arrays in vertical direction
 array_link hstack (const array_link &al, const array_link &b);
 
-/// concatenate 2 arrays in vertical direction
-array_link hstack (const array_link &al, const cperm &b);
+/// concatenate array and conference_column 
+array_link hstack (const array_link &al, const conference_column &b);
 
 /// concatenate 2 arrays in horizontal direction
 array_link hstack (const array_link &al, const array_link &b);
@@ -941,8 +942,8 @@ array_link hstack (const array_link &al, const array_link &b);
 array_link hstacklastcol (const array_link &A, const array_link &B);
 
 /// concatenate two permutations
-inline cperm vstack (const cperm &A, const cperm &B) {
-        cperm c (A.size () + B.size ());
+inline conference_column vstack (const conference_column &A, const conference_column &B) {
+        conference_column c (A.size () + B.size ());
 
         std::copy (A.begin (), A.end (), c.begin ());
         std::copy (B.begin (), B.end (), c.begin () + A.size ());

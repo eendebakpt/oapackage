@@ -2111,7 +2111,7 @@ MatrixFloat array2eigenX2 (const array_link &al) {
 }
 
 // helper function for Python interface
-void eigen2numpyHelper (double *pymat1, int n, const Eigen::MatrixXd &m) {
+void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m) {
         myprintf ("pymat1 %p\n", (void *)pymat1);
         std::copy (m.data (), m.data () + m.size (), pymat1);
 }
@@ -5031,8 +5031,7 @@ array_link vstack (const array_link &al, const array_link &b) {
         return v;
 }
 
-/// stack to arrays together
-array_link hstack (const array_link &al, const cperm &b) {
+array_link hstack (const array_link &al, const conference_column &b) {
         assert (al.n_rows == (int)b.size ());
         array_link v (al.n_rows, al.n_columns + 1, array_link::INDEX_NONE);
         std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);

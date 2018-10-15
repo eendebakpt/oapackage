@@ -670,6 +670,9 @@ template < class Type > inline Type ncombs (const Type n, const Type k) {
 class Combinations {
 	
       public:
+
+ 		~Combinations();
+
         /// return max number of N that can be calculated with number_combinations
         static int number_combinations_max_n ();
 

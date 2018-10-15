@@ -15,32 +15,19 @@
 #include "graphtools.h"
 
 /// print a candidate extension
-inline void print_cperm (const cperm &c) {
-        for (size_t i = 0; i < c.size (); i++) {
-                myprintf ("%3d", c[i]);
-        }
-}
-
-/// print a candidate extension
-inline void print_cperm (const char *msg, const cperm &c) {
-        myprintf ("%s: ", msg);
-        for (size_t i = 0; i < c.size (); i++) {
-                myprintf ("%3d", c[i]);
-        }
-        myprintf ("\n");
-}
+void print_cperm(const conference_column &c, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
  * \param cc List of candidates to show
  */
-void showCandidates (const std::vector< cperm > &cc);
+void showCandidates (const std::vector< conference_column > &cc);
 
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
       public:
         /// list of candidate extentions for each number of columns
-        std::vector< std::vector< cperm > > ce;
+        std::vector< std::vector< conference_column > > ce;
 
         /// print information about the set of candidate extentions
         void info (int verbose = 1) const {
@@ -102,14 +89,14 @@ conference_transformation_t reduceConferenceTransformation (const array_link &al
 /** Helper structure containing extensions of conference designs
  */
 struct conference_extend_t {
-        std::vector< cperm > first;      /// list of first block candidate extensions
-        std::vector< cperm > second;     /// list of first block candidate extensions
-        std::vector< cperm > extensions; /// list of candidate extensions
+        std::vector< conference_column > first;      /// list of first block candidate extensions
+        std::vector< conference_column > second;     /// list of first block candidate extensions
+        std::vector< conference_column > extensions; /// list of candidate extensions
 
       public:
         // combine first and second section into a single column
-        cperm combine (int i, int j) const {
-                cperm c = vstack (this->first[i], this->second[j]);
+        conference_column combine (int i, int j) const {
+                conference_column c = vstack (this->first[i], this->second[j]);
                 return c;
         }
 
@@ -128,7 +115,7 @@ struct conference_extend_t {
 };
 
 /// return true if zero is a specified position
-inline bool checkZeroPosition (const cperm &p, int zero_position) {
+inline bool checkZeroPosition (const conference_column &p, int zero_position) {
         if (zero_position <= 0)
                 return false;
 
@@ -161,7 +148,7 @@ class CandidateGeneratorBase {
 
       protected:
         /// list of candidate extensions. the elements of candidate_list[k] correspond to columns with index k-1
-        mutable std::vector< cperm_list > candidate_list;
+        mutable std::vector< conference_column_list > candidate_list;
 
       public:
         CandidateGeneratorBase (const array_link &al, const conference_t &ct);
@@ -181,7 +168,7 @@ class CandidateGeneratorBase {
         }
 
         /// return all candidates for the kth column
-        cperm_list candidates (int k);
+        conference_column_list candidates (int k);
 
       protected:
         static const int START_COL = 2;
@@ -223,10 +210,10 @@ class CandidateGeneratorConference : public CandidateGeneratorBase {
         CandidateGeneratorConference (const array_link &al, const conference_t &ct);
 
         /// Generate a list of candidate extensions for the specified design
-        const std::vector< cperm > &generateCandidates (const array_link &al) const;
+        const std::vector< conference_column > &generateCandidates (const array_link &al) const;
 
         /// generate all candidate extensions with a zero at the specified position
-        std::vector< cperm > generateCandidatesZero (const array_link &al, int kz) const;
+        std::vector< conference_column > generateCandidatesZero (const array_link &al, int kz) const;
 };
 
 typedef CandidateGeneratorConference CandidateGenerator;
@@ -243,7 +230,7 @@ class CandidateGeneratorDouble : public CandidateGeneratorBase {
          * to be extended have identical first columns.
          *
          */
-        const std::vector< cperm > &generateCandidates (const array_link &al) const;
+        const std::vector< conference_column > &generateCandidates (const array_link &al) const;
 };
 
 /** Extend a single conference design with candidate columns */
@@ -289,22 +276,22 @@ arraylist_t selectLMC0 (const arraylist_t &list, int verbose, const conference_t
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
  */
-std::vector< cperm > generateConferenceExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateConferenceExtensions (const array_link &al, const conference_t &conference_type,
                                                    int zero_index, int verbose = 1, int filtersymm = 1,
                                                    int filterj2 = 1);
 
 /** Generate candidate extensions for restricted isomorphism classes */
-std::vector< cperm > generateConferenceRestrictedExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateConferenceRestrictedExtensions (const array_link &al, const conference_t &conference_type,
                                                              int zero_index, int verbose = 1, int filtersymm = 1,
                                                              int filterip = 1);
 
 // generate extensions for double conference matrices in LMC0 form
-std::vector< cperm > generateDoubleConferenceExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateDoubleConferenceExtensions (const array_link &al, const conference_t &conference_type,
                                                          int verbose = 1, int filtersymm = 1, int filterip = 1,
                                                          int filterJ3 = 0, int filtersymminline = 1);
 
 // generate extensions for conference matrices in LMC0 form
-std::vector< cperm > generateSingleConferenceExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateSingleConferenceExtensions (const array_link &al, const conference_t &conference_type,
                                                          int zero_index, int verbose, int filtersymm, int filterj2,
                                                          int filterj3, int filtersymminline = 0);
 
@@ -332,7 +319,7 @@ lmc_t LMC0check (const array_link &al, int verbose = 0);
 bool isConferenceFoldover (const array_link &al, int verbose = 0);
 
 // return true if the extension column satisfies the inner product check
-int ipcheck (const cperm &col, const array_link &al, int cstart = 2, int verbose = 0);
+int ipcheck (const conference_column &col, const array_link &al, int cstart = 2, int verbose = 0);
 
 /// return minimal position of zero in design
 int minz (const array_link &al, int column_index);
@@ -413,8 +400,8 @@ class DconferenceFilter {
         }
 
         /// filter a list of cperms using the filter method
-        std::vector< cperm > filterList (const std::vector< cperm > &lst, int verbose = 0) const {
-                std::vector< cperm > out;
+        std::vector< conference_column > filterList (const std::vector< conference_column > &lst, int verbose = 0) const {
+                std::vector< conference_column > out;
                 for (size_t i = 0; i < lst.size (); i++) {
                         if (this->filter (lst[i])) {
                                 out.push_back (lst[i]);
@@ -426,8 +413,8 @@ class DconferenceFilter {
                 return out;
         }
 
-        std::vector< cperm > filterListJ2last (const std::vector< cperm > &lst) const {
-                std::vector< cperm > out;
+        std::vector< conference_column > filterListJ2last (const std::vector< conference_column > &lst) const {
+                std::vector< conference_column > out;
                 for (size_t i = 0; i < lst.size (); i++) {
                         if (this->filterJ2last (lst[i])) {
                                 out.push_back (lst[i]);
@@ -438,8 +425,8 @@ class DconferenceFilter {
         }
 
         /// filter a list of cperms using the filterZero method
-        std::vector< cperm > filterListZero (const std::vector< cperm > &lst) const {
-                std::vector< cperm > out;
+        std::vector< conference_column > filterListZero (const std::vector< conference_column > &lst) const {
+                std::vector< conference_column > out;
                 for (size_t i = 0; i < lst.size (); i++) {
                         if (this->filterZero (lst[i])) {
                                 out.push_back (lst[i]);
@@ -449,16 +436,16 @@ class DconferenceFilter {
         }
 
         /// return True of the extension satisfies all checks
-        bool filter (const cperm &c) const;
+        bool filter (const conference_column &c) const;
 
         /** filter on partial column (only last col)
          *
          * r (int): the number of rows that are valid
          **/
-        bool filterJpartial (const cperm &c, int r) const;
+        bool filterJpartial (const conference_column &c, int r) const;
 
         /// return True of the extension satisfies all J-characteristic checks
-        bool filterJ (const cperm &c, int j2start = 0) const {
+        bool filterJ (const conference_column &c, int j2start = 0) const {
                 if (filterj2) {
                         // perform inner product check for all columns
                         if (!ipcheck (c, als, j2start)) {
@@ -476,7 +463,7 @@ class DconferenceFilter {
         }
 
         /// return True of the extension satisfies all J-characteristic checks for the last columns
-        bool filterJlast (const cperm &c, int j2start = 0) const {
+        bool filterJlast (const conference_column &c, int j2start = 0) const {
                 if (filterj2) {
                         // perform inner product check for all columns
                         if (!ipcheck (c, als, j2start)) {
@@ -494,10 +481,10 @@ class DconferenceFilter {
                 return true;
         }
         /// return True of the extension satisfies all checks
-        bool filterReason (const cperm &c) const;
+        bool filterReason (const conference_column &c) const;
 
         /// return True of the candidate satisfies the J3 check
-        bool filterJ3 (const cperm &c) const {
+        bool filterJ3 (const conference_column &c) const {
                 const int nc = dtable.n_columns;
                 const int N = als.n_rows;
                 int jv = 0;
@@ -518,7 +505,7 @@ class DconferenceFilter {
         }
 
         /// return True of the candidate satisfies the J3 check for specified pairs
-        bool filterJ3s (const cperm &c, int idxstart) const {
+        bool filterJ3s (const conference_column &c, int idxstart) const {
                 const int nc = dtable.n_columns;
                 const int N = als.n_rows;
                 int jv = 0;
@@ -538,7 +525,7 @@ class DconferenceFilter {
                 return true;
         }
         /// return True of the candidate satisfies the J3 check
-        bool filterJ3r (const cperm &c) const {
+        bool filterJ3r (const conference_column &c) const {
                 const int nc = dtable.n_columns;
                 const int N = als.n_rows;
                 int jv = 0;
@@ -558,7 +545,7 @@ class DconferenceFilter {
                 return true;
         }
         /// return True of the candidate satisfies the J3 check
-        bool filterJ3inline (const cperm &c) const {
+        bool filterJ3inline (const conference_column &c) const {
                 const int nc = inline_dtable.n_columns;
                 const int N = als.n_rows;
                 int jv = 0;
@@ -579,18 +566,18 @@ class DconferenceFilter {
         }
 
         /// return True of the candidate satisfies the symmetry check
-        bool filterSymmetry (const cperm &c) const;
+        bool filterSymmetry (const conference_column &c) const;
 
         /// return True of the candidate extension satisfies the J2 check
-        bool filterJ2 (const cperm &c) const { return ipcheck (c, als, 0); }
+        bool filterJ2 (const conference_column &c) const { return ipcheck (c, als, 0); }
         /// return True of the candidate extension satisfies the J2 check for the last column of the array checked
         /// against
-        bool filterJ2last (const cperm &c) const { return ipcheck (c, als, als.n_columns - 1); }
+        bool filterJ2last (const conference_column &c) const { return ipcheck (c, als, als.n_columns - 1); }
         /** return True of the candidate extension satisfies the zero check
          *
          * This means that the first entries of the extension do not contain a zero.
          */
-        bool filterZero (const cperm &c) const {
+        bool filterZero (const conference_column &c) const {
                 for (int i = 0; i < minzvalue - 1; i++) {
                         if (c[i] == 0) {
                                 return false;
@@ -611,7 +598,7 @@ class DconferenceFilter {
  *
  * \return List of inflated extensions
  **/
-std::vector< cperm > inflateCandidateExtension (const cperm &basecandidate, const array_link &als,
+std::vector< conference_column > inflateCandidateExtension (const conference_column &basecandidate, const array_link &als,
                                                 const symmetry_group &alsg, const std::vector< int > &check_indices,
                                                 const conference_t &ct, int verbose, const DconferenceFilter &filter);
 
