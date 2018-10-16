@@ -1198,33 +1198,6 @@ void create_root (const arraydata_t *ad, arraylist_t &solutions);
 /**
  * @brief Comparision operator for the array link
  */
-inline int array_link::operator< (const array_link &rhs) const {
-        if ( ! this->equal_size(rhs) ) {
-                myprintf ("array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
-                          this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
-                return 0;
-        }
-        return std::lexicographical_compare (array, array + n_rows * n_columns, rhs.array,
-                                             rhs.array + n_rows * n_columns);
-}
-
-/**
- * @brief Comparision operator for the array link
- */
-inline int array_link::operator> (const array_link &rhs) const {
-        if ( ! this->equal_size(rhs) ) {
-                myprintf ("array_link::operator> comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
-                          this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
-                return 0;
-        }
-
-        return std::lexicographical_compare (rhs.array, rhs.array + n_rows * n_columns, array,
-                                             array + n_rows * n_columns);
-}
-
-/**
- * @brief Comparision operator for the array link
- */
 inline int array_link::operator== (const array_link &rhs_array) const {
         if ( ! this->equal_size(rhs_array) ) {
                 return 0;
