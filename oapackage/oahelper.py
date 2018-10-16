@@ -1087,14 +1087,14 @@ def sortcols(X):
 #%%
 
 
-def testHtml(hh=None):
+def testHtml(html_code=None):
     """ Test a short snippet of HTML """
-    if hh is None:
+    if html_code is None:
         return
     page = markup.page()
     page.init()
     page.body()
-    page.add(hh)
+    page.add(html_code)
     page.body.close()
     _, f = tempfile.mkstemp('.html')
     with open(f, 'wt') as fname:
@@ -1234,7 +1234,7 @@ def create_pareto_element(values, pareto=None):
             if isinstance(v, (int, float)):
                 # convert to list type
                 v = [float(v)]
-            if not isinstance(v, (list, type)):
+            if not isinstance(v, (list, tuple)):
                 raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
                     type(pareto), type(v)))
 
@@ -1242,7 +1242,7 @@ def create_pareto_element(values, pareto=None):
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoDoubleLong):
         if not isinstance(values, (list, tuple, np.ndarray)):
-            raise('')
+            raise Exception('cannot handle input of type %s' % (tuple(values), ))
         vector_pareto = values
     else:
         raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (

@@ -222,17 +222,17 @@ struct arraydata_t {
 
         ~arraydata_t ();
 
-        /// return true if the array is of mixed type
+        /// return true if the class represents mixed-level arrays
         bool ismixed () const;
 
-        /// return true if the array is a 2-level array
+        /// return true if the class represents a 2-level array
         bool is2level () const;
 
         /// return random array from the class. this operation is only valid for strength 0 or 1
         array_link randomarray (int strength = 0, int ncols = -1) const;
 
-        /**
-         * @brief Write file with design of OA
+        /** @brief Write file with design of OA
+		 *
          * @param filename
          * @return
          */
@@ -316,7 +316,8 @@ struct arraydata_t {
                 print_perm (this->colgroupsize, this->ncolgroups);
         }
 
-        void calcoaindex (colindex_t strength) {
+		/// calculate the index of the orthogonal arrays in this class
+        void calculate_oa_index (colindex_t strength) {
                 int combs = 1;
                 for (int i = 0; i < this->strength; i++) {
                         combs *= this->s[i];
@@ -523,7 +524,11 @@ inline void perform_inv_row_permutation (const array_t *source, array_t *target,
                 }
 }
 
-/** Return example array */
+/** Return example array
+ *
+ * \param idx Index of example array to return
+ * \param verbose If True, then print information about the array to stdout
+ */
 array_link exampleArray (int idx = 0, int verbose = 0);
 
 /// calculate J-characteristics for a conference design

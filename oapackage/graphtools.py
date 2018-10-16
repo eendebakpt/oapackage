@@ -123,5 +123,4 @@ def test_select_isomorphism():
     assert(len(mm) == 2)
     assert(np.all(mm[0] == mm[1]))
 
-if __name__ == '__main__':
-    test_select_isomorphism()
+

@@ -2894,7 +2894,7 @@ void arraydata_t::complete_arraydata () {
                 }
         }
         arraydata_t *ad = this;
-        this->calcoaindex (ad->strength);
+        this->calculate_oa_index (ad->strength);
 
         /* calculate column group structure */
         std::vector< int > xx (ad->s, ad->s + ad->ncols);
