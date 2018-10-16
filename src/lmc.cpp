@@ -2206,7 +2206,6 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
         // pre-compute
         array_link alsub = al;
         arraydata_t adatasub (&adata, al.n_columns);
-        // array_link alsub = al.deleteColumn(-1);  arraydata_t adatasub(&adata, alsub.n_columns);
         LMCreduction_t reductionsub (&adatasub);
         reductionsub.init_state = COPY;
 
@@ -2822,7 +2821,7 @@ array_link reduceDOPform (const array_link &al, int verbose) {
 /// add mixed values
 std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, const arraydata_t &ad,
                                         int verbose = 0) {
-        std::vector< GWLPvalue > xx;
+        std::vector< GWLPvalue > GWLPvalues;
         int nc = dopgwp.size ();
         for (int i = 0; i < nc; i++) {
                 GWLPvalue w = dopgwp[i];
@@ -2836,18 +2835,18 @@ std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, c
                         display_vector< double > (t);
                         myprintf ("\n");
                 }
-                xx.push_back (t);
+                GWLPvalues.push_back (t);
         }
 
-        return xx;
+        return GWLPvalues;
 }
 
-array_transformation_t reductionDOP (const array_link &al, int verbose) {
-        int strength = al.strength ();
+array_transformation_t reductionDOP (const array_link &input_array, int verbose) {
+        int strength = input_array.strength ();
 
-        arraydata_t ad = arraylink2arraydata (al);
+        arraydata_t ad = arraylink2arraydata (input_array);
 
-        std::vector< GWLPvalue > dopgwp = projectionGWLPs (al);
+        std::vector< GWLPvalue > dopgwp = projectionGWLPs (input_array);
         indexsort is (dopgwp);
 
         std::vector< GWLPvalue > dofvalues = dopgwp;
@@ -2870,10 +2869,10 @@ array_transformation_t reductionDOP (const array_link &al, int verbose) {
         if (verbose >= 2)
                 sg.show ();
 
-        array_transformation_t at (&ad);
-        at.setcolperm (is.indices);
+        array_transformation_t column_transformation (&ad);
+        column_transformation.setcolperm (is.indices);
 
-        array_link alf (al, is.indices);
+        array_link alf (input_array, is.indices);
 
         if (verbose) {
                 myprintf ("is sorting: ");
@@ -2894,18 +2893,18 @@ array_transformation_t reductionDOP (const array_link &al, int verbose) {
 
         reduction.mode = OA_REDUCE;
         reduction.init_state = COPY;
-		if (0)
+		if (1)
         {
                 reduction.init_state = INIT;
                 // reduction.init_state=COPY;
                 reduction.setArray (alf);
                 int changed = check_root_update (alf.array, ad, reduction.array);
-                copy_array (alf.array, reduction.array, al.n_rows, al.n_columns); // hack?
+                copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns); // hack?
         }
 
         lmc_t ret = LMCcheck (alf, ad, oaextend, reduction);
-        array_transformation_t tmp = (*(reduction.transformation)) * at;
-        return tmp;
+        array_transformation_t array_transformation = (*(reduction.transformation)) * column_transformation;
+        return array_transformation;
 }
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int verbose, int dopruning, int strength,
@@ -2944,7 +2943,6 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                         GWLPvalue x = *(min_element (dopgwp.begin (), dopgwp.begin () + ncols - 1));
                         if (verbose >= 2) {
                                 myprintf ("  delete-1 GWP sequence:        ");
-                                // printf_vector<GWLPvalue> ( dopgwp, "%.3f " );
                                 display_vector< GWLPvalue > (dopgwp);
 
                                 myprintf ("\n");
