@@ -1644,6 +1644,16 @@ inline double jj452double (const double *ww) {
         return val;
 }
 
+/// helper function to calculate J-values
+inline int fastJupdateValue(rowindex_t N, carray_t *tmpval) {
+	int jval = 0;
+	for (rowindex_t r = 0; r < N; r++) {
+		jval += tmpval[r] % 2;
+	}
+	jval = 2 * jval - N;
+	return (jval);
+}
+
 /// return value of subarray based on J4-J5 ordering
 jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val = -1, int dosort = 1) {
 

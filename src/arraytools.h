@@ -1194,34 +1194,6 @@ void create_root (array_t *array, const arraydata_t *ad);
 /// Creates the root of an OA. The root is appended to the current list of arrays
 void create_root (const arraydata_t *ad, arraylist_t &solutions);
 
-/**
- * @brief Assignment operator
- */
-inline array_link &array_link::operator= (const array_link &rhs) { return deepcopy (rhs); }
-
-inline array_link &array_link::shallowcopy (const array_link &rhs) {
-        this->n_rows = rhs.n_rows;
-        this->n_columns = rhs.n_columns;
-        this->index = rhs.index;
-        this->array = rhs.array;
-        return *this;
-}
-
-inline array_link &array_link::deepcopy (const array_link &rhs) {
-        this->n_rows = rhs.n_rows;
-        this->n_columns = rhs.n_columns;
-        this->index = rhs.index;
-        // perform deep copy
-        if (this->array) {
-                destroy_array (this->array);
-        }
-        if (rhs.array == 0) {
-                this->array = create_array (this->n_rows, this->n_columns);
-        } else {
-                this->array = clone_array (rhs.array, this->n_rows, this->n_columns);
-        }
-        return *this;
-}
 
 /**
  * @brief Comparision operator for the array link
@@ -1260,36 +1232,9 @@ inline int array_link::operator== (const array_link &rhs_array) const {
         return std::equal (array, array + n_rows * n_columns, rhs_array.array);
 }
 
-/**
- * @brief Comparision operator for the array link
- */
-inline int array_link::operator!= (const array_link &rhs_array) const {
-        if ( ! this->equal_size(rhs_array) ) {
-                myprintf ("array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
-                          this->index, rhs_array.index, this->n_rows, this->n_columns, rhs_array.n_rows, rhs_array.n_columns);
-                return 0;
-        }
-
-        return (!std::equal (array, array + n_rows * n_columns, rhs_array.array));
-}
 
 /// Compare 2 arrays and return position of first difference
 int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, rowindex_t &rpos, colindex_t &cpos);
-
-/// Compare 2 arrays and return 0 if equal
-int array_cmp (carray_p A, carray_p B, const rowindex_t r, const colindex_t c);
-
-/* analyse arrays */
-
-/// helper function to calculate J-values
-inline int fastJupdateValue (rowindex_t N, carray_t *tmpval) {
-        int jval = 0;
-        for (rowindex_t r = 0; r < N; r++) {
-                jval += tmpval[r] % 2;
-        }
-        jval = 2 * jval - N;
-        return (jval);
-}
 
 /// helper function to calculate J-values
 inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp) {
@@ -1304,7 +1249,7 @@ inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const 
 
 /** Calculate J-value for a 2-level array
  */
-int jvalue (const array_link &ar, const int J, const int *pp);
+int jvalue (const array_link &array, const int J, const int *column_indices);
 
 /// calculate J-value for a 2-level array
 int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *pp);
@@ -1336,8 +1281,8 @@ class array_transformation_t {
         array_transformation_t ();                                           
 		/// copy constructor
         array_transformation_t (const array_transformation_t &at);            
-	/// assignment operator
-	array_transformation_t &operator= (const array_transformation_t &at); 
+		/// assignment operator
+		array_transformation_t &operator= (const array_transformation_t &at); 
         ~array_transformation_t ();                                          
 
         /// show the array transformation
@@ -1361,54 +1306,16 @@ class array_transformation_t {
         void randomizerowperm ();
 
         /// apply transformation to an array_link object
-        array_link apply (const array_link &al) const {
-                array_link trx (al);
-                this->apply (al.array, trx.array);
-                return trx;
-        }
-        /// apply transformation to an array_link object
-        array_link applygeneric (const array_link &al) const {
-                // transform
-                array_link tmp = al + 1;
-
-                array_link trx (tmp);
-                this->apply (al.array, trx.array);
-
-                // reverse transformation
-                return trx + (-1);
-        }
+		array_link apply(const array_link &array) const;
 
         /// Comparison operator
         int operator== (const array_transformation_t &t2) const;
 
         /// composition operator. the transformations are applied from the left
-        array_transformation_t operator* (const array_transformation_t b) {
-
-                array_transformation_t c (this->ad);
-
-                const array_transformation_t &a = *this;
-
-                const int nc = this->ad->ncols;
-
-                // perform the rows permutations
-                perform_inv_perm (b.rperm, c.rperm, this->ad->N, a.rperm);
-
-                // perform the column permutations
-                perform_inv_perm (b.cperm, c.cperm, nc, a.cperm);
-
-                /* level permutations */
-                for (colindex_t ci = 0; ci < ad->ncols; ci++) {
-                        levelperm_t l1 = b.lperms[a.cperm[ci]];
-                        levelperm_t l2 = a.lperms[ci];
-
-                        composition_perm (l1, l2, this->ad->s[ci], c.lperms[ci]);
-                }
-
-                return c;
-        }
+		array_transformation_t operator* (const array_transformation_t b) const;
 
         /// apply transformation to an array (inplace)
-        void apply (array_t *sourcetarget);
+        void apply (array_t *sourcetarget) const;
 
         /// apply transformation to an array
         void apply (const array_t *source, array_t *target) const;

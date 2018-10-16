@@ -37,6 +37,30 @@ int get_file_status (FILE *f) {
 
 #endif
 
+array_transformation_t array_transformation_t::operator* (const array_transformation_t b) const {
+
+	array_transformation_t c(this->ad);
+
+	const array_transformation_t &a = *this;
+
+	const int nc = this->ad->ncols;
+
+	// perform the rows permutations
+	perform_inv_perm(b.rperm, c.rperm, this->ad->N, a.rperm);
+
+	// perform the column permutations
+	perform_inv_perm(b.cperm, c.cperm, nc, a.cperm);
+
+	/* level permutations */
+	for (colindex_t ci = 0; ci < ad->ncols; ci++) {
+		levelperm_t l1 = b.lperms[a.cperm[ci]];
+		levelperm_t l2 = a.lperms[ci];
+
+		composition_perm(l1, l2, this->ad->s[ci], c.lperms[ci]);
+	}
+
+	return c;
+}
 int array_transformation_t::operator== (const array_transformation_t &t2) const {
         if (this->ad->N != t2.ad->N) {
                 return 0;
@@ -290,8 +314,71 @@ void array_transformation_t::print_transformed (carray_t *source) const {
         destroy_array (a);
 }
 
-/// apply transformation to an array
-void array_transformation_t::apply (array_t *sourcetarget) {
+int array_link::operator!= (const array_link &rhs_array) const {
+	if (!this->equal_size(rhs_array)) {
+		myprintf("array_link::operator== comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
+			this->index, rhs_array.index, this->n_rows, this->n_columns, rhs_array.n_rows, rhs_array.n_columns);
+		throw_runtime_exception("comparing arrays with different sizes");
+	}
+
+	return (!std::equal(array, array + n_rows * n_columns, rhs_array.array));
+}
+
+array_link array_transformation_t::apply(const array_link &al) const {
+	array_link trx(al);
+	this->apply(al.array, trx.array);
+	return trx;
+}
+
+int array_link::operator< (const array_link &rhs) const {
+	if (!this->equal_size(rhs)) {
+		myprintf("array_link::operator< comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
+			this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
+		return 0;
+	}
+	return std::lexicographical_compare(array, array + n_rows * n_columns, rhs.array,
+		rhs.array + n_rows * n_columns);
+}
+
+int array_link::operator> (const array_link &rhs) const {
+	if (!this->equal_size(rhs)) {
+		myprintf("array_link::operator> comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
+			this->index, rhs.index, this->n_rows, this->n_columns, rhs.n_rows, rhs.n_columns);
+		return 0;
+	}
+
+	return std::lexicographical_compare(rhs.array, rhs.array + n_rows * n_columns, array,
+		array + n_rows * n_columns);
+}
+
+array_link &array_link::operator= (const array_link &rhs) { return deepcopy(rhs); }
+
+array_link &array_link::shallowcopy(const array_link &rhs) {
+	this->n_rows = rhs.n_rows;
+	this->n_columns = rhs.n_columns;
+	this->index = rhs.index;
+	this->array = rhs.array;
+	return *this;
+}
+
+array_link &array_link::deepcopy(const array_link &rhs) {
+	this->n_rows = rhs.n_rows;
+	this->n_columns = rhs.n_columns;
+	this->index = rhs.index;
+	// perform deep copy
+	if (this->array) {
+		destroy_array(this->array);
+	}
+	if (rhs.array == 0) {
+		this->array = create_array(this->n_rows, this->n_columns);
+	}
+	else {
+		this->array = clone_array(rhs.array, this->n_rows, this->n_columns);
+	}
+	return *this;
+}
+
+void array_transformation_t::apply (array_t *sourcetarget) const {
         array_t *tmp = create_array (ad->N, ad->ncols);
         copy_array (sourcetarget, tmp, ad->N, ad->ncols);
         this->apply (tmp, sourcetarget);
