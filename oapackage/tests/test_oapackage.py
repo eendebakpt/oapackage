@@ -8,10 +8,10 @@ import tempfile
 import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
+    from unittest.mock import patch
 else:
     import mock
-
-from unittest.mock import patch
+    from mock import patch
 
 import oalib
 import oapackage
