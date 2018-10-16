@@ -41,6 +41,20 @@ class TestCppLibrary(unittest.TestCase):
         _ = at.show()
         self.assertEqual(at.colperm(), (1, 0))
 
+    def test_basic_array_link_functionality(self):
+        al2a=oapackage.array_link(2,2,0)
+        al2b=oapackage.array_link(2,2,0)
+        al2b.setconstant(1)
+        
+        al3=oapackage.array_link(3,2,0)
+        self.assertTrue(al2a != al2b)
+        self.assertFalse(al2a == al2b)
+        self.assertTrue(al2a.equalsize(al2b))
+        self.assertFalse(al2a.equalsize(al3))
+        self.assertTrue(al2a < al2b)
+        self.assertFalse(al2b < al2a)
+        #self.assertTrue(al2b <= al2b)
+        
     def test_arraylink2arraydata(self):
         #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
         al = oapackage.exampleArray(0)

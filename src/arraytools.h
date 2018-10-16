@@ -713,9 +713,7 @@ struct array_link {
         int operator> (const array_link &rhs) const;
 
         /// return true of two array have the same dimensions
-        int equalsize (const array_link &rhs) const {
-                return (this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns);
-        }
+		int equalsize(const array_link &rhs) const;
 
         /// elementwise addition
         array_link operator+ (const array_link &) const;
@@ -1193,17 +1191,6 @@ class jstructconference_t : public jstructbase_t {
 void create_root (array_t *array, const arraydata_t *ad);
 /// Creates the root of an OA. The root is appended to the current list of arrays
 void create_root (const arraydata_t *ad, arraylist_t &solutions);
-
-
-/**
- * @brief Comparision operator for the array link
- */
-inline int array_link::operator== (const array_link &rhs_array) const {
-        if ( ! this->equal_size(rhs_array) ) {
-                return 0;
-        }
-        return std::equal (array, array + n_rows * n_columns, rhs_array.array);
-}
 
 
 /// Compare 2 arrays and return position of first difference

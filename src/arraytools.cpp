@@ -340,6 +340,17 @@ int array_link::operator< (const array_link &rhs) const {
 		rhs.array + n_rows * n_columns);
 }
 
+int array_link::equalsize(const array_link &rhs) const {
+	return (this->n_rows == rhs.n_rows && this->n_columns == rhs.n_columns);
+}
+
+int array_link::operator== (const array_link &rhs_array) const {
+	if (!this->equal_size(rhs_array)) {
+		return 0;
+	}
+	return std::equal(array, array + n_rows * n_columns, rhs_array.array);
+}
+
 int array_link::operator> (const array_link &rhs) const {
 	if (!this->equal_size(rhs)) {
 		myprintf("array_link::operator> comparing arrays (%d %d) with different sizes: (%d,%d) (%d, %d)!\n",
