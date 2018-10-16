@@ -102,7 +102,7 @@ except BaseException:
         return [[0, 0, 1280, 720]]
 
 
-def test_monitorSizes():
+def guitest_monitorSizes():
     monitorSizes()
 
 
@@ -946,6 +946,7 @@ def test_selectJ():
 def extendSingleArray(A, adata, t=3, verbose=1):
     """ Extend a single orthogonal array """
     oaoptions = oalib.OAextend()
+    oaoptions.setAlgorithmAuto(adata)
     sols0 = oalib.arraylist_t()
     solsx = oalib.arraylist_t()
     sols0.push_back(A)
@@ -958,7 +959,7 @@ def extendSingleArray(A, adata, t=3, verbose=1):
 
 def test_extendSingleArray():
     A = oapackage.exampleArray(4, 1)
-    adata = oapackage.arraylink2arraydata(A)
+    adata = oapackage.arraylink2arraydata(A, extracols=2)
     B = A.selectFirstColumns(5)
     ee = extendSingleArray(B, adata, t=2, verbose=1)
     assert(ee[0].n_columns == B.n_columns + 1)
@@ -1086,14 +1087,14 @@ def sortcols(X):
 #%%
 
 
-def testHtml(hh=None):
+def testHtml(html_code=None):
     """ Test a short snippet of HTML """
-    if hh is None:
+    if html_code is None:
         return
     page = markup.page()
     page.init()
     page.body()
-    page.add(hh)
+    page.add(html_code)
     page.body.close()
     _, f = tempfile.mkstemp('.html')
     with open(f, 'wt') as fname:
@@ -1117,13 +1118,11 @@ def designStandardError(al):
 
     """
 
-    X = np.matrix(al.getModelMatrix(2))
+    X = np.array(al.getModelMatrix(2))
     k = al.n_columns
 
-    #m = 1 + k + k * (k - 1) / 2
-
     scalefac = 1
-    M = (X.transpose() * X / scalefac).I
+    M = np.linalg.inv(X.transpose().dot(X) / scalefac)
 
     mm = np.array(M.diagonal()).flatten()
 
@@ -1235,7 +1234,7 @@ def create_pareto_element(values, pareto=None):
             if isinstance(v, (int, float)):
                 # convert to list type
                 v = [float(v)]
-            if not isinstance(v, (list, type)):
+            if not isinstance(v, (list, tuple)):
                 raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
                     type(pareto), type(v)))
 
@@ -1243,7 +1242,7 @@ def create_pareto_element(values, pareto=None):
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoDoubleLong):
         if not isinstance(values, (list, tuple, np.ndarray)):
-            raise('')
+            raise Exception('cannot handle input of type %s' % (tuple(values), ))
         vector_pareto = values
     else:
         raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (

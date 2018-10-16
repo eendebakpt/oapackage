@@ -59,7 +59,7 @@ endif()
 message(STATUS "OA development code: ${OADEV}")
 message(STATUS "OA extend code: ${OAEXTEND}")
 
-set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h src/evenodd.h)
+set(headers src/pareto.h src/analysis.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/Deff.h src/evenodd.h src/version.h)
 set(srcs src/pareto.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/graphtools.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/Deff.cpp src/evenodd.cpp)
 
 set(headers ${headers} src/conference.h)
@@ -409,33 +409,6 @@ if(MATLAB_FOUND)
 	endforeach()
 endif()
 
-# > matlab -nojvm -r "Doptim; exit"
-
-
-####### Python support ##########################
-
-
-#add_dependencies(pythoncheck python)
-if(DOPYTHON)	
-	add_custom_target( pythondoc )
-	add_custom_command(
-	  TARGET pythondoc POST_BUILD
-	  COMMAND cd xml; xsltproc ../swig.xsl index.xml > swig_doc.i; cd ..
-	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
-
-	add_custom_target( pinstall )
-	add_custom_command(
-	  TARGET pinstall
-	  POST_BUILD
-	  COMMAND python setup.py install --user
-	#  COMMAND sudo python setup.py install
-	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
-
-endif(DOPYTHON)
-
-
 add_custom_target( doc )
 add_custom_command(
   TARGET doc
@@ -464,9 +437,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "4")
-SET(CPACK_PACKAGE_VERSION_PATCH "8")
-
-#SET(CPACK_STRIP_FILES "bin/MyExecutable")
+SET(CPACK_PACKAGE_VERSION_PATCH "15")
 
 
 #set(CPACK_SOURCE_PACKAGE_FILE_NAME "xxx-${VERSION}" CACHE INTERNAL "tarball basename")
@@ -523,3 +494,5 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # cmake -DCMAKE_INSTALL_PREFIX:PATH=~vsc20149 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
 
+# source formatting: clang-format -style="{BasedOnStyle: llvm, IndentWidth: 8, ColumnLimit: 119, SpaceBeforeParens: Always, SpacesInAngles: true}" -i  *.h *.cpp
+# also see: http://cf.monofraps.net/

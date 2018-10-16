@@ -28,6 +28,7 @@ import subprocess
 import platform
 
 rtd = os.environ.get('READTHEDOCS', False)
+mock_oalib = False
 
 if rtd:
     import sys
@@ -39,8 +40,9 @@ if rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    MOCK_MODULES = ['_oalib']
-    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+    if mock_oalib:
+        MOCK_MODULES = ['_oalib']
+        sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
     print('##############################')
     print('current directory: %s' % os.getcwd())

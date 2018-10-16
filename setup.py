@@ -181,10 +181,11 @@ class OATest(TestCommand):
         # import here, cause outside the eggs aren't loaded
         print('## oapackage test: load package')
         import oapackage.tests
+        import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.miscunittest(verbose=1)
+        oapackage.tests.test_oapackage.miscunittest(verbose=1)
         errno = 0
         sys.exit(errno)
 
@@ -292,11 +293,12 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd:
+if rtd and 0:
     ext_modules = [] # do not build on RTD, this generates a time-out error  
     swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
     print('RTD: run swig command: %s' % (swigcmd,))
     output = subprocess.check_output(swigcmd.split(' '))
+    print('swig output:')
     print(output)
 else:
     if not swig_valid:
@@ -348,7 +350,6 @@ setup(name='OApackage',
       py_modules=['oalib'],
       packages=packages,
       data_files=data_files,
-      test_suite="oapackage.tests.unittest",
       scripts=scripts,
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
       zip_safe=False,
@@ -365,5 +366,6 @@ setup(name='OApackage',
                    'Programming Language :: Python :: 3.5',
                    'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
+                   'License :: OSI Approved :: BSD License'
                    ]
       )

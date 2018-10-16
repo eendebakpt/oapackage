@@ -6,7 +6,7 @@ The Orthogonal Array package contains functionality to generate and analyse orth
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the
-documentation at [https://oapackage.readthedocs.io/en/latest/](https://oapackage.readthedocs.io/en/latest/)
+documentation at [oapackage.readthedocs.io](https://oapackage.readthedocs.io/en/latest/)
 and the webpage <http://pietereendebak.nl/oapackage/>.
 
 Usage
@@ -86,7 +86,7 @@ Testing
 To perform tests run `pytest`. To obtain a coverage report, run
 ```
 $ coverage run --source='./oapackage' -m pytest
-$ coverage report --omit oapackage/markup.py,oapackage/tests.py,oapackage/deprecated.py
+$ coverage report --omit oapackage/markup.py,oapackage/tests/*.py,oapackage/deprecated.py
 ```
 
 Continuous integration and testing for the C++ library is performed on [Travis](https://travis-ci.org/eendebakpt/oapackage) and for the Python package on

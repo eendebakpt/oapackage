@@ -17,9 +17,7 @@
 
 %include "numpy.i"
 %init %{
-#ifdef SWIGPYTHON
 import_array();
-#endif
 %}
 
 %apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
@@ -226,7 +224,7 @@ def _slice2range(self, slice, max_value):
     else:
         start = slice.start
     if slice.stop is None:
-        stop = maxvalue
+        stop = max_value
     else:
         stop = slice.stop
     if slice.step is None:
@@ -328,7 +326,7 @@ def __setitem__(self,index, value):
 #pragma SWIG nowarn=454
 
 namespace std {
-   %template(arraylist_t) deque<array_link>; // arraylist_t
+   %template(arraylist_t) deque<array_link>; 
    %template(jstructArray) vector<jstruct_t>; // results list
    %template(uint8Vector) std::vector<unsigned char>;
    %template(charVector) std::vector<signed char>;
@@ -355,6 +353,23 @@ namespace std {
     $action
   } catch (std::runtime_error& e) {
     SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
+%exception throw_runtime_exception {
+  try {
+    $action
+  } catch (std::runtime_error& e) {
+    SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+  }
+}
+
+%exception {
+  try {
+    $action
+  } 
+  SWIG_CATCH_STDEXCEPT // catch std::exception
+  catch (...) {
+     SWIG_exception_fail(SWIG_UnknownError, "Unknown exception");
   }
 }
 
@@ -434,7 +449,7 @@ mvalueVector = vector_mvalue_t_long
 %}
 
 
-%template(cpermVector) std::vector< cperm >;
+%template(conference_columnVector) std::vector< conference_column >;
 
 %template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
 %template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
@@ -455,7 +470,10 @@ public:
 %extend array_transformation_t {
 public:
     std::string __repr__() {
-      return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      if($self->ad!=0)
+	return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
+      else
+	return printfstring("array_transformation_t: no class defined");      
     }
 } 
 
@@ -476,7 +494,7 @@ public:
 %extend std::deque<array_link> {
 public:
     std::string __repr__() {
-      return printfstring("arraylink array with %d elements", $self->size() ); // $self->showstr();
+      return printfstring("list of array_link objects with %d elements", $self->size() ); 
     }
 }
 

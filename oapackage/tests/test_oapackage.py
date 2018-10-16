@@ -4,13 +4,14 @@
 import sys
 import os
 import numpy as np
-import numpy
 import tempfile
 import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
+    from unittest.mock import patch
 else:
     import mock
+    from mock import patch
 
 import oalib
 import oapackage
@@ -283,19 +284,46 @@ class TestOAhelper(unittest.TestCase):
         r = oapackage.oahelper.safemin(np.array([]), default=-2)
         self.assertEqual(r, -2)
 
+    def test_choose(self):        
+        test_cases= [ ((3,2), 3), ( (10,1), 10), ((5,2), 10), ((1,0),1), ((-1,0), 1)]
+        for args, expected in test_cases:
+            print(args)
+            result=oapackage.oahelper.choose(*args)
+            self.assertEqual(result, expected)
+            
     def test_create_pareto_element(self):
         values = [1, 2, 3]
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
         self.assertEqual(p, values)
 
+        self.assertRaises(Exception, oapackage.oahelper.create_pareto_element, dict() )
+    
+        pareto=oalib.ParetoMultiDoubleLong()
+        pareto_element = oapackage.oahelper.create_pareto_element( [ [1,2],[3,4]], pareto)
+        self.assertEqual(pareto_element.size(), 2)
+
+        pareto=oalib.ParetoMultiLongLong()
+        pareto_element = oapackage.oahelper.create_pareto_element( [ [1,2],[3,4]], pareto)
+        self.assertEqual(pareto_element.size(), 2)
+
+
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
         self.assertAlmostEqual(v[0], 0.3747931073686535)
-
+        al = oapackage.exampleArray(9, 0)
+        v = oapackage.oahelper.designStandardError(al)
+        np.testing.assert_array_almost_equal(v[1], np.array([0.1679305, 0.17229075, 0.17286095, 0.17287786, 0.17303912,
+                                                             0.17353519, 0.17548291]))
+    
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
 
+    def test_testHtml(self):
+        import webbrowser
+        with patch.object(webbrowser, "open", return_value=None):
+            oapackage.oahelper.testHtml('<p>hi</p>')
+        
     def test_bounds(self):
         b = oapackage.oahelper.DefficiencyBound(.8, 4, 6)
         self.assertAlmostEqual(b, 0.8944271909999)
@@ -346,8 +374,13 @@ class TestDoptimize(unittest.TestCase):
                 al, arrayclass=None, niter=100, nabort=200, verbose=0, alpha=[1, 0, 0], method=method)
 
     def test_generateDscatter(self):
-        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None,
-                                              ndata=3, nofig=True, fig=20, scatterarea=80)
+        try:
+            import matplotlib.pyplot
+            fig = None
+        except:
+            fig = 100
+        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, verbose=1,
+                                              ndata=3, nofig=True, fig=fig, scatterarea=80)
 
     def test_generateDpage(self):
         outputdir = tempfile.mkdtemp()
@@ -356,7 +389,24 @@ class TestDoptimize(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
                                               fig=None, optimfunc=[1, 0, 0], nofig=True)
+        guitest = True
+        try:
+            import matplotlib.pyplot
+        except:
+            matplotlib = None
+            guitest = False
+        if guitest:
+            print('test_generateDpage: run gui test')
+            # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
+            #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
+            try:
+                matplotlib.pyplot.close(100)
+            except:
+                pass
 
+    def test_runcommand(self):
+        oapackage.oahelper.runcommand('dir', dryrun=1, verbose=1)
+        
     def test_filterPareto(self):
         dds = self.dds2
         scores = np.arange(dds.shape[0])
@@ -372,53 +422,6 @@ class TestDoptimize(unittest.TestCase):
     def test_array2Dtable(self):
         sols = [oapackage.exampleArray(9, 0)]
         _ = oapackage.Doptim.array2Dtable(sols, verbose=1, titlestr=None)
-
-
-class TestCppLibrary(unittest.TestCase):
-
-    def test_miscunittest(self):
-        miscunittest()
-
-    def test_selectFirstColumns(self):
-        al = oapackage.exampleArray(41, 1)
-        al = al.selectFirstColumns(3)
-        assert(al.n_columns == 3)
-
-        al = oapackage.exampleArray(1000, 1)
-
-        with self.assertRaises(RuntimeError):
-            al = al.selectFirstColumns(1)
-
-    def test_mycheck_handler(self):
-        oapackage.mycheck_handler('a', 'b', 1, 1, 'bla')
-        with self.assertRaises(RuntimeError):
-            oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
-
-    def test_projection_efficiencies(self):
-        al = oapackage.exampleArray(11, 1)
-        d = oapackage.projDeff(al, 3, 1)
-        D = al.selectFirstColumns(3).Defficiency()
-        assert(D == d[0])
-        numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
-
-        seq = oapackage.PECsequence(al)
-        numpy.testing.assert_equal(seq, (1.0,) * len(seq))
-
-    def test_arraylink_slicing(self):
-        numpy_array=np.arange(0, 6*10).reshape( (6,10))
-        
-        al=oapackage.makearraylink(numpy_array)
-        assert(al[0]==numpy_array.flatten()[0])
-        assert(al[0,1]==numpy_array[0,1])
-        assert(al[4,2]==numpy_array[4,2])   
-        np.testing.assert_equal(al[0:4,1:5], np.array(al)[0:4, 1:5] )
-        np.testing.assert_equal(al[0:1,0:10:2], np.array(al)[0:1,0:10:2] )
-        np.testing.assert_equal(al[3,3::], np.array(al)[3:4,3::] )
-        np.testing.assert_equal(al[2,:8:2], np.array(al)[2:3,:8:2] )
-        np.testing.assert_equal(al[2:3,:8:2], np.array(al)[2:3,:8:2] )
-
-        with self.assertRaises(IndexError):
-            al[-1,1]
 
 
 if __name__ == '__main__':

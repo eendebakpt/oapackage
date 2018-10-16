@@ -1,7 +1,7 @@
 /*! \file oaoptions.h
     \brief Contains options for the oa algorithm
 
-	These options are compiled into the program. Making them a run-time option would be inefficient.
+        These options are compiled into the program. Making them a run-time option would be inefficient.
 */
 
 #ifndef ALGO_OPTIONS_H
@@ -12,7 +12,6 @@
 /* max number of columns in algorithms */
 #define MAXCOLS 60
 #define MAXROWS 2048
-
 
 const int HACK = 0;
 
@@ -50,7 +49,6 @@ const int HACK = 0;
 /* use special code for column (t+1) */
 #define TPLUSCOLUMN 1
 
-
 #define oacolSort flipSort
 #define oacolSortName "flipSort"
 //#define oacolSort bubbleSort
@@ -65,38 +63,28 @@ const int HACK = 0;
  * Print the compile-time options to string.
  * @return String with information
  */
-std::string compile_information();
+std::string compile_information ();
 
 /// Print version
-std::string version();
+std::string version ();
 
 /// Print copyright statement
-void print_copyright();
+void print_copyright ();
 
 /// Print copyright statement
-void print_copyright_old();
+void print_copyright_old ();
 
 /// Print copyright statement
-void print_copyright_light();
+void print_copyright_light ();
 
 /// Print compile time options
-void print_options(std::ostream &outx);
-void print_options();
+void print_options (std::ostream &outx);
+void print_options ();
 
 #ifdef OADEV
-inline int oadevelop()
-{
-    return 1;
-}
+inline int oadevelop () { return 1; }
 #else
-inline int oadevelop()
-{
-    return 0;
-}
+inline int oadevelop () { return 0; }
 #endif
 
 #endif
-
-
-
-

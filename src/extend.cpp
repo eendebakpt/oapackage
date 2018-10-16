@@ -1,15 +1,14 @@
 #ifdef OAEXTEND_MULTICORE
 #include <mpi.h>
 #endif
+#include <algorithm>
+#include <errno.h>
+#include <list>
+#include <numeric>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <errno.h>
 #include <time.h>
-#include <list>
-#include <algorithm>
-#include <numeric>
-
 
 #ifdef _WIN32
 #include <math.h>
@@ -18,174 +17,175 @@
 #include <unistd.h>
 #endif
 
+#include "arrayproperties.h"
+#include "arraytools.h"
 #include "extend.h"
+#include "lmc.h"
 #include "mathtools.h"
 #include "strength.h"
 #include "tools.h"
-#include "arraytools.h"
-#include "lmc.h"
-#include "arrayproperties.h"
 
 using namespace std;
 
-std::vector<int> dextend_t::filterArrays(const array_link &al, const arraylist_t &earrays, arraylist_t &earraysout, std::vector<std::vector<double> > &edata, int verbose)
-{
-	dextend_t &dextend = *this;
-	int nn = dextend.filter.size();
+/*!
+ * Counts the occurence of each element in array
+ * @brief Counts elements
+ * @param array Pointer to array where elements are counted in
+ * @param nelements
+ * @param maxval Maximum value that can occur
+ * @param elements
+ */
+void countelements (carray_t *array, const int nelements, const int maxval, int *elements) {
 
-	std::vector<int> ctype(nn);
-	int ngc = 0;
-	for (int i = 0; i < nn; i++) {
-		ctype[i] = dextend.filter[i] * (dextend.lmctype[i] == LMC_MORE);
-	}
+        memset (elements, 0, maxval * sizeof (int));
 
-	int ngoodcombined = std::accumulate(ctype.begin(), ctype.end(), 0);
-
-	array_link tmparray(al.n_rows, al.n_columns + 1, -1);
-	std::copy(al.array, al.array + al.n_columns*al.n_rows, tmparray.array);
-
-	cprintf(verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn, ngoodcombined, nn);
-	flush_stdout();
-	const int lastcolx = al.n_columns;
-
-	for (size_t idx = 0; idx < ctype.size(); idx++) {
-		if (ctype[idx]) {
-			tmparray.setcolumn(lastcolx, earrays[idx]);
-			earraysout.push_back(tmparray);
-		}
-	}
-
-	return ctype;
-
+        for (int i = 0; i < nelements; i++)
+                elements[array[i]]++;
 }
 
+std::vector< int > dextend_t::filterArrays (const array_link &al, const arraylist_t &earrays, arraylist_t &earraysout,
+                                            std::vector< std::vector< double > > &edata, int verbose) {
+        dextend_t &dextend = *this;
+        int nn = dextend.filter.size ();
 
-void dextend_t::DefficiencyFilter(double Dfinal, int k, int kfinal, double Lmax, int verbose)
-{
-	int kn = k + 1;
-	dextend_t &dextend = *this;
+        std::vector< int > ctype (nn);
+        int ngc = 0;
+        for (int i = 0; i < nn; i++) {
+                ctype[i] = dextend.filter[i] * (dextend.lmctype[i] == LMC_MORE);
+        }
 
-	double Cfinal = Dvalue2Cvalue(Dfinal, kfinal);
-	double Cthr = Cfinal;
-	double CthrMulti = Cfinal / pow(Lmax, kfinal - kn);
+        int ngoodcombined = std::accumulate (ctype.begin (), ctype.end (), 0);
 
-	double Lmaxmulti = pow(Lmax, kfinal - kn);
+        array_link tmparray (al.n_rows, al.n_columns + 1, -1);
+        std::copy (al.array, al.array + al.n_columns * al.n_rows, tmparray.array);
 
-	int nn = dextend.Deff.size();
-	for (int ii = 0; ii < (int)nn; ii++) {
+        cprintf (verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn,
+                 ngoodcombined, nn);
+        flush_stdout ();
+        const int lastcolx = al.n_columns;
 
-		double Ci = Dvalue2Cvalue(dextend.Deff[ii], kn);
+        for (size_t idx = 0; idx < ctype.size (); idx++) {
+                if (ctype[idx]) {
+                        tmparray.setcolumn (lastcolx, earrays[idx]);
+                        earraysout.push_back (tmparray);
+                }
+        }
 
-		int chk = 1;
-		switch (dextend.filtermode) {
-		case DFILTER_NONE:
-			chk = 1;
-			break;
-		case DFILTER_BASIC:
-			chk = Ci >= Cfinal;
-			break;
-		case DFILTER_MULTI:
-			//chk= Ci >= Cfinalmulti;
-			chk = Lmaxmulti * Ci >= Cfinal;
-			break;
-		}
-		dextend.filter[ii] = chk;
-	}
-
-
-}
-void OAextend::updateArraydata(arraydata_t *ad) const
-{
-	if (ad == 0)
-		return;
-
-	// TODO: remove order field from arraydata_t: this allows updateArraydata to be removed (and arraydata_t can be static in more places)
-
-	switch (this->algmode) {
-	case MODE_LMC_SYMMETRY:
-	case MODE_ORIGINAL:
-	case MODE_LMC_2LEVEL:
-		ad->order = ORDER_LEX;
-		break;
-	case MODE_J4:
-		ad->order = ORDER_LEX;
-		break;
-	case MODE_J5ORDER:
-		ad->order = ORDER_J5;
-		break;
-	case MODE_J5ORDERX:
-	case MODE_J5ORDERXFAST:
-		ad->order = ORDER_J5;
-		ad->order = ORDER_LEX;
-		break;
-	case MODE_AUTOSELECT:
-		default
-			:
-				printfd("error: OAextend::updateArraydata: no such mode %d for algorithm_t\n", this->algmode);
-				break;
-	}
+        return ctype;
 }
 
-std::string OAextend::__repr__() const
-{
-	std::string split = "\n";
-	std::string s = printfstring("OAextend: checkarrays %d", checkarrays) + split;
-	s += printfstring("OAextend: singleExtendTime %.1f [s], nLMC %d", singleExtendTime, nLMC) + split;
-	s += printfstring("OAextend: init_column_previous %d", init_column_previous) + split;
-	s += printfstring("OAextend: algorithm %s", this->getAlgorithmName().c_str()) + split;
-	if (this->algmode == MODE_J5ORDERX || this->algmode == MODE_J5ORDERXFAST) {
-		s += printfstring("OAextend: special: j5structure %d", this->j5structure) + split;
-	}
-	return s;
+void dextend_t::DefficiencyFilter (double Dfinal, int k, int kfinal, double Lmax, int verbose) {
+        int kn = k + 1;
+        dextend_t &dextend = *this;
+
+        double Cfinal = Dvalue2Cvalue (Dfinal, kfinal);
+        double Cthr = Cfinal;
+        double CthrMulti = Cfinal / pow (Lmax, kfinal - kn);
+
+        double Lmaxmulti = pow (Lmax, kfinal - kn);
+
+        int nn = dextend.Deff.size ();
+        for (int ii = 0; ii < (int)nn; ii++) {
+
+                double Ci = Dvalue2Cvalue (dextend.Deff[ii], kn);
+
+                int chk = 1;
+                switch (dextend.filtermode) {
+                case DFILTER_NONE:
+                        chk = 1;
+                        break;
+                case DFILTER_BASIC:
+                        chk = Ci >= Cfinal;
+                        break;
+                case DFILTER_MULTI:
+                        // chk= Ci >= Cfinalmulti;
+                        chk = Lmaxmulti * Ci >= Cfinal;
+                        break;
+                }
+                dextend.filter[ii] = chk;
+        }
+}
+void OAextend::updateArraydata (arraydata_t *ad) const {
+        if (ad == 0)
+                return;
+
+        switch (this->algmode) {
+        case MODE_LMC_SYMMETRY:
+        case MODE_ORIGINAL:
+        case MODE_LMC_2LEVEL:
+                ad->order = ORDER_LEX;
+                break;
+        case MODE_J4:
+                ad->order = ORDER_LEX;
+                break;
+        case MODE_J5ORDER:
+                ad->order = ORDER_J5;
+                break;
+        case MODE_J5ORDERX:
+        case MODE_J5ORDERXFAST:
+                ad->order = ORDER_J5;
+                ad->order = ORDER_LEX;
+                break;
+        case MODE_AUTOSELECT:
+        default:
+                printfd ("error: OAextend::updateArraydata: no such mode %d for algorithm_t\n", this->algmode);
+                break;
+        }
 }
 
-void OAextend::setAlgorithmAuto(arraydata_t *ad)
-{
-	if (ad == 0) {
-		myprintf("setAlgorithmAuto: zero pointer\n");
-		return;
-	}
-	algorithm_t x = OAextend::getPreferredAlgorithm(*ad);
-
-	this->setAlgorithm(x, ad);
+std::string OAextend::__repr__ () const {
+        std::string split = "\n";
+        std::string s = printfstring ("OAextend: checkarrays %d", checkarrays) + split;
+        s += printfstring ("OAextend: singleExtendTime %.1f [s], nLMC %d", singleExtendTime, nLMC) + split;
+        s += printfstring ("OAextend: init_column_previous %d", init_column_previous) + split;
+        s += printfstring ("OAextend: algorithm %s", this->getAlgorithmName ().c_str ()) + split;
+        if (this->algmode == MODE_J5ORDERX || this->algmode == MODE_J5ORDERXFAST) {
+                s += printfstring ("OAextend: special: j5structure %d", this->j5structure) + split;
+        }
+        return s;
 }
 
-void OAextend::setAlgorithm(algorithm_t algorithm, arraydata_t *ad)
-{
-	this->algmode = algorithm;
+void OAextend::setAlgorithmAuto (arraydata_t *ad) {
+        if (ad == 0) {
+                myprintf ("setAlgorithmAuto: zero pointer\n");
+                return;
+        }
+        algorithm_t x = OAextend::getPreferredAlgorithm (*ad);
 
-	switch (this->algmode) {
-	case MODE_J5ORDER:
-	case MODE_J5ORDERX:
-	case MODE_J5ORDERXFAST:
-		//printf("set init column to J5 mode\n");
-		init_column_previous = INITCOLUMN_J5;
-		j5structure = J5_45;
-		break;
-	case MODE_LMC_SYMMETRY:
-	case MODE_LMC_2LEVEL:
-	case MODE_ORIGINAL:
-	case MODE_J4:
-		init_column_previous = INITCOLUMN_PREVIOUS;
-		//	printf("setAlgorithm: init_column_previous %d\n", init_column_previous);
-		break;
-	case MODE_AUTOSELECT:
-		init_column_previous = INITCOLUMN_PREVIOUS;
-		break;
-		default
-			:
-				init_column_previous = INITCOLUMN_PREVIOUS;
-				myprintf("OAextend::setAlgorithm: error: algorithm (%d) unknown\n", algorithm);
-				break;
-	}
-
-	this->updateArraydata(ad);
+        this->setAlgorithm (x, ad);
 }
 
-//int check_branch ( extend_data_t *es, carray_t* array, extendpos* p, split *stack, array_t &first, int use_row_symmetry );
+void OAextend::setAlgorithm (algorithm_t algorithm, arraydata_t *ad) {
+        this->algmode = algorithm;
+
+        switch (this->algmode) {
+        case MODE_J5ORDER:
+        case MODE_J5ORDERX:
+        case MODE_J5ORDERXFAST:
+                init_column_previous = INITCOLUMN_J5;
+                j5structure = J5_45;
+                break;
+        case MODE_LMC_SYMMETRY:
+        case MODE_LMC_2LEVEL:
+        case MODE_ORIGINAL:
+        case MODE_J4:
+                init_column_previous = INITCOLUMN_PREVIOUS;
+                break;
+        case MODE_AUTOSELECT:
+                init_column_previous = INITCOLUMN_PREVIOUS;
+                break;
+        default:
+                init_column_previous = INITCOLUMN_PREVIOUS;
+                myprintf ("OAextend::setAlgorithm: error: algorithm (%d) unknown\n", algorithm);
+                break;
+        }
+
+        this->updateArraydata (ad);
+}
+
 
 /// Find the range of the elements that are allowed
-void get_range(array_t *array, extendpos *p, extend_data_t* es, int use_row_symmetry);
+void get_range (array_t *array, extendpos *p, extend_data_t *es, int use_row_symmetry);
 
 /**
  * @brief Returns the value of (part of) a row
@@ -196,15 +196,15 @@ void get_range(array_t *array, extendpos *p, extend_data_t* es, int use_row_symm
  * @param index Value index for each of the columns of the array
  * @return
  */
-static inline array_t row_rank_partial(carray_t *array, const colindex_t start_idx, const colindex_t end_idx, const rowindex_t row, const rowindex_t n_rows, const int *index)
-{
-	register int	i, sum = 0, j = row;
-	j += n_rows * start_idx;
-	for (i = start_idx; i < end_idx; i++) {
-		sum += index[i] * array[j];
-		j += n_rows;
-	}
-	return sum;
+static inline array_t row_rank_partial (carray_t *array, const colindex_t start_idx, const colindex_t end_idx,
+                                        const rowindex_t row, const rowindex_t n_rows, const int *index) {
+        register int i, sum = 0, j = row;
+        j += n_rows * start_idx;
+        for (i = start_idx; i < end_idx; i++) {
+                sum += index[i] * array[j];
+                j += n_rows;
+        }
+        return sum;
 }
 
 /** @brief Find row symmetry structure of an array
@@ -218,40 +218,40 @@ static inline array_t row_rank_partial(carray_t *array, const colindex_t start_i
  * @param gstart
  * @param gsize
  */
-rowindex_t find_row_symm(carray_t *array, const arraydata_t *ad, const colindex_t col, rowindex_t *& gidx, rowindex_t *&gstart, rowindex_t *& gsize)
-{
-	int nsg = 0;	// number of symmetry groups
-	array_t *rowvalues;
+rowindex_t find_row_symm (carray_t *array, const arraydata_t *ad, const colindex_t col, rowindex_t *&gidx,
+                          rowindex_t *&gstart, rowindex_t *&gsize) {
+        int nsg = 0; // number of symmetry groups
+        array_t *rowvalues;
 
-	vindex_t *vindex = new_valueindex<vindex_t>(ad->s, col);
+        vindex_t *vindex = new_valueindex< vindex_t > (ad->s, col);
 
-	rowvalues = new array_t[ad->N];
-	for (int i = 0; i < ad->N; i++) {
-		// NOTE: max value of rowvalues is of the order s^ncols
-		rowvalues[i] = row_rank_partial(array, 0, col, i, ad->N, vindex);
-	}
+        rowvalues = new array_t[ad->N];
+        for (int i = 0; i < ad->N; i++) {
+                // NOTE: max value of rowvalues is of the order s^ncols
+                rowvalues[i] = row_rank_partial (array, 0, col, i, ad->N, vindex);
+        }
 
-	nsg = symm_group_index_plain(rowvalues, ad->N, gidx, gstart, gsize);
+        nsg = symm_group_index_plain (rowvalues, ad->N, gidx, gstart, gsize);
 
-	delete[] rowvalues;
-	delete[] vindex;
-	return nsg;
+        delete[] rowvalues;
+        delete[] vindex;
+        return nsg;
 }
 
-int compare_array_block(carray_p A, carray_p B, rowindex_t N, rowindex_t rs1, rowindex_t rs2, rowindex_t nrows, colindex_t cs, colindex_t ncols)
-{
-	for (int y = 0; y < ncols; y++) {
-		int coloffset = (cs + y) *N;
-		for (int x = 0; x < nrows; x++) {
-			if (A[x + rs1 + coloffset] < B[x + rs2 + coloffset]) {
-				return -1;
-			}
-			if (A[x + rs1 + coloffset] > B[x + rs2 + coloffset]) {
-				return 1;
-			}
-		}
-	}
-	return 0;
+int compare_array_block (carray_p A, carray_p B, rowindex_t N, rowindex_t rs1, rowindex_t rs2, rowindex_t nrows,
+                         colindex_t cs, colindex_t ncols) {
+        for (int y = 0; y < ncols; y++) {
+                int coloffset = (cs + y) * N;
+                for (int x = 0; x < nrows; x++) {
+                        if (A[x + rs1 + coloffset] < B[x + rs2 + coloffset]) {
+                                return -1;
+                        }
+                        if (A[x + rs1 + coloffset] > B[x + rs2 + coloffset]) {
+                                return 1;
+                        }
+                }
+        }
+        return 0;
 }
 
 /**
@@ -264,34 +264,32 @@ int compare_array_block(carray_p A, carray_p B, rowindex_t N, rowindex_t rs1, ro
  * @param ncols
  * @return
  */
-int check_block_exchange(carray_p array, rowindex_t N, int blocksize, int bidx1, int bidx2, colindex_t cs, colindex_t clast)
-{
-	rowindex_t rs1 = bidx1 * blocksize;
-	rowindex_t rs2 = bidx2 * blocksize;
+int check_block_exchange (carray_p array, rowindex_t N, int blocksize, int bidx1, int bidx2, colindex_t cs,
+                          colindex_t clast) {
+        rowindex_t rs1 = bidx1 * blocksize;
+        rowindex_t rs2 = bidx2 * blocksize;
 
-	colindex_t ncols = clast - cs + 1;
-	if (compare_array_block(array, array, N, rs1, rs2, blocksize, cs, ncols) > 0) {
-		logstream(DEBUG + 1) << "check_block_exchange: found exchange" << printfstring(" block %d, %d", bidx1, bidx2) << endl;
-		return 1;
-	}
-	return 0;
+        colindex_t ncols = clast - cs + 1;
+        if (compare_array_block (array, array, N, rs1, rs2, blocksize, cs, ncols) > 0) {
+                logstream (DEBUG + 1) << "check_block_exchange: found exchange"
+                                      << printfstring (" block %d, %d", bidx1, bidx2) << endl;
+                return 1;
+        }
+        return 0;
 }
-
-
 
 /**
  * @brief Return next element from the stack
  * @param stack
  * @return
  */
-inline array_t stack_next_element(const split *stack)
-{
-	return stack->valid[stack->count - 1][stack->cvalidpos[stack->count - 1]];
+inline array_t stack_next_element (const split *stack) {
+        return stack->valid[stack->count - 1][stack->cvalidpos[stack->count - 1]];
 }
 
-
 /**
- * We check for all possible extensions. There are several criteria that can be used to check whether an element is valid or not.
+ * We check for all possible extensions. There are several criteria that can be used to check whether an element is
+ * valid or not.
  * These are: strength check, strength 1 check (i.e. the number of elements), range check (due to LMC test)
  *
  * @param es
@@ -302,70 +300,67 @@ inline array_t stack_next_element(const split *stack)
  * @param stack
  * @return
  */
-int check_branch(extend_data_t *es, carray_t* array, extendpos* p, split *stack, array_t &first, int use_row_symmetry)
-{
-	//number of options left according to number of elements
-	int		npos = 0;
+int check_branch (extend_data_t *es, carray_t *array, extendpos *p, split *stack, array_t &first,
+                  int use_row_symmetry) {
+        // number of options left according to number of elements
+        int npos = 0;
 
-	const int	posmax = p->ad->N / p->ad->s[p->col];
-	const int coloffset = p->ad->N * p->col;
+        const int posmax = p->ad->N / p->ad->s[p->col];
+        const int coloffset = p->ad->N * p->col;
 
-	array_t vmin;
-	if (use_row_symmetry) {
-		vmin = array[coloffset + p->row] >= es->range_low ? array[coloffset + p->row] : es->range_low;
-	}
-	else {
-		vmin = (array[coloffset + p->row] >= 0) ? array[coloffset + p->row] : 0;
-	}
+        array_t vmin;
+        if (use_row_symmetry) {
+                vmin = array[coloffset + p->row] >= es->range_low ? array[coloffset + p->row] : es->range_low;
+        } else {
+                vmin = (array[coloffset + p->row] >= 0) ? array[coloffset + p->row] : 0;
+        }
 
 #ifdef USE_SMALLSTEP
-	const array_t vmax = std::min<array_t>(p->ad->s[p->col] - 1, es->range_high);
+        const array_t vmax = std::min< array_t > (p->ad->s[p->col] - 1, es->range_high);
 #else
-	const array_t vmax = p->ad->s[p->col] - 1;
+        const array_t vmax = p->ad->s[p->col] - 1;
 #endif
 
-
-	//printf("range: %d %d\n", esdyn->range, esdyn->range_high);
-	/* loop over all positions specified by range */
-	for (int i = vmin; i <= vmax; i++) {
+        /* loop over all positions specified by range */
+        for (int i = vmin; i <= vmax; i++) {
 #ifdef COUNTELEMENTCHECK
-		/* strength 1 check */
-		if (es->elements[i] < posmax) {
+                /* strength 1 check */
+                if (es->elements[i] < posmax) {
 #else
-		if (1) {
+                if (1) {
 #endif
-			p->value = i; // TODO: eliminate value from pos structure?
-			/* strength t check */
-			if (valid_element(es, p, array)) {
-				stack->valid[stack->count][npos] = p->value;
-				npos++;
-			}
-			else {
-				//printf("reject on strength: %d value %d (row %d col %d)\n", range, p->value, p-> row, p->col);
-			}
-		}
-		else {
-			//printf("reject on strength 1 check: value %d (row %d col %d)\n", p->value, p-> row, p->col);
-		}
-	}
+                        p->value = i; 
+                        /* strength t check */
+                        if (valid_element (es, p, array)) {
+                                stack->valid[stack->count][npos] = p->value;
+                                npos++;
+                        } else {
+                                // printf("reject on strength: %d value %d (row %d col %d)\n", range, p->value, p->
+                                // row, p->col);
+                        }
+                } else {
+                        // printf("reject on strength 1 check: value %d (row %d col %d)\n", p->value, p-> row, p->col);
+                }
+        }
 
-	/* assign first valid element to variable */
-	first = stack->valid[stack->count][0];
+        /* assign first valid element to variable */
+        first = stack->valid[stack->count][0];
 
-	/* if multiple positions then create a branch */
-	if (npos > 1) {
-		stack->st[stack->count] = p->row;
-		stack->nvalid[stack->count] = npos;
-		stack->cvalidpos[stack->count] = 0;
-		stack->count++;
-	}
+        /* if multiple positions then create a branch */
+        if (npos > 1) {
+                stack->st[stack->count] = p->row;
+                stack->nvalid[stack->count] = npos;
+                stack->cvalidpos[stack->count] = 0;
+                stack->count++;
+        }
 
-	return npos;
+        return npos;
 }
 
 /** Special version for 2-level array
  *
- * We check for all possible extensions. There are several criteria that can be used to check whether an element is valid or not.
+ * We check for all possible extensions. There are several criteria that can be used to check whether an element is
+ * valid or not.
  * These are: strength check, strength 1 check (i.e. the number of elements), range check (due to LMC test)
  *
  * @param es
@@ -376,59 +371,55 @@ int check_branch(extend_data_t *es, carray_t* array, extendpos* p, split *stack,
  * @param stack
  * @return
  */
-int check_branch_2level(extend_data_t *es, carray_t* array_colstart, extendpos* p, split *stack, array_t &first, int use_row_symmetry)
-{
-	//number of options left according to number of elements
-	int		npos = 0;
+int check_branch_2level (extend_data_t *es, carray_t *array_colstart, extendpos *p, split *stack, array_t &first,
+                         int use_row_symmetry) {
+        // number of options left according to number of elements
+        int npos = 0;
 
-	array_t vmin;
-	if (use_row_symmetry) {
-		vmin = array_colstart[p->row] >= es->range_low ? array_colstart[p->row] : es->range_low;
-	}
-	else {
-		vmin = (array_colstart[p->row] >= 0) ? array_colstart[p->row] : 0;
-	}
+        array_t vmin;
+        if (use_row_symmetry) {
+                vmin = array_colstart[p->row] >= es->range_low ? array_colstart[p->row] : es->range_low;
+        } else {
+                vmin = (array_colstart[p->row] >= 0) ? array_colstart[p->row] : 0;
+        }
 
-	const array_t vmax = 1;
+        const array_t vmax = 1;
 
-	//printf("range: %d %d %d %d\n", es->range_low, es->range_high, vmin, vmax);
-	/* loop over all positions specified by range */
-	for (int i = vmin; i <= vmax; i++) {
+        /* loop over all positions specified by range */
+        for (int i = vmin; i <= vmax; i++) {
 #ifdef COUNTELEMENTCHECK
-		/* strength 1 check */
-		if (es->elements[i] < posmax) {
+                /* strength 1 check */
+                if (es->elements[i] < posmax) {
 #else
-		if (1) {
+                if (1) {
 #endif
-			p->value = i; // TODO: eliminate value from pos structure?
-			/* strength t check */
-			if (valid_element_2level(es, p)) {
-				stack->valid[stack->count][npos] = p->value;
-				npos++;
-			}
-			else {
-				//printf("reject on strength: %d value %d (row %d col %d)\n", range, p->value, p-> row, p->col);
-			}
-		}
-		else {
-			//printf("reject on strength 1 check: value %d (row %d col %d)\n", p->value, p-> row, p->col);
-		}
-	}
+                        p->value = i; 
+                        /* strength t check */
+                        if (valid_element_2level (es, p)) {
+                                stack->valid[stack->count][npos] = p->value;
+                                npos++;
+                        } else {
+                                // printf("reject on strength: %d value %d (row %d col %d)\n", range, p->value, p->
+                                // row, p->col);
+                        }
+                } else {
+                        // printf("reject on strength 1 check: value %d (row %d col %d)\n", p->value, p-> row, p->col);
+                }
+        }
 
-	/* assign first valid element to variable */
-	first = stack->valid[stack->count][0];
+        /* assign first valid element to variable */
+        first = stack->valid[stack->count][0];
 
-	/* if multiple positions then create a branch */
-	if (npos > 1) {
-		stack->st[stack->count] = p->row;
-		stack->nvalid[stack->count] = npos;
-		stack->cvalidpos[stack->count] = 0;
-		stack->count++;
-	}
+        /* if multiple positions then create a branch */
+        if (npos > 1) {
+                stack->st[stack->count] = p->row;
+                stack->nvalid[stack->count] = npos;
+                stack->cvalidpos[stack->count] = 0;
+                stack->count++;
+        }
 
-	return npos;
+        return npos;
 }
-
 
 /** @brief Find the range of the elements that are allowed
  * A lower bound is given by the symmetry structure of the array, an upper bound is given by the fact
@@ -438,34 +429,31 @@ int check_branch_2level(extend_data_t *es, carray_t* array_colstart, extendpos* 
  * @param p
  * @param esdyn
  */
-void get_range(array_t *array, extendpos *p, extend_data_t* es, int use_row_symmetry)
-{
-	array_t *array_col = array + p->ad->N*p->col;
+void get_range (array_t *array, extendpos *p, extend_data_t *es, int use_row_symmetry) {
+        array_t *array_col = array + p->ad->N * p->col;
 
-	if (use_row_symmetry) {
-		rowindex_t symmidx = es->gidx[p->row];
-		array_t minvalue = 0;
-		for (rowindex_t x = es->gstart[symmidx]; x < p->row; x++) {
-			minvalue = max(minvalue, array_col[x]);
-		}
-		es->range_low = minvalue;
-	}
-	else {
-		es->range_low = 0;
-	}
+        if (use_row_symmetry) {
+                rowindex_t symmidx = es->gidx[p->row];
+                array_t minvalue = 0;
+                for (rowindex_t x = es->gstart[symmidx]; x < p->row; x++) {
+                        minvalue = max (minvalue, array_col[x]);
+                }
+                es->range_low = minvalue;
+        } else {
+                es->range_low = 0;
+        }
 
-	/* determine maximum value */
-	int maxval = -1;
-	if (p->row < es->oaindextmin) {
-		for (int j = 0; j < p->row; j++) {
-			array_t v = array_col[j];
-			maxval = (maxval < v) ? v : maxval;
-		}
-	}
-	else {
-		maxval = es->adata->s[es->extcolumn] - 1;
-	}
-	es->range_high = maxval + 1;
+        /* determine maximum value */
+        int maxval = -1;
+        if (p->row < es->oaindextmin) {
+                for (int j = 0; j < p->row; j++) {
+                        array_t v = array_col[j];
+                        maxval = (maxval < v) ? v : maxval;
+                }
+        } else {
+                maxval = es->adata->s[es->extcolumn] - 1;
+        }
+        es->range_high = maxval + 1;
 }
 
 /*!
@@ -480,28 +468,27 @@ void get_range(array_t *array, extendpos *p, extend_data_t* es, int use_row_symm
   \param col_offset Offset for first element in column, for faster calculations
   \param stack
   */
-int *init_column(array_t *array, extendpos *p, int *col_offset, split * &stack)
-{
-	log_print(DEBUG, "init_column: p->col = %d\n", p->col);
-	int		*elements;
+int *init_column (array_t *array, extendpos *p, int *col_offset, split *&stack) {
+        log_print (DEBUG, "init_column: p->col = %d\n", p->col);
+        int *elements;
 
-	*col_offset = p->ad->N * p->col;				//faster position calculation
+        *col_offset = p->ad->N * p->col; // faster position calculation
 #ifdef COUNTELEMENTCHECK
 
-	elements = (int*)calloc(p->ad->s[p->col], sizeof(int));
+        elements = (int *)calloc (p->ad->s[p->col], sizeof (int));
 
-	elements[0] = 1;						//first element in column is always 0
+        elements[0] = 1; // first element in column is always 0
 #else
-	elements = 0;
+        elements = 0;
 #endif
-	array[*col_offset] = 0;						//count it and set the value
-	memset(&array[*col_offset + 1], -1, (p->ad->N - 1) * sizeof(array_t));	//set remainder of row to -1: unused
-	p->row = 1;							//continue with next element
+        array[*col_offset] = 0;                                                  // count it and set the value
+        memset (&array[*col_offset + 1], -1, (p->ad->N - 1) * sizeof (array_t)); // set remainder of row to -1: unused
+        p->row = 1;                                                              // continue with next element
 
-	/* define the stack for the extensions tree */
-	stack = new split(p->ad->N);
+        /* define the stack for the extensions tree */
+        stack = new split (p->ad->N);
 
-	return elements;
+        return elements;
 }
 
 /**
@@ -513,22 +500,21 @@ int *init_column(array_t *array, extendpos *p, int *col_offset, split * &stack)
  * @param es
  * @param esdyn
  */
-void init_column_full(array_t *array, extendpos *p, int &col_offset, split *&stack, extend_data_t *es)
-{
+void init_column_full (array_t *array, extendpos *p, int &col_offset, split *&stack, extend_data_t *es) {
 #ifdef COUNTELEMENTCHECK
-	es->elements = init_column(array, p, &col_offset, stack);
+        es->elements = init_column (array, p, &col_offset, stack);
 #else
-	init_column(array, p, &col_offset, stack);
+        init_column (array, p, &col_offset, stack);
 #endif
 
-	/* set cache structures */
-	recount_frequencies(es->freqtable, es, p->col, 0, -1, array);
+        /* set cache structures */
+        recount_frequencies (es->freqtable, es, p->col, 0, -1, array);
 
-	for (int j = 1; j < p->row; j++) {
-		p->row = j;
-		add_element_freqtable(es, p->row - 1, array, es->freqtable);
-		copy_freq_table(es->freqtable, es->freqtable_cache[j], es->freqtablesize);
-	}
+        for (int j = 1; j < p->row; j++) {
+                p->row = j;
+                add_element_freqtable (es, p->row - 1, array, es->freqtable);
+                copy_freq_table (es->freqtable, es->freqtable_cache[j], es->freqtablesize);
+        }
 }
 
 /**
@@ -540,101 +526,93 @@ void init_column_full(array_t *array, extendpos *p, int &col_offset, split *&sta
  * @param es
  * @param esdyn
  */
-void init_column_previous(array_t *array, extendpos *p, int &col_offset, split *&stack, extend_data_t *es, const OAextend &oaextend)
-{
-	log_print(DEBUG, "init_column_previous: p->col = %d\n", p->col);
-	const rowindex_t N = p->ad->N;
+void init_column_previous (array_t *array, extendpos *p, int &col_offset, split *&stack, extend_data_t *es,
+                           const OAextend &oaextend) {
+        log_print (DEBUG, "init_column_previous: p->col = %d\n", p->col);
+        const rowindex_t N = p->ad->N;
 
-
-	col_offset = N * p->col;				//faster position calculation
+        col_offset = N * p->col; // faster position calculation
 #ifdef COUNTELEMENTCHECK
-	es->elements = (int*)calloc(p->ad->s[p->col], sizeof(int));
+        es->elements = (int *)calloc (p->ad->s[p->col], sizeof (int));
 #endif
-	/* copy previous column */
-	memcpy(&array[col_offset], &array[N* (p->col - 1)], N * sizeof(array_t));
+        /* copy previous column */
+        memcpy (&array[col_offset], &array[N * (p->col - 1)], N * sizeof (array_t));
 
-	/* define the stack for the extensions tree */
-	stack = new split(N);
+        /* define the stack for the extensions tree */
+        stack = new split (N);
 
-	recount_frequencies(es->freqtable, (extend_data_t *)es, p->col, 0, -1, array);	/* init freq to zero */
+        recount_frequencies (es->freqtable, (extend_data_t *)es, p->col, 0, -1, array); /* init freq to zero */
 
-	for (int j = 1; j < N; j++) {
-		p->row = j;
-		get_range(array, p, es, oaextend.use_row_symmetry);
-		//printf("init_column_previous: countelements: p->row %d, maxval %d\n", p->row, p->ad->s[p->col]);
+        for (int j = 1; j < N; j++) {
+                p->row = j;
+                get_range (array, p, es, oaextend.use_row_symmetry);
+// printf("init_column_previous: countelements: p->row %d, maxval %d\n", p->row, p->ad->s[p->col]);
 #ifdef COUNTELEMENTCHECK
-		countelements(&array[col_offset], p->row, p->ad->s[p->col], es->elements);
+                countelements (&array[col_offset], p->row, p->ad->s[p->col], es->elements);
 #endif
-		add_element_freqtable(es, p->row - 1, array, es->freqtable);
+                add_element_freqtable (es, p->row - 1, array, es->freqtable);
 
-		array_t firstpos;
-		int npos = check_branch(es, array, p, stack, firstpos, oaextend.use_row_symmetry);
+                array_t firstpos;
+                int npos = check_branch (es, array, p, stack, firstpos, oaextend.use_row_symmetry);
 
-		if (npos > 1) {
-			/* a branch was created, update the data tables */
-			copy_freq_table(es->freqtable, es->freqtable_cache[p->row], es->freqtablesize);
-		}
+                if (npos > 1) {
+                        /* a branch was created, update the data tables */
+                        copy_freq_table (es->freqtable, es->freqtable_cache[p->row], es->freqtablesize);
+                }
 
-		if (npos == 0) {
-			/* the current branch is empty, this happend for strength > 1 since the current column and
-			   * the previous one cannot be equal */
-			firstpos = -1;
+                if (npos == 0) {
+                        /* the current branch is empty, this happend for strength > 1 since the current column and
+                           * the previous one cannot be equal */
+                        firstpos = -1;
+                }
+                if (firstpos != array[col_offset + p->row]) {
+                        /* trace back */
+                        // if npos==0, then trace back and add 1 to stack pointer
+                        for (int z = p->row; z < N; z++) {
+                                array[col_offset + z] = -1;
+                        }
 
-			//printf("   setting firstpos to -2: row %d, ar=%d\n", p->row, array[col_offset+p->row]);
-		}
-		if (firstpos != array[col_offset + p->row]) {
-			/* trace back */
-			// if npos==0, then trace back and add 1 to stack pointer
-			for (int z = p->row; z < N; z++) {
-				array[col_offset + z] = -1;
-			}
+                        if (npos > 1) {
+                                stack->count--;
+                        }
+                        break;
+                }
+        }
 
-			if (npos > 1) {
-				stack->count--;
-			}
-			break;
-		}
-	}
+        if (stack->count == 0) {
+                /* since all elements of the column are set the extend loop thinks it will return to a braching point,
+                 * since there is no branching point set we make the last element -1 */
+                log_print (DEBUG, "init_column_previous: there is a unique extention to the array??\n");
+                log_print (DEBUG, "stack->count %d, p->row %d (N %d)\n", stack->count, p->row, p->ad->N);
+                array[col_offset + N - 1] = -1;
+        }
 
-	if (stack->count == 0) {
-		/* since all elements of the column are set the extend loop thinks it will return to a braching point, since there is no branching point set we make the last element -1 */
-		log_print(DEBUG, "init_column_previous: there is a unique extention to the array??\n");
-		log_print(DEBUG, "stack->count %d, p->row %d (N %d)\n", stack->count, p->row, p->ad->N);
-		array[col_offset + N - 1] = -1;
-	}
-
-	/* we set this for designs with strength 1 (here columns can be repeated) */
-	array[col_offset + N - 1] = -1;
+        /* we set this for designs with strength 1 (here columns can be repeated) */
+        array[col_offset + N - 1] = -1;
 }
-
-
-
 
 /** @brief Print progress on current column
  */
-double progress_column(array_t *A, extendpos *p)
-{
-	cout << "column: ";
-	for (int i = 0; i < p->ad->N; i++) {
-		cout << A[p->ad->N*p->col + i] << " ";
-	}
-	cout << endl;
-	return 0;
+double progress_column (array_t *A, extendpos *p) {
+        cout << "column: ";
+        for (int i = 0; i < p->ad->N; i++) {
+                cout << A[p->ad->N * p->col + i] << " ";
+        }
+        cout << endl;
+        return 0;
 }
 
 /// perform Jcheck, return 1 if branch should be cut
-int Jcheck(carray_t *array, const rowindex_t N, const int jmax, const extendpos *p)
-{
-	if (p->row == N / 4 + 1) {
-		int Jpred = predictJ(array, N, p->col);
-		if (abs(Jpred) > abs(jmax)) {
-			logstream(NORMAL) << printfstring("   cutting branch jpred %d, jmax %d!\n", Jpred, jmax);
-			// return to stack
-			return 1;
-		}
-	}
-	return 0;
-
+int Jcheck (carray_t *array, const rowindex_t N, const int jmax, const extendpos *p) {
+        if (p->row == N / 4 + 1) {
+                int Jpred = predictJ (array, N, p->col);
+                if (abs (Jpred) > abs (jmax)) {
+                        logstream (NORMAL) << printfstring ("   cutting branch jpred %d, jmax %d!\n", Jpred, jmax);
+                        // return to stack
+                        return 1;
+                }
+        }
+        return 0;
 }
 
 /**
@@ -645,59 +623,59 @@ int Jcheck(carray_t *array, const rowindex_t N, const int jmax, const extendpos 
  * @param array
  * @return
  */
-bool return_stack(split *stack, extendpos *p, array_t *array, int col_offset)
-{
-	int more_branches = true;
-	if (stack->count > 0) {
-		/* more branch points on stack */
-		p->row = stack->st[stack->count - 1];
-		memset(&array[col_offset + p->row + 1], -1, (p->ad->N - p->row - 1) * sizeof(array_t));
-	}
-	else {
-		/* no more branch points: stop */
-		more_branches = false;
-	}
+bool return_stack (split *stack, extendpos *p, array_t *array, int col_offset) {
+        int more_branches = true;
+        if (stack->count > 0) {
+                /* more branch points on stack */
+                p->row = stack->st[stack->count - 1];
+                memset (&array[col_offset + p->row + 1], -1, (p->ad->N - p->row - 1) * sizeof (array_t));
+        } else {
+                /* no more branch points: stop */
+                more_branches = false;
+        }
 
-	return more_branches;
+        return more_branches;
 }
 
-inline void showLoopProgress(array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0, int nlmcarrays = -1)
-{
+inline void showLoopProgress (array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0,
+                              int nlmcarrays = -1) {
 #ifdef _OPENMPX
 #define SAFEOMP
 #ifdef SAFEOMP
-	static long _nloops[16] = { 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
-	int tid = omp_get_thread_num();
-	_nloops[tid % 16]++;
-	long nloops = _nloops[tid % 16]; //printf("here");
+        static long _nloops[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        int tid = omp_get_thread_num ();
+        _nloops[tid % 16]++;
+        long nloops = _nloops[tid % 16]; 
 #else
-	static long nloops = 0;
-	nloops++;
+        static long nloops = 0;
+        nloops++;
 #endif
 #else
-	static long nloops = 0;
-	nloops++;
+        static long nloops = 0;
+        nloops++;
 #endif
-	if (nloops % 10000 == 0) {
-		fflush(stdout);
+        if (nloops % 10000 == 0) {
+                fflush (stdout);
 
-		if (nloops % (500 * 1000 * 1000) == 0) {
-			std::cout << "node [" << node_rank << "]: extend loop " << nloops / (1000 * 1000);
-			cout << "m, ";
-			print_perm(array + col_offset, N, 28);
-		}
-	}
+                if (nloops % (500 * 1000 * 1000) == 0) {
+                        std::cout << "node [" << node_rank << "]: extend loop " << nloops / (1000 * 1000);
+                        cout << "m, ";
+                        print_perm (array + col_offset, N, 28);
+                }
+        }
 }
 
-typedef  std::vector<array_link> extensioncol_list_t;
+typedef std::vector< array_link > extensioncol_list_t;
 
 /**
  * @brief Extend an LMC OA array with an extra column
  *
- * This function is quite long (and complicated) since it performs the entire extension of arrays. The LMC test is performed by a function call
+ * This function is quite long (and complicated) since it performs the entire extension of arrays. The LMC test is
+ * performed by a function call
  * to LMC reduce.
  *
- * For calculation efficiency several cache systems are used counting the number of occurences of elements and t-tuples.
+ * For calculation efficiency several cache systems are used counting the number of occurences of elements and
+ * t-tuples.
  *
  *
  * @param origarray Array to extend
@@ -707,351 +685,328 @@ typedef  std::vector<array_link> extensioncol_list_t;
  * @param oaextend Structure with options
  * @return Number of candidate extensions generated
  */
-int extend_array(carray_t *origarray, const arraydata_t *fullad, const colindex_t extensioncol, arraylist_t &extensions, OAextend const &oaextend)
-{
+int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex_t extensioncol,
+                  arraylist_t &extensions, OAextend const &oaextend) {
 
-	const int start_number = extensions.size();
-	const colindex_t ncolsextension = extensioncol + 1;
+        const int start_number = extensions.size ();
+        const colindex_t ncolsextension = extensioncol + 1;
 
-	/* make copy of the array with one additional column */
-	array_t *array = create_array(fullad->N, ncolsextension);
-	copy_array(origarray, array, fullad->N, extensioncol);
+        /* make copy of the array with one additional column */
+        array_t *array = create_array (fullad->N, ncolsextension);
+        copy_array (origarray, array, fullad->N, extensioncol);
 
 #ifdef OACHECK
-	if (fullad->strength < 1) {
-		log_print(SYSTEM, " extend_array: error: function not defined for strength < 1\n");
-		throw;
-	}
+        if (fullad->strength < 1) {
+                log_print (SYSTEM, " extend_array: error: function not defined for strength < 1\n");
+                throw_runtime_exception("extend_array: strength should be >=1");
+        }
 #endif
 
-	/* array data */
-	arraydata_t *ad = new arraydata_t(fullad, ncolsextension);
-	oaextend.updateArraydata(ad);
+        /* array data */
+        arraydata_t *ad = new arraydata_t (fullad, ncolsextension);
+        oaextend.updateArraydata (ad);
 
-	extendpos *p = new extendpos(extensioncol, ad);
+        extendpos *p = new extendpos (extensioncol, ad);
 
-	/* extension data */
-	extend_data_t *es = new extend_data_t(ad, p->col);
+        /* extension data */
+        extend_data_t *es = new extend_data_t (ad, p->col);
 
-	rowindex_t nsg = find_row_symm(array, ad, ncolsextension - 1, es->gidx, es->gstart, es->gsize);
-	log_print(DEBUG, "  number of row symmetry groups: %d\n", nsg); //print_perm(esdyn->gidx, p->N);
+        rowindex_t nsg = find_row_symm (array, ad, ncolsextension - 1, es->gidx, es->gstart, es->gsize);
+        log_print (DEBUG, "  number of row symmetry groups: %d\n", nsg); // print_perm(esdyn->gidx, p->N);
 
-
-	/* the stack contains data about the branches found during the extension */
-	split		*stack = 0;
+        /* the stack contains data about the branches found during the extension */
+        split *stack = 0;
 
 #ifdef FREQELEM
-	/* set elem frequencies */
-	init_frequencies(es, array);
+        /* set elem frequencies */
+        init_frequencies (es, array);
 #endif
 
-	//printf("test p->col %d, INIT_COL_PREVIOUS %d!\n", p->col, INIT_COL_PREVIOUS);
+        /* check whether we are in the same column group */
+        int col_offset;
+        if (oaextend.init_column_previous == INITCOLUMN_PREVIOUS && ad->s[p->col] == ad->s[p->col - 1]) {
+                init_column_previous (array, p, col_offset, stack, es, oaextend);
+        } else {
+                if (oaextend.init_column_previous == INITCOLUMN_J5) {
+                        if (extensioncol > 5) {
+                                // printf("extensioncol %d: here\n", extensioncol);
+                                init_column_previous (array, p, col_offset, stack, es, oaextend);
+                        } else
+                                init_column_full (array, p, col_offset, stack, es);
 
-	/* check whether we are in the same column group */
-	int	 col_offset;
-	if (oaextend.init_column_previous == INITCOLUMN_PREVIOUS && ad->s[p->col] == ad->s[p->col - 1]) {
-		init_column_previous(array, p, col_offset, stack, es, oaextend);
-	}
-	else {
-		if (oaextend.init_column_previous == INITCOLUMN_J5) {
-			if (extensioncol > 5) {
-				//printf("extensioncol %d: here\n", extensioncol);
-				init_column_previous(array, p, col_offset, stack, es, oaextend);
-			}
-			else
-				init_column_full(array, p, col_offset, stack, es);
+                } else {
+                        init_column_full (array, p, col_offset, stack, es);
+                }
+        }
 
-		}
-		else {
-			init_column_full(array, p, col_offset, stack, es);
-		}
-	}
+        /* set the frequencies table */
+        recount_frequencies (es->freqtable, es, p->col, 0, p->row - 2,
+                             array); // NOTE: is this not also done in init_column_xxx?
 
-	/* set the frequencies table */
-	recount_frequencies(es->freqtable, es, p->col, 0, p->row - 2, array); // NOTE: is this not also done in init_column_xxx?
+        log_print (DEBUG, "Starting extension\n");
 
-	log_print(DEBUG, "Starting extension\n");
+        array_t *array_colstart = array + p->col * ad->N;
+        bool more_branches = true;
 
-	array_t *array_colstart = array + p->col*ad->N;
-	bool more_branches = true;
-
-	double extendTime = get_time_ms();
-	unsigned long	narrays = 0, nlmcarrays = 0;
+        double extendTime = get_time_ms ();
+        unsigned long narrays = 0, nlmcarrays = 0;
 
 #ifdef COUNTELEMENTCHECK
-	countelements(array_colstart, 0, p->ad->s[p->col], es->elements);
+        countelements (array_colstart, 0, p->ad->s[p->col], es->elements);
 #endif
-	//printf("  at start of extension: stack and array: p->row: %d\n", p->row); stack->print(); print_array(array, ad->N, ad->ncols);
 
-	const rowindex_t N = p->ad->N;
+        const rowindex_t N = p->ad->N;
 #ifdef OAEXTEND_MULTICORE
-	const int node_rank = MPI::COMM_WORLD.Get_rank();
+        const int node_rank = MPI::COMM_WORLD.Get_rank ();
 #else
-	const int node_rank = 0;
+        const int node_rank = 0;
 #endif
 
+        LMCreduction_t reduction (ad);
+        reduction.init_state = COPY;
+        reduction.initStatic (); // needed to make the extend code thread safe
 
+        do {
+                showLoopProgress (array, col_offset, N, node_rank, nlmcarrays);
 
-	LMCreduction_t reduction(ad);
-	reduction.init_state = COPY;
-	reduction.initStatic();	// needed to make the extend code thread safe
+                if ((extensions.size () * ad->N * extensioncol) > (1024 * 1024 * 1024 / sizeof (array_t))) {
+                        myprintf ("extend_array: ERROR: running out of memory! extensions.size() %d, ad->N %d\n",
+                                  (int)extensions.size (), ad->N);
+                        array_link al (origarray, ad->N, extensioncol);
+                        myprintf ("row symmetry group of array: \n");
+                        al.row_symmetry_group ().show ();
+                        throw_runtime_exception("number of extensions too large");
+                }
 
-	do {
-		showLoopProgress(array, col_offset, N, node_rank, nlmcarrays);
-
-		if ((extensions.size() *ad->N*extensioncol) > (1024 * 1024 * 1024 / sizeof(array_t))) {
-			myprintf("extend_array: ERROR: running out of memory! extensions.size() %d, ad->N %d\n", (int)extensions.size(), ad->N);
-			array_link al(origarray, ad->N, extensioncol);
-			myprintf("row symmetry group of array: \n");
-			al.row_symmetry_group().show();
-			throw - 1;
-		}
-
-		if (p->row < N) {	/*column is not yet full */
+                if (p->row < N) { /*column is not yet full */
 
 #ifdef SYMMBLOCKS
-			const int bsize = N / p->ad->s[0];
+                        const int bsize = N / p->ad->s[0];
 
-			//printf("test check_block_exchange: bsize %d, p->row %d\n", bsize, p->row);
-			if (((p->row % bsize) == 0) && (p->row > (bsize * 2))) {
-				int	bidx1 = (p->row / bsize) - 2;
-				int	bidx2 = (p->row / bsize) - 1;
+                        if (((p->row % bsize) == 0) && (p->row > (bsize * 2))) {
+                                int bidx1 = (p->row / bsize) - 2;
+                                int bidx2 = (p->row / bsize) - 1;
 
-				if (check_block_exchange(array, p->ad->N, bsize, bidx1, bidx2, p->ad->strength, p->col) == 1) {
-					more_branches = return_stack(stack, p, array, col_offset);
+                                if (check_block_exchange (array, p->ad->N, bsize, bidx1, bidx2, p->ad->strength,
+                                                          p->col) == 1) {
+                                        more_branches = return_stack (stack, p, array, col_offset);
 
-					if (more_branches)
-						continue;
-					else {
-						logstream(DEBUG) << "cutbranch: no more branches" << endl;
-						break;
-					}
-				}
-			}
+                                        if (more_branches)
+                                                continue;
+                                        else {
+                                                logstream (DEBUG) << "cutbranch: no more branches" << endl;
+                                                break;
+                                        }
+                                }
+                        }
 #endif
 
 #ifdef JCHECK
-			int jc = Jcheck(array, N, jmax, p);
-			if (jc) {
-				more_branches = return_stack(stack, p, array, col_offset);
-				if (more_branches)
-					continue;
-				else {
-					logstream(QUIET) << "cutbranch: no more branches" << endl;
-					break;
-				}
-			}
+                        int jc = Jcheck (array, N, jmax, p);
+                        if (jc) {
+                                more_branches = return_stack (stack, p, array, col_offset);
+                                if (more_branches)
+                                        continue;
+                                else {
+                                        logstream (QUIET) << "cutbranch: no more branches" << endl;
+                                        break;
+                                }
+                        }
 #endif
 
-			if (array_colstart[p->row] == -1) {	//current entry is empty
-				// frequencies table from previous loop is clean, only add a single element
-				add_element_freqtable_col(es, p->row - 1, array_colstart, es->freqtable);
+                        if (array_colstart[p->row] == -1) { // current entry is empty
+                                // frequencies table from previous loop is clean, only add a single element
+                                add_element_freqtable_col (es, p->row - 1, array_colstart, es->freqtable);
 
-				get_range(array, p, es, oaextend.use_row_symmetry);
+                                get_range (array, p, es, oaextend.use_row_symmetry);
 #ifdef COUNTELEMENTCHECK
-				addelement(array_colstart[p->row - 1], es->elements);
+                                addelement (array_colstart[p->row - 1], es->elements);
 #endif
 
-				array_t firstpos;
-				int npos = check_branch(es, array, p, stack, firstpos, oaextend.use_row_symmetry);
+                                array_t firstpos;
+                                int npos = check_branch (es, array, p, stack, firstpos, oaextend.use_row_symmetry);
 
-				if (npos > 1)
-					copy_freq_table(es->freqtable, es->freqtable_cache[p->row], es->freqtablesize);
+                                if (npos > 1)
+                                        copy_freq_table (es->freqtable, es->freqtable_cache[p->row],
+                                                         es->freqtablesize);
 
-				if (npos == 0) {	/* reached dead end, goto branch point */
-					more_branches = return_stack(stack, p, array, col_offset);
-				}
-				else {
-					array_colstart[p->row] = firstpos;
-					p->row++;
-				}
-			}
-			else { /* came back from branche */
-			 /* copy frequencies from cache */
-				copy_freq_table(es->freqtable_cache[p->row], es->freqtable, es->freqtablesize);
+                                if (npos == 0) { /* reached dead end, goto branch point */
+                                        more_branches = return_stack (stack, p, array, col_offset);
+                                } else {
+                                        array_colstart[p->row] = firstpos;
+                                        p->row++;
+                                }
+                        } else { /* came back from branche */
+                                /* copy frequencies from cache */
+                                copy_freq_table (es->freqtable_cache[p->row], es->freqtable, es->freqtablesize);
 #ifdef COUNTELEMENTCHECK
-				/* range and elements do not need to be copied, they are recalculated */
-				countelements(array_colstart, p->row, p->ad->s[p->col], es->elements);
+                                /* range and elements do not need to be copied, they are recalculated */
+                                countelements (array_colstart, p->row, p->ad->s[p->col], es->elements);
 #endif
 
-				stack->cvalidpos[stack->count - 1]++;
+                                stack->cvalidpos[stack->count - 1]++;
 
-				if (stack->cvalidpos[stack->count - 1] == stack->nvalid[stack->count - 1]) {
-					//log_print(DEBUG+1, "reached end of current branch: %d\n", stack->cvalidpos[stack->count-1]);
+                                if (stack->cvalidpos[stack->count - 1] == stack->nvalid[stack->count - 1]) {
+                                        array_colstart[p->row] = -1; /* should be done in return_stack ? */
+                                        stack->count--;              /* remove element from stack */
+                                        more_branches = return_stack (stack, p, array, col_offset);
+                                } else {
+                                        array_colstart[p->row] = stack_next_element (stack);
+                                        p->row++;
+                                }
+                        }
+                } else { // reached end of column
+                        narrays++;
 
-					array_colstart[p->row] = -1; /* should be done in return_stack ? */
-					stack->count--;	/* remove element from stack */
-					more_branches = return_stack(stack, p, array, col_offset);
-				}
-				else {
-					array_colstart[p->row] = stack_next_element(stack);
-					p->row++;
-				}
-			}
-		}
-		else {	//reached end of column
-			narrays++;
+                        if ((narrays % oaextend.nLMC == 0) ||
+                            ((get_time_ms () - extendTime) > oaextend.singleExtendTime)) {
+                                extendTime = get_time_ms ();
+                                if (log_print (QUIET, "")) {
+                                        logstream (QUIET) << printfstring ("  OA extension: ") << narrays - 1
+                                                          << " arrays checked, " << extensions.size ()
+                                                          << " solutions so far";
+                                        logstream (QUIET) << ", time " << printtime ();
+                                        myprintf ("  OA extension: current row: ");
+                                        print_perm (array + col_offset, N, 36);
+                                }
+                        }
 
-			if ((narrays % oaextend.nLMC == 0) || ((get_time_ms() - extendTime) > oaextend.singleExtendTime)) {
-				extendTime = get_time_ms();
-				if (log_print(QUIET, "")) {
-					logstream(QUIET) << printfstring("  OA extension: ") << narrays - 1 << " arrays checked, " << extensions.size() << " solutions so far";
-					logstream(QUIET) << ", time " << printtime();
-					myprintf("  OA extension: current row: ");
-					print_perm(array + col_offset, N, 36);
-				}
-			}
+                        lmc_t lmc;
+                        reduction.reset ();
+                        reduction.mode = OA_TEST;
 
-			lmc_t lmc;
-			reduction.reset();
-			reduction.mode = OA_TEST;
+                        if (oaextend.checkarrays == 0)
+                                lmc = LMC_MORE;
+                        else {
+                                lmc = LMCcheck (array, *ad, oaextend, reduction);
+                        }
 
-			if (oaextend.checkarrays == 0)
-				lmc = LMC_MORE;
-			else {
-				lmc = LMCcheck(array, *ad, oaextend, reduction);
-			}
+                        if (lmc == LMC_MORE || lmc == LMC_EQUAL) {
+                                if (checkloglevel (DEBUG)) {
+                                        std::cout << "Found array:" << endl;
+                                        print_array (array, ad->N, ad->ncols);
+                                }
+                                /* the extension found is LMC */
+                                // printf("found array: oaextend.extendarraymode %d (APPENDFULL %d)\n",
+                                // oaextend.extendarraymode, OAextend::APPENDFULL);
+                                switch (oaextend.extendarraymode) {
+                                case OAextend::APPENDFULL: {
+                                        array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
+                                        extensions.push_back (tmp_extension);
+                                } break;
+                                case OAextend::APPENDEXTENSION: {
+                                        array_link tmp_extension (array + p->col * N, N, 1, nlmcarrays);
+                                        extensions.push_back (tmp_extension);
+                                } break;
+                                case OAextend::STOREARRAY: {
+                                        array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
+                                        arrayfile_t *storefile =
+                                            (arrayfile_t *)&oaextend.storefile; // trick to prevent const warnings
+                                                                                /** Note:
+                                                                                *
+                                                                                * If you only want to store a selection of arrays, here one should insert
+                                                                                * a check on the properties of the array.
+                                                                                *
+                                                                                */
+                                        storefile->append_array (tmp_extension);
+                                } break;
+                                case OAextend::NONE: {
 
-			if (lmc == LMC_MORE || lmc == LMC_EQUAL) {
-				if (checkloglevel(DEBUG)) {
-					std::cout << "Found array:" << endl;
-					print_array(array, ad->N, ad->ncols);
-				}
-				/* the extension found is LMC */
-				//printf("found array: oaextend.extendarraymode %d (APPENDFULL %d)\n", oaextend.extendarraymode, OAextend::APPENDFULL);
-				switch (oaextend.extendarraymode) {
-				case OAextend::APPENDFULL: {
-					array_link	tmp_extension(array, N, p->col + 1, nlmcarrays);
-					extensions.push_back(tmp_extension);
-				}
-										   break;
-				case OAextend::APPENDEXTENSION:
-				{
-					array_link	tmp_extension(array + p->col*N, N, 1, nlmcarrays);
-					extensions.push_back(tmp_extension);
-				}
-				break;
-				case OAextend::STOREARRAY: {
-					array_link	tmp_extension(array, N, p->col + 1, nlmcarrays);
-					arrayfile_t *storefile = (arrayfile_t *)&oaextend.storefile;	// trick to prevent const warnings
-					/** Note:
-					*
-					* If you only want to store a selection of arrays, here one should insert
-					* a check on the properties of the array.
-					*
-					*/
-					storefile->append_array(tmp_extension);
-				}
-										   break;
-				case OAextend::NONE: {
+                                        // do nothing
+                                } break;
+                                default:
+                                        myprintf ("extend_array: no such mode!\n");
+                                        break;
+                                }
+                                nlmcarrays++;
+                        }
+                        more_branches = return_stack (stack, p, array, col_offset);
 
-					// do nothing
-				}
-				break;
-				default:
-					myprintf("extend_array: no such mode!\n");
-					break;
-				}
-				nlmcarrays++;
-			}
-			more_branches = return_stack(stack, p, array, col_offset);
+                        if (oaextend.check_maximal) {
+                                // abort the algorithm
+                                more_branches = false;
+                        }
+                }
+        } while (more_branches); /* continue as long as more branches are left */
 
-			if (oaextend.check_maximal) {
-				// abort the algorithm
-				more_branches = false;
-			}
-		}
-	} while (more_branches);	/* continue as long as more branches are left */
+        log_print (QUIET, "Found %lu arrays in total, only %d in LMC form, total is %d\n", narrays,
+                   (int)(extensions.size () - start_number), (int)extensions.size ());
 
-	log_print(QUIET, "Found %lu arrays in total, only %d in LMC form, total is %d\n", narrays, (int)(extensions.size() - start_number), (int)extensions.size());
+        delete es;
+        destroy_array (array);
+        delete p->ad;
+        delete p;
+        delete stack;
 
-	delete es;
-	destroy_array(array);
-	delete p->ad;
-	delete p;
-	delete stack;
-
-	return narrays;
+        return narrays;
 }
 
-
-arraylist_t extend_array(const array_link &al, arraydata_t &fullad, OAextend const &oaextend)
-{
-	arraylist_t alist;
-	alist.push_back(al);
-	return  extend_arraylist(alist, fullad, oaextend);
-
+arraylist_t extend_array (const array_link &al, arraydata_t &fullad, OAextend const &oaextend) {
+        arraylist_t alist;
+        alist.push_back (al);
+        return extend_arraylist (alist, fullad, oaextend);
 }
 
-arraylist_t extend_array(const array_link &al, arraydata_t &fullad)
-{
-	OAextend oaextend;
-	oaextend.setAlgorithm(MODE_ORIGINAL);
-	arraylist_t alist;
-	alist.push_back(al);
-	return  extend_arraylist(alist, fullad, oaextend);
-
+arraylist_t extend_array (const array_link &al, arraydata_t &fullad) {
+        OAextend oaextend;
+        oaextend.setAlgorithm (MODE_ORIGINAL);
+        arraylist_t alist;
+        alist.push_back (al);
+        return extend_arraylist (alist, fullad, oaextend);
 }
 
-
-arraylist_t extend_arraylist(const arraylist_t & alist, const arraydata_t &arraydata)
-{
-	arraydata_t atmp(arraydata); // make a copy so arraydata can be const
-	OAextend oaextend(atmp);
-	return extend_arraylist(alist, atmp, oaextend);
+arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &arraydata) {
+        arraydata_t atmp (arraydata); // make a copy so arraydata can be const
+        OAextend oaextend (atmp);
+        return extend_arraylist (alist, atmp, oaextend);
 }
-
 
 //%newobject extend_arraylist;
-arraylist_t extend_arraylist(const arraylist_t & alist, arraydata_t &fullad, OAextend const &oaextend)
-{
-	colindex_t extensioncol = -1;
+arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend const &oaextend) {
+        colindex_t extensioncol = -1;
 
-	arraylist_t ll;
-	extend_arraylist(alist, fullad, oaextend, extensioncol, ll);
-	return ll;
+        arraylist_t ll;
+        extend_arraylist (alist, fullad, oaextend, extensioncol, ll);
+        return ll;
 }
 
+int extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend const &oaextend,
+                      colindex_t extensioncolx, arraylist_t &extensions) {
+        colindex_t extensioncol;
+        int n = 0;
+        for (arraylist_t::const_iterator al = alist.begin (); al != alist.end (); al++) {
+                if (extensioncolx == -1)
+                        extensioncol = al->n_columns;
+                else
+                        extensioncol = extensioncolx;
 
-int extend_arraylist(const arraylist_t & alist, arraydata_t &fullad, OAextend const &oaextend, colindex_t extensioncolx, arraylist_t &extensions)
-{
-	colindex_t extensioncol;
-	int n = 0;
-	for (arraylist_t::const_iterator al = alist.begin(); al != alist.end(); al++) {
-		if (extensioncolx == -1)
-			extensioncol = al->n_columns;
-		else
-			extensioncol = extensioncolx;
-
-		if (extensioncol != al->n_columns) {
-			myprintf("problem: array has %d columns, extension to column %d is requested\n", al->n_columns, extensioncol);
-			continue;
-		}
-		n += extend_array((carray_t *)(al->array), &fullad, extensioncol, extensions, oaextend);
-
-	}
-	fflush(stdout);
-	return n;
+                if (extensioncol != al->n_columns) {
+                        myprintf ("problem: array has %d columns, extension to column %d is requested\n",
+                                  al->n_columns, extensioncol);
+                        continue;
+                }
+                n += extend_array ((carray_t *)(al->array), &fullad, extensioncol, extensions, oaextend);
+        }
+        fflush (stdout);
+        return n;
 }
 
-arraylist_t runExtendRoot(arraydata_t adata, int nmax, int verbose)
-{
+arraylist_t runExtendRoot (arraydata_t adata, int nmax, int verbose) {
 
-	array_link al = adata.create_root();
-	OAextend oaoptions;
-	oaoptions.setAlgorithmAuto(&adata);
+        array_link al = adata.create_root ();
+        OAextend oaoptions;
+        oaoptions.setAlgorithmAuto (&adata);
 
-	arraylist_t sols;
-	sols.push_back(al);
+        arraylist_t sols;
+        sols.push_back (al);
 
-	for (int ii = adata.strength; ii < nmax; ii++) {
-		arraylist_t solsx;
-		extend_arraylist(sols, adata, oaoptions, ii, solsx);
-		if (verbose) {
-			myprintf("runExtend: ncols %d: %ld arrays\n", ii + 1, (long)solsx.size());
-		}
-		sols = solsx;
-
-	}
-	return sols;
+        for (int ii = adata.strength; ii < nmax; ii++) {
+                arraylist_t solsx;
+                extend_arraylist (sols, adata, oaoptions, ii, solsx);
+                if (verbose) {
+                        myprintf ("runExtend: ncols %d: %ld arrays\n", ii + 1, (long)solsx.size ());
+                }
+                sols = solsx;
+        }
+        return sols;
 }

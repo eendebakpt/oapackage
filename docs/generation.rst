@@ -25,14 +25,6 @@ The main functions for array extension are the following:
 .. doxygenfunction:: extend_arraylist(const arraylist_t&, const arraydata_t&)
 
                      
-.. comment
-    .. code-block:: c++
-       :caption: C++ interface
-       
-        /// extend a list of arrays
-        arraylist_t & extend_arraylist(arraylist_t & alist, arraydata_t &fullad, 
-                    OAextend const &oaextendoptions);
-
 Here :meth:`~oalib.arraydata_t` is the structure describing the type of arrays and
 :meth:`~oalib.OAextend` contains various options for the algorithm.
 
@@ -41,17 +33,22 @@ A typical session could be:
 .. code-block:: python
    :caption: Extend an array
    
+   >>> import oapackage
    >>> N=8; ncols=3;
    >>> arrayclass=oapackage.arraydata_t(2, N, 2, ncols)
-   >>> al=arrayclass.create_root() 
-   >>> al.showarray()
-   array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
-   >>> 
-   >>> alist=oapackage.extend_array(al, arrayclass)
-   >>> for al in alist:
-   ... al.showarray()
-   array: 0 0 0 0 0 0 0 1 1 0 1 1 1 0 1 1 0 1 1 1 0 1 1 0
-   array: 0 0 0 0 0 1 0 1 0 0 1 1 1 0 0 1 0 1 1 1 0 1 1 1
+   >>> root_array=arrayclass.create_root() 
+   >>> root_array.showarraycompact()
+   00
+   00
+   01
+   01
+   10
+   10
+   11
+   11
+   >>> array_list=oapackage.extend_array(root_array, arrayclass)
+   >>> print('found %d extensions of the root array' % len(array_list))
+   found 2 extensions of the root array
 
 Even-odd
 --------

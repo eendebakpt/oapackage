@@ -6,6 +6,7 @@ environment:
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    CMD_IN_ENV_ARCH64: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env_arch64.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
 
@@ -19,7 +20,7 @@ environment:
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
-
+          
     - PYTHON: "C:\\Python34-x64"
       PYTHON_VERSION: "3.4.x"
       PYTHON_ARCH: "64"
@@ -50,7 +51,7 @@ environment:
       PYTHON_ARCH: "32"
 
     # For details see http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
-    
+        
 matrix:
       fast_finish: true
 
@@ -106,8 +107,9 @@ install:
 
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
-  # part of the requirements
+  # part of the testing requirements
   - "%CMD_IN_ENV% pip install scanf"
+  - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
   - "%CMD_IN_ENV36% pip install jupyter"
@@ -128,12 +130,15 @@ build: off
 build_script:
   # Build the compiled extension
   - "%CMD_IN_ENV% python setup.py build"
-  
+  - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+
+
 test_script:
-   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
-   - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
-   - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
-   - "%CMD_IN_ENV% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
+   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
+   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
+   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
+
+   - "%CMD_IN_ENV36% pytest" # .\\oapackage
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
