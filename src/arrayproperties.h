@@ -57,14 +57,14 @@ std::vector< double > projDeff (const array_link &al, int kp, int verbose);
 * The PEC of a design is the fraction of estimable second-order models in x factors.
 * See "Ranking Non-regular Designs", J.L. Loeppky
 *
-*/std::vector< double > PECsequence (const array_link &al, int verbose = 0);
+*/std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 
 /**Calculate the projection information capacity sequence for a design.
 *
 * The PIC of a design is the average D-efficiency of estimable second-order models in x factors.
 *
 */
-std::vector< double > PICsequence(const array_link &al, int verbose = 0);
+std::vector< double > PICsequence(const array_link &array, int verbose = 0);
 #endif
 
 /// Return the distance distribution of a design
@@ -80,11 +80,11 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  *  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu
  *
- * \param al Array to calculate the GWLP value for
+ * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  */
-std::vector< double > GWLP (const array_link &al, int verbose = 0, int truncate = 1);
+std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
 /** @brief Calculate GWLP (generalized wordlength pattern)
 *

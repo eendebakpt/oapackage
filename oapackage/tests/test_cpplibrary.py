@@ -80,6 +80,20 @@ class TestCppLibrary(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
 
+    def distance_distribution(self):
+        al=oapackage.array_link(2,2, 0)
+        distance_distrib = oapackage.distance_distribution(al)
+        self.assertEqual(distance_distrib, (2.0, 0.0, 0.0))
+
+        al[1,0]=1
+        distance_distrib = oapackage.distance_distribution(al)
+        self.assertEqual(distance_distrib, (1.0, 1.0, 0.0))
+
+        al = oapackage.exampleArray(2, 1)
+
+        distance_distrib = oapackage.distance_distribution(al)
+        self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
+        
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 1)
         d = oapackage.projDeff(al, 3, 1)
@@ -87,8 +101,10 @@ class TestCppLibrary(unittest.TestCase):
         assert(D == d[0])
         numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
 
-        seq = oapackage.PECsequence(al)
-        numpy.testing.assert_equal(seq, (1.0,) * len(seq))
+        pec_seq = oapackage.PECsequence(al)
+        numpy.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
+        pic_seq = oapackage.PICsequence(al)
+        numpy.testing.assert_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957, 0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
     def test_arraylink(self):
         al=oapackage.exampleArray(0)

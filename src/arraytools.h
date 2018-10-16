@@ -663,7 +663,10 @@ struct array_link {
         /// calculate rank of array
         int rank () const;
 
-        /// calculate generalized wordlength pattern
+        /** calculate generalized wordlength pattern
+		 *
+		 * @see ::GWLP
+		 */
         std::vector< double > GWLP (int truncate = 1, int verbose = 0) const;
 
         /// calculate strength of an array

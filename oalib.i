@@ -17,9 +17,7 @@
 
 %include "numpy.i"
 %init %{
-#ifdef SWIGPYTHON
 import_array();
-#endif
 %}
 
 %apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
