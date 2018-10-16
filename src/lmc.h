@@ -772,6 +772,7 @@ inline bool check_root_form (const array_t *array, const arraydata_t &ad) {
 /// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
 inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t *target) {
         int changed = 0;
+
         array_t *root = create_array (ad.N, ad.strength);
         create_root (root, &ad);
         if (!std::equal (original, original + ad.N * ad.strength, root)) {
@@ -799,7 +800,7 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 
 /// helper function
 lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
-                 LMCreduction_t *reduction, const OAextend &oaextend);
+                LMCreduction_t *reduction, const OAextend &oaextend);
 /// Perform reduction or LMC check without root trick
 lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
                      LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic);

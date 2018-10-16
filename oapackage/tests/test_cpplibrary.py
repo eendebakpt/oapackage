@@ -18,7 +18,30 @@ else:
 
 import oapackage
 
+class TestReductions(unittest.TestCase):
 
+    def test_LMC(self):
+        al=oapackage.exampleArray(8)
+        alr=oapackage.reduceLMCform(al);
+        self.assertTrue(alr==al)
+        
+    def test_DOP(self):
+        al=oapackage.exampleArray(1)
+        transformation=oapackage.reductionDOP(al);
+        self.assertTrue(transformation.isIdentity())
+
+        
+        al=oapackage.exampleArray(7,1)
+        transformation=oapackage.reductionDOP(al);
+        self.assertTrue(transformation.isIdentity())
+
+
+        al=oapackage.exampleArray(8,1)
+        transformation=oapackage.reductionDOP(al);
+        transformation.show()
+        alr=oapackage.reduceDOPform(al);
+        self.assertTrue(transformation.apply(al)==alr)
+        
 class TestCppLibrary(unittest.TestCase):
 
     def test_splits(self):

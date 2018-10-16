@@ -1315,7 +1315,7 @@ array_link exampleArray (int idx, int verbose) {
         }
 
         case 9: {
-                dstr = "array in OA(40, 2^7), D-optimal";
+                dstr = "array in A(40, 2^7), D-optimal";
                 if (verbose) {
                         myprintf ("exampleArray: %s\n", dstr.c_str ());
                 }
@@ -2027,7 +2027,6 @@ void array_link::create_root (const arraydata_t &ad, int fill_value) {
                 myprintf ("array_link::create_root: number of columns too small for root of size %d\n", ad.N);
                 return;
         }
-        // myprintf("ad.strength %d, this->n_columns %d\n", ad.strength, this->n_columns );
 
         if (!(ad.strength <= this->n_columns)) {
                 myprintf ("array_link::create_root: number of columns (%d) too small for specified strength %d\n",
@@ -2048,17 +2047,14 @@ void array_link::create_root (const arraydata_t &ad, int fill_value) {
 void create_root (array_t *array, const arraydata_t *ad) {
         int steps = ad->N;
         for (colindex_t i = 0; i < ad->strength; i++) { /* loop over all root columns */
-                // myprintf("create_root: i %d\n", i);
                 steps /= ad->s[i]; // adjust nr of steps per collumn
                 if (steps == 0) {
-                        // myprintf("create_root: steps=0, updating to 1\n");
                         steps = 1;
                 }
                 array_t l = 0;
                 int coloffset = i * ad->N;
                 for (int j = 0; j < ad->N; j += steps) {  // big steps
                         for (int k = 0; k < steps; k++) { // small steps
-                                // myprintf("create_root: i j k %d %d %d\n", i, j,k);
                                 array[coloffset + j + k] = l;
                         }
                         l++;
@@ -2067,7 +2063,6 @@ void create_root (array_t *array, const arraydata_t *ad) {
                         }
                 }
         }
-        //    myprintf("create_root: done\n");
 }
 
 /*!

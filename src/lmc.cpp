@@ -987,8 +987,6 @@ void LMC_static_struct_t::init (const arraydata_t *adp) {
         for (int z = 0; z < adp->ncols; z++)
                 this->dyndata_p[z] = new dyndata_t (adp->N);
 
-        //    if ( this->colbuffer!=0 )
-        //        free ( this->colbuffer );
         this->colbuffer = (array_t *)malloc (sizeof (array_t) * adp->N);
 
         /* make sure all variables are initialized again */
@@ -1078,7 +1076,6 @@ inline void LMC_root_sort (const carray_t *array, const arraydata_t *ad, const d
         }
         delete[] valueindex;
 
-        // OPTIMIZE: select best sort (stable_sort, sort, oacolSort)
         std::stable_sort (rowsort, rowsort + ad->N);
 }
 
@@ -1137,7 +1134,6 @@ inline void static_init_lperms (const arraydata_t *adp, levelperm_t *&lperm_p, L
 inline void static_init_rootrowperms (const arraydata_t *adp, int &totalperms, rowperm_t *&rootrowperms,
                                       levelperm_t *&lperm_p, LMC_static_struct_t &tmpStatic) {
         /* no static update, we assume this has been done already */
-        // static_update ( adp );
 
         totalperms = tmpStatic.nrootrowperms;
         rootrowperms = tmpStatic.rootrowperms;
@@ -1145,18 +1141,6 @@ inline void static_init_rootrowperms (const arraydata_t *adp, int &totalperms, r
 
         tmpStatic.LMC_root_rowperms_init = 1;
 }
-
-/*
-inline void static_init_reduce_rootrowperms ( const arraydata_t *adp, int &totalperms, rowperm_t * &rootrowperms,
-LMC_static_struct_t &tmpStatic) {
-    tmpStatic.update ( adp );
-
-    totalperms = tmpStatic.nrootrowperms;
-    rootrowperms = tmpStatic.rootrowperms;
-
-    tmpStatic.LMC_reduce_root_rowperms_init = 1;
-}
-*/
 
 /// show array with rowsort and colperm
 void show_array (carray_t *array, const int ncols, const int nrows, colperm_t colperm, rowsort_t *rs) {
@@ -1624,12 +1608,6 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
                 myprintf ("  ret %d\n", ret);
 
         ret1 = ret;
-        if (ret == LMC_LESS && ret1 == LMC_MORE) {
-                if (verbose >= 2) {
-                        myprintf ("gr\n");
-                        // reduction.transformation->show();
-                }
-        }
 
         double val = ret1;
         return val;
@@ -2131,7 +2109,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                         cprintf (dverbose >= 2, "  LMCcheckSymmetryMethod: colcombs check : starting...\n");
 
                         reduction.setArray (al);
-                        // alx=al;
                         r = LMCcheckj5 (alx, adfix, reduction, oaextend, 1);
 
                         if (dverbose >= 2) {
@@ -2622,8 +2599,8 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
 
                 if (!rootform) {
                         printfd ("LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs "
-                                 "special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d)\n",
-                                 reduction->mode, OA_TEST, OA_REDUCE);
+                                 "special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d, OA_REDUCE_PARTIAL %d)\n",
+                                 reduction->mode, OA_TEST, OA_REDUCE, OA_REDUCE_PARTIAL);
 
                         int changed = check_root_update (original, *ad, reduction->array);
 
@@ -2799,14 +2776,11 @@ void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose) 
                         if (!e) {
                                 vv[i + 1] = 1;
                         }
-                        if (verbose >= 3 && i < 10) {
-                                myprintf ("--   array %d==%d: %d\n", (int)i, (int)i + 1, e);
-                        }
                 }
 
                 for (size_t i = 0; i < xlist.size (); i++) {
                         if (vv[i]) {
-                                if ((verbose >= 3 && i < 10) || verbose >= 4) {
+                                if (verbose >= 4) {
                                         myprintf ("  selecting array %d\n", (int)i);
                                 }
                                 earrays.push_back (xlist[i]);
@@ -2844,54 +2818,6 @@ array_link reduceDOPform (const array_link &al, int verbose) {
         reduceArraysGWLP (&lst, earrays, verbose, dopruning, strength, dolmc);
         return earrays[0];
 }
-
-// lmc_t reduceCanonicalGWLP2 ( const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t
-// &reduction, array_link &lmc, int verbose )
-//{
-//    lmc_t ret = LMC_NONSENSE;
-//    if ( 0 ) {
-//        // 1. calculate delete-1-projection values
-//        std::vector< GWLPvalue > dopgma = projectionGWLPs ( al );
-//        if ( verbose ) {
-//            myprintf( "LMCcheckGWP: delete-1 GWP:        " );
-//            display_vector< GWLPvalue > ( dopgma );
-//            cout << endl;
-//        }
-//
-//        // calculate symmetry group
-//        indexsort is ( dopgma );
-//        std::vector< GWLPvalue > sgma = is.sorted ( dopgma );
-//        symmetry_group sg ( sgma, 0 );
-//
-//        if ( verbose>=1 ) {
-//            myprintf( "LMCcheckGWP inside: indices: " );
-//            is.show();
-//            myprintf( "\n" );
-//        }
-//
-//        // create column sorted sorted array
-//        array_link alx ( al, is.indices );
-//        arraydata_t adx ( ad );
-//        adx.set_colgroups ( sg );
-//
-//        // do normal reduction
-//        reduction.mode=OA_REDUCE;
-//
-//        ret = LMCcheck ( alx, adx, oaextend, reduction );
-//        //reduction.show();
-//    } else {
-//        reduction.mode=OA_REDUCE;
-//        ret = LMCcheck ( al, ad, oaextend, reduction );
-//
-//    }
-//    copy_array ( reduction.array, lmc.array, lmc.n_rows, lmc.n_columns );
-//
-//    if ( verbose>=2 ) {
-//        myprintf( "LMCcheckGWLP: ret %d\n", ret );
-//    }
-//    // fix column sorting
-//    return ret;
-//}
 
 /// add mixed values
 std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, const arraydata_t &ad,
@@ -2963,13 +2889,12 @@ array_transformation_t reductionDOP (const array_link &al, int verbose) {
 
         LMCreduction_t reduction (&ad);
 
-        // array_link lm ( al );
-
         if (verbose >= 3)
                 ad.show (2);
 
         reduction.mode = OA_REDUCE;
         reduction.init_state = COPY;
+		if (0)
         {
                 reduction.init_state = INIT;
                 // reduction.init_state=COPY;
@@ -2995,19 +2920,19 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
         for (size_t i = 0; i < (size_t)arraylist->size (); i++) {
                 if (verbose >= 2)
                         myprintf ("reduceArrays: array %d/%d\n", (int)i, (int)arraylist->size ());
-                const array_link al = arraylist->at (i);
+                const array_link input_array = arraylist->at (i);
                 // create arraydatya
-                int ncols = al.n_columns;
+                int ncols = input_array.n_columns;
 
-                arraydata_t ad = arraylink2arraydata (al, 0, strength);
+                arraydata_t ad = arraylink2arraydata (input_array, 0, strength);
 
                 if (verbose >= 4) {
-                        std::vector< double > gwp = GWLP (al);
+                        std::vector< double > gwp = GWLP (input_array);
                         cout << "GMA: ";
                         printf_vector< double > (gwp, "%.3f ");
                         myprintf ("\n");
                 }
-                std::vector< GWLPvalue > dopgwp = projectionGWLPs (al);
+                std::vector< GWLPvalue > dopgwp = projectionGWLPs (input_array);
 
                 if (verbose >= 3) {
                         myprintf ("  delete-1 GWP sequence:        ");
@@ -3053,17 +2978,6 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                         printfd ("reduceArraysGWLP:\n");
 
                 is.init (dofvalues);
-                if (verbose >= 3) {
-                        myprintf ("new indexsort:\n");
-                        is.show ();
-                        myprintf (", \n");
-                }
-
-                if (verbose >= 3) {
-                        myprintf ("  indices: ");
-                        is.show ();
-                        myprintf ("\n");
-                }
 
                 std::vector< DOFvalue > sdofvalues = is.sorted (dofvalues);
 
@@ -3078,12 +2992,8 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                 if (verbose >= 2)
                         sg.show ();
 
-                // Done: calculate row symmetry group
 
-                array_link alf (al, is.indices);
-
-                if (verbose >= 2)
-                        myprintf ("------\n");
+                array_link alf (input_array, is.indices);
 
                 // NOTE: since the array was re-ordered, the symmetry group has to be re-ordered
                 ad.set_colgroups (sg);
@@ -3094,7 +3004,7 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
 
                 LMCreduction_t reduction (&ad);
 
-                array_link lm (al);
+                array_link lm (input_array);
 
                 if (verbose >= 3)
                         ad.show (2);
@@ -3112,10 +3022,7 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                         }
                 }
 
-                if (verbose >= 3) {
-                        printfd ("before LMCcheck\n");
-                        oaextend.info ();
-                }
+
                 lmc_t ret = LMCcheck (alf, ad, oaextend, reduction);
                 copy_array (reduction.array, lm.array, lm.n_rows, lm.n_columns);
                 if (verbose >= 2)

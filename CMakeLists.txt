@@ -409,33 +409,6 @@ if(MATLAB_FOUND)
 	endforeach()
 endif()
 
-# > matlab -nojvm -r "Doptim; exit"
-
-
-####### Python support ##########################
-
-
-#add_dependencies(pythoncheck python)
-if(DOPYTHON)	
-	add_custom_target( pythondoc )
-	add_custom_command(
-	  TARGET pythondoc POST_BUILD
-	  COMMAND cd xml; xsltproc ../swig.xsl index.xml > swig_doc.i; cd ..
-	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
-
-	add_custom_target( pinstall )
-	add_custom_command(
-	  TARGET pinstall
-	  POST_BUILD
-	  COMMAND python setup.py install --user
-	#  COMMAND sudo python setup.py install
-	  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	)
-
-endif(DOPYTHON)
-
-
 add_custom_target( doc )
 add_custom_command(
   TARGET doc
@@ -464,9 +437,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "4")
-SET(CPACK_PACKAGE_VERSION_PATCH "8")
-
-#SET(CPACK_STRIP_FILES "bin/MyExecutable")
+SET(CPACK_PACKAGE_VERSION_PATCH "15")
 
 
 #set(CPACK_SOURCE_PACKAGE_FILE_NAME "xxx-${VERSION}" CACHE INTERNAL "tarball basename")
