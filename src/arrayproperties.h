@@ -52,8 +52,19 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose = 0);
 /// Return the D-efficiencies for the projection designs
 std::vector< double > projDeff (const array_link &al, int kp, int verbose);
 
-/// Return the projection estimation capacity sequence of a design
-std::vector< double > PECsequence (const array_link &al, int verbose = 0);
+/** Calculate the projection estimation capacity sequence for a design.
+*
+* The PEC of a design is the fraction of estimable second-order models in x factors.
+* See "Ranking Non-regular Designs", J.L. Loeppky
+*
+*/std::vector< double > PECsequence (const array_link &al, int verbose = 0);
+
+/**Calculate the projection information capacity sequence for a design.
+*
+* The PIC of a design is the average D-efficiency of estimable second-order models in x factors.
+*
+*/
+std::vector< double > PICsequence(const array_link &al, int verbose = 0);
 #endif
 
 /// Return the distance distribution of a design

@@ -1,40 +1,38 @@
 Properties of designs
 =====================
 
+
+Most properties of an array can be calculated using the :class:`~oalib.array_link`
+object. Some properties are calculated using a function from the package
+
+For example to calculate the rank of an array and determine whether the array is a foldover array one can use:
+
+.. code-block:: python
+   
+ >>> al=oapackage.exampleArray(1)
+ >>> print(al.rank())
+ 5 
+ >>> print(al.foldover())
+ False
+
+.. doxygenfunction:: array_link::rank
+.. doxygenfunction:: array_link::foldover
+
+The full set of methods can be found in the documentation of :class:`~oalib.array_link`.
+
 Statistical properties of an array
 ----------------------------------
 
-Most properties of an array can be calculated using the :class:`~oalib.array_link`
-object. The interface is listed below.
+In :cite:`EendebakSO` designs capable of estimating the interaction model are generated. To determine the best of these designs
+a set of efficiency criteria was used
 
-::
 
-    struct array_link
-    {
-        ... 
-        
-    public:
-        // statistical properties of the array
+.. doxygenfunction:: array_link::Defficiency
+.. doxygenfunction:: array_link::DsEfficiency
+.. doxygenfunction:: array_link::DsEfficiency
+.. doxygenfunction:: array_link::Aefficiency
+.. doxygenfunction:: array_link::Eefficiency
 
-        /// calculate D-efficiency
-        double Defficiency() const;
-        /// calculate main effect robustness (or Ds optimality)
-        double DsEfficiency(int verbose=0) const;
-        /// calculate A-efficiency
-        double Aefficiency() const;
-        /// calculate E-efficiency
-        double Eefficiency() const;
-        /// calculate rank of array
-        int rank() const;
-        /// calculate generalized wordlength pattern
-        std::vector<double> GWLP() const;
-        /// return true if the array is a foldover array
-        bool foldover() const;
-        /// calculate centered L2 discrepancy
-        double CL2discrepancy() const;
-        /// Calculate the projective estimation capacity sequence
-        std::vector<double> PECsequence() const;
-    }
 
 The :math:`D`-efficiency, :math:`A`-efficiency and :math:`E`-efficiency
 are calculated by calculating the SVD of the second order interaction
@@ -71,6 +69,17 @@ The :math:`D_s`-effiency is the main effect robustness, see the appendix
 in :cite:`Schoen2010` for more details.
 
 
+Projection sequences
+--------------------
+
+For a design with N runs and k factors one often studies subdesigns with N runs and l factors. 
+To determine the quality of a design for such projections one can use projection sequences.
+
+    
+.. doxygenfunction:: array_link::PECsequence
+.. doxygenfunction:: PICsequence
+
+
 GWLP and J-characteristics
 --------------------------
 
@@ -93,6 +102,11 @@ worldlength patterns :cite:`Xu2001`, :math:`F`-values and
  >>> print('J3-characteristics: %s’ % str(al.Jcharacteristics(3)))
  J3-characteristics: (8, 8, 0, 0, 0, 8, 0, 8, 0, 0)
 
+The documentation:
+
+.. doxygenfunction:: array_link::GWLP
+.. doxygenfunction:: array_link::Fvalues
+.. doxygenfunction:: array_link::Jcharacteristics
 
 
 MD5 sums
@@ -117,11 +131,5 @@ The C++ functions are:
 .. doxygenfunction::  md5(const std::string)
     :no-link:
     
-.. comment
-    .. code-block:: c
-    
-        /// calculate md5 sum of a data block in memory
-        std::string md5(void *data, int numbytes);
-        /// calculate md5 sum of a file on disk
-        std::string md5(const std::string filename);
+
     

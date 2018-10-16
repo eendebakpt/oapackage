@@ -501,23 +501,15 @@ std::vector< double > projDeff (const array_link &al, int number_of_factors, int
         return dd;
 }
 
-/**Calculate the projection estimation capacity sequence for a design.
- *
- * The PEC of a design is the fraction of estimable second-order models in x factors.
- * See "Ranking Non-regular Designs", J.L. Loeppky
- *
- */
-std::vector< double > PECsequence (const array_link &al, int verbose) {
+std::vector< double > PECsequence (const array_link &array, int verbose) {
 
-        int N = al.n_rows;
+        int N = array.n_rows;
 
-        int number_of_factors = al.n_columns;
+        int number_of_factors = array.n_columns;
         std::vector< double > pec (number_of_factors);
 
         if (number_of_factors >= 20) {
-                myprintf ("PECsequence: error: not defined for 20 or more columns\n");
-                pec[0] = -1;
-                return pec;
+			throw_runtime_exception("PECsequence: error: not implemented for 20 or more columns\n");
         }
 
 #ifdef DOOPENMP
@@ -531,19 +523,44 @@ std::vector< double > PECsequence (const array_link &al, int verbose) {
                         // if size of model is larger than number of runs the model cannot be estimated
                         pec[i] = 0;
                 } else {
-                        std::vector< double > dd = projDeff (al, kp, verbose >= 2);
-
-                        double ec = 0;
-                        for (unsigned long j = 0; j < dd.size (); j++)
-                                ec += dd[j] > 0;
-
-                        ec = ec / dd.size ();
-
-                        pec[i] = ec;
+                        std::vector< double > dd = projDeff (array, kp, verbose >= 2);
+                        pec[i] = fraction_nonzero(dd);
                 }
         }
 
         return pec;
+}
+
+std::vector< double > PICsequence(const array_link &array, int verbose) {
+
+	int N = array.n_rows;
+	int number_of_factors = array.n_columns;
+	std::vector< double > pec(number_of_factors);
+
+	if (number_of_factors >= 20) {
+		throw_runtime_exception("PICsequence: error: not implemented for 20 or more columns\n");
+	}
+
+
+#ifdef DOOPENMP
+#pragma omp parallel for
+#endif
+	for (int i = 0; i < number_of_factors; i++) {
+		int kp = i + 1;
+		int m = 1 + kp + kp * (kp - 1) / 2;
+
+		if (m > N) {
+			// if size of model is larger than number of runs the model cannot be estimated
+			pec[i] = 0;
+		}
+		else {
+			std::vector< double > dd = projDeff(array, kp, verbose >= 2);
+
+			pec[i] = average(dd);
+		}
+	}
+
+	return pec;
 }
 #endif
 
@@ -924,20 +941,11 @@ int rankStructure::rankxf (const array_link &al) {
 
         // transform second order interaction matrix into suitable format
 
-        // method 2
-        // Eigen::MatrixXd Zxp = (A * ptmp).block(0, rank0, N, m-rank0);
-        // Eigen::MatrixXd ZxSub = this->Qi.block(rank0, 0, N-rank0, N)*(A * ptmp).block(0, rank0, N, m-rank0);
-        // method 1
         Eigen::MatrixXd Zxp = A * ptmp;
         Eigen::MatrixXd ZxSub = this->Qi.block (rank0, 0, N - rank0, N) * Zxp.block (0, rank0, N, m - rank0);
 
-        // direct version
-        // Eigen::MatrixXd Zx = this->Qi*A * ptmp;
-        // Eigen::MatrixXd ZxSub = Zx.block ( rank0, rank0, Zx.rows()-rank0, m-rank0 );
-
         if (verbose >= 2) {
                 printf ("  rankStructure: k %d, m %d\n", k, m);
-                // eigenInfo ( Zx, "Zx" );
                 printf ("  rankStructure: msub %d, m %d\n", msub, m);
         }
 

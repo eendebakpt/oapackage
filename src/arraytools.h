@@ -2184,20 +2184,20 @@ inline void vectorvector2binfile (const std::string fname, const std::vector< st
 
 /** convert 2-level array to main effects in Eigen format
  *
- * \param arrays_to_append Array to convert
+ * \param array Array to convert
  * \param intercept If True, then include the intercept
  * \returns The main effects model
  */
-MatrixFloat array2eigenX1 (const array_link &al, int intercept = 1);
+MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
 
 /** Convert 2-level array to second order interaction matrix in Eigen format
  *
  * The intercept and main effects are not included.
  *
- * \param arrays_to_append Array to convert
+ * \param array Array to convert
  * \returns The second order interaction model
  */
-MatrixFloat array2eigenX2 (const array_link &al);
+MatrixFloat array2eigenX2 (const array_link &array);
 
 /// convert 2-level array to second order model matrix (intercept, X1, X2)
 MatrixFloat array2eigenModelMatrix (const array_link &al);
@@ -2222,12 +2222,12 @@ int arrayInFile (const array_link &array, const char *array_file, int verbose = 
 
 /** return index of specified array in a list. returns -1 if array is not found
  *
- * \param arrays_to_append Array to find
+ * \param array Array to find
  * \param arrays List of arrays
  * \param verbose Verbosity level
  * \returns Position of array in list
  */
-int arrayInList (const array_link &al, const arraylist_t &arrays, int verbose = 1);
+int arrayInList (const array_link &array, const arraylist_t &arrays, int verbose = 1);
 
 #endif
 

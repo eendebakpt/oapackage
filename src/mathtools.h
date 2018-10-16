@@ -1775,5 +1775,21 @@ double conditionNumber (const Eigen::Matrix< Type, -1, -1 > A) {
         return cond;
 }
 
+template < class NumericType >
+/// calculate the average value of a vector of numbers
+double average(std::vector < NumericType> data) {
+	return  double(std::accumulate(data.begin(), data.end(), 0.0) ) / data.size();
+}
+
+template < class NumericType >
+/// calculate the fraction of non-zero elemenets of a vector
+double fraction_nonzero(std::vector < NumericType> data) {
+	double nonzero = 0;
+	for (unsigned long j = 0; j < data.size(); j++)
+		nonzero += data[j] > 0;
+
+	return nonzero / data.size();
+}
+
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
