@@ -1946,8 +1946,9 @@ bool array_link::is_mixed_level() const {
 	if (this->min() < 0)
 		return false;
 	array_t max_value = this->max();
-	const int N = this->n_columns;
+	const int N = this->n_rows;
 	int s = max_value + 1;
+	
 	int k;
 	for (k = 0; k < this->n_columns; k++) {
 		array_t *max_column_value = std::max_element(this->array + N * k, this->array + (N * (k + 1)));

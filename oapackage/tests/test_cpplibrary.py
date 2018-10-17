@@ -78,7 +78,7 @@ class TestArrayLink(unittest.TestCase):
 class TestCppLibrary(unittest.TestCase):
 
     def test_mvalue_t(self):
-        input_vector=(1,2,2)
+        input_vector=[1.,2.,2.]
         m=oapackage.mvalue_t_double( input_vector )
         self.assertEqual(m.size(), len(input_vector))
         self.assertEqual(list(m.values), input_vector)
