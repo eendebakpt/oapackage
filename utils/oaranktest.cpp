@@ -99,7 +99,6 @@ int main (int argc, char *argv[]) {
                 array_link A = ll[i];
                 array_link B = array2xf (A);
                 int r1 = arrayrankColPivQR (B);
-                // printf("i %d: r values %d %d %d\n", (int)i, r1, r2, r3);
                 rr[i] = r1;
 
                 if (verbose >= 3) {
