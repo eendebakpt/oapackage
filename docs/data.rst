@@ -4,23 +4,31 @@
 Data representation
 ===================
 
-All designs handled by the OApackage are integer valued. The designs (whether these are ortogonal arrays, optimal designs or conferences designs)
+All designs handled by the OApackage are integer valued. The designs (whether these are orthogonal arrays, optimal designs or conferences designs)
 are stored in an :meth:`array_link` object.
 
 An orthogonal array (OA) of strength :math:`{t}`, :math:`{N}` runs and
 :math:`{n}` factors at :math:`{s}` levels is an :math:`{N}\times {n}`
-array of :math:`0,
-\ldots,({s}-1)`-valued symbols such that for every :math:`{t}` columns
+array of symbols :math:`0,
+\ldots,({s}-1)`, such that, for every subset of :math:`{t}` columns,
 every :math:`{t}`-tuple occurs equally
-often :cite:`Rao1947`. The set of all OAs with given
-strength, runs and levels is denoted by
-:math:`{\operatorname{OA}({N}; {t}; {s}^{n})}`. The OAs are represented
-by arrays (in column-major form).
+often :cite:`Rao1947`. The set of all strength-:math:`{t}` OAs with 
+:math:`{N}` runs and :math:`{n}` factors at :math:`{s}` levels 
+is denoted by :math:`{\operatorname{OA}({N}; {t}; {s}^{n})}`. 
+The OAs are represented by arrays (in column-major form).
+
+A D-optimal design (:math:`{n}`) is an :math:`{N}\times {n}` array 
+that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p}/N}`, for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}.
+
+For :math:`{N}` even, a conference design (:math:`{n}`) is 
+an :math:`{N}\times {n}` array which satisfices :math:`{C}^{T}{C} = ({n}-1) {I}_{n}}`,
+with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
+:math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`.
 
 Data structures
 ---------------
 
-The package contains several data structures. Here we describe the main
+The package contains several data structures. Here, we describe the main
 structures and their use.
 
   :meth:`~oalib.array_link`
@@ -40,28 +48,25 @@ structures and their use.
     The structure describing a certain class of conference designs.
 
   :meth:`~oalib.array_transformation_t`
-    This describes a transformation of an orthogonal array. This includes the row-,
-    column- and level-permutations.
+    This describes a transformation of an orthogonal array, which 
+    includes row and column permutations, as well as permutations 
+    to the symbols in one or more columns.
 
   :meth:`~oalib.conference_transformation_t`
-    This describes a transformation of an array. This includes the row-,
-    and column permutations and row- and column sign switches.
+    This describes a transformation of conference design, which includes 
+    row and column permutations, as well as sign switches to the elements
+    in one or more rows and columns.
 
 Representing arrays
 -------------------
 
 The structure containing an orthogonal array is called the
 :class:`~oalib.array_link` structure. It consists of a specified number of rows and
-columns, the data (integer valued) and an index.
-        
-In the Python interface the :meth:`array_link` object can be indexed just as
-normal arrays. It is also possible to convert to a Numpy array. The
-:class:`~oalib.array_link` object implements to Python array interface, so most
-opertations from packages such as Numpy work on the :meth:`~oalib.array_link`
-object.
+columns, the data (integer valued) and an index. In the Python interface, the :meth:`array_link` object can be indexed just as
+normal arrays. 
 
 .. code-block:: python
- :caption: Array representation in Python
+ :caption: Array representation and indexing in Python
 
  >>> import oapackage
  >>> al=oapackage.exampleArray(0)
@@ -69,9 +74,19 @@ object.
  array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1 
  >>> al[2,1] 
  1L 
+        
+It is also possible to convert to a Numpy array. The
+:class:`~oalib.array_link` object implements to Python array interface, so most
+opertations from packages such as Numpy work on the :meth:`~oalib.array_link`
+object.
+
+.. code-block:: python
+ :caption: Convertion to Numpy array
+
  >>> X=np.array(al)
  >>> X 
  array([[0, 0], [0, 0], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1]], dtype=int32)
+
 
 The C++ class is:
 
@@ -84,7 +99,7 @@ Reading and writing arrays
 --------------------------
 
 Reading and writing arrays to disk can be done with the :meth:`oalib.arrayfile_t`
-class. For example:
+class. 
 
 .. code-block:: python
    :caption: Write an array to disk
@@ -98,7 +113,7 @@ class. For example:
    >>> af.closefile()
 
 The arrays can be written in text or binary format. For more details on
-the file format see Section :ref:`File formats`.
+the file format, see Section :ref:`File formats`.
 
 The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 
@@ -109,12 +124,11 @@ The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 Array transformations
 ---------------------
 
-Transformations of (orthogonal) arrays consist of row permutations,
-level permutations and level transformations. A transformation is
-represented by the :meth:`~oalib.array_transformation_t` object.
+Transformations of (orthogonal) arrays consist of row, column and 
+level permutations. A transformation is represented by the :meth:`~oalib.array_transformation_t` object.
 
-For a given transformation the column permutations are applied first,
-then the level permutations and finally the row permutations. The level-
+For a given transformation, the column permutations are applied first,
+then the level permutations and, finally, the row permutations. The level
 and column permutations are not commutative.
 
 .. code-block:: c++
@@ -123,40 +137,40 @@ and column permutations are not commutative.
     class array_transformation_t
     {
     public:
-        rowperm_t   rperm;      /// row permutation
-        colperm_t   colperm;    /// column permutation
-        levelperm_t *lperms;    /// level permutations
-        const arraydata_t *ad;  /// type of array
+        rowperm_t   rperm;      /// Row permutation.
+        colperm_t   colperm;    /// Column permutation.
+        levelperm_t *lperms;    /// Level permutations.
+        const arraydata_t *ad;  /// Type of array.
 
     public:
         array_transformation_t ( const arraydata_t *ad );
-        array_transformation_t ( );     /// default constructor
+        array_transformation_t ( );     /// Default constructor.
         array_transformation_t ( const array_transformation_t  &at );   
         array_transformation_t & operator= ( const array_transformation_t &at );    
-        ~array_transformation_t();  /// destructor
+        ~array_transformation_t();  /// Destructor.
 
-        /// show the array transformation
+        /// Show the array transformation.
         void show() const;
 
-        /// return true if the transformation is equal to the identity
+        /// Return true if the transformation is equal to the identity.
         bool isIdentity() const;
 
-        /// return the inverse transformation
+        /// Return the inverse transformation.
         array_transformation_t inverse() const;
 
-        /// return the transformation to the identity transformation
+        /// Return the transformation to the identity transformation.
         void reset();
 
-        /// initialize to a random transformation
+        /// Initialize to a random transformation.
         void randomize();
 
-        /// initialize with a random column transformation
+        /// Initialize with a random column transformation.
         void randomizecolperm();
 
-        /// apply transformation to an array_link object
+        /// Apply transformation to an array_link object.
         array_link apply ( const array_link &al ) const;
 
-        /// composition operator. the transformations are applied from the left
+        /// Composition operator. the transformations are applied from the left.
         array_transformation_t operator*(const array_transformation_t b);
         
         ...
@@ -172,28 +186,28 @@ arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 
     struct arraydata_t
     {
-        rowindex_t N;   /** number of runs */
-        array_t *s; /** pointer to levels of the array */
-        colindex_t ncols; /** total number of columns (factors) in the design */
-        colindex_t strength;    /** strength of the design */
+        rowindex_t N;   /// Number of runs.
+        array_t *s; /// Pointer to levels of the array. 
+        colindex_t ncols; /// Total number of columns (factors) in the design.
+        colindex_t strength;    /// Strength of the design.
 
-        ordering_t  order; /** Ordering used for arrays */
+        ordering_t  order; /// Ordering used for arrays.
 
     public:
-        /// create new arraydata_t object
+        /// Create new arraydata_t object.
         arraydata_t(std::vector<int> s, rowindex_t N_, colindex_t t, colindex_t nc);
         arraydata_t(carray_t *s_, rowindex_t N_, colindex_t t, colindex_t nc);
         arraydata_t(const arraydata_t &adp);
         
         ...
         
-        /// return true if the array is of mixed type
+        /// Return true if the array is of mixed type.
         bool ismixed() const;
-        /// return true if the array is a 2-level array
+        /// Return true if the array is a 2-level array.
         bool is2level() const;
-        /// set column group equal to that of a symmetry group
+        /// Set column group equal to that of a symmetry group.
         void set_colgroups(const symmetry_group &sg);
-            /// return random array from the class
+            /// Return random array from the class.
         array_link randomarray ( int strength = 0, int ncols=-1 ) const;
 
     }
@@ -202,19 +216,19 @@ File formats
 ------------
 
 The Orthogonal Array package stores arrays in a custom file
-format. There is a text format with is easily readable by humans and a
-binary format with is faster to process and memory efficient.
+format. There is a text format which is easily readable by humans and a
+binary format which is faster to process and memory efficient.
 
 Plain text array files
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Arrays are stored in plain text files with extension ``.oa``. The first line
 contains the number of columns, the number of rows and the number of
-arrays (or -1 if the number of arrays is not specified). Then for each
-array a single line with the index of the array, followed by N lines
+arrays (or -1 if the number of arrays is not specified). Then, for each
+array, a single line with the array index, followed by N lines
 containing the array.
 
-A typical example of a text file would be:
+A typical example of a text file is the following:
 
 .. code-block:: c
 
@@ -256,10 +270,10 @@ number is specified in the header):
   [INT32] Index
   [Nxk elements] The elements contain b bits
 
-If the number of bits per number is 1 (e.g. a 2-level array) then the
+If the number of bits per number is 1 (e.g. a 2-level array), then the
 data is padded with zeros to a multiple of 64 bits. The data of the
 array is stored in column-major order. The binary file format allows for
-random access reading and writing. The ``binary diff`` and ``binary diff
+random access, reading and writing. The ``binary diff`` and ``binary diff
 zero`` formats are special formats.
 
 A binary array file can be compressed using gzip. Most tools in the
@@ -269,8 +283,8 @@ Writing to compressed array files is not supported at the moment.
 Data files
 ~~~~~~~~~~
 
-The analysis tool (``oaanalyse``) writes data to disk in binary format.
-The format is consists of a binary header:
+The analysis tool (``oaanalyse``) writes data to disk in binary format, which
+consists of a binary header.
 
 ::
 
@@ -286,12 +300,12 @@ After the header there follow ``nc*nr [FLOAT64]`` values.
 Command line interface
 ----------------------
 
-Included in the packages are several command line tools. For each tool
+Several command line tools are included in the Orthogonal Array package. For each tool,
 help can be obtained from the command line by using the switch ``-h``.
-The tools are:
+The tools include the following:
 
 `oainfo`
-    This program reads Orthogonal Array packagedata files and reports
+    This program reads OApackage data files and reports
     the contents of the files. For example:
 
     .. code-block:: console
@@ -303,33 +317,33 @@ The tools are:
         $
 
 `oacat`
-    Show the contents of a file with orthogonal arrays for a data file.
+    Shows the contents of a file with orthogonal arrays.
 
 `oacheck`
-    Check or reduce an array to canonical form.
+    Checks or reduces an array to canonical form.
 
 `oaextendsingle`
-    Extend a set of arrays in LMC form with one or more columns.
+    Extends a set of arrays in LMC form with one or more columns.
 
 `oacat`
-    Show the contents of an array file or data file.
+    Shows the contents of an array file or data file.
 
     Usage: ``oacat [OPTIONS] [FILES]``
 
 `oajoin`
-    Read one or more files from disk and join all the array files into a
+    Reads one or more files from disk and join all the array files into a
     single list.
 
 `oasplit`
-    Takes a single array file as input and splits the arrays to a
+    Takes a single array file as input and splits the arrays into a
     specified number of output files.
 
 `oapareto`
     Calculates the set of Pareto optimal arrays in a file with arrays.
 
 `oaanalyse`
-    Calculates various statistics of arrays in a file. The statistics
-    are described in section :ref:`Properties of designs`.
+    Calculates various statistical properties of arrays in a file. 
+    The properties are described in section :ref:`Properties of designs`.
 
 
 .. figure:: images/oaimage-18_2-3-3-3-3-3-n17.png
