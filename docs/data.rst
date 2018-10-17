@@ -18,7 +18,7 @@ is denoted by :math:`{\operatorname{OA}({N}; {t}; {s}^{n})}`.
 The OAs are represented by arrays (in column-major form).
 
 A D-optimal design (:math:`{n}`) is an :math:`{N}\times {n}` array 
-that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p}/N}`, for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}.
+that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p}/N}`, for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}. An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
 
 For :math:`{N}` even, a conference design (:math:`{n}`) is 
 an :math:`{N}\times {n}` array which satisfices :math:`{C}^{T}{C} = ({n}-1) {I}_{n}}`,
