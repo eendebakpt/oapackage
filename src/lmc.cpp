@@ -2814,11 +2814,11 @@ array_link reduceDOPform (const array_link &al, int verbose) {
         int strength = 2;
         arraylist_t lst;
         lst.push_back (al);
-        arraylist_t earrays;
+        arraylist_t reduced_arrays;
         if (verbose >= 2)
                 myprintf ("reduceDOPform: calling reduceArraysGWLP\n");
-        reduceArraysGWLP (lst, earrays, verbose, dopruning, strength, dolmc);
-        return earrays[0];
+        reduceArraysGWLP (lst, reduced_arrays, verbose, dopruning, strength, dolmc);
+        return reduced_arrays[0];
 }
 
 /** Calculate mixed-level projection GWLP values from normal GWLP values. 
@@ -2835,7 +2835,7 @@ std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, c
                 std::vector< double > t;
                 t.push_back (-ad.s[i]);
 
-                t.insert (t.end (), w.v.begin (), w.v.end ());
+                t.insert (t.end (), w.values.begin (), w.values.end ());
 
                 if (verbose >= 2) {
                         myprintf ("reduceArraysGWLP: mixed array: column %d: s[%d]=%d: \n   ", i, i, ad.s[i]);
@@ -2869,6 +2869,25 @@ else {
 	if (verbose >= 2)
 		myprintf("  array changed\n");
 }
+}
+
+bool _check_dof_order_minimal(std::vector<GWLPvalue> &dopgwp, int ncols, int verbose) 
+{
+	GWLPvalue x = *(min_element(dopgwp.begin(), dopgwp.begin() + ncols - 1));
+	if (verbose >= 2) {
+		myprintf("  delete-1 GWP sequence:        ");
+		display_vector< GWLPvalue >(dopgwp);
+
+		myprintf("\n");
+		std::cout << "  pruning check: last element " << dopgwp[ncols - 1] << " minimal element " << x << std::endl;
+	}
+	if (dopgwp[ncols - 1] > x) {
+		if (verbose >= 2) {
+			myprintf("  reject based on dopgwp ordering\n");
+		}
+		return false;
+	}
+	return true;
 }
 
 array_transformation_t reductionDOP (const array_link &input_array, int verbose) {
@@ -2944,7 +2963,6 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
                 if (verbose >= 2)
                         myprintf ("reduceArrays: array %d/%d\n", (int)i, (int)input_arrays.size ());
                 const array_link input_array = input_arrays.at (i);
-                // create arraydatya
                 int ncols = input_array.n_columns;
 
                 arraydata_t ad = arraylink2arraydata (input_array, 0, strength);
@@ -2952,21 +2970,10 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
 				std::vector< GWLPvalue > dopgwp = projectionGWLPs(input_array);
 
                 if (dopruning) {
-                        GWLPvalue x = *(min_element (dopgwp.begin (), dopgwp.begin () + ncols - 1));
-                        if (verbose >= 2) {
-                                myprintf ("  delete-1 GWP sequence:        ");
-                                display_vector< GWLPvalue > (dopgwp);
-
-                                myprintf ("\n");
-                                std::cout << "  pruning check: " << dopgwp[ncols - 1] << " minmax " << x << std::endl;
-                        }
-                        if (dopgwp[ncols - 1] > x) {
-                                if (verbose >= 2) {
-                                        myprintf ("  reject based on dopgwp ordering\n");
-                                }
-                                npruned++;
-                                continue;
-                        }
+					if (! _check_dof_order_minimal(dopgwp, ncols, verbose) ) {
+						npruned++;
+						continue;
+					}
                 }
 
                 if (verbose >= 2)

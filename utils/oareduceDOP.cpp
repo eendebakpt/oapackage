@@ -102,10 +102,7 @@ int main (int argc, char *argv[]) {
         }
 
 
-        // extend arrays
-
-        arraydata_t *ad;
-        ad = readConfigFile (oaconfigfile);
+        arraydata_t *ad = readConfigFile (oaconfigfile);
 
         arraylist_t extensions;
         arraylist_t *arraylist2 = arraylist;

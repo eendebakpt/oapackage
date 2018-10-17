@@ -337,7 +337,7 @@ inline typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayPare
         if (verbose >= 2) {
                 if (verbose >= 3) {
                         std::vector< double > gwlp = al.GWLP ();
-                        myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.v[1], gwlp[4]);
+                        myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.raw_values()[1], gwlp[4]);
                 }
 
                 myprintf ("  parseArrayPareto: rank %d, verbose %d\n", al.rank (), verbose);
@@ -379,7 +379,7 @@ template < class IndexType >
  *
  * 1) Rank (higher is better)
  * 2) A3, A4 (lower is better)
- * 3) F4 (?? is better, sum of elements is constant)
+ * 3) F4 (lower is better, sum of elements is constant)
  *
  * */
 inline void parseArrayPareto (const array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
@@ -409,15 +409,7 @@ inline double Dvalue2Cvalue (double A, int ka) {
         return C;
 }
 
-/// Return index of an array
-inline int get_oaindex (const array_t *s, const colindex_t strength, const colindex_t N) {
-        int oaindex = N;
-        for (colindex_t z = 0; z < strength; z++) {
-                oaindex /= s[z];
-        }
 
-        return oaindex;
-}
 
 #endif // ARRAYPROPERTIES_H
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;

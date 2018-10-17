@@ -1904,10 +1904,10 @@ symmetry_group array_link::row_symmetry_group () const {
         std::vector< mvalue_t< int > > rr (this->n_rows);
         for (int i = 0; i < this->n_rows; i++) {
                 mvalue_t< int > &m = rr[i];
-                m.v.resize (nc);
+                m.values.resize (nc);
 
                 for (int k = 0; k < nc; k++) {
-                        m.v[k] = this->atfast (i, k);
+                        m.values[k] = this->atfast (i, k);
                 }
         }
         symmetry_group sg (rr, true, 0);

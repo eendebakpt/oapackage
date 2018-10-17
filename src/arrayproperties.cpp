@@ -648,7 +648,7 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
 inline double GWPL2val (GWLPvalue x) {
         double r = 0;
         for (int i = x.size () - 1; i > 0; i--)
-                r = r / 10 + x.v[i];
+                r = r / 10 + x.values[i];
 
         return r;
 }

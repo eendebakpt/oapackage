@@ -240,59 +240,63 @@ template < class NumericType >
 struct mvalue_t {
       public:
         /// vector containing the values
-        std::vector< NumericType > v;
+        std::vector< NumericType > values;
         // int direction;
         enum direction_t { HIGH, LOW };
         /// value representing the ordering used
-        direction_t d;
+        direction_t ordering;
 
-        mvalue_t () : d (HIGH){};
+        mvalue_t () : ordering (HIGH){};
         ~mvalue_t (){};
 
         mvalue_t (NumericType m, direction_t dd = HIGH) {
-                v.push_back (m);
-                d = dd;
+                values.push_back (m);
+                ordering = dd;
         }
         mvalue_t (std::vector< NumericType > vv, direction_t dd = HIGH) {
-                d = dd;
-                this->v = vv;
+                ordering = dd;
+                this->values = vv;
         }
 
+		std::vector< NumericType > raw_values() const {
+			return this->values;
+		}
+
         template < class T > mvalue_t (std::vector< T > vv, direction_t dd = HIGH) {
-                d = dd;
-                v.clear ();
-                v.resize (vv.size ());
+                ordering = dd;
+                values.clear ();
+                values.resize (vv.size ());
                 for (size_t ii = 0; ii < vv.size (); ii++) {
-                        this->v[ii] = vv[ii];
+                        this->values[ii] = vv[ii];
                 }
         }
 
-        size_t size () const { return this->v.size (); }
+        size_t size () const { return this->values.size (); }
 
-        // Copy assignemnt operator
+        // Copy assignment operator
         mvalue_t &operator= (const mvalue_t &rhs) {
-                this->d = rhs.d;
-                this->v = rhs.v;
+                this->ordering = rhs.ordering;
+                this->values = rhs.values;
                 return *this;
         }
         /// comparison operator
         bool operator== (const mvalue_t &rhs) const {
-                if (this->v.size () != rhs.size ())
+                if (this->values.size () != rhs.size ())
                         return 0;
 
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        if (v[i] != rhs.v[i]) {
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] != rhs.values[i]) {
                                 return 0;
                         }
                 }
                 return true;
         }
         bool operator!= (const mvalue_t &rhs) const {
-                if (this->v.size () != rhs.size ())
+                if (this->values.size () != rhs.size ())
                         return 1;
 
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        if (v[i] != rhs.v[i])
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] != rhs.values[i])
                                 return 1;
                 }
                 return 0;
@@ -301,7 +305,7 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (d == HIGH)
+                if (ordering == HIGH)
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);
@@ -309,41 +313,41 @@ struct mvalue_t {
         }
         bool operator> (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (d == HIGH)
+                if (ordering == HIGH)
                         val = (bool)better (rhs);
                 else
                         val = (bool)worse (rhs);
-                // if (dverbose) myprintf("mvalue_t: operator>: %d\n", val);
                 return val;
         }
         bool operator>= (const mvalue_t &rhs) const { return !rhs.operator< (*this); }
 
+		/// Show the object on stdout by casting to integer type objects
         void show_integer () const {
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        myprintf ("%ld", (long)this->v[i]);
-                        if (i < this->v.size () - 1)
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        myprintf ("%ld", (long)this->values[i]);
+                        if (i < this->values.size () - 1)
                                 myprintf (",");
                 }
         }
 
         template < class W > friend std::ostream &operator<< (std::ostream &stream, const mvalue_t< W > &mval);
 
-#ifdef SWIGCODE
-        std::string __repr__x () {
+		/// return a string representation of the object
+        std::string string_representation (const char *separator = ";") {
                 std::stringstream s;
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        s << v[i];
-                        if (i < this->v.size () - 1)
-                                s << (",");
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        s << values[i];
+                        if (i < this->values.size () - 1)
+                                s << (separator);
                 }
 
                 return s.str ();
         }
-#endif
+
       private:
         int equal (const mvalue_t &rhs) const {
                 for (size_t i = 0; i < this->size (); i++) {
-                        if (this->v[i] != rhs.v[i])
+                        if (this->values[i] != rhs.values[i])
                                 return 0;
                 }
                 return 1;
@@ -355,19 +359,19 @@ struct mvalue_t {
              *
              */
         int better (const mvalue_t &rhs) const {
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        if (v[i] > rhs.v[i])
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] > rhs.values[i])
                                 return 1;
-                        if (v[i] < rhs.v[i])
+                        if (values[i] < rhs.values[i])
                                 return 0;
                 }
                 return 0;
         }
         int worse (const mvalue_t &rhs) const {
-                for (size_t i = 0; i < this->v.size (); i++) {
-                        if (v[i] < rhs.v[i])
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] < rhs.values[i])
                                 return 1;
-                        if (v[i] > rhs.v[i])
+                        if (values[i] > rhs.values[i])
                                 return 0;
                 }
                 return 0;
@@ -375,7 +379,7 @@ struct mvalue_t {
 };
 
 template < class NumericType > std::ostream &operator<< (std::ostream &stream, const mvalue_t< NumericType > &mval) {
-        std::copy (mval.v.begin (), mval.v.end (), std::ostream_iterator< NumericType > (stream, " "));
+        std::copy (mval.values.begin (), mval.values.end (), std::ostream_iterator< NumericType > (stream, " "));
         return stream;
 }
 
