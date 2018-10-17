@@ -67,10 +67,10 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al.is_mixed_level())       
 
         al=oapackage.exampleArray(11,1)
-        self.assertFalse(al.is2level())  
-        self.assertTrue(al.is_mixed_level())       
+        self.assertTrue(al.is2level())  
+        self.assertFalse(al.is_mixed_level())       
 
-        al=oapackage.aray_link(2,2,0)
+        al=oapackage.array_link(2,2,0)
         al[1,1]=-1 
         self.assertFalse(al.is2level())  
         self.assertFalse(al.is_mixed_level())       
