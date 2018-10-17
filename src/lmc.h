@@ -859,12 +859,13 @@ std::vector< numtype > comb2perm (const std::vector< numtype > comb, int n) {
 }
 
 /// reduce arrays to canonical form using delete-1-factor ordering
-void reduceArraysGWLP (const arraylist_t *input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
+void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
 array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
 
-void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose = 1);
+/// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
+void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
 
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &al);

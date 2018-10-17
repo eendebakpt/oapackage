@@ -77,7 +77,7 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  *
  *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
  * fractional factorial desings"
- *  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+ * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu
  *
  * \param array Array to calculate the GWLP value for
@@ -86,7 +86,7 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
-/** @brief Calculate GWLP (generalized wordlength pattern)
+/** @brief Calculate GWLP (generalized wordlength pattern) for mixed-level arrays
 *
 *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
 * fractional factorial desings"

@@ -564,12 +564,16 @@ std::vector< double > PICsequence(const array_link &array, int verbose) {
 }
 #endif
 
-/** calculate GWLP (generalized wordlength pattern)
- *
- * Based on: "GENERALIZED MINIMUM ABERRATION FOR ASYMMETRICAL
-FRACTIONAL FACTORIAL DESIGNS", Xu and Wu, 2001
- *
- */
+void round_GWLP_zero_values(std::vector<double> &gma, int N)
+{
+	for (size_t i = 0; i < gma.size(); i++) {
+		gma[i] = round(N * N * gma[i]) / (N * N);
+		if (gma[i] == 0)
+			gma[i] = 0; // fix minus zero float number
+	}
+
+}
+
 std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate) {
         arraydata_t adata = arraylink2arraydata (al);
         symmetry_group sg (adata.getS (), false);
@@ -597,17 +601,11 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         std::vector< double > gma = macwilliams_transform_mixed (B, sg, sx, N, Bout, verbose);
 
-        if (truncate) {
-                for (size_t i = 0; i < gma.size (); i++) {
-                        gma[i] = round (N * N * gma[i]) / (N * N);
-                        if (gma[i] == 0)
-                                gma[i] = 0; // fix minus zero
-                }
-        }
+        if (truncate)
+			round_GWLP_zero_values(gma, N);
         return gma;
 }
 
-/// calculate GWLP (generalized wordlength pattern)
 std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int N = al.n_rows;
         int n = al.n_columns;
@@ -616,11 +614,12 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int s = *me + 1;
         int k;
         for (k = 0; k < al.n_columns; k++) {
-                array_t *mine = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
-                if (*mine + 1 != s)
+                array_t *max_column_value = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
+                if (*max_column_value + 1 != s)
                         break;
         }
         int domixed = (k < al.n_columns);
+
         if (verbose)
                 myprintf ("GWLP: N %d, s %d, domixed %d\n", N, s, domixed);
 
@@ -638,13 +637,8 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
                 // calculate GWP
                 std::vector< double > gma = macwilliams_transform (B, N, s);
 
-                if (truncate) {
-                        for (size_t i = 0; i < gma.size (); i++) {
-                                gma[i] = round (N * N * gma[i]) / (N * N);
-                                if (gma[i] == 0)
-                                        gma[i] = 0; // fix minus zero
-                        }
-                }
+				if (truncate)
+					round_GWLP_zero_values(gma, N);
 
                 return gma;
         }

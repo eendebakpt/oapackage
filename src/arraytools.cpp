@@ -1858,6 +1858,17 @@ array_link exampleArray (int idx, int verbose) {
                 return al;
                 break;
         }
+		case 43: {
+			dstr = "2x2 array with zeros and a singe value -1";
+			if (verbose) {
+				myprintf("exampleArray: %s\n", dstr.c_str());
+			}
+			array_link al(2, 2, 0);
+			int tmp[] = { 0,  0,  0,  -1 };
+			al.setarraydata(tmp, al.n_rows * al.n_columns);
+			return al;
+			break;
+		}
 
         } // end of switch
 
@@ -1928,6 +1939,23 @@ bool array_link::is_conference (int nz) const {
                         return false;
         }
         return true;
+}
+
+
+bool array_link::is_mixed_level() const {
+	if (this->min() < 0)
+		return false;
+	array_t max_value = this->max();
+	const int N = this->n_columns;
+	int s = max_value + 1;
+	int k;
+	for (k = 0; k < this->n_columns; k++) {
+		array_t *max_column_value = std::max_element(this->array + N * k, this->array + (N * (k + 1)));
+		if (*max_column_value + 1 != s)
+			break;
+	}
+	int is_mixed = (k < this->n_columns);
+	return is_mixed;
 }
 
 bool array_link::is_conference () const {

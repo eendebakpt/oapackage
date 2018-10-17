@@ -2764,32 +2764,35 @@ inline int predictJrowsort (const array_t *array, const int N, const rowsort_t *
 }
 
 /// select the unique arrays in a list, the original list is sorted in place
-void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose) {
-        sort (xlist.begin (), xlist.end ()); // solutions.sort();
-        if (xlist.size () > 0) {
-                std::vector< int > vv (xlist.size ());
+void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose) {
+        sort (input_arrays.begin (), input_arrays.end ()); 
+        if (input_arrays.size () > 0) {
+                std::vector< int > vv (input_arrays.size ());
                 vv[0] = 1;
 
-                for (size_t i = 0; i < xlist.size () - 1; i++) {
-                        int e = xlist[i] == xlist[i + 1];
+                for (size_t i = 0; i < input_arrays.size () - 1; i++) {
+                        int e = input_arrays[i] == input_arrays[i + 1];
                         if (!e) {
                                 vv[i + 1] = 1;
                         }
                 }
 
-                for (size_t i = 0; i < xlist.size (); i++) {
+                for (size_t i = 0; i < input_arrays.size (); i++) {
                         if (vv[i]) {
                                 if (verbose >= 4) {
                                         myprintf ("  selecting array %d\n", (int)i);
                                 }
-                                earrays.push_back (xlist[i]);
+                                output_arrays.push_back (input_arrays[i]);
                         }
                 }
         }
 }
 
 array_link reduceLMCform (const array_link &al) {
-        int strength = 2; // assume strength is at least 2
+		if (!al.strength() >= 2) {
+			throw_runtime_exception("strength should be at least 2");
+		}
+        int strength = 2; // assume strength is  2
 
         arraydata_t ad = arraylink2arraydata (al, 0, strength);
         LMCreduction_t *reduction = new LMCreduction_t (&ad);
@@ -2814,11 +2817,15 @@ array_link reduceDOPform (const array_link &al, int verbose) {
         arraylist_t earrays;
         if (verbose >= 2)
                 myprintf ("reduceDOPform: calling reduceArraysGWLP\n");
-        reduceArraysGWLP (&lst, earrays, verbose, dopruning, strength, dolmc);
+        reduceArraysGWLP (lst, earrays, verbose, dopruning, strength, dolmc);
         return earrays[0];
 }
 
-/// add mixed values
+/** Calculate mixed-level projection GWLP values from normal GWLP values. 
+ * 
+ * These are the normal projection values, with added the factor level of the removed column.
+ *
+ */
 std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, const arraydata_t &ad,
                                         int verbose = 0) {
         std::vector< GWLPvalue > GWLPvalues;
@@ -2841,31 +2848,48 @@ std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, c
         return GWLPvalues;
 }
 
-array_transformation_t reductionDOP (const array_link &input_array, int verbose) {
-        int strength = input_array.strength ();
+void helper_compare_dof_reductions(array_link &alf, array_link &lm, int verbose, lmc_t ret) {
+if (alf == lm) {
+	if (verbose >= 3)
+		myprintf("  array unchanged (ret %d)\n", ret);
+	if (verbose >= 3) {
+		myprintf("input sort:\n");
+		alf.showarray();
+		myprintf("output:\n");
+		lm.showarray();
+	}
+}
+else {
+	if (verbose >= 3) {
+		myprintf("input sort:\n");
+		alf.showarray();
+		myprintf("output:\n");
+		lm.showarray();
+	}
+	if (verbose >= 2)
+		myprintf("  array changed\n");
+}
+}
 
+array_transformation_t reductionDOP (const array_link &input_array, int verbose) {
         arraydata_t ad = arraylink2arraydata (input_array);
 
         std::vector< GWLPvalue > dopgwp = projectionGWLPs (input_array);
-        indexsort is (dopgwp);
-
-        std::vector< GWLPvalue > dofvalues = dopgwp;
-
-        if (ad.ismixed ()) {
+		std::vector< GWLPvalue > dofvalues = dopgwp;
+		if (ad.ismixed ()) {
                 dofvalues = mixedProjGWLP (dopgwp, ad, verbose);
         }
 
-        is.init (dofvalues);
-
-        std::vector< DOFvalue > sdofvalues = is.sorted (dofvalues);
+		indexsort is(dofvalues);
+        std::vector< DOFvalue > sorted_dofvalues = is.sorted (dofvalues);
 
         if (verbose >= 2) {
                 myprintf ("reductionDOP: delete-1-factor values sorted: ");
-                display_vector< DOFvalue > (sdofvalues);
+                display_vector< DOFvalue > (sorted_dofvalues);
                 std::cout << endl;
         }
 
-        symmetry_group sg (sdofvalues, 0);
+        symmetry_group sg (sorted_dofvalues, 0);
         if (verbose >= 2)
                 sg.show ();
 
@@ -2906,8 +2930,8 @@ array_transformation_t reductionDOP (const array_link &input_array, int verbose)
         array_transformation_t array_transformation = (*(reduction.transformation)) * column_transformation;
         return array_transformation;
 }
-/// reduce arrays to canonical form using delete-1-factor ordering
-void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int verbose, int dopruning, int strength,
+
+void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose, int dopruning, int strength,
                        int dolmc) {
         OAextend oaextend;
         arraylist_t xlist;
@@ -2916,28 +2940,16 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
         if (verbose >= 2)
                 myprintf ("reduceArraysGWLP: start\n");
 
-        for (size_t i = 0; i < (size_t)arraylist->size (); i++) {
+        for (size_t i = 0; i < (size_t)input_arrays.size (); i++) {
                 if (verbose >= 2)
-                        myprintf ("reduceArrays: array %d/%d\n", (int)i, (int)arraylist->size ());
-                const array_link input_array = arraylist->at (i);
+                        myprintf ("reduceArrays: array %d/%d\n", (int)i, (int)input_arrays.size ());
+                const array_link input_array = input_arrays.at (i);
                 // create arraydatya
                 int ncols = input_array.n_columns;
 
                 arraydata_t ad = arraylink2arraydata (input_array, 0, strength);
 
-                if (verbose >= 4) {
-                        std::vector< double > gwp = GWLP (input_array);
-                        cout << "GMA: ";
-                        printf_vector< double > (gwp, "%.3f ");
-                        myprintf ("\n");
-                }
-                std::vector< GWLPvalue > dopgwp = projectionGWLPs (input_array);
-
-                if (verbose >= 3) {
-                        myprintf ("  delete-1 GWP sequence:        ");
-                        display_vector< GWLPvalue > (dopgwp);
-                        myprintf ("\n");
-                }
+				std::vector< GWLPvalue > dopgwp = projectionGWLPs(input_array);
 
                 if (dopruning) {
                         GWLPvalue x = *(min_element (dopgwp.begin (), dopgwp.begin () + ncols - 1));
@@ -2961,39 +2973,26 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                         printfd ("reduceArraysGWLP:\n");
 
                 std::vector< DOFvalue > dofvalues = dopgwp;
-                indexsort is (dopgwp);
-
                 if (ad.ismixed ()) {
                         dofvalues = mixedProjGWLP (dopgwp, ad, verbose);
-
-                        if (verbose >= 3) {
-                                myprintf ("old indexsort:\n");
-                                is.show ();
-                        }
                 }
 
-                if (verbose >= 2)
-                        printfd ("reduceArraysGWLP:\n");
-
-                is.init (dofvalues);
-
-                std::vector< DOFvalue > sdofvalues = is.sorted (dofvalues);
+				indexsort is(dofvalues);
+				std::vector< DOFvalue > sorted_dofvalues = is.sorted (dofvalues);
 
                 if (verbose >= 2) {
                         myprintf ("  delete-1-factor values sorted: ");
-                        display_vector< DOFvalue > (sdofvalues);
+                        display_vector< DOFvalue > (sorted_dofvalues);
 
                         myprintf ("\n");
                 }
 
-                symmetry_group sg (sdofvalues, 0);
+                symmetry_group sg (sorted_dofvalues, 0);
                 if (verbose >= 2)
                         sg.show ();
 
 
                 array_link alf (input_array, is.indices);
-
-                // NOTE: since the array was re-ordered, the symmetry group has to be re-ordered
                 ad.set_colgroups (sg);
 
                 OAextend oaextend;
@@ -3026,43 +3025,26 @@ void reduceArraysGWLP (const arraylist_t *arraylist, arraylist_t &earrays, int v
                 if (verbose >= 2)
                         printfd ("reduceArraysGWLP: ret %d (LMC_MORE %d, strength %d)\n", ret, LMC_MORE, ad.strength);
 
-                if (alf == lm) {
-                        if (verbose >= 3)
-                                myprintf ("  array unchanged (ret %d)\n", ret);
-                        if (verbose >= 3) {
-                                myprintf ("input sort:\n");
-                                alf.showarray ();
-                                myprintf ("output:\n");
-                                lm.showarray ();
-                        }
-                } else {
-                        if (verbose >= 3) {
-                                myprintf ("input sort:\n");
-                                alf.showarray ();
-                                myprintf ("output:\n");
-                                lm.showarray ();
-                        }
-                        if (verbose >= 2)
-                                myprintf ("  array changed\n");
-                }
+				helper_compare_dof_reductions(alf, lm, verbose, ret);
+			
                 xlist.push_back (lm);
         }
         if (verbose) {
-                myprintf ("reduceArraysGWLP: input size %d, output size %d, pruned %d\n", (int)arraylist->size (),
+                myprintf ("reduceArraysGWLP: input size %d, output size %d, pruned %d\n", (int)input_arrays.size (),
                           (int)xlist.size (), npruned);
         }
 
         if (dolmc) {
-                selectUniqueArrays (xlist, earrays, verbose);
+                selectUniqueArrays (xlist, output_arrays, verbose);
 
         } else {
-                sort (xlist.begin (), xlist.end ()); // solutions.sort();
+                sort (xlist.begin (), xlist.end ()); 
 
                 for (size_t i = 0; i < xlist.size (); i++) {
-                        earrays.push_back (xlist[i]);
+                        output_arrays.push_back (xlist[i]);
                 }
         }
         if (verbose)
-                myprintf ("  selecting %d/%d arrays\n", (int)earrays.size (), (int)xlist.size ());
+                myprintf ("  selecting %d/%d arrays\n", (int)output_arrays.size (), (int)xlist.size ());
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

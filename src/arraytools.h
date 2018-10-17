@@ -588,6 +588,9 @@ struct array_link {
         /// return true if the array is a +1, 0, -1 valued array
         bool is_conference () const;
 
+		/// return true is the array is a mixel-level array
+		bool is_mixed_level() const;
+
         /// return true if the array is a +1, 0, -1 valued array, with specified number of zeros in each column
         bool is_conference (int number_of_zeros) const;
 
@@ -626,8 +629,6 @@ struct array_link {
 
         /// return transposed array
         array_link transposed () const;
-
-        // statistical properties of the array
 
         /// calculate D-efficiency
         double Defficiency () const;

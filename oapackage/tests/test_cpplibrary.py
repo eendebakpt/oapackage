@@ -21,6 +21,10 @@ import oapackage
 class TestReductions(unittest.TestCase):
 
     def test_LMC(self):
+        al=oapackage.array_link(2,2,0)
+        al[1,1]=-1
+        self.assertRaises(RuntimeError, oapackage.reduceLMCform, al);
+        
         al=oapackage.exampleArray(8)
         alr=oapackage.reduceLMCform(al);
         self.assertTrue(alr==al)
@@ -41,7 +45,36 @@ class TestReductions(unittest.TestCase):
         transformation.show()
         alr=oapackage.reduceDOPform(al);
         self.assertTrue(transformation.apply(al)==alr)
+
+class TestArrayLink(unittest.TestCase):
+    def test_basic_array_link_functionality(self):
+        al2a=oapackage.array_link(2,2,0)
+        al2b=oapackage.array_link(2,2,0)
+        al2b.setconstant(1)
         
+        al3=oapackage.array_link(3,2,0)
+        self.assertTrue(al2a != al2b)
+        self.assertFalse(al2a == al2b)
+        self.assertTrue(al2a.equalsize(al2b))
+        self.assertFalse(al2a.equalsize(al3))
+        self.assertTrue(al2a < al2b)
+        self.assertFalse(al2b < al2a)
+        #self.assertTrue(al2b <= al2b)
+
+    def test_array_class_functions(self):
+        al=oapackage.exampleArray(1)
+        self.assertTrue(al.is2level())  
+        self.assertFalse(al.is_mixed_level())       
+
+        al=oapackage.exampleArray(11,1)
+        self.assertFalse(al.is2level())  
+        self.assertTrue(al.is_mixed_level())       
+
+        al=oapackage.aray_link(2,2,0)
+        al[1,1]=-1 
+        self.assertFalse(al.is2level())  
+        self.assertFalse(al.is_mixed_level())       
+       
 class TestCppLibrary(unittest.TestCase):
 
     def test_splits(self):
@@ -63,20 +96,6 @@ class TestCppLibrary(unittest.TestCase):
         at.setcolperm([1, 0])
         _ = at.show()
         self.assertEqual(at.colperm(), (1, 0))
-
-    def test_basic_array_link_functionality(self):
-        al2a=oapackage.array_link(2,2,0)
-        al2b=oapackage.array_link(2,2,0)
-        al2b.setconstant(1)
-        
-        al3=oapackage.array_link(3,2,0)
-        self.assertTrue(al2a != al2b)
-        self.assertFalse(al2a == al2b)
-        self.assertTrue(al2a.equalsize(al2b))
-        self.assertFalse(al2a.equalsize(al3))
-        self.assertTrue(al2a < al2b)
-        self.assertFalse(al2b < al2a)
-        #self.assertTrue(al2b <= al2b)
         
     def test_arraylink2arraydata(self):
         #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]

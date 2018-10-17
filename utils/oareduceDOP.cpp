@@ -101,7 +101,6 @@ int main (int argc, char *argv[]) {
                 cout << "file " << opt.getArgv (i) << ":   read " << n << " array(s)" << endl;
         }
 
-        arraylist_t earrays;
 
         // extend arrays
 
@@ -127,13 +126,14 @@ int main (int argc, char *argv[]) {
                 arraylist2 = &extensions;
         }
 
-        reduceArraysGWLP (arraylist2, earrays, verbose, dopruning, strength, dolmc);
+		arraylist_t reduced_arrays;
+		reduceArraysGWLP (*arraylist2, reduced_arrays, verbose, dopruning, strength, dolmc);
 
         // write arrays to disk
         std::string outfile = outputprefix;
         if (verbose)
-                printf ("  writing %ld arrays to %s\n", earrays.size (), outfile.c_str ());
-        writearrayfile (outfile.c_str (), &earrays, arrayfile::ABINARY);
+                printf ("  writing %ld arrays to %s\n", reduced_arrays.size (), outfile.c_str ());
+        writearrayfile (outfile.c_str (), &reduced_arrays, arrayfile::ABINARY);
 
         delete ad;
         delete arraylist;
