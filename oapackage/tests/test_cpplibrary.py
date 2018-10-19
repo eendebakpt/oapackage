@@ -16,6 +16,9 @@ else:
     python3 = False
 
 
+def is_sorted(l):
+    return all(a <= b for a, b in zip(l, l[1:]))
+
 import oapackage
 
 class TestReductions(unittest.TestCase):
@@ -34,6 +37,9 @@ class TestReductions(unittest.TestCase):
         transformation=oapackage.reductionDOP(al);
         self.assertTrue(transformation.isIdentity())
 
+        dof_values=oapackage.projectionDOFvalues(al)
+        pvalues=[pvalue.raw_values() for pvalue in dof_values]
+        self.assertTrue(is_sorted(pvalues))
         
         al=oapackage.exampleArray(7,1)
         transformation=oapackage.reductionDOP(al);
@@ -45,6 +51,7 @@ class TestReductions(unittest.TestCase):
         transformation.show()
         alr=oapackage.reduceDOPform(al);
         self.assertTrue(transformation.apply(al)==alr)
+
 
 class TestArrayLink(unittest.TestCase):
     def test_basic_array_link_functionality(self):
