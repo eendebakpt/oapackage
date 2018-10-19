@@ -902,10 +902,9 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
 /* helper functions */
 
-rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
-void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level,
+//rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
+//void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level, int &permcounter);
 
-int &permcounter);
 /**
 * @brief Print the contents of a rowsort structure
 * @param rowsort Pointer to rowsort structure
