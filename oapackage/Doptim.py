@@ -58,7 +58,7 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 # %%
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, 
+def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20, 
                      scatterarea=80, verbose=0, setWindowRectangle=False ):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
@@ -90,7 +90,7 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20,
     figh.set_facecolor('w')
     ax = plt.subplot(111)
 
-    ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
+    ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
     if lbls is None:
@@ -103,11 +103,11 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20,
         cc = [color] * len(gp)
         if verbose:
             print('index %d: %d points' % (ii, gidx.size))
-        ax.scatter(data[fi, gp], data[si, gp], s=scatterarea, c=cc,
+        ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
                    linewidths=0, alpha=alpha, label=lbls[jj])  # , zorder=4)
         plt.draw()
 
-    if data[si, :].std() < 1e-3:
+    if data[second_index, :].std() < 1e-3:
         y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
         ax.yaxis.set_major_formatter(y_formatter)
 

@@ -140,7 +140,8 @@ capacity (PEC) sequence for orthogonal arrays :cite:`loeppky2004ranking`. This c
     
 In :cite:`Eendebak2017` it is shown that one can optimize a linear combination of the
 :math:`D`-efficiency and :math:`D_s`-efficiency to generate a rich 
-set of optimal designs with various efficiency. 
+set of optimal designs with various efficiency. From the generated designs the optimal ones accoring
+to Pareto optimality can be selected.
 
 
 .. figure:: images/motivating-40-d-2-2-2-2-2-2-2-scatterplot-ndata2.png
