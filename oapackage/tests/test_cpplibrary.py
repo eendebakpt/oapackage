@@ -67,10 +67,10 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al.is_mixed_level())       
 
         al=oapackage.exampleArray(11,1)
-        self.assertFalse(al.is2level())  
-        self.assertTrue(al.is_mixed_level())       
+        self.assertTrue(al.is2level())  
+        self.assertFalse(al.is_mixed_level())       
 
-        al=oapackage.aray_link(2,2,0)
+        al=oapackage.array_link(2,2,0)
         al[1,1]=-1 
         self.assertFalse(al.is2level())  
         self.assertFalse(al.is_mixed_level())       
@@ -78,7 +78,7 @@ class TestArrayLink(unittest.TestCase):
 class TestCppLibrary(unittest.TestCase):
 
     def test_mvalue_t(self):
-        input_vector=(1,2,2)
+        input_vector=[1.,2.,2.]
         m=oapackage.mvalue_t_double( input_vector )
         self.assertEqual(m.size(), len(input_vector))
         self.assertEqual(list(m.values), input_vector)

@@ -66,7 +66,6 @@ bool testLMC0checkDC (const array_link &al, int verbose = 1) {
                 return true;
 
         // array is in LMC0 format, perform random transformations
-
         for (int jj = 0; jj < niter; jj++) {
                 conference_transformation_t tr (al);
                 tr.randomizecolperm ();
@@ -134,7 +133,6 @@ void checkGenerators (int verbose = 1) {
         ct.j3zero = 1;
 
         array_link al = exampleArray (35, 1);
-        // al.showarray();
 
         CandidateGeneratorDouble cgenerator (array_link (), ct);
         cgenerator.verbose = 0;
@@ -213,10 +211,7 @@ int checkTransformationComposition (const array_link &al, int verbose = 0) {
         array_transformation_t T3;
         T3 = T1 * T2;
 
-        // T2.reset(); T2.randomize();
         array_link al2 = T2.apply (al);
-
-        // T1.show(); al2.showarray(); exit(0);
 
         array_link al12 = T1.apply (al2);
         array_link al3 = T3.apply (al);
@@ -246,8 +241,6 @@ void test_array_manipulation (int verbose = 1) {
                 myprintf ("test selectFirstColumns\n");
         array_link al5 = al.selectFirstColumns (5);
         assert (al5.n_columns == 5);
-        // array_link alx = al5.selectFirstColumns(8);
-        // assert(alx.n_columns == al5.n_columns);
 }
 
 /** unittest for oapackage
@@ -296,8 +289,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 myassert (testLMC0checkDC (al, verbose >= 2), "testLMC0checkDC");
 
-                // conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose
-                // );
         }
 
         /* conference matrices */
@@ -511,7 +502,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                                 printf ("unittest: rank of array %d: %d\n", idx[ii], r);
                         }
 
-                        // array2xf ( al ) .showarray();
                         myassert (rr[ii] == r, "unittest error: rank of example matrix\n");
                 }
         }
@@ -750,7 +740,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 array_link al2 = reduction.transformation->apply (al);
 
-                // printf("input: \n"); al2.showarray();
                 lmc_t tmp = LMCcheck (alr, adata, oaextend, reduction);
 
                 array_link alx = reduction.transformation->apply (alr);
@@ -777,10 +766,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 for (int ii = 0; ii < 50; ii++) {
                         reduction.transformation->randomize ();
-                        // reduction.transformation->randomizecolperm();
                         array_link al2 = reduction.transformation->apply (al);
-
-                        // printf("input: \n"); al2.showarray();
 
                         array_link alr = al2.reduceLMC ();
                         if (0) {
@@ -815,8 +801,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 if (verbose >= 2)
                         printf ("sg2: %ld\n", sg2.permsize ());
                 assert (sg2.ngroups == 2);
-
-                // sg2.
         }
 
         /* Test efficiencies */
@@ -839,7 +823,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         }
                 }
                 al = exampleArray (8, vb);
-                // al.showarray();
                 al.showproperties ();
                 d = al.Defficiencies ();
                 if (verbose >= 2)

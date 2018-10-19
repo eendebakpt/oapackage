@@ -36,7 +36,6 @@ int main (int argc, char *argv[]) {
         opt.addUsage ("Usage: oaconvert [OPTIONS] [INPUTFILE] [OUTPUTFILE]");
         opt.addUsage ("");
         opt.addUsage (" -h --help  			Prints this help ");
-        // opt.addUsage( " -s --sort			Sort the arrays " );
         opt.addUsage (" -f [FORMAT]					Output format (default: TEXT, or BINARY) ");
         opt.processCommandArgs (argc, argv);
 
