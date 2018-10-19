@@ -962,8 +962,13 @@ void perform_column_permutation (const array_link source, array_link &target, co
 /// perform row permutation for an array
 void perform_row_permutation (const array_link source, array_link &target, const std::vector< int > perm);
 
-/// create arraydata_t structure from array
-arraydata_t arraylink2arraydata (const array_link &al, int extracols = 0, int strength = 2);
+/** create arraydata_t structure from array
+ * 
+ * \param array Array to use as input specifiction for array class
+ * \param extracols Number of extra columns to add to the number of columns of the array
+ * \param strength Strength to set in the array class. If -1, then use the strength of the array
+ */
+arraydata_t arraylink2arraydata (const array_link &array, int extracols = 0, int strength = 2);
 
 /// container with arrays
 typedef std::deque< array_link > arraylist_t;

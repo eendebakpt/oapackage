@@ -58,7 +58,8 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 # %%
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
+def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, 
+                     scatterarea=80, verbose=0, setWindowRectangle=False ):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -113,11 +114,12 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
     plt.ylabel('D-efficiency', fontsize=16)
 
-    try:
-        oahelper.setWindowRectangle(10, 10, 860, 600)
-    except Exception as ex:
-        print('generateDscatter: setWindowRectangle failed')
-        logging.exception(ex)
+    if setWindowRectangle:
+        try:
+            oahelper.setWindowRectangle(10, 10, 860, 600)
+        except Exception as ex:
+            print('generateDscatter: setWindowRectangle failed')
+            logging.exception(ex)
 
     plt.axis('image')
     pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)

@@ -122,6 +122,11 @@ class TestCppLibrary(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             _ = oapackage.arraylink2arraydata(al)
 
+        for ii in [0,4,8,10]:
+                    al = oapackage.exampleArray(ii)
+                    arrayclass = oapackage.arraylink2arraydata(al, strength=-1)
+                    self.assertEqual(arrayclass.strength, al.strength())
+                    
     def test_exception_handling(self):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler("file", "function", 10, 0, "hi")
