@@ -867,6 +867,11 @@ array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
 /// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
 void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
 
+/** Calculate projection values for delete-of-factor algorithm
+ *
+ */
+std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose = 0);
+
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &al);
 

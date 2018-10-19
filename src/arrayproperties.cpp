@@ -681,7 +681,7 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al) {
         return v;
 }
 
-std::vector< double > projectionGWLPvalues (const array_link &al) {
+std::vector< double > projectionGWLPdoublevalues (const array_link &al) {
         int ncols = al.n_columns;
 
         std::vector< double > v (ncols);
@@ -712,7 +712,7 @@ Eigen::MatrixXd arraylink2eigen (const array_link &al) {
         return mymatrix;
 }
 
-/// return rank of an array based on Eigen::ColPivHouseholderQR
+/// return rank of an array based on Eigen::FullPivHouseholderQR
 int arrayrankFullPivQR (const array_link &al, double threshold) {
         Eigen::MatrixXd mymatrix = arraylink2eigen (al);
         FullPivHouseholderQR< Eigen::MatrixXd > decomp (mymatrix.rows (), mymatrix.cols ());
@@ -1567,10 +1567,6 @@ double Defficiency (const array_link &al, int verbose) {
                         myprintf ("  Aold: %.6f\n", Deff);
                 }
         }
-
-        //   int rank = svd.nonzeroSingularValues();
-
-        // myprintf("Avalue: S size %d %d\n", (int) S.cols(), (int) S.rows());
 
         if (S[0] < 1e-15) {
                 if (verbose >= 2)

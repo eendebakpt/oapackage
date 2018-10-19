@@ -409,7 +409,7 @@ int main (int argc, char *argv[]) {
                 int filterj2 = 1;
                 int filtersymminline = 1;
                 int averbose = verbose;
-                std::vector< cperm > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
+                std::vector< conference_column > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
                                                                                ct.j3zero, filtersymminline);
                 showCandidates (ccX);
                 printf ("\n-----------\n");
@@ -710,7 +710,6 @@ int main (int argc, char *argv[]) {
                         }
                         exit (0);
                 }
-                // int ctype=2;
                 conference_t ctype (al.n_rows, al.n_rows, 1);
                 ctype.itype = CONFERENCE_RESTRICTED_ISOMORPHISM;
                 ctype.ctype = conference_t::DCONFERENCE;

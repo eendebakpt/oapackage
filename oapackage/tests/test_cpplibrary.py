@@ -105,7 +105,6 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(at.colperm(), (1, 0))
         
     def test_arraylink2arraydata(self):
-        #ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
         al = oapackage.exampleArray(0)
         adata = oapackage.arraylink2arraydata(al)
         self.assertEqual(str(adata), r'arrayclass: N 8, k 2, strength 2, s {2,2}, order 0')

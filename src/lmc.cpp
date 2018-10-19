@@ -2789,7 +2789,7 @@ void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, 
 }
 
 array_link reduceLMCform (const array_link &al) {
-		if (!al.strength() >= 2) {
+		if (! (al.strength() >= 2) ) {
 			throw_runtime_exception("strength should be at least 2");
 		}
         int strength = 2; // assume strength is  2
@@ -2821,6 +2821,7 @@ array_link reduceDOPform (const array_link &al, int verbose) {
         return reduced_arrays[0];
 }
 
+
 /** Calculate mixed-level projection GWLP values from normal GWLP values. 
  * 
  * These are the normal projection values, with added the factor level of the removed column.
@@ -2846,6 +2847,17 @@ std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, c
         }
 
         return GWLPvalues;
+}
+
+std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose ) {
+	
+	arraydata_t arrayclass=arraylink2arraydata(array);
+	std::vector< GWLPvalue > projection_dof_values = projectionGWLPs(array);
+	
+	if (arrayclass.ismixed() ) {
+		projection_dof_values =  mixedProjGWLP(projection_dof_values, arrayclass, verbose);
+	}
+	return projection_dof_values;
 }
 
 void helper_compare_dof_reductions(array_link &alf, array_link &lm, int verbose, lmc_t ret) {
