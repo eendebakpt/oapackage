@@ -58,8 +58,8 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 # %%
 
 
-def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20, 
-                     scatterarea=80, verbose=0, setWindowRectangle=False ):
+def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
+                     scatterarea=80, verbose=0, setWindowRectangle=False):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -78,18 +78,18 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
     idx = np.unique(colors).astype(int)
 
     if verbose:
-        print('generateDscatter: unique colors: %s'  % (idx, ))
-    ncolors=idx.size
+        print('generateDscatter: unique colors: %s' % (idx, ))
+    ncolors = idx.size
     try:
         import brewer2mpl
         ncolors = max(ncolors, 4)
         mycmap = brewer2mpl.get_map('Set1', 'qualitative', ncolors).mpl_colors
     except BaseException:
-        mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0,1,ncolors)]
+        mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0, 1, ncolors)]
 
     nonparetoidx = np.setdiff1d(range(nn), paretoidx)
 
-    figh = plt.figure(fig)  
+    figh = plt.figure(fig)
     plt.clf()
     figh.set_facecolor('w')
     ax = plt.subplot(111)
@@ -108,7 +108,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         if verbose:
             print('index %d: %d points' % (ii, gidx.size))
         ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
-                   linewidths=0, alpha=alpha, label=lbls[jj])  
+                   linewidths=0, alpha=alpha, label=lbls[jj])
         plt.draw()
 
     if data[second_index, :].std() < 1e-3:
@@ -270,27 +270,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
     print('written to file %s' % outfile)
 
     return outfile
-
-#%%
-
-
-# def _optimDeffhelper(classdata):
-#    """ Helper function that is suitable for the multi-processing framework """
-#
-#    N = classdata[0]
-#    k = classdata[1]
-#    alpha = classdata[2]
-#    method = classdata[3]
-#    p = classdata[4]
-#    nabort = p.get('nabort', 2500)
-#    niter = p.get('nabort', 12000)
-#
-#    arrayclass = oalib.arraydata_t(2, N, 1, k)
-#    al = arrayclass.randomarray(1)
-#
-#    vv = optimDeffPython(
-#        al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
-#    return vv[0], vv[1].getarray()
 
 
 def calcScore(dds, optimfunc):
