@@ -77,15 +77,19 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
 
     idx = np.unique(colors).astype(int)
 
+    if verbose:
+        print('generateDscatter: unique colors: %s'  % (idx, ))
+    ncolors=idx.size
     try:
         import brewer2mpl
-        mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
+        ncolors = max(ncolors, 4)
+        mycmap = brewer2mpl.get_map('Set1', 'qualitative', ncolors).mpl_colors
     except BaseException:
-        mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
+        mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0,1,ncolors)]
 
     nonparetoidx = np.setdiff1d(range(nn), paretoidx)
 
-    figh = plt.figure(fig)  # ,facecolor='red')
+    figh = plt.figure(fig)  
     plt.clf()
     figh.set_facecolor('w')
     ax = plt.subplot(111)
@@ -104,7 +108,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         if verbose:
             print('index %d: %d points' % (ii, gidx.size))
         ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
-                   linewidths=0, alpha=alpha, label=lbls[jj])  # , zorder=4)
+                   linewidths=0, alpha=alpha, label=lbls[jj])  
         plt.draw()
 
     if data[second_index, :].std() < 1e-3:
