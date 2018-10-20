@@ -379,7 +379,7 @@ class TestDoptimize(unittest.TestCase):
             fig = None
         except:
             fig = 100
-        r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, verbose=1,
+        r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 
     def test_generateDpage(self):

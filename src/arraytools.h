@@ -894,7 +894,6 @@ struct array_link {
                 int n = this->n_rows;
                 MatrixFloat mymatrix = MatrixFloat::Zero (n, k);
 
-                // init array
                 for (int c = 0; c < k; ++c) {
                         int ci = c * n;
                         for (int r = 0; r < n; ++r) {
