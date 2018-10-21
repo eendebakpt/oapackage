@@ -3584,25 +3584,18 @@ vector< jstruct_t > analyseArrays (const arraylist_t &arraylist, const int verbo
 
                 js = new jstruct_t (ll, jj);
 
-#ifdef FULLPACKAGE
-                if (verbose >= 3) {
-                        cout << printfstring ("array %d: abberation %.3f j-values ", ii, js->A);
-                        print_perm (cout, js->values, js->nc);
-                }
                 if (verbose >= 2) {
                         std::vector< int > FF = js->calculateF ();
                         myprintf ("F%d (high to low): ", jj);
                         display_vector (FF);
-                        std::cout << std::endl;
+						myprintf("\n");
                 }
-#endif
                 delete_perm (pp);
 
                 results.push_back (*js);
                 delete js;
         }
 
-        // myprintf("analyseArrays: return value\n");
         return results;
 }
 
@@ -3679,7 +3672,6 @@ void writeblob (const TypeIn *src, int n, FILE *fid) {
         TypeOut *dst = new TypeOut[n];
 
         for (int i = 0; i < n; i++) {
-                // myprintf("src[%d] %d, \n", i, src[i]);
                 dst[i] = src[i];
         }
         fwrite ((const void *)dst, sizeof (TypeOut), n, fid);
@@ -3776,7 +3768,7 @@ bool file_exists (const char *filename) {
 #endif
 }
 
-#ifdef FULLPACKAGE // related to arrayfile_t
+#ifdef FULLPACKAGE
 
 bool arrayfile_t::isbinary () const {
         return (this->mode == ABINARY || this->mode == ABINARY_DIFF || this->mode == ABINARY_DIFFZERO);
@@ -3850,7 +3842,6 @@ int arrayfile_t::append_arrays (const arraylist_t &arrays, int startidx) {
 }
 
 arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t m, int nb) {
-        // closefile();
         this->verbose = 0;
         this->nfid = 0;
         this->narrays = -1;
@@ -3882,7 +3873,6 @@ size_t arrayfile_t::afread (void *ptr, size_t sz, size_t cnt) {
         size_t r;
         r = fread (ptr, sz, cnt, this->nfid);
 #endif
-        // assert(r==n);
         return r;
 }
 
@@ -4059,7 +4049,6 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
         switch (this->mode) {
         case arrayfile::ATEXT: {
                 int r = fscanf (nfid, "%d\n", &index);
-                // myprintf("index %d\n", index);
                 ::read_array (nfid, array, nrows, ncols);
                 break;
         }
@@ -4091,7 +4080,6 @@ void arrayfile_t::writeheader () {
 
         if (this->mode == arrayfile::ABINARY || this->mode == arrayfile::ABINARY_DIFF ||
             this->mode == arrayfile::ABINARY_DIFFZERO) {
-                // myprintf("  arrayfile_t::writeheader(): binary mode\n");
                 int magic = 65;
                 int32_t reserved = 0;
 
@@ -4148,7 +4136,6 @@ arraydata_t *readConfigFile (const char *file) {
         if (!inFile) {
                 myprintf ("readConfigFile: unable to open file %s\n", file);
                 return 0;
-                // exit(1); // terminate with error
         }
 
         /* read design specifications: runs, strength, number of factors */
@@ -4174,9 +4161,9 @@ arraydata_t *readConfigFile (const char *file) {
         s = (array_t *)malloc (ncols * sizeof (array_t));
         for (int j = 0; j < ncols; j++) {
                 inFile >> s[j];
-                if ((s[j] < 1) || (s[j] > 15)) {
+                if ((s[j] < 1) || (s[j] > 25)) {
                         myprintf ("warning: number of levels specified is %d\n", s[j]);
-                        // exit(1);
+						throw_runtime_exception("incorrect specification of factor levels");
                 }
         }
         inFile.close ();
@@ -4214,7 +4201,6 @@ arraylist_t readarrayfile (const char *fname, int verbose, int *setcols) {
  */
 int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, colindex_t *setcols, rowindex_t *setrows,
                    int *setbits) {
-        // verbose=3;
         if (arraylist == 0) {
                 arraylist = new arraylist_t;
         }
@@ -4324,8 +4310,6 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
 arrayfile_t::arrayfile_t () {
         this->verbose = 0;
 
-        // this->verbose=2;
-        // myprintf("arrayfile_t::arrayfile_t ()\n");
         this->nfid = 0;
         this->filename = "";
 #ifdef USEZLIB
@@ -4392,7 +4376,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
         }
 
         std::string gzname = fname + ".gz";
-        // myprintf("arrayfile_t::arrayfile_t: %s -> %s\n", fname.c_str(), gzname.c_str() );
         if (!file_exists (fname.c_str ()) && file_exists (gzname.c_str ())) {
                 if (verbose && warngz) {
                         myprintf ("  file %s does not exist, but gzipped file does\n", fname.c_str ());
@@ -4492,8 +4475,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
                 result = afread (&reserved, sizeof (int32_t), 1);
                 result = afread (&reserved, sizeof (int32_t), 1);
 
-                // myprintf("arrayfile_t: constructor: binary_mode %d\n", binary_mode);
-
                 switch (binary_mode) {
                 case 1001:
                         this->mode = arrayfile::ABINARY;
@@ -4549,7 +4530,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
                 buf[0] = -1;
                 int r = fread (buf, sizeof (char), 1, this->nfid);
                 if (buf[0] < 48 || buf[0] > 57 || r < 0) {
-                        // myprintf("   read char %d\n", int(buf[0]));
                         if (verbose >= 1) {
                                 myprintf ("   problem opening file %s (iscompressed %d)\n", fname.c_str (),
                                           this->iscompressed);
@@ -4561,7 +4541,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
 
                 r = fscanf (this->nfid, "%i %i %i\n", &this->ncols, &this->nrows, &this->narrays);
                 this->nbits = 0;
-                // myprintf("arrayfile_t: text mode\n");
                 if (verbose >= 2) {
                         myprintf ("arrayfile_t: text mode: header %d %d %d\n", this->ncols, this->nrows,
                                   this->narrays);
@@ -4604,7 +4583,6 @@ int save_arrays (arraylist_t &solutions, const arraydata_t *ad, const int n_arra
         fname += "-" + oafilestring (ad);
 
         int nb = arrayfile_t::arrayNbits (*ad);
-        // myprintf(" save_arrays nb: %d\n", nb);
         arrayfile_t *afile = new arrayfile_t (fname.c_str (), ad->N, ad->ncols, n_arrays, mode, nb);
         int startidx = 1;
         afile->append_arrays (solutions, startidx);
@@ -4625,8 +4603,6 @@ void arrayfile_t::closefile () {
                 }
                 return;
         }
-        //   myprintf ( "arrayfile_t: closefile(): filename %s, nfid %ld, narrays %d, narraycounter %d, this->rwmode
-        //   %d\n", filename.c_str(), ( long ) nfid, narrays, narraycounter, this->rwmode );
 
         if (verbose >= 3) {
                 myprintf ("arrayfile_t::closefile: narrays: %d\n", narrays);
@@ -4662,9 +4638,7 @@ void arrayfile_t::updatenumbers () {
                 }
                 if (nfid != 0) {
                         long pos = ftell (nfid);
-                        // myprintfd("seek to from %ld to 4\n", pos);
                         int r = fseek (nfid, 4 * sizeof (int32_t), SEEK_SET);
-                        // printfd("seek result %d\n", r);
                         r = this->afwrite (&narraycounter, sizeof (int32_t), 1);
                         if (verbose >= 2) {
                                 myprintf ("   arrayfile_t::updatenumbers: result of write: %d\n", (int)r);
@@ -4770,8 +4744,6 @@ void arrayfile_t::write_array_binary_diff (const array_link &A) {
         const int num = N * sizeof (array_t);
 
         for (int i = 0; i < diffarray.n_columns; i++) {
-                // printf("write_array_binary_diff: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i, A.array+N*i,
-                // num));
                 if (!memcmp (this->diffarray.array + N * i, A.array + N * i, num)) {
                         ngood++;
 
@@ -4806,8 +4778,6 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
         const int num = N * sizeof (array_t);
 
         for (int i = 0; i < diffarray.n_columns; i++) {
-                // printf("write_array_binary_diffzero: i %d: %d\n", i, memcmp ( this->diffarray.array+N*i,
-                // A.array+N*i, num));
                 if (!memcmp (this->diffarray.array + N * i, A.array + N * i, num)) {
                         ngood++;
 
