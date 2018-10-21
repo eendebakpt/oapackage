@@ -1,29 +1,22 @@
-Normal form of designs
+Normal form of arrays
 ======================
 
 
-If we introduce an ordering a set of arrays, then for each
-isomorphism class of arrays the minimal element defines a unique
-canonical form. The Orthogonal Array package contains functions to reduce
-designs to canonical form with respect to some ordering. The
-default ordering for arrays is the lexicographic ordering in
-columns :cite:`Eendebak2009`. An alternative ordering is the
-delete-one-factor projection ordering as described
-in :cite:`EendebakDOF` or the even-odd ordering.
+The Orthogonal Array package provides functions to reduce
+the arrays to their canonical form, with respect to some ordering. The
+default ordering is the lexicographically minimum in columns (LMC) ordering 
+:cite:`Eendebak2009`. Alternative orderings include the
+delete-one-factor projection ordering introduced
+in :cite:`EendebakDOF` and the even-odd ordering.
 
-Another approach to generation of canonical forms for designs is to use
-graph-isomophism packages such as
-Nauty :cite:`nautyI`, :cite:`nautyII`. An advantage of this approach is 
-that the graph isomorphism packages contain state-of-the-art methods for reduction to canonical form.
-A disadvantage is that these methods are unaware of the special structure of designs and cannot be tailored
-to create normal forms of a specific form.
+Specialized packages such as Nauty :cite:`nautyI`, :cite:`nautyII` can also reduce  arrays to their canonical form using state-of-the-art, graph-isomophism methods. However, these methods do not take into account the special structure of the arrays and so, they  cannot be tailored to create normal forms of a specific form.
 
                        
 Reduction to LMC normal form
 ----------------------------
 
-Based on theory from `Complete enumeration of pure‐level and mixed‐level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ we can reduce
-orthogonal arrays to LMC normal form. The C++ function to perform reduction is
+The OApackage implements theory and methods from the article `Complete enumeration of pure‐level and mixed‐level orthogonal arrays, Schoen et al., <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ to reduce
+orthogonal arrays to their LMC normal form. The C++ function to perform the reduction is:
 
 .. doxygenfunction:: reduceLMCform(const array_link&)
 
@@ -49,20 +42,14 @@ orthogonal arrays to LMC normal form. The C++ function to perform reduction is
        :caption: Reduction to normal form
     
     
-        /// reduce an array to canonical form using LMC ordering
+        /// Reduce an array to canonical form using LMC ordering.
         array_link reduceLMCform(const array_link &al);
 
 Reduction to delete-one-factor projection form
 ----------------------------------------------
 
-The canonical form is described in `A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections <https://econpapers.repec.org/paper/antwpaper/2014007.htm>`_
-:cite:`EendebakDOF`.
-
-An example with the methods is :ref:`Example code for delete-one-factor projections` which can be found
-in the example notebooks section.
-
-
-The C++ interface to delete-one-factor projection form is:
+The article `A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections, <https://econpapers.repec.org/paper/antwpaper/2014007.htm>`_
+:cite:`EendebakDOF` describes a canonical form of an orthogonal array based on delete-one-factor projections. The C++ function function to perform the reduction in terms of this form is:
 
 .. doxygenfunction:: reduceDOPform(const array_link&)
 
@@ -73,14 +60,13 @@ The C++ interface to delete-one-factor projection form is:
         /// reduce an array to canonical form using delete-1-factor ordering
         array_link reduceDOPform(const array_link &al);
     
+An example on how to use this reduction is shown in :ref:`Example code for delete-one-factor projections`, which can be found
+in the example notebooks section.
 
 Reduction using graph isomorphisms
 ----------------------------------
 
-To reduce a general graph to Nauty canonical form one can use :py:meth:`~oalib.reduceGraphNauty`. For orthogonal arrays we can
-encode the array structure as a graph. The reduction can then be done
-with :py:meth:`~oalib.reduceOAnauty`.
-
+The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Nauty canonical form. To reduce general graphs to Nauty canonical form, the OApackage includes the function :py:meth:`~oalib.reduceGraphNauty`.
 
 .. code-block:: python
    :caption: Reduce a design to normal form using Nauty
