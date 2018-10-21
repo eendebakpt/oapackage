@@ -83,6 +83,13 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al.is2level())
         self.assertFalse(al.is_mixed_level())
 
+class TestArraydata_t(unittest.TestCase):
+    
+    def test_factor_levels(self):
+        array=oapackage.exampleArray(5,1)
+        arrayclass=oapackage.arraylink2arraydata(array)
+        factor_levels=arrayclass.factor_levels()
+        self.assertEqual(factor_levels, (4,3,2,2,2))
 
 class TestCppLibrary(unittest.TestCase):
 

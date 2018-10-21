@@ -264,7 +264,7 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
 
         arraydata_t ad = arraylink2arraydata (al);
 
-        symmetry_group sg (ad.getS (), false);
+        symmetry_group sg (ad.factor_levels (), false);
 
         int *dh = new int[sg.ngroups];
 
@@ -576,7 +576,7 @@ void round_GWLP_zero_values(std::vector<double> &gma, int N)
 
 std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate) {
         arraydata_t adata = arraylink2arraydata (al);
-        symmetry_group sg (adata.getS (), false);
+        symmetry_group sg (adata.factor_levels (), false);
 
         std::vector< int > dims (adata.ncolgroups);
         for (unsigned int i = 0; i < dims.size (); i++)
@@ -593,7 +593,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         int N = adata.N;
         // calculate GWLP
-        std::vector< int > ss = adata.getS ();
+        std::vector< int > ss = adata.factor_levels ();
 
         std::vector< int > sx;
         for (int i = 0; i < sg.ngroups; i++)

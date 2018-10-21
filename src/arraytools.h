@@ -346,6 +346,7 @@ struct arraydata_t {
 
         /// return factor levels
         std::vector< int > getS () const {
+                myprintf("deprecated method: use factor_levels instead\n");
                 std::vector< int > s (this->ncols);
                 for (int i = 0; i < this->ncols; i++) {
                         s[i] = this->s[i];
@@ -353,6 +354,9 @@ struct arraydata_t {
                 return s;
         }
 
+        /// return factor levels
+        std::vector< int > factor_levels () const;
+        
         /**
          * @brief Reset strength of arraydata
          * @param t
