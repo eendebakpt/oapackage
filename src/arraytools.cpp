@@ -1869,7 +1869,18 @@ array_link exampleArray (int idx, int verbose) {
 			return al;
 			break;
 		}
-
+		 case 44: {
+                        dstr = "D-optimal strength 3 ortogonal array in OA(40,3, 2^7)";
+                        if (verbose) {
+                                myprintf("exampleArray: %s\n", dstr.c_str());
+                        }
+                         array_link array (40, 7, 0); 
+                         int array_data_tmp[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,0,0,1,0,1,0,1,0,0,1,1};
+                         array.setarraydata (array_data_tmp, array.n_rows * array.n_columns);
+                         return array;
+                         break;
+                }
+   
         } // end of switch
 
         return array_link (1, 1, -1);
@@ -2120,7 +2131,7 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
                 throw_runtime_exception("numberModelParams: not implemented for order > 2\n");
         }
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
         std::vector< int > df = s;
         std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
 
@@ -2272,7 +2283,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
         int N = al.n_rows;
         int k = al.n_columns;
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 0);
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
 
         std::vector< int > df = s;
         std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
@@ -2982,6 +2993,14 @@ array_link arraydata_t::randomarray (int strength, int ncols) const {
         return al;
 }
 
+std::vector< int > arraydata_t::factor_levels () const {
+          std::vector< int > s (this->ncols);
+          for (int i = 0; i < this->ncols; i++) {
+               s[i] = this->s[i];
+          }
+          return s;
+}
+        
 array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         if (n_columns == -1)
                 n_columns = this->strength;

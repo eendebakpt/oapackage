@@ -111,7 +111,7 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al);
 std::vector< GWLPvalue > sortGWLP (std::vector< GWLPvalue >);
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
-std::vector< double > projectionGWLPvalues (const array_link &al);
+std::vector< double > projectionGWLPdoublevalues (const array_link &al);
 
 /** calculate centered L2-discrepancy of a design
  *
@@ -141,13 +141,13 @@ array_link array2xf (const array_link &array);
 */
 Eigen::MatrixXd array2xfeigen (const array_link &array);
 
-/// return rank of an array based on FullPivHouseholderQR
+/// return rank of an array based on Eigen::FullPivHouseholderQR
 int arrayrankFullPivQR (const array_link &al, double threshold = -1);
 
-/// return rank of an array based on ColPivHouseholderQR
+/// return rank of an array based on Eigen::ColPivHouseholderQR
 int arrayrankColPivQR (const array_link &al, double threshold = -1);
 
-/// return rank of an array based on arrayrankFullPivLU
+/// return rank of an array based on Eigen::FullPivLU
 int arrayrankFullPivLU (const array_link &al, double threshold = -1);
 
 /// return rank of an array based on Eigen::JacobiSVD
