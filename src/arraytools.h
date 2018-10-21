@@ -346,6 +346,7 @@ struct arraydata_t {
 
         /// return factor levels
         std::vector< int > getS () const {
+                myprintf("deprecated method: use factor_levels instead\n");
                 std::vector< int > s (this->ncols);
                 for (int i = 0; i < this->ncols; i++) {
                         s[i] = this->s[i];
@@ -353,6 +354,9 @@ struct arraydata_t {
                 return s;
         }
 
+        /// return factor levels
+        std::vector< int > factor_levels () const;
+        
         /**
          * @brief Reset strength of arraydata
          * @param t
@@ -588,6 +592,9 @@ struct array_link {
         /// return true if the array is a +1, 0, -1 valued array
         bool is_conference () const;
 
+		/// return true is the array is a mixel-level array
+		bool is_mixed_level() const;
+
         /// return true if the array is a +1, 0, -1 valued array, with specified number of zeros in each column
         bool is_conference (int number_of_zeros) const;
 
@@ -626,8 +633,6 @@ struct array_link {
 
         /// return transposed array
         array_link transposed () const;
-
-        // statistical properties of the array
 
         /// calculate D-efficiency
         double Defficiency () const;
@@ -893,7 +898,6 @@ struct array_link {
                 int n = this->n_rows;
                 MatrixFloat mymatrix = MatrixFloat::Zero (n, k);
 
-                // init array
                 for (int c = 0; c < k; ++c) {
                         int ci = c * n;
                         for (int r = 0; r < n; ++r) {
@@ -961,8 +965,13 @@ void perform_column_permutation (const array_link source, array_link &target, co
 /// perform row permutation for an array
 void perform_row_permutation (const array_link source, array_link &target, const std::vector< int > perm);
 
-/// create arraydata_t structure from array
-arraydata_t arraylink2arraydata (const array_link &al, int extracols = 0, int strength = 2);
+/** create arraydata_t structure from array
+ * 
+ * \param array Array to use as input specifiction for array class
+ * \param extracols Number of extra columns to add to the number of columns of the array
+ * \param strength Strength to set in the array class. If -1, then use the strength of the array
+ */
+arraydata_t arraylink2arraydata (const array_link &array, int extracols = 0, int strength = 2);
 
 /// container with arrays
 typedef std::deque< array_link > arraylist_t;

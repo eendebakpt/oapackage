@@ -409,7 +409,7 @@ int main (int argc, char *argv[]) {
                 int filterj2 = 1;
                 int filtersymminline = 1;
                 int averbose = verbose;
-                std::vector< cperm > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
+                std::vector< conference_column > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
                                                                                ct.j3zero, filtersymminline);
                 showCandidates (ccX);
                 printf ("\n-----------\n");
@@ -417,7 +417,7 @@ int main (int argc, char *argv[]) {
                 CandidateGenerator cgenerator (array_link (), ct);
                 int kz = maxz (al) + 1;
                 cgenerator.verbose = verbose;
-                std::vector< cperm > ee = cgenerator.generateCandidatesZero (al, kz);
+                std::vector< conference_column > ee = cgenerator.generateCandidatesZero (al, kz);
 
                 cgenerator.showCandidates (2);
                 printf ("generateCandidatesZero: %d\n-------------\n", (int)ee.size ());
@@ -447,7 +447,7 @@ int main (int argc, char *argv[]) {
                 for (int i = 0; i < 2; i++) {
                         {
                                 printf ("\n---------------------------------\n");
-                                const std::vector< cperm > &cl = cgenerator.generateCandidates (al);
+                                const std::vector< conference_column > &cl = cgenerator.generateCandidates (al);
                                 printfd ("generated %d\n", cl.size ());
                                 cgenerator.showCandidates (2);
                         }
@@ -474,13 +474,13 @@ int main (int argc, char *argv[]) {
 
                 if (0) {
                         int extcol = 2;
-                        std::vector< cperm > ee = generateConferenceExtensions (al2, ctype, extcol, 0, 0, 1);
+                        std::vector< conference_column > ee = generateConferenceExtensions (al2, ctype, extcol, 0, 0, 1);
                         printfd ("generated %d\n", ee.size ());
                 }
 
                 if (0) {
                         int extcol = 3;
-                        std::vector< cperm > ee2 = generateConferenceExtensions (al3, ctype, extcol, 0, 0, 1);
+                        std::vector< conference_column > ee2 = generateConferenceExtensions (al3, ctype, extcol, 0, 0, 1);
 
                         //    conf_candidates_t tmp = generateCandidateExtensions ( ctype, 2, ncstart, ncmax, root );
                 }
@@ -492,7 +492,7 @@ int main (int argc, char *argv[]) {
                 cgenerator.showCandidates (2);
 
                 printf ("------------------------------\n");
-                const std::vector< cperm > &cl = cgenerator.generateCandidatesZero (al2, ii);
+                const std::vector< conference_column > &cl = cgenerator.generateCandidatesZero (al2, ii);
                 cgenerator.showCandidates (2);
                 printfd (" cache: generated %d\n", cl.size ());
 
@@ -710,7 +710,6 @@ int main (int argc, char *argv[]) {
                         }
                         exit (0);
                 }
-                // int ctype=2;
                 conference_t ctype (al.n_rows, al.n_rows, 1);
                 ctype.itype = CONFERENCE_RESTRICTED_ISOMORPHISM;
                 ctype.ctype = conference_t::DCONFERENCE;
@@ -719,7 +718,7 @@ int main (int argc, char *argv[]) {
                 cgenerator.verbose = verbose;
 
                 for (int i = 0; i < (int)ll.size (); i++) {
-                        std::vector< cperm > cc = cgenerator.generateCandidates (ll[i]);
+                        std::vector< conference_column > cc = cgenerator.generateCandidates (ll[i]);
                         printfd ("generated %d\n", cc.size ());
                 }
                 exit (0);

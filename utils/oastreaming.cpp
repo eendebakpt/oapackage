@@ -79,7 +79,6 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
 
         std::string ss = printfstring (" -m [MODE]			Algorithm (") + algorithm_t_list () + ")\n";
         opt->addUsage (ss.c_str ());
-        // opt->printUsage();
         opt->addUsage ("");
         opt->addUsage ("Example: ./oastreaming -r inputarrays.oa -l 2");
 
@@ -92,24 +91,6 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
                 algorithm = MODE_AUTOSELECT;
 
         return opt;
-}
-
-/*!
-  For restarting an extension, the reading of all arays and putting them into the memmory is handled by init_restart.
-  It only needs
-  the file descriptor of the restart file, the characteristic numbers of the design and a "pointer" to the list, where
-  the arrays
-  need to be stored.
-  \brief Initialises from a previous solutions file
-  \param fname File name of file with solutions
-  \param p Characteristic numbers of design
-  \param solutions List where solutions are going to be put into
-  */
-int init_restart (const char *fname, colindex_t &cols, arraylist_t &solutions) {
-        int narrays = readarrayfile (fname, &solutions, 1, &cols);
-        log_print (NORMAL, "init_restart: number of arrays: %i\n", narrays);
-
-        return 0;
 }
 
 /**

@@ -77,7 +77,7 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  *
  *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
  * fractional factorial desings"
- *  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+ * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu
  *
  * \param array Array to calculate the GWLP value for
@@ -86,7 +86,7 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
-/** @brief Calculate GWLP (generalized wordlength pattern)
+/** @brief Calculate GWLP (generalized wordlength pattern) for mixed-level arrays
 *
 *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
 * fractional factorial desings"
@@ -111,7 +111,7 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al);
 std::vector< GWLPvalue > sortGWLP (std::vector< GWLPvalue >);
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
-std::vector< double > projectionGWLPvalues (const array_link &al);
+std::vector< double > projectionGWLPdoublevalues (const array_link &al);
 
 /** calculate centered L2-discrepancy of a design
  *
@@ -141,13 +141,13 @@ array_link array2xf (const array_link &array);
 */
 Eigen::MatrixXd array2xfeigen (const array_link &array);
 
-/// return rank of an array based on FullPivHouseholderQR
+/// return rank of an array based on Eigen::FullPivHouseholderQR
 int arrayrankFullPivQR (const array_link &al, double threshold = -1);
 
-/// return rank of an array based on ColPivHouseholderQR
+/// return rank of an array based on Eigen::ColPivHouseholderQR
 int arrayrankColPivQR (const array_link &al, double threshold = -1);
 
-/// return rank of an array based on arrayrankFullPivLU
+/// return rank of an array based on Eigen::FullPivLU
 int arrayrankFullPivLU (const array_link &al, double threshold = -1);
 
 /// return rank of an array based on Eigen::JacobiSVD
@@ -337,7 +337,7 @@ inline typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayPare
         if (verbose >= 2) {
                 if (verbose >= 3) {
                         std::vector< double > gwlp = al.GWLP ();
-                        myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.v[1], gwlp[4]);
+                        myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.raw_values()[1], gwlp[4]);
                 }
 
                 myprintf ("  parseArrayPareto: rank %d, verbose %d\n", al.rank (), verbose);
@@ -379,7 +379,7 @@ template < class IndexType >
  *
  * 1) Rank (higher is better)
  * 2) A3, A4 (lower is better)
- * 3) F4 (?? is better, sum of elements is constant)
+ * 3) F4 (lower is better, sum of elements is constant)
  *
  * */
 inline void parseArrayPareto (const array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
@@ -409,15 +409,7 @@ inline double Dvalue2Cvalue (double A, int ka) {
         return C;
 }
 
-/// Return index of an array
-inline int get_oaindex (const array_t *s, const colindex_t strength, const colindex_t N) {
-        int oaindex = N;
-        for (colindex_t z = 0; z < strength; z++) {
-                oaindex /= s[z];
-        }
 
-        return oaindex;
-}
 
 #endif // ARRAYPROPERTIES_H
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;

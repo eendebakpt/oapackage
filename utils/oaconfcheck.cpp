@@ -89,8 +89,6 @@ int main (int argc, char *argv[]) {
         for (size_t i = 0; i < ll.size (); i++) {
                 array_link al = ll[i];
 
-                // al = al.randomrowperm();
-                // al = al.randomcolperm();
                 al.showarray ();
                 lmc_t r = LMC0check (al, 2);
                 printf ("array %d: result %d\n (should be %d)\n", (int)i, r, LMC_MORE);

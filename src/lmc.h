@@ -859,12 +859,18 @@ std::vector< numtype > comb2perm (const std::vector< numtype > comb, int n) {
 }
 
 /// reduce arrays to canonical form using delete-1-factor ordering
-void reduceArraysGWLP (const arraylist_t *input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
+void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
 array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
 
-void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose = 1);
+/// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
+void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
+
+/** Calculate projection values for delete-of-factor algorithm
+ *
+ */
+std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose = 0);
 
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &al);
@@ -896,10 +902,9 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
 /* helper functions */
 
-rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
-void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level,
+//rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
+//void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level, int &permcounter);
 
-int &permcounter);
 /**
 * @brief Print the contents of a rowsort structure
 * @param rowsort Pointer to rowsort structure

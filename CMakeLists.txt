@@ -440,7 +440,6 @@ SET(CPACK_PACKAGE_VERSION_MINOR "4")
 SET(CPACK_PACKAGE_VERSION_PATCH "15")
 
 
-#set(CPACK_SOURCE_PACKAGE_FILE_NAME "xxx-${VERSION}" CACHE INTERNAL "tarball basename")
 set(CPACK_SOURCE_GENERATOR TGZ)
 
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-source")
@@ -448,7 +447,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSIO
 set(OADEVPACK 0)
 set(CPACK_SOURCE_IGNORE_FILES "tests.txt$;/vsc/;/old/;/Eigen3.2/;/Eigen-devel/;/Eigen3.1/;/buildvs/;a.out$;/TestingCommands;/testing/;tags$;_oalib.so$;Makefile$;setup.py~$;ChangeLog~$;CMakeFiles$;TODO$;oaconfig-speedtest.txt$;CMakeCache.txt;cmake_install.cmake;.pyc$;/oacode.kdev4;/OA.kde;.cpp~$;/CMakeLists-develop.txt;/build/;/matlabtools/;/xml/;/pythonscripts/;/miscx/;/performancetest/;/oldx/;/buildwin/;/html/;/testsuite/;/.svn/;${CPACK_SOURCE_IGNORE_FILES}")
 set(CPACK_SOURCE_IGNORE_FILES "example.so;oatest2.cpp;/build2/;PrecompiledHeader.cmake;/Eigen3.2.1/" ${CPACK_SOURCE_IGNORE_FILES})
-set(CPACK_SOURCE_IGNORE_FILES "_oalib.cpython-34m.so;mex/Doptim.mex;/.git/;x.txt;/appveyor/;/tmp/;/dist/;/build2/;/hopper/;/OAlib.egg-info/;/buildx/;/OApackage.egg-info/;x2.txt;appveyor.yml;oalib_wrap_dev.cxx;oalib_wrap.cpp;oalib_wrap.cxx;sandbox;" ${CPACK_SOURCE_IGNORE_FILES})
+set(CPACK_SOURCE_IGNORE_FILES "mex/Doptim.mex;/.git/;/appveyor/;/tmp/;/dist/;/build2/;/hopper/;/OAlib.egg-info/;/buildx/;/OApackage.egg-info/;x2.txt;appveyor.yml;oalib_wrap_dev.cxx;oalib_wrap.cpp;oalib_wrap.cxx;sandbox;" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "\\\\.cpp~$" "\\\\.txt~$" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "~$" ${CPACK_SOURCE_IGNORE_FILES})
 
@@ -466,7 +465,6 @@ else()
   set(CPACK_SOURCE_IGNORE_FILES "oaextendA.cpp$;oatest.cpp$;oa_depth_extend.cpp$;/dev/oadevelop.h$;/dev/oadevelop.cpp;${CPACK_SOURCE_IGNORE_FILES}")
   #message(STATUS "CPACK_SOURCE_IGNORE_FILES  ${CPACK_SOURCE_IGNORE_FILES}")
 endif(OADEVPACK)
-#message(STATUS "CPACK_SOURCE_IGNORE_FILES ${CPACK_SOURCE_IGNORE_FILES}")
 
 # cmake package type: CygwinBinary, DEB, TGZ, ZIP, etc.
 if(WIN32)

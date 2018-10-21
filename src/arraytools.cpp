@@ -1858,7 +1858,29 @@ array_link exampleArray (int idx, int verbose) {
                 return al;
                 break;
         }
-
+		case 43: {
+			dstr = "2x2 array with zeros and a singe value -1";
+			if (verbose) {
+				myprintf("exampleArray: %s\n", dstr.c_str());
+			}
+			array_link al(2, 2, 0);
+			int tmp[] = { 0,  0,  0,  -1 };
+			al.setarraydata(tmp, al.n_rows * al.n_columns);
+			return al;
+			break;
+		}
+		 case 44: {
+                        dstr = "D-optimal strength 3 ortogonal array in OA(40,3, 2^7)";
+                        if (verbose) {
+                                myprintf("exampleArray: %s\n", dstr.c_str());
+                        }
+                         array_link array (40, 7, 0); 
+                         int array_data_tmp[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,0,0,1,0,1,0,1,0,0,1,1};
+                         array.setarraydata (array_data_tmp, array.n_rows * array.n_columns);
+                         return array;
+                         break;
+                }
+   
         } // end of switch
 
         return array_link (1, 1, -1);
@@ -1893,10 +1915,10 @@ symmetry_group array_link::row_symmetry_group () const {
         std::vector< mvalue_t< int > > rr (this->n_rows);
         for (int i = 0; i < this->n_rows; i++) {
                 mvalue_t< int > &m = rr[i];
-                m.v.resize (nc);
+                m.values.resize (nc);
 
                 for (int k = 0; k < nc; k++) {
-                        m.v[k] = this->atfast (i, k);
+                        m.values[k] = this->atfast (i, k);
                 }
         }
         symmetry_group sg (rr, true, 0);
@@ -1928,6 +1950,24 @@ bool array_link::is_conference (int nz) const {
                         return false;
         }
         return true;
+}
+
+
+bool array_link::is_mixed_level() const {
+	if (this->min() < 0)
+		return false;
+	array_t max_value = this->max();
+	const int N = this->n_rows;
+	int s = max_value + 1;
+	
+	int k;
+	for (k = 0; k < this->n_columns; k++) {
+		array_t *max_column_value = std::max_element(this->array + N * k, this->array + (N * (k + 1)));
+		if (*max_column_value + 1 != s)
+			break;
+	}
+	int is_mixed = (k < this->n_columns);
+	return is_mixed;
 }
 
 bool array_link::is_conference () const {
@@ -2091,7 +2131,7 @@ std::vector< int > numberModelParams (const array_link &al, int order = 2)
                 throw_runtime_exception("numberModelParams: not implemented for order > 2\n");
         }
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
         std::vector< int > df = s;
         std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
 
@@ -2243,7 +2283,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
         int N = al.n_rows;
         int k = al.n_columns;
         arraydata_t arrayclass = arraylink2arraydata (al, 0, 0);
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
 
         std::vector< int > df = s;
         std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
@@ -2953,6 +2993,14 @@ array_link arraydata_t::randomarray (int strength, int ncols) const {
         return al;
 }
 
+std::vector< int > arraydata_t::factor_levels () const {
+          std::vector< int > s (this->ncols);
+          for (int i = 0; i < this->ncols; i++) {
+               s[i] = this->s[i];
+          }
+          return s;
+}
+        
 array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         if (n_columns == -1)
                 n_columns = this->strength;

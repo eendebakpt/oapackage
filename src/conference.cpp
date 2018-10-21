@@ -1210,7 +1210,7 @@ indexsort rowsorter (const array_link &al) {
         for (int i = 0; i < al.n_rows; i++) {
                 mvalue_t< int > m;
                 for (int k = 0; k < al.n_columns; k++)
-                        m.v.push_back (al.at (i, k));
+                        m.values.push_back (al.at (i, k));
                 rr.push_back (m);
         }
         indexsort is (rr);
@@ -2105,10 +2105,10 @@ array_link sortrows (const array_link &al) {
         std::vector< mvalue_t< int > > rr (al.n_rows);
         for (int i = 0; i < al.n_rows; i++) {
                 mvalue_t< int > &m = rr[i];
-                m.v.resize (nc);
+                m.values.resize (nc);
 
                 for (int k = 0; k < nc; k++) {
-                        m.v[k] = al.atfast (i, k);
+                        m.values[k] = al.atfast (i, k);
                 }
         }
         indexsort sorter (rr);

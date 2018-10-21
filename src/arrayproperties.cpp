@@ -264,7 +264,7 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
 
         arraydata_t ad = arraylink2arraydata (al);
 
-        symmetry_group sg (ad.getS (), false);
+        symmetry_group sg (ad.factor_levels (), false);
 
         int *dh = new int[sg.ngroups];
 
@@ -564,15 +564,19 @@ std::vector< double > PICsequence(const array_link &array, int verbose) {
 }
 #endif
 
-/** calculate GWLP (generalized wordlength pattern)
- *
- * Based on: "GENERALIZED MINIMUM ABERRATION FOR ASYMMETRICAL
-FRACTIONAL FACTORIAL DESIGNS", Xu and Wu, 2001
- *
- */
+void round_GWLP_zero_values(std::vector<double> &gma, int N)
+{
+	for (size_t i = 0; i < gma.size(); i++) {
+		gma[i] = round(N * N * gma[i]) / (N * N);
+		if (gma[i] == 0)
+			gma[i] = 0; // fix minus zero float number
+	}
+
+}
+
 std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate) {
         arraydata_t adata = arraylink2arraydata (al);
-        symmetry_group sg (adata.getS (), false);
+        symmetry_group sg (adata.factor_levels (), false);
 
         std::vector< int > dims (adata.ncolgroups);
         for (unsigned int i = 0; i < dims.size (); i++)
@@ -589,7 +593,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         int N = adata.N;
         // calculate GWLP
-        std::vector< int > ss = adata.getS ();
+        std::vector< int > ss = adata.factor_levels ();
 
         std::vector< int > sx;
         for (int i = 0; i < sg.ngroups; i++)
@@ -597,17 +601,11 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         std::vector< double > gma = macwilliams_transform_mixed (B, sg, sx, N, Bout, verbose);
 
-        if (truncate) {
-                for (size_t i = 0; i < gma.size (); i++) {
-                        gma[i] = round (N * N * gma[i]) / (N * N);
-                        if (gma[i] == 0)
-                                gma[i] = 0; // fix minus zero
-                }
-        }
+        if (truncate)
+			round_GWLP_zero_values(gma, N);
         return gma;
 }
 
-/// calculate GWLP (generalized wordlength pattern)
 std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int N = al.n_rows;
         int n = al.n_columns;
@@ -616,11 +614,12 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int s = *me + 1;
         int k;
         for (k = 0; k < al.n_columns; k++) {
-                array_t *mine = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
-                if (*mine + 1 != s)
+                array_t *max_column_value = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
+                if (*max_column_value + 1 != s)
                         break;
         }
         int domixed = (k < al.n_columns);
+
         if (verbose)
                 myprintf ("GWLP: N %d, s %d, domixed %d\n", N, s, domixed);
 
@@ -638,13 +637,8 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
                 // calculate GWP
                 std::vector< double > gma = macwilliams_transform (B, N, s);
 
-                if (truncate) {
-                        for (size_t i = 0; i < gma.size (); i++) {
-                                gma[i] = round (N * N * gma[i]) / (N * N);
-                                if (gma[i] == 0)
-                                        gma[i] = 0; // fix minus zero
-                        }
-                }
+				if (truncate)
+					round_GWLP_zero_values(gma, N);
 
                 return gma;
         }
@@ -654,7 +648,7 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
 inline double GWPL2val (GWLPvalue x) {
         double r = 0;
         for (int i = x.size () - 1; i > 0; i--)
-                r = r / 10 + x.v[i];
+                r = r / 10 + x.values[i];
 
         return r;
 }
@@ -687,7 +681,7 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al) {
         return v;
 }
 
-std::vector< double > projectionGWLPvalues (const array_link &al) {
+std::vector< double > projectionGWLPdoublevalues (const array_link &al) {
         int ncols = al.n_columns;
 
         std::vector< double > v (ncols);
@@ -718,7 +712,7 @@ Eigen::MatrixXd arraylink2eigen (const array_link &al) {
         return mymatrix;
 }
 
-/// return rank of an array based on Eigen::ColPivHouseholderQR
+/// return rank of an array based on Eigen::FullPivHouseholderQR
 int arrayrankFullPivQR (const array_link &al, double threshold) {
         Eigen::MatrixXd mymatrix = arraylink2eigen (al);
         FullPivHouseholderQR< Eigen::MatrixXd > decomp (mymatrix.rows (), mymatrix.cols ());
@@ -1573,10 +1567,6 @@ double Defficiency (const array_link &al, int verbose) {
                         myprintf ("  Aold: %.6f\n", Deff);
                 }
         }
-
-        //   int rank = svd.nonzeroSingularValues();
-
-        // myprintf("Avalue: S size %d %d\n", (int) S.cols(), (int) S.rows());
 
         if (S[0] < 1e-15) {
                 if (verbose >= 2)
