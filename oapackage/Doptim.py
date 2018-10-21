@@ -88,55 +88,61 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0, 1, ncolors)]
 
     nonparetoidx = np.setdiff1d(range(nn), paretoidx)
-
-    figh = plt.figure(fig)
-    plt.clf()
-    figh.set_facecolor('w')
-    ax = plt.subplot(111)
-
-    ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
-               c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
-
     if lbls is None:
         lbls = ['%d' % i for i in range(len(idx))]
-    for jj, ii in enumerate(idx):
-        gidx = (colors == ii).nonzero()[0]
-        gp = np.intersect1d(paretoidx, gidx)
 
-        color = mycmap[jj]
-        cc = [color] * len(gp)
-        if verbose:
-            print('index %d: %d points' % (ii, gidx.size))
-        ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
-                   linewidths=0, alpha=alpha, label=lbls[jj])
-        plt.draw()
+    
+    if fig is not None:
+        figh = plt.figure(fig)
+        plt.clf()
+        figh.set_facecolor('w')
+        ax = plt.subplot(111)
+    
+        ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
+                   c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
-    if data[second_index, :].std() < 1e-3:
-        y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
-        ax.yaxis.set_major_formatter(y_formatter)
+        for jj, ii in enumerate(idx):
+            gidx = (colors == ii).nonzero()[0]
+            gp = np.intersect1d(paretoidx, gidx)
+    
+            color = mycmap[jj]
+            cc = [color] * len(gp)
+            if verbose:
+                print('index %d: %d points' % (ii, gidx.size))
+            ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
+                       linewidths=0, alpha=alpha, label=lbls[jj])
+            plt.draw()
 
-    xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
-    plt.ylabel('D-efficiency', fontsize=16)
+        if data[second_index, :].std() < 1e-3:
+            y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+            ax.yaxis.set_major_formatter(y_formatter)
 
-    if setWindowRectangle:
-        try:
-            oahelper.setWindowRectangle(10, 10, 860, 600)
-        except Exception as ex:
-            print('generateDscatter: setWindowRectangle failed')
-            logging.exception(ex)
+        xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
+        plt.ylabel('D-efficiency', fontsize=16)
 
-    plt.axis('image')
-    pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
-    if not nofig:
-        plt.show()
-    ax.grid(b=True, which='both', color='0.85', linestyle='-')
-    ax.set_axisbelow(True)
+        if setWindowRectangle:
+            try:
+                oahelper.setWindowRectangle(10, 10, 860, 600)
+            except Exception as ex:
+                print('generateDscatter: setWindowRectangle failed')
+                logging.exception(ex)
 
-    if nofig:
-        plt.close(figh.number)
+        plt.axis('image')
+        pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
+        if not nofig:
+            plt.show()
+        ax.grid(b=True, which='both', color='0.85', linestyle='-')
+        ax.set_axisbelow(True)
+
+        if nofig:
+            plt.close(figh.number)
+        else:
+            plt.draw()
+            plt.pause(1e-3)
     else:
-        plt.draw()
-        plt.pause(1e-3)
+        ax=None
+        xlabelhandle=None
+        pltlegend=None
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
 #%%

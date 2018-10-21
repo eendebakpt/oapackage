@@ -347,6 +347,13 @@ class TestDoptimize(unittest.TestCase):
         self.dds = np.random.rand(20, 3)
         self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
 
+        self.guitest = True
+        try:
+            import matplotlib.pyplot
+        except:
+            self.guitest = False
+        print('guitest %s'  % self.guitest)
+            
     def test_custom_optim(self):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
@@ -373,11 +380,10 @@ class TestDoptimize(unittest.TestCase):
                 al, arrayclass=None, niter=100, nabort=200, verbose=0, alpha=[1, 0, 0], method=method)
 
     def test_generateDscatter(self):
-        try:
-            import matplotlib.pyplot
-            fig = None
-        except:
+        if self.guitest:
             fig = 100
+        else:
+            fig=None
         r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 
@@ -388,13 +394,7 @@ class TestDoptimize(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
                                               fig=None, optimfunc=[1, 0, 0], nofig=True)
-        guitest = True
-        try:
-            import matplotlib.pyplot
-        except:
-            matplotlib = None
-            guitest = False
-        if guitest:
+        if self.guitest:
             print('test_generateDpage: run gui test')
             # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
             #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)

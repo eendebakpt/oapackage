@@ -86,6 +86,17 @@ class TestArrayLink(unittest.TestCase):
 
 class TestCppLibrary(unittest.TestCase):
 
+    def test_projectionDOFvalues(self):
+        array=oapackage.exampleArray(5,1)
+        arrayclass=oapackage.arraylink2arraydata(array)
+        dof_values = oapackage.projectionDOFvalues ( array )
+        sg=oapackage.symmetry_group(dof_values, False)
+        sg.show(1)
+        
+        for column in range(array.n_columns):          
+            dof_element = list(dof_values[column].raw_values())
+            self.assertEqual(dof_element[0], -arrayclass.getS()[column])
+            
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
         m = oapackage.mvalue_t_double(input_vector)
