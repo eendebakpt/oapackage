@@ -824,19 +824,18 @@ array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_, carray_t
         this->setarraydata (data, nrows * ncols);
 }
 
-bool array_link::columnEqual (int cl, const array_link &rhs, int cr) const {
+bool array_link::columnEqual (int column_index, const array_link &rhs, int column_index_rhs) const {
         if (this->n_rows != rhs.n_rows)
                 return false;
-        assert (cl >= 0);
-        assert (cl < this->n_columns);
-        assert (cr >= 0);
-        assert (cr < rhs.n_columns);
-        const array_t *pl = this->array + this->n_rows * cl;
-        const array_t *pr = rhs.array + this->n_rows * cr;
+		if (column_index < 0 || column_index >= rhs.n_columns)
+			throw std::out_of_range("index out of bound");
+		if (column_index_rhs < 0 || column_index_rhs>= rhs.n_columns)
+			throw std::out_of_range("index out of bound");
+        const array_t *pl = this->array + this->n_rows * column_index;
+        const array_t *pr = rhs.array + this->n_rows * column_index_rhs;
 
         for (int r = 0; r < this->n_rows; r++) {
                 if (pl[r] != pr[r]) {
-                        // if ( this->atfast ( r, cl ) != rhs.atfast ( r, cr ) ) {
                         return false;
                 }
         }
@@ -849,9 +848,24 @@ int array_link::firstColumnDifference (const array_link &A) const {
         return c;
 }
 
+bool array_link::firstDiff(const array_link &A, int &r, int &c, int verbose) const {
+	r = 0;
+	c = 0;
+	for (c = 0; c < this->n_columns; c++) {
+		for (r = 0; r < this->n_rows; r++) {
+			if (this->at(r, c) != A.at(r, c)) {
+				if (verbose) {
+					myprintf("first difference of array at %d, %d\n", r, c);
+				}
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
 std::string array_link::md5 () const {
-#ifdef FULLPACKAGE
         if (sizeof (array_t) == 4) {
                 // we have int as the representation type
                 return ::md5 (this->array, this->n_columns * this->n_rows * sizeof (array_t));
@@ -863,10 +877,6 @@ std::string array_link::md5 () const {
                 delete[] x;
                 return m;
         }
-#else
-        myprintf ("array_link::md5(): not implemented\n");
-        return "";
-#endif
 }
 
 void showArrayList (const arraylist_t &lst) {
@@ -917,7 +927,6 @@ array_link array_link::selectFirstColumns (int ncols) const {
 }
 
 array_link array_link::selectLastColumns (int ii) const {
-        // myprintf("array_link::selectLastColumns  %d\n", this->n_columns);
         mycheck (ii >= 0, "array_link::selectFirstColumn: ii<0\n");
         array_link d (this->n_rows, ii, INDEX_DEFAULT);
         for (int j = 0; j < ii; j++) {
@@ -3205,7 +3214,6 @@ array_link createJ2tableConference (const array_link &confmatrix) {
         int idx = 0;
         for (int i = 0; i < confmatrix.n_columns; i++) {
                 for (int j = 0; j <= i; j++) {
-                        // int idx=i+j*confmatrix.n_columns;
                         // loop over all rows of original array
                         const array_t *p1 = confmatrix.array + confmatrix.n_rows * i;
                         const array_t *p2 = confmatrix.array + confmatrix.n_rows * j;
@@ -3232,13 +3240,11 @@ array_link createJdtable (const array_link &al) {
         int idx = 0;
         for (int i = 0; i < al.n_columns; i++) {
                 for (int j = 0; j < al.n_columns; j++) {
-                        // printfd("dtable: size %d: idx %d\n", nc, idx);
                         // loop over all rows of original array
                         const array_t *p1 = al.array + al.n_rows * i;
                         const array_t *p2 = al.array + al.n_rows * j;
                         array_t *pout = dtable.array + idx * dtable.n_rows;
                         for (int x = 0; x < nr; x++) {
-                                // pout[x] = p1[x]+p2[x];
                                 pout[x] = p1[x] ^ p2[x];
                         }
                         idx++;
@@ -3249,7 +3255,6 @@ array_link createJdtable (const array_link &al) {
 }
 
 void jstruct_t::calcj4 (const array_link &al) {
-        // myprintf ( "jstruct_t::calcj4\n" );
         assert (jj == 4);
         int *pp = new_perm_init< int > (jj);
         int ncolcombs = ncombs (k, jj);
@@ -3257,10 +3262,8 @@ void jstruct_t::calcj4 (const array_link &al) {
         const int N = nr;
 
         array_link dtable = createJdtable (al);
-        // myprintf("dtable\n"); dtable.showarray();
 
         for (int x = 0; x < this->nc; x++) {
-                // int jv = jvalue ( al, jj, pp );  this->vals[x]=jv;
                 const int idx1 = pp[0] + pp[1] * al.n_columns;
                 const int idx2 = pp[2] + pp[3] * al.n_columns;
                 int jv = 0;
@@ -3268,10 +3271,7 @@ void jstruct_t::calcj4 (const array_link &al) {
                         const array_t *o1 = dtable.array + dtable.n_rows * idx1;
                         const array_t *o2 = dtable.array + dtable.n_rows * idx2;
                         for (int xr = 0; xr < nr; xr++) {
-                                // int tmp = ( o1[xr]  + o2[xr] ) % 2;
-
                                 int tmp = (o1[xr]) ^ (o2[xr]);
-                                // printf(" tmp %d (%d %d)\n", tmp, o1[xr], o2[xr]);
                                 jv += tmp;
                         }
                 }
@@ -3293,10 +3293,8 @@ void jstruct_t::calcj5 (const array_link &al) {
 
         array_link dtable = createJdtable (al);
 
-        // myprintf("dtable\n"); dtable.showarray();
 
         for (int x = 0; x < this->nc; x++) {
-                // int jv = jvalue ( al, jj, pp );  this->vals[x]=jv;
                 const int idx1 = pp[0] + pp[1] * al.n_columns;
                 const int idx2 = pp[2] + pp[3] * al.n_columns;
                 const int idx3 = pp[4];
@@ -3309,12 +3307,9 @@ void jstruct_t::calcj5 (const array_link &al) {
                                 int tmp = (o1[xr]) ^ (o2[xr]) ^ o3[xr];
                                 jv += tmp;
                         }
-                        //			jv %= 2;
                 }
                 jv = 2 * jv - N;
                 this->values[x] = jv;
-                // myprintf(" val %d -> %d\n", jvalue ( al, jj, pp ), jv); myprintf("  perm "); print_perm(pp, jj);
-
                 next_comb_s (pp, jj, k);
         }
 
@@ -3374,11 +3369,9 @@ jstruct_t::jstruct_t (const jstruct_t &js) {
         A = js.A;
         values = std::vector< int > (nc);
         std::copy (js.values.begin (), js.values.begin () + nc, values.begin ());
-        // myprintf("jstruct_t(): copy constructor: js.vals %d, new %d\n", js.vals, vals);
 }
 
 jstruct_t &jstruct_t::operator= (const jstruct_t &rhs) {
-        // myprintf("jstruct_t::operator=\n");
         this->N = rhs.N;
         this->k = rhs.k;
         this->jj = rhs.jj;
@@ -3387,13 +3380,11 @@ jstruct_t &jstruct_t::operator= (const jstruct_t &rhs) {
         this->A = rhs.A;
         values = std::vector< int > (nc);
         std::copy (rhs.values.begin (), rhs.values.begin () + nc, values.begin ());
-        // myprintf("jstruct_t(): copy constructor: js.vals %d, new %d\n", js.vals, vals);
 
         return *this;
 }
 
 jstruct_t::~jstruct_t () {
-        // myprintf("~jstruct_t(): vals %d\n", this->vals);
 }
 
 std::string jstruct_t::showstr () {
@@ -3413,13 +3404,10 @@ void jstruct_t::show () {
 }
 
 void jstruct_t::showdata () {
-#ifdef FULLPACKAGE
-
         for (size_t x = 0; x < this->values.size (); x++) {
-                std::cout << printfstring (" %d", values[x]);
+                myprintf(printfstring (" %d", values[x]).c_str());
         }
-        std::cout << std::endl;
-#endif
+		myprintf("\n");
 }
 
 std::string jstructbase_t::showstr () {

@@ -90,9 +90,9 @@ object.
 The C++ class is:
 
 .. doxygenstruct:: array_link
-    :outline:
-    :no-link:
+..    :no-link:
 
+..    :outline:
     
 Reading and writing arrays
 --------------------------
