@@ -258,7 +258,7 @@ class rankStructure {
 
         /// calculate the rank of the second order interaction matrix of an array directly
         int rankxfdirect (const array_link &al) const {
-                Eigen::MatrixXd mymatrix = arraylink2eigen (array2xf (al)); // array2xf;
+                Eigen::MatrixXd mymatrix = arraylink2eigen (array2xf (al)); 
                 return rankdirect (mymatrix);
         }
 
