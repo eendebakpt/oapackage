@@ -12,7 +12,7 @@ delete-one-factor projection ordering as described
 in :cite:`EendebakDOF` or the even-odd ordering.
 
 Another approach to generation of canonical forms for designs is to use
-graph-isomophism packages such as
+graph-isomorphism packages such as
 Nauty :cite:`nautyI`, :cite:`nautyII`. An advantage of this approach is 
 that the graph isomorphism packages contain state-of-the-art methods for reduction to canonical form.
 A disadvantage is that these methods are unaware of the special structure of designs and cannot be tailored
@@ -22,35 +22,11 @@ to create normal forms of a specific form.
 Reduction to LMC normal form
 ----------------------------
 
-Based on theory from `Complete enumeration of pure‐level and mixed‐level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ we can reduce
+Based on theory from `Complete enumeration of pure-level and mixed-level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ we can reduce
 orthogonal arrays to LMC normal form. The C++ function to perform reduction is
 
 .. doxygenfunction:: reduceLMCform(const array_link&)
 
-.. comment
-    .. admonition:: C++ block
-    
-        .. doxygenfunction:: reduceLMCform(const array_link&)
-
-    .. sidebar:: Sidebar Title
-        :subtitle: Optional Sidebar Subtitle
-    
-        Subsequent indented lines comprise
-        the body of the sidebar, and are
-        interpreted as body elements.
-
-
-    
-    .. topic:: C++ code
-    
-        .. doxygenfunction:: reduceLMCform(const array_link&)
-    
-    .. code-block:: c++
-       :caption: Reduction to normal form
-    
-    
-        /// reduce an array to canonical form using LMC ordering
-        array_link reduceLMCform(const array_link &al);
 
 Reduction to delete-one-factor projection form
 ----------------------------------------------
@@ -71,7 +47,7 @@ The C++ interface to delete-one-factor projection form is:
        :caption: C++ interface to delete-one-factor projection form
     
         /// reduce an array to canonical form using delete-1-factor ordering
-        array_link reduceDOPform(const array_link &al);
+        array_link reduceDOPform(const array_link &array);
     
 
 Reduction using graph isomorphisms
