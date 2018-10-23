@@ -6,8 +6,6 @@
 #include "lmc.h"
 #include "nonroot.h"
 
-// IDEA: fold non_root and non_root_j4 into each other: only difference: TPLUSONECOLUMN?
-
 inline void cpy_dyndata_rowsort (const dyndata_t *src, dyndata_t *dest) {
 #ifdef OADEBUG
         if (src->N != dest->N) {
@@ -41,9 +39,6 @@ inline void cpy_dyndata_rowsortl (const dyndata_t *src, dyndata_t *dest) {
 
 void debug_check_rowsort_overflow (const arraydata_t *ad, const rowsort_t *rowsort, const dyndata_t *dd,
                                    rowindex_t cur_row) {
-#ifdef OAOVERFLOW
-        assert (rowsort[cur_row].val >= 0);
-#endif
 #ifdef OADEBUG
         /* the rowsort value should not exceed the maximum int value! */
         if (std::numeric_limits< rowsort_value_t >::max () / ad->s[dd->col] < 2 * rowsort[cur_row].val)
@@ -67,9 +62,6 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
 /// compare 2 columns
 inline lmc_t LMC_check_col (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dd);
 
-/// Perform LMC check on a single column, perform full sorting
-inline lmc_t LMC_check_col_complete (const array_t *original, const array_t *array, const arraydata_t *ad,
-                                     const dyndata_t *dd);
 /// Perform LMC check on a single column, a buffer is used for the rowsort value
 inline lmc_t LMC_check_col_buffer (const array_t *original, const array_t *array, levelperm_t lperm,
                                    const arraydata_t *ad, const dyndata_t *dd, rowsort_value_t *rsbuffer);
@@ -511,13 +503,11 @@ lmc_t LMC_check_col_rowsymm (const array_t *arraycol, const arraydata_t *ad, con
 /// Perform LMC check on a single column, special case for 2-level arrays
 lmc_t LMC_check_col_ft_2level_rowsymm (const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                                        const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose) {
-        // myassert(sd!=0, "LMC_check_col_ft");
-
         lmc_t ret = LMC_EQUAL;
         const int scol = dd->col - 1;
         rowsortlight_t *rowsort = dd->rowsortl;
 
-        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); // myprintf("LMC_check_col_ft: nb %d\n",nb);
+        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol);
         array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
 
         /* we check in blocks determined by the ft */
@@ -565,13 +555,11 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
         myassert (dd->rowsortl != 0, "LMC_check_col_ft_2level: need rowsortl structure\n");
 #endif
 
-        // myassert(sd!=0, "LMC_check_col_ft");
-
         lmc_t ret = LMC_EQUAL;
         const int scol = dd->col - 1;
         rowsortlight_t *rowsort = dd->rowsortl;
 
-        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); // myprintf("LMC_check_col_ft: nb %d\n",nb);
+        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); 
         array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
 
         /* we check in blocks determined by the ft */
@@ -800,7 +788,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
         assert (ad->order == ORDER_J5);
 
         const int cpoffset = ad->N * dd->colperm[dd->col];
-        if (dd->col < 4) { // XXX
+        if (dd->col < 4) { 
                 lmc_t ret = LMC_check_col (original + dd->col * +ad->N, array + cpoffset, lperm, ad, dd);
                 return ret;
         }
@@ -845,13 +833,8 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
         }
 }
 
-/* Main functions */
-
 lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
                              LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic) {
-        // logstream ( DEBUG+1 ) << printfstring ( "LMCreduce_non_root: col %d, reduction->mode %d, perm ",
-        // dyndata->col, reduction->mode );
-        // print_perm ( dyndata->colperm, ad->ncols );
 
         /* static allocation of data structures for non-root stage of LMC check */
         levelperm_t *lperm_p = 0;
