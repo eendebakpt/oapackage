@@ -91,6 +91,20 @@ class TestArraydata_t(unittest.TestCase):
         factor_levels=arrayclass.factor_levels()
         self.assertEqual(factor_levels, (4,3,2,2,2))
 
+class TestConferenceDesigns(unittest.TestCase):
+
+    def test_conf2dsd(self):
+        al=oapackage.exampleArray(42)
+        dsd=oapackage.conference2DSD(al)
+        self.assertEqual(dsd.n_rows, 2*al.n_rows+1)
+        
+        conf=np.array(al)
+        dsd=np.array(dsd)
+        
+        np.testing.assert_array_equal(conf, dsd[0:al.n_rows,:])
+        np.testing.assert_array_equal(conf, -dsd[al.n_rows:2*al.n_rows,:])
+        np.testing.assert_array_equal(0*conf[0], dsd[-1,:])
+        
 class TestCppLibrary(unittest.TestCase):
 
     def test_projectionDOFvalues(self):

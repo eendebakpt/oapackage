@@ -23,6 +23,9 @@ void print_cperm(const conference_column &c, const char *msg = 0);
  */
 void showCandidates (const std::vector< conference_column > &cc);
 
+/// convert conference design to definitive screening design
+array_link conference2DSD(const array_link &conf, bool add_zeros = 1);
+
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
       public:
