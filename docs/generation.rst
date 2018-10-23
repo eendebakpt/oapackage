@@ -111,19 +111,13 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
  >>> print('Generated %d designs, the best D-efficiency is %.4f’ % (len(designs), dds[:,0].max() ))
  Generated 8 designs, the best D-efficiency is 0.9098
 
-The parameters of the function are documented in the code.
+The parameters of the :meth:`~oapackage.Doptim.Doptimize` function are documented in the code.
 
 To calculate properties of designs we can use the following functions.
-For :math:`D`-efficiencies, we can use the following command:
+We can use the following command:
 
 .. doxygenfunction:: array_link::Defficiencies(int)
     :no-link:
-    :outline:
-
-.. comment
-    .. code-block:: c++
-    
-        std::vector<double> array_link::Defficiencies ( int verbose ) const;
 
 to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
 For details see :cite:`EendebakSO`.
@@ -138,7 +132,7 @@ capacity (PEC) sequence for orthogonal arrays :cite:`loeppky2004ranking`. This c
     :no-link:
     :outline:
     
-In :cite:`Eendebak2017` it is shown that one can optimize a linear combination of the
+In :cite:`EendebakSO` it is shown that one can optimize a linear combination of the
 :math:`D`-efficiency and :math:`D_s`-efficiency to generate a rich 
 set of optimal designs with various efficiency. From the generated designs the optimal ones accoring
 to Pareto optimality can be selected.

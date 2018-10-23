@@ -22,126 +22,6 @@
 #include "conference.h"
 #include "lmc.h"
 
-/*
-
-######## Extension numbers
-
-When generating candidate extension columns many properties of the column are determined by N and the position of the
-zero in the column. (If the first 2 columns are in normal form).
-Below we write down the conditions and solve the resulting equations.
-
-#### Zero in middle block
-
-Values in column k for k > 1 and k <= N/2 + 1 = q + 2:
-
-First value 1, value at position k is 0.
-
-From the remaining N-2 values we have q=(N-2)/2 positive. Inner product with column 0 is then satisfied.
-
-Value v at position 1 is irrevant to innerproduct with column 1, this can be either +1 or -1
-
-Top: 2 elements, Upper half: N/2-1 elements, bottom: N/2-1 elements
-
-put q1 in upper half and q2 in lower half. we need:
-
-[Case v=-1]
-
-(inner prod with col 0 == 0):
-
-q1+q2=q
-
-(inner prod with col 1 == 0)
-
-q1 - (N/2 - 1 - 1 -q1) - [ q2-(N/2-1-q2) ]  + 1= 0
-
---> 2q1 - 2q2  +2 = 0
---> q1 - q2  = -1
-
----> q1+(q1+1)=q --> 2q1 = q -1  --> q1 = q/2 - 1/2 = (q-1)/2
-
-[Case v=1] (<-- q even/odd?)
-
-(inner prod 0 == 0):
-
-q1+q2+1=q
-
-(inner prod 1 == 0)
-
-q1 - (N/2 -1 -1 -q1) - [ q2-(N/2-1-q2) ]  + 1 = 0
-
---> 2q1 - 2q2 + 2 = 0
---> q1 - q2 + 1 =0
-
----> q1+(q1+1)+1=q --> 2q1 = q - 2 --> q1 = q/2 - 1
-
-Example:
-
-N=8
-q=3
-q1=1
-q2=2
-v=1
-
-N=6
-q=2
-q1=0
-q2=1
-n1=1
-v=1
-
-#### Zero in last block
-
-Values in column k for k > 1 and k > N/2 + 1 = 2 + q:
-First value 1, value at position k is 0.
-
-From the remaining N-2 values we have q=(N-2)/2 positive. Inner product with column 0 is then satisfied.
-
-Value v at position 1 is irrevant to innerproduct with column 1, this can be either +1 or -1
-
-Top: 2 elements, Upper half: N/2-1 elements, bottom: N/2-1 elements
-
-The zero is in the bottom part. Let q1 and q2 be the number of +1 signs in the upper and lower half, respectively.
-We need:
-
-[Case v=-1]
-
-(inner prod with col 0 == 0):
-
-q1+q2=q
-
-(inner prod with col 1 == 0)
-
-1 + q1 + (q-1-q2) = q
-
-[Case v=1] (<-- q even)
-
-(inner prod 0 == 0):
-
-q1+q2+1=q
-
-(inner prod 1 == 0)
-
-1 + q1 + (q-1-q2) = q
-
-==> v=+1: q1=(q-1)/2, q2=q1
-==> v=-1: q1=q/2, q2=q1
-
-Examples:
-
-N=8
-q=3
-q1=?
-q2=?
-v=?
-
-N=6
-q=2
-q1=?0
-q2=?
-n1=?
-v=1
-
- */
 
 void print_cperm(const conference_column &c, const char *msg) {
 	if (msg != 0)
@@ -155,7 +35,14 @@ void print_cperm(const conference_column &c, const char *msg) {
 /// return true of the argument is even
 inline bool iseven (int q) { return (q % 2) == 0; }
 
-/// return parameters of a conference design
+/** return structure parameters of a conference design
+ *
+ * When generating candidate extension columns many properties of the column are
+ * determined by N and the position of the zero in the column. (If the first 2 columns are in normal form).
+ *
+ * This method returns the sizes q1 and q2 of the second and third block. For details see "A Classification Criterion for Definitive Screening Designs", Schoen et al.
+ */
+
 void getConferenceNumbers (int N, int k, int &q, int &q1, int &q2, int &v) {
         q = (N - 2) / 2;
 
@@ -181,7 +68,19 @@ void getConferenceNumbers (int N, int k, int &q, int &q1, int &q2, int &v) {
                         q2 = q1;
                 }
         }
-        // printfd ( "getConferenceNumbers: k %d, q %d: q1 q2 %d, %d\n", k, q, q1, q2 );
+}
+
+array_link conference2DSD(const array_link &conf, bool add_zeros)
+{
+	array_link dsd(2 * conf.n_rows + add_zeros, conf.n_columns, array_link::INDEX_DEFAULT);
+	
+	for(int row=0; row<conf.n_rows; row++) {
+		for (int column = 0; column < conf.n_columns; column++) {
+			dsd.atfast(row, column) = conf.atfast(row, column);
+			dsd.atfast(conf.n_rows+row, column) = -conf.atfast(row, column);
+		}
+	}
+	return dsd;
 }
 
 /// show a list of candidate extensions

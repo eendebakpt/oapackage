@@ -10,6 +10,7 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "std_deque.i"
+%include "std_pair.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -28,8 +29,6 @@ import_array();
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* pymat1, int n)}
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
-
-%include "std_pair.i"
 
 %{
 #include <utility>
@@ -406,6 +405,8 @@ import numpy
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
 %template(pairGraphColors) std::pair< array_link  , std::vector<int>  >;
+%template(pairEigenMatrix) std::pair< MatrixFloat  , MatrixFloat >;
+
 
 %extend mvalue_t<double> {
 %insert("python") %{
