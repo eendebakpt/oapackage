@@ -47,7 +47,6 @@ import_array();
 #include "arraytools.h"
 #include "tools.h"
 #include "md5.h"
-#include "nonroot.h"
 #include "pareto.h"
 #include "arrayproperties.h"
 #include "extend.h"

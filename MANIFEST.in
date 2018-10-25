@@ -1,6 +1,21 @@
-include numpy.i
+include README.md
+include FORMAT.txt
+include LICENSE
+include CONTRIBUTORS.md
+#include CMakeLists.txt
+include doxy2swig.py
 include oadoxy.i
-include oalib.i
+include oaconfig.txt
+include numpy.i
+#include mex/compile.m
+#include mex/Doptim.cpp
+#include mex/Doptim.m
+
 include misc/scripts/example_oapackage_python.py
 recursive-include src/*.h 
 recursive-include src/*.cpp 
+
+graft src/Eigen
+graft utils
+
+
