@@ -193,10 +193,10 @@ class OATest(TestCommand):
 #%% Define sources of the package
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
-        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp']
+        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp']
 srcs = srcs + ['Deff.cpp', 'evenodd.cpp']
 srcs = srcs + ['conference.cpp']
-#srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
+
 
 srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
 srcs = ['src/' + ff for ff in srcs]
@@ -204,7 +204,17 @@ if os.path.exists('dev/oadevelop.cpp'):
     oadev = 1
     print('Building development code')
     srcs = ['dev/oadevelop.cpp'] + srcs
+
+
 sources = srcs + ['src/bitarray/bit_array.cpp']
+oaheaders = [ cppfile.replace('.cpp', '.h') for cppfile in srcs ] +[os.path.join('src', 'version.h')]
+
+
+for nauty_file in 'nauty.c nautinv.c nautil.c naurng.c naugraph.c schreier.c naugroup.c'.split(' '):
+    sources += [os.path.join('src', 'nauty',nauty_file)]
+
+nautyheaders = [os.path.join('src', 'nauty', headerfile) for headerfile in ['gtools.h', 'naugroup.h','nautinv.h',  'naurng.h', 'naugraph.h', 'nausparse.h','nautil.h',  'nauty.h', 'schreier.h']]
+sources=sources+oaheaders+nautyheaders
 
 swig_opts = []
 compile_options = []
@@ -225,10 +235,6 @@ else:
 swig_opts += ['-Isrc/nauty/']
 compile_options += ['-Isrc/nauty/']
 
-sources += ['src/graphtools.cpp']
-
-for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c'.split(' '):
-    sources += ['src/' + f]
 
 if platform.system() == 'Windows':
     compile_options += ['-DWIN32', '-D_WIN32']

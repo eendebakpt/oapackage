@@ -2623,14 +2623,13 @@ std::vector< int > array_link::Jcharacteristics (int jj) const {
         }
 }
 
-/// helper function
-int jvalue_conference (const array_link &ar, const int J, const int *pp) {
+int jvalue_conference (const array_link &ar, const int J, const int *column_indices) {
         int jval = 0;
 
         for (rowindex_t r = 0; r < ar.n_rows; r++) {
                 int tmp = 1;
                 for (int i = 0; i < J; i++) {
-                        tmp *= ar.atfast (r, pp[i]);
+                        tmp *= ar.atfast (r, column_indices[i]);
                 }
                 jval += tmp;
         }
@@ -2639,21 +2638,21 @@ int jvalue_conference (const array_link &ar, const int J, const int *pp) {
 
 /// calculate J-characteristics for a conference design
 std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, int verbose) {
-        assert (al.max () == 1 && al.min () == -1);
+        myassert (al.max () == 1 && al.min () == -1);
 
         const int k = al.n_columns;
         const int nc = ncombs (k, jj);
         std::vector< int > vals (nc);
 
-        int *pp = new_perm_init< int > (jj);
+        int *column_indices = new_perm_init< int > (jj);
 
         for (int x = 0; x < nc; x++) {
-                int jv = jvalue_conference (al, jj, pp); // slow version
+                int jv = jvalue_conference (al, jj, column_indices); 
                 vals[x] = jv;
-                next_comb_s (pp, jj, k);
+                next_comb_s (column_indices, jj, k);
         }
 
-        delete_perm (pp);
+        delete_perm (column_indices);
 
         return vals;
 }
@@ -3189,18 +3188,16 @@ std::vector< int > jstruct_t::calculateF (int strength) const {
 }
 
 void jstruct_t::calc (const array_link &al) {
-        int *pp = new_perm_init< int > (jj);
-        // int ncolcombs = ncombs ( k, jj );
+        int *column_indices = new_perm_init< int > (jj);
 
         assert (al.is2level ());
         for (int x = 0; x < this->nc; x++) {
-                // int jv = jvalue ( al, jj, pp ); // slow version
-                int jv = jvaluefast (al.array, al.n_rows, jj, pp);
+                int jv = jvaluefast (al.array, al.n_rows, jj, column_indices);
                 this->values[x] = jv;
-                next_comb_s (pp, jj, k);
+                next_comb_s (column_indices, jj, k);
         }
 
-        delete_perm (pp);
+        delete_perm (column_indices);
 }
 
 /// create J2 table as intermediate result for J-characteristic calculations for conference matrices

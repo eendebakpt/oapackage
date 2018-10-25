@@ -190,7 +190,15 @@ def __getattr__(self, attr):
     else:
       raise AttributeError("%r object has no attribute %r" %
                          (self.__class__, attr))
-                         
+
+@property
+def shape(self):
+    return (self.n_rows, self.n_columns)
+
+@property
+def size(self):
+    return self.n_rows*self.n_columns
+                             
 def showarray(self):
   """ Show array"""
   # overridden to fix problems with ipython

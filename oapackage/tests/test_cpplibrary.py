@@ -69,6 +69,12 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al2b < al2a)
         #self.assertTrue(al2b <= al2b)
 
+    def test_array_link_dimensions(self):
+        for example_idx in [0,2,6,10]:
+            al = oapackage.exampleArray(example_idx)
+            self.assertEqual(al.size, al.n_rows*al.n_columns )
+            self.assertEqual(al.shape, (al.n_rows, al.n_columns ) )
+        
     def test_array_class_functions(self):
         al = oapackage.exampleArray(1)
         self.assertTrue(al.is2level())
