@@ -322,25 +322,17 @@ void throw_runtime_exception (const std::string exception_message) {
 	throw std::runtime_error (exception_message);
 }
 
-void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...) {
+void mycheck_handler (const char *file, const char *func, int line, int condition, const char *error_message, ...) {
         if (condition == 0) {
                 va_list va;
-                va_start (va, message);
+                va_start (va, error_message);
                 myprintf ("mycheck: %s: %s (line %d): ", file, func, line);
                 fflush (0);
-#ifdef RPACKAGE
-                myprintf ("(not implemented) %s", message);
-#else
-                vprintf (message, va);
-#endif
+                vprintf (error_message, va);
                 va_end (va);
-#ifdef RPACKAGE
-                throw_runtime_exception("");
-#else
                 std::string error_message = printfstring ("exception: %s: %s (line %d): ", file, func, line);
-                error_message += message;
+                error_message += error_message;
                 throw_runtime_exception(error_message);
-#endif
         }
 }
 

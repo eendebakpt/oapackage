@@ -76,4 +76,3 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
 array_transformation_t oagraph2transformation (const std::vector< int > &pp, const arraydata_t &arrayclass,
                                                int verbose = 1);
 
-int unittest_nautynormalform (const array_link &al, int verbose = 1);

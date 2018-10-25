@@ -11,8 +11,8 @@
 #endif
 
 template < class Type >
-/// helper function, substruct minimum from list of values
-std::vector< Type > sorthelper (std::vector< Type > &v) {
+/// substract minimum from list of values
+std::vector< Type > subtract_minimum (std::vector< Type > &v) {
         std::vector< Type > w (v.size ());
         std::copy (v.begin (), v.end (), w.begin ());
         int rmin = w[0];
@@ -79,7 +79,6 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
                 printfd ("reduceNauty: array is not symmetric, operation not well defined\n");
         }
 
-        // for(size_t j=0; j<colors.size(); j++) colors[j]=j;
         if (verbose) {
                 myprintf ("reduceNauty: %d vertices\n", G.n_rows);
                 myprintf ("  colors: ");
@@ -192,7 +191,6 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
         std::vector< int > tr (nvertices);
         std::copy (lab, lab + nvertices, tr.begin ());
 
-        // TODO: use colors in graph
         //  delete allocated variables
         DYNFREE (g, g_sz);
         DYNFREE (canong, canong_sz);
@@ -242,7 +240,6 @@ array_transformation_t reduceOAnauty (const array_link &al, int verbose, const a
 template < class IntType >
 /// helper function
 std::vector< int > indexvector (const std::vector< IntType > s) {
-        // printf("indexvector: input "); print_perm(s);
         int n = std::accumulate (s.begin (), s.end (), 0);
 
         std::vector< int > v (n);
@@ -301,7 +298,6 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
 
         std::vector< int > colors (nVertices);
 
-        // printf("arrayclass.ncolgroups %d\n", arrayclass.ncolgroups);
         symmetry_group sg (arrayclass.getS (), 0);
 
         // row vertices: color 0
@@ -347,7 +343,6 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
 array_link transformGraph (const array_link &G, const std::vector< int > tr, int verbose) {
         array_link H = G;
 
-        // printfd("transformGraph: tr "); display_vector(tr); myprintf("\n");
         for (int i = 0; i < H.n_rows; i++) {
                 for (int j = 0; j < H.n_columns; j++) {
                         int ix = tr[i];
@@ -404,7 +399,7 @@ array_transformation_t oagraph2transformation (const std::vector< int > &pp, con
                 display_vector (colperm);
                 myprintf ("\n");
         }
-        colperm = sorthelper (colperm);
+        colperm = subtract_minimum (colperm);
         colperm = invert_permutation (colperm);
         ttc.setcolperm (colperm);
 
@@ -421,7 +416,7 @@ array_transformation_t oagraph2transformation (const std::vector< int > &pp, con
 
         std::vector< int > lvlperm (ns);
         std::copy (pp.begin () + N + ncols, pp.begin () + N + ncols + ns, lvlperm.begin ());
-        lvlperm = sorthelper (lvlperm);
+        lvlperm = subtract_minimum (lvlperm);
 
         std::vector< int > cs = cumsum0 (s);
 
@@ -451,38 +446,6 @@ array_transformation_t oagraph2transformation (const std::vector< int > &pp, con
 
         array_transformation_t tt = ttr * ttc * ttl;
         return tt;
-}
-
-/// unittest: return 1 if all tests are good
-int unittest_nautynormalform (const array_link &al, int verbose) {
-        arraydata_t arrayclass = arraylink2arraydata (al);
-
-        if (verbose >= 2) {
-                myprintf ("unittest_nautynormalform: testing on array\n");
-                al.showarray ();
-        }
-
-        array_link alr1 = al.randomperm ();
-        array_link alr2 = al.randomperm ();
-
-        array_transformation_t ttx1 = reduceOAnauty (alr1, 0);
-        array_link alx1 = ttx1.apply (alr1);
-
-        array_transformation_t ttx2 = reduceOAnauty (alr2, 0);
-        array_link alx2 = ttx2.apply (alr2);
-
-        if (alx1 != alx2) {
-                printfd ("unittest_nautynormalform: error: transformed graphs unequal!\n");
-
-                myprintf ("alx1: \n");
-                alx1.showarray ();
-                myprintf ("alx2: \n");
-                alx2.showarray ();
-
-                return 0;
-        }
-
-        return 1;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
