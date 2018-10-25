@@ -216,7 +216,7 @@ for nauty_file in 'nauty.c nautinv.c nautil.c naurng.c naugraph.c schreier.c nau
     sources += [os.path.join('src', 'nauty',nauty_file)]
 
 nautyheaders = [os.path.join('src', 'nauty', headerfile) for headerfile in ['gtools.h', 'naugroup.h','nautinv.h',  'naurng.h', 'naugraph.h', 'nausparse.h','nautil.h',  'nauty.h', 'schreier.h']]
-sources=sources+oaheaders+nautyheaders
+sources=sources
 
 swig_opts = []
 compile_options = []
