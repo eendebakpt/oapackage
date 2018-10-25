@@ -13,6 +13,7 @@ include numpy.i
 include misc/scripts/example_oapackage_python.py
 recursive-include src *.h 
 recursive-include src *.cpp 
+recursive-include src *.c
 
 graft src/Eigen
 #graft utils
