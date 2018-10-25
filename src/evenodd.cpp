@@ -329,27 +329,6 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 dextend.extension_column_list = dextendsub.initialize (extensions0, adfull, oaextendx);
                 dextendsub.info ();
 
-                if (0) {
-
-                        for (int i = 0; i < (int)extensions0.size (); i++) {
-                                LMCreduction_t reduction (&adfull);
-                                reduction.updateSDpointer (extensions0[i]);
-
-                                // find reduced column index
-
-                                int pi = i;
-
-                                // results
-                                if (dextendsub.lmctype[i] >= LMC_EQUAL) {
-                                        myprintf ("array %d: lmc %d, lastcol %d, lastcol parent %d\n", i,
-                                                  dextendsub.lmctype[i], dextendsub.lastcol[i],
-                                                  dextendsub.lastcol[pi]);
-                                }
-                                // dextend.lmctype[k]=lmc;
-                                //      dextend.lastcol[k]=lc;
-                        }
-                }
-
                 // make selection
                 goodarrays = dextendsub.selectArraysZ (extensions0);
         }

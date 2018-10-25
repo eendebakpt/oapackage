@@ -1658,34 +1658,6 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
         return val;
 }
 
-/// return value based on J4-J5 ordering
-// jj45_t jj45val_orig (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val = -1, int dosort = 1) {
-// 
-//         double ww[6];
-//         if (j5val == -1)
-//                 ww[0] = abs (jvaluefast (array, N, jj, comb));
-//         else
-//                 ww[0] = j5val;
-// 
-//         colindex_t lc[4];
-//         init_perm (lc, 4);
-//         colindex_t lc2[4];
-//         init_perm (lc2, 4);
-//         for (size_t i = 0; i < 5; i++) {
-//                 perform_inv_perm (comb, lc2, 4, lc);
-// 
-//                 ww[i + 1] = abs (jvaluefast (array, N, 4, lc2));
-//                 next_comb (lc, 4, 5);
-//         }
-// 
-//         if (dosort) {
-//                 std::sort (ww + 1, ww + 6, std::greater< int > ());
-//         }
-// 
-//         double val = jj452double (ww);
-// 
-//         return val;
-// }
 
 #ifdef LMCSTATS
 // this code is not thread safe!
@@ -1698,7 +1670,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                   int hack) {
         const int dverbose = 0;
         LMC_static_struct_t &tmpStatic = reduction.getStaticReference ();
-        // tmpStatic.setRef("LMCcheckj5");
 
         const int jj = 5;
 #ifdef OACHECK
@@ -1728,8 +1699,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         // NOTE: the reduction.array is reduced, so reduction.array is a good value to start from.
         // NOTE: for arrays not in root form we set update the reduction.array to make sure that the root is set (this
         // part is not checked!)
-        // IMPROVEMENT: only do this if the reduction.array is not in root form (automatic REDUCE_INIT, but this also
-        // works for LMC_TEST)
         bool rootform = check_root_form (reduction.array, adin);
 
         if (!rootform) {
