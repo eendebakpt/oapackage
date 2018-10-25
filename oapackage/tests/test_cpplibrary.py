@@ -74,7 +74,9 @@ class TestArrayLink(unittest.TestCase):
             al = oapackage.exampleArray(example_idx)
             self.assertEqual(al.size, al.n_rows*al.n_columns )
             self.assertEqual(al.shape, (al.n_rows, al.n_columns ) )
-        
+        with self.assertRaises(AttributeError):
+            al.shape=1
+            
     def test_array_class_functions(self):
         al = oapackage.exampleArray(1)
         self.assertTrue(al.is2level())

@@ -1,5 +1,4 @@
 include README.md
-include FORMAT.txt
 include LICENSE
 include CONTRIBUTORS.md
 #include CMakeLists.txt
@@ -12,10 +11,10 @@ include numpy.i
 #include mex/Doptim.m
 
 include misc/scripts/example_oapackage_python.py
-recursive-include src/*.h 
-recursive-include src/*.cpp 
+recursive-include src *.h 
+recursive-include src *.cpp 
 
 graft src/Eigen
-graft utils
+#graft utils
 
 
