@@ -2,7 +2,7 @@
 title: 'OApackage: A Python package for generation and analysis of orthogonal arrays and conference designs'
 tags:
   - Python
-  - ortogonal arrays
+  - orthogonal arrays
   - conference matrices
   - design of experiments
 authors:
@@ -27,26 +27,27 @@ bibliography: paper.bib
 
 Orthogonal arrays, optimal designs and conference designs are important tools for the design of
 experiments [@Elster1995], [@Hedayat1999], [@Wu2009]. The Orthogonal Array package contains functionality 
-to generate and analyse these types of designs. More specifically, the Ortogonal Array package allows 
+to generate and analyse these types of designs. More specifically, the Orthogonal Array package allows 
 the user to:
 
 * Efficiently generate orthogonal arrays, optimal designs and conference designs
-* Reduce the designs to their normal form and perform isomophism testing 
+* Reduce the designs to their normal form and perform isomorphism testing 
 * Calculate a wide variety of statistical properties of the designs
 
 To generate orthogonal arrays and conference designs, the Orthogonal Array package uses an exhaustive 
-generation procedure with ismorphism pruning [@Eendebak2009], [@IsomorphismPaper]. To generate 
+generation procedure with isomorphism pruning [@Eendebak2009], [@IsomorphismPaper]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
 optimization algorithm [@Eendebak2015].
 
 The reduction of the designs to their normal form is done by either reduction to a minimal form 
-(such as lexicographic minimal in columns or delete-one-factor projection normal form [@EendebakDOF])
-or reduction using graph algorithms. For designs with a specified isomorphic group, the Orthogonal 
-Array package provides a generic interface to the graph reduction algorithms to perform ismophism 
-testing and reduction to normal form effectively.
+(such as lexicographically minimal in columns or delete-one-factor projection normal form [@EendebakDOF])
+or reduction using graph algorithms. For designs with a specified isomorphism group, the Orthogonal 
+Array package provides a generic interface to the graph reduction algorithms that effectively perform isomophism 
+testing and reduction to normal form.
 
-The Orthogonal Array package evaluates the designs using sensible statistical criteria. For instance,
-the package calculates the generalized wordlength pattern [@Tang1999], the J_k-characteristics [@Deng1999] 
+The Orthogonal Array package evaluates the designs using well-known statistical criteria. For instance,
+the package calculates the generalized wordlength pattern [@Tang1999], confounding frequency vector, which is based
+on the J-characteristics [@Deng1999] 
 and the number of degrees of freedom available for estimating selected factors' effects.
 
 The Orthogonal Array package consists of a C++ library with an user-friendly Python interface generated
@@ -56,7 +57,7 @@ generation and analysis of designs are available in the OApackage documentation 
 The Orthogonal Array package website [@EendebakOA] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
 the website of Neil Sloane [@Sloanewebsite]. Finally, the analysis of data from the designs is left to 
-exising packages such as R [@Rpackage] and JMP [@wiki:JMP].
+existing packages such as R [@Rpackage] and JMP [@wiki:JMP].
 
 # Acknowledgements
 

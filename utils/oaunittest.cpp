@@ -51,6 +51,38 @@ int checkConferenceInverse (const array_link &al) {
         return 0;
 }
 
+/// unittest: return 1 if all tests are good
+int unittest_nautynormalform(const array_link &al, int verbose) {
+	arraydata_t arrayclass = arraylink2arraydata(al);
+
+	if (verbose >= 2) {
+		myprintf("unittest_nautynormalform: testing on array\n");
+		al.showarray();
+	}
+
+	array_link alr1 = al.randomperm();
+	array_link alr2 = al.randomperm();
+
+	array_transformation_t ttx1 = reduceOAnauty(alr1, 0);
+	array_link alx1 = ttx1.apply(alr1);
+
+	array_transformation_t ttx2 = reduceOAnauty(alr2, 0);
+	array_link alx2 = ttx2.apply(alr2);
+
+	if (alx1 != alx2) {
+		printfd("unittest_nautynormalform: error: transformed graphs unequal!\n");
+
+		myprintf("alx1: \n");
+		alx1.showarray();
+		myprintf("alx2: \n");
+		alx2.showarray();
+
+		return 0;
+	}
+
+	return 1;
+}
+
 bool testLMC0checkDC (const array_link &al, int verbose = 1) {
         const int niter = 20; // number of iterations used in check
 

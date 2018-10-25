@@ -86,11 +86,12 @@ std::string system_uname ();
 char path_separator ();
 
 /// handler for error messages. throws an std::runtime_error exception
-void mycheck_handler (const char *file, const char *func, int line, int condition, const char *message, ...);
+void mycheck_handler (const char *file, const char *func, int line, int condition, const char *error_message, ...);
 
 #define mycheck(...) mycheck_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-void myassert (int condition, const char *str = 0);
+/// Check whether the condition is true and throw an expception otherwise
+void myassert (int condition, const char *error_message = 0);
 
 /** Throw a runtime_error exception with specified error message
  * 

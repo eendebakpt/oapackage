@@ -109,10 +109,8 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 // only export high level IO functions
 %ignore::array_diff;
 %ignore::write_array;
-%ignore::write_array_latex;
 %ignore::finish_arrayfile;
 %ignore arrayfile_t::arrayNbits;
-%ignore foldtest;
 %ignore arraydata_t::complete_arraydata_splitn;
 %ignore::writebinheader;
 #endif
@@ -143,16 +141,15 @@ typedef array_t *levelperm_t;  /** type of level permutation */
 // maximum value if of order max(s)*t
 typedef int vindex_t; /* value index type */
 
-// forward declarations
+/// Class representing an array
 struct array_link;
-struct arraydata_t;
 
 /// return size in bytes of array_t type
 int sizeof_array_t ();
 
 /// possible values for J-values of 2-level design
 inline std::vector< int > possible_F_values (int N, int strength) {
-        int x = pow ((double)2, strength + 1); // TODO: replace by integer power
+        int x = pow ((double)2, strength + 1); 
         int nn = floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
@@ -395,11 +392,7 @@ inline std::string printfstring (const char *message, ...) {
 
         va_list va;
         va_start (va, message);
-#ifdef RPACKAGE
-        myprintf ("printfstring: not implemented in R\n");
-#else
         vsprintf (buf, message, va);
-#endif
         va_end (va);
 
         std::string str (buf);
@@ -528,19 +521,7 @@ inline void perform_inv_row_permutation (const array_t *source, array_t *target,
                 }
 }
 
-/** Return example array
- *
- * \param idx Index of example array to return
- * \param verbose If True, then print information about the array to stdout
- */
-array_link exampleArray (int idx = 0, int verbose = 0);
-
-/// calculate J-characteristics for a conference design
-std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, int verbose = 0);
-
-/*** \brief Wrapper class for an array
- *
- * The array_link struct is a struct that represents an array.
+/*** \brief Class representing an array
  */
 struct array_link {
         /// Number of rows in array
@@ -815,7 +796,7 @@ struct array_link {
         std::string md5 () const;
 
         /// return true if two columns are equal
-        bool columnEqual (int rl, const array_link &rhs, int rr) const;
+        bool columnEqual (int column_index, const array_link &rhs, int column_index_rhs) const;
 
         /// return index of first different column
         int firstColumnDifference (const array_link &A) const;
@@ -824,21 +805,7 @@ struct array_link {
          *
          * The difference is according to the column-major ordering.
          */
-        bool firstDiff (const array_link &A, int &r, int &c, int verbose = 1) const {
-                r = 0;
-                c = 0;
-                for (c = 0; c < this->n_columns; c++) {
-                        for (r = 0; r < this->n_rows; r++) {
-                                if (this->at (r, c) != A.at (r, c)) {
-                                        if (verbose) {
-                                                myprintf ("first difference of array at %d, %d\n", r, c);
-                                        }
-                                        return true;
-                                }
-                        }
-                }
-                return false;
-        }
+		bool firstDiff(const array_link &A, int &r, int &c, int verbose = 1) const;
 
         /// create root in arraylink
         void create_root (const arraydata_t &ad, int fill_value = 0);
@@ -934,6 +901,16 @@ private:
     bool _valid_index (int index) const;
 
 };
+
+/** Return example array
+*
+* \param idx Index of example array to return
+* \param verbose If True, then print information about the array to stdout
+*/
+array_link exampleArray(int idx = 0, int verbose = 0);
+
+/// calculate J-characteristics for a conference design
+std::vector< int > Jcharacteristics_conference(const array_link &al, int jj, int verbose = 0);
 
 typedef signed char conf_t;
 typedef std::vector< conf_t > conference_column;

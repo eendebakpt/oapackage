@@ -23,7 +23,7 @@ for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}`.
 An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
 
 For :math:`{N}` even, a conference design :math:`C` is 
-an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) {I}_{n}}`,
+an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`.
 See :cite:`Xiao2012`, :cite:`Wu2009`.
@@ -90,9 +90,9 @@ object.
 The C++ class is:
 
 .. doxygenstruct:: array_link
-    :outline:
-    :no-link:
+..    :no-link:
 
+..    :outline:
     
 Reading and writing arrays
 --------------------------
