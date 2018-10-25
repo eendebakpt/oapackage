@@ -1,0 +1,6 @@
+include numpy.i
+include oadoxy.i
+include oalib.i
+include misc/scripts/example_oapackage_python.py
+recursive-include src/*.h 
+recursive-include src/*.cpp 

@@ -8,6 +8,8 @@ setup.py file for OApackage
 from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.test import test as TestCommand
+from distutils.command.build import build
+from setuptools.command.install import install
 
 from codecs import open  # To use a consistent encoding
 from os import path
@@ -311,10 +313,6 @@ else:
         raise Exception('could not find a recent version if SWIG')
 
     ext_modules = [oalib_module]
-
-from distutils.command.build import build
-from setuptools.command.install import install
-
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 class CustomBuild(build):
