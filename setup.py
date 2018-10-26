@@ -8,8 +8,9 @@ setup.py file for OApackage
 from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.test import test as TestCommand
-from distutils.command.build import build
-from setuptools.command.install import install
+from distutils.command.build import build as distutils_build
+from setuptools.command.install import install as setuptools_install
+import setuptools.command.build_ext 
 
 from codecs import open  # To use a consistent encoding
 from os import path
@@ -139,10 +140,11 @@ try:
             print("Found SWIG: %s (version %s)" % (swig_executable, swig_version))
         return swig_executable, swig_version, swig_valid
     swig_executable, swig_version, swig_valid = get_swig_executable()
-    print('swig_version %s' % swig_version)
+    print('swig_version %s, swig_executable %s' % (swig_version, swig_executable) )
 except:
-    # fallback
-    swig_valid = True
+    def get_swig_executable():
+        return None, None, False
+    swig_valid = False
 
 #%% Hack to remove option for c++ code
 try:
@@ -315,20 +317,25 @@ else:
     ext_modules = [oalib_module]
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
-class CustomBuild(build):
+class CustomBuild(distutils_build):
 
     def run(self):
         self.run_command('build_ext')
-        build.run(self)
+        distutils_build.run(self)
 
 
-class CustomInstall(install):
+class CustomInstall(setuptools_install):
 
     def run(self):
         self.run_command('build_ext')
-        install.run(self)
+        setuptools_install.run(self)
 
 
+class BuildExtSwig3(setuptools.command.build_ext.build_ext):
+    def find_swig(self):
+        swig_executable, _, _ = get_swig_executable
+        return swig_executable
+    
 def readme():
     with open('README.md') as f:
         return f.read()
@@ -340,7 +347,7 @@ version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
 setup(name='OApackage',
-      cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild},
+      cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
       version=version,
       author="Pieter Eendebak",
       description="Package to generate and analyse orthogonal arrays and optimal designs",
