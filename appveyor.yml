@@ -156,6 +156,7 @@ test_script:
    
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
+  - "%CMD_IN_ENV36% %PYTHON%/python setup.py sdist"
   - ps: "ls dist"
 
 artifacts:
