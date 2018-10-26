@@ -200,12 +200,11 @@ struct LMC_static_struct_t {
         int id;
 #endif
 
-        /* methods */
         LMC_static_struct_t ();
         ~LMC_static_struct_t ();
 
         void show (int verbose = 1) const {
-                myprintf ("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", (const long)(this->ad),
+                myprintf ("LMC_static_struct_t: ad %p, LMC_non_root_init %d\n", (void *)(this->ad),
                           LMC_non_root_init);
         }
 
