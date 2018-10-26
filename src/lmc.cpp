@@ -52,10 +52,6 @@ LMC_static_struct_t *getGlobalStaticOnePointer () {
 
 static object_pool< LMC_static_struct_t > staticDataPool;
 
-int getGlobalStaticNumber (LMC_static_struct_t *p) {
-        return p->id; 
-}
-
 LMC_static_struct_t *getGlobalStatic () {
 #ifdef NOREUSE
         LMC_static_struct_t *pp = new LMC_static_struct_t ();
