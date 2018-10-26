@@ -132,11 +132,9 @@ struct extendpos {
 
         extendpos (colindex_t extensioncol, arraydata_t *adp) : row (0), col (extensioncol), ad (adp){};
 
-#ifdef OADEBUG
         void show () {
                 myprintf ("extendpos struct: N %d, col %d, ncols %d\n", this->ad->N, this->col, this->ad->ncols);
         }
-#endif
 };
 
 /// extend a list of orthogonal arrays

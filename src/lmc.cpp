@@ -52,11 +52,9 @@ LMC_static_struct_t *getGlobalStaticOnePointer () {
 
 static object_pool< LMC_static_struct_t > staticDataPool;
 
-#ifdef OADEBUG
 int getGlobalStaticNumber (LMC_static_struct_t *p) {
         return p->id; 
 }
-#endif
 
 LMC_static_struct_t *getGlobalStatic () {
 #ifdef NOREUSE
@@ -2636,11 +2634,6 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
         /* loop over all possible column combinations for the root */
 
         for (int i = 0; i < nc; i++) {
-#ifdef OAEXTRA
-                logstream (DEBUG) << printfstring ("LMCreduce: root stage (col %d): column comb: %d/%d\n",
-                                                   dyndata->col, i, nc); 
-#endif
-
                 create_perm_from_comb< colindex_t > (localcolperm, comb, k, ad->ncols, col);
 
                 // loop over permutations of selected columns

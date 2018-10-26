@@ -333,7 +333,7 @@ class CustomInstall(setuptools_install):
 
 class BuildExtSwig3(setuptools.command.build_ext.build_ext):
     def find_swig(self):
-        swig_executable, _, _ = get_swig_executable
+        swig_executable, _, _ = get_swig_executable()
         return swig_executable
     
 def readme():

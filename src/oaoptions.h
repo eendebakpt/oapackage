@@ -18,9 +18,6 @@ const int HACK = 0;
 /* output analysis data */
 //#define OAANALYZE 1
 
-/* for developing purposes*/
-//#define OAEXTRA 1
-
 /* add checks for nonsense input from the user */
 #define OACHECK 1
 
@@ -57,11 +54,9 @@ const int HACK = 0;
 /* use j-value check */
 //#define JCHECK 1
 
-//#define NOFINAL 1
-
 /**
  * Print the compile-time options to string.
- * @return String with information
+ * @return String with compile time information
  */
 std::string compile_information ();
 
