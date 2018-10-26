@@ -252,7 +252,6 @@ void cleanGlobalStaticIndexed ();
 LMC_static_struct_t *getGlobalStatic ();
 void releaseGlobalStatic (LMC_static_struct_t *p);
 void cleanGlobalStatic ();
-int getGlobalStaticNumber (LMC_static_struct_t *p);
 LMC_static_struct_t &getGlobalStaticOne ();
 
 /// variable indicating the state of the reduction process
