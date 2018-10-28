@@ -546,7 +546,7 @@ struct array_link {
         /// create array_link structure with data from another array_link structure
         array_link (const array_link &);
         /// create array_link structure with data from Eigen matrix
-        array_link (Eigen::MatrixXd &m);
+        array_link (Eigen::MatrixXd &eigen_matrix);
         ~array_link ();
 
 #ifdef SWIGCODE
@@ -570,11 +570,16 @@ struct array_link {
         /// return true if the array is a 2-level array (e.g. only contains values 0 and 1)
         bool is2level () const;
 
-        /// return true if the array is a +1, 0, -1 valued array
-        bool is_conference () const;
-
 		/// return true is the array is a mixel-level array
 		bool is_mixed_level() const;
+
+		/// return true is the array is array with values in 0, 1, ...,  for each column
+		bool is_orthogonal_array() const;
+
+		/** return true if the array is a +1, 0, -1 valued array
+		 */
+        bool is_conference () const;
+
 
         /// return true if the array is a +1, 0, -1 valued array, with specified number of zeros in each column
         bool is_conference (int number_of_zeros) const;
@@ -784,7 +789,8 @@ struct array_link {
                 }
         }
         /// print information about array
-        void show () const { myprintf ("index: %d, (%d, %d), array %p\n", index, n_rows, n_columns, (void *)array); }
+        void show () const { myprintf ("array_link: index: %d, shape (%d, %d), data pointer %p\n", index, n_rows, n_columns, (void *)array); }
+
         std::string showstr () const {
                 std::stringstream s;
                 s << "array_link: " << n_rows << ", " << n_columns << "";
@@ -860,19 +866,7 @@ struct array_link {
         array_link reduceDOP () const;
 
         /// return the array as an Eigen matrix
-        inline MatrixFloat getEigenMatrix () const {
-                int k = this->n_columns;
-                int n = this->n_rows;
-                MatrixFloat mymatrix = MatrixFloat::Zero (n, k);
-
-                for (int c = 0; c < k; ++c) {
-                        int ci = c * n;
-                        for (int r = 0; r < n; ++r) {
-                                mymatrix (r, c) = this->array[r + ci];
-                        }
-                }
-                return mymatrix;
-        }
+		MatrixFloat getEigenMatrix() const;
 
         /// return true of specified column is smaller than column in another array
         inline int columnGreater (int c1, const array_link &rhs, int c2) const {
@@ -955,13 +949,13 @@ typedef std::deque< array_link > arraylist_t;
 
 /// add a constant value to all arrays in a list
 inline arraylist_t addConstant (const arraylist_t &lst, int v) {
-        arraylist_t out (lst.size ());
+        arraylist_t output_arrays (lst.size ());
 
         for (size_t i = 0; i < lst.size (); i++) {
-                out[i] = lst[i] + v;
+                output_arrays[i] = lst[i] + v;
         }
 
-        return out;
+        return output_arrays;
 }
 
 /** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
@@ -2071,6 +2065,17 @@ MatrixFloat array2eigenMainEffects (const array_link &al, int verbose = 1);
 
 /// create first and second order model matrix for mixed-level array
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose = 1);
+
+/** calculate number of parameters in the model matrix
+*
+* A list of integers is returned, with the number of columns in:
+*
+* - The intercept (always 1)
+* - The main effects
+* - The interaction effects (second order without quadratics)
+* - The the quadratic effects
+*/
+std::vector< int > numberModelParams(const array_link &array, int order = -1);
 
 /** return index of specified array in a file. returns -1 if array is not found
  *
