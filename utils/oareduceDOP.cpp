@@ -101,12 +101,17 @@ int main (int argc, char *argv[]) {
                 cout << "file " << opt.getArgv (i) << ":   read " << n << " array(s)" << endl;
         }
 
+<<<<<<< HEAD
         arraylist_t earrays;
 
         // extend arrays
 
         arraydata_t *ad;
         ad = readConfigFile (oaconfigfile);
+=======
+
+        arraydata_t *ad = readConfigFile (oaconfigfile);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         arraylist_t extensions;
         arraylist_t *arraylist2 = arraylist;
@@ -127,13 +132,23 @@ int main (int argc, char *argv[]) {
                 arraylist2 = &extensions;
         }
 
+<<<<<<< HEAD
         reduceArraysGWLP (arraylist2, earrays, verbose, dopruning, strength, dolmc);
+=======
+		arraylist_t reduced_arrays;
+		reduceArraysGWLP (*arraylist2, reduced_arrays, verbose, dopruning, strength, dolmc);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         // write arrays to disk
         std::string outfile = outputprefix;
         if (verbose)
+<<<<<<< HEAD
                 printf ("  writing %ld arrays to %s\n", earrays.size (), outfile.c_str ());
         writearrayfile (outfile.c_str (), &earrays, arrayfile::ABINARY);
+=======
+                printf ("  writing %ld arrays to %s\n", reduced_arrays.size (), outfile.c_str ());
+        writearrayfile (outfile.c_str (), &reduced_arrays, arrayfile::ABINARY);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         delete ad;
         delete arraylist;

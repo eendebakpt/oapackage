@@ -4,13 +4,14 @@
 import sys
 import os
 import numpy as np
-import numpy
 import tempfile
 import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
+    from unittest.mock import patch
 else:
     import mock
+    from mock import patch
 
 import oalib
 import oapackage
@@ -283,10 +284,27 @@ class TestOAhelper(unittest.TestCase):
         r = oapackage.oahelper.safemin(np.array([]), default=-2)
         self.assertEqual(r, -2)
 
+    def test_choose(self):
+        test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
+        for args, expected in test_cases:
+            print(args)
+            result = oapackage.oahelper.choose(*args)
+            self.assertEqual(result, expected)
+
     def test_create_pareto_element(self):
         values = [1, 2, 3]
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
         self.assertEqual(p, values)
+
+        self.assertRaises(Exception, oapackage.oahelper.create_pareto_element, dict())
+
+        pareto = oalib.ParetoMultiDoubleLong()
+        pareto_element = oapackage.oahelper.create_pareto_element([[1, 2], [3, 4]], pareto)
+        self.assertEqual(pareto_element.size(), 2)
+
+        pareto = oalib.ParetoMultiLongLong()
+        pareto_element = oapackage.oahelper.create_pareto_element([[1, 2], [3, 4]], pareto)
+        self.assertEqual(pareto_element.size(), 2)
 
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
@@ -299,6 +317,11 @@ class TestOAhelper(unittest.TestCase):
 
     def test_fac(self):
         self.assertEqual(oapackage.oahelper.fac(4), 24)
+
+    def test_testHtml(self):
+        import webbrowser
+        with patch.object(webbrowser, "open", return_value=None):
+            oapackage.oahelper.testHtml('<p>hi</p>')
 
     def test_bounds(self):
         b = oapackage.oahelper.DefficiencyBound(.8, 4, 6)
@@ -324,6 +347,13 @@ class TestDoptimize(unittest.TestCase):
         self.dds = np.random.rand(20, 3)
         self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
 
+        self.guitest = True
+        try:
+            import matplotlib.pyplot
+        except:
+            self.guitest = False
+        print('guitest %s'  % self.guitest)
+            
     def test_custom_optim(self):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
@@ -350,12 +380,20 @@ class TestDoptimize(unittest.TestCase):
                 al, arrayclass=None, niter=100, nabort=200, verbose=0, alpha=[1, 0, 0], method=method)
 
     def test_generateDscatter(self):
+<<<<<<< HEAD:oapackage/tests/test_oapackage.py
         try:
             import matplotlib.pyplot
             fig = None
         except:
             fig = 100
         r = oapackage.Doptim.generateDscatter(self.dds, si=0, fi=1, lbls=None, verbose=1,
+=======
+        if self.guitest:
+            fig = 100
+        else:
+            fig=None
+        r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a:oapackage/tests/test_oapackage.py
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 
     def test_generateDpage(self):
@@ -365,6 +403,7 @@ class TestDoptimize(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
                                               fig=None, optimfunc=[1, 0, 0], nofig=True)
+<<<<<<< HEAD:oapackage/tests/test_oapackage.py
         guitest = True
         try:
             import matplotlib.pyplot
@@ -372,6 +411,9 @@ class TestDoptimize(unittest.TestCase):
             matplotlib = None
             guitest = False
         if guitest:
+=======
+        if self.guitest:
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a:oapackage/tests/test_oapackage.py
             print('test_generateDpage: run gui test')
             # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
             #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
@@ -379,6 +421,12 @@ class TestDoptimize(unittest.TestCase):
                 matplotlib.pyplot.close(100)
             except:
                 pass
+<<<<<<< HEAD:oapackage/tests/test_oapackage.py
+=======
+
+    def test_runcommand(self):
+        oapackage.oahelper.runcommand('dir', dryrun=1, verbose=1)
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a:oapackage/tests/test_oapackage.py
 
     def test_filterPareto(self):
         dds = self.dds2

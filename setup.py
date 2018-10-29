@@ -8,6 +8,8 @@ setup.py file for OApackage
 from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.test import test as TestCommand
+from distutils.command.build import build
+from setuptools.command.install import install
 
 from codecs import open  # To use a consistent encoding
 from os import path
@@ -193,10 +195,10 @@ class OATest(TestCommand):
 #%% Define sources of the package
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
-        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp']
+        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp']
 srcs = srcs + ['Deff.cpp', 'evenodd.cpp']
 srcs = srcs + ['conference.cpp']
-#srcs=srcs+[ 'lmc.h', 'Deff.h', 'mathtools.h', 'tools.h', 'arraytools.h' ]
+
 
 srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
 srcs = ['src/' + ff for ff in srcs]
@@ -204,7 +206,17 @@ if os.path.exists('dev/oadevelop.cpp'):
     oadev = 1
     print('Building development code')
     srcs = ['dev/oadevelop.cpp'] + srcs
+
+
 sources = srcs + ['src/bitarray/bit_array.cpp']
+oaheaders = [ cppfile.replace('.cpp', '.h') for cppfile in srcs ] +[os.path.join('src', 'version.h')]
+
+
+for nauty_file in 'nauty.c nautinv.c nautil.c naurng.c naugraph.c schreier.c naugroup.c'.split(' '):
+    sources += [os.path.join('src', 'nauty',nauty_file)]
+
+nautyheaders = [os.path.join('src', 'nauty', headerfile) for headerfile in ['gtools.h', 'naugroup.h','nautinv.h',  'naurng.h', 'naugraph.h', 'nausparse.h','nautil.h',  'nauty.h', 'schreier.h']]
+sources=sources
 
 swig_opts = []
 compile_options = []
@@ -225,10 +237,6 @@ else:
 swig_opts += ['-Isrc/nauty/']
 compile_options += ['-Isrc/nauty/']
 
-sources += ['src/graphtools.cpp']
-
-for f in 'nauty/nauty.c nauty/nautinv.c nauty/nautil.c nauty/naurng.c nauty/naugraph.c nauty/schreier.c nauty/naugroup.c'.split(' '):
-    sources += ['src/' + f]
 
 if platform.system() == 'Windows':
     compile_options += ['-DWIN32', '-D_WIN32']
@@ -293,21 +301,18 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd:
+if rtd and 0:
     ext_modules = [] # do not build on RTD, this generates a time-out error  
     swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
     print('RTD: run swig command: %s' % (swigcmd,))
     output = subprocess.check_output(swigcmd.split(' '))
+    print('swig output:')
     print(output)
 else:
     if not swig_valid:
         raise Exception('could not find a recent version if SWIG')
 
     ext_modules = [oalib_module]
-
-from distutils.command.build import build
-from setuptools.command.install import install
-
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 class CustomBuild(build):
@@ -365,5 +370,6 @@ setup(name='OApackage',
                    'Programming Language :: Python :: 3.5',
                    'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
+                   'License :: OSI Approved :: BSD License'
                    ]
       )

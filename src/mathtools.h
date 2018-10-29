@@ -240,6 +240,7 @@ template < class NumericType >
 struct mvalue_t {
       public:
         /// vector containing the values
+<<<<<<< HEAD
         std::vector< NumericType > v;
         // int direction;
         enum direction_t { HIGH, LOW };
@@ -273,26 +274,81 @@ struct mvalue_t {
         mvalue_t &operator= (const mvalue_t &rhs) {
                 this->d = rhs.d;
                 this->v = rhs.v;
+=======
+        std::vector< NumericType > values;
+        // int direction;
+        enum direction_t { HIGH, LOW };
+        /// value representing the ordering used
+        direction_t ordering;
+
+        mvalue_t () : ordering (HIGH){};
+        ~mvalue_t (){};
+
+        mvalue_t (NumericType m, direction_t dd = HIGH) {
+                values.push_back (m);
+                ordering = dd;
+        }
+        mvalue_t (std::vector< NumericType > vv, direction_t dd = HIGH) {
+                ordering = dd;
+                this->values = vv;
+        }
+
+		std::vector< NumericType > raw_values() const {
+			return this->values;
+		}
+
+        template < class T > mvalue_t (std::vector< T > vv, direction_t dd = HIGH) {
+                ordering = dd;
+                values.clear ();
+                values.resize (vv.size ());
+                for (size_t ii = 0; ii < vv.size (); ii++) {
+                        this->values[ii] = vv[ii];
+                }
+        }
+
+        size_t size () const { return this->values.size (); }
+
+        // Copy assignment operator
+        mvalue_t &operator= (const mvalue_t &rhs) {
+                this->ordering = rhs.ordering;
+                this->values = rhs.values;
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 return *this;
         }
         /// comparison operator
         bool operator== (const mvalue_t &rhs) const {
+<<<<<<< HEAD
                 if (this->v.size () != rhs.size ())
                         return 0;
 
                 for (size_t i = 0; i < this->v.size (); i++) {
                         if (v[i] != rhs.v[i]) {
+=======
+                if (this->values.size () != rhs.size ())
+                        return 0;
+
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] != rhs.values[i]) {
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 return 0;
                         }
                 }
                 return true;
         }
         bool operator!= (const mvalue_t &rhs) const {
+<<<<<<< HEAD
                 if (this->v.size () != rhs.size ())
                         return 1;
 
                 for (size_t i = 0; i < this->v.size (); i++) {
                         if (v[i] != rhs.v[i])
+=======
+                if (this->values.size () != rhs.size ())
+                        return 1;
+
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] != rhs.values[i])
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 return 1;
                 }
                 return 0;
@@ -301,7 +357,11 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
+<<<<<<< HEAD
                 if (d == HIGH)
+=======
+                if (ordering == HIGH)
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);
@@ -309,25 +369,41 @@ struct mvalue_t {
         }
         bool operator> (const mvalue_t &rhs) const {
                 bool val = 0;
+<<<<<<< HEAD
                 if (d == HIGH)
                         val = (bool)better (rhs);
                 else
                         val = (bool)worse (rhs);
                 // if (dverbose) myprintf("mvalue_t: operator>: %d\n", val);
+=======
+                if (ordering == HIGH)
+                        val = (bool)better (rhs);
+                else
+                        val = (bool)worse (rhs);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 return val;
         }
         bool operator>= (const mvalue_t &rhs) const { return !rhs.operator< (*this); }
 
+<<<<<<< HEAD
         void show_integer () const {
                 for (size_t i = 0; i < this->v.size (); i++) {
                         myprintf ("%ld", (long)this->v[i]);
                         if (i < this->v.size () - 1)
+=======
+		/// Show the object on stdout by casting to integer type objects
+        void show_integer () const {
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        myprintf ("%ld", (long)this->values[i]);
+                        if (i < this->values.size () - 1)
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 myprintf (",");
                 }
         }
 
         template < class W > friend std::ostream &operator<< (std::ostream &stream, const mvalue_t< W > &mval);
 
+<<<<<<< HEAD
 #ifdef SWIGCODE
         std::string __repr__x () {
                 std::stringstream s;
@@ -335,15 +411,32 @@ struct mvalue_t {
                         s << v[i];
                         if (i < this->v.size () - 1)
                                 s << (",");
+=======
+		/// return a string representation of the object
+        std::string string_representation (const char *separator = ";") {
+                std::stringstream s;
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        s << values[i];
+                        if (i < this->values.size () - 1)
+                                s << (separator);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 }
 
                 return s.str ();
         }
+<<<<<<< HEAD
 #endif
       private:
         int equal (const mvalue_t &rhs) const {
                 for (size_t i = 0; i < this->size (); i++) {
                         if (this->v[i] != rhs.v[i])
+=======
+
+      private:
+        int equal (const mvalue_t &rhs) const {
+                for (size_t i = 0; i < this->size (); i++) {
+                        if (this->values[i] != rhs.values[i])
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 return 0;
                 }
                 return 1;
@@ -355,19 +448,33 @@ struct mvalue_t {
              *
              */
         int better (const mvalue_t &rhs) const {
+<<<<<<< HEAD
                 for (size_t i = 0; i < this->v.size (); i++) {
                         if (v[i] > rhs.v[i])
                                 return 1;
                         if (v[i] < rhs.v[i])
+=======
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] > rhs.values[i])
+                                return 1;
+                        if (values[i] < rhs.values[i])
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 return 0;
                 }
                 return 0;
         }
         int worse (const mvalue_t &rhs) const {
+<<<<<<< HEAD
                 for (size_t i = 0; i < this->v.size (); i++) {
                         if (v[i] < rhs.v[i])
                                 return 1;
                         if (v[i] > rhs.v[i])
+=======
+                for (size_t i = 0; i < this->values.size (); i++) {
+                        if (values[i] < rhs.values[i])
+                                return 1;
+                        if (values[i] > rhs.values[i])
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                 return 0;
                 }
                 return 0;
@@ -375,7 +482,11 @@ struct mvalue_t {
 };
 
 template < class NumericType > std::ostream &operator<< (std::ostream &stream, const mvalue_t< NumericType > &mval) {
+<<<<<<< HEAD
         std::copy (mval.v.begin (), mval.v.end (), std::ostream_iterator< NumericType > (stream, " "));
+=======
+        std::copy (mval.values.begin (), mval.values.end (), std::ostream_iterator< NumericType > (stream, " "));
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         return stream;
 }
 
@@ -605,6 +716,7 @@ int compare_matrix (const numtype *A, const numtype *B, int r, int c) {
         return 1;
 }
 
+<<<<<<< HEAD
 /*!
  *	A small function that calculates the factorial of a number.
     Returns one if the argument is smaller or equal to 1
@@ -620,6 +732,23 @@ template < class Type > inline Type factorial (const Type f) {
 #ifdef OAOVERFLOW
                 if (sol > std::numeric_limits< Type >::max () / 100) {
                         myprintf ("fact: number %ld, i %d:  %ld, %ld\n", (long)f, i, (long)sol,
+=======
+/*! \brief Calculates factorial
+ *	A small function that calculates the factorial of a number.
+ *   Returns one if the argument is smaller or equal to 1
+ *     
+ *	\param number Number to calculate the factorial of
+ *  \returns Factorial of specified number
+ */
+template < class Type > inline Type factorial (const Type number) {
+        if (number <= 1)
+                return 1;
+        Type sol = 1;
+        for (int i = number; i > 1; i--) {
+#ifdef OAOVERFLOW
+                if (sol > std::numeric_limits< Type >::max () / 100) {
+                        myprintf ("fact: number %ld, i %d:  %ld, %ld\n", (long)number, i, (long)sol,
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                   (long)std::numeric_limits< Type >::max ());
                 }
 #endif
@@ -666,6 +795,7 @@ template < class Type > inline Type ncombs (const Type n, const Type k) {
                 sol *= i;
         return sol / factorial<> (k);
 }
+<<<<<<< HEAD
 
 class Combinations {
 	
@@ -687,6 +817,32 @@ class Combinations {
         static int ncombscachemax;
 };
 
+=======
+
+class Combinations {
+	
+      public:
+
+ 		~Combinations();
+
+        /// return max number of N that can be calculated with number_combinations
+        static int number_combinations_max_n ();
+
+        /// initialize datastructure for number_combinations, this function is not thread safe
+        static void initialize_number_combinations (int N);
+
+        /** Return number of combinations from previously calculated results
+        *
+        *  The results should be initialized with initialize_number_combinations
+        */
+        static long number_combinations (int n, int k);
+
+      private:
+        static long **ncombsdata;
+        static int ncombscachemax;
+};
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 template < class Type >
 /// calculate using multiplicative formula, see
 /// http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
@@ -1770,6 +1926,25 @@ double conditionNumber (const Eigen::Matrix< Type, -1, -1 > A) {
         Eigen::JacobiSVD< Eigen::Matrix< Type, -1, -1 > > svd (A);
         double cond = svd.singularValues () (0) / svd.singularValues () (svd.singularValues ().size () - 1);
         return cond;
+<<<<<<< HEAD
+=======
+}
+
+template < class NumericType >
+/// calculate the average value of a vector of numbers
+double average(std::vector < NumericType> data) {
+	return  double(std::accumulate(data.begin(), data.end(), 0.0) ) / data.size();
+}
+
+template < class NumericType >
+/// calculate the fraction of non-zero elemenets of a vector
+double fraction_nonzero(std::vector < NumericType> data) {
+	double nonzero = 0;
+	for (unsigned long j = 0; j < data.size(); j++)
+		nonzero += data[j] > 0;
+
+	return nonzero / data.size();
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 }
 
 #endif

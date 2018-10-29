@@ -316,6 +316,7 @@ int log_print (const int level, const char *message, ...) {
 #endif // FULLPACKAGE
 
         return result;
+<<<<<<< HEAD
 }
 
 void throw_runtime_exception (const std::string exception_message) {
@@ -344,6 +345,28 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
         }
 }
 
+=======
+}
+
+void throw_runtime_exception (const std::string exception_message) {
+	throw std::runtime_error (exception_message);
+}
+
+void mycheck_handler (const char *file, const char *func, int line, int condition, const char *error_message, ...) {
+        if (condition == 0) {
+                va_list va;
+                va_start (va, error_message);
+                myprintf ("mycheck: %s: %s (line %d): ", file, func, line);
+                fflush (0);
+                vprintf (error_message, va);
+                va_end (va);
+                std::string error_message = printfstring ("exception: %s: %s (line %d): ", file, func, line);
+                error_message += error_message;
+                throw_runtime_exception(error_message);
+        }
+}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 void myassert (int condition, const char *error_message) {
         if (condition == 0) {
                 if (error_message == 0)

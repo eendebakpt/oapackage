@@ -248,8 +248,17 @@ void Combinations::initialize_number_combinations (int N) {
         }
 }
 
+<<<<<<< HEAD
 int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
 
+=======
+Combinations::~Combinations() {
+	// we define the empty destructor because swig otherwise generates an error
+}
+
+int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 long Combinations::number_combinations (int n, int k) {
 #ifdef OADEBUG
         assert (Combinations::ncombsdata != 0);

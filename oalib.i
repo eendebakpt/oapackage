@@ -10,6 +10,7 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "std_deque.i"
+%include "std_pair.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -17,9 +18,7 @@
 
 %include "numpy.i"
 %init %{
-#ifdef SWIGPYTHON
 import_array();
-#endif
 %}
 
 %apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
@@ -30,8 +29,6 @@ import_array();
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* pymat1, int n)}
 %apply (array_t* ARGOUT_ARRAY1, int DIM1) {(array_t* pymat1, int n)}
 %apply (int* ARGOUT_ARRAY1, int DIM1) {(int* rangevec, int n)}
-
-%include "std_pair.i"
 
 %{
 #include <utility>
@@ -50,7 +47,6 @@ import_array();
 #include "arraytools.h"
 #include "tools.h"
 #include "md5.h"
-#include "nonroot.h"
 #include "pareto.h"
 #include "arrayproperties.h"
 #include "extend.h"
@@ -193,7 +189,15 @@ def __getattr__(self, attr):
     else:
       raise AttributeError("%r object has no attribute %r" %
                          (self.__class__, attr))
-                         
+
+@property
+def shape(self):
+    return (self.n_rows, self.n_columns)
+
+@property
+def size(self):
+    return self.n_rows*self.n_columns
+                             
 def showarray(self):
   """ Show array"""
   # overridden to fix problems with ipython
@@ -408,6 +412,8 @@ import numpy
 
 %template(pairDoptimize) std::pair< std::vector< std::vector<double> > ,arraylist_t>;
 %template(pairGraphColors) std::pair< array_link  , std::vector<int>  >;
+%template(pairEigenMatrix) std::pair< MatrixFloat  , MatrixFloat >;
+
 
 %extend mvalue_t<double> {
 %insert("python") %{
@@ -451,7 +457,7 @@ mvalueVector = vector_mvalue_t_long
 %}
 
 
-%template(cpermVector) std::vector< cperm >;
+%template(conference_columnVector) std::vector< conference_column >;
 
 %template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
 %template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;

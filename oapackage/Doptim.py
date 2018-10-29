@@ -58,7 +58,8 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 # %%
 
 
-def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, scatterarea=80, verbose=0):
+def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
+                     scatterarea=80, verbose=0, setWindowRectangle=False):
     """ Generate scatter plot for D and Ds efficiencies """
     data = dds.T
     pp = oahelper.createPareto(dds)
@@ -76,10 +77,15 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
 
     idx = np.unique(colors).astype(int)
 
+    if verbose:
+        print('generateDscatter: unique colors: %s' % (idx, ))
+    ncolors = idx.size
     try:
         import brewer2mpl
-        mycmap = brewer2mpl.get_map('Set1', 'qualitative', idx.size).mpl_colors
+        ncolors = max(ncolors, 4)
+        mycmap = brewer2mpl.get_map('Set1', 'qualitative', ncolors).mpl_colors
     except BaseException:
+<<<<<<< HEAD
         mycmap = [matplotlib.cm.jet(ii) for ii in range(4)]
 
     nonparetoidx = np.setdiff1d(range(nn), paretoidx)
@@ -92,45 +98,66 @@ def generateDscatter(dds, si=0, fi=1, lbls=None, ndata=3, nofig=False, fig=20, s
     ax.scatter(data[fi, nonparetoidx], data[si, nonparetoidx], s=.33 * scatterarea,
                c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
+=======
+        mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0, 1, ncolors)]
+
+    nonparetoidx = np.setdiff1d(range(nn), paretoidx)
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
     if lbls is None:
         lbls = ['%d' % i for i in range(len(idx))]
-    for jj, ii in enumerate(idx):
-        gidx = (colors == ii).nonzero()[0]
-        gp = np.intersect1d(paretoidx, gidx)
 
-        color = mycmap[jj]
-        cc = [color] * len(gp)
-        if verbose:
-            print('index %d: %d points' % (ii, gidx.size))
-        ax.scatter(data[fi, gp], data[si, gp], s=scatterarea, c=cc,
-                   linewidths=0, alpha=alpha, label=lbls[jj])  # , zorder=4)
-        plt.draw()
+    
+    if fig is not None:
+        figh = plt.figure(fig)
+        plt.clf()
+        figh.set_facecolor('w')
+        ax = plt.subplot(111)
+    
+        ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
+                   c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
-    if data[si, :].std() < 1e-3:
-        y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
-        ax.yaxis.set_major_formatter(y_formatter)
+        for jj, ii in enumerate(idx):
+            gidx = (colors == ii).nonzero()[0]
+            gp = np.intersect1d(paretoidx, gidx)
+    
+            color = mycmap[jj]
+            cc = [color] * len(gp)
+            if verbose:
+                print('index %d: %d points' % (ii, gidx.size))
+            ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
+                       linewidths=0, alpha=alpha, label=lbls[jj])
+            plt.draw()
 
-    xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
-    plt.ylabel('D-efficiency', fontsize=16)
+        if data[second_index, :].std() < 1e-3:
+            y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+            ax.yaxis.set_major_formatter(y_formatter)
 
-    try:
-        oahelper.setWindowRectangle(10, 10, 860, 600)
-    except Exception as ex:
-        print('generateDscatter: setWindowRectangle failed')
-        logging.exception(ex)
+        xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
+        plt.ylabel('D-efficiency', fontsize=16)
 
-    plt.axis('image')
-    pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
-    if not nofig:
-        plt.show()
-    ax.grid(b=True, which='both', color='0.85', linestyle='-')
-    ax.set_axisbelow(True)
+        if setWindowRectangle:
+            try:
+                oahelper.setWindowRectangle(10, 10, 860, 600)
+            except Exception as ex:
+                print('generateDscatter: setWindowRectangle failed')
+                logging.exception(ex)
 
-    if nofig:
-        plt.close(figh.number)
+        plt.axis('image')
+        pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
+        if not nofig:
+            plt.show()
+        ax.grid(b=True, which='both', color='0.85', linestyle='-')
+        ax.set_axisbelow(True)
+
+        if nofig:
+            plt.close(figh.number)
+        else:
+            plt.draw()
+            plt.pause(1e-3)
     else:
-        plt.draw()
-        plt.pause(1e-3)
+        ax=None
+        xlabelhandle=None
+        pltlegend=None
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
 #%%
@@ -264,27 +291,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
     print('written to file %s' % outfile)
 
     return outfile
-
-#%%
-
-
-# def _optimDeffhelper(classdata):
-#    """ Helper function that is suitable for the multi-processing framework """
-#
-#    N = classdata[0]
-#    k = classdata[1]
-#    alpha = classdata[2]
-#    method = classdata[3]
-#    p = classdata[4]
-#    nabort = p.get('nabort', 2500)
-#    niter = p.get('nabort', 12000)
-#
-#    arrayclass = oalib.arraydata_t(2, N, 1, k)
-#    al = arrayclass.randomarray(1)
-#
-#    vv = optimDeffPython(
-#        al, niter=niter, nabort=nabort, verbose=0, alpha=alpha, method=method)
-#    return vv[0], vv[1].getarray()
 
 
 def calcScore(dds, optimfunc):

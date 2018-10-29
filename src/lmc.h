@@ -772,6 +772,10 @@ inline bool check_root_form (const array_t *array, const arraydata_t &ad) {
 /// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
 inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t *target) {
         int changed = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         array_t *root = create_array (ad.N, ad.strength);
         create_root (root, &ad);
         if (!std::equal (original, original + ad.N * ad.strength, root)) {
@@ -799,7 +803,11 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 
 /// helper function
 lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
+<<<<<<< HEAD
                  LMCreduction_t *reduction, const OAextend &oaextend);
+=======
+                LMCreduction_t *reduction, const OAextend &oaextend);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 /// Perform reduction or LMC check without root trick
 lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
                      LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic);
@@ -858,12 +866,26 @@ std::vector< numtype > comb2perm (const std::vector< numtype > comb, int n) {
 }
 
 /// reduce arrays to canonical form using delete-1-factor ordering
+<<<<<<< HEAD
 void reduceArraysGWLP (const arraylist_t *input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
+=======
+void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                        int strength = 2, int dolmc = 1);
 
 array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
 
+<<<<<<< HEAD
 void selectUniqueArrays (arraylist_t &xlist, arraylist_t &earrays, int verbose = 1);
+=======
+/// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
+void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
+
+/** Calculate projection values for delete-of-factor algorithm
+ *
+ */
+std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose = 0);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &al);
@@ -895,10 +917,16 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 
 /* helper functions */
 
+<<<<<<< HEAD
 rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
 void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level,
 
 int &permcounter);
+=======
+//rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
+//void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level, int &permcounter);
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 /**
 * @brief Print the contents of a rowsort structure
 * @param rowsort Pointer to rowsort structure

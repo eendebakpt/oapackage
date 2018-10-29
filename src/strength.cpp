@@ -55,6 +55,19 @@ strength_freq_table new_strength_freq_table (int ncolcombs, int *nvalues, int &n
         return frequencies;
 }
 
+<<<<<<< HEAD
+=======
+/// Return index of an orthogonal array
+inline int get_oaindex(const array_t *s, const colindex_t strength, const colindex_t N) {
+	int oaindex = N;
+	for (colindex_t z = 0; z < strength; z++) {
+		oaindex /= s[z];
+	}
+
+	return oaindex;
+}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 /**
  * @brief Constructor fuction
  */

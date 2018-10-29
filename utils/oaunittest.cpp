@@ -51,6 +51,7 @@ int checkConferenceInverse (const array_link &al) {
         return 0;
 }
 
+<<<<<<< HEAD
 bool testLMC0checkDC (const array_link &al, int verbose = 1) {
         const int niter = 20; // number of iterations used in check
 
@@ -96,6 +97,84 @@ bool testLMC0checkDC (const array_link &al, int verbose = 1) {
         return true;
 }
 
+=======
+/// unittest: return 1 if all tests are good
+int unittest_nautynormalform(const array_link &al, int verbose) {
+	arraydata_t arrayclass = arraylink2arraydata(al);
+
+	if (verbose >= 2) {
+		myprintf("unittest_nautynormalform: testing on array\n");
+		al.showarray();
+	}
+
+	array_link alr1 = al.randomperm();
+	array_link alr2 = al.randomperm();
+
+	array_transformation_t ttx1 = reduceOAnauty(alr1, 0);
+	array_link alx1 = ttx1.apply(alr1);
+
+	array_transformation_t ttx2 = reduceOAnauty(alr2, 0);
+	array_link alx2 = ttx2.apply(alr2);
+
+	if (alx1 != alx2) {
+		printfd("unittest_nautynormalform: error: transformed graphs unequal!\n");
+
+		myprintf("alx1: \n");
+		alx1.showarray();
+		myprintf("alx2: \n");
+		alx2.showarray();
+
+		return 0;
+	}
+
+	return 1;
+}
+
+bool testLMC0checkDC (const array_link &al, int verbose = 1) {
+        const int niter = 20; // number of iterations used in check
+
+        myassert (al.is_conference (2));
+
+        // perform LMC0 test
+        lmc_t r = LMC0checkDC (al, verbose >= 2);
+
+        if (verbose >= 2) {
+                printf ("testLMC0checkDC: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)r, LMC_LESS, LMC_MORE);
+        }
+        if (r == LMC_MORE)
+                return true;
+
+        // array is in LMC0 format, perform random transformations
+        for (int jj = 0; jj < niter; jj++) {
+                conference_transformation_t tr (al);
+                tr.randomizecolperm ();
+                tr.randomizerowperm ();
+                tr.randomizecolflips ();
+
+                array_link alx = tr.apply (al);
+
+                if (al != alx) {
+                        lmc_t r = LMC0checkDC (alx, verbose >= 2);
+
+                        if (verbose >= 2) {
+                                printf ("testLMC0checkDC: randomized array: result %d (LMC_LESS %d, LMC_MORE %d)\n",
+                                        (int)r, LMC_LESS, LMC_MORE);
+                        }
+
+                        if (r != LMC_LESS) {
+                                printf ("testLMC0checkDC: error?: LMC0checkDC on randomized array did not return "
+                                        "LMC_LESS\n");
+                                return false;
+                        }
+                } else {
+                        if (verbose >= 2)
+                                printf ("testLMC0checkDC: randomized array resulted in same array\n");
+                }
+        }
+        return true;
+}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 /// check composition operator. returns 0 if test id good
 int checkConferenceComposition (const array_link &al, int verbose = 0) {
         conference_transformation_t T1 (al);
@@ -134,13 +213,20 @@ void checkGenerators (int verbose = 1) {
         ct.j3zero = 1;
 
         array_link al = exampleArray (35, 1);
+<<<<<<< HEAD
         // al.showarray();
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         CandidateGeneratorDouble cgenerator (array_link (), ct);
         cgenerator.verbose = 0;
         for (int i = 0; i < 2; i++) {
                 {
+<<<<<<< HEAD
                         const std::vector< cperm > &cl = cgenerator.generateCandidates (al);
+=======
+                        const std::vector< conference_column > &cl = cgenerator.generateCandidates (al);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                         myassert (cl.size () == 3, "unittest error: inverse of array transformation\n");
 
                         if (verbose >= 2) {
@@ -166,7 +252,11 @@ void checkGenerators (int verbose = 1) {
                 int filterj2 = 1;
                 int filtersymminline = 1;
                 int averbose = verbose;
+<<<<<<< HEAD
                 std::vector< cperm > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
+=======
+                std::vector< conference_column > ccX = generateSingleConferenceExtensions (al, ct, -1, averbose, 1, filterj2,
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                                                                                ct.j3zero, filtersymminline);
                 if (verbose >= 2) {
 
@@ -178,7 +268,11 @@ void checkGenerators (int verbose = 1) {
                         CandidateGenerator cgenerator (array_link (), ct);
                         int kz = maxz (al) + 1;
                         cgenerator.verbose = verbose;
+<<<<<<< HEAD
                         std::vector< cperm > ee = cgenerator.generateCandidatesZero (al, kz);
+=======
+                        std::vector< conference_column > ee = cgenerator.generateCandidatesZero (al, kz);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                         printf ("ee.size() %d\n", (int)ee.size ());
                         myassert (ee.size () == 1, "number of candidnates generated");
                         if (verbose >= 2) {
@@ -213,11 +307,16 @@ int checkTransformationComposition (const array_link &al, int verbose = 0) {
         array_transformation_t T3;
         T3 = T1 * T2;
 
+<<<<<<< HEAD
         // T2.reset(); T2.randomize();
         array_link al2 = T2.apply (al);
 
         // T1.show(); al2.showarray(); exit(0);
 
+=======
+        array_link al2 = T2.apply (al);
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         array_link al12 = T1.apply (al2);
         array_link al3 = T3.apply (al);
 
@@ -246,8 +345,11 @@ void test_array_manipulation (int verbose = 1) {
                 myprintf ("test selectFirstColumns\n");
         array_link al5 = al.selectFirstColumns (5);
         assert (al5.n_columns == 5);
+<<<<<<< HEAD
         // array_link alx = al5.selectFirstColumns(8);
         // assert(alx.n_columns == al5.n_columns);
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 }
 
 /** unittest for oapackage
@@ -296,8 +398,11 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 myassert (testLMC0checkDC (al, verbose >= 2), "testLMC0checkDC");
 
+<<<<<<< HEAD
                 // conference_transformation_t reduceDoubleConferenceTransformation ( const array_link &al, int verbose
                 // );
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         }
 
         /* conference matrices */
@@ -511,7 +616,10 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                                 printf ("unittest: rank of array %d: %d\n", idx[ii], r);
                         }
 
+<<<<<<< HEAD
                         // array2xf ( al ) .showarray();
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                         myassert (rr[ii] == r, "unittest error: rank of example matrix\n");
                 }
         }
@@ -750,7 +858,10 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 array_link al2 = reduction.transformation->apply (al);
 
+<<<<<<< HEAD
                 // printf("input: \n"); al2.showarray();
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 lmc_t tmp = LMCcheck (alr, adata, oaextend, reduction);
 
                 array_link alx = reduction.transformation->apply (alr);
@@ -777,11 +888,16 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 for (int ii = 0; ii < 50; ii++) {
                         reduction.transformation->randomize ();
+<<<<<<< HEAD
                         // reduction.transformation->randomizecolperm();
                         array_link al2 = reduction.transformation->apply (al);
 
                         // printf("input: \n"); al2.showarray();
 
+=======
+                        array_link al2 = reduction.transformation->apply (al);
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                         array_link alr = al2.reduceLMC ();
                         if (0) {
                                 printf ("\n reduction complete:\n");
@@ -815,8 +931,11 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 if (verbose >= 2)
                         printf ("sg2: %ld\n", sg2.permsize ());
                 assert (sg2.ngroups == 2);
+<<<<<<< HEAD
 
                 // sg2.
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         }
 
         /* Test efficiencies */
@@ -839,7 +958,10 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         }
                 }
                 al = exampleArray (8, vb);
+<<<<<<< HEAD
                 // al.showarray();
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 al.showproperties ();
                 d = al.Defficiencies ();
                 if (verbose >= 2)

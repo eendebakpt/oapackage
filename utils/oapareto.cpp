@@ -20,12 +20,15 @@
 
 #include "pareto.h"
 
+<<<<<<< HEAD
 /**
  * @brief Analyse arrays
  * @param argc
  * @param argv[]
  * @return
  */
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 int main (int argc, char *argv[]) {
         AnyOption opt;
 

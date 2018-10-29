@@ -166,6 +166,7 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
                             goodarrays.size (), dextend.extension_column_list.size (), extensioncol);
                         flush_stdout ();
                 }
+<<<<<<< HEAD
 
                 OAextend oaextendDirect = dextend.oaextend;
                 oaextendDirect.use_row_symmetry = 1;
@@ -180,6 +181,119 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
         }
 }
 
+void depth_extend_hybrid (const arraylist_t &alist, depth_extend_t &dextend, int extcol, const OAextend &oaextendx,
+                          int verbose) {
+
+        std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
+        if (extcol >= dextend.ad->ncols) {
+                return;
+=======
+
+                OAextend oaextendDirect = dextend.oaextend;
+                oaextendDirect.use_row_symmetry = 1;
+                oaextendDirect.extendarraymode = OAextend::APPENDFULL;
+                oaextendDirect.checkarrays = 1;
+
+                depth_extend_hybrid (goodarrays, dextend, extensioncol, oaextendDirect, 1);
+        } break;
+        default:
+                myprintf ("no such depth algoritm\n");
+                exit (1);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
+        }
+}
+
+<<<<<<< HEAD
+        if (verbose >= 2 || 0) {
+                myprintf ("%sdepth_extend_hybrid column %d->%d: input %d arrays\n", sp.c_str (), extcol, extcol + 1,
+                          (int)alist.size ());
+        }
+
+        const arraydata_t *adfull = dextend.ad;
+
+        // loop over all arrays
+        for (size_t i = 0; i < alist.size (); i++) {
+                array_link al = alist[i];
+                int ps = alist[i].row_symmetry_group ().permsize ();
+
+                printfd ("### extcol %d: array %d: row group size %d\n", extcol, i, ps);
+
+                dextend.setposition (extcol, i, alist.size (), -1, -1);
+
+                if (dextend.showprogress (1, extcol)) {
+                        myprintf ("%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str (), extcol, (int)i,
+                                  (int)alist.size ());
+                        flush_stdout ();
+                }
+
+                if (ps >= 4000) {
+                        arraydata_t adlocal (dextend.ad, extcol + 1);
+
+                        setloglevel (SYSTEM);
+                        arraylist_t alocal;
+                        extend_array (al.array, &adlocal, extcol, alocal, oaextendx);
+
+                        dextend.counter->addNfound (extcol + 1, alocal.size ());
+                        dextend.arraywriter->writeArray (alocal);
+
+                        depth_extend_direct (alocal, dextend, extcol + 1, oaextendx, verbose);
+                } else {
+                        depth_extend_t dextendloop (dextend);
+                        dextendloop.setposition (al.n_columns, i, alist.size (), 0, 0);
+                        depth_extend_array (al, dextendloop, *adfull, verbose, 0, i);
+                }
+        }
+}
+
+void depth_extend_direct (const arraylist_t &alist, depth_extend_t &dextend, int extcol, const OAextend &oaextendx,
+                          int verbose) {
+        std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
+        if (extcol >= dextend.ad->ncols) {
+                return;
+        }
+
+        if (verbose >= 2 || 0) {
+                myprintf ("%sdepth_extend column %d->%d: input %d arrays\n", sp.c_str (), extcol, extcol + 1,
+                          (int)alist.size ());
+        }
+
+        // loop over all arrays
+        for (size_t i = 0; i < alist.size (); i++) {
+                array_link al = alist[i];
+                dextend.setposition (extcol, i, alist.size (), -1, -1);
+
+                if (verbose >= 2 || extcol <= dextend.loglevelcol) {
+                        // log if extcol is small enough
+                        myprintf ("%sdepth_extend_direct column %d->%d, parse array %d/%d\n", sp.c_str (), extcol,
+                                  extcol + 1, (int)i, (int)alist.size ());
+                        flush_stdout ();
+                } else {
+                        if (verbose && extcol <= dextend.loglevelcol + 9) {
+                                // log at certain time intervals if extcol is small enough
+                                if (dextend.showprogress (1, extcol)) {
+                                        myprintf ("%sdepth_extend_direct: column %d, array %d/%d\n", sp.c_str (),
+                                                  extcol, (int)i, (int)alist.size ());
+                                        flush_stdout ();
+                                }
+                        }
+                }
+
+                arraydata_t adlocal (dextend.ad, extcol + 1);
+
+                setloglevel (SYSTEM);
+                arraylist_t alocal;
+                extend_array (al.array, &adlocal, extcol, alocal, oaextendx);
+
+                dextend.counter->addNfound (extcol + 1, alocal.size ());
+                dextend.arraywriter->writeArray (alocal);
+
+                if (extcol < dextend.ad->ncols - 1 && alocal.size () > 0) {
+                        if (verbose >= 3) {
+                                myprintf ("%sdepth_extend column %d->%d: calling depth_extend_direct \n", sp.c_str (),
+                                          extcol, extcol + 1);
+                        }
+                        depth_extend_direct (alocal, dextend, extcol + 1, oaextendx, verbose);
+=======
 void depth_extend_hybrid (const arraylist_t &alist, depth_extend_t &dextend, int extcol, const OAextend &oaextendx,
                           int verbose) {
 
@@ -225,10 +339,82 @@ void depth_extend_hybrid (const arraylist_t &alist, depth_extend_t &dextend, int
                         depth_extend_t dextendloop (dextend);
                         dextendloop.setposition (al.n_columns, i, alist.size (), 0, 0);
                         depth_extend_array (al, dextendloop, *adfull, verbose, 0, i);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 }
         }
 }
 
+<<<<<<< HEAD
+void depth_extend_array (const array_link &al, depth_extend_t &dextend, const arraydata_t &adfull, int verbose,
+                         depth_extensions_storage_t *ds, int dsidx) {
+        OAextend oaextendx = dextend.oaextend;
+
+        int extensioncol = al.n_columns;
+        dextend.loglevelcol = al.n_columns;
+
+        if (extensioncol > 5) {
+                oaextendx.init_column_previous = INITCOLUMN_PREVIOUS;
+        } else {
+                oaextendx.init_column_previous = INITCOLUMN_ZERO;
+        }
+
+        arraylist_t extensions0;
+        arraylist_t goodarrays;
+
+        int64_t ps = al.row_symmetry_group ().permsize ();
+
+        depth_alg_t depthalg = DEPTH_DIRECT;
+        depth_extend_sub_t dextendsub;
+
+        if (ps > 20000 || ps > 1999999) {
+                // IDEA: enable caching of extensions at later stage!
+
+                printfd ("depth_extend_array: warning: direct extension due to large symmetry group!\n");
+                depthalg = DEPTH_DIRECT;
+
+                OAextend oaextendDirect = oaextendx;
+                oaextendDirect.use_row_symmetry = 1;
+                oaextendDirect.extendarraymode = OAextend::APPENDFULL;
+                oaextendDirect.checkarrays = 1;
+
+                extend_array (al.array, &adfull, extensioncol, goodarrays, oaextendDirect);
+
+        } else {
+                // dextend.cache_extensions =1;
+                depthalg = DEPTH_EXTENSIONS;
+
+                /// extend the arrays without using the row symmetry property
+                {
+                        // OPTIMIZE: use row_symmtry=1 and then add missing extensions
+                        extend_array (al.array, &adfull, extensioncol, extensions0, oaextendx);
+                }
+
+                dextendsub.resize (extensions0.size ());
+                dextend.extension_column_list = dextendsub.initialize (extensions0, adfull, oaextendx);
+                dextendsub.info ();
+
+                if (0) {
+
+                        for (int i = 0; i < (int)extensions0.size (); i++) {
+                                LMCreduction_t reduction (&adfull);
+                                reduction.updateSDpointer (extensions0[i]);
+
+                                // find reduced column index
+
+                                int pi = i;
+
+                                // results
+                                if (dextendsub.lmctype[i] >= LMC_EQUAL) {
+                                        myprintf ("array %d: lmc %d, lastcol %d, lastcol parent %d\n", i,
+                                                  dextendsub.lmctype[i], dextendsub.lastcol[i],
+                                                  dextendsub.lastcol[pi]);
+                                }
+                                // dextend.lmctype[k]=lmc;
+                                //      dextend.lastcol[k]=lc;
+                        }
+                }
+
+=======
 void depth_extend_direct (const arraylist_t &alist, depth_extend_t &dextend, int extcol, const OAextend &oaextendx,
                           int verbose) {
         std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
@@ -329,27 +515,7 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 dextend.extension_column_list = dextendsub.initialize (extensions0, adfull, oaextendx);
                 dextendsub.info ();
 
-                if (0) {
-
-                        for (int i = 0; i < (int)extensions0.size (); i++) {
-                                LMCreduction_t reduction (&adfull);
-                                reduction.updateSDpointer (extensions0[i]);
-
-                                // find reduced column index
-
-                                int pi = i;
-
-                                // results
-                                if (dextendsub.lmctype[i] >= LMC_EQUAL) {
-                                        myprintf ("array %d: lmc %d, lastcol %d, lastcol parent %d\n", i,
-                                                  dextendsub.lmctype[i], dextendsub.lastcol[i],
-                                                  dextendsub.lastcol[pi]);
-                                }
-                                // dextend.lmctype[k]=lmc;
-                                //      dextend.lastcol[k]=lc;
-                        }
-                }
-
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 // make selection
                 goodarrays = dextendsub.selectArraysZ (extensions0);
         }
@@ -391,12 +557,21 @@ void depth_extend_log (int i, const arraylist_t &alist, int nn, depth_extend_t &
 /// variation of depth_extend in which OpenMP is used
 void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_extend_sub_t &dextendsub, int extcol,
                        int verbose, int nomp) {
+<<<<<<< HEAD
 
         const int dv = 0;
         cprintf (dv >= 1, "depth_extend_omp! extcol %d\n", extcol);
 
         std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
 
+=======
+
+        const int dv = 0;
+        cprintf (dv >= 1, "depth_extend_omp! extcol %d\n", extcol);
+
+        std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (verbose >= 2) {
                 myprintf ("depth_extend: start: extcol %d, ad->ncols %d\n", dextend.ad->ncols, extcol);
         }
@@ -418,10 +593,17 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                                   extcol, al.n_columns, dextend.ad->ncols);
                         throw_runtime_exception("depth_extend_omp: error extension has too many columns");
                 }
+<<<<<<< HEAD
 
                 depth_extend_sub_t dlocal = dextendsub;
                 size_t nn = dlocal.valididx.size ();
 
+=======
+
+                depth_extend_sub_t dlocal = dextendsub;
+                size_t nn = dlocal.valididx.size ();
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 // make each thread log separately
                 if (alist.size () > 1) {
                         dextend.setposition (extcol, i, alist.size (), nn, -1);
@@ -702,6 +884,7 @@ Jcounter calculateJstatistics (const char *inputfile, int jj, int verbose) {
                 if (arraylist.size () <= 0) {
                         break;
                 }
+<<<<<<< HEAD
 
                 jcounter.addArrays (arraylist);
                 naread += arraylist.size ();
@@ -710,6 +893,16 @@ Jcounter calculateJstatistics (const char *inputfile, int jj, int verbose) {
         afile.closefile ();
         jcounter.dt = get_time_ms () - t0;
 
+=======
+
+                jcounter.addArrays (arraylist);
+                naread += arraylist.size ();
+                loop++;
+        }
+        afile.closefile ();
+        jcounter.dt = get_time_ms () - t0;
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         return jcounter;
 }
 
@@ -724,6 +917,7 @@ void Jcounter::addArrays (const arraylist_t &arraylist, int verbose) {
 Jcounter &Jcounter::operator+= (Jcounter &jc) {
         assert (this->N == jc.N);
         assert (this->jj == jc.jj);
+<<<<<<< HEAD
 
         for (std::map< jindex_t, long >::const_iterator it = jc.maxJcounts.begin (); it != jc.maxJcounts.end ();
              ++it) {
@@ -731,6 +925,15 @@ Jcounter &Jcounter::operator+= (Jcounter &jc) {
                 this->maxJcounts[it->first] += val;
         }
 
+=======
+
+        for (std::map< jindex_t, long >::const_iterator it = jc.maxJcounts.begin (); it != jc.maxJcounts.end ();
+             ++it) {
+                long val = jc.maxJcounts[it->first];
+                this->maxJcounts[it->first] += val;
+        }
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         this->dt += jc.dt;
 
         return *this;
@@ -747,9 +950,15 @@ Jcounter readStatisticsFile (const char *numbersfile, int verbose) {
         }
         int N = -1;
         int jj = -1;
+<<<<<<< HEAD
 
         char line[512];
 
+=======
+
+        char line[512];
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (fid == 0) {
                 return jc;
         }

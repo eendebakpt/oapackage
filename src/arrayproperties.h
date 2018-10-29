@@ -51,9 +51,26 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose = 0);
 #ifdef FULLPACKAGE
 /// Return the D-efficiencies for the projection designs
 std::vector< double > projDeff (const array_link &al, int kp, int verbose);
+<<<<<<< HEAD
 
 /// Return the projection estimation capacity sequence of a design
 std::vector< double > PECsequence (const array_link &al, int verbose = 0);
+=======
+
+/** Calculate the projection estimation capacity sequence for a design.
+*
+* The PEC of a design is the fraction of estimable second-order models in x factors.
+* See "Ranking Non-regular Designs", J.L. Loeppky
+*
+*/std::vector< double > PECsequence (const array_link &array, int verbose = 0);
+
+/**Calculate the projection information capacity sequence for a design.
+*
+* The PIC of a design is the average D-efficiency of estimable second-order models in x factors.
+*
+*/
+std::vector< double > PICsequence(const array_link &array, int verbose = 0);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 #endif
 
 /// Return the distance distribution of a design
@@ -66,16 +83,24 @@ std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbo
  *
  *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
  * fractional factorial desings"
+<<<<<<< HEAD
  *  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+=======
+ * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
  * Sizes", Xu
  *
- * \param al Array to calculate the GWLP value for
+ * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  */
+<<<<<<< HEAD
 std::vector< double > GWLP (const array_link &al, int verbose = 0, int truncate = 1);
+=======
+std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
-/** @brief Calculate GWLP (generalized wordlength pattern)
+/** @brief Calculate GWLP (generalized wordlength pattern) for mixed-level arrays
 *
 *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
 * fractional factorial desings"
@@ -100,7 +125,11 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al);
 std::vector< GWLPvalue > sortGWLP (std::vector< GWLPvalue >);
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
+<<<<<<< HEAD
 std::vector< double > projectionGWLPvalues (const array_link &al);
+=======
+std::vector< double > projectionGWLPdoublevalues (const array_link &al);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 /** calculate centered L2-discrepancy of a design
  *
@@ -114,20 +143,29 @@ double CL2discrepancy (const array_link &al);
 * \param array Array to calculate second order interaction model from
 * \returns Array interaction effects
 */
+<<<<<<< HEAD
 array_link array2secondorder (const array_link &al);
+=======
+array_link array2secondorder (const array_link &array);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 /** calculate second order interaction model for 2-level array
  *
  * \param array Array to calculate second order interaction model from
  * \returns Array with intercept, main effects and interaction effects
  */
+<<<<<<< HEAD
 array_link array2xf (const array_link &al);
+=======
+array_link array2xf (const array_link &array);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 /** calculate second order interaction model for 2-level array
 *
 * \param array Array to calculate second order interaction model from
 * \returns Array with intercept, main effects and interaction effects
 */
+<<<<<<< HEAD
 Eigen::MatrixXd array2xfeigen (const array_link &al);
 
 /// return rank of an array based on FullPivHouseholderQR
@@ -137,6 +175,17 @@ int arrayrankFullPivQR (const array_link &al, double threshold = -1);
 int arrayrankColPivQR (const array_link &al, double threshold = -1);
 
 /// return rank of an array based on arrayrankFullPivLU
+=======
+Eigen::MatrixXd array2xfeigen (const array_link &array);
+
+/// return rank of an array based on Eigen::FullPivHouseholderQR
+int arrayrankFullPivQR (const array_link &al, double threshold = -1);
+
+/// return rank of an array based on Eigen::ColPivHouseholderQR
+int arrayrankColPivQR (const array_link &al, double threshold = -1);
+
+/// return rank of an array based on Eigen::FullPivLU
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 int arrayrankFullPivLU (const array_link &al, double threshold = -1);
 
 /// return rank of an array based on Eigen::JacobiSVD
@@ -247,7 +296,11 @@ class rankStructure {
 
         /// calculate the rank of the second order interaction matrix of an array directly
         int rankxfdirect (const array_link &al) const {
+<<<<<<< HEAD
                 Eigen::MatrixXd mymatrix = arraylink2eigen (array2xf (al)); // array2xf;
+=======
+                Eigen::MatrixXd mymatrix = arraylink2eigen (array2xf (al)); 
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 return rankdirect (mymatrix);
         }
 
@@ -326,7 +379,11 @@ inline typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayPare
         if (verbose >= 2) {
                 if (verbose >= 3) {
                         std::vector< double > gwlp = al.GWLP ();
+<<<<<<< HEAD
                         myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.v[1], gwlp[4]);
+=======
+                        myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.raw_values()[1], gwlp[4]);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 }
 
                 myprintf ("  parseArrayPareto: rank %d, verbose %d\n", al.rank (), verbose);
@@ -368,7 +425,7 @@ template < class IndexType >
  *
  * 1) Rank (higher is better)
  * 2) A3, A4 (lower is better)
- * 3) F4 (?? is better, sum of elements is constant)
+ * 3) F4 (lower is better, sum of elements is constant)
  *
  * */
 inline void parseArrayPareto (const array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
@@ -398,12 +455,15 @@ inline double Dvalue2Cvalue (double A, int ka) {
         return C;
 }
 
+<<<<<<< HEAD
 /// Return index of an array
 inline int get_oaindex (const array_t *s, const colindex_t strength, const colindex_t N) {
         int oaindex = N;
         for (colindex_t z = 0; z < strength; z++) {
                 oaindex /= s[z];
         }
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         return oaindex;
 }

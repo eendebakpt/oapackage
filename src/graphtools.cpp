@@ -11,8 +11,13 @@
 #endif
 
 template < class Type >
+<<<<<<< HEAD
 /// helper function, substruct minimum from list of values
 std::vector< Type > sorthelper (std::vector< Type > &v) {
+=======
+/// substract minimum from list of values
+std::vector< Type > subtract_minimum (std::vector< Type > &v) {
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         std::vector< Type > w (v.size ());
         std::copy (v.begin (), v.end (), w.begin ());
         int rmin = w[0];
@@ -79,7 +84,10 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
                 printfd ("reduceNauty: array is not symmetric, operation not well defined\n");
         }
 
+<<<<<<< HEAD
         // for(size_t j=0; j<colors.size(); j++) colors[j]=j;
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (verbose) {
                 myprintf ("reduceNauty: %d vertices\n", G.n_rows);
                 myprintf ("  colors: ");
@@ -192,7 +200,10 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
         std::vector< int > tr (nvertices);
         std::copy (lab, lab + nvertices, tr.begin ());
 
+<<<<<<< HEAD
         // TODO: use colors in graph
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         //  delete allocated variables
         DYNFREE (g, g_sz);
         DYNFREE (canong, canong_sz);
@@ -242,7 +253,10 @@ array_transformation_t reduceOAnauty (const array_link &al, int verbose, const a
 template < class IntType >
 /// helper function
 std::vector< int > indexvector (const std::vector< IntType > s) {
+<<<<<<< HEAD
         // printf("indexvector: input "); print_perm(s);
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         int n = std::accumulate (s.begin (), s.end (), 0);
 
         std::vector< int > v (n);
@@ -301,7 +315,10 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
 
         std::vector< int > colors (nVertices);
 
+<<<<<<< HEAD
         // printf("arrayclass.ncolgroups %d\n", arrayclass.ncolgroups);
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         symmetry_group sg (arrayclass.getS (), 0);
 
         // row vertices: color 0
@@ -339,6 +356,7 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
                         }
                 }
         }
+<<<<<<< HEAD
 
         return std::pair< array_link, std::vector< int > > (G, colors);
 }
@@ -483,6 +501,119 @@ int unittest_nautynormalform (const array_link &al, int verbose) {
         }
 
         return 1;
+=======
+
+        return std::pair< array_link, std::vector< int > > (G, colors);
+}
+
+/// apply a vertex permutation to a graph
+array_link transformGraph (const array_link &G, const std::vector< int > tr, int verbose) {
+        array_link H = G;
+
+        for (int i = 0; i < H.n_rows; i++) {
+                for (int j = 0; j < H.n_columns; j++) {
+                        int ix = tr[i];
+                        int jx = tr[j];
+                        H.at (ix, jx) = G._at (i, j);
+                        ;
+                }
+        }
+        return H;
+}
+
+/// From a relabelling of the graph return the corresponding array transformation
+array_transformation_t oagraph2transformation (const std::vector< int > &pp, const arraydata_t &arrayclass,
+                                               int verbose) {
+        if (arrayclass.ismixed ()) {
+                printfd ("note: oagraph2transformation not tested for mixed-level designs\n");
+                arrayclass.show ();
+        }
+        /// invert the labelling transformation
+        std::vector< int > ppi = invert_permutation (pp);
+
+        // extract colperms and rowperm and levelperms from pp
+        array_transformation_t ttr (arrayclass);
+
+        if (verbose) {
+                myprintf ("labelling2transformation: class %s\n", arrayclass.idstr ().c_str ());
+                myprintf ("labelling2transformation: pp  ");
+                display_vector (pp);
+                myprintf ("\n");
+                myprintf ("labelling2transformation: ppi ");
+                display_vector (ppi);
+                myprintf ("\n");
+        }
+        const int N = arrayclass.N;
+        std::copy (pp.begin (), pp.begin () + N, ttr.rperm);
+        int rmin = pp.size ();
+        for (int j = 0; j < N; j++)
+                rmin = std::min (rmin, (int)ttr.rperm[j]);
+        for (int i = 0; i < N; i++)
+                ttr.rperm[i] -= rmin;
+        ttr = ttr.inverse ();
+
+        if (verbose) {
+                myprintf ("labelling2transformation: rowperm ");
+                print_perm (ttr.rperm, N);
+        }
+
+        int ncols = arrayclass.ncols;
+        array_transformation_t ttc (arrayclass);
+        std::vector< int > colperm (arrayclass.ncols);
+        std::copy (pp.begin () + N, pp.begin () + N + ncols, colperm.begin ());
+        if (verbose >= 2) {
+                printfd ("colperm: ");
+                display_vector (colperm);
+                myprintf ("\n");
+        }
+        colperm = subtract_minimum (colperm);
+        colperm = invert_permutation (colperm);
+        ttc.setcolperm (colperm);
+
+        if (verbose) {
+                printfd ("labelling2transformation: colperm ");
+                display_vector (colperm);
+                myprintf ("\n");
+        }
+
+        std::vector< int > s = arrayclass.getS ();
+
+        int ns = std::accumulate (s.begin (), s.end (), 0);
+        array_transformation_t ttl (arrayclass);
+
+        std::vector< int > lvlperm (ns);
+        std::copy (pp.begin () + N + ncols, pp.begin () + N + ncols + ns, lvlperm.begin ());
+        lvlperm = subtract_minimum (lvlperm);
+
+        std::vector< int > cs = cumsum0 (s);
+
+        for (int ii = 0; ii < ncols; ii++) {
+                std::vector< int > ww (lvlperm.begin () + cs[ii],
+                                       lvlperm.begin () + cs[ii + 1]); //  = lvlperm[cs[ii]:cs[ii + 1]]
+
+                indexsort is (ww);
+
+                if (verbose >= 2) {
+                        printfd ("index sorted: ");
+                        display_vector (is.indices);
+                        myprintf ("\n");
+                }
+                ww = is.indices;
+
+                if (verbose >= 1) {
+                        printfd ("oagraph2transformation: lvlperm %d: ", ii);
+                        display_vector (ww);
+                        myprintf ("\n");
+                        fflush (0);
+                }
+                ttl.setlevelperm (ii, ww);
+        }
+
+        ttl = ttl.inverse ();
+
+        array_transformation_t tt = ttr * ttc * ttl;
+        return tt;
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

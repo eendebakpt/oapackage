@@ -121,7 +121,10 @@ int main (int argc, char *argv[]) {
                 if ((narrays % nsplit) > i)
                         nars++;
                 logstream (DEBUG) << printfstring ("  creating arrayfile %d (%d arrays)\n", i, nars);
+<<<<<<< HEAD
                 // int nb = 8; //arrayfile_t::arrayNbits(arraylist->at(0));
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 outfid[i] = create_arrayfile (outputfiles[i].c_str (), rows, cols, nars, mode, nb);
                 if (!outfid[i]->isopen ()) {
                         printf ("oasplit: error opening %s, aborting program\n", outputfiles[i].c_str ());

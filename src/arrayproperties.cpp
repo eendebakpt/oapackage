@@ -85,6 +85,7 @@ class ndarray {
                 data = new Type[n];
                 std::fill (data, data + n, 0);
         }
+<<<<<<< HEAD
 
         std::string idxstring (int i) const {
                 std::string s = "";
@@ -433,6 +434,356 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
                                   Bout.data[j]);
         }
 
+=======
+
+        std::string idxstring (int i) const {
+                std::string s = "";
+                std::vector< int > tmpidx (this->k);
+                linear2idx (i, tmpidx);
+
+                for (int i = 0; i < k; i++) {
+                        s += printfstring ("[%d]", tmpidx[i]);
+                }
+                return s;
+        }
+
+        /// size of the array (product of all dimensions)
+        long totalsize () const { return n; }
+
+        /// print the array to stdout
+        void show () const {
+                for (int i = 0; i < n; i++) {
+                        std::string idxstrx = idxstring (i);
+                        myprintf ("B[%d] = B%s = %f\n", i, idxstrx.c_str (), (double)data[i]);
+                }
+        }
+
+        /// convert a linear index to normal indices
+        inline void linear2idx (int ndx, int *nidx = 0) const {
+
+                if (nidx == 0)
+                        return;
+
+                for (int i = k - 1; i >= 0; i--) {
+                        div_t xx = div (ndx, cumprod[i]);
+                        int vi = xx.rem;
+                        int vj = xx.quot;
+                        nidx[i] = vj;
+                        ndx = vi;
+                }
+        }
+        /// convert a linear index to normal indices
+        inline void linear2idx (int ndx, std::vector< int > &nidx) const {
+
+                assert ((int)nidx.size () == this->k);
+                for (int i = k - 1; i >= 0; i--) {
+                        div_t xx = div (ndx, cumprod[i]);
+                        int vi = xx.rem;
+                        int vj = xx.quot;
+                        nidx[i] = vj;
+                        ndx = vi;
+                }
+        }
+
+        inline int getlinearidx (int *idx) const {
+                int lidx = 0;
+                for (int i = 0; i < k; i++) {
+                        lidx += idx[i] * cumprod[i];
+                }
+                return lidx;
+        }
+
+        /// set all values of the array to specified value
+        void setconstant (Type val) { std::fill (this->data, this->data + this->n, val); }
+
+        /// set value at position
+        void set (int *idx, Type val) {
+                int lidx = getlinearidx (idx);
+                data[lidx] = val;
+        }
+
+        /// set value using linear index
+        inline void setlinear (int idx, Type val) { data[idx] = val; }
+        /// get value using linear index
+        inline void getlinear (int idx, Type val) const { return data[idx]; }
+
+        /// get value using n-dimensional index
+        Type get (int *idx) const {
+                int lidx = getlinearidx (idx);
+                return data[lidx];
+        }
+
+        ~ndarray () { delete[] data; }
+};
+
+/// calculate Hamming distance between two rows of an array
+inline int dH (const int N, int k, const array_link &al, int r1, int r2) {
+        int dh = 0;
+        carray_t *D = al.array;
+        carray_t *d1 = D + r1;
+        carray_t *d2 = D + r2;
+
+        for (int c = 0; c < k; c++) {
+                dh += d1[c * N] != d2[c * N];
+        }
+        return dh;
+}
+
+/// calculate Hamming distance between two rows of an array with mixed levels
+inline void dHmixed (const int N, int k, const array_link &al, int r1, int r2, int *dh, int ncolgroups,
+                     const std::vector< int > colgroupindex) {
+        for (int i = 0; i < ncolgroups; i++)
+                dh[i] = 0;
+
+        carray_t *D = al.array;
+        carray_t *d1 = D + r1;
+        carray_t *d2 = D + r2;
+
+        for (int c = 0; c < k; c++) {
+                int ci = colgroupindex[c];
+                dh[ci] += d1[c * N] != d2[c * N];
+        }
+}
+
+/// Hamming distance (transposed array)
+inline int dHx (const int nr, int k, carray_t *data, int c1, int c2) {
+        // nr is the OA column variable
+
+        int dh = 0;
+        carray_t *d1 = data + c1 * nr;
+        carray_t *d2 = data + c2 * nr;
+
+        for (int c = 0; c < nr; c++) {
+                dh += d1[c] != d2[c];
+        }
+        return dh;
+}
+
+/// compare 2 GWPL sequences
+int GWPcompare (const std::vector< double > &a, const std::vector< double > &b) {
+        for (size_t x = 0; x < a.size (); x++) {
+                if (a[x] != b[x])
+                        return a[x] < b[x];
+        }
+        return 0;
+}
+
+/// calculate distance distrubution (array is transposed for speed)
+std::vector< double > distance_distributionT (const array_link &al, int norm = 1) {
+        int N = al.n_rows;
+        int n = al.n_columns;
+
+        // transpose array
+        array_t *x = new array_t[N * n];
+        array_t *xx = x;
+        for (int i = 0; i < N; i++)
+                for (int j = 0; j < n; j++) {
+                        (*xx) = al.array[i + j * N];
+                        xx++;
+                }
+
+        // calculate distance distribution
+        std::vector< double > dd (n + 1);
+
+        for (int r1 = 0; r1 < N; r1++) {
+                for (int r2 = 0; r2 < r1; r2++) {
+                        int dh = dHx (n, N, x, r1, r2);
+                        dd[dh] += 2; // factor 2: dH is symmetric
+                }
+        }
+        // along diagonal
+        dd[0] += N;
+
+        if (norm) {
+                for (int x = 0; x <= n; x++) {
+                        dd[x] /= N;
+                }
+        }
+
+        delete[] x;
+        return dd;
+}
+
+/// calculate distance distribution for mixed array
+void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose = 1) {
+        int N = al.n_rows;
+        int n = al.n_columns;
+
+        // calculate distance distribution
+        std::vector< double > dd (n + 1);
+
+        arraydata_t ad = arraylink2arraydata (al);
+
+        symmetry_group sg (ad.factor_levels (), false);
+
+        int *dh = new int[sg.ngroups];
+
+        std::vector< int > dims (ad.ncolgroups);
+        for (size_t i = 0; i < dims.size (); i++)
+                dims[i] = ad.colgroupsize[i];
+        if (verbose >= 3) {
+                myprintf ("distance_distribution_mixed before: \n");
+                B.show ();
+        }
+
+        for (int r1 = 0; r1 < N; r1++) {
+                for (int r2 = 0; r2 < r1; r2++) {
+                        dHmixed (N, n, al, r1, r2, dh, sg.ngroups, sg.gidx);
+
+                        if (verbose >= 4) {
+                                myprintf ("distance_distribution_mixed: rows %d %d: ", r1, r2);
+                                print_perm (dh, sg.ngroups);
+                        }
+                        int v = B.get (dh);
+                        B.set (dh, v + 2);
+
+                        if (verbose >= 3) {
+                                int w = B.getlinearidx (dh);
+                                if (w == 0) {
+                                        myprintf (" r1 %d, r2 %d\n", r1, r2);
+                                }
+                        }
+                }
+        }
+        if (verbose >= 3) {
+                myprintf ("distance_distribution_mixed low: \n");
+                B.show ();
+        }
+
+        // along diagonal
+        for (unsigned int i = 0; i < dims.size (); i++)
+                dh[i] = 0;
+        int v = B.get (dh);
+        B.set (dh, v + N);
+
+        if (verbose >= 3) {
+                myprintf ("distance_distribution_mixed integer: \n");
+                B.show ();
+        }
+
+        for (int x = 0; x < B.n; x++) {
+                B.data[x] /= N;
+        }
+
+        if (verbose) {
+                myprintf ("distance_distribution_mixed: \n");
+                B.show ();
+        }
+
+        delete[] dh;
+}
+
+template < class Type >
+/// calculate MacWilliams transform
+std::vector< double > macwilliams_transform (std::vector< Type > B, int N, int s) {
+        int n = B.size () - 1;
+        std::vector< double > Bp (n + 1);
+
+        if (s == 2) {
+                if (n <= Combinations::number_combinations_max_n ()) {
+                        // use cached version of krawtchouks
+                        for (int j = 0; j <= n; j++) {
+                                Bp[j] = 0;
+                                for (int i = 0; i <= n; i++) {
+                                        Bp[j] += B[i] * krawtchouksCache< long > (
+                                                            j, i, n); //  calculate krawtchouk with dynamic programming
+                                }
+                                Bp[j] /= N;
+                        }
+                } else {
+
+                        for (int j = 0; j <= n; j++) {
+                                Bp[j] = 0;
+                                for (int i = 0; i <= n; i++) {
+                                        Bp[j] += B[i] * krawtchouks< long > (j, i, n);
+                                }
+                                Bp[j] /= N;
+                        }
+                }
+
+        } else {
+                for (int j = 0; j <= n; j++) {
+                        Bp[j] = 0;
+                        for (int i = 0; i <= n; i++) {
+                                Bp[j] += B[i] * krawtchouk< long > (j, i, n, s);
+                        }
+                        Bp[j] /= N;
+                }
+        }
+
+        return Bp;
+}
+
+std::vector< double > distance_distribution (const array_link &al) {
+        int N = al.n_rows;
+        int n = al.n_columns;
+
+        // calculate distance distribution
+        std::vector< double > dd (n + 1);
+
+        for (int r1 = 0; r1 < N; r1++) {
+                for (int r2 = 0; r2 < r1; r2++) {
+                        int dh = dH (N, n, al, r1, r2);
+                        dd[dh] += 2;
+                }
+        }
+        // along diagonal
+        dd[0] += N;
+
+        for (int x = 0; x <= n; x++) {
+                dd[x] /= N;
+        }
+
+        return dd;
+}
+
+std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, const symmetry_group &sg,
+                                                   std::vector< int > sx, int N, ndarray< double > &Bout,
+                                                   int verbose = 0) {
+        if (verbose) {
+                myprintf ("macwilliams_transform_mixed:\n");
+                myprintf ("sx: ");
+                display_vector (sx);
+                myprintf ("\n");
+        }
+
+        int jprod = B.n;
+
+        int *bi = new int[sg.ngroups];
+        int *iout = new int[sg.ngroups];
+
+        for (int i = 0; i < sg.ngroups; i++)
+                bi[i] = 0;
+        for (int i = 0; i < sg.ngroups; i++)
+                iout[i] = 0;
+
+        for (int j = 0; j < Bout.n; j++) {
+                Bout.linear2idx (j, iout);
+                Bout.setlinear (j, 0); // [j]=0;
+
+                for (int i = 0; i < B.n; i++) {
+                        B.linear2idx (i, bi);
+
+                        long fac = 1;
+                        for (int f = 0; f < B.k; f++) {
+                                long ji = iout[f];
+                                long ii = bi[f];
+                                long ni = B.dims[f] - 1;
+                                long si = sx[f];
+                                fac *= krawtchouk (ji, ii, ni, si);
+                                if (verbose >= 4)
+                                        myprintf ("  Bout[%d] += %.1f * %ld (%d %d %d)\n", j, (double)B.data[i], fac,
+                                                  (int)ji, (int)ii, (int)ni);
+                        }
+                        Bout.data[j] += B.data[i] * fac;
+                }
+                Bout.data[j] /= N;
+                if (verbose >= 2)
+                        myprintf ("macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.idxstring (j).c_str (),
+                                  Bout.data[j]);
+        }
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (verbose >= 1) {
                 myprintf ("Bout: \n");
                 Bout.show ();
@@ -499,6 +850,7 @@ std::vector< double > projDeff (const array_link &al, int number_of_factors, int
                 myprintf ("projDeff: k %d, kp %d: done\n", number_of_columns, number_of_factors);
 
         return dd;
+<<<<<<< HEAD
 }
 
 /**Calculate the projection estimation capacity sequence for a design.
@@ -519,10 +871,55 @@ std::vector< double > PECsequence (const array_link &al, int verbose) {
                 pec[0] = -1;
                 return pec;
         }
+=======
+}
+
+std::vector< double > PECsequence (const array_link &array, int verbose) {
+
+        int N = array.n_rows;
+
+        int number_of_factors = array.n_columns;
+        std::vector< double > pec (number_of_factors);
+
+        if (number_of_factors >= 20) {
+			throw_runtime_exception("PECsequence: error: not implemented for 20 or more columns\n");
+        }
 
 #ifdef DOOPENMP
 #pragma omp parallel for
 #endif
+        for (int i = 0; i < number_of_factors; i++) {
+                int kp = i + 1;
+                int m = 1 + kp + kp * (kp - 1) / 2;
+
+                if (m > N) {
+                        // if size of model is larger than number of runs the model cannot be estimated
+                        pec[i] = 0;
+                } else {
+                        std::vector< double > dd = projDeff (array, kp, verbose >= 2);
+                        pec[i] = fraction_nonzero(dd);
+                }
+        }
+
+        return pec;
+}
+
+std::vector< double > PICsequence(const array_link &array, int verbose) {
+
+	int N = array.n_rows;
+	int number_of_factors = array.n_columns;
+	std::vector< double > pec(number_of_factors);
+
+	if (number_of_factors >= 20) {
+		throw_runtime_exception("PICsequence: error: not implemented for 20 or more columns\n");
+	}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
+
+#ifdef DOOPENMP
+#pragma omp parallel for
+#endif
+<<<<<<< HEAD
         for (int i = 0; i < number_of_factors; i++) {
                 int kp = i + 1;
                 int m = 1 + kp + kp * (kp - 1) / 2;
@@ -591,6 +988,69 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 }
 
 /// calculate GWLP (generalized wordlength pattern)
+=======
+	for (int i = 0; i < number_of_factors; i++) {
+		int kp = i + 1;
+		int m = 1 + kp + kp * (kp - 1) / 2;
+
+		if (m > N) {
+			// if size of model is larger than number of runs the model cannot be estimated
+			pec[i] = 0;
+		}
+		else {
+			std::vector< double > dd = projDeff(array, kp, verbose >= 2);
+
+			pec[i] = average(dd);
+		}
+	}
+
+	return pec;
+}
+#endif
+
+void round_GWLP_zero_values(std::vector<double> &gma, int N)
+{
+	for (size_t i = 0; i < gma.size(); i++) {
+		gma[i] = round(N * N * gma[i]) / (N * N);
+		if (gma[i] == 0)
+			gma[i] = 0; // fix minus zero float number
+	}
+
+}
+
+std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate) {
+        arraydata_t adata = arraylink2arraydata (al);
+        symmetry_group sg (adata.factor_levels (), false);
+
+        std::vector< int > dims (adata.ncolgroups);
+        for (unsigned int i = 0; i < dims.size (); i++)
+                dims[i] = adata.colgroupsize[i] + 1;
+
+        ndarray< double > B (dims);
+        ndarray< double > Bout (dims);
+
+        distance_distribution_mixed (al, B, verbose);
+        if (verbose >= 3) {
+                myprintf ("GWLPmixed: distance distrubution\n");
+                B.show ();
+        }
+
+        int N = adata.N;
+        // calculate GWLP
+        std::vector< int > ss = adata.factor_levels ();
+
+        std::vector< int > sx;
+        for (int i = 0; i < sg.ngroups; i++)
+                sx.push_back (ss[sg.gstart[i]]);
+
+        std::vector< double > gma = macwilliams_transform_mixed (B, sg, sx, N, Bout, verbose);
+
+        if (truncate)
+			round_GWLP_zero_values(gma, N);
+        return gma;
+}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int N = al.n_rows;
         int n = al.n_columns;
@@ -599,6 +1059,7 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int s = *me + 1;
         int k;
         for (k = 0; k < al.n_columns; k++) {
+<<<<<<< HEAD
                 array_t *mine = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
                 if (*mine + 1 != s)
                         break;
@@ -639,6 +1100,44 @@ inline double GWPL2val (GWLPvalue x) {
         for (int i = x.size () - 1; i > 0; i--)
                 r = r / 10 + x.v[i];
 
+=======
+                array_t *max_column_value = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
+                if (*max_column_value + 1 != s)
+                        break;
+        }
+        int domixed = (k < al.n_columns);
+
+        if (verbose)
+                myprintf ("GWLP: N %d, s %d, domixed %d\n", N, s, domixed);
+
+        if (domixed) {
+                std::vector< double > gma = GWLPmixed (al, verbose, truncate);
+                return gma;
+        } else {
+                // calculate distance distribution
+                std::vector< double > B = distance_distributionT (al);
+                if (verbose) {
+                        myprintf ("distance_distributionT: ");
+                        display_vector (B);
+                        myprintf ("\n");
+                }
+                // calculate GWP
+                std::vector< double > gma = macwilliams_transform (B, N, s);
+
+				if (truncate)
+					round_GWLP_zero_values(gma, N);
+
+                return gma;
+        }
+}
+
+/// convert GWLP sequence to unique value
+inline double GWPL2val (GWLPvalue x) {
+        double r = 0;
+        for (int i = x.size () - 1; i > 0; i--)
+                r = r / 10 + x.values[i];
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         return r;
 }
 
@@ -670,7 +1169,11 @@ std::vector< GWLPvalue > projectionGWLPs (const array_link &al) {
         return v;
 }
 
+<<<<<<< HEAD
 std::vector< double > projectionGWLPvalues (const array_link &al) {
+=======
+std::vector< double > projectionGWLPdoublevalues (const array_link &al) {
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         int ncols = al.n_columns;
 
         std::vector< double > v (ncols);
@@ -701,7 +1204,11 @@ Eigen::MatrixXd arraylink2eigen (const array_link &al) {
         return mymatrix;
 }
 
+<<<<<<< HEAD
 /// return rank of an array based on Eigen::ColPivHouseholderQR
+=======
+/// return rank of an array based on Eigen::FullPivHouseholderQR
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 int arrayrankFullPivQR (const array_link &al, double threshold) {
         Eigen::MatrixXd mymatrix = arraylink2eigen (al);
         FullPivHouseholderQR< Eigen::MatrixXd > decomp (mymatrix.rows (), mymatrix.cols ());
@@ -896,6 +1403,7 @@ int rankStructure::rankxf (const array_link &al) {
         if (verbose)
                 printf ("rankStructure: rankxf: alsub %d, al %d (ks %d)\n", alsub.n_columns, al.n_columns, ks);
         if (al.selectFirstColumns (ks) == this->alsub) {
+<<<<<<< HEAD
 
         } else {
                 // update structure
@@ -938,6 +1446,41 @@ int rankStructure::rankxf (const array_link &al) {
         if (verbose >= 2) {
                 printf ("  rankStructure: k %d, m %d\n", k, m);
                 // eigenInfo ( Zx, "Zx" );
+=======
+
+        } else {
+                // update structure
+                if (verbose >= 2)
+                        printf ("rankStructure: update structure (current ks %d, al.n_columns %d)\n", ks,
+                                al.n_columns);
+                updateStructure (al.selectFirstColumns (al.n_columns - nsub));
+        }
+        int rank0 = decomp.rank ();
+        if (verbose >= 2)
+                printfd ("rankStructure: rank0 %d\n", rank0);
+
+        // special case: the same matrix!
+        if (ks == al.n_columns) {
+                if (verbose)
+                        printfd ("special case: k==al.n_columns\n");
+                return decomp.rank ();
+        }
+        Eigen::MatrixXd A = array2xfeigen (al);
+
+        // caculate permutation
+
+        EigenDecomp::PermutationType subperm = decomp.colsPermutation ();
+        MatrixXi perm = permM (ks, k, subperm.indices (), verbose);
+        EigenDecomp::PermutationType ptmp (perm);
+
+        // transform second order interaction matrix into suitable format
+
+        Eigen::MatrixXd Zxp = A * ptmp;
+        Eigen::MatrixXd ZxSub = this->Qi.block (rank0, 0, N - rank0, N) * Zxp.block (0, rank0, N, m - rank0);
+
+        if (verbose >= 2) {
+                printf ("  rankStructure: k %d, m %d\n", k, m);
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 printf ("  rankStructure: msub %d, m %d\n", msub, m);
         }
 
@@ -1046,6 +1589,7 @@ inline void array2eigenxf (const array_link &al, Eigen::MatrixXd &mymatrix) {
         mymatrix.array () *= 2;
         mymatrix.array () -= 1;
 }
+<<<<<<< HEAD
 
 array_link array2secondorder (const array_link &al) {
         int k = al.n_columns;
@@ -1072,6 +1616,34 @@ array_link array2secondorder (const array_link &al) {
                 }
         }
 
+=======
+
+array_link array2secondorder (const array_link &al) {
+        int k = al.n_columns;
+        int n = al.n_rows;
+        int m = 1 + k + k * (k - 1) / 2;
+        int m2 = k * (k - 1) / 2;
+        array_link out (n, m2, array_link::INDEX_DEFAULT);
+
+        // init interactions
+        int ww = 0;
+        for (int c = 0; c < k; ++c) {
+                int ci = c * n;
+                for (int c2 = 0; c2 < c; ++c2) {
+                        int ci2 = c2 * n;
+
+                        const array_t *p1 = al.array + ci;
+                        const array_t *p2 = al.array + ci2;
+                        array_t *pout = out.array + ww * out.n_rows;
+
+                        for (int r = 0; r < n; ++r) {
+                                pout[r] = (p1[r] + p2[r]) % 2;
+                        }
+                        ww++;
+                }
+        }
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         out *= 2;
         out -= 1;
 
@@ -1162,6 +1734,7 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, 
                 Deff = 0;
                 vif = 0;
                 Eeff = 0;
+<<<<<<< HEAD
 
 #ifdef FULLPACKAGE
                 int rankold = rank2;
@@ -1203,6 +1776,49 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, 
                 Eigen::FullPivLU< MatrixXd > lu (x);
                 int ranklu = lu.rank ();
 
+=======
+
+#ifdef FULLPACKAGE
+                int rankold = rank2;
+                if (verbose >= 3) {
+                        Eigen::MatrixXd Smat (S);
+                        Eigen::ArrayXd Sa = Smat.array ();
+                        double Deff = exp (2 * Sa.log ().sum () / m) / N;
+
+                        std::cout << "  singular matrix: the rank of A is " << rank << std::endl;
+                        myprintf ("   Deff %e, smallest eigenvalue %e, rankold %d, rank lu %d\n", Deff, S[m - 1],
+                                  rankold, rank);
+                }
+                if (verbose >= 4)
+                        std::cout << "Its singular values are:" << std::endl << S << std::endl;
+#endif
+                return;
+        }
+#ifdef FULLPACKAGE
+        if (verbose >= 3)
+                std::cout << "Its singular values are:" << std::endl << S << std::endl;
+#endif
+
+        Eeff = S[m - 1] * S[m - 1] / N;
+        // cout << "Its singular values are:" << endl << S/sqrt(N) << endl;
+
+        vif = 0;
+        for (int i = 0; i < m; i++)
+                vif += 1 / (S[i] * S[i]);
+        vif = N * vif / m;
+
+        Eigen::MatrixXd Smat (S);
+        Eigen::ArrayXd Sa = Smat.array ();
+        Deff = exp (2 * Sa.log ().sum () / m) / N;
+
+        if (verbose >= 2) {
+                myprintf ("ABwithSVD: Defficiency %.3f, Aefficiency %.3f (%.3f), Eefficiency %.3f\n", Deff, vif,
+                          vif * m, Eeff);
+
+                Eigen::FullPivLU< MatrixXd > lu (x);
+                int ranklu = lu.rank ();
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 myprintf ("   Defficiency %e, smallest eigenvalue %e, rank %d, rank lu %d\n", Deff, S[m - 1], rank,
                           ranklu);
         }
@@ -1261,6 +1877,7 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose) {
         if (verbose)
                 printf ("Aefficiencies: invert information matrix\n");
         MatrixFloat M = matXtX.inverse ();
+<<<<<<< HEAD
 
         std::vector< double > aa (3);
         double Ax = 0;
@@ -1273,6 +1890,20 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose) {
                 Ax += M (i, i);
         }
 
+=======
+
+        std::vector< double > aa (3);
+        double Ax = 0;
+        for (int i = 0; i < m; i++) {
+                Ax += M (i, i);
+        }
+        aa[0] = 1. / (Ax / m);
+        Ax = 0;
+        for (int i = 1; i < k + 1; i++) {
+                Ax += M (i, i);
+        }
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         aa[1] = 1. / (Ax / k);
         Ax = 0;
         for (int i = k + 1; i < m; i++) {
@@ -1336,11 +1967,19 @@ double detXtX (const Eigen::MatrixXd &mymatrix, int verbose) {
                         S[j] = sqrt (S[j]);
                 }
         }
+<<<<<<< HEAD
 
         Eigen::MatrixXd Smat (S);
         Eigen::ArrayXd Sa = Smat.array ();
         dd = exp (2 * Sa.log ().sum ());
 
+=======
+
+        Eigen::MatrixXd Smat (S);
+        Eigen::ArrayXd Sa = Smat.array ();
+        dd = exp (2 * Sa.log ().sum ());
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (S[0] < 1e-15) {
                 if (verbose >= 2)
                         myprintf ("Avalue: singular matrix\n");
@@ -1507,6 +2146,7 @@ double Defficiency (const array_link &al, int verbose) {
         int m = 1 + k + k * (k - 1) / 2;
         int N = n;
         double Deff = -1;
+<<<<<<< HEAD
 
         // DMatrix mymatrix(n, m); array2eigenxf(al, mymatrix);
         DMatrix mymatrix = array2eigenModelMatrix (al);
@@ -1569,6 +2209,66 @@ double Defficiency (const array_link &al, int verbose) {
         //   int rank = svd.nonzeroSingularValues();
 
         // myprintf("Avalue: S size %d %d\n", (int) S.cols(), (int) S.rows());
+=======
+
+        // DMatrix mymatrix(n, m); array2eigenxf(al, mymatrix);
+        DMatrix mymatrix = array2eigenModelMatrix (al);
+
+        Eigen::FullPivLU< DMatrix > lu_decomp (mymatrix);
+        int rank = lu_decomp.rank ();
+
+        DMatrix mm = mymatrix.transpose () * mymatrix;
+        SelfAdjointEigenSolver< DMatrix > es;
+        es.compute (mm);
+        const DVector evs = es.eigenvalues ();
+        DVector S = evs; // sqrt(S);
+
+        if (S[m - 1] < 1e-15 || rank < m) {
+                if (verbose >= 2) {
+
+                        Eigen::FullPivLU< DMatrix > lu_decomp2 (mm);
+                        int rank2 = lu_decomp2.rank ();
+
+                        myprintf ("Defficiency: array is singular (rank %d/%d/%d), setting D-efficiency to zero "
+                                  "(S[m-1] %e)\n",
+                                  rank, rank2, m, S[m - 1]);
+                }
+                Deff = 0;
+                return Deff;
+        }
+
+        for (int j = 0; j < m; j++) {
+                if (S[j] < 1e-14) {
+                        if (verbose >= 3)
+                                myprintf ("  singular!\n");
+                        S[j] = 0;
+                } else {
+                        S[j] = sqrt (S[j]);
+                }
+        }
+
+        if (verbose >= 2) {
+                JacobiSVD< DMatrix > svd (mymatrix);
+                const DVector S2 = svd.singularValues ();
+
+                if (!(S2[m - 1] < 1e-15)) {
+                        for (int ii = 0; ii < m - 3; ii++) {
+                                myprintf ("ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver "
+                                          "svd %f %f %f\n",
+                                          ii, (double)S[m - ii - 1], (double)evs[m - ii - 1], (double)S2[ii]);
+                        }
+                        for (int ii = m - 3; ii < m - 1; ii++) {
+                                myprintf ("ii %d: %f %f %f\n", ii, (double)S[m - ii - 1], (double)evs[m - ii - 1],
+                                          (double)S2[ii]);
+                        }
+
+                        DMatrix Smat (S);
+                        DArray Sa = Smat.array ();
+                        Deff = exp (2 * Sa.log ().sum () / m) / N;
+                        myprintf ("  Aold: %.6f\n", Deff);
+                }
+        }
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
         if (S[0] < 1e-15) {
                 if (verbose >= 2)
@@ -1622,6 +2322,7 @@ void calculateParetoEvenOdd (const std::vector< std::string > infiles, const cha
                 break;
         }
         Pareto< mvalue_t< long >, array_link > pset;
+<<<<<<< HEAD
 
         long ntotal = 0;
         for (size_t i = 0; i < infiles.size (); i++) {
@@ -1734,6 +2435,120 @@ void addArray (Pareto< mvalue_t< long >, long > &pset, const array_link &al, int
         pset.addvalue (p, idx);
 }
 
+=======
+
+        long ntotal = 0;
+        for (size_t i = 0; i < infiles.size (); i++) {
+                // open arrayfile
+                arrayfile_t af (infiles[i].c_str ());
+
+                if (verbose) {
+                        myprintf ("calculateParetoEvenOdd: read file %s (%d arrays)\n", af.filename.c_str (),
+                                  af.narrays);
+                }
+                int narrays = af.narrays;
+//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
+#pragma omp parallel for
+                for (int k = 0; k < narrays; k++) {
+                        array_link al;
+#pragma omp critical
+                        {
+                                al = af.readnext ();
+                                ntotal++;
+                        }
+                        Pareto< mvalue_t< long >, array_link >::pValue p = paretofunction (al, verbose >= 3);
+
+                        if (verbose >= 2) {
+                                printf ("values: ");
+                                Pareto< mvalue_t< long >, array_link >::showvalue (p);
+                        }
+#pragma omp critical
+                        {
+                                // add the new tuple to the Pareto set
+                                pset.addvalue (p, al);
+                        }
+
+#pragma omp critical
+                        {
+                                if (verbose >= 2 || (k % 500000 == 0 && k > 0)) {
+                                        printf ("calculateParetoEvenOdd: file %d/%d, array %d/%d\n", (int)i,
+                                                (int)infiles.size (), k, narrays);
+                                }
+                        }
+                }
+        }
+
+        if (verbose)
+                printf ("calculateParetoEvenOdd: %ld arrays -> %d pareto values, %d pareto arrays \n", ntotal,
+                        pset.number (), pset.numberindices ());
+
+        if (verbose) {
+                pset.show (verbose);
+        }
+
+        arraylist_t lst = pset.allindicesdeque ();
+
+        // write files to disk
+        if (verbose)
+                printf ("calculateParetoEvenOdd: writing arrays to file %s\n", outfile);
+        if (verbose >= 3) {
+                printf ("calculateParetoEvenOdd: afmode %d (TEXT %d)\n", afmode, ATEXT);
+        }
+
+        if (outfile != 0) {
+                writearrayfile (outfile, &lst, afmode, nrows, ncols);
+        }
+        return;
+}
+
+Pareto< mvalue_t< long >, long > parsePareto (const arraylist_t &arraylist, int verbose, paretomethod_t paretomethod) {
+        pareto_cb paretofunction = calculateArrayParetoRankFA< array_link >;
+        switch (paretomethod) {
+        case PARETOFUNCTION_J5:
+                paretofunction = calculateArrayParetoJ5< array_link >;
+                break;
+        default:
+                break;
+        }
+
+        Pareto< mvalue_t< long >, long > pset;
+        pset.verbose = verbose;
+
+#pragma omp parallel for num_threads(4) schedule(dynamic, 1)
+        for (size_t i = 0; i < arraylist.size (); i++) {
+                if (verbose >= 2 || ((i % 2000 == 0) && verbose >= 1)) {
+                        myprintf ("parsePareto: array %ld/%ld\n", (long)i, (long)arraylist.size ());
+                }
+                if (((i % 10000 == 0) && verbose >= 1)) {
+                        pset.show (1);
+                }
+                const array_link &al = arraylist.at (i);
+
+                Pareto< mvalue_t< long >, long >::pValue p = paretofunction (al, verbose);
+#pragma omp critical
+                {
+                        // add the new tuple to the Pareto set
+                        pset.addvalue (p, i);
+                }
+        }
+        return pset;
+}
+
+void addArray (Pareto< mvalue_t< long >, long > &pset, const array_link &al, int idx, int verbose,
+               paretomethod_t paretomethod) {
+        pareto_cb paretofunction = calculateArrayParetoRankFA< array_link >;
+        switch (paretomethod) {
+        case PARETOFUNCTION_J5:
+                paretofunction = calculateArrayParetoJ5< array_link >;
+                break;
+        default:
+                break;
+        }
+        Pareto< mvalue_t< long >, long >::pValue p = paretofunction (al, verbose);
+        pset.addvalue (p, idx);
+}
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 template Pareto< mvalue_t< long >, array_link >::pValue calculateArrayParetoJ5< array_link > (const array_link &al,
                                                                                               int verbose);
 template Pareto< mvalue_t< long >, int >::pValue calculateArrayParetoJ5< int > (const array_link &al, int verbose);

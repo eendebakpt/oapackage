@@ -10,11 +10,16 @@ are stored in an :meth:`array_link` object.
 An orthogonal array (OA) of strength :math:`{t}`, :math:`{N}` runs and
 :math:`{n}` factors at :math:`{s}` levels is an :math:`{N}\times {n}`
 array of symbols :math:`0,
+<<<<<<< HEAD
 \ldots,({s}-1)`, such that, for every subset of :math:`{t}` columns,
+=======
+\ldots,({s}-1)`, such that for every subset of :math:`{t}` columns,
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 every :math:`{t}`-tuple occurs equally
 often :cite:`Rao1947`. The set of all strength-:math:`{t}` OAs with 
 :math:`{N}` runs and :math:`{n}` factors at :math:`{s}` levels 
 is denoted by :math:`{\operatorname{OA}({N}; {t}; {s}^{n})}`. 
+<<<<<<< HEAD
 The OAs are represented by arrays (in column-major form).
 
 A D-optimal design (:math:`{n}`) is an :math:`{N}\times {n}` array 
@@ -24,6 +29,21 @@ For :math:`{N}` even, a conference design (:math:`{n}`) is
 an :math:`{N}\times {n}` array which satisfices :math:`{C}^{T}{C} = ({n}-1) {I}_{n}}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`.
+=======
+The OAs are represented by arrays (data in memory is stored in column-major form).
+
+A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
+that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
+for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}`.
+An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
+
+For :math:`{N}` even, a conference design :math:`C` is 
+an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
+with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
+:math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`.
+See :cite:`Xiao2012`, :cite:`Wu2009`.
+
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 Data structures
 ---------------
@@ -53,7 +73,11 @@ structures and their use.
     to the symbols in one or more columns.
 
   :meth:`~oalib.conference_transformation_t`
+<<<<<<< HEAD
     This describes a transformation of conference design, which includes 
+=======
+    This describes a transformation of conference design or double conference design, which includes 
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
     row and column permutations, as well as sign switches to the elements
     in one or more rows and columns.
 
@@ -62,8 +86,18 @@ Representing arrays
 
 The structure containing an orthogonal array is called the
 :class:`~oalib.array_link` structure. It consists of a specified number of rows and
+<<<<<<< HEAD
 columns, the data (integer valued) and an index. In the Python interface, the :meth:`array_link` object can be indexed just as
 normal arrays. 
+=======
+columns, the data (integer valued) and an index. In the Python interface the :meth:`array_link` object can be indexed just as
+normal arrays. 
+
+It is also possible to convert to a Numpy array. The
+:class:`~oalib.array_link` object implements to Python array interface, so most
+operations from packages such as Numpy work on the :meth:`~oalib.array_link`
+object.
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 .. code-block:: python
  :caption: Array representation and indexing in Python
@@ -91,9 +125,9 @@ object.
 The C++ class is:
 
 .. doxygenstruct:: array_link
-    :outline:
-    :no-link:
+..    :no-link:
 
+..    :outline:
     
 Reading and writing arrays
 --------------------------
@@ -127,8 +161,13 @@ Array transformations
 Transformations of (orthogonal) arrays consist of row, column and 
 level permutations. A transformation is represented by the :meth:`~oalib.array_transformation_t` object.
 
+<<<<<<< HEAD
 For a given transformation, the column permutations are applied first,
 then the level permutations and, finally, the row permutations. The level
+=======
+For a given transformation the column permutations are applied first,
+then the level permutations and finally the row permutations. The level
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 and column permutations are not commutative.
 
 .. code-block:: c++
@@ -225,7 +264,11 @@ Plain text array files
 Arrays are stored in plain text files with extension ``.oa``. The first line
 contains the number of columns, the number of rows and the number of
 arrays (or -1 if the number of arrays is not specified). Then, for each
+<<<<<<< HEAD
 array, a single line with the array index, followed by N lines
+=======
+array, a single line with the index of the array, followed by N lines
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 containing the array.
 
 A typical example of a text file is the following:
@@ -262,7 +305,8 @@ Every binary file starts with a header, which has the following format:
   [INT32] Reserved integer
   [INT32] Reserved integer
 
-The normal binary format has the following format. For each array (the
+The format of the remainder of the binary file depends on the binary format specified.
+For the normal binary format the format is as follows. For each array (the
 number is specified in the header):
 
 .. code-block:: c
@@ -305,7 +349,11 @@ help can be obtained from the command line by using the switch ``-h``.
 The tools include the following:
 
 `oainfo`
+<<<<<<< HEAD
     This program reads OApackage data files and reports
+=======
+    This program reads Orthogonal Array package data files and reports
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
     the contents of the files. For example:
 
     .. code-block:: console
@@ -317,7 +365,11 @@ The tools include the following:
         $
 
 `oacat`
+<<<<<<< HEAD
     Shows the contents of a file with orthogonal arrays.
+=======
+    Shows the contents of a file with orthogonal arrays for a data file.
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 
 `oacheck`
     Checks or reduces an array to canonical form.
@@ -350,4 +402,4 @@ The tools include the following:
    :alt: alternate text
    :align: center
 
-   Orthogonal array in :math:`\mathrm{OA}(18, 2 3^a, 2)`
+   Orthogonal array in :math:`\mathrm{OA}(18, 2 3^a, 2)`. 

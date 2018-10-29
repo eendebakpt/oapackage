@@ -79,7 +79,10 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
 
         std::string ss = printfstring (" -m [MODE]			Algorithm (") + algorithm_t_list () + ")\n";
         opt->addUsage (ss.c_str ());
+<<<<<<< HEAD
         // opt->printUsage();
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         opt->addUsage ("");
         opt->addUsage ("Example: ./oastreaming -r inputarrays.oa -l 2");
 
@@ -94,6 +97,7 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
         return opt;
 }
 
+<<<<<<< HEAD
 /*!
   For restarting an extension, the reading of all arays and putting them into the memmory is handled by init_restart.
   It only needs
@@ -112,6 +116,8 @@ int init_restart (const char *fname, colindex_t &cols, arraylist_t &solutions) {
         return 0;
 }
 
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
 /**
  * @brief Main function for oaextendmpi and oaextendsingle
  * @param argc

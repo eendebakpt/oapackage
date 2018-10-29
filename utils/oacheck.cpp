@@ -213,7 +213,10 @@ int main (int argc, char *argv[]) {
         algorithm_t algmethod = (algorithm_t)opt.getIntValue ("mode", MODE_AUTOSELECT);
 
         int loglevel = NORMAL;
+<<<<<<< HEAD
         // int verbose = loglevel;
+=======
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
         if (opt.getValue ("loglevel") != NULL || opt.getValue ('l') != NULL)
                 loglevel = atoi (opt.getValue ('l')); // set custom loglevel
         setloglevel (loglevel);
@@ -291,9 +294,13 @@ int main (int argc, char *argv[]) {
                 LMCreduction_t *randtest = new LMCreduction_t (&ad);
                 array_t *testarray = clone_array (array, ad.N, ad.ncols);
                 randtest->transformation->randomize ();
+<<<<<<< HEAD
                 reduction->setArray (
                     al); // FIXME: for reduction of arrays not in root-form we need to add the special initialization
 
+=======
+                reduction->setArray ( al); 
+>>>>>>> eda3ae59b7a81637e44d4cf3d072fd59c47ce60a
                 /* variables needed within the switch statement */
                 switch (mode) {
                 case MODE_CHECK:
