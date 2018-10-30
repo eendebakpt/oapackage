@@ -211,6 +211,21 @@ class TestOAfiles(unittest.TestCase):
         _ = oapackage.oahelper.finddirectories(os.getcwd())
 
 
+class TestParetoFunctionality:
+    def test_selectParetoArrays(self):
+        
+        arrays=[oapackage.array_link(np.array([[ii]])) for ii in range(5)]
+        pareto_object = oapackage.ParetoLongLong()
+        
+        for ii in range(len(arrays)):
+            value=[ii,ii%2]
+            pareto_object.addvalue(value, ii)
+        pareto_object.show(2)
+
+        selected=oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
+        self.assertEqual(selected, arrays[4,5])
+    
+
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 
@@ -285,11 +300,13 @@ class TestOAhelper(unittest.TestCase):
         s = oapackage.oahelper.floatformat(3.14, mind=1, maxd=2)
         self.assertEqual(s, '3.1')
 
-    def test_safemin(self):
+    def test_safemin_safemax(self):
         r = oapackage.oahelper.safemin(np.array([1, -2, 3]), default=0)
         self.assertEqual(r, -2)
         r = oapackage.oahelper.safemin(np.array([]), default=-2)
         self.assertEqual(r, -2)
+        r = oapackage.oahelper.safemax(np.array([1, -2, 3]), default=0)
+        self.assertEqual(r, 3)
 
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
