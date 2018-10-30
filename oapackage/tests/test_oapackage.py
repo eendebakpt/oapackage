@@ -192,6 +192,13 @@ class TestOAfiles(unittest.TestCase):
 
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
+    def test_findfiles(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        lst = [oapackage.exampleArray(4, 1)]
+        oapackage.writearrayfile(array_filename, lst)
+        lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
+        self.assertIn(os.path.split(array_filename)[-1], lst)
+        
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
@@ -336,6 +343,11 @@ class TestOAhelper(unittest.TestCase):
     def test_sortrows(self):
         a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]])
         s = oapackage.oahelper.sortrows(a)
+        self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
+
+    def test_sortcols(self):
+        a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]]).T
+        s = oapackage.oahelper.sortcols(a)
         self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
 
 

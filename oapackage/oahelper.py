@@ -321,32 +321,51 @@ def timeString(tt=None):
     return ts
 
 
-def findfilesR(p, patt):
-    """ Get a list of files (recursive) """
+def findfilesR(directory, pattern):
+    """ Get a list of files (recursive)
+    
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched filess
+    """
     lst = []
-    for root, _, files in os.walk(p, topdown=False):
+    for root, _, files in os.walk(directory, topdown=False):
         lst += [os.path.join(root, f) for f in files]
-    rr = re.compile(patt)
+    rr = re.compile(pattern)
     lst = [l for l in lst if re.match(rr, l)]
     return lst
 
 
-def findfiles(p, patt=None):
-    """ Get a list of files """
-    lst = os.listdir(p)
-    if not patt is None:
-        rr = re.compile(patt)
+def findfiles(directory, pattern=None):
+    """ Get a list of files 
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched files
+    """
+    lst = os.listdir(directory)
+    if not pattern is None:
+        rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
     return lst
 
 
-def finddirectories(p, patt=None):
-    """ Get a list of directories """
-    lst = os.listdir(p)
-    if not patt is None:
-        rr = re.compile(patt)
+def finddirectories(directory, pattern=None):
+    """ Get a list of directories 
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched directories
+    """
+    lst = os.listdir(directory)
+    if not pattern is None:
+        rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
-    lst = [l for l in lst if os.path.isdir(os.path.join(p, l))]
+    lst = [l for l in lst if os.path.isdir(os.path.join(directory, l))]
     return lst
 
 
@@ -366,7 +385,13 @@ def oaIsBinary(afile):
 
 
 def fac(n):
-    """ Return n! (factorial) """
+    """ Return n! (factorial) 
+    
+    Args:
+        n (int): number to calculate factorial
+    Returns
+        integer: factorial of number
+    """
     if n == 1 or n == 0:
         return 1
     else:
@@ -1048,11 +1073,12 @@ def compressOAfile(afile, decompress=False, verbose=1):
 
 
 def argsort(seq):
-    """ Stable argsort """
+    """ Stable version of argsort """
     # http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
     return sorted(range(len(seq)), key=seq.__getitem__)
 
 
+@deprecated
 def jseq(xx, comb):
     pp = functools.reduce(lambda y, i: xx[:, i] + y, comb, 0)
     jseq = 1 - 2 * np.mod(pp, 2)
@@ -1063,7 +1089,7 @@ def sortrows(x):
     """ Sort rows of an array, return indices"""
     if len(x.shape) == 1:
         nn = 1
-        sind = np.argsort(x)  # or np.argsort(x, order=('x', 'y'))
+        sind = np.argsort(x) 
         return sind
     else:
         nn = x.shape[1]
@@ -1074,16 +1100,21 @@ def sortrows(x):
         return sind
     v = [tuple(x[kk, :]) for kk in range(0, x.shape[0])]
     w = np.array(v, dtype=dt)
-    sind = np.argsort(w)  # or np.argsort(x, order=('x', 'y'))
+    sind = np.argsort(w) 
     return sind
 
 
-def sortcols(X):
-    """ Sort columns of an array, return indices"""
-    sind = sortrows(X.transpose())
+def sortcols(array):
+    """ Sort columns of an array, return indices
+    
+    Args:
+        array (numpy array)
+    Returns:
+        numpy array: array with columns sorted 
+    """
+    sind = sortrows(array.transpose())
     return sind
-
-
+    
 #%%
 
 
