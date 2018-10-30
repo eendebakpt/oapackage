@@ -547,13 +547,7 @@ lmc_t LMC_check_col_ft_2level_rowsymm (const array_t *originalcol, const array_t
  */
 lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                                const arraydata_t *ad, const dyndata_t *dd, const symmdata &sd, int dverbose) {
-#ifdef OADEBUG
-        if (dd->rowsortl == 0) {
-                printfd ("OADEBUG: error: dd->rowsortl==%ld\n", (long)dd->rowsortl);
-                lperm[-1] = -1; // trick to get feedback from valgrind
-        }
         myassert (dd->rowsortl != 0, "LMC_check_col_ft_2level: need rowsortl structure\n");
-#endif
 
         lmc_t ret = LMC_EQUAL;
         const int scol = dd->col - 1;
@@ -990,10 +984,8 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndat
         /* number of columns remaining in this group */
         const int ncolsremgroup = ad->colgroupsize[cg] + ad->colgroupindex[cg] - dyndata->col;
 
-#ifdef OADEBUG
-        myassertdebug (dyndata->col != ad->ncols,
+        myassert (dyndata->col != ad->ncols,
                        "LMC_non_root this code should not be reached!  dyndata->col!=ad->ncols\n");
-#endif
 
         lmc_t ret = LMC_MORE;
         init_perm< colindex_t > (colpermloop, remsize); // intialize for entire loop
