@@ -17,10 +17,14 @@
 
 /// structure containing current position in search tree
 struct depth_path_t {
-        std::vector< int > ncurr;   // vector with current position
-        std::vector< int > nmax;    // vector with target
-        std::vector< int > necols;  // number of extension columns
-        std::vector< int > ngecols; // number of good extension columns
+        /// vector with current position
+        std::vector< int > ncurr;  
+        /// vector with target
+        std::vector< int > nmax;    
+        /// number of extension columns
+        std::vector< int > necols;  
+        /// number of good extension columns
+        std::vector< int > ngecols; 
         int depthstart;
 
         depth_path_t () {}
@@ -336,7 +340,6 @@ struct depth_extend_t {
 #endif
                 {
                         if (arraywriter->nwritten > this->narraysmax) {
-                                /// HACK
                                 myprintf ("dextend_t: number of arrays written: %d, quitting\n",
                                           arraywriter->nwritten);
                                 this->counter->showcounts (*this->ad);
@@ -513,11 +516,13 @@ struct jindex_t {
 /// object to hold counts of maximum J_k-values
 class Jcounter {
       public:
-        int N; /// number of rows
+        /// number of rows
+        int N; 
         int jj;
         std::vector< int > fvals;
         std::map< jindex_t, long > maxJcounts;
-        double dt; /// time needed for calculation
+        /// time needed for calculation
+        double dt; 
 
         Jcounter () : N (-1), jj (-1) {}
 
@@ -531,113 +536,26 @@ class Jcounter {
         }
 
         /// return true if specified column is in the data
-        bool hasColumn (int col) const {
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-
-                        if (it->first.k == col) {
-                                return true;
-                        }
-                }
-                return false;
-        }
+        bool hasColumn (int col) const;
 
         bool isOpen () const { return N > 0; }
         void showPerformance () const {
                 myprintf ("Jcounter: %.1f Marrays/h\n", (1e-6 * 3600.) * double(narrays ()) / this->dt);
         }
-        long narrays () const {
-
-                long r = 0;
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        r += it->second;
-                }
-
-                return r;
-        }
+        long narrays () const;
 
         /// show statistics of the object
-        void show () const {
+        void show () const;
 
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        myprintf ("k %d: max(J%d) %d: %ld\n", it->first.k, this->jj, it->first.j, it->second);
-                }
-        }
+        int maxCols () const;
 
-        int maxCols () const {
-                int kmax = -1;
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        kmax = std::max (kmax, it->first.k);
-                }
+        long getCount (int k, int j) const;
 
-                return kmax;
-        }
-
-        long getCount (int k, int j) const {
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        if (it->first.j == j && it->first.k == k) {
-                                return it->second;
-                        }
-                }
-                return -1;
-        }
-
-        std::vector< long > getTotalsJvalue (int jval) const {
-                int nmax = maxCols ();
-                std::vector< long > k (nmax + 1);
-
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        if (it->second < 0) {
-                                myprintf ("Jcounter::getTotals: value -1 for index %s\n",
-                                          it->first.toString ().c_str ());
-                        } else {
-                                if (it->first.j == jval)
-                                        k[it->first.k] += it->second;
-                        }
-                }
-                return k;
-        }
-        std::vector< long > getTotals () const {
-                int nmax = maxCols ();
-                std::vector< long > k (nmax + 1);
-
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        if (it->second < 0) {
-                                myprintf ("Jcounter::getTotals: value -1 for index %s\n",
-                                          it->first.toString ().c_str ());
-                        } else {
-                                k[it->first.k] += it->second;
-                        }
-                }
-                return k;
-        }
+        std::vector< long > getTotalsJvalue (int jval) const;
+        std::vector< long > getTotals () const;
+        
         /// show statistics of the object
-        void showcompact () const {
-
-                int kprev = -1;
-                long nt = 0;
-                for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
-                     ++it) {
-                        if (it->first.k == kprev) {
-                                nt += it->second;
-                                myprintf ("; %d: %ld", it->first.j, it->second);
-                        } else {
-                                if (kprev != -1) {
-                                        myprintf ("; total %ld\n", nt);
-                                }
-                                nt = 0;
-                                myprintf ("k %d: max(J%d) %d: %ld", it->first.k, this->jj, it->first.j, it->second);
-                                kprev = it->first.k;
-                        }
-                }
-                myprintf ("; total %ld\n", nt);
-        }
+        void showcompact () const;
 
         Jcounter &operator+= (Jcounter &jc);
 
