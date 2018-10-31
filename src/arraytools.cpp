@@ -3402,7 +3402,7 @@ void jstruct_t::show () {
 
 void jstruct_t::showdata () {
         for (size_t x = 0; x < this->values.size (); x++) {
-                myprintf(printfstring (" %d", values[x]).c_str());
+                myprintf("%s", printfstring (" %d", values[x]).c_str());
         }
 		myprintf("\n");
 }

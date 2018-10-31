@@ -1399,7 +1399,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
 }
 
 // typedef Eigen::MatrixXd MyMatrix;
-typedef MatrixFloat MyMatrix;
+typedef MatrixFloat EigenMatrixFloat;
 
 std::vector< double > Defficiencies (const array_link &al, const arraydata_t &arrayclass, int verbose, int addDs0) {
         if ((al.n_rows > 500) || (al.n_columns > 500)) {
@@ -1409,11 +1409,10 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
 
         int k = al.n_columns;
         int k1 = al.n_columns + 1;
-        int n = al.n_rows;
-        int N = n;
+        int nrows = al.n_rows;
         int m = 1 + k + k * (k - 1) / 2;
 
-        MyMatrix X;
+        EigenMatrixFloat X;
 
         int n2fi = -1; /// number of 2-factor interactions in contrast matrix
         int nme = -1;  /// number of main effects in contrast matrix
@@ -1427,24 +1426,24 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
         } else {
                 if (verbose >= 2)
                         myprintf ("Defficiencies: mixed design!\n");
-                std::pair< MyMatrix, MyMatrix > mm = array2eigenModelMatrixMixed (al, 0);
-                const MyMatrix &X1 = mm.first;
-                const MyMatrix &X2 = mm.second;
-                X.resize (N, 1 + X1.cols () + X2.cols ());
-                X << MyMatrix::Constant (N, 1, 1), X1, X2;
+                std::pair< EigenMatrixFloat, EigenMatrixFloat > mm = array2eigenModelMatrixMixed (al, 0);
+                const EigenMatrixFloat &X1 = mm.first;
+                const EigenMatrixFloat &X2 = mm.second;
+                X.resize (nrows, 1 + X1.cols () + X2.cols ());
+                X << EigenMatrixFloat::Constant (nrows, 1, 1), X1, X2;
 
                 n2fi = X2.cols ();
                 nme = X1.cols ();
         }
-        MyMatrix matXtX = (X.transpose () * (X)) / n;
+        EigenMatrixFloat matXtX = (X.transpose () * (X)) / nrows;
 
         double f1 = matXtX.determinant ();
 
         int nm = 1 + nme + n2fi;
 
-        MyMatrix tmp (nm, 1 + n2fi); // tmp.resize ( nm, 1+n2fi);
+        EigenMatrixFloat tmp (nm, 1 + n2fi);
         tmp << matXtX.block (0, 0, nm, 1), matXtX.block (0, 1 + nme, nm, n2fi);
-        MyMatrix mX2i (1 + n2fi, 1 + n2fi); // X2i.resize ( 1+n2fi, 1+n2fi);
+        EigenMatrixFloat mX2i (1 + n2fi, 1 + n2fi); 
         mX2i << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + nme, 0, n2fi, 1 + n2fi);
 
         double f2i = (mX2i).determinant ();
@@ -1453,7 +1452,7 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
         double D = 0, Ds = 0, D1 = 0;
         int rank = m;
         if (fabs (f1) < 1e-15) {
-                Eigen::FullPivLU< MyMatrix > lu_decomp (X);
+                Eigen::FullPivLU< EigenMatrixFloat > lu_decomp (X);
                 rank = lu_decomp.rank ();
 
                 if (verbose >= 1) {
