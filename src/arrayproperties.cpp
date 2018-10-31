@@ -1133,6 +1133,8 @@ int _model2idx(const std::string mode) {
 	else if (mode == "q" || mode == "quadratic")
 		return 3;
 	else throw_runtime_exception("no such mode for model matrix");
+	
+	return -1;
 }
 
 array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose)

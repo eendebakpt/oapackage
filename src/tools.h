@@ -366,8 +366,6 @@ template < class atype > void show_array_dyn (const atype *array, const int x, c
 }
 #endif
 
-//inline void addelement (const array_t elem, int *elements) { elements[elem]++; }
-
 /// return time with milisecond precision
 double get_time_ms ();
 
@@ -378,15 +376,7 @@ double get_time_ms (double t0);
 void trim (std::string &str, const std::string &trimChars = "");
 
 /// return the current time as a string
-inline std::string currenttime () {
-        time_t seconds;
-        struct tm *tminfo;
-        time (&seconds);
-        tminfo = localtime (&seconds);
-        std::string ts = asctime (tminfo);
-        trim (ts);
-        return ts;
-}
+std::string currenttime ();
 
 /// return string describing array
 std::string oafilestring (const arraydata_t *ad);
@@ -549,13 +539,7 @@ inline std::string replaceString (std::string subject, const std::string &search
 }
 
 /// print a double value as bits
-inline void printdoubleasbits (double double_value) {
-        unsigned char *desmond = (unsigned char *)&double_value;
-        for (size_t i = 0; i < sizeof (double); i++) {
-                myprintf ("%02X ", desmond[i]);
-        }
-        myprintf ("\n");
-}
+void printdoubleasbits (double double_value, bool add_newline = true);
 
 /// calculate directory name for job splitted into parts
 std::string splitDir (std::vector< int > ii);

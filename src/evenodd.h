@@ -194,7 +194,6 @@ struct depth_extend_sub_t {
                                   lmctype.size ());
                 arraylist_t ga;
                 for (size_t i = 0; i < lmctype.size (); i++) {
-                        // size_t ii = valididx[i];
                         if (verbose >= 3)
                                 myprintf ("  depth_extend_sub_t.selectArraysZ: array %ld: lmctype %d\n", i,
                                           lmctype[i]);
