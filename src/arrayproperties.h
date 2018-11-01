@@ -28,7 +28,7 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, 
  *
  * The vector ret is filled with the rank, Defficiency, VIF efficiency and Eefficiency
  */
-int array_rank_D_B (const array_link &al, std::vector< double > *ret = 0, int verbose = 0);
+int array2rank_Deff_Beff (const array_link &al, std::vector< double > *ret = 0, int verbose = 0);
 
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition
 double Defficiency (const array_link &al, int verbose = 0);
@@ -133,6 +133,16 @@ array_link array2secondorder (const array_link &array);
  * \returns Array with intercept, main effects and interaction effects
  */
 array_link array2xf (const array_link &array);
+
+/**
+ * Intercept, main effects, interaction effects, quadratics
+ * The order in the interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1
+ *
+ */
+Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
+
+
+std::vector<int> array2modelmatrix_sizes(const array_link &array);
 
 /** calculate second order interaction model for 2-level array
 *
@@ -394,19 +404,19 @@ inline void parseArrayPareto (const array_link &al, IndexType i, Pareto< mvalue_
 #endif // FULLPACKAGE
 
 /// convert C value to D-efficiency value
-inline double Cvalue2Dvalue (double C, int ka) {
-        double ma = 1 + ka + ka * (ka - 1) / 2;
-        double A = pow (C, 1. / ma);
+inline double Cvalue2Dvalue (double Cvalue, int number_of_columns) {
+        double ma = 1 + number_of_columns + number_of_columns * (number_of_columns - 1) / 2;
+        double Defficiency = pow (Cvalue, 1. / ma);
 
-        return A;
+        return Defficiency;
 }
 
 /// convert D-efficiency value to C value
-inline double Dvalue2Cvalue (double A, int ka) {
-        int ma = 1 + ka + ka * (ka - 1) / 2;
-        double C = pow (A, ma);
+inline double Dvalue2Cvalue (double Defficiency, int number_of_columns) {
+        int ma = 1 + number_of_columns + number_of_columns * (number_of_columns - 1) / 2;
+        double Cvalue = pow (Defficiency, ma);
 
-        return C;
+        return Cvalue;
 }
 
 

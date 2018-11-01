@@ -52,8 +52,45 @@ class TestReductions(unittest.TestCase):
         alr = oapackage.reduceDOPform(al)
         self.assertTrue(transformation.apply(al) == alr)
 
+class TestModelmatrix(unittest.TestCase):
 
+    def test_modelmatrix(self):
+        al = oapackage.exampleArray(1)
+
+        sizes=oapackage.array2modelmatrix_sizes(al)
+        k=al.n_columns
+        self.assertEqual(sizes, (1, 1+k, int(1+k+k*(k-1)/2), int(1+k+k*(k+1)/2)) )
+        
+        model_matrix = oapackage.array2modelmatrix(al, "main",1)
+        np.testing.assert_array_equal(2*np.array(al)-1, model_matrix[:,1:])
+        
+        conf_design = oapackage.exampleArray(41,1)
+        sizes=oapackage.array2modelmatrix_sizes(conf_design)
+        k=conf_design.n_columns
+        self.assertEqual(sizes, (1, 1+k, int(1+k+k*(k-1)/2), int(1+k+k*(k+1)/2)) )
+        model_matrix = oapackage.array2modelmatrix(conf_design, "i",1)
+        self.assertTrue(model_matrix.shape[1]==sizes[2])
+        model_matrix = oapackage.array2modelmatrix(conf_design, "q",1)
+        
+        last_column = np.array(conf_design)[:,-1]
+        
+        np.testing.assert_array_equal(model_matrix[:,-1], last_column*last_column)
+        
+        self.assertTrue(model_matrix.shape[1]==sizes[3])
+        
+        
 class TestArrayLink(unittest.TestCase):
+
+
+    def test_selectFirstColumns(self):
+        al = oapackage.exampleArray(41, 1)
+        al = al.selectFirstColumns(3)
+        assert(al.n_columns == 3)
+
+        al = oapackage.exampleArray(1000, 1)
+
+        with self.assertRaises(RuntimeError):
+            al = al.selectFirstColumns(1)
 
     def test_basic_array_link_functionality(self):
         al2a = oapackage.array_link(2, 2, 0)
@@ -76,6 +113,14 @@ class TestArrayLink(unittest.TestCase):
             self.assertEqual(al.shape, (al.n_rows, al.n_columns ) )
         with self.assertRaises(AttributeError):
             al.shape=1
+
+    def test_is_ortogonal_array(self):
+        al = oapackage.exampleArray(1)
+        self.assertTrue(al.is_orthogonal_array())
+        al[1,2]=-1
+        self.assertFalse(al.is_orthogonal_array())
+        al = oapackage.exampleArray(41)
+        self.assertFalse(al.is_orthogonal_array())
             
     def test_array_class_functions(self):
         al = oapackage.exampleArray(1)
@@ -179,16 +224,6 @@ class TestCppLibrary(unittest.TestCase):
         al = oapackage.oalib.exampleArray(18, 1)
         with self.assertRaisesRegex(RuntimeError, "array cannot have negative elements"):
             _ = oapackage.array2eigenModelMatrixMixed(al, 2)
-
-    def test_selectFirstColumns(self):
-        al = oapackage.exampleArray(41, 1)
-        al = al.selectFirstColumns(3)
-        assert(al.n_columns == 3)
-
-        al = oapackage.exampleArray(1000, 1)
-
-        with self.assertRaises(RuntimeError):
-            al = al.selectFirstColumns(1)
 
     def test_mycheck_handler(self):
         oapackage.mycheck_handler('a', 'b', 1, 1, 'bla')

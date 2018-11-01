@@ -11,6 +11,7 @@
 %include "std_vector.i"
 %include "std_deque.i"
 %include "std_pair.i"
+%include "exception.i"
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -346,7 +347,6 @@ namespace std {
    
 };
 
-%include "exception.i"
 %exception array_link::selectFirstColumns {
   try {
     $action

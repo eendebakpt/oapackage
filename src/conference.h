@@ -309,7 +309,7 @@ int maxz (const array_link &al, int column_index = -1);
  */
 bool compareLMC0 (const array_link &alL, const array_link &alR);
 
-/// sort list of arrays according to LMC-0 ordering
+/// sort list of conference designs according to LMC-0 ordering
 arraylist_t sortLMC0 (const arraylist_t &lst);
 
 /// LMC0 check for double conference matrix

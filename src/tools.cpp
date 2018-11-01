@@ -231,6 +231,16 @@ void trim (std::string &str, const std::string &trimChars) {
         }
 }
 
+std::string currenttime () {
+        time_t seconds;
+        struct tm *tminfo;
+        time (&seconds);
+        tminfo = localtime (&seconds);
+        std::string ts = asctime (tminfo);
+        trim (ts);
+        return ts;
+}
+
 /* this integer determines to level of logging */
 static int streamloglvl = NORMAL;
 
@@ -352,6 +362,15 @@ char path_separator () {
 #else
         return '/';
 #endif
+}
+
+void printdoubleasbits (double double_value, bool add_newline) {
+        unsigned char *desmond = (unsigned char *)&double_value;
+        for (size_t i = 0; i < sizeof (double); i++) {
+                myprintf ("%02X ", desmond[i]);
+        }
+        if (add_newline)
+			myprintf ("\n");
 }
 
 /// calculate directory name for job splitted into parts

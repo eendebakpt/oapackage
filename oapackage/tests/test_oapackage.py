@@ -192,6 +192,13 @@ class TestOAfiles(unittest.TestCase):
 
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
+    def test_findfiles(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        lst = [oapackage.exampleArray(4, 1)]
+        oapackage.writearrayfile(array_filename, lst)
+        lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
+        self.assertIn(os.path.split(array_filename)[-1], lst)
+        
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
@@ -203,6 +210,21 @@ class TestOAfiles(unittest.TestCase):
     def test_finddirectories(self):
         _ = oapackage.oahelper.finddirectories(os.getcwd())
 
+
+class TestParetoFunctionality:
+    def test_selectParetoArrays(self):
+        
+        arrays=[oapackage.array_link(np.array([[ii]])) for ii in range(5)]
+        pareto_object = oapackage.ParetoLongLong()
+        
+        for ii in range(len(arrays)):
+            value=[ii,ii%2]
+            pareto_object.addvalue(value, ii)
+        pareto_object.show(2)
+
+        selected=oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
+        self.assertEqual(selected, arrays[4,5])
+    
 
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
@@ -278,11 +300,13 @@ class TestOAhelper(unittest.TestCase):
         s = oapackage.oahelper.floatformat(3.14, mind=1, maxd=2)
         self.assertEqual(s, '3.1')
 
-    def test_safemin(self):
+    def test_safemin_safemax(self):
         r = oapackage.oahelper.safemin(np.array([1, -2, 3]), default=0)
         self.assertEqual(r, -2)
         r = oapackage.oahelper.safemin(np.array([]), default=-2)
         self.assertEqual(r, -2)
+        r = oapackage.oahelper.safemax(np.array([1, -2, 3]), default=0)
+        self.assertEqual(r, 3)
 
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
@@ -336,6 +360,11 @@ class TestOAhelper(unittest.TestCase):
     def test_sortrows(self):
         a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]])
         s = oapackage.oahelper.sortrows(a)
+        self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
+
+    def test_sortcols(self):
+        a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]]).T
+        s = oapackage.oahelper.sortcols(a)
         self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
 
 
