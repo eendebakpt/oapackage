@@ -245,20 +245,17 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose = 
 /// perform strength check on an array
 bool strength_check (const array_link &al, int strength, int verbose = 0);
 
-#ifdef FULLPACKAGE
 /**
  * @brief Determine whether an element passes the strength test
  * @param es
- * @param p
- * @param array
+ * @param position
+ * @param array Pointer to array
  * @return
  */
-bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array);
+bool valid_element (const extend_data_t *es, const extendpos *position, carray_t *array);
 
 /** Determine whether an element passes the strength test, specialized for 2-level array */
 bool valid_element_2level (const extend_data_t *es, const extendpos *p);
-
-#endif
 
 #endif
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

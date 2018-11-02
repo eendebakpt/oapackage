@@ -505,8 +505,6 @@ void recount_frequencies (int **frequencies, extend_data_t *es, colindex_t curre
         }
 }
 
-#ifdef FULLPACKAGE
-
 bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array)
 /*Put the possibliy correct value in p->value and it will be tested, given the frequency table, lambdas etc*/
 {
@@ -518,13 +516,9 @@ bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array
         int *freqpositions2 = es->element2freqtable[idx];
         freq_t *freqtable0 = &(es->freqtable[0][0]);
 
-        // OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a
-        // difference for cases with high strength and high number of columns
-        for (int z = 0; z < es->ncolcombs; z++) {
-                
+        for (int z = 0; z < es->ncolcombs; z++) {              
                         if (freqtable0[freqpositions2[z]] + 1 > es->lambda[z])
                                 return false;
-                
         }
         return true;
 #else
@@ -561,17 +555,9 @@ bool valid_element_2level (const extend_data_t *es, const extendpos *p)
         int *freqpositions2 = es->element2freqtable[idx];
         freq_t *freqtable0 = &(es->freqtable[0][0]);
 
-        // OPTIMIZE: we can improve the performance by changing the ordering in the frequency table. this makes a
-        // difference for cases with high strength and high number of columns
         for (int z = 0; z < es->ncolcombs; z++) {
-                // int freq_pos = freqpositions[z];
-
-                // OPTIMIZE: create a lambda minus one table
-                // IDEA: use structure of freqtable to make better indexing
-
                 if (freqtable0[freqpositions2[z]] >=
-                    es->lambda2lvl) { // (es->freqtable[z][freq_pos]  >= es->lambda2lvl)
-                        // cout << "colcomb:" << z << endl;
+                    es->lambda2lvl) { 
                         return false;
                 }
         }
@@ -581,8 +567,6 @@ bool valid_element_2level (const extend_data_t *es, const extendpos *p)
         printf ("valid_element_2level: not implemented\n");
 #endif
 }
-
-#endif
 
 bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
         myassert (ad.ncols >= al.n_columns, "strength_check: array has too many columns");
@@ -599,13 +583,10 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
         strengthcheck.colcombs = set_colcombs_fixed (strengthcheck.lambda, strengthcheck.nvalues,
                                                      strengthcheck.ncolcombs, ad.s, ad.strength, fixcol, ad.N);
 
-        // myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
         strengthcheck.indices =
             set_indices (strengthcheck.colcombs, ad.s, ad.strength,
                          strengthcheck.ncolcombs); // sets indices for frequencies, does the malloc as well
         strengthcheck.create_reverse_colcombs_fixed ();
-
-        //	strengthcheck.r_index = create_reverse_colcombs_fixed(ncolcombs);
 
         int val = true;
         strengthcheck.freqtable =
@@ -618,11 +599,8 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
                 myprintf ("before:\n");
                 strengthcheck.print_frequencies ();
         }
-        //   myprintf ( "  table of size %d\n", strengthcheck.freqtablesize );
 
         for (int i = 0; i < strengthcheck.ncolcombs; i++) {
-                // myprintf ( "columns %d: ", i ); print_perm ( strengthcheck.colcombs[i], strength );
-
                 assert (ad.N <= MAXROWS);
                 int valindex[MAXROWS];
                 std::fill_n (valindex, ad.N, 0);
@@ -641,8 +619,6 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
                 }
 
                 for (int j = 0; j < strengthcheck.nvalues[i]; j++) {
-                        //    myprintf ( "strength: i %d, j %d: %d %d\n", i, j, strengthcheck.freqtable[i][j],
-                        //    nvalues[i] );
                         if (strengthcheck.freqtable[i][j] != ad.N / strengthcheck.nvalues[i]) {
                                 if (verbose >= 2)
                                         myprintf ("no good strength: i %d, j %d: %d %d\n", i, j,
@@ -655,13 +631,10 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
                 if (val == false)
                         break;
         }
-        // myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
         if (verbose >= 2) {
                 myprintf ("table of counted value pairs\n");
                 strengthcheck.print_frequencies ();
         }
-        //	print_frequencies(strengthcheck.freqtable, strengthcheck.ncolcombs, nvalues, ad.N);
-
         return val;
 }
 
