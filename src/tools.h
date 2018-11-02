@@ -4,8 +4,7 @@
  * Author: Pieter Eendebak <pieter.eendebak@gmail.com>
  * Copyright: See LICENSE.txt file that comes with this distribution
  */
-#ifndef TOOLS_H
-#define TOOLS_H
+#pragma once
 
 #include <algorithm>
 #include <iomanip>
@@ -550,5 +549,4 @@ std::string splitFile (std::vector< int > ii);
 /// calculate tag for job splitted into parts
 std::string splitTag (std::vector< int > ii);
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+

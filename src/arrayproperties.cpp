@@ -1131,7 +1131,7 @@ int _model2idx(const std::string mode) {
 		return 2;
 	else if (mode == "q" || mode == "quadratic")
 		return 3;
-	else throw_runtime_exception(printfstring("mode %s is not valid for model matrix", mode));
+	else throw_runtime_exception(printfstring("mode %s is not valid for model matrix", mode.c_str()));
 
 	return -1;
 }
