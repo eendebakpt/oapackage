@@ -51,7 +51,7 @@ implemented in the Eigen package :cite:`eigenweb`, is used.
 
    .. math::
     
-       {D(X)} = (\prod_j \lambda_j)^{1/m} / N, 
+       {D(X)} = (\prod_j \lambda_j)^{1/m} / N = (\det I(X) )^{1/m}, 
        \label{formula:Defficiency} \\
        {\mathrm{VIF}(X)} = N (\sum_j \lambda_j^{-1})/m 
        \label{formula:VIF} \\ 

@@ -19,7 +19,7 @@
 #define stringify(name) #name
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
-void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
+void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
 
 /** Calculate the rank of the second order interaction matrix of an orthogonal array
  *

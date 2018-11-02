@@ -23,8 +23,14 @@ void print_cperm(const conference_column &c, const char *msg = 0);
  */
 void showCandidates (const std::vector< conference_column > &cc);
 
-/// convert conference design to definitive screening design
-array_link conference2DSD(const array_link &conf, bool add_zeros = 1);
+/** Convert conference design to definitive screening design
+ *
+ * The DSD is created by appending the negated design to the conference design and then appending a row of zeros.
+ *
+ * \param conference_design Array with the conference design
+ * \param add_zeros If True, then append a row of zeros
+ */
+array_link conference2DSD(const array_link &conference_design, bool add_zeros = 1);
 
 /// structure to cache a list of candidate extensions
 struct conf_candidates_t {
@@ -45,16 +51,22 @@ struct conf_candidates_t {
 /// Structure representing the type of conference designs
 class conference_t {
       public:
-        rowindex_t N;     /// number of runs
-        colindex_t ncols; /// total number of columns (factors) in the design
+		/// number of runs
+        rowindex_t N;     
+		/// total number of columns (factors) in the design
+        colindex_t ncols; 
 
         /// Type of conference design
         enum conference_type { CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE };
-        conference_type ctype;      /// defines the type of designs
-        matrix_isomorphism_t itype; /// defines the isomorphism type
+		/// defines the type of designs
+		conference_type ctype;      
+		/// defines the isomorphism type
+        matrix_isomorphism_t itype; 
 
-        bool j1zero; /// if true then J1 values should be zero
-        bool j3zero; /// if true then J3 values should be zero
+		/// if true then J1 values should be zero
+        bool j1zero; 
+		/// if true then J3 values should be zero
+        bool j3zero; 
 
       public:
         /// create new conference_t object
@@ -88,34 +100,6 @@ array_link reduceConference (const array_link &, int verbose = 0);
 
 /// reduce conference matrix to normal form
 conference_transformation_t reduceConferenceTransformation (const array_link &al, int verbose);
-
-/** Helper structure containing extensions of conference designs
- */
-struct conference_extend_t {
-        std::vector< conference_column > first;      /// list of first block candidate extensions
-        std::vector< conference_column > second;     /// list of first block candidate extensions
-        std::vector< conference_column > extensions; /// list of candidate extensions
-
-      public:
-        // combine first and second section into a single column
-        conference_column combine (int i, int j) const {
-                conference_column c = vstack (this->first[i], this->second[j]);
-                return c;
-        }
-
-        size_t nExtensions () const { return this->extensions.size (); }
-
-        /// return the set of extension arrays
-        arraylist_t getarrays (const array_link al) const {
-                arraylist_t ll;
-
-                for (size_t i = 0; i < this->extensions.size (); i++) {
-                        array_link alx = hstack (al, extensions[i]);
-                        ll.push_back (alx);
-                }
-                return ll;
-        }
-};
 
 /// return true if zero is a specified position
 inline bool checkZeroPosition (const conference_column &p, int zero_position) {
@@ -235,10 +219,6 @@ class CandidateGeneratorDouble : public CandidateGeneratorBase {
          */
         const std::vector< conference_column > &generateCandidates (const array_link &al) const;
 };
-
-/** Extend a single conference design with candidate columns */
-conference_extend_t extend_conference_matrix (const array_link &al, const conference_t &ct, int extcol,
-                                              int verbose = 1, int maxzpos = -1);
 
 /** Extend a list of conference designs with a single column.
  *
