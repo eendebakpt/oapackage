@@ -5,8 +5,8 @@
  * and E.D. Schoen, 2017
  */
 
-#ifndef DEFF_H
-#define DEFF_H
+#pragma once
+
 
 #include "arrayproperties.h"
 #include "arraytools.h"
@@ -69,5 +69,3 @@ DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestarts, const std:
 DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector< double > alpha,
                              int verbose = 1, int nabort = -1);
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

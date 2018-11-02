@@ -13,8 +13,6 @@
 #define MAXCOLS 60
 #define MAXROWS 2048
 
-const int HACK = 0;
-
 /* output analysis data */
 //#define OAANALYZE 1
 

@@ -84,8 +84,7 @@ extend_data_t::extend_data_t (const arraydata_t *ad, colindex_t extcol)
         /* set column combinations with extending column fixed */
         int ncolcombs;
         es->colcombs = set_colcombs_fixed (es->lambda, es->nvalues, ncolcombs, ad->s, ad->strength, extcol, ad->N);
-        es->lambda2lvl = es->adata->N / pow (double(2), ad->strength); // NOTE: use cross-platform interger power
-        // printf("lambda2lvl: %d %d\n", es->lambda[0], es->lambda2lvl);
+        es->lambda2lvl = es->adata->N / pow (double(2), ad->strength);
         es->indices = set_indices (es->colcombs, ad->s, ad->strength,
                                    ncolcombs); // sets indices for frequencies, does the malloc as well
         es->r_index = create_reverse_colcombs_fixed (ncolcombs);

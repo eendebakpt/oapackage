@@ -1921,6 +1921,21 @@ void combadd2perm (const larray< numtype > &comb, int newidx, int n, larray< num
         }
 }
 
+template < class numtype >
+/// Convert selection of elements to extended permutation
+std::vector< numtype > comb2perm(const std::vector< numtype > comb, int n) {
+	std::vector< numtype > w(n);
+	std::copy(comb.begin(), comb.end(), w.begin());
+	numtype j = comb.size();
+	for (int i = 0; i < n; i++) {
+		bool c = std::find(comb.begin(), comb.end(), i) != comb.end();
+		if (!c) {
+			w[j] = i;
+			j++;
+		}
+	}
+	return w;
+}
 lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const OAextend &oaextend,
                               LMCreduction_t &reduction, LMCreduction_t &reductionsub, int dverbose) {
 
@@ -1983,7 +1998,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
 
                         // initialize dyndata with rowperm and init level perms
                         dyndata.initsymmetry (reductionsub.symms.symmetries[i][j], sd, i);
-                        // note: above call  is expensive, merge with initrowsortl call
 
                         if (dverbose >= 2) {
                                 myprintf ("  dyndata perm: ");
@@ -1994,7 +2008,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                         if (oaextend.getAlgorithm () == MODE_LMC_SYMMETRY ||
                             oaextend.getAlgorithm () == MODE_J5ORDERXFAST ||
                             oaextend.getAlgorithm () == MODE_LMC_2LEVEL) {
-                                // TODO: make call to LMCreduce_non_root_2level more generic
                                 dyndata.initrowsortl ();
                                 r = LMCreduce_non_root_2level (al.array, &adfix, &dyndata, &reduction, oaextend,
                                                                *tmpStatic);
@@ -2063,8 +2076,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                 adfix.show_colgroups ();
                         }
 
-                        // NOTE: allow non-proper initialization of array
-                        // reduction.mode=LMC_REDUCE_INIT;
                         reduction.mode = OA_TEST;
 
                         array_link alx = al.selectColumns (ww);
@@ -2115,10 +2126,8 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                                 myprintf ("	--> ");
                         }
 
-                        // initialize dyndata with w
                         dyndata.reset ();
-                        dyndata.col = ad.strength; // set at col after root
-                        dyndata.col = 0;           // ?
+                        dyndata.col = 0;           
 
                         dyndata.setColperm (ww);
                         if (dverbose >= 2) {

@@ -6,8 +6,7 @@
  Copyright: See LICENSE.txt file that comes with this distribution
 */
 
-#ifndef MATHTOOLS_H
-#define MATHTOOLS_H
+#pragma once
 
 #include "printfheader.h"
 #ifdef FULLPACKAGE
@@ -1795,5 +1794,3 @@ double fraction_nonzero(std::vector < NumericType> data) {
 	return nonzero / data.size();
 }
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

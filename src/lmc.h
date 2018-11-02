@@ -31,8 +31,7 @@ For more information please contact Pieter Eendebak, <pieter.eendebak@gmail.com>
   @sa extend_array(), LMCreduce(), array_link, arraydata_t
   */
 
-#ifndef LMC_H
-#define LMC_H
+#pragma once
 
 #include <assert.h>
 #include <iomanip>
@@ -838,22 +837,6 @@ larray< numtype > comb2perm (const larray< numtype > comb, int n) {
         return w;
 }
 
-template < class numtype >
-/// Convert selection of elements to extended permutation
-std::vector< numtype > comb2perm (const std::vector< numtype > comb, int n) {
-        std::vector< numtype > w (n);
-        std::copy (comb.begin (), comb.end (), w.begin ());
-        numtype j = comb.size ();
-        for (int i = 0; i < n; i++) {
-                bool c = std::find (comb.begin (), comb.end (), i) != comb.end ();
-                if (!c) {
-                        w[j] = i;
-                        j++;
-                }
-        }
-        return w;
-}
-
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
@@ -896,11 +879,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 #endif
 
 
-/* helper functions */
-
-//rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
-//void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level, int &permcounter);
-
 /**
 * @brief Print the contents of a rowsort structure
 * @param rowsort Pointer to rowsort structure
@@ -910,4 +888,3 @@ void print_rowsort (rowsort_t *rowsort, int N);
 void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N);
 
 
-#endif

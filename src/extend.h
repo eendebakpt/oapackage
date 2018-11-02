@@ -90,11 +90,9 @@ class OAextend {
 
         /// return preferred extension algorithm
         static inline algorithm_t getPreferredAlgorithm (const arraydata_t &ad, int verbose = 0) {
-                // verbose=2;
                 if (verbose)
                         myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
                 if (ad.ncolgroups == 1 && ad.s[0] == 2 && (ad.strength == 3)) {
-                        // printf(" using MODE_J4\n");
                         return MODE_J4;
                 } else
                         return MODE_ORIGINAL;

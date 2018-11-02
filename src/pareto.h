@@ -30,8 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#ifndef PARETO_H
-#define PARETO_H
 
 #ifdef RPACKAGE
 // not implemented...
@@ -113,7 +111,8 @@ struct pareto_element {
                 }
                 return true;
         }
-        bool isdominated (pValue v) {
+		/// return true of the argument element is dominated by this value
+		bool isdominated (pValue v) {
                 for (size_t i = 0; i < v.size (); i++) {
                         if (value[i] > v[i]) {
                                 return false;
@@ -282,5 +281,3 @@ class Pareto {
         }
 };
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
