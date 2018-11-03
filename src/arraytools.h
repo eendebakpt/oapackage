@@ -232,7 +232,7 @@ struct arraydata_t {
         /// return random array from the class. this operation is only valid for strength 0 or 1
         array_link randomarray (int strength = 0, int ncols = -1) const;
 
-        /** @brief Write file with design of OA
+        /** @brief Write file with specification of orthognal array class
 		 *
          * @param filename
          * @return
