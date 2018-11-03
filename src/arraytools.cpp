@@ -2828,6 +2828,46 @@ arraydata_t::~arraydata_t () {
         delete[] colgroupsize;
 }
 
+/// @brief assignment operator
+arraydata_t& arraydata_t::operator= (const arraydata_t &ad2) {
+	this->N = ad2.N;
+	this->strength = ad2.strength;
+	this->ncols = ad2.ncols;
+	this->order = ad2.order;
+	if (s != 0) {
+		delete[] s;
+	}
+	this->s = new array_t[this->ncols];
+
+	if (ad2.s == 0) {
+		myprintf("error: invalid arraydata_t structure\n");
+	}
+	std::copy(ad2.s, ad2.s + this->ncols, s);
+	return *this;
+}
+
+/// @brief Comparison operator
+int arraydata_t::operator== (const arraydata_t &ad2) {
+	if (this->N != ad2.N) {
+		return 0;
+	}
+
+	if (this->ncols != ad2.ncols) {
+		return 0;
+	}
+	if (!std::equal(this->s, this->s + this->ncols, ad2.s)) {
+		return 0;
+	}
+	if (this->strength != ad2.strength) {
+		return 0;
+	}
+	if (this->order != ad2.order) {
+		return 0;
+	}
+
+	return 1;
+};
+
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
         colindex_t ncols = ad.ncols;

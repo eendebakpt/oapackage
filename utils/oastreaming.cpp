@@ -164,12 +164,10 @@ int main (int argc, char *argv[]) {
         ad = readConfigFile (oaconfigfile);
         if (ad == 0)
                 return 1;
-        // ad->show(3);
 
         log_print (NORMAL, "Using design file: %s (runs %d, strength %d)\n", oaconfigfile, ad->N, ad->strength);
 
         if (oaextend.getAlgorithm () == MODE_AUTOSELECT) {
-                // oaextend.algmode = OAextend::getPreferredAlgorithm(*ad);
                 oaextend.setAlgorithmAuto (ad);
         }
 

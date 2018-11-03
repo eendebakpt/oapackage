@@ -784,7 +784,7 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
 
 #ifdef FREQELEM
         /* set elem frequencies */
-        init_frequencies (es, array);
+        es->init_frequencies (array);
 #endif
 
         /* check whether we are in the same column group */

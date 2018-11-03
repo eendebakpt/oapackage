@@ -783,8 +783,6 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 
 typedef double jj45_t;
 
-/** Apply a random transformation to an array **/
-void random_transformation (array_t *array, const arraydata_t *adp);
 
 /* helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
@@ -815,33 +813,13 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
 lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const OAextend &oaextend,
                               LMCreduction_t &reduction, LMCreduction_t &reductionsub, int dverbose);
 
-template < class numtype >
-/// Convert selection of elements to extended permutation
-larray< numtype > comb2perm (const larray< numtype > comb, int n) {
-        larray< numtype > w (n);
-        larray< numtype > wtmp (n);
-        for (int i = 0; i < n; i++) {
-                wtmp[i] = i;
-        }
-        int j = comb.size ();
-        for (int i = 0; i < j; i++) {
-                w[i] = comb[i];
-                wtmp[comb[i]] = -1;
-        }
-        for (int i = 0; i < n; i++) {
-                if (wtmp[i] >= 0) {
-                        w[j] = wtmp[i];
-                        j++;
-                }
-        }
-        return w;
-}
 
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
-array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
+/// Caculate the transformation to delete-on-factor normal for from an array
+array_transformation_t reductionDOP (const array_link &array, int verbose = 0);
 
 /// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
 void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);

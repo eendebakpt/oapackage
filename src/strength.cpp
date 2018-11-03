@@ -66,6 +66,63 @@ inline int get_oaindex(const array_t *s, const colindex_t strength, const colind
 }
 
 /**
+* Return all column combinations including a fixed column.
+* At the same time allocate space for the number of values these columns have
+* @param xlambda
+* @param nvalues
+* @param ncolcombs
+* @param s
+* @param strength
+* @param fixedcol
+* @param N
+* @return
+*/
+colindex_t **set_colcombs_fixed(int *&xlambda, int *&nvalues, int &ncolcombs, const array_t *s, const int strength,
+	const int fixedcol, const int N) {
+	log_print(DEBUG + 1, "set_colcombs_fixed: strength %d, fixedcol %d, N%d\n", strength, fixedcol, N);
+	register int i, j;
+	int prod;
+	colindex_t **colcombs = 0;
+
+	int n = fixedcol;
+	int k = strength - 1; // we keep 1 column fixed, choose k columns
+	ncolcombs = ncombs(n, k);
+
+	colcombs = malloc2d< colindex_t >(ncolcombs, strength);
+	xlambda = (int *)malloc(ncolcombs * sizeof(int));
+	nvalues = (int *)malloc(ncolcombs * sizeof(int));
+
+	log_print(DEBUG, "ncolcombs: %d\n", ncolcombs);
+
+	/* set last entry to fixed column */
+	for (i = 0; i < ncolcombs; i++)
+		colcombs[i][k] = fixedcol;
+
+	for (i = 0; i < k; i++) // set initial combination
+		colcombs[0][i] = i;
+
+	for (i = 1; i < ncolcombs; i++) {
+		memcpy(colcombs[i], colcombs[i - 1], k * sizeof(colindex_t));
+		next_combination< colindex_t >(colcombs[i], k, n);
+
+		prod = 1;
+		for (j = 0; j < strength; j++) {
+			prod *= s[colcombs[i][j]];
+		}
+		nvalues[i] = prod;
+		xlambda[i] = N / prod;
+	}
+
+	prod = 1; // First lambda manually, because of copy-for-loop
+	for (i = 0; i < strength; i++)
+		prod *= s[colcombs[0][i]];
+	nvalues[0] = prod;
+	xlambda[0] = N / prod;
+
+	return colcombs;
+}
+
+/**
  * @brief Constructor fuction
  */
 extend_data_t::extend_data_t (const arraydata_t *ad, colindex_t extcol)
@@ -445,17 +502,17 @@ void print_frequencies (int **frequencies, const int nelements, const int *lambd
  * @param es
  * @param array
  */
-void init_frequencies (extend_data_t *es, array_t *array) {
+void extend_data_t::init_frequencies (array_t *array) {
+	    extend_data_t *es = this;
         log_print (DEBUG, "init_frequencies: extension column %d\n", es->extcolumn);
-        array_t sc = es->adata->s[es->extcolumn];
+        array_t number_factor_levels = es->adata->s[es->extcolumn];
 
         /* loop over rows */
         for (rowindex_t row = 0; row < es->adata->N; row++) {
                 /* loop over all values of the rows */
-                for (array_t v = 0; v < sc; v++) {
-                        int idx = row * sc + v;
+                for (array_t value_idx = 0; value_idx < number_factor_levels; value_idx++) {
+                        int idx = row * number_factor_levels + value_idx;
 
-                        // log_print(NORMAL-1, "init_frequencies: setting idx %d\n", idx);
                         /* clear data */
                         memset (es->freqtable_elem[idx], 0, es->ncolcombs * sizeof (int));
                         memset (es->element2freqtable[idx], 0, es->ncolcombs * sizeof (int));
@@ -468,7 +525,7 @@ void init_frequencies (extend_data_t *es, array_t *array) {
                         for (int i = 0; i < es->ncolcombs; i++) {  // find all columns column p->col is involved with
                                 cur_combi = es->r_index->index[i]; /* select a combination of t columns */
                                 array_t tmp = array[es->adata->N * es->extcolumn + row];
-                                array[es->adata->N * es->extcolumn + row] = v;
+                                array[es->adata->N * es->extcolumn + row] = value_idx;
                                 int freq_pos = freq_position (N, row, strength, es->colcombs[cur_combi],
                                                               es->indices[cur_combi], array);
                                 es->freqtable_elem[idx][i] = freq_pos;
@@ -660,7 +717,6 @@ bool check_divisibility (const arraydata_t *ad) {
                 prod = 1;
                 for (int j = 0; j < ad->strength; j++) {
                         prod *= ad->s[colcombs[j]];
-                        // cout << "prod: " << prod << endl;
                 }
                 if (ad->N % prod != 0) {
                         log_print (SYSTEM, "Failed divisibility test!\n");
@@ -676,53 +732,6 @@ bool check_divisibility (const arraydata_t *ad) {
         free (colcombs);
 
         return ret;
-}
-
-colindex_t **set_colcombs_fixed (int *&xlambda, int *&nvalues, int &ncolcombs, const array_t *s, const int strength,
-                                 const int fixedcol, const int N) {
-        log_print (DEBUG + 1, "set_colcombs_fixed: strength %d, fixedcol %d, N%d\n", strength, fixedcol, N);
-        register int i, j;
-        int prod;
-        colindex_t **colcombs = 0;
-
-        int n = fixedcol;
-        int k = strength - 1; // we keep 1 column fixed, choose k columns
-        ncolcombs = ncombs (n, k);
-
-        // printf("ncolcombs: %d, strength %d\n", ncolcombs, strength);
-        colcombs = malloc2d< colindex_t > (ncolcombs, strength);
-        xlambda = (int *)malloc (ncolcombs * sizeof (int));
-        nvalues = (int *)malloc (ncolcombs * sizeof (int));
-
-        log_print (DEBUG, "ncolcombs: %d\n", ncolcombs);
-
-        /* set last entry to fixed column */
-        for (i = 0; i < ncolcombs; i++)
-                colcombs[i][k] = fixedcol;
-
-        for (i = 0; i < k; i++) // set initial combination
-                colcombs[0][i] = i;
-
-        for (i = 1; i < ncolcombs; i++) {
-                memcpy (colcombs[i], colcombs[i - 1], k * sizeof (colindex_t));
-                next_combination< colindex_t > (colcombs[i], k, n);
-
-                prod = 1;
-                for (j = 0; j < strength; j++) {
-                        // myprintf("i %d j %d: %d\n", i, j, colcombs[i][j]);
-                        prod *= s[colcombs[i][j]];
-                }
-                nvalues[i] = prod;
-                xlambda[i] = N / prod;
-        }
-
-        prod = 1; // First lambda manually, because of copy-for-loop
-        for (i = 0; i < strength; i++)
-                prod *= s[colcombs[0][i]];
-        nvalues[0] = prod;
-        xlambda[0] = N / prod;
-
-        return colcombs;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

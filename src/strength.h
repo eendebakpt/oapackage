@@ -5,8 +5,7 @@
    Copyright: See LICENSE.txt file that comes with this distribution
 */
 
-#ifndef STRENGTH_H
-#define STRENGTH_H
+#pragma once
 
 #include "arrayproperties.h"
 #include "arraytools.h"
@@ -191,10 +190,11 @@ struct extend_data_t {
         // rangemax is equal max(values in current col)+1
         // rangemin only occurs if row symmetries are used (define: USE_ROW_SYMMETRY)
 
-        /* functions */
-
         extend_data_t (const arraydata_t *ad, colindex_t extcol);
         ~extend_data_t ();
+
+		/// Initialize the table of t-tuple frequencies
+		void init_frequencies(array_t *array);
 };
 
 /** @brief Copy the frequency count table
@@ -206,22 +206,6 @@ inline void copy_freq_table (strength_freq_table source, strength_freq_table tar
 /// check whether an array passes divisibility test
 bool check_divisibility (const arraydata_t *);
 
-void print_frequencies (int **frequencies, const int nelements, const int *lambda, const int N);
-
-/**
- * Return all column combinations including a fixed column.
- * At the same time allocate space for the number of values these columns have
- * @param xlambda
- * @param nvalues
- * @param ncolcombs
- * @param s
- * @param strength
- * @param fixedcol
- * @param N
- * @return
- */
-colindex_t **set_colcombs_fixed (int *&xlambda, int *&nvalues, int &ncolcombs, const array_t *s, const int strength,
-                                 const int fixedcol, const int N);
 
 /// Add row to frequency table using cache system
 void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *array, strength_freq_table freqtable);
@@ -229,13 +213,10 @@ void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *a
 void add_element_freqtable_col (extend_data_t *es, rowindex_t activerow, carray_t *arraycol,
                                 strength_freq_table freqtable);
 
-/// Initialize the table of t-tuple frequencies
-void init_frequencies (extend_data_t *es, array_t *array);
-
 void recount_frequencies (int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart,
                           rowindex_t rowlast, carray_t *array);
 
-/** perform strength check on an array
+/** Perform strength check on an array
  *
  * Special case for extension of an array with proper strength
  *
@@ -257,5 +238,3 @@ bool valid_element (const extend_data_t *es, const extendpos *position, carray_t
 /** Determine whether an element passes the strength test, specialized for 2-level array */
 bool valid_element_2level (const extend_data_t *es, const extendpos *p);
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
