@@ -348,7 +348,6 @@ bool strength_check (const array_link &al, int strength, int verbose) {
                 myprintf ("strength_check array: N %d, k %d, strength %d\n", ad.N, al.n_columns, ad.strength);
         strengthcheck.set_colcombs (ad);
 
-        // myprintf ( "nvalues: " ); print_perm ( nvalues, strengthcheck.ncolcombs );
         strengthcheck.indices =
             set_indices (strengthcheck.colcombs, ad.s, ad.strength,
                          strengthcheck.ncolcombs); // sets indices for frequencies, does the malloc as well
@@ -447,15 +446,10 @@ void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *a
         const array_t elem = array[es->extcolumn * es->N + activerow];
         int idx = es->adata->s[es->extcolumn] * activerow + elem;
 
-        // int *postable = es->freqtable_elem[idx];
         int *postable3 = es->element2freqtable[idx];
         int *freqtable0 = &(freqtable[0][0]);
         for (int z = 0; z < es->ncolcombs; z++) {
-                // int freqpos = postable[z]; freqtable[z][freqpos]++;
-
-                // printf("%ld -> %ld\n", freqtable[z]+freqpos, postable2[z] );
                 freqtable0[postable3[z]]++;
-                // printf("row %d elem %d, z %d, freqpos %d\n", activerow, elem, z, freqpos);
         }
 }
 
@@ -464,15 +458,10 @@ void add_element_freqtable_col (extend_data_t *es, rowindex_t activerow, carray_
         const array_t elem = arraycol[activerow];
         int idx = es->adata->s[es->extcolumn] * activerow + elem;
 
-        // int *postable = es->freqtable_elem[idx];
         int *postable3 = es->element2freqtable[idx];
 		int *freqtable0 = &(freqtable[0][0]);
         for (int z = 0; z < es->ncolcombs; ++z) {
-                // int freqpos = postable[z]; freqtable[z][freqpos]++;
-
-                // printf("%ld -> %ld\n", freqtable[z]+freqpos, postable2[z] );
                 freqtable0[postable3[z]]++;
-                // printf("row %d elem %d, z %d, freqpos %d\n", activerow, elem, z, freqpos);
         }
 }
 

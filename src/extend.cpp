@@ -556,6 +556,12 @@ int *init_column (array_t *array, extendpos *p, int *col_offset, split *&stack) 
         return elements;
 }
 
+/** @brief Copy the frequency count table
+*/
+inline void copy_freq_table(strength_freq_table source, strength_freq_table target, int ftsize) {
+	memcpy((void *)target[0], (void *)source[0], ftsize * sizeof(int));
+}
+
 /**
  * @brief Initialize extension with column
  * @param array

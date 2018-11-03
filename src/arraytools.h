@@ -295,15 +295,7 @@ struct arraydata_t {
         array_link create_root (int n_columns = -1, int fill_value = 0) const;
 
         /// return the factor level for the specified column return -1 if the column index is invalid
-        int getfactorlevel (int idx) const {
-                if (idx < 0) {
-                        return -1;
-                }
-                if (idx >= this->ncols) {
-                        return -1;
-                }
-                return this->s[idx];
-        }
+		int getfactorlevel(int idx) const;
 
         /// return factor levels
         std::vector< int > getS () const {
@@ -322,25 +314,10 @@ struct arraydata_t {
          * @brief Reset strength of arraydata
          * @param t
          */
-        void reset_strength (colindex_t t) {
-                strength = t;
-                delete[] colgroupindex;
-                delete[] colgroupsize;
-                complete_arraydata ();
-        }
+		void reset_strength(colindex_t t);
 
         /// Return index of the column group for a column
-        colindex_t get_col_group (const colindex_t col) const {
-                colindex_t j = 0;
-                for (colindex_t i = 0; i < ncolgroups; i++) {
-                        if (colgroupindex[i] <= col) {
-                                j = i;
-                        } else {
-                                break;
-                        }
-                }
-                return j;
-        }
+		colindex_t get_col_group(const colindex_t col) const;
 };
 
 /// Read array configuration from file
@@ -351,17 +328,7 @@ arraydata_t *readConfigFile (const char *file);
  * @param message
  * @return
  */
-inline std::string printfstring (const char *message, ...) {
-        char buf[8 * 1024];
-
-        va_list va;
-        va_start (va, message);
-        vsprintf (buf, message, va);
-        va_end (va);
-
-        std::string str (buf);
-        return str;
-}
+std::string printfstring(const char *message, ...);
 
 /**
  * @brief Make a copy of an array

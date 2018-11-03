@@ -113,8 +113,7 @@ class object_pool {
         }
         void Delete (TYPE *t) {
                 pool.push_back (t);
-                // if (pool.size() % 100000==0) myprintf("object_pool::Delete() stored object %zu\n", pool.size() );
-                if (verbose || 0) {
+                if (verbose) {
                         myprintf ("  object_pool::Delete() stored object %ld\n", (long)pool.size ());
                 }
         }

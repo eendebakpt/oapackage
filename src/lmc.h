@@ -835,8 +835,6 @@ array_link reduceLMCform (const array_link &al);
 /// reduce an array to canonical form using delete-1-factor ordering
 array_link reduceDOPform (const array_link &al, int verbose = 0);
 
-/* Helper functions */
-
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);
 

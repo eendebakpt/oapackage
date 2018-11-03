@@ -3142,6 +3142,37 @@ array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         return al;
 }
 
+/// return the factor level for the specified column return -1 if the column index is invalid
+int arraydata_t::getfactorlevel(int idx) const {
+	if (idx < 0) {
+		return -1;
+	}
+	if (idx >= this->ncols) {
+		return -1;
+	}
+	return this->s[idx];
+}
+
+void arraydata_t::reset_strength(colindex_t t) {
+	strength = t;
+	delete[] colgroupindex;
+	delete[] colgroupsize;
+	complete_arraydata();
+}
+
+colindex_t arraydata_t::get_col_group(const colindex_t col) const {
+	colindex_t j = 0;
+	for (colindex_t i = 0; i < ncolgroups; i++) {
+		if (colgroupindex[i] <= col) {
+			j = i;
+		}
+		else {
+			break;
+		}
+	}
+	return j;
+}
+
 bool arraydata_t::is2level () const {
         for (int i = 0; i < this->ncols; i++) {
                 if (this->s[i] != 2) {
@@ -4244,6 +4275,18 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
         memcpy (this->array, array, nrows * ncolsorig * sizeof (array_t)); // FIX: replace by copy_array
+}
+
+std::string printfstring(const char *message, ...) {
+	char buf[32 * 1024];
+
+	va_list va;
+	va_start(va, message);
+	vsprintf(buf, message, va);
+	va_end(va);
+
+	std::string str(buf);
+	return str;
 }
 
 /**
