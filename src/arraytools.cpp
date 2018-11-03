@@ -3509,6 +3509,15 @@ std::string jstruct_t::showstr () {
         return ss.str ();
 }
 
+int jstruct_t::allzero() const {
+	for (int i = 0; i < this->nc; ++i) {
+		if (this->values[i] != 0) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 void jstruct_t::show () {
 #ifdef FULLPACKAGE
         cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
@@ -5260,22 +5269,29 @@ array_link hstack (const array_link &al, const conference_column &b) {
         return v;
 }
 
-/// stack to arrays together
-array_link hstack (const array_link &al, const array_link &b) {
-        assert (al.n_rows == b.n_rows);
-        array_link v (al.n_rows, al.n_columns + b.n_columns, array_link::INDEX_NONE);
-        std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
-        std::copy (b.array, b.array + b.n_columns * al.n_rows, v.array + v.n_rows * al.n_columns);
-        return v;
+array_link hstack (const array_link &array_left, const array_link &array_right) {
+        assert (array_left.n_rows == array_right.n_rows);
+        array_link output_array (array_left.n_rows, array_left.n_columns + array_right.n_columns, array_link::INDEX_NONE);
+        std::copy (array_left.array, array_left.array + array_left.n_columns * array_left.n_rows, output_array.array);
+        std::copy (array_right.array, array_right.array + array_right.n_columns * array_left.n_rows, output_array.array + output_array.n_rows * array_left.n_columns);
+        return output_array;
 }
 
-/// append the last column of the second array to the entire first array
 array_link hstacklastcol (const array_link &al, const array_link &b) {
         array_link v (al.n_rows, al.n_columns + 1, array_link::INDEX_NONE);
         std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
         size_t offset = al.n_rows * (b.n_columns - 1);
         std::copy (b.array + offset, b.array + offset + al.n_rows, v.array + v.n_rows * al.n_columns);
         return v;
+}
+
+/// concatenate two columns
+conference_column vstack(const conference_column &column_top, const conference_column &column_bottom) {
+	conference_column output_column(column_top.size() + column_bottom.size());
+
+	std::copy(column_top.begin(), column_top.end(), output_column.begin());
+	std::copy(column_bottom.begin(), column_bottom.end(), output_column.begin() + column_top.size());
+	return output_column;
 }
 
 void conference_transformation_t::show (int verbose) const {

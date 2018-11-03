@@ -611,7 +611,6 @@ void init_column_previous (array_t *array, extendpos *p, int &col_offset, split 
         for (int j = 1; j < N; j++) {
                 p->row = j;
                 get_range (array, p, es, oaextend.use_row_symmetry);
-// printf("init_column_previous: countelements: p->row %d, maxval %d\n", p->row, p->ad->s[p->col]);
 #ifdef COUNTELEMENTCHECK
                 countelements (&array[col_offset], p->row, p->ad->s[p->col], es->elements);
 #endif
@@ -667,13 +666,35 @@ double progress_column (array_t *A, extendpos *p) {
         return 0;
 }
 
+/** @brief Predict j4(1,2,3,k) using the theorem from Deng
+* This works only for 2-level arrays. The 0 corresponds to a +
+*
+*/
+inline int predictJ(const array_t *array, const int N, const int k) {
+	int t = N / 4;
+	int tt = t / 2;
+
+	int number_of_plus_values = 0;
+	for (int i = 0; i < tt; i++) {
+		if (array[k * N + i] == 0) {
+			number_of_plus_values++;
+		}
+	}
+	for (int i = tt; i < t; i++) {
+		if (array[k * N + i] == 1) {
+			number_of_plus_values++;
+		}
+	}
+
+	return 8 * number_of_plus_values - N;
+}
+
 /// perform Jcheck, return 1 if branch should be cut
 int Jcheck (carray_t *array, const rowindex_t N, const int jmax, const extendpos *p) {
         if (p->row == N / 4 + 1) {
                 int Jpred = predictJ (array, N, p->col);
                 if (abs (Jpred) > abs (jmax)) {
                         logstream (NORMAL) << printfstring ("   cutting branch jpred %d, jmax %d!\n", Jpred, jmax);
-                        // return to stack
                         return 1;
                 }
         }
