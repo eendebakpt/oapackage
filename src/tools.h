@@ -41,7 +41,6 @@ inline void printfd_handler (const char *file, const char *func, int line, const
 #endif
 }
 
-//#define printfd(MESSAGE) printfd_handler(__FILE__, __LINE__, MESSAGE)
 #define printfd(...) printfd_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #include "arraytools.h"
@@ -124,23 +123,23 @@ inline void flush_stdout () {
 
 template < class A >
 /**
- * Delete a pointer and set to zero.
+ * Delete object given by a pointer and set to zero.
  */
-inline void safedelete (A *p) {
-        if (p != 0)
-                delete p;
-        p = 0;
+inline void safedelete (A *pointer) {
+        if (pointer != 0)
+                delete pointer;
+        pointer = 0;
 }
 
 template < class A >
 /**
  * Delete array and set pointer to zero
- * @param p
+ * @param pointer Pointer to allocated array 
  */
-inline void safedeletearray (A *p) {
-        if (p != 0)
-                delete[] p;
-        p = 0;
+inline void safedeletearray (A *pointer) {
+        if (pointer != 0)
+                delete[] pointer;
+        pointer = 0;
 }
 
 template < class Type >
