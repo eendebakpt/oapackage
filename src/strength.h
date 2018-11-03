@@ -23,11 +23,7 @@ typedef int freq_t; /* used for counting t-tuples in strength check */
 /** Create a table with frequencies for t-tuples for a set of column combinations */
 typedef freq_t **strength_freq_table;
 
-// strength_freq_table new_strength_freq_table ( int ncolcombs, int *nvalues, int &nelements );
-
 rev_index *create_reverse_colcombs_fixed (const int ncolcombs);
-// rev_index *create_reverse_colcombs ( colindex_t **colcombs, const int ncols, const int strength );
-// void free_colcombs_fixed ( colindex_t **colcombs, int *lambda, int *nvalues );
 
 /*!
   Structure serves as an index, gives the combinations in which a certain column participates. Is used to for the
@@ -58,51 +54,8 @@ struct strength_check_t {
             : freqtable (0), indices (0), r_index (0), colcombs (0), nvalues (0), lambda (0), strength (str){};
         ~strength_check_t ();
 
-        void set_colcombs (const arraydata_t &ad) {
-                int verbose = 0;
-
-                {
-                        int prod;
-                        int n = ad.ncols;
-                        int N = ad.N;
-                        const carray_t *s = ad.s;
-
-                        int k = strength; // we keep 1 column fixed, choose k columns
-                        ncolcombs = ncombs (n, k);
-
-                        if (verbose)
-                                myprintf ("strength_check_t: set_colcombs: ncolcombs %d, strength %d\n", ncolcombs,
-                                          strength);
-                        this->colcombs = malloc2d< colindex_t > (ncolcombs, strength);
-                        this->lambda = (int *)malloc (ncolcombs * sizeof (int));
-                        this->nvalues = (int *)malloc (ncolcombs * sizeof (int));
-
-                        // set initial combination
-                        for (int i = 0; i < k; i++)
-                                colcombs[0][i] = i;
-
-                        for (int i = 1; i < ncolcombs; i++) {
-                                memcpy (colcombs[i], colcombs[i - 1], k * sizeof (colindex_t));
-                                next_combination< colindex_t > (colcombs[i], k, n);
-
-                                prod = 1;
-                                for (int j = 0; j < strength; j++) {
-                                        if (verbose >= 2)
-                                                myprintf ("i %d j %d: %d\n", i, j, colcombs[i][j]);
-                                        prod *= s[colcombs[i][j]];
-                                }
-                                nvalues[i] = prod;
-                                lambda[i] = N / prod;
-                        }
-
-                        prod = 1; // First lambda manually, because of copy-for-loop
-                        for (int j = 0; j < strength; j++)
-                                prod *= s[colcombs[0][j]];
-                        nvalues[0] = prod;
-                        lambda[0] = N / prod;
-                }
-        }
-
+		void set_colcombs(const arraydata_t &ad);
+		
         void info () const {
                 myprintf ("strength_check_t: %d column combintations: \n", ncolcombs);
                 for (int i = 0; i < ncolcombs; i++) {
@@ -111,8 +64,8 @@ struct strength_check_t {
                 }
         }
 
-        void create_reverse_colcombs_fixed () { r_index = ::create_reverse_colcombs_fixed (ncolcombs); }
-
+		void create_reverse_colcombs_fixed();
+		
         void print_frequencies () const {
                 register int i, j;
 
@@ -169,8 +122,7 @@ struct extend_data_t {
 #endif
 
         int freqtablesize;
-        //! frequency table for strength check. For each column combination this table contains the frequencies of
-        //! tuples found so far
+        //! frequency table for strength check. For each column combination this table contains the frequencies of tuples found so far
         strength_freq_table freqtable;
 
         //! strength check, cache
@@ -182,7 +134,6 @@ struct extend_data_t {
         //! used strength check, for each row+element combination and column combination give a pointer to the position
         //! in the tuple frequence table
         int **element2freqtable;
-        // freq_t* **element2freqtable;
 
         //! used for setting the range, range_high is inclusive
         array_t range_low, range_high;
@@ -220,7 +171,7 @@ void recount_frequencies (int **frequencies, extend_data_t *es, colindex_t curre
  *
  * Special case for extension of an array with proper strength
  *
- */
+ **/
 bool strength_check (const arraydata_t &ad, const array_link &al, int verbose = 1);
 
 /// perform strength check on an array

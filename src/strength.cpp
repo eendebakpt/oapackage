@@ -287,6 +287,51 @@ strength_check_t::~strength_check_t () {
         }
 }
 
+void strength_check_t::set_colcombs(const arraydata_t &ad) {
+	int verbose = 0;
+
+	int prod;
+	int n = ad.ncols;
+	int N = ad.N;
+	const carray_t *s = ad.s;
+
+	int k = strength; // we keep 1 column fixed, choose k columns
+	ncolcombs = ncombs(n, k);
+
+	if (verbose)
+		myprintf("strength_check_t: set_colcombs: ncolcombs %d, strength %d\n", ncolcombs,
+			strength);
+	this->colcombs = malloc2d< colindex_t >(ncolcombs, strength);
+	this->lambda = (int *)malloc(ncolcombs * sizeof(int));
+	this->nvalues = (int *)malloc(ncolcombs * sizeof(int));
+
+	// set initial combination
+	for (int i = 0; i < k; i++)
+		colcombs[0][i] = i;
+
+	for (int i = 1; i < ncolcombs; i++) {
+		memcpy(colcombs[i], colcombs[i - 1], k * sizeof(colindex_t));
+		next_combination< colindex_t >(colcombs[i], k, n);
+
+		prod = 1;
+		for (int j = 0; j < strength; j++) {
+			if (verbose >= 2)
+				myprintf("i %d j %d: %d\n", i, j, colcombs[i][j]);
+			prod *= s[colcombs[i][j]];
+		}
+		nvalues[i] = prod;
+		lambda[i] = N / prod;
+	}
+
+	prod = 1; // First lambda manually, because of copy-for-loop
+	for (int j = 0; j < strength; j++)
+		prod *= s[colcombs[0][j]];
+	nvalues[0] = prod;
+	lambda[0] = N / prod;
+}
+
+void strength_check_t::create_reverse_colcombs_fixed() { r_index = ::create_reverse_colcombs_fixed(ncolcombs); }
+
 /// perform strength check on an array
 bool strength_check (const array_link &al, int strength, int verbose) {
         if (strength == 0)
