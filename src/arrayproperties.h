@@ -135,9 +135,21 @@ array_link array2secondorder (const array_link &array);
 array_link array2xf (const array_link &array);
 
 /**
+ *
+ * \param conference_design Conference design
+ * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
+ * \param verbose Verbosity level
+ */
+array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose);
+
+/** Convert orthogonal array or conference design to model matrix
+ *
  * Intercept, main effects, interaction effects, quadratics
  * The order in the interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1
  *
+ * \param array Orthogonal array or conference design
+ * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
+ * \param verbose Verbosity level
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 
