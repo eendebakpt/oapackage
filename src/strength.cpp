@@ -449,7 +449,7 @@ void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *a
 
         // int *postable = es->freqtable_elem[idx];
         int *postable3 = es->element2freqtable[idx];
-        freq_t *freqtable0 = &(freqtable[0][0]);
+        int *freqtable0 = &(freqtable[0][0]);
         for (int z = 0; z < es->ncolcombs; z++) {
                 // int freqpos = postable[z]; freqtable[z][freqpos]++;
 
@@ -466,7 +466,7 @@ void add_element_freqtable_col (extend_data_t *es, rowindex_t activerow, carray_
 
         // int *postable = es->freqtable_elem[idx];
         int *postable3 = es->element2freqtable[idx];
-        freq_t *freqtable0 = &(freqtable[0][0]);
+		int *freqtable0 = &(freqtable[0][0]);
         for (int z = 0; z < es->ncolcombs; ++z) {
                 // int freqpos = postable[z]; freqtable[z][freqpos]++;
 
@@ -615,7 +615,7 @@ bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array
         const int idx = p->row * es->adata->s[es->extcolumn] + p->value;
         // int *freqpositions = es->freqtable_elem[idx];
         int *freqpositions2 = es->element2freqtable[idx];
-        freq_t *freqtable0 = &(es->freqtable[0][0]);
+		int *freqtable0 = &(es->freqtable[0][0]);
 
         for (int z = 0; z < es->ncolcombs; z++) {              
                         if (freqtable0[freqpositions2[z]] + 1 > es->lambda[z])
@@ -654,7 +654,7 @@ bool valid_element_2level (const extend_data_t *es, const extendpos *p)
         const int idx = p->row * es->adata->s[es->extcolumn] + p->value;
         // int *freqpositions = es->freqtable_elem[idx];
         int *freqpositions2 = es->element2freqtable[idx];
-        freq_t *freqtable0 = &(es->freqtable[0][0]);
+		int *freqtable0 = &(es->freqtable[0][0]);
 
         for (int z = 0; z < es->ncolcombs; z++) {
                 if (freqtable0[freqpositions2[z]] >=

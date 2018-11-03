@@ -701,6 +701,16 @@ int Jcheck (carray_t *array, const rowindex_t N, const int jmax, const extendpos
         return 0;
 }
 
+/// return string with current time
+inline std::string printtime() {
+	time_t rawtime;
+	struct tm *timeinfo;
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	return printfstring("%s", asctime(timeinfo));
+}
+
 /**
  *
  * @brief Check the stack of extensions
@@ -883,19 +893,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
                                                 logstream (DEBUG) << "cutbranch: no more branches" << endl;
                                                 break;
                                         }
-                                }
-                        }
-#endif
-
-#ifdef JCHECK
-                        int jc = Jcheck (array, N, jmax, p);
-                        if (jc) {
-                                more_branches = return_stack (stack, p, array, col_offset);
-                                if (more_branches)
-                                        continue;
-                                else {
-                                        logstream (QUIET) << "cutbranch: no more branches" << endl;
-                                        break;
                                 }
                         }
 #endif

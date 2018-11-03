@@ -163,15 +163,12 @@ int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensi
 /// Run the extension algorithm starting from the array root
 arraylist_t runExtendRoot (arraydata_t adata, int nmax, int verbose = 0);
 
-/* Helper functions and development code */
 
 enum { DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI };
 
 enum { DCALC_ALWAYS, DCALC_COND };
 
-/** @brief Helper structure for dynamic extension of arrays based on D-efficiencies
- *
- *
+/** @brief Structure for dynamic extension of arrays based on D-efficiencies
  *
  */
 struct dextend_t {

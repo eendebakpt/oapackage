@@ -198,7 +198,7 @@ class TestOAfiles(unittest.TestCase):
         oapackage.writearrayfile(array_filename, lst)
         lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
         self.assertIn(os.path.split(array_filename)[-1], lst)
-        
+
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
@@ -213,18 +213,18 @@ class TestOAfiles(unittest.TestCase):
 
 class TestParetoFunctionality:
     def test_selectParetoArrays(self):
-        
-        arrays=[oapackage.array_link(np.array([[ii]])) for ii in range(5)]
+
+        arrays = [oapackage.array_link(np.array([[ii]])) for ii in range(5)]
         pareto_object = oapackage.ParetoLongLong()
-        
+
         for ii in range(len(arrays)):
-            value=[ii,ii%2]
+            value = [ii, ii % 2]
             pareto_object.addvalue(value, ii)
         pareto_object.show(2)
 
-        selected=oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
-        self.assertEqual(selected, arrays[4,5])
-    
+        selected = oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
+        self.assertEqual(selected, arrays[4, 5])
+
 
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
@@ -381,8 +381,8 @@ class TestDoptimize(unittest.TestCase):
             import matplotlib.pyplot
         except:
             self.guitest = False
-        print('guitest %s'  % self.guitest)
-            
+        print('guitest %s' % self.guitest)
+
     def test_custom_optim(self):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
@@ -412,7 +412,7 @@ class TestDoptimize(unittest.TestCase):
         if self.guitest:
             fig = 100
         else:
-            fig=None
+            fig = None
         r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 

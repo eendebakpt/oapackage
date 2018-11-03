@@ -18,10 +18,8 @@
 
 struct rev_index;
 
-typedef int freq_t; /* used for counting t-tuples in strength check */
-
 /** Create a table with frequencies for t-tuples for a set of column combinations */
-typedef freq_t **strength_freq_table;
+typedef int **strength_freq_table;
 
 rev_index *create_reverse_colcombs_fixed (const int ncolcombs);
 
@@ -151,7 +149,7 @@ struct extend_data_t {
 /** @brief Copy the frequency count table
  */
 inline void copy_freq_table (strength_freq_table source, strength_freq_table target, int ftsize) {
-        memcpy ((void *)target[0], (void *)source[0], ftsize * sizeof (freq_t));
+        memcpy ((void *)target[0], (void *)source[0], ftsize * sizeof (int));
 }
 
 /// check whether an array passes divisibility test

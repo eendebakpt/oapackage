@@ -19,6 +19,7 @@ else:
 def is_sorted(l):
     return all(a <= b for a, b in zip(l, l[1:]))
 
+
 import oapackage
 
 
@@ -52,35 +53,35 @@ class TestReductions(unittest.TestCase):
         alr = oapackage.reduceDOPform(al)
         self.assertTrue(transformation.apply(al) == alr)
 
+
 class TestModelmatrix(unittest.TestCase):
 
     def test_modelmatrix(self):
         al = oapackage.exampleArray(1)
 
-        sizes=oapackage.array2modelmatrix_sizes(al)
-        k=al.n_columns
-        self.assertEqual(sizes, (1, 1+k, int(1+k+k*(k-1)/2), int(1+k+k*(k+1)/2)) )
-        
-        model_matrix = oapackage.array2modelmatrix(al, "main",1)
-        np.testing.assert_array_equal(2*np.array(al)-1, model_matrix[:,1:])
-        
-        conf_design = oapackage.exampleArray(41,1)
-        sizes=oapackage.array2modelmatrix_sizes(conf_design)
-        k=conf_design.n_columns
-        self.assertEqual(sizes, (1, 1+k, int(1+k+k*(k-1)/2), int(1+k+k*(k+1)/2)) )
-        model_matrix = oapackage.array2modelmatrix(conf_design, "i",1)
-        self.assertTrue(model_matrix.shape[1]==sizes[2])
-        model_matrix = oapackage.array2modelmatrix(conf_design, "q",1)
-        
-        last_column = np.array(conf_design)[:,-1]
-        
-        np.testing.assert_array_equal(model_matrix[:,-1], last_column*last_column)
-        
-        self.assertTrue(model_matrix.shape[1]==sizes[3])
-        
-        
-class TestArrayLink(unittest.TestCase):
+        sizes = oapackage.array2modelmatrix_sizes(al)
+        k = al.n_columns
+        self.assertEqual(sizes, (1, 1 + k, int(1 + k + k * (k - 1) / 2), int(1 + k + k * (k + 1) / 2)))
 
+        model_matrix = oapackage.array2modelmatrix(al, "main", 1)
+        np.testing.assert_array_equal(2 * np.array(al) - 1, model_matrix[:, 1:])
+
+        conf_design = oapackage.exampleArray(41, 1)
+        sizes = oapackage.array2modelmatrix_sizes(conf_design)
+        k = conf_design.n_columns
+        self.assertEqual(sizes, (1, 1 + k, int(1 + k + k * (k - 1) / 2), int(1 + k + k * (k + 1) / 2)))
+        model_matrix = oapackage.array2modelmatrix(conf_design, "i", 1)
+        self.assertTrue(model_matrix.shape[1] == sizes[2])
+        model_matrix = oapackage.array2modelmatrix(conf_design, "q", 1)
+
+        last_column = np.array(conf_design)[:, -1]
+
+        np.testing.assert_array_equal(model_matrix[:, -1], last_column * last_column)
+
+        self.assertTrue(model_matrix.shape[1] == sizes[3])
+
+
+class TestArrayLink(unittest.TestCase):
 
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 1)
@@ -107,21 +108,21 @@ class TestArrayLink(unittest.TestCase):
         #self.assertTrue(al2b <= al2b)
 
     def test_array_link_dimensions(self):
-        for example_idx in [0,2,6,10]:
+        for example_idx in [0, 2, 6, 10]:
             al = oapackage.exampleArray(example_idx)
-            self.assertEqual(al.size, al.n_rows*al.n_columns )
-            self.assertEqual(al.shape, (al.n_rows, al.n_columns ) )
+            self.assertEqual(al.size, al.n_rows * al.n_columns)
+            self.assertEqual(al.shape, (al.n_rows, al.n_columns))
         with self.assertRaises(AttributeError):
-            al.shape=1
+            al.shape = 1
 
     def test_is_ortogonal_array(self):
         al = oapackage.exampleArray(1)
         self.assertTrue(al.is_orthogonal_array())
-        al[1,2]=-1
+        al[1, 2] = -1
         self.assertFalse(al.is_orthogonal_array())
         al = oapackage.exampleArray(41)
         self.assertFalse(al.is_orthogonal_array())
-            
+
     def test_array_class_functions(self):
         al = oapackage.exampleArray(1)
         self.assertTrue(al.is2level())
@@ -136,41 +137,44 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al.is2level())
         self.assertFalse(al.is_mixed_level())
 
+
 class TestArraydata_t(unittest.TestCase):
-    
+
     def test_factor_levels(self):
-        array=oapackage.exampleArray(5,1)
-        arrayclass=oapackage.arraylink2arraydata(array)
-        factor_levels=arrayclass.factor_levels()
-        self.assertEqual(factor_levels, (4,3,2,2,2))
+        array = oapackage.exampleArray(5, 1)
+        arrayclass = oapackage.arraylink2arraydata(array)
+        factor_levels = arrayclass.factor_levels()
+        self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
+
 
 class TestConferenceDesigns(unittest.TestCase):
 
     def test_conf2dsd(self):
-        al=oapackage.exampleArray(42)
-        dsd=oapackage.conference2DSD(al)
-        self.assertEqual(dsd.n_rows, 2*al.n_rows+1)
-        
-        conf=np.array(al)
-        dsd=np.array(dsd)
-        
-        np.testing.assert_array_equal(conf, dsd[0:al.n_rows,:])
-        np.testing.assert_array_equal(conf, -dsd[al.n_rows:2*al.n_rows,:])
-        np.testing.assert_array_equal(0*conf[0], dsd[-1,:])
-        
+        al = oapackage.exampleArray(42)
+        dsd = oapackage.conference2DSD(al)
+        self.assertEqual(dsd.n_rows, 2 * al.n_rows + 1)
+
+        conf = np.array(al)
+        dsd = np.array(dsd)
+
+        np.testing.assert_array_equal(conf, dsd[0:al.n_rows, :])
+        np.testing.assert_array_equal(conf, -dsd[al.n_rows:2 * al.n_rows, :])
+        np.testing.assert_array_equal(0 * conf[0], dsd[-1, :])
+
+
 class TestCppLibrary(unittest.TestCase):
 
     def test_projectionDOFvalues(self):
-        array=oapackage.exampleArray(5,1)
-        arrayclass=oapackage.arraylink2arraydata(array)
-        dof_values = oapackage.projectionDOFvalues ( array )
-        sg=oapackage.symmetry_group(dof_values, False)
+        array = oapackage.exampleArray(5, 1)
+        arrayclass = oapackage.arraylink2arraydata(array)
+        dof_values = oapackage.projectionDOFvalues(array)
+        sg = oapackage.symmetry_group(dof_values, False)
         sg.show(1)
-        
-        for column in range(array.n_columns):          
+
+        for column in range(array.n_columns):
             dof_element = list(dof_values[column].raw_values())
             self.assertEqual(dof_element[0], -arrayclass.getS()[column])
-            
+
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
         m = oapackage.mvalue_t_double(input_vector)
