@@ -426,7 +426,6 @@ struct depth_extensions_storage_t {
                 this->depthalglist[ai] = (depthalg);
                 this->dextendsubList[ai] = (dextendsub);
         }
-        // std::vector<arraylist_t>  extensions0list;
         std::vector< arraylist_t > columnextensionsList;
         std::vector< arraylist_t > goodarrayslist;
         std::vector< depth_alg_t > depthalglist;
@@ -468,14 +467,14 @@ inline typename Pareto< mvalue_t< long >, IndexType >::pValue
 calculateArrayParetoJ5Cache (const array_link &al, int verbose, rankStructure &rs) {
 
         const int N = al.n_rows;
-        int r = rs.rankxf (al);
-        mvalue_t< long > wm = A3A4 (al);
+        int rank_modelmatrix = rs.rankxf (al);
+        mvalue_t< long > a3a4 = A3A4 (al);
         mvalue_t< long > f4 = F4 (al);
 
         typename Pareto< mvalue_t< long >, IndexType >::pValue p;
-        p.push_back (r);  // rank of second order interaction matrix
-        p.push_back (wm); // A4
-        p.push_back (f4); // F
+        p.push_back (rank_modelmatrix);  
+        p.push_back (a3a4); 
+        p.push_back (f4); 
         addJmax< IndexType > (al, p, verbose);
 
         return p;
@@ -493,8 +492,10 @@ void addArraysToPareto (Pareto< mvalue_t< long >, array_link > &pset, pareto_cb_
  * The index consists of the number of columns and the value for the J-characteristic
  */
 struct jindex_t {
-        int k; // number of columns
-        int j; // J-value
+		/// number of columns
+        int k; 
+		/// J-value
+        int j; 
 
         jindex_t (int colindex, int jvalue) : k (colindex), j (jvalue) {}
 

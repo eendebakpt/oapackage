@@ -12,8 +12,7 @@
  Copyright: See LICENSE.txt file that comes with this distribution
 */
 
-#ifndef ARRAYTOOLS_H
-#define ARRAYTOOLS_H
+#pragma once
 
 #ifdef WIN32
 #define _CRT_SECURE_NO_DEPRECATE
@@ -67,6 +66,8 @@ typedef(unsigned __int64) uint64_t;
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <map>
+
 
 #include <stdexcept>
 
@@ -219,6 +220,9 @@ struct arraydata_t {
 
         ~arraydata_t ();
 
+		arraydata_t& operator= (const arraydata_t &ad2);
+		int operator== (const arraydata_t &ad2);
+
         /// return true if the class represents mixed-level arrays
         bool ismixed () const;
 
@@ -228,52 +232,12 @@ struct arraydata_t {
         /// return random array from the class. this operation is only valid for strength 0 or 1
         array_link randomarray (int strength = 0, int ncols = -1) const;
 
-        /** @brief Write file with design of OA
+        /** @brief Write file with specification of orthognal array class
 		 *
          * @param filename
          * @return
          */
         void writeConfigFile (const char *filename) const;
-
-        /// @brief assignment operator
-        inline arraydata_t &operator= (const arraydata_t &ad2) {
-                this->N = ad2.N;
-                this->strength = ad2.strength;
-                this->ncols = ad2.ncols;
-                this->order = ad2.order;
-                if (s != 0) {
-                        delete[] s;
-                }
-                this->s = new array_t[this->ncols];
-
-                if (ad2.s == 0) {
-                        myprintf ("error: invalid arraydata_t structure\n");
-                }
-                std::copy (ad2.s, ad2.s + this->ncols, s);
-                return *this;
-        }
-
-        /// @brief Comparison operator
-        inline int operator== (const arraydata_t &ad2) {
-                if (this->N != ad2.N) {
-                        return 0;
-                }
-
-                if (this->ncols != ad2.ncols) {
-                        return 0;
-                }
-                if (!std::equal (this->s, this->s + this->ncols, ad2.s)) {
-                        return 0;
-                }
-                if (this->strength != ad2.strength) {
-                        return 0;
-                }
-                if (this->order != ad2.order) {
-                        return 0;
-                }
-
-                return 1;
-        };
 
         std::string idstr () const;
         std::string idstrseriesfull () const;
@@ -331,15 +295,7 @@ struct arraydata_t {
         array_link create_root (int n_columns = -1, int fill_value = 0) const;
 
         /// return the factor level for the specified column return -1 if the column index is invalid
-        int getfactorlevel (int idx) const {
-                if (idx < 0) {
-                        return -1;
-                }
-                if (idx >= this->ncols) {
-                        return -1;
-                }
-                return this->s[idx];
-        }
+		int getfactorlevel(int idx) const;
 
         /// return factor levels
         std::vector< int > getS () const {
@@ -358,25 +314,10 @@ struct arraydata_t {
          * @brief Reset strength of arraydata
          * @param t
          */
-        void reset_strength (colindex_t t) {
-                strength = t;
-                delete[] colgroupindex;
-                delete[] colgroupsize;
-                complete_arraydata ();
-        }
+		void reset_strength(colindex_t t);
 
         /// Return index of the column group for a column
-        colindex_t get_col_group (const colindex_t col) const {
-                colindex_t j = 0;
-                for (colindex_t i = 0; i < ncolgroups; i++) {
-                        if (colgroupindex[i] <= col) {
-                                j = i;
-                        } else {
-                                break;
-                        }
-                }
-                return j;
-        }
+		colindex_t get_col_group(const colindex_t col) const;
 };
 
 /// Read array configuration from file
@@ -387,17 +328,7 @@ arraydata_t *readConfigFile (const char *file);
  * @param message
  * @return
  */
-inline std::string printfstring (const char *message, ...) {
-        char buf[8 * 1024];
-
-        va_list va;
-        va_start (va, message);
-        vsprintf (buf, message, va);
-        va_end (va);
-
-        std::string str (buf);
-        return str;
-}
+std::string printfstring(const char *message, ...);
 
 /**
  * @brief Make a copy of an array
@@ -911,24 +842,19 @@ typedef std::vector< conf_t > conference_column;
 typedef std::vector< conference_column > conference_column_list;
 
 /// concatenate 2 arrays in vertical direction
-array_link hstack (const array_link &al, const array_link &b);
+array_link hstack (const array_link &array1, const array_link &array2);
 
 /// concatenate array and conference_column 
-array_link hstack (const array_link &al, const conference_column &b);
+array_link hstack (const array_link &array, const conference_column &column);
 
 /// concatenate 2 arrays in horizontal direction
-array_link hstack (const array_link &al, const array_link &b);
+array_link hstack (const array_link &array_left, const array_link &array_right);
+
 /// concatenate the last column of array B to array A
 array_link hstacklastcol (const array_link &A, const array_link &B);
 
-/// concatenate two permutations
-inline conference_column vstack (const conference_column &A, const conference_column &B) {
-        conference_column c (A.size () + B.size ());
-
-        std::copy (A.begin (), A.end (), c.begin ());
-        std::copy (B.begin (), B.end (), c.begin () + A.size ());
-        return c;
-}
+/// concatenate two columns
+conference_column vstack(const conference_column &column_top, const conference_column &column_bottom);
 
 /// perform column permutation for an array
 void perform_column_permutation (const array_link source, array_link &target, const std::vector< int > perm);
@@ -948,11 +874,11 @@ arraydata_t arraylink2arraydata (const array_link &array, int extracols = 0, int
 typedef std::deque< array_link > arraylist_t;
 
 /// add a constant value to all arrays in a list
-inline arraylist_t addConstant (const arraylist_t &lst, int v) {
+inline arraylist_t addConstant (const arraylist_t &lst, int value) {
         arraylist_t output_arrays (lst.size ());
 
         for (size_t i = 0; i < lst.size (); i++) {
-                output_arrays[i] = lst[i] + v;
+                output_arrays[i] = lst[i] + value;
         }
 
         return output_arrays;
@@ -961,30 +887,7 @@ inline arraylist_t addConstant (const arraylist_t &lst, int v) {
 /** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
 std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose = 1);
 
-/** @brief Predict j4(1,2,3,k) using the theorem from Deng
- * This works only for 2-level arrays. The 0 corresponds to a +
- *
- */
-inline int predictJ (const array_t *array, const int N, const int k) {
-        int t = N / 4;
-        int tt = t / 2;
 
-        int number_of_plus_values = 0;
-        for (int i = 0; i < tt; i++) {
-                if (array[k * N + i] == 0) {
-                        number_of_plus_values++;
-                }
-        }
-        for (int i = tt; i < t; i++) {
-                if (array[k * N + i] == 1) {
-                        number_of_plus_values++;
-                }
-        }
-
-        return 8 * number_of_plus_values - N;
-}
-
-#include <map>
 
 /**
  * @brief struct to hold data of an array, e.g. J-characteristic. Abstract base class
@@ -1133,14 +1036,7 @@ class jstruct_t {
         std::string showstr ();
 
         /// return 1 if all J values are zero, otherwise return 0
-        int allzero () {
-                for (int i = 0; i < this->nc; ++i) {
-                        if (this->values[i] != 0) {
-                                return 0;
-                        }
-                }
-                return 1;
-        }
+		int allzero() const;
 };
 
 class jstructconference_t : public jstructbase_t {
@@ -2095,6 +1991,4 @@ int arrayInFile (const array_link &array, const char *array_file, int verbose = 
  */
 int arrayInList (const array_link &array, const arraylist_t &arrays, int verbose = 1);
 
-#endif
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;

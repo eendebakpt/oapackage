@@ -188,7 +188,6 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
     """
 
-    # Remove top and right axes lines ("spines")
     if verbose:
         print('niceplot: remove spines')
 
@@ -459,26 +458,6 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '\\end{psmallmatrix}' + chr(10)
         else:
             ss += '\\end{pmatrix}' + chr(10)
-    return ss
-
-
-@deprecated
-def array2latex_old(ltable, htable=None):
-    """ Write a numpy array to latex format """
-    print('please use array2latex from researchOA instead')
-    ss = ''
-    ccc = 'c' * ltable.shape[1]
-    ss += '\\begin{tabular}{%s}\n' % ccc
-    if not htable is None:
-        ss += " \\\\\n".join(
-            [" & ".join(['\\textbf{%s}' % val for val in htable])])
-        ss += ' \\\\ \n'
-        ss += '\\hline \n'
-    for ii in range(0, ltable.shape[0]):
-        line = ltable[ii, :]
-        ss += " & ".join([str(val) for val in line])
-        ss += ' \\\\ \n'
-    ss += '\\end{tabular}\n'
     return ss
 
 
@@ -866,9 +845,7 @@ def parseProcessingTime(logfile, verbose=0):
         for line in fileinput.input([logfile]):
             if line.startswith('#time'):
                 if verbose >= 1:
-                    # print(line)
                     print('parseProcessingTime: line: %s' % line, end="")
-                    # print('xy %s' % line[10:])
             if line.startswith('#time start:'):
                 tstart = dateutil.parser.parse(line[13:])
                 if verbose >= 2:

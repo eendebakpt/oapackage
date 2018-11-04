@@ -192,13 +192,28 @@ class TestOAfiles(unittest.TestCase):
 
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
+    def test_selectArrays(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1), oapackage.exampleArray(4, 1)])
+        oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
+                                        1], afmode=oalib.ABINARY, verbose=1, cache=0)
+        oapackage.oahelper.selectArrays(array_filename, array_filename_out,
+                                        [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
+
+    def test_nArrayFile(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1)])
+        self.assertEqual(oapackage.oahelper.nArrayFile(array_filename), 1)
+        self.assertEqual(oapackage.oahelper.nArrayFile('notavalidfile.oa'), -1)
+
     def test_findfiles(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
         lst = [oapackage.exampleArray(4, 1)]
         oapackage.writearrayfile(array_filename, lst)
         lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
         self.assertIn(os.path.split(array_filename)[-1], lst)
-        
+
     def test_findfilesR(self):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
@@ -213,18 +228,18 @@ class TestOAfiles(unittest.TestCase):
 
 class TestParetoFunctionality:
     def test_selectParetoArrays(self):
-        
-        arrays=[oapackage.array_link(np.array([[ii]])) for ii in range(5)]
+
+        arrays = [oapackage.array_link(np.array([[ii]])) for ii in range(5)]
         pareto_object = oapackage.ParetoLongLong()
-        
+
         for ii in range(len(arrays)):
-            value=[ii,ii%2]
+            value = [ii, ii % 2]
             pareto_object.addvalue(value, ii)
         pareto_object.show(2)
 
-        selected=oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
-        self.assertEqual(selected, arrays[4,5])
-    
+        selected = oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
+        self.assertEqual(selected, arrays[4, 5])
+
 
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
@@ -247,6 +262,15 @@ class TestOAhelper(unittest.TestCase):
     def test_gwlp2str(self):
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
+
+    def test_parseProcessingTime(self):
+        filename = tempfile.mktemp(suffix='.txt')
+        with open(filename, 'wt') as fid:
+            fid.write('# my logfile\n')
+            fid.write('#time start: 2012-01-19 17:21:00\n')
+            fid.write('#time end: 2012-01-19 18:21:00\n')
+        dtt = oapackage.oahelper.parseProcessingTime(filename, verbose=2)
+        self.assertEqual(dtt, 3600.)
 
     def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
@@ -289,6 +313,7 @@ class TestOAhelper(unittest.TestCase):
     def test_checkFiles(self):
         self.assertTrue(oapackage.oahelper.checkFiles([], -1))
         self.assertTrue(oapackage.oahelper.checkFiles(['nosuchfile'], -1))
+        self.assertTrue(oapackage.oahelper.checkFiles('nosuchfile', -1))
 
     def test_checkFilesOA(self):
         r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
@@ -307,6 +332,8 @@ class TestOAhelper(unittest.TestCase):
         self.assertEqual(r, -2)
         r = oapackage.oahelper.safemax(np.array([1, -2, 3]), default=0)
         self.assertEqual(r, 3)
+        r = oapackage.oahelper.safemax([], default=-23)
+        self.assertEqual(r, -23)
 
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
@@ -381,8 +408,8 @@ class TestDoptimize(unittest.TestCase):
             import matplotlib.pyplot
         except:
             self.guitest = False
-        print('guitest %s'  % self.guitest)
-            
+        print('guitest %s' % self.guitest)
+
     def test_custom_optim(self):
         def optimfunc(x): return x[0] + x[1] + x[2]
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
@@ -412,7 +439,7 @@ class TestDoptimize(unittest.TestCase):
         if self.guitest:
             fig = 100
         else:
-            fig=None
+            fig = None
         r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
 

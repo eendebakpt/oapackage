@@ -1039,7 +1039,6 @@ inline void array2eigenxf (const array_link &al, Eigen::MatrixXd &mymatrix) {
                                 mymatrix (r, ww) = (*p1 + *p2) % 2;
                                 p1++;
                                 p2++;
-                                // mymatrix ( r, ww ) = ( p1[r]+p2[r] ) %2;
                         }
                         ww++;
                 }
@@ -1132,8 +1131,8 @@ int _model2idx(const std::string mode) {
 		return 2;
 	else if (mode == "q" || mode == "quadratic")
 		return 3;
-	else throw_runtime_exception("no such mode for model matrix");
-	
+	else throw_runtime_exception(printfstring("mode %s is not valid for model matrix", mode.c_str()));
+
 	return -1;
 }
 
@@ -1221,22 +1220,22 @@ using namespace Eigen;
 
 #include <Eigen/LU>
 
-void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, double &Eeff, int &rank, int verbose) {
-        Eigen::FullPivLU< MatrixXd > lu_decomp (x);
+void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose) {
+        Eigen::FullPivLU< MatrixXd > lu_decomp (secondorder_interaction_matrix);
         rank = lu_decomp.rank ();
 
-        JacobiSVD< Eigen::MatrixXd > svd (x);
+        JacobiSVD< Eigen::MatrixXd > svd (secondorder_interaction_matrix);
 
         const Eigen::VectorXd S = svd.singularValues ();
         int rank2 = svd.nonzeroSingularValues ();
         if (rank2 != rank) {
                 if (verbose >= 3) {
-                        myprintf ("ABwithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n",
+                        myprintf ("DAEefficiencyWithSVD: rank calculations differ, unstable matrix: ranklu %d, ranksvd: %d\n",
                                   rank, rank2);
                 }
         }
-        int m = x.cols ();
-        int N = x.rows ();
+        int m = secondorder_interaction_matrix.cols ();
+        int N = secondorder_interaction_matrix.rows ();
 
         if (m > N) {
                 Deff = 0;
@@ -1289,7 +1288,7 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &x, double &Deff, double &vif, 
                 myprintf ("ABwithSVD: Defficiency %.3f, Aefficiency %.3f (%.3f), Eefficiency %.3f\n", Deff, vif,
                           vif * m, Eeff);
 
-                Eigen::FullPivLU< MatrixXd > lu (x);
+                Eigen::FullPivLU< MatrixXd > lu (secondorder_interaction_matrix);
                 int ranklu = lu.rank ();
 
                 myprintf ("   Defficiency %e, smallest eigenvalue %e, rank %d, rank lu %d\n", Deff, S[m - 1], rank,
@@ -1328,9 +1327,9 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose) {
         int m = 1 + k + (k * (k - 1)) / 2;
         if (verbose)
                 printf ("Aefficiencies: array %d, %d\n", N, k);
-        MatrixFloat X = array2eigenModelMatrix (al);
+        MatrixFloat modelmatrix = array2eigenModelMatrix (al);
 
-        Eigen::FullPivLU< MatrixXd > lu_decomp (X);
+        Eigen::FullPivLU< MatrixXd > lu_decomp (modelmatrix);
         int rank = lu_decomp.rank ();
         if (rank < m) {
                 if (verbose)
@@ -1345,11 +1344,11 @@ std::vector< double > Aefficiencies (const array_link &al, int verbose) {
         if (verbose)
                 printf ("Aefficiencies: calculate information matrix\n");
 
-        MatrixFloat matXtX = (X.transpose () * (X)) / N;
+        MatrixFloat information_matrix = (modelmatrix.transpose () * (modelmatrix)) / N;
 
         if (verbose)
                 printf ("Aefficiencies: invert information matrix\n");
-        MatrixFloat M = matXtX.inverse ();
+        MatrixFloat M = information_matrix.inverse ();
 
         std::vector< double > aa (3);
         double Ax = 0;
