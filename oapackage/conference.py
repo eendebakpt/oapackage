@@ -120,6 +120,6 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
         invAPV_values += [invAPV]
     pec, pic, ppc = np.mean(Eestx), np.mean(Deff), np.mean(invAPV_values)
     if verbose:
-        print('conferenceProjectionStatistics: projection to %d columns: PEC %.3f PIC %.3f PPC %.3f  ' % (ncolumns, pec, pic, ppc))
+        print('conferenceProjectionStatistics: projection to %d columns: PEC %.3f PIC %.3f PPC %.3f  ' %
+              (ncolumns, pec, pic, ppc))
     return pec, pic, ppc
-
