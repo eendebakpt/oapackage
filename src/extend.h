@@ -69,7 +69,7 @@ class OAextend {
                 this->check_maximal = o.check_maximal;
 
                 this->algmode = o.algmode;
-                // we do NOT copy the storefile: this->storefile = o.storefile;
+                // we do not copy the storefile: this->storefile = o.storefile;
         };
         OAextend (arraydata_t &ad)
             : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
@@ -90,25 +90,17 @@ class OAextend {
 
         /// return preferred extension algorithm
         static inline algorithm_t getPreferredAlgorithm (const arraydata_t &ad, int verbose = 0) {
-                // verbose=2;
                 if (verbose)
                         myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
                 if (ad.ncolgroups == 1 && ad.s[0] == 2 && (ad.strength == 3)) {
-                        // printf(" using MODE_J4\n");
                         return MODE_J4;
                 } else
                         return MODE_ORIGINAL;
         }
 
         /// print configuration to stdout
-        void info (int vb = 1) const {
-                std::cout << __repr__ ();
+		void info(int verbose = 1) const;
 
-                if (vb > 1) {
-                        myprintf ("OAextend: use_row_symmetry: %d\n", this->use_row_symmetry);
-                }
-                std::cout << std::endl;
-        }
         std::string __repr__ () const;
 };
 
@@ -132,11 +124,9 @@ struct extendpos {
 
         extendpos (colindex_t extensioncol, arraydata_t *adp) : row (0), col (extensioncol), ad (adp){};
 
-#ifdef OADEBUG
         void show () {
                 myprintf ("extendpos struct: N %d, col %d, ncols %d\n", this->ad->N, this->col, this->ad->ncols);
         }
-#endif
 };
 
 /// extend a list of orthogonal arrays
@@ -173,15 +163,12 @@ int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensi
 /// Run the extension algorithm starting from the array root
 arraylist_t runExtendRoot (arraydata_t adata, int nmax, int verbose = 0);
 
-/* Helper functions and development code */
 
 enum { DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI };
 
 enum { DCALC_ALWAYS, DCALC_COND };
 
-/** @brief Helper structure for dynamic extension of arrays based on D-efficiencies
- *
- *
+/** @brief Structure for dynamic extension of arrays based on D-efficiencies
  *
  */
 struct dextend_t {
@@ -236,59 +223,5 @@ struct dextend_t {
         long nmaxrnktotal; // total number of arrays found with max rank
 };
 
-/*!  \brief Branche Information for extension algorithm
- *
- * This struct is used to keep track of the branches of different possibilities. If more than one option is available,
- * this location should be stored at st[count] and count should be increased. For short, this could be done by
- * st[count++]. If a column if filled, the highest element in use, gives the last branching point. Struct is used to
- * represent a stack, since no random access is needed.
- */
-struct split {
-        ///	Pointer to the stack
-        rowindex_t *st; // alternative for a stack object
-        ///	Counter for number of elements on the stack and the number of options at the last spot, is obsolete?
-        rowindex_t count;
-        /// size of stack
-        rowindex_t stacksize;
-
-        /// number of valid positions
-        array_t *nvalid;
-        array_t *cvalidpos;
-        ///  valid positions
-        array_t **valid;
-
-        /**
-         * @brief Constructor for stack structure
-         * @param stacksize
-         * @param maxs Maximum value in array
-         */
-        split (rowindex_t stacksize, int maxs = 26) {
-                log_print (DEBUG + 1, "split constructor: size %d\n", stacksize);
-                this->stacksize = stacksize;
-                this->st = new rowindex_t[stacksize];
-                this->nvalid = new array_t[stacksize];
-                this->cvalidpos = new array_t[stacksize];
-                this->valid = malloc2d< array_t > (stacksize, maxs + 1);
-                this->count = 0; // initialize stack
-        }
-
-        ~split () {
-                delete[] this->st;
-                delete[] this->nvalid;
-                delete[] this->cvalidpos;
-                free2d (this->valid); //, this->stacksize);
-        }
-
-        inline rowindex_t position () { return this->count - 1; };
-
-        /// show information about stack
-        void show () {
-                myprintf ("stack: %d elements\n", this->count);
-                for (int i = 0; i < this->count; i++) {
-                        myprintf ("row %d (pos %d): ", this->st[i], this->cvalidpos[i]);
-                        print_perm (this->valid[i], this->nvalid[i]);
-                }
-        }
-};
 
 #endif

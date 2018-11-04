@@ -216,16 +216,14 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
 }
 
 arraylist_t conference_t::createDconferenceRootArrays () const {
-        // assert(this->j1zero==1); // if j1 is arbitrary, then we have more arrays in the root
-
         arraylist_t lst;
         array_link al (this->N, 1, array_link::INDEX_DEFAULT);
         if (j1zero) {
                 al.setconstant (-1);
                 al.at (0, 0) = 0;
                 al.at (1, 0) = 0;
-                for (int k = 2; k < N / 2 + 1; k++) {
-                        al.at (k, 0) = 1;
+                for (int row = 2; row < N / 2 + 1; row++) {
+                        al.at (row, 0) = 1;
                 }
                 lst.push_back (al);
 
@@ -234,8 +232,8 @@ arraylist_t conference_t::createDconferenceRootArrays () const {
                         al.setconstant (-1);
                         al.at (0, 0) = 0;
                         al.at (1, 0) = 0;
-                        for (int k = 2; k < i; k++) {
-                                al.at (k, 0) = 1;
+                        for (int row = 2; row < i; row++) {
+                                al.at (row, 0) = 1;
                         }
                         lst.push_back (al);
                 }
@@ -269,6 +267,34 @@ array_link conference_t::create_root () const {
 
         return al;
 }
+
+/** Helper structure containing extensions of conference designs
+*/
+struct conference_extend_t {
+	std::vector< conference_column > first;      /// list of first block candidate extensions
+	std::vector< conference_column > second;     /// list of first block candidate extensions
+	std::vector< conference_column > extensions; /// list of candidate extensions
+
+public:
+	// combine first and second section into a single column
+	conference_column combine(int i, int j) const {
+		conference_column c = vstack(this->first[i], this->second[j]);
+		return c;
+	}
+
+	size_t nExtensions() const { return this->extensions.size(); }
+
+	/// return the set of extension arrays
+	arraylist_t getarrays(const array_link al) const {
+		arraylist_t ll;
+
+		for (size_t i = 0; i < this->extensions.size(); i++) {
+			array_link alx = hstack(al, extensions[i]);
+			ll.push_back(alx);
+		}
+		return ll;
+	}
+};
 
 bool isConferenceFoldover (const array_link &al, int verbose) {
         array_link alt = al.transposed ();
@@ -1912,6 +1938,10 @@ conference_extend_t extend_double_conference_matrix (const array_link &al, const
         ce.extensions = cc;
         return ce;
 }
+
+/** Extend a single conference design with candidate columns */
+conference_extend_t extend_conference_matrix(const array_link &al, const conference_t &ct, int extcol,
+	int verbose = 1, int maxzpos = -1);
 
 conference_extend_t extend_conference_matrix (const array_link &al, const conference_t &ct, int extcol, int verbose,
                                               int maxzpos) {

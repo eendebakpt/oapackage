@@ -9,6 +9,7 @@ http://github.com/eendebakpt/oapackage
 
 import oalib
 import oapackage.Doptim
+from . import conference
 from oalib import *
 from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduceOAnauty, arraylink2arraydata, reduceGraphNauty, transformGraphMatrix
 

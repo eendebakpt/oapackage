@@ -91,20 +91,19 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
     if lbls is None:
         lbls = ['%d' % i for i in range(len(idx))]
 
-    
     if fig is not None:
         figh = plt.figure(fig)
         plt.clf()
         figh.set_facecolor('w')
         ax = plt.subplot(111)
-    
+
         ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
                    c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
 
         for jj, ii in enumerate(idx):
             gidx = (colors == ii).nonzero()[0]
             gp = np.intersect1d(paretoidx, gidx)
-    
+
             color = mycmap[jj]
             cc = [color] * len(gp)
             if verbose:
@@ -140,9 +139,9 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
             plt.draw()
             plt.pause(1e-3)
     else:
-        ax=None
-        xlabelhandle=None
-        pltlegend=None
+        ax = None
+        xlabelhandle = None
+        pltlegend = None
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
 #%%

@@ -22,6 +22,7 @@ import time
 import warnings
 import webbrowser
 import tempfile
+import subprocess
 
 try:
     import matplotlib
@@ -99,11 +100,13 @@ try:
         return wa
 except BaseException:
     def monitorSizes(verbose=0):
+        """ Dummy implementation """
         return [[0, 0, 1280, 720]]
 
 
 def guitest_monitorSizes():
-    monitorSizes()
+    sizes = monitorSizes()
+    assert(isinstance(sizes, list))
 
 
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
@@ -185,7 +188,6 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
     """
 
-    # Remove top and right axes lines ("spines")
     if verbose:
         print('niceplot: remove spines')
 
@@ -254,12 +256,19 @@ def enlargelims(factor=1.05):
 #%%
 
 
-def selectParetoArrays(allarrays, pp):
-    """ Select arrays using a Pareto object """
+def selectParetoArrays(array_list, pareto_object):
+    """ Select arrays using a Pareto object 
+
+    Args:
+        array_list (list): list of arrays
+        pareto (object): oapackage Pareto object
+    Returns:
+        list: list with all Pareto optimal designs
+    """
     paretoarrays = oalib.arraylist_t()
-    paretoidx = np.array(pp.allindices())
+    paretoidx = np.array(pareto_object.allindices())
     ww = oalib.longVector(tuple(paretoidx.tolist()))
-    oalib.selectArrays(allarrays, ww, paretoarrays)
+    oalib.selectArrays(array_list, ww, paretoarrays)
     return paretoarrays
 
 
@@ -314,59 +323,90 @@ def tprint(string, dt=1, output=False):
 
 
 def timeString(tt=None):
-    """ Return a string with the current time or specified time """
+    """ Return a string with the current time or specified time
+
+    Args:
+        tt (struct_time or None): time to convert
+    Returns:
+        str: formatted time
+    """
     if tt is None:
         tt = gmtime()
     ts = strftime("%Y-%m-%d %H:%M:%S", tt)
     return ts
 
 
-def findfilesR(p, patt):
-    """ Get a list of files (recursive) """
+def findfilesR(directory, pattern):
+    """ Get a list of files (recursive)
+
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched filess
+    """
     lst = []
-    for root, _, files in os.walk(p, topdown=False):
+    for root, _, files in os.walk(directory, topdown=False):
         lst += [os.path.join(root, f) for f in files]
-    rr = re.compile(patt)
+    rr = re.compile(pattern)
     lst = [l for l in lst if re.match(rr, l)]
     return lst
 
 
-def findfiles(p, patt=None):
-    """ Get a list of files """
-    lst = os.listdir(p)
-    if not patt is None:
-        rr = re.compile(patt)
+def findfiles(directory, pattern=None):
+    """ Get a list of files 
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched files
+    """
+    lst = os.listdir(directory)
+    if not pattern is None:
+        rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
     return lst
 
 
-def finddirectories(p, patt=None):
-    """ Get a list of directories """
-    lst = os.listdir(p)
-    if not patt is None:
-        rr = re.compile(patt)
+def finddirectories(directory, pattern=None):
+    """ Get a list of directories 
+    Args:
+        directory (str): directory to search
+        patt (str): pattern
+    Returns:
+        list: list of matched directories
+    """
+    lst = os.listdir(directory)
+    if not pattern is None:
+        rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
-    lst = [l for l in lst if os.path.isdir(os.path.join(p, l))]
+    lst = [l for l in lst if os.path.isdir(os.path.join(directory, l))]
     return lst
 
 
-def oainfo(afile, verbose=1):
+def oainfo(filename, verbose=1):
     """ Print information about a file containing arrays """
-    af = oapackage.arrayfile_t(afile, verbose)
+    af = oapackage.arrayfile_t(filename, verbose)
     print(af.showstr())
     af.closefile()
 
 
-def oaIsBinary(afile):
+def oaIsBinary(filename):
     """ Return true if array file is in binary format """
-    af = oapackage.arrayfile_t(afile)
+    af = oapackage.arrayfile_t(filename)
     ret = af.isbinary()
     af.closefile()
     return ret
 
 
 def fac(n):
-    """ Return n! (factorial) """
+    """ Return n! (factorial) 
+
+    Args:
+        n (int): number to calculate factorial
+    Returns
+        integer: factorial of number
+    """
     if n == 1 or n == 0:
         return 1
     else:
@@ -418,26 +458,6 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
             ss += '\\end{psmallmatrix}' + chr(10)
         else:
             ss += '\\end{pmatrix}' + chr(10)
-    return ss
-
-
-@deprecated
-def array2latex_old(ltable, htable=None):
-    """ Write a numpy array to latex format """
-    print('please use array2latex from researchOA instead')
-    ss = ''
-    ccc = 'c' * ltable.shape[1]
-    ss += '\\begin{tabular}{%s}\n' % ccc
-    if not htable is None:
-        ss += " \\\\\n".join(
-            [" & ".join(['\\textbf{%s}' % val for val in htable])])
-        ss += ' \\\\ \n'
-        ss += '\\hline \n'
-    for ii in range(0, ltable.shape[0]):
-        line = ltable[ii, :]
-        ss += " & ".join([str(val) for val in line])
-        ss += ' \\\\ \n'
-    ss += '\\end{tabular}\n'
     return ss
 
 
@@ -498,9 +518,6 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     return page
 
 
-import subprocess
-
-
 def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
     """ Run specified command in external environment
 
@@ -518,9 +535,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
             cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
             r = process.poll()
-            #print('poll done... %s' % r)
             line = process.stdout.readline()
-            # print('poll...')
             if verbose >= 2:
                 print('runcommand: jj %d' % jj)
             if verbose >= 3:
@@ -542,9 +557,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
                 sys.stdout.flush()
             if verbose >= 2:
                 print('end of loop...')
-        #print('exit loop...')
         r = process.poll()
-        # r = os.system(cmd) # old method
         if (not r == 0):
             print('runcommand: cmd returned error! r=%d' % str(r))
             print(cmd)
@@ -559,7 +572,6 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         fid.close()
     else:
         pass
-        #raise Exception('no logfile')
 
     # all good
     return r
@@ -702,7 +714,7 @@ def checkFilesOA(lst, cache=1, verbose=0):
 #%%
 
 
-def randomizearrayfile(afile, afileout, verbose=1):
+def randomizearrayfile(input_filename, output_filename, verbose=1):
     """ Randomize a file with orthogonal arrays
 
     Each array is transformed with a random transformation
@@ -711,7 +723,7 @@ def randomizearrayfile(afile, afileout, verbose=1):
         afile (str): input file
         afileout (str): output file
     """
-    lst = oapackage.readarrayfile(afile)
+    lst = oapackage.readarrayfile(input_filename)
     rlst = oapackage.oalib.arraylist_t()
     for ii, al in enumerate(lst):
         adata = oalib.arraylink2arraydata(al)
@@ -721,16 +733,16 @@ def randomizearrayfile(afile, afileout, verbose=1):
         trans.randomize()
         alr = trans.apply(al)
         rlst.push_back(alr)
-    oapackage.writearrayfile(afileout, rlst)
+    oapackage.writearrayfile(output_filename, rlst)
 
 
-def nArrayFile(afile, verbose=1):
+def nArrayFile(filename, verbose=1):
     """ Return number of arrays in file
 
     Args:
         afile (str): name of array file
     """
-    af = oalib.arrayfile_t(afile, 0)
+    af = oalib.arrayfile_t(filename, 0)
     n = af.narrays
     af.closefile()
     return n
@@ -771,70 +783,20 @@ def floatformat(number, mind=2, maxd=4):
 
 
 def safemin(data, default=0):
-    """ Return mininum of array with default value for empty array """
+    """ Return mininum of array with default value for empty array 
+
+    Args:
+        data (array or list): data to return the maximum
+        default (obj): default value
+    Returns:
+        m: minimum value
+
+    """
     if data.size == 0:
         m = default
     else:
         m = data.min()
     return m
-
-
-def mkdirc(xdir):
-    """ Create directory """
-    if not os.path.exists(xdir):
-        os.mkdir(xdir)
-    return xdir
-
-
-def parseProcessingTime(logfile, verbose=0):
-    """ Parse a log file to calculate the processing time """
-
-    try:
-        import dateutil.parser
-    except BaseException:
-        warnings.warn('oahelper: could not load dateutil package...')
-
-    fileinput.close()
-    tstart = None
-    tend = None
-    dtr = None
-    try:
-        for line in fileinput.input([logfile]):
-            if line.startswith('#time'):
-                if verbose >= 1:
-                    # print(line)
-                    print('parseProcessingTime: line: %s' % line, end="")
-                    # print('xy %s' % line[10:])
-            if line.startswith('#time start:'):
-                tstart = dateutil.parser.parse(line[13:])
-                if verbose >= 2:
-                    print('parseProcessingTime: tstart: %s' % tstart)
-            elif line.startswith('#time end:'):
-                tend = dateutil.parser.parse(line[10:])
-                if verbose >= 2:
-                    print('parseProcessingTime: tend: %s' % tend)
-            elif line.startswith('#time total:'):
-                dtr = (line[13:])
-                dtr = float(dtr[:-5])
-                if verbose >= 2:
-                    print('parseProcessingTime: total: %s' % dtr)
-            # else:
-            #    print('invalid line? %s' % line)
-        if tstart is not None and tend is not None:
-            dt = tend - tstart
-            dtt = dt.total_seconds()
-        else:
-            dtt = -1
-    except BaseException:
-        if verbose:
-            print('error processing log %s' % logfile)
-            traceback.print_exc(file=sys.stdout)
-        dtt = -1
-    if dtr is not None:
-        if abs(dtr - dtt) > 10:
-            print(
-                'parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]' % (dtt, dtr))
-    return dtt
 
 
 def safemax(data, default=0):
@@ -858,6 +820,62 @@ def safemax(data, default=0):
     else:
         m = data.max()
     return m
+
+
+def mkdirc(directory_name):
+    """ Create directory """
+    if not os.path.exists(directory_name):
+        os.mkdir(directory_name)
+    return directory_name
+
+
+def parseProcessingTime(logfile, verbose=0):
+    """ Parse a log file to calculate the processing time """
+
+    try:
+        import dateutil.parser
+    except BaseException:
+        warnings.warn('oahelper: could not load dateutil package...')
+
+    fileinput.close()
+    tstart = None
+    tend = None
+    dtr = None
+    try:
+        for line in fileinput.input([logfile]):
+            if line.startswith('#time'):
+                if verbose >= 1:
+                    print('parseProcessingTime: line: %s' % line, end="")
+            if line.startswith('#time start:'):
+                tstart = dateutil.parser.parse(line[13:])
+                if verbose >= 2:
+                    print('parseProcessingTime: tstart: %s' % tstart)
+            elif line.startswith('#time end:'):
+                tend = dateutil.parser.parse(line[10:])
+                if verbose >= 2:
+                    print('parseProcessingTime: tend: %s' % tend)
+            elif line.startswith('#time total:'):
+                dtr = (line[13:])
+                dtr = float(dtr[:-5])
+                if verbose >= 2:
+                    print('parseProcessingTime: total: %s' % dtr)
+            else:
+                pass
+        if tstart is not None and tend is not None:
+            dt = tend - tstart
+            dtt = dt.total_seconds()
+        else:
+            dtt = -1
+    except BaseException:
+        if verbose:
+            print('error processing log %s' % logfile)
+            traceback.print_exc(file=sys.stdout)
+        dtt = -1
+    if dtr is not None:
+        if abs(dtr - dtt) > 10:
+            print(
+                'parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]' % (dtt, dtr))
+    return dtt
 
 
 def series2htmlstr(ad, html=1, case=0):
@@ -1048,11 +1066,12 @@ def compressOAfile(afile, decompress=False, verbose=1):
 
 
 def argsort(seq):
-    """ Stable argsort """
+    """ Stable version of argsort """
     # http://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3382369#3382369
     return sorted(range(len(seq)), key=seq.__getitem__)
 
 
+@deprecated
 def jseq(xx, comb):
     pp = functools.reduce(lambda y, i: xx[:, i] + y, comb, 0)
     jseq = 1 - 2 * np.mod(pp, 2)
@@ -1060,29 +1079,39 @@ def jseq(xx, comb):
 
 
 def sortrows(x):
-    """ Sort rows of an array, return indices"""
+    """ Sort rows of an array, return indices
+
+    Args:
+        array (numpy array)
+    Returns:
+        list: indices of rows of sorted array
+    """
     if len(x.shape) == 1:
         nn = 1
-        sind = np.argsort(x)  # or np.argsort(x, order=('x', 'y'))
+        sind = np.argsort(x)
         return sind
     else:
         nn = x.shape[1]
     dt = [('x%d' % xx, 'f8') for xx in range(0, nn)]
     if x.size == 0:
-        # hack
         sind = np.array([])
         return sind
     v = [tuple(x[kk, :]) for kk in range(0, x.shape[0])]
     w = np.array(v, dtype=dt)
-    sind = np.argsort(w)  # or np.argsort(x, order=('x', 'y'))
+    sind = np.argsort(w)
     return sind
 
 
-def sortcols(X):
-    """ Sort columns of an array, return indices"""
-    sind = sortrows(X.transpose())
-    return sind
+def sortcols(array):
+    """ Sort columns of an array, return indices
 
+    Args:
+        array (numpy array)
+    Returns:
+        list: indices of columns of sorted array
+    """
+    sind = sortrows(array.transpose())
+    return sind
 
 #%%
 
@@ -1214,6 +1243,8 @@ def create_pareto_element(values, pareto=None):
     """ Create a vector of mvalue_t elements
     Args:
         vv (list): list with tuples or arrays
+    Returns:
+        object: Pareto element
     """
     if pareto is None:
         pareto = oalib.ParetoDoubleLong()

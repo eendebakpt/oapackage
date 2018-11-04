@@ -120,7 +120,6 @@ arraylist_t depth_extend_sub_t::initialize (const arraylist_t &alist, const arra
         }
         arraylist_t v = ::selectArrays (alist, valididx);
 
-        // reset valididx
         for (size_t i = 0; i < valididx.size (); i++) {
                 valididx[i] = i;
         }
@@ -151,7 +150,6 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
                         flush_stdout ();
                 }
 #ifdef DOOPENMP
-                // printfd("entry to depth_extend_omp: extesioncol %d\n", extensioncol );
                 dextend.setposition (extensioncol, -1, goodarrays.size ());
                 depth_extend_omp (goodarrays, dextend, dextendsub, extensioncol, 1);
 #else
@@ -316,7 +314,6 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 extend_array (al.array, &adfull, extensioncol, goodarrays, oaextendDirect);
 
         } else {
-                // dextend.cache_extensions =1;
                 depthalg = DEPTH_EXTENSIONS;
 
                 /// extend the arrays without using the row symmetry property
@@ -348,7 +345,6 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
         processDepth (goodarrays, depthalg, dextend, dextendsub, extensioncol, verbose);
 }
 
-/// helper function
 void depth_extend_log (int i, const arraylist_t &alist, int nn, depth_extend_t &dextend, int extcol, int verbose) {
         std::string sp = depth_extend_logstring (extcol - dextend.loglevelcol);
 
@@ -417,10 +413,9 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
                         if (j5max == al.n_rows) {
                                 if (dlocal.verbose >= 2) {
-                                        printf ("depth_extend: discardJ5: extcol %d, j5max %d: setting number of "
+                                        myprintf ("depth_extend: discardJ5: extcol %d, j5max %d: setting number of "
                                                 "extensions (%d) to zero\n",
                                                 extcol, j5max, (int)nn);
-                                        // dextend.showprogress ( 1, extcol );
                                         dextend.showsearchpath (extcol);
                                 }
                                 dextend.discardJ5number += nn;
@@ -461,7 +456,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
                         if (b) {
                                 // do lmc check
-                                LMCreduction_t reduction (&adlocal); // TODO: place outside loop (only if needed)
+                                LMCreduction_t reduction (&adlocal); 
                                 LMCreduction_t tmp = reduction;
 
                                 // make sure code is thread safe
@@ -690,6 +685,108 @@ Jcounter calculateJstatistics (const char *inputfile, int jj, int verbose) {
         jcounter.dt = get_time_ms () - t0;
 
         return jcounter;
+}
+
+long Jcounter::getCount (int k, int j) const {
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                if (it->first.j == j && it->first.k == k) {
+                        return it->second;
+                }
+        }
+        return -1;
+}
+void Jcounter::showcompact () const {
+
+        int kprev = -1;
+        long nt = 0;
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                if (it->first.k == kprev) {
+                        nt += it->second;
+                        myprintf ("; %d: %ld", it->first.j, it->second);
+                } else {
+                        if (kprev != -1) {
+                                myprintf ("; total %ld\n", nt);
+                        }
+                        nt = 0;
+                        myprintf ("k %d: max(J%d) %d: %ld", it->first.k, this->jj, it->first.j, it->second);
+                        kprev = it->first.k;
+                }
+        }
+        myprintf ("; total %ld\n", nt);
+}
+        
+std::vector< long > Jcounter::getTotalsJvalue (int jval) const {
+        int nmax = maxCols ();
+        std::vector< long > k (nmax + 1);
+
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                if (it->second < 0) {
+                        myprintf ("Jcounter::getTotals: value -1 for index %s\n",
+                                    it->first.toString ().c_str ());
+                } else {
+                        if (it->first.j == jval)
+                                k[it->first.k] += it->second;
+                }
+        }
+        return k;
+}
+std::vector< long > Jcounter::getTotals () const {
+        int nmax = maxCols ();
+        std::vector< long > k (nmax + 1);
+
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                if (it->second < 0) {
+                        myprintf ("Jcounter::getTotals: value -1 for index %s\n",
+                                    it->first.toString ().c_str ());
+                } else {
+                        k[it->first.k] += it->second;
+                }
+        }
+        return k;
+}
+        
+/// show statistics of the object
+void Jcounter::show () const {
+
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                myprintf ("k %d: max(J%d) %d: %ld\n", it->first.k, this->jj, it->first.j, it->second);
+        }
+}
+
+int Jcounter::maxCols () const {
+        int kmax = -1;
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                kmax = std::max (kmax, it->first.k);
+        }
+
+        return kmax;
+}
+bool Jcounter::hasColumn (int col) const {
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+
+                if (it->first.k == col) {
+                        return true;
+                }
+        }
+        return false;
+}
+
+long Jcounter::narrays () const {
+
+        long r = 0;
+        for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
+                ++it) {
+                r += it->second;
+        }
+
+        return r;
 }
 
 /// add list of arrays to object

@@ -104,7 +104,7 @@ To compile the Python interface use
 
 The Python interface requires Numpy :cite:`NumPy2012`,
 Matplotlib :cite:`Matplotlib` and Swig. The code has been
-tested with Python 2.7, 3.5 and 3.6.
+tested with Python 2.7, 3.5, 3.6 and 3.7.
 
 The R interface to the optimal design functionality of the package is available from
 `CRAN <http://cran.r-project.org/web/packages/oapackage/index.html>`_.

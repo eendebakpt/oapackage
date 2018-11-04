@@ -182,8 +182,6 @@ int main (int argc, char *argv[]) {
 // printf("slave %d: receive algorithm %d\n", this_rank, algorithm);
 #endif
 
-                // assert(algorithm==MODE_ORIGINAL);
-                // oaextend.algmode = algorithm;
                 extend_slave_code (this_rank, oaextend);
 
                 delete opt;
@@ -223,9 +221,7 @@ int main (int argc, char *argv[]) {
                         logstream (SYSTEM) << "operating in streaming mode, sorting of arrays will not work "
                                            << std::endl;
                         oaextend.extendarraymode = OAextend::STOREARRAY;
-                        // oaextend.storefile.createfile();
                 }
-                // oaextend.init_column_previous=1;
 
                 // J5_45
                 int xx = opt->getFlag ('x');
@@ -323,7 +319,7 @@ int main (int argc, char *argv[]) {
 
                         } else {
                                 // starting with root
-                                if (check_divisibility (ad) == false) { // Divisibility test
+                                if (check_divisibility (ad) == false) { 
                                         log_print (SYSTEM, "ERROR: Failed divisibility test!\n");
 
 #ifdef OAEXTEND_MPI
@@ -341,8 +337,6 @@ int main (int argc, char *argv[]) {
 
                         maxk = std::min (maxk, ad->ncols);
 
-                        // oaextend.info();  ad->show();
-
                         time_t seconds;
                         for (colindex_t current_col = col_start; current_col < maxk; current_col++) {
                                 fflush (stdout);
@@ -357,14 +351,9 @@ int main (int argc, char *argv[]) {
                                                            << std::endl;
                                         int nb = arrayfile_t::arrayNbits (*ad);
 
-                                        // oaextend.storefile.setVerbose(2);
                                         oaextend.storefile.createfile (fname, adcol->N, ad->ncols, -1, ABINARY, nb);
                                 }
 
-                                // printf("hack: adcol current_col %d\n", current_col); adcol->show();
-
-                                // time(&seconds); tminfo = localtime(&seconds);
-                                // log_print(SYSTEM, "TIME: %5i\t%s\n", seconds - t0, asctime(tminfo));
                                 log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
                                            current_col + 1, (int)solutions.size (), get_time_ms () - Tstart);
                                 nr_extensions = 0;
@@ -376,12 +365,9 @@ int main (int argc, char *argv[]) {
                                         print_progress (csol, solutions, extensions, Tstart, current_col);
                                         logstream (NORMAL) << cur_extension[0];
 
-                                        // if (cur_extension-solutions.begin()>2) break;
-
                                         if (n_processors == 1) {
                                                 nr_extensions += extend_array (cur_extension->array, adcol,
                                                                                current_col, extensions, oaextend);
-
                                         } else {
 #ifdef OAEXTEND_MPI
                                                 double Ttmp = get_time_ms ();

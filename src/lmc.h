@@ -31,8 +31,7 @@ For more information please contact Pieter Eendebak, <pieter.eendebak@gmail.com>
   @sa extend_array(), LMCreduce(), array_link, arraydata_t
   */
 
-#ifndef LMC_H
-#define LMC_H
+#pragma once
 
 #include <assert.h>
 #include <iomanip>
@@ -200,12 +199,11 @@ struct LMC_static_struct_t {
         int id;
 #endif
 
-        /* methods */
         LMC_static_struct_t ();
         ~LMC_static_struct_t ();
 
         void show (int verbose = 1) const {
-                myprintf ("LMC_static_struct_t: ad %ld, LMC_non_root_init %d\n", (const long)(this->ad),
+                myprintf ("LMC_static_struct_t: ad %p, LMC_non_root_init %d\n", (void *)(this->ad),
                           LMC_non_root_init);
         }
 
@@ -253,9 +251,6 @@ void cleanGlobalStaticIndexed ();
 LMC_static_struct_t *getGlobalStatic ();
 void releaseGlobalStatic (LMC_static_struct_t *p);
 void cleanGlobalStatic ();
-#ifdef OADEBUG
-int getGlobalStaticNumber (LMC_static_struct_t *p);
-#endif
 LMC_static_struct_t &getGlobalStaticOne ();
 
 /// variable indicating the state of the reduction process
@@ -788,8 +783,6 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 
 typedef double jj45_t;
 
-/** Apply a random transformation to an array **/
-void random_transformation (array_t *array, const arraydata_t *adp);
 
 /* helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
@@ -820,49 +813,13 @@ LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t 
 lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const OAextend &oaextend,
                               LMCreduction_t &reduction, LMCreduction_t &reductionsub, int dverbose);
 
-template < class numtype >
-/// Convert selection of elements to extended permutation
-larray< numtype > comb2perm (const larray< numtype > comb, int n) {
-        larray< numtype > w (n);
-        larray< numtype > wtmp (n);
-        for (int i = 0; i < n; i++) {
-                wtmp[i] = i;
-        }
-        int j = comb.size ();
-        for (int i = 0; i < j; i++) {
-                w[i] = comb[i];
-                wtmp[comb[i]] = -1;
-        }
-        for (int i = 0; i < n; i++) {
-                if (wtmp[i] >= 0) {
-                        w[j] = wtmp[i];
-                        j++;
-                }
-        }
-        return w;
-}
-
-template < class numtype >
-/// Convert selection of elements to extended permutation
-std::vector< numtype > comb2perm (const std::vector< numtype > comb, int n) {
-        std::vector< numtype > w (n);
-        std::copy (comb.begin (), comb.end (), w.begin ());
-        numtype j = comb.size ();
-        for (int i = 0; i < n; i++) {
-                bool c = std::find (comb.begin (), comb.end (), i) != comb.end ();
-                if (!c) {
-                        w[j] = i;
-                        j++;
-                }
-        }
-        return w;
-}
 
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
-array_transformation_t reductionDOP (const array_link &al, int verbose = 0);
+/// Caculate the transformation to delete-on-factor normal for from an array
+array_transformation_t reductionDOP (const array_link &array, int verbose = 0);
 
 /// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
 void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
@@ -877,8 +834,6 @@ array_link reduceLMCform (const array_link &al);
 
 /// reduce an array to canonical form using delete-1-factor ordering
 array_link reduceDOPform (const array_link &al, int verbose = 0);
-
-/* Helper functions */
 
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);
@@ -900,11 +855,6 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
 #endif
 
 
-/* helper functions */
-
-//rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr);
-//void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lperms, const arraydata_t *ad, int level, int &permcounter);
-
 /**
 * @brief Print the contents of a rowsort structure
 * @param rowsort Pointer to rowsort structure
@@ -914,4 +864,3 @@ void print_rowsort (rowsort_t *rowsort, int N);
 void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N);
 
 
-#endif

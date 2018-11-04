@@ -684,9 +684,7 @@ array_link::array_link (const array_link &rhs, const std::vector< int > &colperm
         }
 }
 
-/**
- * @brief Element access
- */
+
 array_t array_link::at (const int index) const {
         if ( ! this->_valid_index(index) ) {
                 throw std::out_of_range (printfstring("array_link error: index %dout of bounds\n", index));
@@ -704,7 +702,7 @@ array_link array_link::clone () const {
 
 void array_link::setvalue (int r, int c, int val) {
         if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
-                myprintf ("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                myprintf ("array_link::setvalue: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns);
                 return;
         }
@@ -715,7 +713,7 @@ void array_link::setvalue (int r, int c, int val) {
 void array_link::setvalue (int r, int c, double val) {
         if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
 #ifdef FULLPACKAGE
-                myprintf ("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                myprintf ("array_link::setvalue: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns);
 #endif
                 return;
@@ -747,7 +745,7 @@ array_t array_link::_at (const rowindex_t r, const colindex_t c) const { return 
  */
 array_t array_link::at (const rowindex_t r, const colindex_t c) const {
         if ( ! this->_valid_index(r, c) ) {
-                throw std::out_of_range (printfstring("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                throw std::out_of_range (printfstring("array_link::at: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns));
         }
 
@@ -759,7 +757,7 @@ array_t array_link::at (const rowindex_t r, const colindex_t c) const {
  */
 array_t &array_link::at (const rowindex_t r, const colindex_t c) {
         if ( ! this->_valid_index(r, c) ) {
-                throw std::out_of_range (printfstring("array_link error: index out of bounds %d %d (%d %d)!!\n", r, c, this->n_rows,
+                throw std::out_of_range (printfstring("array_link::at: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns));
         }
 
@@ -1889,7 +1887,47 @@ array_link exampleArray (int idx, int verbose) {
                          return array;
                          break;
                 }
-   
+		 case 45: {
+			 dstr = "first conference design in C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,-1,-1,-1,1,0,-1,1,1,1,1,-1,1,-1,-1,1,-1,1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 46: {
+			 dstr = "second conference design in C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,-1,-1,1,0,1,-1,1,1,-1,1,-1,-1,-1,1,1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 47: {
+			 dstr = "third conference design in C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,-1,-1,1,0,1,-1,1,1,-1,-1,1,1,-1,-1,1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 48: {
+			 dstr = "last conference design in C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,-1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,0,-1,1,-1,-1,-1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1,1,0,1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,1,-1,-1,-1,1,-1,-1,0,1,-1,1,1,1,-1,1,1,1,-1,1,-1,-1,-1,-1,1,1,1,1,-1,-1,1,0,1,-1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+
         } // end of switch
 
         return array_link (1, 1, -1);
@@ -1898,6 +1936,20 @@ array_link exampleArray (int idx, int verbose) {
 array_link array_link::reduceDOP () const {
         array_link d = reduceDOPform (*this, 0);
         return d;
+}
+
+MatrixFloat array_link::getEigenMatrix() const {
+	int ncolumns = this->n_columns;
+	int nrows = this->n_rows;
+	MatrixFloat mymatrix = MatrixFloat::Zero(nrows, ncolumns);
+
+	for (int column = 0; column < ncolumns; ++column) {
+		int column_offset = column * nrows;
+		for (int row = 0; row < nrows; ++row) {
+			mymatrix(row, column) = this->array[row + column_offset];
+		}
+	}
+	return mymatrix;
 }
 
 array_link array_link::reduceLMC () const {
@@ -1961,6 +2013,11 @@ bool array_link::is_conference (int nz) const {
         return true;
 }
 
+bool array_link::is_orthogonal_array() const {
+	if (this->min() < 0)
+		return false;
+	return true;
+}
 
 bool array_link::is_mixed_level() const {
 	if (this->min() < 0)
@@ -2127,38 +2184,60 @@ void create_root (const arraydata_t *ad, arraylist_t &solutions) {
         solutions.push_back (cur_solution);
 }
 
-/// calculate number of model parameters
-std::vector< int > numberModelParams (const array_link &al, int order = 2)
-
+std::vector< int > numberModelParametersConference(const array_link &conference_design)
 {
-        int k = al.n_columns;
-        std::vector< int > n (order + 1);
-        n[0] = 1;
-        n[1] = al.n_columns;
+	int n_columns = conference_design.n_columns;
+	std::vector< int > number_parameters(4);
+	number_parameters[0] = 1;
+	number_parameters[1] = n_columns;
+	number_parameters[2] = n_columns * (n_columns - 1) / 2;
+	number_parameters[3] = n_columns;
+	return number_parameters;
+}
+std::vector< int > numberModelParams(const array_link &array, int order)
+{
+	if (order > 0) {
+		myprintf("numberModelParams: order argument is not used any more\n");
+	}
 
-        if (order > 2) {
-                throw_runtime_exception("numberModelParams: not implemented for order > 2\n");
-        }
-        arraydata_t arrayclass = arraylink2arraydata (al, 0, 2);
-        std::vector< int > s = arrayclass.factor_levels ();
-        std::vector< int > df = s;
-        std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
+	if (array.is_conference()) {
+		return numberModelParametersConference(array);
+	}
+	if (array.is_orthogonal_array()) {
+		int k = array.n_columns;
+		std::vector< int > number_parameters(4);
+		number_parameters[0] = 1;
+		number_parameters[1] = array.n_columns;
 
-        /* main effect contrasts */
-        int mesize = std::accumulate (df.begin (), df.end (), 0);
-        n[1] = mesize;
+		arraydata_t arrayclass = arraylink2arraydata(array, 0, 2);
+		std::vector< int > s = arrayclass.factor_levels();
+		std::vector< int > df = s;
+		std::transform(df.begin(), df.end(), df.begin(), std::bind2nd(std::minus< int >(), 1.0));
 
-        /* 2fi*/
-        int number_of_2factor_interactions = 0;
-        for (int ii = 0; ii < k - 1; ii++) {
-                for (int jj = ii + 1; jj < k; jj++) {
-                        number_of_2factor_interactions += df[ii] * df[jj];
-                }
-        }
+		/* main effect contrasts */
+		int mesize = std::accumulate(df.begin(), df.end(), 0);
+		number_parameters[1] = mesize;
 
-        if (order >= 2)
-                n[2] = number_of_2factor_interactions;
-        return n;
+		/* 2fi*/
+		int number_of_2factor_interactions = 0;
+		for (int ii = 0; ii < k - 1; ii++) {
+			for (int jj = ii + 1; jj < k; jj++) {
+				number_of_2factor_interactions += df[ii] * df[jj];
+			}
+		}
+		number_parameters[2] = number_of_2factor_interactions;
+
+		/* quadratic effects*/
+		int number_of_quadratic_interactions = 0;
+		for (int ii = 0; ii < k - 1; ii++) {
+			number_of_quadratic_interactions += df[ii] * df[ii];
+		}
+		number_parameters[3] = number_of_quadratic_interactions;
+
+		return number_parameters;
+	}
+	throw_runtime_exception("array type invalid");
+
 }
 
 MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) const {
@@ -2166,7 +2245,7 @@ MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) c
         MatrixFloat intcpt = MatrixFloat::Zero (N, 1);
         intcpt.setConstant (1);
 
-        std::vector< int > np = numberModelParams (*this, order);
+        std::vector< int > np = numberModelParams (*this);
         if (verbose >= 1) {
                 myprintf ("array_link::getModelMatrix numberModelParams: ");
                 printf_vector (np, "%d", " ");
@@ -2776,7 +2855,6 @@ arraydata_t::arraydata_t (const arraydata_t *adp, colindex_t newncols) {
         complete_arraydata ();
 }
 
-/// @brief copy constructor
 arraydata_t::arraydata_t (const arraydata_t &adp)
     : N (adp.N), ncols (adp.ncols), strength (adp.strength), order (adp.order), colgroupindex (0), colgroupsize (0) {
         s = new array_t[ncols];
@@ -2788,6 +2866,44 @@ arraydata_t::~arraydata_t () {
         delete[] colgroupindex;
         delete[] colgroupsize;
 }
+
+arraydata_t& arraydata_t::operator= (const arraydata_t &ad2) {
+	this->N = ad2.N;
+	this->strength = ad2.strength;
+	this->ncols = ad2.ncols;
+	this->order = ad2.order;
+	if (s != 0) {
+		delete[] s;
+	}
+	this->s = new array_t[this->ncols];
+
+	if (ad2.s == 0) {
+		myprintf("error: invalid arraydata_t structure\n");
+	}
+	std::copy(ad2.s, ad2.s + this->ncols, s);
+	return *this;
+}
+
+int arraydata_t::operator== (const arraydata_t &ad2) {
+	if (this->N != ad2.N) {
+		return 0;
+	}
+
+	if (this->ncols != ad2.ncols) {
+		return 0;
+	}
+	if (!std::equal(this->s, this->s + this->ncols, ad2.s)) {
+		return 0;
+	}
+	if (this->strength != ad2.strength) {
+		return 0;
+	}
+	if (this->order != ad2.order) {
+		return 0;
+	}
+
+	return 1;
+};
 
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
@@ -3021,6 +3137,37 @@ array_link arraydata_t::create_root (int n_columns, int fill_value) const {
                 }
         }
         return al;
+}
+
+/// return the factor level for the specified column return -1 if the column index is invalid
+int arraydata_t::getfactorlevel(int idx) const {
+	if (idx < 0) {
+		return -1;
+	}
+	if (idx >= this->ncols) {
+		return -1;
+	}
+	return this->s[idx];
+}
+
+void arraydata_t::reset_strength(colindex_t t) {
+	strength = t;
+	delete[] colgroupindex;
+	delete[] colgroupsize;
+	complete_arraydata();
+}
+
+colindex_t arraydata_t::get_col_group(const colindex_t col) const {
+	colindex_t j = 0;
+	for (colindex_t i = 0; i < ncolgroups; i++) {
+		if (colgroupindex[i] <= col) {
+			j = i;
+		}
+		else {
+			break;
+		}
+	}
+	return j;
 }
 
 bool arraydata_t::is2level () const {
@@ -3390,6 +3537,15 @@ std::string jstruct_t::showstr () {
         return ss.str ();
 }
 
+int jstruct_t::allzero() const {
+	for (int i = 0; i < this->nc; ++i) {
+		if (this->values[i] != 0) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 void jstruct_t::show () {
 #ifdef FULLPACKAGE
         cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
@@ -3402,7 +3558,7 @@ void jstruct_t::show () {
 
 void jstruct_t::showdata () {
         for (size_t x = 0; x < this->values.size (); x++) {
-                myprintf(printfstring (" %d", values[x]).c_str());
+                myprintf("%s", printfstring (" %d", values[x]).c_str());
         }
 		myprintf("\n");
 }
@@ -4116,6 +4272,18 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
     : n_rows (nrows), n_columns (ncols), index (index_) {
         this->array = create_array (nrows, ncols);
         memcpy (this->array, array, nrows * ncolsorig * sizeof (array_t)); // FIX: replace by copy_array
+}
+
+std::string printfstring(const char *message, ...) {
+	char buf[32 * 1024];
+
+	va_list va;
+	va_start(va, message);
+	vsprintf(buf, message, va);
+	va_end(va);
+
+	std::string str(buf);
+	return str;
 }
 
 /**
@@ -5141,22 +5309,29 @@ array_link hstack (const array_link &al, const conference_column &b) {
         return v;
 }
 
-/// stack to arrays together
-array_link hstack (const array_link &al, const array_link &b) {
-        assert (al.n_rows == b.n_rows);
-        array_link v (al.n_rows, al.n_columns + b.n_columns, array_link::INDEX_NONE);
-        std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
-        std::copy (b.array, b.array + b.n_columns * al.n_rows, v.array + v.n_rows * al.n_columns);
-        return v;
+array_link hstack (const array_link &array_left, const array_link &array_right) {
+        assert (array_left.n_rows == array_right.n_rows);
+        array_link output_array (array_left.n_rows, array_left.n_columns + array_right.n_columns, array_link::INDEX_NONE);
+        std::copy (array_left.array, array_left.array + array_left.n_columns * array_left.n_rows, output_array.array);
+        std::copy (array_right.array, array_right.array + array_right.n_columns * array_left.n_rows, output_array.array + output_array.n_rows * array_left.n_columns);
+        return output_array;
 }
 
-/// append the last column of the second array to the entire first array
 array_link hstacklastcol (const array_link &al, const array_link &b) {
         array_link v (al.n_rows, al.n_columns + 1, array_link::INDEX_NONE);
         std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
         size_t offset = al.n_rows * (b.n_columns - 1);
         std::copy (b.array + offset, b.array + offset + al.n_rows, v.array + v.n_rows * al.n_columns);
         return v;
+}
+
+/// concatenate two columns
+conference_column vstack(const conference_column &column_top, const conference_column &column_bottom) {
+	conference_column output_column(column_top.size() + column_bottom.size());
+
+	std::copy(column_top.begin(), column_top.end(), output_column.begin());
+	std::copy(column_bottom.begin(), column_bottom.end(), output_column.begin() + column_top.size());
+	return output_column;
 }
 
 void conference_transformation_t::show (int verbose) const {

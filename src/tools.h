@@ -4,8 +4,7 @@
  * Author: Pieter Eendebak <pieter.eendebak@gmail.com>
  * Copyright: See LICENSE.txt file that comes with this distribution
  */
-#ifndef TOOLS_H
-#define TOOLS_H
+#pragma once
 
 #include <algorithm>
 #include <iomanip>
@@ -42,7 +41,6 @@ inline void printfd_handler (const char *file, const char *func, int line, const
 #endif
 }
 
-//#define printfd(MESSAGE) printfd_handler(__FILE__, __LINE__, MESSAGE)
 #define printfd(...) printfd_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #include "arraytools.h"
@@ -125,23 +123,23 @@ inline void flush_stdout () {
 
 template < class A >
 /**
- * Delete a pointer and set to zero.
+ * Delete object given by a pointer and set to zero.
  */
-inline void safedelete (A *p) {
-        if (p != 0)
-                delete p;
-        p = 0;
+inline void safedelete (A *pointer) {
+        if (pointer != 0)
+                delete pointer;
+        pointer = 0;
 }
 
 template < class A >
 /**
  * Delete array and set pointer to zero
- * @param p
+ * @param pointer Pointer to allocated array 
  */
-inline void safedeletearray (A *p) {
-        if (p != 0)
-                delete[] p;
-        p = 0;
+inline void safedeletearray (A *pointer) {
+        if (pointer != 0)
+                delete[] pointer;
+        pointer = 0;
 }
 
 template < class Type >
@@ -309,11 +307,11 @@ void free2d_irr (DataType **data, const int nrows) {
         free2d (data);
 }
 
-void print_array (const char *str, const array_t *array, const rowindex_t r, const colindex_t c);
+void print_array (const char *str, const array_t *array, const int nrows, const int ncols);
 void print_array (const array_t *array, const rowindex_t r, const colindex_t c);
 
 /// Print array to stdout
-void print_array (const array_link &A);
+void print_array (const array_link &array);
 
 #ifdef FULLPACKAGE
 template < class atype >
@@ -351,23 +349,6 @@ void printf_vector (const std::vector< atype > &vector, const char *format, cons
         }
 }
 
-#ifdef FULLPACKAGE
-template < class atype > void show_array_dyn (const atype *array, const int x, const int y) {
-        register int i, j, k;
-
-        for (i = 0; i < y; i++) {
-                k = i;
-                for (j = 0; j < x; j++) {
-                        std::cout << std::setw (3) << array[k];
-                        k += y;
-                }
-                std::cout << "\n";
-        }
-}
-#endif
-
-//inline void addelement (const array_t elem, int *elements) { elements[elem]++; }
-
 /// return time with milisecond precision
 double get_time_ms ();
 
@@ -378,44 +359,25 @@ double get_time_ms (double t0);
 void trim (std::string &str, const std::string &trimChars = "");
 
 /// return the current time as a string
-inline std::string currenttime () {
-        time_t seconds;
-        struct tm *tminfo;
-        time (&seconds);
-        tminfo = localtime (&seconds);
-        std::string ts = asctime (tminfo);
-        trim (ts);
-        return ts;
-}
+std::string currenttime ();
 
 /// return string describing array
-std::string oafilestring (const arraydata_t *ad);
+std::string oafilestring (const arraydata_t *arrayclass);
 
 template < class numtype >
 /** @brief Convert integer to C++ string
  *
- * @param i Integer
+ * @param integer_value Integer
  * @return String representation of the integer
  */
-inline std::string itos (numtype i) {
+inline std::string itos (numtype integer_value) {
         std::stringstream s;
-        s << i;
+        s << integer_value;
         return s.str ();
 }
 
 /// printf-style function that returns std::string
 std::string printfstring (const char *message, ...);
-
-inline std::string printtime () {
-        time_t rawtime;
-        struct tm *timeinfo;
-
-        time (&rawtime);
-        timeinfo = localtime (&rawtime);
-        return printfstring ("%s", asctime (timeinfo));
-}
-
-/* sorting templates */
 
 template < class Object >
 /**
@@ -439,13 +401,13 @@ inline void insertionSort (Object array[], int length) {
 
 template < class itemType, class indexType >
 /// sort arrays using bubbleSort
-inline void bubbleSort (itemType a[], indexType left, indexType right) {
+inline void bubbleSort (itemType array[], indexType left, indexType right) {
         indexType i, j;
 
         for (i = right; i > left; --i)
                 for (j = left; j < i; ++j)
-                        if (a[j] > a[j + 1])
-                                std::swap (a[j], a[j + 1]);
+                        if (array[j] > array[j + 1])
+                                std::swap (array[j], array[j + 1]);
 }
 
 template < class itemType, class indexType >
@@ -453,7 +415,7 @@ template < class itemType, class indexType >
  *
  * The indices left and right are inclusive.
  */
-inline void flipSort (itemType a[], indexType left, indexType right) {
+inline void flipSort (itemType array[], indexType left, indexType right) {
         indexType i, j;
 
         i = right;
@@ -461,8 +423,8 @@ inline void flipSort (itemType a[], indexType left, indexType right) {
                 indexType ii = i;
                 i = left;
                 for (j = left; j < ii; ++j) {
-                        if (a[j] > a[j + 1]) {
-                                std::swap (a[j], a[j + 1]);
+                        if (array[j] > array[j + 1]) {
+                                std::swap (array[j], array[j + 1]);
                                 i = j;
                         }
                 }
@@ -549,22 +511,15 @@ inline std::string replaceString (std::string subject, const std::string &search
 }
 
 /// print a double value as bits
-inline void printdoubleasbits (double double_value) {
-        unsigned char *desmond = (unsigned char *)&double_value;
-        for (size_t i = 0; i < sizeof (double); i++) {
-                myprintf ("%02X ", desmond[i]);
-        }
-        myprintf ("\n");
-}
+void printdoubleasbits (double double_value, bool add_newline = true);
 
 /// calculate directory name for job splitted into parts
-std::string splitDir (std::vector< int > ii);
+std::string splitDir (std::vector< int > tag_indices);
 
 /// calculate file name of job splitted into parts
-std::string splitFile (std::vector< int > ii);
+std::string splitFile (std::vector< int > tag_indices);
 
 /// calculate tag for job splitted into parts
-std::string splitTag (std::vector< int > ii);
+std::string splitTag (std::vector< int > tag_indices);
 
-#endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+
