@@ -462,26 +462,6 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
     return ss
 
 
-@deprecated
-def array2latex_old(ltable, htable=None):
-    """ Write a numpy array to latex format """
-    print('please use array2latex from researchOA instead')
-    ss = ''
-    ccc = 'c' * ltable.shape[1]
-    ss += '\\begin{tabular}{%s}\n' % ccc
-    if not htable is None:
-        ss += " \\\\\n".join(
-            [" & ".join(['\\textbf{%s}' % val for val in htable])])
-        ss += ' \\\\ \n'
-        ss += '\\hline \n'
-    for ii in range(0, ltable.shape[0]):
-        line = ltable[ii, :]
-        ss += " & ".join([str(val) for val in line])
-        ss += ' \\\\ \n'
-    ss += '\\end{tabular}\n'
-    return ss
-
-
 def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='', tdstyle='', trstyle='', thstyle=''):
     """ Convert Numpy array to HTML table
 
@@ -866,9 +846,7 @@ def parseProcessingTime(logfile, verbose=0):
         for line in fileinput.input([logfile]):
             if line.startswith('#time'):
                 if verbose >= 1:
-                    # print(line)
                     print('parseProcessingTime: line: %s' % line, end="")
-                    # print('xy %s' % line[10:])
             if line.startswith('#time start:'):
                 tstart = dateutil.parser.parse(line[13:])
                 if verbose >= 2:

@@ -192,6 +192,19 @@ class TestOAfiles(unittest.TestCase):
 
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
+    def test_selectArrays(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1), oapackage.exampleArray(4, 1)])
+        oapackage.oahelper.selectArrays(array_filename, array_filename_out, [1], afmode=oalib.ABINARY, verbose=1, cache=0)
+        oapackage.oahelper.selectArrays(array_filename, array_filename_out, [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
+
+    def test_nArrayFile(self):
+        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1)])
+        self.assertEqual(oapackage.oahelper.nArrayFile(array_filename), 1)        
+        self.assertEqual(oapackage.oahelper.nArrayFile('notavalidfile.oa'), -1)
+        
     def test_findfiles(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
         lst = [oapackage.exampleArray(4, 1)]
@@ -248,6 +261,15 @@ class TestOAhelper(unittest.TestCase):
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
 
+    def test_parseProcessingTime(self):
+        filename=tempfile.mktemp(suffix='.txt')
+        with open(filename, 'wt') as fid:
+            fid.write('# my logfile\n')
+            fid.write('#time start: 2012-01-19 17:21:00\n')
+            fid.write('#time end: 2012-01-19 18:21:00\n')
+        dtt = oapackage.oahelper.parseProcessingTime(filename, verbose=2)
+        self.assertEqual(dtt, 3600.)
+        
     def test_argsort(self):
         idx = oapackage.oahelper.argsort([1, 2, 3])
         assert(idx == [0, 1, 2])
@@ -289,6 +311,7 @@ class TestOAhelper(unittest.TestCase):
     def test_checkFiles(self):
         self.assertTrue(oapackage.oahelper.checkFiles([], -1))
         self.assertTrue(oapackage.oahelper.checkFiles(['nosuchfile'], -1))
+        self.assertTrue(oapackage.oahelper.checkFiles('nosuchfile', -1))
 
     def test_checkFilesOA(self):
         r = oapackage.oahelper.checkFilesOA([], cache=1, verbose=0)
@@ -307,6 +330,8 @@ class TestOAhelper(unittest.TestCase):
         self.assertEqual(r, -2)
         r = oapackage.oahelper.safemax(np.array([1, -2, 3]), default=0)
         self.assertEqual(r, 3)
+        r = oapackage.oahelper.safemax([], default=-23)
+        self.assertEqual(r, -23)
 
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
