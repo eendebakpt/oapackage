@@ -64,10 +64,8 @@ def modelStatistics(dsd, verbose=0):
     nrows = dsd.shape[0]
     ncolumns = dsd.shape[1]
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
-    modelmatrix = oapackage.array_link(modelmatrix.astype(int))
+    M = (modelmatrix.T).dot(modelmatrix)
 
-    Eest = 0
-    M = (np.array(modelmatrix).T).dot(np.array(modelmatrix))
     mr = np.linalg.matrix_rank(M)
 
     if verbose >= 2:

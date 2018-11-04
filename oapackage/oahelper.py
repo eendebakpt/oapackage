@@ -188,7 +188,6 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
     """
 
-    # Remove top and right axes lines ("spines")
     if verbose:
         print('niceplot: remove spines')
 
