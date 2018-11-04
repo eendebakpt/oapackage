@@ -9,6 +9,10 @@ OAlib.egg-info
 .vscode
 OApackage.egg-info
 
+# IDE
+.idea/
+.pytest_cache/
+
 # Misc
 
 x.txt

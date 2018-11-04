@@ -91,7 +91,7 @@ class conference_t {
 
         /// return string representation of the object
         std::string __repr__ () const {
-                return printfstring ("conference type: N %d, ncols %d", this->N, this->ncols);
+                return printfstring ("conference class: number of rows %d, number of columns %d", this->N, this->ncols);
         }
 };
 

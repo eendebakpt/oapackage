@@ -2855,7 +2855,6 @@ arraydata_t::arraydata_t (const arraydata_t *adp, colindex_t newncols) {
         complete_arraydata ();
 }
 
-/// @brief copy constructor
 arraydata_t::arraydata_t (const arraydata_t &adp)
     : N (adp.N), ncols (adp.ncols), strength (adp.strength), order (adp.order), colgroupindex (0), colgroupsize (0) {
         s = new array_t[ncols];
@@ -2868,7 +2867,6 @@ arraydata_t::~arraydata_t () {
         delete[] colgroupsize;
 }
 
-/// @brief assignment operator
 arraydata_t& arraydata_t::operator= (const arraydata_t &ad2) {
 	this->N = ad2.N;
 	this->strength = ad2.strength;
@@ -2886,7 +2884,6 @@ arraydata_t& arraydata_t::operator= (const arraydata_t &ad2) {
 	return *this;
 }
 
-/// @brief Comparison operator
 int arraydata_t::operator== (const arraydata_t &ad2) {
 	if (this->N != ad2.N) {
 		return 0;

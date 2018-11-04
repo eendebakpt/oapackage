@@ -120,5 +120,76 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
         invAPV_values += [invAPV]
     pec, pic, ppc = np.mean(Eestx), np.mean(Deff), np.mean(invAPV_values)
     if verbose:
-        print('conferenceProjectionStatistics: %.3f %.3f %.3f  ' % (pec, pic, ppc))
+        print('conferenceProjectionStatistics: projection to %d columns: PEC %.3f PIC %.3f PPC %.3f  ' % (ncolumns, pec, pic, ppc))
     return pec, pic, ppc
+
+def generateConference(N, kmax=None, verbose=1, diagc=False, nmax=None, selectmethod='random', tag='cdesign', outputdir=None):
+    """ General function to compute conference matrices 
+
+    Arguments:
+        N : integer
+            number of rows in the array
+        kmax : integer
+            maximum number of columns to compute
+        verbose : integer
+            output level
+        diagc : boolean
+            the default value is False. If True, then only the diagonal
+            matrices will be computed (e.g. all zeros are on the diagonal)
+
+    """
+    if kmax is None:
+        kmax = N
+    ctype = oapackage.conference_t(N, N, 0)
+
+    if diagc:
+        ctype.ctype = oapackage.conference_t.CONFERENCE_DIAGONAL
+        tag += '-diagonal'
+    if not nmax is None:
+        tag += '-r'
+
+    al = ctype.create_root()
+
+    ll = oapackage.arraylist_t()
+    ll.push_back(al)
+    LL = [[]] * (kmax)
+    LL[1] = ll
+    print('generateConference: start: %s' % ctype)
+    if outputdir is not None:
+        _ = oapackage.writearrayfile(
+            join(outputdir, 'cdesign-%d-%d.oa' % (N, 2)), LL[1], oapackage.ATEXT, N, 2)
+
+    for extcol in range(2, kmax):
+        if verbose:
+            print('generateConference: extcol %d: %d designs' % (extcol, len(LL[extcol - 1])) )
+            sys.stdout.flush()
+        LL[extcol] = oapackage.extend_conference(
+            LL[extcol - 1], ctype, verbose=verbose >= 2)
+
+        LL[extcol] = oapackage.selectConferenceIsomorpismClasses(LL[extcol], 1)
+
+        LL[extcol] = oapackage.sortLMC0(LL[extcol])
+
+        if nmax is not None:
+            na = min(nmax, len(LL[extcol]))
+            if na > 0:
+                if selectmethod == 'random':
+                    idx = np.random.choice(len(LL[extcol]), na, replace=False)
+                    LL[extcol] = [LL[extcol][i] for i in idx]
+                elif selectmethod == 'first':
+                    LL[extcol] = [LL[extcol][i] for i in range(na)]
+                else:
+                    # mixed
+                    raise Exception('not implemented')
+        afmode = oapackage.ATEXT
+        if (len(LL[extcol]) > 1000):
+            afmode = oapackage.ABINARY
+        if outputdir is not None:
+            _ = oapackage.writearrayfile(join(
+                outputdir, '%s-%d-%d.oa' % (tag, N, extcol + 1)), LL[extcol], afmode, N, extcol + 1)
+
+    ll = [len(l) for l in LL]
+    if verbose:
+        print('generated sequence: %s' % ll)
+    return LL
+
