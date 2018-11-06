@@ -1747,7 +1747,7 @@ void write_array_latex (std::ostream &ss, const atype *array, const int nrows, c
 
 /** Convert a file with arrays to a different format
  */
-void convert_array_file(std::string inputfile, std::string outputfile, arrayfile::arrayfilemode_t mode, int verbose = 0);
+void convert_array_file(std::string input_filename, std::string output_filename, arrayfile::arrayfilemode_t output_format, int verbose = 0);
 
 /// structure to write arrays to disk, thread safe
 struct arraywriter_t {

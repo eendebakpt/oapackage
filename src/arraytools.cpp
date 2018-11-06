@@ -4352,28 +4352,28 @@ void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst) {
 	}
 }
 
-void convert_array_file(std::string infile, std::string outfile, arrayfile::arrayfilemode_t mode, int verbose)
+void convert_array_file(std::string input_filename, std::string output_filename, arrayfile::arrayfilemode_t output_format, int verbose)
 {
-	arrayfile_t input_array_file(infile.c_str());
+	arrayfile_t input_array_file(input_filename.c_str());
 	int nc = input_array_file.ncols;
 	int nr = input_array_file.nrows;
 	array_link al(nr, nc, -1);
 
 	if (!input_array_file.isopen()) {
 		fprintf(stderr, "oaconvert: could not open input file, aborting...\n");
-		throw_runtime_exception(printfstring("convert_array_file: could not open input file %s", infile.c_str()));
+		throw_runtime_exception(printfstring("convert_array_file: could not open input file %s", input_filename.c_str()));
 	}
 	if (verbose)
-		printf("oaconvert: output mode %d, nr %d nc %d\n", mode, nr, nc);
+		printf("oaconvert: output mode %d, nr %d nc %d\n", output_format, nr, nc);
 
 	{
 		// streaming mode
 		int narrays = input_array_file.narrays;
 		int nb = 8; // we have not read any arrays so far, so nb is hard to predict
-		if (mode == ABINARY_DIFFZERO)
+		if (output_format == ABINARY_DIFFZERO)
 			nb = 1;
 
-		arrayfile_t afout(outfile.c_str(), nr, nc, narrays, mode, nb);
+		arrayfile_t afout(output_filename.c_str(), nr, nc, narrays, output_format, nb);
 
 		if (input_array_file.narrays < 0) {
 			narrays = arrayfile_t::NARRAYS_MAX;
