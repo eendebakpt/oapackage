@@ -1745,6 +1745,10 @@ void write_array_latex (std::ostream &ss, const atype *array, const int nrows, c
         ss << "\\end{tabular}" << std::endl;
 }
 
+/** Convert a file with arrays to a different format
+ */
+void convert_array_file(std::string inputfile, std::string outputfile, arrayfile::arrayfilemode_t mode, int verbose = 0);
+
 /// structure to write arrays to disk, thread safe
 struct arraywriter_t {
       public:

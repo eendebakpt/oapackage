@@ -4352,6 +4352,55 @@ void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst) {
 	}
 }
 
+void convert_array_file(std::string infile, std::string outfile, arrayfile::arrayfilemode_t mode, int verbose)
+{
+	arrayfile_t input_array_file(infile.c_str());
+	int nc = input_array_file.ncols;
+	int nr = input_array_file.nrows;
+	array_link al(nr, nc, -1);
+
+	if (!input_array_file.isopen()) {
+		fprintf(stderr, "oaconvert: could not open input file, aborting...\n");
+		throw_runtime_exception(printfstring("convert_array_file: could not open input file %s", infile.c_str()));
+	}
+	if (verbose)
+		printf("oaconvert: output mode %d, nr %d nc %d\n", mode, nr, nc);
+
+	{
+		// streaming mode
+		int narrays = input_array_file.narrays;
+		int nb = 8; // we have not read any arrays so far, so nb is hard to predict
+		if (mode == ABINARY_DIFFZERO)
+			nb = 1;
+
+		arrayfile_t afout(outfile.c_str(), nr, nc, narrays, mode, nb);
+
+		if (input_array_file.narrays < 0) {
+			narrays = arrayfile_t::NARRAYS_MAX;
+			printf("warning: untested code! (number of arrays undefined)\n");
+		}
+
+		int index;
+		for (long i = 0; i < narrays; i++) {
+			if ((i % 10000 == 0 && verbose) || (verbose >= 3)) {
+				log_print(QUIET, "oaconvert: loading arrays: %d/%d\n", i, input_array_file.narrays);
+			}
+
+			int g = input_array_file.read_array(al);
+			if (g < 0) {
+				if (verbose)
+					printf("   oaconvert: read_array returned index %d, end of file\n", g);
+				break;
+			}
+
+			afout.append_array(al);
+		}
+
+		afout.finisharrayfile();
+	}
+
+}
+
 arraylist_t readarrayfile (const char *fname, int verbose, int *setcols) {
         arraylist_t v;
         readarrayfile (fname, &v, verbose, setcols);
