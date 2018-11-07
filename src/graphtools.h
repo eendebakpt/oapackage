@@ -37,7 +37,7 @@ namespace nauty {
  *
  * The transformation returned is from the normal form to the specified graph.
  *
- * \param G Graph in incidence matrix form
+ * \param graph Graph in incidence matrix form
  * \param colors Colors of the graph nodes
  * \param verbose Verbosity level
  * \return Relabelling of the graph vertices
@@ -47,13 +47,13 @@ std::vector< int > reduceNauty (const array_link &graph, std::vector< int > colo
 
 } 
 
-/// apply a vertex permutation to a graph
-array_link transformGraph (const array_link &graph, const std::vector< int > tr, int verbose = 1);
+/// Apply a vertex permutation to a graph
+array_link transformGraph (const array_link &graph, const std::vector< int > vertex_permutation, int verbose = 1);
 
-/// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
+/// Reduce an orthogonal array to Nauty minimal form. the array transformation is returned
 array_transformation_t reduceOAnauty (const array_link &array, int verbose = 0);
 
-/// reduce an orthogonal array to Nauty minimal form. the array transformation is returned
+/// Reduce an orthogonal array to Nauty minimal form. the array transformation is returned
 array_transformation_t reduceOAnauty (const array_link &array, int verbose, const arraydata_t &arrayclass);
 
 /**  Convert orthogonal array to graph representation

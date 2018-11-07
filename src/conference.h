@@ -95,11 +95,23 @@ class conference_t {
         }
 };
 
-/// reduce conference matrix to normal form
+/** Reduce conference matrix to normal form using Nauty
+ *
+ * @see reduceConferenceTransformation
+ */
 array_link reduceConference (const array_link &, int verbose = 0);
 
-/// reduce conference matrix to normal form
-conference_transformation_t reduceConferenceTransformation (const array_link &al, int verbose);
+/** Reduce conference matrix to normal form using Nauty
+ *
+ * The design is converted to a graph representation. The graph is then reduced using Nauty 
+ * to normal form and the resulting graph translated back to a conference design.
+ *
+ * \param conference_design Design to be reduced to normal form
+ * \param verbose Verbosity level
+ * \returns A transformation that converts the input design to normal form
+ *
+ */
+conference_transformation_t reduceConferenceTransformation (const array_link &conference_design, int verbose);
 
 /// return true if zero is a specified position
 inline bool checkZeroPosition (const conference_column &p, int zero_position) {
