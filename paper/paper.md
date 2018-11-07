@@ -35,14 +35,14 @@ the user to:
 * Calculate a wide variety of statistical properties of the designs
 
 To generate orthogonal arrays and conference designs, the Orthogonal Array package uses an exhaustive 
-generation procedure with isomorphism pruning [@Eendebak2009], [@IsomorphismPaper]. To generate 
+generation procedure with isomorphism pruning [@Eendebak2009], [@Schoen2018dsd]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
 optimization algorithm [@Eendebak2015].
 
 The reduction of the designs to their normal form is done by either reduction to a minimal form 
 (such as lexicographically minimal in columns or delete-one-factor projection normal form [@EendebakDOF])
 or reduction using graph algorithms. For designs with a specified isomorphism group, the Orthogonal 
-Array package provides a generic interface to the graph reduction algorithms that effectively perform isomophism 
+Array package provides a generic interface to the graph reduction algorithms that effectively perform isomorphism 
 testing and reduction to normal form.
 
 The Orthogonal Array package evaluates the designs using well-known statistical criteria. For instance,
@@ -50,7 +50,7 @@ the package calculates the generalized wordlength pattern [@Tang1999], confoundi
 on the J-characteristics [@Deng1999] 
 and the number of degrees of freedom available for estimating selected factors' effects.
 
-The Orthogonal Array package consists of a C++ library with an user-friendly Python interface generated
+The Orthogonal Array package consists of a C++ library with a user-friendly Python interface generated
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
 
