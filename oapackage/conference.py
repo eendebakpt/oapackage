@@ -50,8 +50,8 @@ def _leftDivide(A, B):
     Returns:
         array: the result of A\B
     """
-    x, resid, rank, s = np.linalg.lstsq(A, B, rcond=None)
-    #x = lin.solve(A.T.dot(A), A.T.dot(B))
+    #x, resid, rank, s = np.linalg.lstsq(A, B, rcond=None)
+    x = np.linalg.solve(A.T.dot(A), A.T.dot(B))
     return x
 
 
@@ -66,16 +66,21 @@ def modelStatistics(dsd, verbose=0):
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
     M = (modelmatrix.T).dot(modelmatrix)
 
-    mr = np.linalg.matrix_rank(M)
-
+    if 0:
+        mr = np.linalg.matrix_rank(M)
+        fullrank = mr == modelmatrix.shape[1]
+    else:
+        fullrank = np.linalg.cond(M)<1000
+        
     if verbose >= 2:
         print('conferenceProjectionStatistics: condition number: %s' % (np.linalg.cond(M)))
     if verbose:
         print('%d, cond %.5f' % (mr == modelmatrix.shape[1], np.linalg.cond(M), ))
-    if mr == modelmatrix.shape[1]:  # np.linalg.cond(np.array(A).dot(np.array(A).T))<1000:
+    if fullrank: 
         Eest = 1
         pk = int(1 + ncolumns + ncolumns * (ncolumns + 1) / 2)
         kappa = np.linalg.det(M)
+        #kappa=scipy.linalg.det(M)
         lnkappa = np.log(kappa) / (pk)
         Defficiency = np.exp(lnkappa)
 
@@ -102,16 +107,18 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
         pec, pic, ppc (float)
     """
     nc = al.shape[1]
-    AA = np.array(al)
+    array_np = np.array(al)
     Eestx = []
     Deff = []
     invAPV_values = []
+    dsd = oapackage.conference2DSD(oapackage.array_link(al))
+    dsd_np=np.array(dsd)
     for c in list(itertools.combinations(range(nc), ncolumns)):
-        X = AA[:, c]
-        dsd = oapackage.conference2DSD(oapackage.array_link(X))
-        k = X.shape[1]
-
-        Eest, D, invAPV = modelStatistics(dsd, verbose=0)
+        #proj_array = array_np[:, c]
+        #proj_dsd = oapackage.conference2DSD(oapackage.array_link(proj_array))
+        proj_dsd = oapackage.array_link(dsd_np[:,c])
+        
+        Eest, D, invAPV = modelStatistics(proj_dsd, verbose=0)
 
         Deff += [D]
         Eestx += [Eest]
