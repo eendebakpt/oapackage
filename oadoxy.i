@@ -193,10 +193,6 @@ C++ includes: anyoption.h
 
 %feature("docstring") array_link "
 
-Wrapper class for an array.  
-
-The array_link struct is a struct that represents an array.  
-
 C++ includes: arraytools.h
 ";
 
@@ -206,15 +202,23 @@ Constructor functions.
 ";
 
 %feature("docstring") array_link::array_link "
+
+Create array link filled with zeros.  
 ";
 
 %feature("docstring") array_link::array_link "
+
+create array_link structure with data from raw data  
 ";
 
 %feature("docstring") array_link::array_link "
+
+create array_link structure with data from another array_link structure  
 ";
 
 %feature("docstring") array_link::array_link "
+
+create array_link structure with data from Eigen matrix  
 ";
 
 %feature("docstring") array_link::array_link "
@@ -255,14 +259,24 @@ print array properties to stdout
 return true if the array is a 2-level array (e.g. only contains values 0 and 1)  
 ";
 
-%feature("docstring") array_link::is_conference "
+%feature("docstring") array_link::is_mixed_level "
 
-return true if the array is a +1,0, -1 valued array  
+return true is the array is a mixel-level array  
+";
+
+%feature("docstring") array_link::is_orthogonal_array "
+
+return true is the array is array with values in 0, 1, ..., for each column  
 ";
 
 %feature("docstring") array_link::is_conference "
 
-return true if the array is a +1,0, -1 valued array, with specialindex number of
+return true if the array is a +1, 0, -1 valued array  
+";
+
+%feature("docstring") array_link::is_conference "
+
+return true if the array is a +1, 0, -1 valued array, with specified number of
 zeros in each column  
 ";
 
@@ -283,17 +297,17 @@ return array with selected column removed
 
 %feature("docstring") array_link::selectFirstRows "
 
-return array with first n rows  
+return array with first number_of_arrays rows  
 ";
 
 %feature("docstring") array_link::selectFirstColumns "
 
-return array with first n columns selected  
+return array with first number_of_arrays columns selected  
 ";
 
 %feature("docstring") array_link::selectLastColumns "
 
-return array with last n columns selected  
+return array with last number_of_arrays columns selected  
 ";
 
 %feature("docstring") array_link::selectColumns "
@@ -312,6 +326,8 @@ set a column of the array to the given vector
 ";
 
 %feature("docstring") array_link::setColumn "
+
+set a column of the array to the given vector  
 ";
 
 %feature("docstring") array_link::transposed "
@@ -332,7 +348,7 @@ calculate main effect robustness (or Ds-optimality)
 %feature("docstring") array_link::Defficiencies "
 
 calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and
-D1-efficiency  
+D1-efficiency for an orthogonal array  
 ";
 
 %feature("docstring") array_link::VIFefficiency "
@@ -350,8 +366,9 @@ calculate E-efficiency
 
 %feature("docstring") array_link::Fvalues "
 
-Calculate F-values of a 2-level matrix. This assumes the strength is at least 3.
-Otherwise use the jstruct_t object.  
+Calculate F-values of a 2-level matrix.  
+
+This assumes the strength is at least 3. Otherwise use the jstruct_t object  
 ";
 
 %feature("docstring") array_link::FvaluesConference "
@@ -377,6 +394,8 @@ calculate rank of array
 %feature("docstring") array_link::GWLP "
 
 calculate generalized wordlength pattern  
+
+       @see ::GWLP  
 ";
 
 %feature("docstring") array_link::strength "
@@ -400,7 +419,8 @@ return true if the array is a foldover array
 calculate centered L2 discrepancy  
 
 The method is from \"A connection between uniformity and aberration in regular
-fractions of two-level factorials\", Fang and Mukerjee, 2000  
+fractions of two-level
+factorials\", Fang and Mukerjee, 2000  
 ";
 
 %feature("docstring") array_link::randomperm "
@@ -432,6 +452,8 @@ University of Antwerp, Belgium
 ";
 
 %feature("docstring") array_link::equalsize "
+
+return true of two array have the same dimensions  
 ";
 
 %feature("docstring") array_link::atfast "
@@ -613,8 +635,6 @@ C++ includes: arraytools.h
 ";
 
 %feature("docstring") array_transformation_t::array_transformation_t "
-
-type of array  
 ";
 
 %feature("docstring") array_transformation_t::array_transformation_t "
@@ -625,17 +645,13 @@ type of array
 
 %feature("docstring") array_transformation_t::array_transformation_t "
 
-default constructor  
+copy constructor  
 ";
 
 %feature("docstring") array_transformation_t::~array_transformation_t "
-
-assignment operator  
 ";
 
 %feature("docstring") array_transformation_t::show "
-
-destructor  
 
 show the array transformation  
 ";
@@ -680,17 +696,12 @@ apply transformation to an array_link object
 
 %feature("docstring") array_transformation_t::apply "
 
-apply transformation to an array  
+apply transformation to an array (inplace)  
 ";
 
 %feature("docstring") array_transformation_t::apply "
 
 apply transformation to an array  
-";
-
-%feature("docstring") array_transformation_t::applygeneric "
-
-apply transformation to an array_link object  
 ";
 
 %feature("docstring") array_transformation_t::print_transformed "
@@ -699,27 +710,33 @@ apply transformation and show resulting array
 ";
 
 %feature("docstring") array_transformation_t::rowperm "
-";
-
-%feature("docstring") array_transformation_t::colperm "
 
 return the row permutation of the transformation  
 ";
 
-%feature("docstring") array_transformation_t::lvlperm "
+%feature("docstring") array_transformation_t::colperm "
 
 return the column permutation of the transformation  
 ";
 
-%feature("docstring") array_transformation_t::setrowperm "
+%feature("docstring") array_transformation_t::lvlperm "
 
 return the level permutations of the transformation  
 ";
 
+%feature("docstring") array_transformation_t::setrowperm "
+
+set the row permutation of the transformation  
+";
+
 %feature("docstring") array_transformation_t::setcolperm "
+
+set the column permutation of the transformation  
 ";
 
 %feature("docstring") array_transformation_t::setlevelperm "
+
+set the level permutation of the transformation  
 ";
 
 // File: structarraydata__t.xml
@@ -746,9 +763,6 @@ create new arraydata_t object
 ";
 
 %feature("docstring") arraydata_t::arraydata_t "
-";
-
-%feature("docstring") arraydata_t::arraydata_t "
 
 copy constructor  
 ";
@@ -758,21 +772,22 @@ copy constructor
 copy constructor  
 ";
 
-%feature("docstring") arraydata_t::~arraydata_t "
+%feature("docstring") arraydata_t::arraydata_t "
 
 dummy constructor  
 ";
 
+%feature("docstring") arraydata_t::~arraydata_t "
+";
+
 %feature("docstring") arraydata_t::ismixed "
 
-destructor  
-
-return true if the array is of mixed type  
+return true if the class represents mixed-level arrays  
 ";
 
 %feature("docstring") arraydata_t::is2level "
 
-return true if the array is a 2-level array  
+return true if the class represents a 2-level array  
 ";
 
 %feature("docstring") arraydata_t::randomarray "
@@ -783,7 +798,7 @@ or 1
 
 %feature("docstring") arraydata_t::writeConfigFile "
 
-Write file with design of OA.  
+Write file with specification of orthognal array class.  
 
 Parameters
 ----------
@@ -803,6 +818,8 @@ Returns
 ";
 
 %feature("docstring") arraydata_t::latexstr "
+
+return latex string describing the class  
 ";
 
 %feature("docstring") arraydata_t::reduceColumns "
@@ -836,13 +853,14 @@ check whether the LMC calculation will overflow
 set column group equal to that of a symmetry group  
 ";
 
-%feature("docstring") arraydata_t::set_colgroups_jj "
-";
-
 %feature("docstring") arraydata_t::show_colgroups "
+
+show column groups in the array class  
 ";
 
-%feature("docstring") arraydata_t::calcoaindex "
+%feature("docstring") arraydata_t::calculate_oa_index "
+
+calculate the index of the orthogonal arrays in this class  
 ";
 
 %feature("docstring") arraydata_t::create_root "
@@ -851,9 +869,19 @@ return the root array for the class
 ";
 
 %feature("docstring") arraydata_t::getfactorlevel "
+
+return the factor level for the specified column return -1 if the column index
+is invalid  
 ";
 
 %feature("docstring") arraydata_t::getS "
+
+return factor levels  
+";
+
+%feature("docstring") arraydata_t::factor_levels "
+
+return factor levels  
 ";
 
 %feature("docstring") arraydata_t::reset_strength "
@@ -877,7 +905,9 @@ Return index of the column group for a column.
 
 Structure for reading or writing a file with arrays.  
 
-The format of array files is described in the file FORMAT.txt  
+The format of the file is determined by the `arrayfilemode_t` The format
+described in detail in the documentation of the OApackage
+https://oapackage.readthedocs.io/en/latest/.  
 
 C++ includes: arraytools.h
 ";
@@ -969,6 +999,8 @@ append a single array to the file
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::pos "
+
+return current position in file  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::hasrandomaccess "
@@ -1041,14 +1073,14 @@ C++ includes: arraytools.h
 ";
 
 %feature("docstring") arraywriter_t::arraywriter_t "
-
-verbosity level  
 ";
 
 %feature("docstring") arraywriter_t::~arraywriter_t "
 ";
 
 %feature("docstring") arraywriter_t::flush "
+
+flush all output files  
 ";
 
 %feature("docstring") arraywriter_t::writeArray "
@@ -1057,9 +1089,13 @@ write a single array to disk
 ";
 
 %feature("docstring") arraywriter_t::writeArray "
+
+write a list of arrays to disk  
 ";
 
 %feature("docstring") arraywriter_t::initArrayFiles "
+
+initialize the result files  
 ";
 
 %feature("docstring") arraywriter_t::nArraysWritten "
@@ -1116,6 +1152,8 @@ C++ includes: conference.h
 ";
 
 %feature("docstring") CandidateGeneratorConference::generateCandidates "
+
+Generate a list of candidate extensions for the specified design.  
 ";
 
 %feature("docstring") CandidateGeneratorConference::generateCandidatesZero "
@@ -1138,10 +1176,39 @@ C++ includes: conference.h
 
 %feature("docstring") CandidateGeneratorDouble::generateCandidates "
 
-Generate candidates with caching  
+Generate a list of candidate extensions for the specified design  
 
 This method uses symmetry inflation, assumes j1=0 and j2=0. Optimal performance
 is achieved when the arrays to be extended have identical first columns.  
+";
+
+// File: classCombinations.xml
+
+
+%feature("docstring") Combinations "
+
+C++ includes: mathtools.h
+";
+
+%feature("docstring") Combinations::~Combinations "
+";
+
+%feature("docstring") Combinations::number_combinations_max_n "
+
+return max number of N that can be calculated with number_combinations  
+";
+
+%feature("docstring") Combinations::initialize_number_combinations "
+
+initialize datastructure for number_combinations, this function is not thread
+safe  
+";
+
+%feature("docstring") Combinations::number_combinations "
+
+Return number of combinations from previously calculated results  
+
+The results should be initialized with initialize_number_combinations  
 ";
 
 // File: classgfx_1_1Compare.xml
@@ -1184,27 +1251,8 @@ C++ includes: conference.h
 ";
 
 %feature("docstring") conf_candidates_t::info "
-";
 
-// File: structconference__extend__t.xml
-
-
-%feature("docstring") conference_extend_t "
-
-Helper structure containing extensions of conference designs  
-
-C++ includes: conference.h
-";
-
-%feature("docstring") conference_extend_t::combine "
-";
-
-%feature("docstring") conference_extend_t::nExtensions "
-";
-
-%feature("docstring") conference_extend_t::getarrays "
-
-return the set of extension arrays  
+print information about the set of candidate extentions  
 ";
 
 // File: classconference__t.xml
@@ -1401,6 +1449,8 @@ C++ includes: conference.h
 ";
 
 %feature("docstring") DconferenceFilter::show "
+
+print object to stdout  
 ";
 
 %feature("docstring") DconferenceFilter::filterList "
@@ -1559,8 +1609,6 @@ C++ includes: evenodd.h
 ";
 
 %feature("docstring") depth_extend_t::maxArrayCheck "
-
-HACK  
 ";
 
 %feature("docstring") depth_extend_t::showsearchpath "
@@ -1630,7 +1678,7 @@ C++ includes: evenodd.h
 
 %feature("docstring") dextend_t "
 
-Helper structure for dynamic extension.  
+Structure for dynamic extension of arrays based on D-efficiencies.  
 
 C++ includes: extend.h
 ";
@@ -1656,7 +1704,7 @@ filter the arrays based on values in filter
 
 %feature("docstring") DoptimReturn "
 
-Structure containing results of the Doptimize function.  
+Structure containing results of the Doptimize function  
 
 C++ includes: Deff.h
 ";
@@ -1719,7 +1767,7 @@ initialize the rowsort structure from an arraysymmetry object
 
 %feature("docstring") dyndata_t::getRowperm "
 
-set lightweight row permutation  
+get lightweight row permutation  
 ";
 
 %feature("docstring") dyndata_t::getRowperm "
@@ -1742,7 +1790,7 @@ return column permutation
 set column permutation  
 ";
 
-%feature("docstring") dyndata_t::allocrowsortl "
+%feature("docstring") dyndata_t::allocate_rowsortl "
 
 allocate lightweight rowsort structure  
 ";
@@ -1751,11 +1799,13 @@ allocate lightweight rowsort structure
 ";
 
 %feature("docstring") dyndata_t::initrowsortl "
+
+initialize rowsortl from rowsort  
 ";
 
 %feature("docstring") dyndata_t::rowsortl2rowsort "
 
-helper function  
+copy rowsortl variable to rowsrt  
 ";
 
 %feature("docstring") dyndata_t::copydata "
@@ -1775,6 +1825,11 @@ C++ includes: strength.h
 ";
 
 %feature("docstring") extend_data_t::~extend_data_t "
+";
+
+%feature("docstring") extend_data_t::init_frequencies "
+
+Initialize the table of t-tuple frequencies.  
 ";
 
 // File: classindexsort.xml
@@ -1925,8 +1980,6 @@ C++ includes: evenodd.h
 ";
 
 %feature("docstring") Jcounter::Jcounter "
-
-time needed for calculation  
 ";
 
 %feature("docstring") Jcounter::Jcounter "
@@ -2064,7 +2117,7 @@ Show contents of structure.
 
 %feature("docstring") jstruct_t::allzero "
 
-return 1 if all vals are zero  
+return 1 if all J values are zero, otherwise return 0  
 ";
 
 // File: classjstructbase__t.xml
@@ -2163,6 +2216,8 @@ C++ includes: mathtools.h
 ";
 
 %feature("docstring") larray::addelement "
+
+add constant value to the elements of the array  
 ";
 
 // File: structLMC__static__struct__t.xml
@@ -2255,6 +2310,8 @@ Assignment operator.
 ";
 
 %feature("docstring") LMCreduction_t::updateSDpointer "
+
+update the pointer to the symmetry data based on the specified array  
 ";
 
 %feature("docstring") LMCreduction_t::clearSymmetries "
@@ -2326,10 +2383,20 @@ C++ includes: mathtools.h
 %feature("docstring") mvalue_t::~mvalue_t "
 ";
 
+%feature("docstring") mvalue_t::raw_values "
+";
+
 %feature("docstring") mvalue_t::size "
 ";
 
 %feature("docstring") mvalue_t::show_integer "
+
+Show the object on stdout by casting to integer type objects.  
+";
+
+%feature("docstring") mvalue_t::string_representation "
+
+return a string representation of the object  
 ";
 
 // File: classOAextend.xml
@@ -2516,6 +2583,8 @@ return true of the argument element dominates this value
 ";
 
 %feature("docstring") pareto_element::isdominated "
+
+return true of the argument element is dominated by this value  
 ";
 
 %feature("docstring") pareto_element::equal "
@@ -2634,8 +2703,6 @@ C++ includes: mathtools.h
 
 %feature("docstring") LMCreduction_t::symm_t "
 
-store column permutations from array symmetry group  
-
 C++ includes: lmc.h
 ";
 
@@ -2709,8 +2776,6 @@ C++ includes: mathtools.h
 ";
 
 %feature("docstring") symmetry_group::symmetry_group "
-
-ordering of elements  
 ";
 
 %feature("docstring") symmetry_group::symmetry_group "
@@ -2736,15 +2801,14 @@ ordering of elements
 
 %feature("docstring") symmetry_group::symmetry_group "
 
-copy constructor  
+default constructor  
 ";
 
 %feature("docstring") symmetry_group::permsize "
 
-return size of the group of all permutations respecting the symmetry  
+Return size of the group of all permutations respecting the symmetry  
 
-    The return type can overflow quickly. For larger group sizes use
-permsize_large  
+The return type can overflow quickly. For larger group sizes use permsize_large  
 ";
 
 %feature("docstring") symmetry_group::permsize_large "
@@ -2772,7 +2836,9 @@ show the symmetry group
 
 %feature("docstring") symmetry_group_walker "
 
-class to walk over all element of a symmetry group  
+Class to walk over all elements of a symmetry group  
+
+The elements are generated by walking over all product permutations.  
 
 C++ includes: mathtools.h
 ";
@@ -2781,15 +2847,19 @@ C++ includes: mathtools.h
 ";
 
 %feature("docstring") symmetry_group_walker::show "
-";
 
-%feature("docstring") symmetry_group_walker::init "
+show all elements in the symmetry group  
 ";
 
 %feature("docstring") symmetry_group_walker::next "
+
+go to next element of the symmetry group  
 ";
 
 %feature("docstring") symmetry_group_walker::fullperm "
+
+return the full permutation corresponding to the current permutation in the
+walker  
 ";
 
 // File: classgfx_1_1TimSort.xml
@@ -2801,8 +2871,6 @@ C++ includes: timsort.hpp
 ";
 
 // File: namespacearrayfile.xml
-
-// File: namespaceEigen.xml
 
 // File: namespacegfx.xml
 
@@ -2823,6 +2891,19 @@ Same as std::stable_sort(first, last, c).
 Reduce a colored graph to Nauty minimal form  
 
 The transformation returned is from the normal form to the specified graph.  
+
+Parameters
+----------
+* `G` :  
+    Graph in incidence matrix form  
+* `colors` :  
+    Colors of the graph nodes  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Relabelling of the graph vertices  
 ";
 
 // File: namespacestd.xml
@@ -2833,21 +2914,21 @@ The transformation returned is from the normal form to the specified graph.
 
 // File: arrayproperties_8h.xml
 
-%feature("docstring") detXtX "
-
-calculate determinant of X^T X by using the SVD  
-";
-
-%feature("docstring") DAEefficiecyWithSVD "
+%feature("docstring") DAEefficiencyWithSVD "
 
 Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD.  
 ";
 
-%feature("docstring") array_rank_D_B "
+%feature("docstring") array2rank_Deff_Beff "
 
-Calculate the rank of the second order interaction matrix of an orthogonal
-array, the rank, D-efficiency, VIF-efficiency and E-efficiency are appended to
-the second argument.  
+Calculate the rank of the second order interaction matrix of an orthogonal array  
+
+The model is the intercept, main effects and interaction effects The rank,
+D-efficiency, VIF-efficiency and E-efficiency are appended to the second
+argument  
+
+The vector ret is filled with the rank, Defficiency, VIF efficiency and
+Eefficiency  
 ";
 
 %feature("docstring") Defficiency "
@@ -2886,7 +2967,18 @@ Return the D-efficiencies for the projection designs.
 
 %feature("docstring") PECsequence "
 
-Return the projection estimation capacity sequence of a design.  
+Calculate the projection estimation capacity sequence for a design.  
+
+The PEC of a design is the fraction of estimable second-order models in x
+factors. See \"Ranking Non-regular Designs\", J.L. Loeppky  
+";
+
+%feature("docstring") PICsequence "
+
+Calculate the projection information capacity sequence for a design.  
+
+The PIC of a design is the average D-efficiency of estimable second-order models
+in x factors.  
 ";
 
 %feature("docstring") distance_distribution "
@@ -2901,15 +2993,42 @@ Calculate J-characteristics of matrix (the values are signed)
 
 %feature("docstring") GWLP "
 
-calculate GWLP (generalized wordlength pattern)  
+Calculate GWLP (generalized wordlength pattern)  
 
 The method used for calculation is from Xu and Wu (2001), \"Generalized minimum
-aberration for asymmetrical fractional factorial desings\" The non-symmetric
-arrays see \"Algorithmic Construction of Efficient Fractional Factorial Designs
-With Large Run Sizes\", Xu  
+aberration for asymmetrical
+fractional factorial desings\" For non-symmetric arrays see \"Algorithmic
+Construction of Efficient Fractional Factorial Designs With Large Run
+Sizes\", Xu  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate the GWLP value for  
+* `verbose` :  
+    Verbosity level  
+* `truncate` :  
+    If True then round values near zero to solve double precision errors  
 ";
 
 %feature("docstring") GWLPmixed "
+
+Calculate GWLP (generalized wordlength pattern) for mixed-level arrays.  
+
+The method used for calculation is from Xu and Wu (2001), \"Generalized minimum
+aberration for asymmetrical
+fractional factorial desings\" The non-symmetric arrays see \"Algorithmic
+Construction of Efficient Fractional Factorial Designs With Large Run
+Sizes\", Xu  
+
+Parameters
+----------
+* `al` :  
+    Array to calculate the GWLP value for  
+* `verbose` :  
+    Verbosity level  
+* `truncate` :  
+    If True then round values near zero to solve double precision errors  
 ";
 
 %feature("docstring") projectionGWLPs "
@@ -2920,7 +3039,7 @@ calculate delete-one-factor GWLP (generalized wordlength pattern) projections
 %feature("docstring") sortGWLP "
 ";
 
-%feature("docstring") projectionGWLPvalues "
+%feature("docstring") projectionGWLPdoublevalues "
 
 calculate delete-one-factor GWLP (generalized wordlength pattern) projection
 values  
@@ -2928,7 +3047,7 @@ values
 
 %feature("docstring") CL2discrepancy "
 
-calculate centered L2-discrepancy  
+calculate centered L2-discrepancy of a design  
 
 The method is from \"A connection between uniformity and aberration in regular
 fractions of two-level factorials\", Fang and Mukerjee, 2000  
@@ -2936,34 +3055,98 @@ fractions of two-level factorials\", Fang and Mukerjee, 2000
 
 %feature("docstring") array2secondorder "
 
-calculate second order interaction matrix for 2-level array (does not include
-intercept and matrix itself)  
+Calculate second order interaction model for 2-level array  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate second order interaction model from  
+
+Returns
+-------
+Array interaction effects  
 ";
 
 %feature("docstring") array2xf "
 
-add intercept and second order interactions to a 2-level array  
+calculate second order interaction model for 2-level array  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate second order interaction model from  
+
+Returns
+-------
+Array with intercept, main effects and interaction effects  
+";
+
+%feature("docstring") conference_design2modelmatrix "
+
+Parameters
+----------
+* `conference_design` :  
+    Conference design  
+* `mode` :  
+    Can be 'm' for main effects, 'i' for interaction effects or 'q' for
+    quadratic effects  
+* `verbose` :  
+    Verbosity level  
+";
+
+%feature("docstring") array2modelmatrix "
+
+Convert orthogonal array or conference design to model matrix  
+
+Intercept, main effects, interaction effects, quadratics The order in the
+interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1  
+
+Parameters
+----------
+* `array` :  
+    Orthogonal array or conference design  
+* `mode` :  
+    Can be 'm' for main effects, 'i' for interaction effects or 'q' for
+    quadratic effects  
+* `verbose` :  
+    Verbosity level  
+";
+
+%feature("docstring") array2modelmatrix_sizes "
 ";
 
 %feature("docstring") array2xfeigen "
 
-add intercept and second order interactions to an array  
+calculate second order interaction model for 2-level array  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate second order interaction model from  
+
+Returns
+-------
+Array with intercept, main effects and interaction effects  
 ";
 
 %feature("docstring") arrayrankFullPivQR "
 
-return rank of an array based on FullPivHouseholderQR (defined at compile time)  
+return rank of an array based on Eigen::FullPivHouseholderQR  
 ";
 
 %feature("docstring") arrayrankColPivQR "
 
-return rank of an array based on ColPivHouseholderQR (defined at compile time)  
+return rank of an array based on Eigen::ColPivHouseholderQR  
 ";
 
 %feature("docstring") arrayrankFullPivLU "
+
+return rank of an array based on Eigen::FullPivLU  
 ";
 
 %feature("docstring") arrayrankSVD "
+
+return rank of an array based on Eigen::JacobiSVD  
 ";
 
 %feature("docstring") arrayrank "
@@ -2973,12 +3156,14 @@ calculate the rank of an array
 
 %feature("docstring") arrayrankInfo "
 
-return rank of an array based on Eigen::FullPivLU  
+Return rank of an array. Information about the different methods for rank
+calculation is printed to stdout.  
 ";
 
 %feature("docstring") arrayrankInfo "
 
-print information related to rank calculations  
+Return rank of an array. Information about the different methods for rank
+calculation is printed to stdout.  
 ";
 
 %feature("docstring") arraylink2eigen "
@@ -2988,7 +3173,7 @@ convert array_link to Eigen matrix
 
 %feature("docstring") conditionNumber "
 
-return the condition number of a matrix  
+Return the condition number of a matrix.  
 ";
 
 %feature("docstring") calculateParetoEvenOdd "
@@ -3004,6 +3189,15 @@ Pareto optimality is calculated according to (rank; A3,A4; F4)
 %feature("docstring") A3A4 "
 
 calculate A3 and A4 value for array  
+
+Parameters
+----------
+* `al` :  
+    Array for which to calculate A3 and A4  
+
+Returns
+-------
+Object with A3 and A4  
 ";
 
 %feature("docstring") F4 "
@@ -3017,8 +3211,8 @@ Add array to list of Pareto optimal arrays
 
 The values to be optimized are:  
 
-1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (?? is better, sum
-of elements is constant)  
+1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (lower is better,
+sum of elements is constant)  
 
 Valid for 2-level arrays of strength at least 3  
 ";
@@ -3037,8 +3231,8 @@ Add array to list of Pareto optimal arrays
 
 The values to be optimized are:  
 
-1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (?? is better, sum
-of elements is constant)  
+1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (lower is better,
+sum of elements is constant)  
 ";
 
 %feature("docstring") Cvalue2Dvalue "
@@ -3051,78 +3245,77 @@ convert C value to D-efficiency value
 convert D-efficiency value to C value  
 ";
 
-%feature("docstring") get_oaindex "
-
-Return index of an array.  
-";
-
 // File: arraytools_8h.xml
 
-%feature("docstring") Eigen::eigenInfo "
-
-show information about Eigen matrix  
+%feature("docstring") arrayfile::throw_runtime_exception "
 ";
 
-%feature("docstring") Eigen::eigen2numpyHelper "
+%feature("docstring") arrayfile::eigenInfo "
+
+Print information about an Eigen matrix  
+
+Parameters
+----------
+* `m` :  
+    Matrix about which to print information  
+* `str` :  
+    String to prepend in output  
+* `verbose` :  
+    Verbosity level  
 ";
 
-%feature("docstring") Eigen::dummy "
+%feature("docstring") arrayfile::eigen2numpyHelper "
 ";
 
-%feature("docstring") Eigen::dummy2 "
-";
-
-%feature("docstring") Eigen::sizeof_array_t "
+%feature("docstring") arrayfile::sizeof_array_t "
 
 return size in bytes of array_t type  
 ";
 
-%feature("docstring") Eigen::Fval "
+%feature("docstring") arrayfile::possible_F_values "
 
 possible values for J-values of 2-level design  
 ";
 
-%feature("docstring") Eigen::file_exists "
+%feature("docstring") arrayfile::file_exists "
 
 return true if the specified file exists  
 ";
 
-%feature("docstring") Eigen::file_exists "
+%feature("docstring") arrayfile::file_exists "
 
 return true if the specified file exists  
 ";
 
-%feature("docstring") Eigen::oa_file_exists "
+%feature("docstring") arrayfile::oa_file_exists "
 
 return true if the specified oa file exists  
 ";
 
-%feature("docstring") Eigen::oa_file_exists "
+%feature("docstring") arrayfile::oa_file_exists "
 
 return true if the specified oa file exists  
 ";
 
-%feature("docstring") Eigen::createJ2tableConference "
+%feature("docstring") arrayfile::createJ2tableConference "
 
 create J2 table as intermediate result for J-characteristic calculations for
 conference matrices  
 ";
 
-%feature("docstring") Eigen::createJdtable "
+%feature("docstring") arrayfile::createJdtable "
 
 create J2 table as intermediate result for J-characteristic calculations  
 ";
 
-%feature("docstring") Eigen::readConfigFile "
+%feature("docstring") arrayfile::readConfigFile "
 
 Read array configuration from file.  
 ";
 
-%feature("docstring") Eigen::printfstring "
+%feature("docstring") arrayfile::printfstring "
 
 Function similar to printf returning C++ style string.  
-
-printf-style function that returns std::string  
 
 Parameters
 ----------
@@ -3132,12 +3325,12 @@ Returns
 -------  
 ";
 
-%feature("docstring") Eigen::copy_array "
+%feature("docstring") arrayfile::copy_array "
 
 Make a copy of an array.  
 ";
 
-%feature("docstring") Eigen::destroy_array "
+%feature("docstring") arrayfile::destroy_array "
 
 Delete an array.  
 
@@ -3149,7 +3342,7 @@ Returns
 -------  
 ";
 
-%feature("docstring") Eigen::create_array "
+%feature("docstring") arrayfile::create_array "
 
 Create an array.  
 
@@ -3164,12 +3357,12 @@ Returns
 -------  
 ";
 
-%feature("docstring") Eigen::create_array "
+%feature("docstring") arrayfile::create_array "
 
 Create an array from an arraydata_t structure.  
 ";
 
-%feature("docstring") Eigen::equal_array_cols "
+%feature("docstring") arrayfile::equal_array_cols "
 
 Compare 2 columns of an array.  
 
@@ -3186,12 +3379,12 @@ Returns
 -------  
 ";
 
-%feature("docstring") Eigen::clone_array "
+%feature("docstring") arrayfile::clone_array "
 
 Clone an array.  
 ";
 
-%feature("docstring") Eigen::perform_inv_column_permutation "
+%feature("docstring") arrayfile::perform_inv_column_permutation "
 
 Perform inverse column permutation on an array.  
 
@@ -3204,15 +3397,25 @@ Parameters
 * `ncols` :  
 ";
 
-%feature("docstring") Eigen::perform_column_permutation "
+%feature("docstring") arrayfile::perform_column_permutation "
+
+Perform column permutation on an array.  
+
+Parameters
+----------
+* `source` :  
+* `target` :  
+* `perm` :  
+* `nrows` :  
+* `ncols` :  
 ";
 
-%feature("docstring") Eigen::perform_column_permutation "
+%feature("docstring") arrayfile::perform_column_permutation "
 
 perform column permutation for an array  
 ";
 
-%feature("docstring") Eigen::perform_row_permutation "
+%feature("docstring") arrayfile::perform_row_permutation "
 
 Perform a row permutation.  
 
@@ -3230,229 +3433,266 @@ Parameters
     Numer of columns  
 ";
 
-%feature("docstring") Eigen::perform_row_permutation "
+%feature("docstring") arrayfile::perform_row_permutation "
 
 perform row permutation for an array  
 ";
 
-%feature("docstring") Eigen::perform_inv_row_permutation "
+%feature("docstring") arrayfile::perform_inv_row_permutation "
 
-apply inverse row permutation  
+Perform a row permutation.  
+
+Parameters
+----------
+* `source` :  
+    Source array  
+* `target` :  
+    Target array  
+* `perm` :  
+    Permutation to perform  
+* `nrows` :  
+    Number of rows  
+* `ncols` :  
+    Numer of columns  
 ";
 
-%feature("docstring") Eigen::exampleArray "
+%feature("docstring") arrayfile::exampleArray "
 
 Return example array  
+
+Parameters
+----------
+* `idx` :  
+    Index of example array to return  
+* `verbose` :  
+    If True, then print information about the array to stdout  
 ";
 
-%feature("docstring") Eigen::Jcharacteristics_conference "
+%feature("docstring") arrayfile::Jcharacteristics_conference "
 
 calculate J-characteristics for a conference design  
 ";
 
-%feature("docstring") Eigen::hstack "
+%feature("docstring") arrayfile::hstack "
+
+concatenate 2 arrays in vertical direction  
+
+concatenate 2 arrays in horizontal direction  
 ";
 
-%feature("docstring") Eigen::hstack "
+%feature("docstring") arrayfile::hstack "
+
+concatenate array and conference_column  
 ";
 
-%feature("docstring") Eigen::hstacklastcol "
+%feature("docstring") arrayfile::hstacklastcol "
+
+concatenate the last column of array B to array A  
 ";
 
-%feature("docstring") Eigen::vstack "
+%feature("docstring") arrayfile::vstack "
+
+concatenate two columns  
 ";
 
-%feature("docstring") Eigen::arraylink2arraydata "
+%feature("docstring") arrayfile::arraylink2arraydata "
 
 create arraydata_t structure from array  
+
+Parameters
+----------
+* `array` :  
+    Array to use as input specifiction for array class  
+* `extracols` :  
+    Number of extra columns to add to the number of columns of the array  
+* `strength` :  
+    Strength to set in the array class. If -1, then use the strength of the
+    array  
 ";
 
-%feature("docstring") Eigen::addConstant "
+%feature("docstring") arrayfile::addConstant "
 
 add a constant value to all arrays in a list  
 ";
 
-%feature("docstring") Eigen::getJcounts "
+%feature("docstring") arrayfile::getJcounts "
 
-Return number of arrays with j_{2n+1}=0 for n<m  
+Return number of arrays with j_{2n+1}=0 for number_of_arrays<m  
 ";
 
-%feature("docstring") Eigen::predictJ "
-
-Predict j4(1,2,3,k) using the theorem from Deng This works only for 2-level
-arrays. The 0 corresponds to a +.  
-";
-
-%feature("docstring") Eigen::create_root "
+%feature("docstring") arrayfile::create_root "
 
 set first columns of an array to root form  
 ";
 
-%feature("docstring") Eigen::create_root "
+%feature("docstring") arrayfile::create_root "
 
 Creates the root of an OA. The root is appended to the current list of arrays.  
 ";
 
-%feature("docstring") Eigen::array_diff "
+%feature("docstring") arrayfile::array_diff "
 
 Compare 2 arrays and return position of first difference.  
 ";
 
-%feature("docstring") Eigen::array_cmp "
-
-Compare 2 arrays and return 0 if equal.  
-";
-
-%feature("docstring") Eigen::fastJupdateValue "
+%feature("docstring") arrayfile::fastJupdate "
 
 helper function to calculate J-values  
 ";
 
-%feature("docstring") Eigen::fastJupdate "
-
-helper function to calculate J-values  
-";
-
-%feature("docstring") Eigen::jvalue "
+%feature("docstring") arrayfile::jvalue "
 
 Calculate J-value for a 2-level array  
 ";
 
-%feature("docstring") Eigen::jvaluefast "
+%feature("docstring") arrayfile::jvaluefast "
 
 calculate J-value for a 2-level array  
 ";
 
-%feature("docstring") Eigen::analyseArrays "
+%feature("docstring") arrayfile::analyseArrays "
 
 Analyse a list of arrays.  
 ";
 
-%feature("docstring") Eigen::showArrayList "
+%feature("docstring") arrayfile::showArrayList "
 
-functions for working with array files  
+print a list of arrays to stdout  
 ";
 
-%feature("docstring") Eigen::nArrays "
+%feature("docstring") arrayfile::nArrays "
 
 return number of arrays in an array file  
 ";
 
-%feature("docstring") Eigen::arrayfileinfo "
+%feature("docstring") arrayfile::arrayfileinfo "
 
-return number of arrays in an array file  
+return information about file with arrays  
+
+Parameters
+----------
+* `fname` :  
+    Filename of array file  
+* `number_of_arrays` :  
+    Variable is set with number of arrays  
+* `number_of_rows` :  
+    Variable is set with number of rows  
+* `number_of_columns` :  
+    Variable is set with number of columns  
 ";
 
-%feature("docstring") Eigen::readarrayfile "
+%feature("docstring") arrayfile::readarrayfile "
 
 read list of arrays from file and append to list  
 ";
 
-%feature("docstring") Eigen::readarrayfile "
+%feature("docstring") arrayfile::readarrayfile "
 
 read list of arrays from file  
 ";
 
-%feature("docstring") Eigen::writearrayfile "
+%feature("docstring") arrayfile::writearrayfile "
 
 write a list of arrays to file on disk  
 ";
 
-%feature("docstring") Eigen::writearrayfile "
+%feature("docstring") arrayfile::writearrayfile "
 
 write a list of arrays to file on disk  
 ";
 
-%feature("docstring") Eigen::writearrayfile "
+%feature("docstring") arrayfile::writearrayfile "
 
 write a single array to file  
 ";
 
-%feature("docstring") Eigen::appendarrayfile "
+%feature("docstring") arrayfile::appendarrayfile "
 
 append a single array to an array file. creates a new file if no file exists  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 
 Make a selection of arrays from binary array file, append to list.  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 
 Select a single array from a file.  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 
 Make a selection of arrays.  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 
 Make a selection of arrays.  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 
 Make a selection of arrays, append to list.  
 ";
 
-%feature("docstring") Eigen::selectArrays "
+%feature("docstring") arrayfile::selectArrays "
 ";
 
-%feature("docstring") Eigen::create_arrayfile "
+%feature("docstring") arrayfile::create_arrayfile "
 ";
 
-%feature("docstring") Eigen::save_arrays "
+%feature("docstring") arrayfile::save_arrays "
+
+save a list of arrays to disk  
 ";
 
-%feature("docstring") Eigen::write_array_format "
+%feature("docstring") arrayfile::write_array_format "
 
 write array to output stream  
 ";
 
-%feature("docstring") Eigen::write_array_format "
+%feature("docstring") arrayfile::write_array_format "
 
 Write a formatted array  
 ";
 
-%feature("docstring") Eigen::write_array_format "
+%feature("docstring") arrayfile::write_array_format "
 
 Write a formatted array.  
 ";
 
-%feature("docstring") Eigen::keepElements "
+%feature("docstring") arrayfile::keepElements "
 
 Make a selection of arrays, keep.  
 ";
 
-%feature("docstring") Eigen::removeElements "
+%feature("docstring") arrayfile::removeElements "
 
 Make a selection of arrays, remove.  
 ";
 
-%feature("docstring") Eigen::selectArraysMask "
+%feature("docstring") arrayfile::selectArraysMask "
 
 Make a selection of arrays from a list, append to list.  
 ";
 
-%feature("docstring") Eigen::appendArrays "
+%feature("docstring") arrayfile::appendArrays "
 
 Append selection of arrays to existing list.  
 ";
 
-%feature("docstring") Eigen::appendArrays "
+%feature("docstring") arrayfile::appendArrays "
 
-Append selection of arrays to existing list.  
+Append set of arrays to existing list.  
 ";
 
-%feature("docstring") Eigen::write_array_latex "
+%feature("docstring") arrayfile::write_array_latex "
 
 write an array in latex style  
 ";
 
-%feature("docstring") Eigen::readbinheader "
+%feature("docstring") arrayfile::readbinheader "
 
 Read header for binary data file. Return true if valid header file  
 
@@ -3460,60 +3700,119 @@ The header consists of 4 integers: 2 magic numbers, then the number of rows and
 columns  
 ";
 
-%feature("docstring") Eigen::writebinheader "
+%feature("docstring") arrayfile::writebinheader "
 
 Write header for binary data file.  
 ";
 
-%feature("docstring") Eigen::doublevector2binfile "
+%feature("docstring") arrayfile::doublevector2binfile "
 
 Write a vector of integer elements to file.  
 ";
 
-%feature("docstring") Eigen::vectorvector2binfile "
+%feature("docstring") arrayfile::vectorvector2binfile "
 
 Write a vector of vector elements to binary file.  
 ";
 
-%feature("docstring") Eigen::array2eigenX2 "
+%feature("docstring") arrayfile::array2eigenX1 "
 
-convert 2-level array to second order interaction matrix in Eigen format  
+convert 2-level array to main effects in Eigen format  
+
+Parameters
+----------
+* `array` :  
+    Array to convert  
+* `intercept` :  
+    If True, then include the intercept  
+
+Returns
+-------
+The main effects model  
 ";
 
-%feature("docstring") Eigen::array2eigenX1 "
+%feature("docstring") arrayfile::array2eigenX2 "
+
+Convert 2-level array to second order interaction matrix in Eigen format  
+
+The intercept and main effects are not included.  
+
+Parameters
+----------
+* `array` :  
+    Array to convert  
+
+Returns
+-------
+The second order interaction model  
 ";
 
-%feature("docstring") Eigen::array2eigenModelMatrix "
+%feature("docstring") arrayfile::array2eigenModelMatrix "
 
 convert 2-level array to second order model matrix (intercept, X1, X2)  
 ";
 
-%feature("docstring") Eigen::array2eigenME "
+%feature("docstring") arrayfile::array2eigenMainEffects "
 
-convert array to model matrix in Eigen format  
+Convert array to model matrix in Eigen format  
+
+See also: array2eigenModelMatrixMixed  
 ";
 
-%feature("docstring") Eigen::array2eigenModelMatrixMixed "
+%feature("docstring") arrayfile::array2eigenModelMatrixMixed "
 
 create first and second order model matrix for mixed-level array  
 ";
 
-%feature("docstring") Eigen::arrayInFile "
+%feature("docstring") arrayfile::numberModelParams "
 
-return index of specified array in a file. returns -1 if array is not found  
+calculate number of parameters in the model matrix  
+
+A list of integers is returned, with the number of columns in:  
+
+*   The intercept (always 1)  
+*   The main effects  
+*   The interaction effects (second order without quadratics)  
+*   The the quadratic effects  
 ";
 
-%feature("docstring") Eigen::arrayInList "
+%feature("docstring") arrayfile::arrayInFile "
+
+return index of specified array in a file. returns -1 if array is not found  
+
+Parameters
+----------
+* `array` :  
+    Array to find  
+* `array_file` :  
+    Location if file with arrays  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Position of array in list  
+";
+
+%feature("docstring") arrayfile::arrayInList "
 
 return index of specified array in a list. returns -1 if array is not found  
+
+Parameters
+----------
+* `array` :  
+    Array to find  
+* `arrays` :  
+    List of arrays  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Position of array in list  
 ";
 
 // File: conference_8h.xml
-
-%feature("docstring") print_cperm "
-
-print a candidate extension  
-";
 
 %feature("docstring") print_cperm "
 
@@ -3530,24 +3829,51 @@ Parameters
     List of candidates to show  
 ";
 
+%feature("docstring") conference2DSD "
+
+Convert conference design to definitive screening design  
+
+The DSD is created by appending the negated design to the conference design and
+then appending a row of zeros.  
+
+Parameters
+----------
+* `conference_design` :  
+    Array with the conference design  
+* `add_zeros` :  
+    If True, then append a row of zeros  
+";
+
 %feature("docstring") reduceConference "
 
-reduce conference matrix to normal form  
+Reduce conference matrix to normal form using Nauty  
+
+See also: reduceConferenceTransformation  
 ";
 
 %feature("docstring") reduceConferenceTransformation "
 
-reduce conference matrix to normal form  
+Reduce conference matrix to normal form using Nauty  
+
+The design is converted to a graph representation. The graph is then reduced
+using Nauty to normal form and the resulting graph translated back to a
+conference design.  
+
+Parameters
+----------
+* `conference_design` :  
+    Design to be reduced to normal form  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+A transformation that converts the input design to normal form  
 ";
 
 %feature("docstring") checkZeroPosition "
 
 return true if zero is a specified position  
-";
-
-%feature("docstring") extend_conference_matrix "
-
-Extend a single conference design with candidate columns  
 ";
 
 %feature("docstring") extend_conference "
@@ -3598,9 +3924,9 @@ Parameters
 ----------
 * `al` :  
     Design to be extended  
-* `ct` :  
+* `conference_type` :  
     Class of conference designs  
-* `kz` :  
+* `zero_index` :  
     index of zero in candidate column  
 * `verbose` :  
     Verbosity level  
@@ -3636,7 +3962,7 @@ Return true of the array is smaller in LMC-0 ordering
 
 %feature("docstring") sortLMC0 "
 
-sort list of arrays according to LMC-0 ordering  
+sort list of conference designs according to LMC-0 ordering  
 ";
 
 %feature("docstring") LMC0checkDC "
@@ -3662,9 +3988,6 @@ return true if the design is a foldover array
 return minimal position of zero in design  
 ";
 
-%feature("docstring") generateDoubleConferenceExtensionsInflate "
-";
-
 %feature("docstring") inflateCandidateExtension "
 
 Inflate a candidate column  
@@ -3684,6 +4007,15 @@ List of inflated extensions
 %feature("docstring") scoreD "
 
 calculate score from from set of efficiencies  
+
+The score is the weighted sum of the efficiencies.  
+
+Parameters
+----------
+* `efficiencies` :  
+    Vector with calculated efficiencies  
+* `alpha` :  
+    Weights for the efficiencies  
 ";
 
 %feature("docstring") optimDeff "
@@ -3694,22 +4026,53 @@ Arguments:
 
 Parameters
 ----------
+* `A0` :  
+    Array to be optimized  
 * `arrayclass` :  
-    structure describing the design class  
+    Structure describing the design class  
 * `alpha` :  
-    (3x1 array)  
+    3x1 array with optimization parameters  
 * `verbose` :  
-    output level  
+    Verbosity level  
+* `optimmethod` :  
+    Optimization method to use  
+* `niter` :  
+    Number of iterations  
+* `nabort` :  
+    Number of iterations after which to abort when no improvements are found  
+
+Returns
+-------
+Optimized designs  
 ";
 
 %feature("docstring") Doptimize "
 
-function to generate optimal designs  
+Generates optimal designs for the specified class of designs  
+
+Parameters
+----------
+* `arrayclass` :  
+    Class of designs to optimize  
+* `nrestarts` :  
+    Number of restarts to perform  
+* `alpha` :  
+    Optimization parameters  
+* `verbose` :  
+    Verbosity level  
+* `method` :  
+    Method for optimization algorithm  
+* `niter` :  
+    Maximum number of iterations for each restart  
+* `maxtime` :  
+    Maximum calculation time. If this time is exceeded, the function is aborted  
+* `nabort` :  
+    Maximum number of iterations when no improvement is found  
 ";
 
 %feature("docstring") DoptimizeMixed "
 
-function to generate optimal designs with mixed levels  
+function to generate optimal designs with mixed optimization approach  
 ";
 
 // File: evenodd_8h.xml
@@ -3783,27 +4146,40 @@ calculate J-value statistics
 
 %feature("docstring") extend_arraylist "
 
-extend a list of arrays  
+extend a list of orthogonal arrays  
 ";
 
 %feature("docstring") extend_arraylist "
 
-extend a list of arrays  
+extend a list of orthogonal arrays  
 ";
 
 %feature("docstring") extend_arraylist "
 
-extend a list of arrays with default options  
+Extend a list of arrays with default options  
+
+See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
 ";
 
 %feature("docstring") extend_array "
 
-extend a single array  
+Extend a single orthogonal array  
+
+Parameters
+----------
+* `al` :  
+    The array to be extended  
+* `fullad` :  
+    Class of arrays to generate  
+* `oaextend` :  
+    Parameters for the extension algorithm  
 ";
 
 %feature("docstring") extend_array "
 
-extend a single array with the default LMC algorithm  
+Extend a single orthogonal array with the default LMC algorithm  
+
+See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
 ";
 
 %feature("docstring") extend_array "
@@ -3813,7 +4189,7 @@ extend an array with a single column
 
 %feature("docstring") runExtendRoot "
 
-simple wrapper function  
+Run the extension algorithm starting from the array root.  
 ";
 
 // File: graphtools_8h.xml
@@ -3830,6 +4206,9 @@ returned
 ";
 
 %feature("docstring") nauty::reduceOAnauty "
+
+reduce an orthogonal array to Nauty minimal form. the array transformation is
+returned  
 ";
 
 %feature("docstring") nauty::array2graph "
@@ -3851,9 +4230,6 @@ partite. The graph representation can be used for isomorphism testing.
 %feature("docstring") nauty::oagraph2transformation "
 
 From a relabelling of the graph return the corresponding array transformation.  
-";
-
-%feature("docstring") nauty::unittest_nautynormalform "
 ";
 
 // File: InfInt_8h.xml
@@ -3908,9 +4284,9 @@ releaseGlobalStatic
 %feature("docstring") getGlobalStaticOne "
 ";
 
-%feature("docstring") insertUnique "
+%feature("docstring") insert_if_not_at_end_of_vector "
 
-helper function  
+Append element to vector if the element the element is not at the end of vector.  
 ";
 
 %feature("docstring") check_root_update "
@@ -3928,16 +4304,6 @@ initialization + 1
 %feature("docstring") check_root_form "
 
 return true if target is in root form, otherwise return false  
-";
-
-%feature("docstring") jj45val "
-
-return value based on J4-J5 ordering  
-";
-
-%feature("docstring") random_transformation "
-
-Apply a random transformation to an array  
 ";
 
 %feature("docstring") LMCreduction_train "
@@ -3979,25 +4345,25 @@ helper function
 %feature("docstring") LMCcheckSymmetryMethod "
 ";
 
-%feature("docstring") comb2perm "
-
-Convert selection of elements to extended permutation.  
-";
-
-%feature("docstring") comb2perm "
-
-Convert selection of elements to extended permutation.  
-";
-
 %feature("docstring") reduceArraysGWLP "
 
 reduce arrays to canonical form using delete-1-factor ordering  
 ";
 
 %feature("docstring") reductionDOP "
+
+Caculate the transformation to delete-on-factor normal for from an array.  
 ";
 
 %feature("docstring") selectUniqueArrays "
+
+select the unique arrays in a list, the original list is sorted in place. the
+unique arrays are append to the output list  
+";
+
+%feature("docstring") projectionDOFvalues "
+
+Calculate projection values for delete-of-factor algorithm  
 ";
 
 %feature("docstring") reduceLMCform "
@@ -4028,25 +4394,19 @@ Perform LMC check lexicographically.
 Perform LMC check with J5 ordering.  
 ";
 
-%feature("docstring") root_row_permutation_from_index "
-";
-
-%feature("docstring") create_root_permutations_index "
-";
-
-%feature("docstring") create_root_permutations_index_helper "
-";
-
 %feature("docstring") print_rowsort "
+
+Print the contents of a rowsort structure.  
+
+Parameters
+----------
+* `rowsort` :  
+    Pointer to rowsort structure  
+* `N` :  
+    Number of elements  
 ";
 
 %feature("docstring") print_column_rowsort "
-";
-
-%feature("docstring") print_fracs "
-";
-
-%feature("docstring") clear_fracs "
 ";
 
 // File: mathtools_8h.xml
@@ -4147,30 +4507,31 @@ Returns
 -------  
 ";
 
-%feature("docstring") fact "
+%feature("docstring") factorial "
 
-Calculates factorial.  
+Calculates factorial A small function that calculates the factorial of a number.
+Returns one if the argument is smaller or equal to 1.  
 
-A small function that calculates the factorial of a number. Can be inlined if
-the compiler decides it is faster. Returns one if the number is smaller or equal
+Parameters
+----------
+* `number` :  
+    Number to calculate the factorial of  
+
+Returns
+-------
+Factorial of specified number  
+";
+
+%feature("docstring") factorial_return_argument "
+
+A small function that calculates the factorial of a number. This inline
+factorial function is the same as the standard factorial calculation, except
+that the return type is generic Returns one if the argument is smaller or equal
 to 1  
 
 Parameters
 ----------
-* `f` :  
-    Number to calculate the factorial of  
-";
-
-%feature("docstring") factorial "
-
-Calculates factorial of type numtype.  
-
-This inline factorial function is the same as the standard factorial
-calculation, except that the return type is generic  
-
-Parameters
-----------
-* `f` :  
+* `number` :  
     number to calculate factorial of  
 ";
 
@@ -4186,23 +4547,6 @@ Parameters
     Total number of entries to choose from  
 * `k` :  
     Number of entries in a certain combination  
-
-n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!  
-";
-
-%feature("docstring") ncombscacheNumber "
-";
-
-%feature("docstring") initncombscache "
-
-initialize datastructure, this function is not thread safe  
-";
-
-%feature("docstring") ncombscache "
-
-return number of combinations from previously calculated results  
-
-The results should be calculated with initncombscache  
 ";
 
 %feature("docstring") ncombsm "
@@ -4234,23 +4578,18 @@ set the random number seed using srand
 %feature("docstring") next_perm_twoperm "
 ";
 
-%feature("docstring") permutationLex "
-
-See also http://en.wikipedia.org/wiki/Permutation#Numbering_permutations  
-
-Parameters
-----------
-* `k` :  
-* `s` :  
-* `n` :  
-
-Returns
--------  
-";
-
 %feature("docstring") random_perm "
 
 Create random permutation using Fisher-Yates shuffle, or Knuth shuffle  
+
+The permutation is peformed inplace.  
+
+Parameters
+----------
+* `array` :  
+    Array of objects  
+* `length` :  
+    Length of array  
 ";
 
 %feature("docstring") random_perm "
@@ -4359,7 +4698,7 @@ Parameters
 ----------
 * `perm` :  
     Permutation as integer type std::vector  
-* `permout` :  
+* `iperm` :  
     Output permutation  
 ";
 
@@ -4372,10 +4711,8 @@ Parameters
 * `perm` :  
     Pointer to permutation  
 * `len` :  
-
-Returns
--------
-Pointer to new permutation that is the inverse of the argument  
+* `iperm` :  
+    Pointer to new permutation that is the inverse of the argument  
 ";
 
 %feature("docstring") invert_permutation "
@@ -4423,7 +4760,7 @@ Parameters
 
 Calculate composition of 2 permutations.  
 
-Calculates C = B  A  
+Calculates C = B &#9675; A  
 
 Parameters
 ----------
@@ -4438,7 +4775,7 @@ Parameters
 
 Calculate composition of 2 permutations.  
 
-Calculates C = B  A  
+Calculates C = B &#9675; A  
 
 Parameters
 ----------
@@ -4578,7 +4915,12 @@ Power of two integers.
 Power of two unsigned integers.  
 ";
 
-%feature("docstring") powmo "
+%feature("docstring") power_minus_one "
+
+-1 to the power n (integer)  
+";
+
+%feature("docstring") power_minus_one "
 
 -1 to the power n (integer)  
 ";
@@ -4596,11 +4938,23 @@ calculate value of Krawtchouk polynomial
 %feature("docstring") krawtchouks "
 
 calculate value of Krawtchouk polynomial  
+
+See also: https://en.wikipedia.org/wiki/Kravchuk_polynomials  
 ";
 
 %feature("docstring") conditionNumber "
 
 return the condition number of a matrix  
+";
+
+%feature("docstring") average "
+
+calculate the average value of a vector of numbers  
+";
+
+%feature("docstring") fraction_nonzero "
+
+calculate the fraction of non-zero elemenets of a vector  
 ";
 
 // File: md5_8h.xml
@@ -4625,6 +4979,8 @@ default reduction function for non-root stage
 ";
 
 %feature("docstring") LMCreduce_non_root_j4 "
+
+default reduction function for non-root stage with J4 algorithm  
 ";
 
 %feature("docstring") LMCreduce_non_root_2level "
@@ -4645,7 +5001,7 @@ Print the compile-time options to string.
 
 Returns
 -------
-String with information  
+String with compile time information  
 ";
 
 %feature("docstring") version "
@@ -4670,10 +5026,12 @@ Print copyright statement.
 
 %feature("docstring") print_options "
 
-Print compile time options.  
+Print compile time options to output stream.  
 ";
 
 %feature("docstring") print_options "
+
+Print compile time options to stdout.  
 ";
 
 %feature("docstring") oadevelop "
@@ -4688,36 +5046,9 @@ Print compile time options.
 %feature("docstring") create_reverse_colcombs_fixed "
 ";
 
-%feature("docstring") copy_freq_table "
-
-Copy the frequency count table.  
-";
-
 %feature("docstring") check_divisibility "
 
 check whether an array passes divisibility test  
-";
-
-%feature("docstring") print_frequencies "
-";
-
-%feature("docstring") set_colcombs_fixed "
-
-Return all column combinations including a fixed column. At the same time
-allocate space for the number of values these columns have  
-
-Parameters
-----------
-* `xlambda` :  
-* `nvalues` :  
-* `ncolcombs` :  
-* `s` :  
-* `strength` :  
-* `fixedcol` :  
-* `N` :  
-
-Returns
--------  
 ";
 
 %feature("docstring") add_element_freqtable "
@@ -4730,17 +5061,12 @@ Add row to frequency table using cache system.
 fast version of add_element_freqtable  
 ";
 
-%feature("docstring") init_frequencies "
-
-Initialize the table of t-tuple frequencies.  
-";
-
 %feature("docstring") recount_frequencies "
 ";
 
 %feature("docstring") strength_check "
 
-perform strength check on an array  
+Perform strength check on an array  
 
 Special case for extension of an array with proper strength  
 ";
@@ -4757,8 +5083,9 @@ Determine whether an element passes the strength test.
 Parameters
 ----------
 * `es` :  
-* `p` :  
+* `position` :  
 * `array` :  
+    Pointer to array  
 
 Returns
 -------  
@@ -4798,26 +5125,39 @@ array
 %feature("docstring") system_uname "
 ";
 
+%feature("docstring") path_separator "
+
+return path separator symbol for the current platform  
+";
+
 %feature("docstring") mycheck_handler "
+
+handler for error messages. throws an std::runtime_error exception  
 ";
 
 %feature("docstring") myassert "
+
+Check whether the condition is true and throw an expception otherwise.  
 ";
 
-%feature("docstring") myassertdebug2 "
+%feature("docstring") throw_runtime_exception "
+
+Throw a runtime_error exception with specified error message  
+
+This exception is caught in the SWIG interface.  
 ";
 
 %feature("docstring") cprintf "
 ";
 
-%feature("docstring") ff "
+%feature("docstring") flush_stdout "
 
 flush to stdout  
 ";
 
 %feature("docstring") safedelete "
 
-Delete a pointer and set to zero.  
+Delete object given by a pointer and set to zero.  
 ";
 
 %feature("docstring") safedeletearray "
@@ -4826,7 +5166,8 @@ Delete array and set pointer to zero
 
 Parameters
 ----------
-* `p` :  
+* `pointer` :  
+    Pointer to allocated array  
 ";
 
 %feature("docstring") next_comb "
@@ -4974,24 +5315,15 @@ print vector using generic std::cout print functionality
 %feature("docstring") printf_vector "
 
 print vector using printf function  
-";
-
-%feature("docstring") show_array_dyn "
-";
-
-%feature("docstring") countelements "
-
-Counts the number of occurences of each value in an array.  
-";
-
-%feature("docstring") addelement "
-
-Add element to element counter.  
 
 Parameters
 ----------
-* `elem` :  
-* `elements` :  
+* `vector` :  
+    Vector to be displayed  
+* `format` :  
+    Format to use in printf  
+* `separator` :  
+    Separator symbol to use  
 ";
 
 %feature("docstring") get_time_ms "
@@ -5019,18 +5351,13 @@ return the current time as a string
 return string describing array  
 ";
 
-%feature("docstring") oafilestring "
-
-return string describing array  
-";
-
 %feature("docstring") itos "
 
 Convert integer to C++ string.  
 
 Parameters
 ----------
-* `i` :  
+* `integer_value` :  
     Integer  
 
 Returns
@@ -5041,28 +5368,18 @@ String representation of the integer
 %feature("docstring") printfstring "
 
 printf-style function that returns std::string  
-
-printf-style function that returns std::string  
-
-Parameters
-----------
-* `message` :  
-
-Returns
--------  
-";
-
-%feature("docstring") printtime "
 ";
 
 %feature("docstring") insertionSort "
 
-Tempalate for insertionSort.  
+Template for insertionSort.  
 
 Parameters
 ----------
-* `x[]` :  
+* `array` :  
+    Data to be sorted  
 * `length` :  
+    Length of array  
 ";
 
 %feature("docstring") bubbleSort "
@@ -5072,9 +5389,9 @@ sort arrays using bubbleSort
 
 %feature("docstring") flipSort "
 
-sorting similar to bubblesort but fast for sorted arrays  
+Sorting similar to bubblesort but fast for sorted arrays  
 
-The indices l and r are inclusive.  
+The indices left and right are inclusive.  
 ";
 
 %feature("docstring") bubbleSort2 "
@@ -5083,8 +5400,10 @@ Template for bubble sort.
 
 Parameters
 ----------
-* `obj[]` :  
+* `array` :  
+    Array to be sorted  
 * `array_size` :  
+    Size of the array  
 ";
 
 %feature("docstring") quickSort "
