@@ -51,6 +51,13 @@ int checkConferenceInverse (const array_link &al) {
         return 0;
 }
 
+int unittest_reduceConferenceTransformation()
+{
+	array_link conference_design = exampleArray(45);
+	conference_transformation_t tranformation = reduceConferenceTransformation(conference_design, 0);
+
+	return 0;
+}
 /// unittest: return 1 if all tests are good
 int unittest_nautynormalform(const array_link &al, int verbose) {
 	arraydata_t arrayclass = arraylink2arraydata(al);
@@ -304,6 +311,9 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 myassert (sum == 0, "unittest error: construction of interaction matrices\n");
         }
+
+		cprintf(verbose, "%s: reduceConferenceTransformation\n", bstr);
+		myassert(unittest_reduceConferenceTransformation()==0);
 
         /* constructors */
         {

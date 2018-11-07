@@ -352,6 +352,144 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
         return t;
 }
 
+std::pair<array_link, std::vector<int> > conference_design2colored_graph(const array_link &al, int verbose) {
+	const int nr = al.n_rows;
+	const int nc = al.n_columns;
+	const int number_vertices = 2 * (nr + nc);
+	/// create graph
+	array_link G(number_vertices, number_vertices, array_link::INDEX_DEFAULT);
+	G.setconstant(0);
+
+	if (verbose)
+		myprintf("reduceConferenceTransformation: reduce design with %d rows, %d columns\n", nr, nc);
+
+	std::vector< int > colors(2 * (nr + nc));
+
+	const int roffset0 = 0;
+	const int roffset1 = nr;
+	const int coffset0 = 2 * nr;
+	const int coffset1 = 2 * nr + nc;
+
+	/*
+	Add edges as follows:
+	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+	Zeros in A don't cause any edges.
+	*/
+
+	// set colors
+	for (int i = 0; i < coffset0; i++)
+		colors[i] = 0;
+	for (int i = coffset0; i < coffset0 + 2 * nc; i++)
+		colors[i] = 1;
+
+	// (1)
+	for (int i = 0; i < nr; i++)
+		G.atfast(roffset0 + i, i + roffset1) = 1;
+	for (int i = 0; i < nc; i++)
+		G.atfast(coffset0 + i, i + coffset1) = 1;
+
+	// (2), (3)
+	for (int c = 0; c < nc; c++) {
+		for (int r = 0; r < nr; r++) {
+			if (al.atfast(r, c) == 1) {
+				G.atfast(roffset0 + r, coffset0 + c) = 1;
+				G.atfast(roffset1 + r, coffset1 + c) = 1;
+			}
+			else {
+				if (al.atfast(r, c) == -1) {
+					G.atfast(roffset0 + r, coffset1 + c) = 1;
+					G.atfast(roffset1 + r, coffset0 + c) = 1;
+				}
+			}
+		}
+	}
+
+	// make array symmetryic
+	const int nrg = G.n_rows;
+	for (int i = 0; i < number_vertices; i++) {
+
+		array_t *x = G.array + i * nrg; // offset to column
+		for (int j = i; j < number_vertices; j++) {
+			x[j] = G.array[i + j * nrg];
+		}
+	}
+
+	if (verbose >= 3) {
+		printf("reduceConference: incidence graph:\n");
+		printf("   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2 * nr, nc, 2 * nc);
+		G.showarray();
+	}
+
+	return std::pair<array_link, std::vector<int> >(G, colors);
+}
+
+conference_transformation_t graph_transformation2conference_transformation(int nrows, int ncolumns, const array_link &G, const std::vector< int > vertex_permutation, int verbose)
+{
+	const int number_vertices = 2 * (nrows + ncolumns);
+	myassert(number_vertices == G.n_rows, "conference design specification does not match graph size");
+
+
+	// extract transformation
+	const int roffset0 = 0;
+	const int roffset1 = nrows;
+	const int coffset0 = 2 * nrows;
+	const int coffset1 = 2 * nrows + ncolumns;
+
+	if (verbose >= 2) {
+		if (verbose >= 3) {
+			array_link Gx = transformGraph(G, vertex_permutation, 0);
+			printfd("transformed graph\n");
+			Gx.showarray();
+		}
+		std::vector< int > tr1 = std::vector< int >(vertex_permutation.begin(), vertex_permutation.begin() + 2 * nrows);
+		std::vector< int > tr2 = std::vector< int >(vertex_permutation.begin() + coffset0, vertex_permutation.end());
+		printf("  row vertex transformations: ");
+		display_vector(tr1);
+		printf("\n");
+		printf("  col vertex transformations: ");
+		display_vector(tr2);
+		printf("\n");
+	}
+
+	// define conference matrix transformation object....
+	conference_transformation_t transformation(nrows, ncolumns);
+
+	// extract transformation
+	std::vector< int > rr(nrows);
+	for (int i = 0; i < nrows; i++) {
+		rr[i] = std::min(vertex_permutation[i], vertex_permutation[i + nrows]);
+	}
+
+	if (verbose >= 2) {
+		printf("rr: ");
+		print_perm(rr);
+	}
+
+	transformation.rperm = invert_permutation(argsort(rr));
+
+	for (int i = 0; i < nrows; i++) {
+		transformation.rswitch[transformation.rperm[i]] = 2 * (vertex_permutation[i] < vertex_permutation[i + nrows]) - 1;
+	}
+
+	std::vector< int > cc(ncolumns);
+	for (int i = 0; i < ncolumns; i++) {
+		cc[i] = std::min(vertex_permutation[coffset0 + i], vertex_permutation[coffset0 + i + ncolumns]);
+	}
+	transformation.cperm = invert_permutation(argsort(cc));
+
+	for (int i = 0; i < ncolumns; i++) {
+		transformation.cswitch[transformation.cperm[i]] = 2 * (vertex_permutation[coffset0 + i] < vertex_permutation[coffset0 + i + ncolumns]) - 1;
+	}
+
+	if (verbose >= 2) {
+		printf("transform: \n");
+		transformation.show();
+	}
+	return transformation;
+}
+
 conference_transformation_t reduceConferenceTransformation (const array_link &al, int verbose) {
 
         if (!al.is_conference (1)) {
@@ -360,130 +498,14 @@ conference_transformation_t reduceConferenceTransformation (const array_link &al
                 return t;
         }
 
-        const int nr = al.n_rows;
-        const int nc = al.n_columns;
-        const int nn = 2 * (nr + nc);
-        /// create graph
-        array_link G (2 * (nr + nc), 2 * (nr + nc), array_link::INDEX_DEFAULT);
-        G.setconstant (0);
+		std::pair<array_link, std::vector<int> > colored_graph = conference_design2colored_graph(al, verbose);
+		array_link G = colored_graph.first;
+		std::vector<int> colors = colored_graph.second;
 
-        if (verbose)
-                myprintf ("reduceConferenceTransformation: reduce design with %d rows, %d columns\n", nr, nc);
+        const std::vector< int > vertex_permutation = nauty::reduceNauty (G, colors, verbose >= 2);
+        const std::vector< int > inverse_vertex_permutation = invert_permutation (vertex_permutation);
 
-        std::vector< int > colors (2 * (nr + nc));
-
-        const int roffset0 = 0;
-        const int roffset1 = nr;
-        const int coffset0 = 2 * nr;
-        const int coffset1 = 2 * nr + nc;
-
-        /*
-        Add edges as follows:
-        (1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
-        (2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
-        (3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
-        Zeros in A don't cause any edges.
-        */
-
-        // set colors
-        for (int i = 0; i < coffset0; i++)
-                colors[i] = 0;
-        for (int i = coffset0; i < coffset0 + 2 * nc; i++)
-                colors[i] = 1;
-
-        // (1)
-        for (int i = 0; i < nr; i++)
-                G.atfast (roffset0 + i, i + roffset1) = 1;
-        for (int i = 0; i < nc; i++)
-                G.atfast (coffset0 + i, i + coffset1) = 1;
-
-        // (2), (3)
-        for (int c = 0; c < nc; c++) {
-                for (int r = 0; r < nr; r++) {
-                        if (al.atfast (r, c) == 1) {
-                                G.atfast (roffset0 + r, coffset0 + c) = 1;
-                                G.atfast (roffset1 + r, coffset1 + c) = 1;
-                        } else {
-                                if (al.atfast (r, c) == -1) {
-                                        G.atfast (roffset0 + r, coffset1 + c) = 1;
-                                        G.atfast (roffset1 + r, coffset0 + c) = 1;
-                                        // G.atfast ( coffset0+c, roffset1+r ) =1;
-                                }
-                        }
-                }
-        }
-
-        // make array symmetryic
-        const int nrg = G.n_rows;
-        for (int i = 0; i < nn; i++) {
-
-                array_t *x = G.array + i * nrg; // offset to column
-                for (int j = i; j < nn; j++) {
-                        x[j] = G.array[i + j * nrg];
-                }
-        }
-
-        if (verbose >= 3) {
-                printf ("reduceConference: incidence graph:\n");
-                printf ("   2x%d=%d row vertices and 2x%d=%d column vertices\n", nr, 2 * nr, nc, 2 * nc);
-                G.showarray ();
-        }
-        /// call nauty
-        const std::vector< int > tr = nauty::reduceNauty (G, colors, verbose >= 2);
-        const std::vector< int > tri = invert_permutation (tr);
-        const std::vector< int > trx = tri;
-
-        // extract transformation
-        if (verbose >= 2) {
-                if (verbose >= 3) {
-                        array_link Gx = transformGraph (G, tri, 0);
-                        printfd ("transformed graph\n");
-                        Gx.showarray ();
-                }
-                std::vector< int > tr1 = std::vector< int > (trx.begin (), trx.begin () + 2 * nr);
-                std::vector< int > tr2 = std::vector< int > (trx.begin () + coffset0, trx.end ());
-                printf ("  row vertex transformations: ");
-                display_vector (tr1);
-                printf ("\n");
-                printf ("  col vertex transformations: ");
-                display_vector (tr2);
-                printf ("\n");
-        }
-
-        // define conference matrix transformation object....
-        conference_transformation_t t (al);
-
-        // extract transformation
-        std::vector< int > rr (nr);
-        for (int i = 0; i < nr; i++) {
-                rr[i] = std::min (trx[i], trx[i + nr]);
-        }
-
-        if (verbose >= 2) {
-                printf ("rr: ");
-                print_perm (rr);
-        }
-
-        t.rperm = invert_permutation (argsort (rr));
-
-        for (int i = 0; i < nr; i++) {
-                t.rswitch[t.rperm[i]] = 2 * (trx[i] < trx[i + nr]) - 1;
-        }
-
-        std::vector< int > cc (nc);
-        for (int i = 0; i < nc; i++) {
-                cc[i] = std::min (trx[coffset0 + i], trx[coffset0 + i + nc]);
-        }
-        t.cperm = invert_permutation (argsort (cc));
-
-        for (int i = 0; i < nc; i++) {
-                t.cswitch[t.cperm[i]] = 2 * (trx[coffset0 + i] < trx[coffset0 + i + nc]) - 1;
-        }
-
-        if (verbose >= 2) {
-                printf ("transform: \n");
-                t.show ();
-        }
+		conference_transformation_t t = graph_transformation2conference_transformation(al.n_rows, al.n_columns, G, inverse_vertex_permutation, verbose);
         return t;
 }
 
