@@ -1081,6 +1081,8 @@ def jseq(xx, comb):
 def sortrows(x):
     """ Sort rows of an array, return indices
 
+    The array is sorted low to high with the first column as the major column.
+
     Args:
         array (numpy array)
     Returns:
@@ -1104,6 +1106,8 @@ def sortrows(x):
 
 def sortcols(array):
     """ Sort columns of an array, return indices
+
+    The array is sorted low to high with the row column as the major row.
 
     Args:
         array (numpy array)
