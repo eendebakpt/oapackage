@@ -388,24 +388,10 @@ class DconferenceFilter {
         }
 
         /// print object to stdout
-        void show () const {
-                myprintf ("DconferenceFilter: filterj1 -, filterj2 %d, filterj3 %d, filtersymm %d\n", filterj2,
-                          filterj3, filtersymm);
-        }
+		void show() const;
 
-        /// filter a list of cperms using the filter method
-        std::vector< conference_column > filterList (const std::vector< conference_column > &lst, int verbose = 0) const {
-                std::vector< conference_column > out;
-                for (size_t i = 0; i < lst.size (); i++) {
-                        if (this->filter (lst[i])) {
-                                out.push_back (lst[i]);
-                        }
-                }
-                if (verbose) {
-                        printfd ("filterList: %d -> %d\n", lst.size (), out.size ());
-                }
-                return out;
-        }
+        /// filter a list of columns using the filter method
+		std::vector< conference_column > filterList(const std::vector< conference_column > &lst, int verbose = 0) const;
 
 		std::vector< conference_column > filterListJ2last(const std::vector< conference_column > &column_list) const;
 
@@ -425,41 +411,21 @@ class DconferenceFilter {
 		bool filterJ(const conference_column &column, int j2start = 0) const;
 
         /// return True if the extension satisfies all J-characteristic checks for the last columns
-		bool filterJlast(const conference_column &c, int j2start = 0);
+		bool filterJlast(const conference_column &c, int j2start = 0) const;
 
         /// return True if the extension satisfies all checks. prints the reason for returning True or False to stdout
-        bool filterReason (const conference_column &c) const;
+        bool filterReason (const conference_column &column) const;
 
         /// return True if the candidate satisfies the J3 check
-        bool filterJ3 (const conference_column &c) const {
-                const int nc = dtable.n_columns;
-                const int N = als.n_rows;
-                int jv = 0;
-                for (int idx1 = 0; idx1 < nc; idx1++) {
-                        jv = 0;
-
-                        const array_t *o1 = dtable.array + dtable.n_rows * idx1;
-                        for (int xr = 0; xr < N; xr++) {
-
-                                jv += (o1[xr]) * (c[xr]);
-                        }
-
-                        if (jv != 0) {
-                                return false;
-                        }
-                }
-                return true;
-        }
+		bool filterJ3(const conference_column &column) const;
 
         /// return True if the candidate satisfies the J3 check for specified pairs
-		bool filterJ3s(const conference_column &c, int idxstart) const;
+		bool filterJ3s(const conference_column &column, int idxstart) const;
         /// return True if the candidate satisfies the J3 check
-		bool filterJ3r(const conference_column &c) const;
-        /// return True if the candidate satisfies the J3 check
-		bool filterJ3inline(const conference_column &c) const;
+		bool filterJ3inline(const conference_column &column) const;
 
         /// return True of the candidate satisfies the symmetry check
-        bool filterSymmetry (const conference_column &c) const;
+        bool filterSymmetry (const conference_column &column) const;
 
         /// return True of the candidate extension satisfies the J2 check
         bool filterJ2 (const conference_column &c) const { return ipcheck (c, als, 0); }
@@ -469,16 +435,8 @@ class DconferenceFilter {
          *
          * This means that the first entries of the extension do not contain a zero.
          */
-        bool filterZero (const conference_column &c) const {
-                for (int i = 0; i < minzvalue - 1; i++) {
-                        if (c[i] == 0) {
-                                return false;
-                        }
-                }
-                return true;
-        }
+		bool filterZero(const conference_column &c) const;
 
-      private:
 };
 
 /** Inflate a candidate column

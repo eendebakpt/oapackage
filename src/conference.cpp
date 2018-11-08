@@ -973,6 +973,24 @@ bool DconferenceFilter::filterJpartial (const conference_column &c, int r) const
         }
 }
 
+void DconferenceFilter::show() const {
+	myprintf("DconferenceFilter: filterj1 -, filterj2 %d, filterj3 %d, filtersymm %d\n", filterj2,
+		filterj3, filtersymm);
+}
+
+std::vector< conference_column > DconferenceFilter::filterList(const std::vector< conference_column > &lst, int verbose) const {
+	std::vector< conference_column > out;
+	for (size_t i = 0; i < lst.size(); i++) {
+		if (this->filter(lst[i])) {
+			out.push_back(lst[i]);
+		}
+	}
+	if (verbose) {
+		printfd("filterList: %d -> %d\n", lst.size(), out.size());
+	}
+	return out;
+}
+
 std::vector< conference_column > DconferenceFilter::filterListJ2last(const std::vector< conference_column > &column_list) const {
 	std::vector< conference_column > out;
 	for (size_t i = 0; i < column_list.size(); i++) {
@@ -1023,7 +1041,7 @@ bool DconferenceFilter::filter (const conference_column &c) const {
 }
 
 /// return True of the extension satisfies all J-characteristic checks
-bool DconferenceFilter::filterJ(const conference_column &column, int j2start = 0) const {
+bool DconferenceFilter::filterJ(const conference_column &column, int j2start) const {
 	if (filterj2) {
 		// perform inner product check for all columns
 		if (!ipcheck(column, als, j2start)) {
@@ -1041,7 +1059,7 @@ bool DconferenceFilter::filterJ(const conference_column &column, int j2start = 0
 }
 
 /// return True of the extension satisfies all J-characteristic checks for the last columns
-bool DconferenceFilter::filterJlast(const conference_column &c, int j2start = 0) const {
+bool DconferenceFilter::filterJlast(const conference_column &c, int j2start) const {
 	if (filterj2) {
 		// perform inner product check for all columns
 		if (!ipcheck(c, als, j2start)) {
@@ -1061,6 +1079,15 @@ bool DconferenceFilter::filterJlast(const conference_column &c, int j2start = 0)
 
 /// return True of the candidate satisfies the symmetry check
 bool DconferenceFilter::filterSymmetry (const conference_column &c) const { return satisfy_symm (c, check_indices, 0); }
+
+bool DconferenceFilter::filterZero(const conference_column &c) const {
+	for (int i = 0; i < minzvalue - 1; i++) {
+		if (c[i] == 0) {
+			return false;
+		}
+	}
+	return true;
+}
 
 bool DconferenceFilter::filterReason (const conference_column &c) const {
         if (filterfirst) {
@@ -1093,6 +1120,26 @@ bool DconferenceFilter::filterReason (const conference_column &c) const {
         myprintf ("filter check good\n");
 
         return true;
+}
+
+/// return True if the candidate satisfies the J3 check
+bool DconferenceFilter::filterJ3(const conference_column &c) const {
+	const int nc = dtable.n_columns;
+	const int N = als.n_rows;
+	int Jvalue = 0;
+	for (int column_idx = 0; column_idx < nc; column_idx++) {
+		Jvalue = 0;
+
+		const array_t *o1 = dtable.array + dtable.n_rows * column_idx;
+		for (int row = 0; row < N; row++) {
+			Jvalue += (o1[row]) * (c[row]);
+		}
+
+		if (Jvalue != 0) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /** filter conference matrix extension candidates
@@ -1165,26 +1212,7 @@ bool DconferenceFilter::filterJ3s(const conference_column &c, int idxstart) cons
 	}
 	return true;
 }
-/// return True if the candidate satisfies the J3 check
-bool DconferenceFilter::filterJ3r(const conference_column &c) const {
-	const int nc = dtable.n_columns;
-	const int N = als.n_rows;
-	int jv = 0;
-	for (int idx1 = nc - 1; idx1 >= 0; idx1--) {
-		jv = 0;
 
-		const array_t *o1 = dtable.array + dtable.n_rows * idx1;
-		for (int xr = 0; xr < N; xr++) {
-
-			jv += (o1[xr]) * (c[xr]);
-		}
-
-		if (jv != 0) {
-			return false;
-		}
-	}
-	return true;
-}
 /// return True if the candidate satisfies the J3 check
 bool DconferenceFilter::filterJ3inline(const conference_column &c) const {
 	const int nc = inline_dtable.n_columns;
