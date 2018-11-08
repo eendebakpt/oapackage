@@ -84,10 +84,10 @@ array_link conference2DSD(const array_link &conf, bool add_zeros)
 }
 
 /// show a list of candidate extensions
-void showCandidates (const std::vector< conference_column > &cc) {
-        for (size_t i = 0; i < cc.size (); i++) {
+void showCandidates (const std::vector< conference_column > &column_candidates) {
+        for (size_t i = 0; i < column_candidates.size (); i++) {
                 myprintf ("%d: ", (int)i);
-                print_cperm (cc[i]);
+                print_cperm (column_candidates[i]);
                 myprintf ("\n");
         }
 }
@@ -123,7 +123,7 @@ conference_t::conference_t (int N, int k, int _j1zero) {
 }
 
 array_link conference_t::create_root_three () const {
-        array_link al (this->N, 3, 0); // c.ncols
+        array_link al (this->N, 3, 0); 
 
         al.at (0, 0) = 0;
         for (int i = 1; i < this->N; i++) {
@@ -207,12 +207,6 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
                 }
         }
         }
-        if (0) {
-                for (size_t i = 0; i < lst.size (); i++) {
-                        printf ("root array %d:\n", int(i));
-                        lst[i].showarray ();
-                }
-        }
 }
 
 arraylist_t conference_t::createDconferenceRootArrays () const {
@@ -248,7 +242,7 @@ std::string conference_t::idstr () const {
 }
 
 array_link conference_t::create_root () const {
-        array_link al (this->N, 2, 0); // c.ncols
+        array_link al (this->N, 2, 0);
 
         al.at (0, 0) = 0;
         for (int i = 1; i < this->N; i++) {
@@ -296,22 +290,21 @@ public:
 	}
 };
 
-bool isConferenceFoldover (const array_link &al, int verbose) {
-        array_link alt = al.transposed ();
+bool isConferenceFoldover (const array_link &array, int verbose) {
+        array_link alt = array.transposed ();
         array_link alt2 = alt * -1;
 
-        std::vector< int > ri (al.n_rows);
+        std::vector< int > ri (array.n_rows);
         std::fill (ri.begin (), ri.end (), -1);
 
-        for (int i = 0; i < al.n_rows; i++) {
+        for (int i = 0; i < array.n_rows; i++) {
                 if (ri[i] > -1)
                         continue;
                 int foundcol = 0;
-                for (int j = i + 1; j < al.n_rows; j++) {
+                for (int j = i + 1; j < array.n_rows; j++) {
                         if (ri[j] > -1)
                                 continue;
                         if (alt.columnEqual (i, alt2, j)) {
-                                // if ( alx==alx2 ) {
                                 foundcol = 1;
                                 ri[i] = j;
                                 ri[j] = i;
@@ -329,21 +322,21 @@ bool isConferenceFoldover (const array_link &al, int verbose) {
 }
 
 /// reduce double conference matrix to normal form (work in progress)
-conference_transformation_t reduceDoubleConferenceTransformation (const array_link &al, int verbose) {
-        if (!al.is_conference (2)) {
+conference_transformation_t reduceDoubleConferenceTransformation (const array_link &array, int verbose) {
+        if (!array.is_conference (2)) {
                 myprintf ("reduceConferenceTransformation: error: design is not a double conference design\n");
-                conference_transformation_t t (al);
+                conference_transformation_t t (array);
                 return t;
         }
 
-        arraydata_t arrayclass (3, al.n_rows, 1, al.n_columns);
-        array_transformation_t at = reduceOAnauty (al + 1, verbose >= 2, arrayclass);
+        arraydata_t arrayclass (3, array.n_rows, 1, array.n_columns);
+        array_transformation_t at = reduceOAnauty (array + 1, verbose >= 2, arrayclass);
 
-        conference_transformation_t t (al);
+        conference_transformation_t t (array);
         t.rperm = at.rowperm ();
         t.cperm = at.colperm ();
 
-        for (int c = 0; c < al.n_columns; c++) {
+        for (int c = 0; c < array.n_columns; c++) {
                 std::vector< int > lp = at.lvlperm (c);
                 myassert (lp[1] == 1);                  // 0 should go to 0
                 t.cswitch[c] = (lp[0] == 0) ? 1 : -1; 
@@ -657,13 +650,13 @@ std::vector< conference_column > get_second (int N, int extcol, int target, int 
 }
 
 /// calculate inner product between partial two permutations
-int partial_inner_product (const conference_column &a, const array_link &al, int col, int rmax) {
+int partial_inner_product (const conference_column &a, const array_link &al, int column_idx, int rmax) {
         int ip = 0;
         size_t nn = a.size ();
-        const array_t *b = al.array + col * al.n_rows;
+        const array_t *b = al.array + column_idx * al.n_rows;
 
-        for (int i = 0; i < rmax; i++) {
-                ip += a[i] * b[i];
+        for (int row = 0; row < rmax; row++) {
+                ip += a[row] * b[row];
         }
         return ip;
 }
@@ -963,14 +956,49 @@ std::vector< conference_column > filterDconferenceCandidates (const std::vector<
         return e2;
 }
 
-bool DconferenceFilter::filterJpartial (const conference_column &c, int r) const {
+bool DconferenceFilter::filterJpartial (const conference_column &c, int maxrow) const {
         const int N = als.n_rows;
-        long j = partial_inner_product (c, this->als, als.n_columns - 1, r);
-        if (std::abs (j) > (N - r)) {
+        long j = partial_inner_product (c, this->als, als.n_columns - 1, maxrow);
+        if (std::abs (j) > (N - maxrow)) {
                 return false;
         } else {
                 return true;
         }
+}
+
+DconferenceFilter::DconferenceFilter(const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ )
+	: als(_als), filtersymm(filtersymm_), filterj2(filterj2_), filterj3(filterj3_), filterfirst(0),
+	filterzero(0), ngood(0), sd(als) {
+
+	check_indices = sd.checkIdx();
+	dtable = createJ2tableConference(als);
+
+	if (als.n_columns >= 2) {
+		inline_dtable = als.selectColumns(0) - als.selectColumns(1);
+		inline_dtable = hstack(inline_dtable, als.selectColumns(0) + 1);
+		inline_dtable = hstack(inline_dtable, als.selectColumns(0) * als.selectColumns(0) - 1);
+		inline_dtable = hstack(inline_dtable, als.selectColumns(1) * als.selectColumns(1) - 1);
+
+		minzvalue = minz(als, als.n_columns - 1);
+
+		inline_row = als.n_rows;
+		int br = 0;
+		for (int i = als.n_rows - 1; i >= 0; i--) {
+			for (int c = 0; c < als.n_columns; c++) {
+				if (inline_dtable.at(i, 0) != 0) {
+					br = 1;
+					break;
+				}
+			}
+			if (br) {
+				break;
+			}
+			inline_row = i;
+		}
+	}
+	else {
+		inline_row = -1;
+	}
 }
 
 void DconferenceFilter::show() const {
@@ -1579,6 +1607,18 @@ std::vector< conference_column > inflateCandidateExtension (const conference_col
                          als.n_columns);
         }
         return cc;
+}
+
+/// return true if zero is a specified position
+inline bool checkZeroPosition(const conference_column &column, int zero_position) {
+	if (zero_position <= 0)
+		return false;
+
+	if (column[zero_position] == 0) {
+		return true;
+	}
+	else
+		return false;
 }
 
 std::vector< conference_column > generateSingleConferenceExtensions (const array_link &al, const conference_t &ct, int kz,

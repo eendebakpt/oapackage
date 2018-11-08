@@ -988,7 +988,7 @@ class jstruct_t {
         /// contains calculated J-values
         std::vector< int > values;
         /// calculated abberation
-        double A;
+        double abberation;
 
       public:
         /// Create an object to calculate J-characteristics
@@ -1010,7 +1010,7 @@ class jstruct_t {
         void calcj5 (const array_link &al);
 
       public:
-        jstruct_t &operator= (const jstruct_t &rhs); // assignment
+        jstruct_t &operator= (const jstruct_t &rhs); 
 
         /// calculate maximum J value
         int maxJ () const;
@@ -1021,17 +1021,11 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        // calculate aberration value
-        void calculateAberration () {
-                jstruct_t *js = this;
-                js->A = 0;
-                for (int i = 0; i < js->nc; i++) {
-                        js->A += js->values[i] * js->values[i];
-                }
-                js->A /= N * N;
-        }
+        /// calculate aberration value
+		void calculateAberration();
+
         /// Show contents of structure
-        void show ();
+        void show () const;
         void showdata ();
         std::string showstr ();
 
@@ -1053,34 +1047,24 @@ class jstructconference_t : public jstructbase_t {
         }
 
       private:
-        void calcJvalues (int N, int jj) {
-                assert (jj == 4);
-                int nn = floor (double(int((N - jj + 1) / 4))) + 1;
-                this->jvalues = std::vector< int > (nn);
-                this->jvalue2index.clear ();
-                for (size_t i = 0; i < jvalues.size (); i++) {
-                        int jval = (N - jj) - i * 4;
-                        jvalues[i] = jval;
-                        jvalue2index[jval] = i;
-                }
-        }
-
-        void calc (const array_link &al) { values = Jcharacteristics_conference (al, this->jj); }
+		void calcJvalues(int N, int jj);
+		void calc(const array_link &al);
 };
 
 /// set first columns of an array to root form
-void create_root (array_t *array, const arraydata_t *ad);
-/// Creates the root of an OA. The root is appended to the current list of arrays
-void create_root (const arraydata_t *ad, arraylist_t &solutions);
+void create_root (array_t *array, const arraydata_t *arrayclass);
+
+/// Creates the root of an orthogonal array. The root is appended to the list of arrays
+void create_root (const arraydata_t *arrayclass, arraylist_t &solutions);
 
 
 /// Compare 2 arrays and return position of first difference
 int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, rowindex_t &rpos, colindex_t &cpos);
 
 /// helper function to calculate J-values
-inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp) {
+inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const colindex_t *column_indices, array_t *tmp) {
         for (int i = 0; i < J; i++) {
-                carray_t *cp = array + N * pp[i];
+                carray_t *cp = array + N * column_indices[i];
                 for (rowindex_t r = 0; r < N; r++) {
                         tmp[r] += cp[r];
                 }

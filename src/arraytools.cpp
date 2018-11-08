@@ -3296,7 +3296,7 @@ std::vector< int > jstructbase_t::calculateF () const {
 jstruct_t::jstruct_t () {
         // myprintf("jstruct_t()\n");
         this->nc = 0;
-        this->A = -1;
+        this->abberation = -1;
 }
 
 int jstruct_t::maxJ () const {
@@ -3334,6 +3334,15 @@ std::vector< int > jstruct_t::calculateF (int strength) const {
         return F;
 }
 
+void jstruct_t::calculateAberration() {
+	jstruct_t *js = this;
+	js->abberation = 0;
+	for (int i = 0; i < js->nc; i++) {
+		js->abberation += js->values[i] * js->values[i];
+	}
+	js->abberation /= N * N;
+}
+
 void jstruct_t::calc (const array_link &al) {
         int *column_indices = new_perm_init< int > (jj);
 
@@ -3346,6 +3355,19 @@ void jstruct_t::calc (const array_link &al) {
 
         delete_perm (column_indices);
 }
+
+void jstructconference_t::calcJvalues(int N, int jj) {
+	assert(jj == 4);
+	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
+	this->jvalues = std::vector< int >(nn);
+	this->jvalue2index.clear();
+	for (size_t i = 0; i < jvalues.size(); i++) {
+		int jval = (N - jj) - i * 4;
+		jvalues[i] = jval;
+		jvalue2index[jval] = i;
+	}
+}
+void jstructconference_t::calc(const array_link &al) { values = Jcharacteristics_conference(al, this->jj); }
 
 /// create J2 table as intermediate result for J-characteristic calculations for conference matrices
 array_link createJ2tableConference (const array_link &confmatrix) {
@@ -3502,7 +3524,7 @@ void jstruct_t::init (int N_, int k_, int jj_) {
 
         this->nc = ncombs< long > (k_, jj_);
         values = std::vector< int > (nc);
-        this->A = -1;
+        this->abberation = -1;
 }
 
 jstruct_t::jstruct_t (const jstruct_t &js) {
@@ -3510,7 +3532,7 @@ jstruct_t::jstruct_t (const jstruct_t &js) {
         k = js.k;
         jj = js.jj;
         nc = js.nc;
-        A = js.A;
+        abberation = js.abberation;
         values = std::vector< int > (nc);
         std::copy (js.values.begin (), js.values.begin () + nc, values.begin ());
 }
@@ -3521,7 +3543,7 @@ jstruct_t &jstruct_t::operator= (const jstruct_t &rhs) {
         this->jj = rhs.jj;
         this->nc = rhs.nc;
 
-        this->A = rhs.A;
+        this->abberation = rhs.abberation;
         values = std::vector< int > (nc);
         std::copy (rhs.values.begin (), rhs.values.begin () + nc, values.begin ());
 
@@ -3546,13 +3568,13 @@ int jstruct_t::allzero() const {
 	return 1;
 }
 
-void jstruct_t::show () {
+void jstruct_t::show () const {
 #ifdef FULLPACKAGE
-        cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
+        std::cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
         for (int x = 0; x < this->nc; x++) {
                 cout << printfstring (" %d", values[x]);
         }
-        cout << std::endl;
+        std::cout << std::endl;
 #endif
 }
 

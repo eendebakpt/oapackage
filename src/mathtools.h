@@ -1213,6 +1213,7 @@ inline outtype init_perm_n (numtype *perm, int len) {
         return factorial< outtype > (len);
 }
 
+/// create a new permutation and initialize
 template < class numtype > numtype *new_perm_init (int len) {
         numtype *perm = new_perm< numtype > (len);
         init_perm (perm, len);
@@ -1229,8 +1230,6 @@ template < typename _ForwardIterator > inline bool issorted (_ForwardIterator fi
                         return false;
         return true;
 }
-
-/* templates for valueindex */
 
 template < class returntype, class basetype, class numtype >
 returntype *new_valueindex (const basetype *bases, const numtype n) {
@@ -1448,7 +1447,6 @@ template < class numtype > std::vector< int > argsort (const std::vector< numtyp
 #include "InfInt.h"
 #endif
 
-#include <limits>
 
 /** @brief Class to describe the symmetry group of a list of elements
  *

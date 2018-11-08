@@ -15,13 +15,13 @@
 #include "graphtools.h"
 
 /// print a candidate extension
-void print_cperm(const conference_column &c, const char *msg = 0);
+void print_cperm(const conference_column &column, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
  * \param cc List of candidates to show
  */
-void showCandidates (const std::vector< conference_column > &cc);
+void showCandidates (const std::vector< conference_column > &column_candidates);
 
 /** Convert conference design to definitive screening design
  *
@@ -112,17 +112,6 @@ array_link reduceConference (const array_link &, int verbose = 0);
  *
  */
 conference_transformation_t reduceConferenceTransformation (const array_link &conference_design, int verbose);
-
-/// return true if zero is a specified position
-inline bool checkZeroPosition (const conference_column &p, int zero_position) {
-        if (zero_position <= 0)
-                return false;
-
-        if (p[zero_position] == 0) {
-                return true;
-        } else
-                return false;
-}
 
 /** Class to generate candidate extensions with caching
  *
@@ -353,39 +342,7 @@ class DconferenceFilter {
         symmdata sd;
 
       public:
-        DconferenceFilter (const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1)
-            : als (_als), filtersymm (filtersymm_), filterj2 (filterj2_), filterj3 (filterj3_), filterfirst (0),
-              filterzero (0), ngood (0), sd (als) {
-
-                check_indices = sd.checkIdx ();
-                dtable = createJ2tableConference (als);
-
-                if (als.n_columns >= 2) {
-                        inline_dtable = als.selectColumns (0) - als.selectColumns (1);
-                        inline_dtable = hstack (inline_dtable, als.selectColumns (0) + 1);
-                        inline_dtable = hstack (inline_dtable, als.selectColumns (0) * als.selectColumns (0) - 1);
-                        inline_dtable = hstack (inline_dtable, als.selectColumns (1) * als.selectColumns (1) - 1);
-
-                        minzvalue = minz (als, als.n_columns - 1);
-
-                        inline_row = als.n_rows;
-                        int br = 0;
-                        for (int i = als.n_rows - 1; i >= 0; i--) {
-                                for (int c = 0; c < als.n_columns; c++) {
-                                        if (inline_dtable.at (i, 0) != 0) {
-                                                br = 1;
-                                                break;
-                                        }
-                                }
-                                if (br) {
-                                        break;
-                                }
-                                inline_row = i;
-                        }
-                } else {
-                        inline_row = -1;
-                }
-        }
+		  DconferenceFilter(const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1);
 
         /// print object to stdout
 		void show() const;
@@ -403,9 +360,9 @@ class DconferenceFilter {
 
         /** filter on partial column (only last col)
          *
-         * r (int): the number of rows that are valid
+         * maxrow (int): the number of rows that are valid
          **/
-        bool filterJpartial (const conference_column &c, int r) const;
+        bool filterJpartial (const conference_column &c, int maxrow) const;
 
         /// return True if the extension satisfies all J-characteristic checks
 		bool filterJ(const conference_column &column, int j2start = 0) const;
