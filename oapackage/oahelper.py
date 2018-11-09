@@ -425,7 +425,11 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
     """ Convert numpy array to Latex tabular """
     ss = ''
     if comment is not None:
-        ss += '%% %s\n' % str(comment)
+        if isinstance(comment, list):
+            for line in comment:    
+                ss += '%% %s\n' % str(line)
+        else:
+            ss += '%% %s\n' % str(comment)
     if header:
         if mode == 'tabular':
             if len(tabchar) == 1:

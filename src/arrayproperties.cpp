@@ -457,48 +457,46 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
         return A;
 }
 
-#ifdef FULLPACKAGE
 /** Calculate D-efficiencies for all projection designs
  *
- * \param al Design to calculate D-efficiencies for
+ * \param orthogonal_array Design to calculate D-efficiencies for
  * \param number_of_factors Number of factors into which to project
  * \returns Vector with calculated D-efficiencies
  */
-std::vector< double > projDeff (const array_link &al, int number_of_factors, int verbose = 0) {
-        assert (al.is2level ());
+std::vector< double > projDeff (const array_link &orthogonal_array, int number_of_factors, int verbose) {
+        myassert (orthogonal_array.is2level ());
 
-        int number_of_columns = al.n_columns;
-        std::vector< int > cp (number_of_factors);
+        int number_of_columns = orthogonal_array.n_columns;
+        std::vector< int > column_combination (number_of_factors);
         for (int i = 0; i < number_of_factors; i++)
-                cp[i] = i;
-        int64_t ncomb = ncombsm< int64_t > (number_of_columns, number_of_factors);
-
-        std::vector< double > dd (ncomb);
+                column_combination[i] = i;
+        int64_t number_combinations = ncombsm< int64_t > (number_of_columns, number_of_factors);
 
         int m = 1 + number_of_factors + number_of_factors * (number_of_factors - 1) / 2;
-        int N = al.n_rows;
+        int N = orthogonal_array.n_rows;
 
         if (verbose)
                 myprintf ("projDeff: k %d, kp %d: start with %ld combinations \n", number_of_columns,
-                          number_of_factors, (long)ncomb);
+                          number_of_factors, (long)number_combinations);
 
-        for (int64_t i = 0; i < ncomb; i++) {
+		std::vector< double > efficiencies(number_combinations);
+		for (int64_t i = 0; i < number_combinations; i++) {
                 if (m > N)
-                        dd[i] = 0;
+                        efficiencies[i] = 0;
                 else {
-                        array_link alsub = al.selectColumns (cp);
-                        dd[i] = alsub.Defficiency ();
+                        array_link alsub = orthogonal_array.selectColumns (column_combination);
+                        efficiencies[i] = alsub.Defficiency ();
                 }
                 if (verbose >= 2)
                         myprintf ("projDeff: k %d, kp %d: i %ld, D %f\n", number_of_columns, number_of_factors,
-                                  (long)i, dd[i]);
-                next_comb (cp, number_of_factors, number_of_columns);
+                                  (long)i, efficiencies[i]);
+                next_comb (column_combination, number_of_factors, number_of_columns);
         }
 
         if (verbose)
                 myprintf ("projDeff: k %d, kp %d: done\n", number_of_columns, number_of_factors);
 
-        return dd;
+        return efficiencies;
 }
 
 std::vector< double > PECsequence (const array_link &array, int verbose) {
@@ -562,7 +560,6 @@ std::vector< double > PICsequence(const array_link &array, int verbose) {
 
 	return pec;
 }
-#endif
 
 void round_GWLP_zero_values(std::vector<double> &gma, int N)
 {

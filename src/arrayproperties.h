@@ -5,8 +5,7 @@
  Copyright: See LICENSE.txt file that comes with this distribution
 */
 
-#ifndef ARRAYPROPERTIES_H
-#define ARRAYPROPERTIES_H
+#pragma once
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -37,22 +36,26 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
                                      int addDs0 = 0);
 
 /// Calculate VIF-efficiency of matrix
-double VIFefficiency (const array_link &al, int verbose = 0);
+double VIFefficiency (const array_link &orthogonal_array, int verbose = 0);
 
 /// Calculate A-efficiency of matrix
-double Aefficiency (const array_link &al, int verbose = 0);
+double Aefficiency (const array_link &orthogonal_array, int verbose = 0);
 
 /// Calculate E-efficiency of matrix (1 over the VIF-efficiency)
-double Eefficiency (const array_link &al, int verbose = 0);
+double Eefficiency (const array_link &orthogonal_array, int verbose = 0);
 
 /// calculate various A-efficiencies
-std::vector< double > Aefficiencies (const array_link &al, int verbose = 0);
+std::vector< double > Aefficiencies (const array_link &orthogonal_array, int verbose = 0);
 
-#ifdef FULLPACKAGE
-/// Return the D-efficiencies for the projection designs
-std::vector< double > projDeff (const array_link &al, int kp, int verbose);
+/** Calculate D-efficiencies for all projection designs
+*
+* \param al Design to calculate D-efficiencies for
+* \param number_of_factors Number of factors into which to project
+* \returns Vector with calculated D-efficiencies
+*/
+std::vector< double > projDeff (const array_link &al, int number_of_factors, int verbose = 0);
 
-/** Calculate the projection estimation capacity sequence for a design.
+/** Calculate the projection estimation capacity sequence for a design
 *
 * The PEC of a design is the fraction of estimable second-order models in x factors.
 * See "Ranking Non-regular Designs", J.L. Loeppky
@@ -65,17 +68,19 @@ std::vector< double > projDeff (const array_link &al, int kp, int verbose);
 *
 */
 std::vector< double > PICsequence(const array_link &array, int verbose = 0);
-#endif
 
-/// Return the distance distribution of a design
-std::vector< double > distance_distribution (const array_link &al);
+/** Return the distance distribution of a design
+ *
+ * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001
+ */
+std::vector< double > distance_distribution (const array_link &array);
 
 /// Calculate J-characteristics of matrix (the values are signed)
 std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbose = 0);
 
 /** @brief Calculate GWLP (generalized wordlength pattern)
  *
- *  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
+ * The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
  * fractional factorial desings"
  * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu
@@ -433,5 +438,3 @@ inline double Dvalue2Cvalue (double Defficiency, int number_of_columns) {
 
 
 
-#endif // ARRAYPROPERTIES_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;
