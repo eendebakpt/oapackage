@@ -509,7 +509,6 @@ struct LMCreduction_t {
                 std::copy (al.array, al.array + this->ncols * this->nrows, this->array);
         }
         void setArray (const array_t *array, int nrows, int ncols) {
-                // FIXE: check on sizes
                 init_state = INIT;
                 std::copy (array, array + ncols * nrows, this->array);
         }
@@ -549,7 +548,6 @@ struct LMCreduction_t {
                 if (this->staticdata == 0) {
                         return getGlobalStaticOne ();
                 } else {
-                        // printfd("return internal pointer...\n");
                         return *(this->staticdata);
                 }
         }
@@ -557,19 +555,7 @@ struct LMCreduction_t {
         /// reset the reduction: clears the symmetries and sets the transformation to zero
         void reset ();
 
-        void show (int verbose = 2) const {
-                myprintf ("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state "
-                          "%d, lastcol %d\n",
-                          this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state,
-                          this->lastcol);
-                if (verbose >= 1) {
-                        myprintf ("LMCreduction_t: nred %ld\n", nred);
-                        print_array ("array:\n", this->array, this->transformation->ad->N,
-                                     this->transformation->ad->ncols);
-                }
-                if (verbose >= 2)
-                        this->transformation->show ();
-        }
+		void show(int verbose = 2) const;
 
         std::string __repr__ () const {
                 std::string ss = printfstring ("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, "
@@ -593,8 +579,6 @@ struct LMCreduction_t {
                 }
         }
         inline void updateLastCol (int col) { this->lastcol = col; }
-
-        // non-public
 
       private:
         void free ();
@@ -653,45 +637,19 @@ struct dyndata_t {
         }
 
         /// get lightweight row permutation
-        void getRowperm (rowpermtypelight &rp) const {
-                rp.resize (this->N);
-                if (this->rowsortl == 0) {
-                        for (int i = 0; i < this->N; i++)
-                                rp[i] = this->rowsort[i].r;
-                } else {
-                        for (int i = 0; i < this->N; i++)
-                                rp[i] = this->rowsortl[i];
-                }
-        }
+		void getRowperm(rowpermtypelight &rp) const;
 
         /// get row permutation
-        void getRowperm (rowperm_t &rperm) const {
-                if (this->rowsortl == 0) {
-                        for (rowindex_t x = 0; x < this->N; x++)
-                                rperm[x] = this->rowsort[x].r;
-                } else {
-                        for (rowindex_t x = 0; x < this->N; x++)
-                                rperm[x] = this->rowsortl[x];
-                }
-        }
+		void getRowperm(rowperm_t &rperm) const;
 
         /// return lightweight row permutation
-        rowpermtypelight getRowperm () const {
-                rowpermtypelight rp (this->N);
-                this->getRowperm (rp);
-                return rp;
-        }
+		rowpermtypelight getRowperm() const;
 
         /// return column permutation
-        colpermtypelight getColperm () const {
-                colpermtypelight cp (this->colperm, this->col + 1);
-                return cp;
-        }
+		colpermtypelight getColperm() const;
+
         /// set column permutation
-        void getColperm (colpermtypelight &cp) const {
-                cp.resize (this->col + 1);
-                std::copy (this->colperm, this->colperm + this->col + 1, cp.data_pointer);
-        }
+		void getColperm(colpermtypelight &cp) const;
 
         /// allocate lightweight rowsort structure
         void allocate_rowsortl () {

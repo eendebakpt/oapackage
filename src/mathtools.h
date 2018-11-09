@@ -747,33 +747,13 @@ void seedfastrand (int s);
 // return random integer in range 0 to k-1
 int fastrandK (int k);
 
-#ifdef RPACKAGE
-// R packages are not allowed to use rand
-#define myrand fastrand
-#else
+
 /// set the random number seed using srand
 void set_srand (unsigned int s);
 #define myrand rand
-#endif
 
-#ifdef RPACKAGE
-template < typename myRandomAccessIterator >
-inline void my_random_shuffle (myRandomAccessIterator myfirst, myRandomAccessIterator mylast) {
-        // concept requirements
-        //__glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
-        //  _RandomAccessIterator>)
-        //__glibcxx_requires_valid_range(__first, __last);
 
-        if (myfirst != mylast)
-                for (myRandomAccessIterator __i = myfirst + 1; __i != mylast; ++__i) {
-                        myRandomAccessIterator __j = myfirst + fastrand () % ((__i - myfirst) + 1);
-                        if (__i != __j)
-                                std::iter_swap (__i, __j);
-                }
-}
-#else
 #define my_random_shuffle std::random_shuffle
-#endif
 
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
                                    /*

@@ -439,6 +439,21 @@ void LMCreduction_t::reset () {
 
         clearSymmetries ();
 }
+
+void LMCreduction_t::show(int verbose = 2) const {
+	myprintf("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state "
+		"%d, lastcol %d\n",
+		this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state,
+		this->lastcol);
+	if (verbose >= 1) {
+		myprintf("LMCreduction_t: nred %ld\n", nred);
+		print_array("array:\n", this->array, this->transformation->ad->N,
+			this->transformation->ad->ncols);
+	}
+	if (verbose >= 2)
+		this->transformation->show();
+}
+
 void LMCreduction_t::clearSymmetries () {
         symms.store = 0;
         symms.ncols = -1;
@@ -550,6 +565,44 @@ void dyndata_t::reset () {
                 this->rowsort[i].r = i;
                 this->rowsort[i].val = 0;
         }
+}
+
+void dyndata_t::getRowperm(rowpermtypelight &rp) const {
+	rp.resize(this->N);
+	if (this->rowsortl == 0) {
+		for (int i = 0; i < this->N; i++)
+			rp[i] = this->rowsort[i].r;
+	}
+	else {
+		for (int i = 0; i < this->N; i++)
+			rp[i] = this->rowsortl[i];
+	}
+}
+
+void dyndata_t::getRowperm(rowperm_t &rperm) const {
+	if (this->rowsortl == 0) {
+		for (rowindex_t x = 0; x < this->N; x++)
+			rperm[x] = this->rowsort[x].r;
+	}
+	else {
+		for (rowindex_t x = 0; x < this->N; x++)
+			rperm[x] = this->rowsortl[x];
+	}
+}
+
+rowpermtypelight dyndata_t::getRowperm() const {
+	rowpermtypelight rp(this->N);
+	this->getRowperm(rp);
+	return rp;
+}
+
+colpermtypelight dyndata_t::getColperm() const {
+	colpermtypelight cp(this->colperm, this->col + 1);
+	return cp;
+}
+void dyndata_t::getColperm(colpermtypelight &cp) const {
+	cp.resize(this->col + 1);
+	std::copy(this->colperm, this->colperm + this->col + 1, cp.data_pointer);
 }
 
 dyndata_t::dyndata_t (int N_, int col_) {

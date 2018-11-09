@@ -109,11 +109,6 @@ inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array,
                 // to normal form if the LMC check is satisfied
                 // see the appendix A in the article by Deng and Tang
                 if (j < 1) {
-                        // OPTIMIZE: combine sorting and comparing
-                        // by checking whether we have flipped any elements
-                        // other sort functions: insertionSort, bubbleSort, bubbleSort2, quickSort, shellSort,
-                        // std::sort, std::__insertion_sort
-
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
 
                         for (int k = 0; k < oaindex; k++) {
@@ -167,7 +162,6 @@ inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array,
 */
 inline lmc_t LMC_check_col_less (const array_t *original, const array_t *array, levelperm_t lperm,
                                  const arraydata_t *ad, const dyndata_t *dd) {
-        // myprintfd("LMC_check_col: start: lperm "); print_perm(lperm, ad->s[0]);
         lmc_t ret = LMC_EQUAL;
         int cur_row = 0, rowp;
         const int oaindex = ad->oaindex;
@@ -184,7 +178,6 @@ inline lmc_t LMC_check_col_less (const array_t *original, const array_t *array, 
 
                                 debug_check_rowsort_overflow (ad, rowsort, dd, cur_row);
 
-                                /* OPTIMIZE: the multiplication can be taken out of this function */
                                 rowsort[cur_row].val = ad->s[dd->col] * rowsort[cur_row].val + lperm[array[rowp]];
                         }
 
@@ -202,7 +195,6 @@ inline lmc_t LMC_check_col_less (const array_t *original, const array_t *array, 
                                 } else if (original[cur_row] >
                                            lperm[array[rowp]]) { // the permuted array is lex. less than original
                                         ret = LMC_LESS;
-                                        // printfd("LMC_check_col: LMC_LESS: lperm "); print_perm(lperm, ad->s[0]);
                                         break;
                                 }
                         }
@@ -263,7 +255,6 @@ inline lmc_t LMC_check_col_nosort (const array_t *original, const array_t *array
 */
 inline lmc_t LMC_check_col_buffer (const array_t *original, const array_t *array, levelperm_t lperm,
                                    const arraydata_t *ad, const dyndata_t *dd, rowsort_value_t *rsbuffer) {
-        // myprintf("LMC_check_col: start\n");
         lmc_t ret = LMC_EQUAL;
         int cur_row, rowp;
         const int oaindex = ad->oaindex;
@@ -319,8 +310,7 @@ inline lmc_t LMC_check_col_buffer (const array_t *original, const array_t *array
 
 // check range of elements (inclusive)
 inline lmc_t checkLMChelperSorted (int ix, int iy, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad) {
-        // myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
-        array_t prevval = 0; // lperm[0];
+        array_t prevval = 0; 
 
         for (int cur_row = ix; cur_row <= iy; cur_row++) {
                 array_t cval = lperm[arraycol[cur_row]];
@@ -364,7 +354,6 @@ inline lmc_t checkLMChelperSorted (int ix, int iy, const array_t *originalcol, c
 // check range of elements (inclusive)
 inline lmc_t checkLMChelper (int ix, int iy, const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                              const arraydata_t *ad, rowsortlight_t *rowsortl) {
-        // myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
         int v1 = 0, v2 = 0;
 
 #ifdef OADEBUG
@@ -375,10 +364,7 @@ inline lmc_t checkLMChelper (int ix, int iy, const array_t *originalcol, const a
 
                 v1 += originalcol[cur_row];
                 v2 += lperm[arraycol[rowp]];
-                // v2 += arraycol[rowp];
         }
-
-        // if (lperm[0]) v2=(1+iy-ix)-v2;
 
         if (v1 == v2)
                 return LMC_EQUAL;
@@ -390,7 +376,6 @@ inline lmc_t checkLMChelper (int ix, int iy, const array_t *originalcol, const a
 // check range of elements (inclusive)
 inline lmc_t checkLMChelper (int ix, int iy, const array_t *originalcol, const array_t *arraycol, levelperm_t lperm,
                              const arraydata_t *ad, rowsort_t *rowsort) {
-        // myprintf("checkLMChelper: %d to %d (inclusive)\n", ix, iy);
         int v1 = 0, v2 = 0;
 
         for (int cur_row = ix; cur_row <= iy; cur_row++) {
@@ -398,11 +383,8 @@ inline lmc_t checkLMChelper (int ix, int iy, const array_t *originalcol, const a
 
                 v1 += originalcol[cur_row];
                 v2 += lperm[arraycol[rowp]];
-                // v2 += arraycol[rowp2];
         }
-
-        // if (lperm[0]) v2=(1+iy-ix)-v2;
-
+		
         if (v1 == v2)
                 return LMC_EQUAL;
         if (v1 < v2)
@@ -436,7 +418,6 @@ inline void sortzeroone (rowsortlight_t *rs, int low, int high, const array_t *a
                         high--;
                 }
                 if (low < high) {
-                        // swap arr[low], arr[high]
                         std::swap (rs[low], rs[high]);
                 }
         }
@@ -453,7 +434,6 @@ inline void sortzerooneR (rowsort_t *rs, int low, int high, const array_t *array
                         high--;
                 }
                 if (low < high) {
-                        // swap arr[low], arr[high]
                         std::swap (rs[low].r, rs[high].r);
                 }
         }
@@ -469,7 +449,6 @@ inline void sortzeroone (rowsort_t *rs, int low, int high, carray_t *arraycol) {
                         high--;
                 }
                 if (low < high) {
-                        // swap arr[low], arr[high]
                         std::swap (rs[low].r, rs[high].r);
                 }
         }

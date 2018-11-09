@@ -1,22 +1,18 @@
-#include "mathtools.h"
-
 #include <numeric>
 
-#ifdef RPACKAGE
-#else
+#include "mathtools.h"
+
 void set_srand (unsigned int s) { srand (s); }
-#endif
 
 template < class Type > void symmetry_group::init (const std::vector< Type > vals, bool ascendingx, int verbose) {
-#ifdef RPACKAGE
-#else
+
         if (verbose >= 2) {
                 myprintf ("symmetry_group::init: %ld elements: ", vals.size ());
                 for (size_t i = 0; i < vals.size (); i++)
                         std::cout << vals[i] << ", ";
                 myprintf ("\n");
         }
-#endif
+
         n = vals.size ();
         ascending = ascendingx;
 
@@ -31,9 +27,7 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         else
                 is.sortdescending (vals);
 
-        //      myprintf("symmetry_group::init: xxx\n");
-
-        if (verbose >= 2 || 0) {
+        if (verbose >= 2) {
                 if (ascending) {
                         if (!is.issorted ()) {
                                 myprintf ("symmetry_group: input group was not sorted!\n");
@@ -50,20 +44,13 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         }
         // calc group
         int nsg = 0;
-        Type prev; //=vals[0];
+        Type prev; 
 
         prev = std::numeric_limits< Type >::quiet_NaN ();
         /* count number of symmetry groups */
         for (int i = 0; i < n; i++) {
                 if (vals[i] != prev || i == 0) {
                         nsg++;
-#ifdef FULLPACKAGE
-                        if (verbose) {
-                                myprintf ("  symmetry_group: %d: add ", i);
-                                std::cout << prev << "->";
-                                std::cout << vals[i] << std::endl;
-                        }
-#endif
                 }
                 prev = vals[i];
         }
@@ -127,7 +114,6 @@ symmetry_group::symmetry_group (const std::vector< mvalue_t< double > > &vals, b
 }
 
 symmetry_group::symmetry_group (const std::vector< mvalue_t< int > > &vals, bool ascending, int verbose) {
-        // printf("symmetry_group::symmetry_group: type <mvalue_t<int>: %zu, %zu\n", vals.size(), vals[0].size() );
         this->init (vals, ascending, verbose);
 }
 
@@ -196,9 +182,6 @@ std::vector< int > symmetry_group_walker::fullperm () const {
         return ww;
 }
 
-// instantiate classes
-// template symmetry_group::symmetry_group<int>(std::vector<int>, int);
-
 /* Random number generators */
 
 int g_seed = 123;
@@ -261,4 +244,3 @@ long Combinations::number_combinations (int n, int k) {
         return Combinations::ncombsdata[n][k];
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
