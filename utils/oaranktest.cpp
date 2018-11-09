@@ -34,14 +34,13 @@ using namespace Eigen;
 int main (int argc, char *argv[]) {
         AnyOption opt;
         /* parse command line options */
-        opt.setFlag ("help", 'h'); /* a flag (takes no argument), supporting long and short form */
+        opt.setFlag ("help", 'h'); 
         opt.setOption ("output", 'o');
         opt.setOption ("input", 'I');
         opt.setOption ("rand", 'r');
         opt.setOption ("niter", 'n');
         opt.setOption ("verbose", 'v');
         opt.setOption ("ii", 'i');
-        opt.setOption ("oaconfig", 'c'); /* file that specifies the design */
 
         opt.addUsage ("Orthonal Array: oatest: testing platform");
         opt.addUsage ("Usage: oatest [OPTIONS] [FILE]");
@@ -192,4 +191,3 @@ int main (int argc, char *argv[]) {
         return 0;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;
