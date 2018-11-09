@@ -440,7 +440,7 @@ void LMCreduction_t::reset () {
         clearSymmetries ();
 }
 
-void LMCreduction_t::show(int verbose = 2) const {
+void LMCreduction_t::show(int verbose) const {
 	myprintf("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state "
 		"%d, lastcol %d\n",
 		this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state,
