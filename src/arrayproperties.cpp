@@ -886,6 +886,40 @@ double conditionNumber (const array_link &M) {
         double cond = svd.singularValues () (0) / svd.singularValues () (svd.singularValues ().size () - 1);
         return cond;
 }
+void rankStructure::info() const {
+	printf("	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows,
+		alsub.n_columns, this->alsub.rank(), (int)decomp.rank());
+}
+
+/// update the structure cache with a new array
+void rankStructure::updateStructure(const array_link &al) {
+	this->alsub = al;
+	this->ks = al.n_columns;
+	Eigen::MatrixXd A = array2xf(al).getEigenMatrix();
+	decomp.compute(A);
+
+	this->Qi = decomp.matrixQ().inverse();
+
+	nupdate++;
+
+	if (this->verbose >= 1 && nupdate % 30 == 0) {
+		printfd("updateStructure: ncalc %d, nupdate %d\n", ncalc, nupdate);
+	}
+}
+
+/// calculate the rank of an array directly, uses special threshold
+int rankStructure::rankdirect(const Eigen::MatrixXd &A) const {
+	EigenDecomp decomp(A);
+	decomp.setThreshold(1e-12);
+	int rank = decomp.rank();
+	return rank;
+}
+
+/// calculate the rank of the second order interaction matrix of an array directly
+int rankStructure::rankxfdirect(const array_link &al) const {
+	Eigen::MatrixXd mymatrix = arraylink2eigen(array2xf(al));
+	return rankdirect(mymatrix);
+}
 
 /// calculate the rank of the second order interaction matrix of an array using the cache system
 int rankStructure::rankxf (const array_link &al) {

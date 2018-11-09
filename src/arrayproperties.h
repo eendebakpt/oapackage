@@ -181,22 +181,20 @@ int arrayrankFullPivLU (const array_link &al, double threshold = -1);
 int arrayrankSVD (const array_link &al, double threshold = -1);
 
 /// calculate the rank of an array
-int arrayrank (const array_link &al);
+int arrayrank (const array_link &array);
 
 /// Return rank of an array. Information about the different methods for rank calculation is printed to stdout
 int arrayrankInfo (const Eigen::MatrixXd &, int verbose = 1);
 
 /// Return rank of an array. Information about the different methods for rank calculation is printed to stdout
-int arrayrankInfo (const array_link &al, int verbose = 1);
+int arrayrankInfo (const array_link &array, int verbose = 1);
 
 /// convert array_link to Eigen matrix
-Eigen::MatrixXd arraylink2eigen (const array_link &al);
+Eigen::MatrixXd arraylink2eigen (const array_link &array);
 
-/** Structure to efficiently calculate the rank of the second order interaction matrix of many arrays sharing a common
- *subarray
+/** Structure to efficiently calculate the rank of the second order interaction matrix of many arrays
  *
- * The input arrays are assumed to be of the form A_i = [A_0 X_i]
- *
+ * The efficiency is obtained if the arrays share a common subarray. The theory is described in "Efficient rank calculation for matrices with a common submatrix", Eendebak, 2016
  *
  **/
 class rankStructure {
@@ -247,54 +245,24 @@ class rankStructure {
                 updateStructure (al);
         }
 
-        void info () const {
-                printf ("	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows,
-                        alsub.n_columns, this->alsub.rank (), (int)decomp.rank ());
-        }
+		/// print information about the rank structure
+		void info() const;
 
         /// update the structure cache with a new array
-        void updateStructure (const array_link &al) {
-                this->alsub = al;
-                this->ks = al.n_columns;
-                Eigen::MatrixXd A = array2xf (al).getEigenMatrix ();
-                decomp.compute (A);
-
-                this->Qi = decomp.matrixQ ().inverse ();
-
-                nupdate++;
-
-                if (this->verbose >= 1 && nupdate % 30 == 0) {
-                        printfd ("updateStructure: ncalc %d, nupdate %d\n", ncalc, nupdate);
-                }
-        }
-
-        /// helper function
-        EigenDecomp::PermutationType matrixP () const { return decomp.colsPermutation (); }
+		void updateStructure(const array_link &al);
 
         /// calculate the rank of an array directly, uses special threshold
-        int rankdirect (const Eigen::MatrixXd &A) const {
-                EigenDecomp decomp (A);
-                decomp.setThreshold (1e-12);
-
-                if (0) {
-                        printf ("rankdirect: threshold: %e, rank %d\n", decomp.threshold (), (int)decomp.rank ());
-                }
-                int rank = decomp.rank ();
-                return rank;
-        }
+		int rankdirect(const Eigen::MatrixXd &array) const;
 
         /// calculate the rank of the second order interaction matrix of an array directly
-        int rankxfdirect (const array_link &al) const {
-                Eigen::MatrixXd mymatrix = arraylink2eigen (array2xf (al)); 
-                return rankdirect (mymatrix);
-        }
+		int rankxfdirect(const array_link &array) const;
 
         /// calculate the rank of the second order interaction matrix of an array using the cache system
-        int rankxf (const array_link &al);
+        int rankxf (const array_link &array);
 };
 
 /// Return the condition number of a matrix
-double conditionNumber (const array_link &M);
+double conditionNumber (const array_link &matrix);
 
 #ifdef FULLPACKAGE
 
@@ -347,7 +315,7 @@ template < class IndexType >
  * Valid for 2-level arrays of strength at least 3
  *
  * */
-inline typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankFA (const array_link &al,
+typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankFA (const array_link &al,
                                                                                           int verbose) {
         int N = al.n_rows;
         int model_rank = arrayrankFullPivLU (array2secondorder (al), 1e-12) + 1 +
