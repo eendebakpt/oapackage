@@ -298,7 +298,7 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
 
         std::vector< int > colors (nVertices);
 
-        symmetry_group sg (arrayclass.getS (), 0);
+        symmetry_group sg (arrayclass.factor_levels (), 0);
 
         // row vertices: color 0
         for (int i = 0; i < nrows; i++)

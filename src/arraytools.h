@@ -616,9 +616,9 @@ struct array_link {
 
         /// apply a random permutation of rows, columns and levels of an orthogonal array
         array_link randomperm () const;
-        /// apply a random permutation of columns
+        /// apply a random permutation of columns of an orthogonal array
         array_link randomcolperm () const;
-        /// apply a random permutation of row
+        /// apply a random permutation of rows of an orthogonal array
         array_link randomrowperm () const;
 
         /** This function calculates Helmert contrasts for the factors of an input design.

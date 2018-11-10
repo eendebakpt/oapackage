@@ -953,8 +953,8 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 // check read/write of binary file
 
                 arraylist_t ll0;
-                ll0.push_back (exampleArray (22));
-                ll0.push_back (exampleArray (22).randomcolperm ());
+                ll0.push_back (exampleArray (7));
+                ll0.push_back (exampleArray (7).randomcolperm ());
                 writearrayfile (tempstr.c_str (), ll0, ABINARY);
                 arraylist_t ll = readarrayfile (tempstr.c_str ());
                 myassert (ll0.size () == ll.size (), "read and write of arrays: size of list");
