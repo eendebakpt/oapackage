@@ -614,7 +614,7 @@ struct array_link {
          */
         double CL2discrepancy () const;
 
-        /// apply a random permutation of rows, columns and levels
+        /// apply a random permutation of rows, columns and levels of an orthogonal array
         array_link randomperm () const;
         /// apply a random permutation of columns
         array_link randomcolperm () const;

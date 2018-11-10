@@ -1236,6 +1236,7 @@ Eigen::MatrixXd array2modelmatrix(const array_link & array, const char*mode, int
 	}
 
 	throw_runtime_exception("no modelmatrix for array type");
+	return MatrixFloat();
 }
 
 std::vector<int> array2modelmatrix_sizes(const array_link & array)
