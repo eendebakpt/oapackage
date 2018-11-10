@@ -712,10 +712,8 @@ void array_link::setvalue (int r, int c, int val) {
 
 void array_link::setvalue (int r, int c, double val) {
         if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
-#ifdef FULLPACKAGE
                 myprintf ("array_link::setvalue: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns);
-#endif
                 return;
         }
 
@@ -724,6 +722,20 @@ void array_link::setvalue (int r, int c, double val) {
 
 void array_link::_setvalue (int r, int c, int val) { this->array[r + this->n_rows * c] = val; }
 
+void array_link::negateRow (rowindex_t row) {
+          for (int c = 0; c < this->n_columns; c++) {
+               this->atfast (row, c) *= -1;
+          }
+}
+void array_link::show () const { myprintf ("array_link: index: %d, shape (%d, %d), data pointer %p\n", index, n_rows, n_columns, (void *)array); }
+
+std::string array_link::showstr () const {
+          std::stringstream s;
+          s << "array_link: " << n_rows << ", " << n_columns << "";
+          std::string rs = s.str ();
+          return rs;
+}
+        
 bool array_link::_valid_index (int index) const {
         if ((index < 0) || (index >= this->n_rows*this->n_columns)) {
                 return false;
@@ -1996,6 +2008,14 @@ double array_link::nonzero_fraction () const {
         return nz / nn;
 }
 
+void array_link::setcolumn (int target_column, const array_link &source_array, int source_column ) const {
+          assert (target_column >= 0);
+          assert (target_column <= this->n_columns);
+          assert (this->n_rows == source_array.n_rows);
+          std::copy (source_array.array + source_column * this->n_rows, source_array.array + (source_column + 1) * this->n_rows,
+                    this->array + this->n_rows * target_column);
+}
+        
 bool array_link::is_conference (int nz) const {
         if (!this->is_conference ()) {
                 return false;
@@ -5358,6 +5378,38 @@ array_link array_link::operator* (const array_link &rhs) const {
         return tmp;
 }
 
+array_link array_link::operator* (array_t val) const {
+          array_link al (*this);
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               al.array[i] *= val;
+          }
+          return al;
+}
+
+array_link array_link::operator*= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] *= val;
+          }
+          return *this;
+}
+
+array_link array_link::operator+= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] += val;
+          }
+          return *this;
+}
+array_link array_link::operator-= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] -= val;
+          }
+          return *this;
+}
+        
 /// stack to arrays together
 array_link vstack (const array_link &al, const array_link &b) {
         assert (al.n_columns == b.n_columns);

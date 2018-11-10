@@ -652,37 +652,11 @@ struct array_link {
         /// elementwise multiplication
         array_link operator* (const array_link &rhs) const;
 
-        array_link operator* (array_t val) const {
-                array_link al (*this);
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        al.array[i] *= val;
-                }
-                return al;
-        }
+        array_link operator* (array_t val) const;
 
-        array_link operator*= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] *= val;
-                }
-                return *this;
-        }
-
-        array_link operator+= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] += val;
-                }
-                return *this;
-        }
-        array_link operator-= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] -= val;
-                }
-                return *this;
-        }
+        array_link operator*= (array_t val);
+        array_link operator+= (array_t val);
+        array_link operator-= (array_t val);
 
         /// get element from array, no error checking, inline version
         inline const array_t &atfast (const rowindex_t r, const colindex_t c) const {
@@ -703,31 +677,23 @@ struct array_link {
         array_t &at (const rowindex_t, const colindex_t);
 
         /// set all elements in the array to a value
-        void setconstant (array_t val);
+        void setconstant (array_t value);
 
         /// set value of an array
-        void setvalue (int row, int col, int val);
+        void setvalue (int row, int col, int value);
         /// set value of an array
-        void setvalue (int row, int col, double val);
+        void setvalue (int row, int col, double value);
 
         /// set value of an array, no bounds checking!
-        void _setvalue (int row, int col, int val);
+        void _setvalue (int row, int col, int value);
 
         /// multiply a row by -1
-        void negateRow (rowindex_t r) {
-                for (int c = 0; c < this->n_columns; c++) {
-                        this->atfast (r, c) *= -1;
-                }
-        }
+        void negateRow (rowindex_t row);
         /// print information about array
-        void show () const { myprintf ("array_link: index: %d, shape (%d, %d), data pointer %p\n", index, n_rows, n_columns, (void *)array); }
-
-        std::string showstr () const {
-                std::stringstream s;
-                s << "array_link: " << n_rows << ", " << n_columns << "";
-                std::string rs = s.str ();
-                return rs;
-        }
+        void show () const;
+	
+	/// return string describing the array
+        std::string showstr () const;
 
         /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
         std::string md5 () const;
@@ -771,13 +737,7 @@ struct array_link {
         }
 
         /// set column to values
-        void setcolumn (int c, const array_link &al, int sc = 0) {
-                assert (c >= 0);
-                assert (c <= this->n_columns);
-                assert (this->n_rows == al.n_rows);
-                std::copy (al.array + sc * this->n_rows, al.array + (sc + 1) * this->n_rows,
-                           this->array + this->n_rows * c);
-        }
+        void setcolumn (int target_column, const array_link &source_array, int source_column = 0) const;
 
       public:
         array_link (const array_link &, const std::vector< int > &colperm);
