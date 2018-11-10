@@ -815,7 +815,6 @@ int arrayrankInfo (const array_link &al, int verbose) {
         return rank;
 }
 
-/* Helper functions for rankStructure */
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -887,7 +886,7 @@ double conditionNumber (const array_link &M) {
         return cond;
 }
 void rankStructure::info() const {
-	printf("	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows,
+	myprintf("	rankStructure: submatrix %dx%d, rank %d, rank of xf %d\n", alsub.n_rows,
 		alsub.n_columns, this->alsub.rank(), (int)decomp.rank());
 }
 

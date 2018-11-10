@@ -210,37 +210,7 @@ int main (int argc, char *argv[]) {
                 srand (randvalseed);
         }
 
-        {
-             cprintf (verbose, "OA unittest: reading and writing of files\n");
 
-                boost::filesystem::path tmpdir = boost::filesystem::temp_directory_path ();
-                boost::filesystem::path temp = boost::filesystem::unique_path ("test-%%%%%%%.oa");
-
-                const std::string tempstr = (tmpdir / temp).native (); 
-
-                if (verbose >= 2)
-                        printf ("generate text OA file: %s\n", tempstr.c_str ());
-
-                int nrows = 16;
-                int ncols = 8;
-                int narrays = 10;
-                
-
-                // check read/write of binary file
-
-                myprintf(" here\n");
-                arraylist_t ll0;
-                ll0.push_back (exampleArray (22,1));
-                ll0.push_back (exampleArray (22).randomcolperm ());
-                
-                myprintf(" here3\n");
-                writearrayfile (tempstr.c_str (), ll0, ABINARY);
-                
-                myprintf(" here2\n");
-
-             
-                exit(0);
-        }
 		try {
 			array_link al = exampleArray(r);
 			al.show();
