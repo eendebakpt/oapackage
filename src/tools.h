@@ -102,12 +102,7 @@ inline int cprintf (int check, const char *message, ...) {
         if (check) {
                 va_list va;
                 va_start (va, message);
-#ifdef RPACKAGE
-                n = -1;
-                myprintf ("cprintf: not implemented\n");
-#else
                 n = vprintf (message, va);
-#endif
                 va_end (va);
         }
         return n;
@@ -115,10 +110,7 @@ inline int cprintf (int check, const char *message, ...) {
 
 /// flush to stdout
 inline void flush_stdout () {
-#ifdef RPACKAGE
-#else
         fflush (stdout);
-#endif
 }
 
 template < class A >

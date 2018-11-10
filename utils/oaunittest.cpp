@@ -931,7 +931,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 boost::filesystem::path tmpdir = boost::filesystem::temp_directory_path ();
                 boost::filesystem::path temp = boost::filesystem::unique_path ("test-%%%%%%%.oa");
 
-                const std::string tempstr = (tmpdir / temp).native (); // optional
+                const std::string tempstr = (tmpdir / temp).native (); 
 
                 if (verbose >= 2)
                         printf ("generate text OA file: %s\n", tempstr.c_str ());
@@ -941,7 +941,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 int narrays = 10;
                 arrayfile_t afile (tempstr.c_str (), nrows, ncols, narrays, ATEXT);
                 for (int i = 0; i < narrays; i++) {
-                        array_link al (nrows, ncols, array_link::INDEX_DEFAULT);
+                        array_link al (nrows, ncols, array_link::INDEX_DEFAULT);                        
                         afile.append_array (al);
                 }
                 afile.closefile ();
@@ -953,8 +953,8 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 // check read/write of binary file
 
                 arraylist_t ll0;
-                ll0.push_back (exampleArray (22));
-                ll0.push_back (exampleArray (22).randomperm ());
+                ll0.push_back (exampleArray (7));
+                ll0.push_back (exampleArray (7).randomcolperm ());
                 writearrayfile (tempstr.c_str (), ll0, ABINARY);
                 arraylist_t ll = readarrayfile (tempstr.c_str ());
                 myassert (ll0.size () == ll.size (), "read and write of arrays: size of list");

@@ -129,18 +129,18 @@ struct extendpos {
         }
 };
 
-/// extend a list of orthogonal arrays
-int extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend const &oaextend, colindex_t extensioncol,
+/// Extend a list of orthogonal arrays
+int extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend, colindex_t extensioncol,
                       arraylist_t &extensions);
 
-/// extend a list of orthogonal arrays
-arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend const &oaextend_options);
+/// Extend a list of orthogonal arrays
+arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend_options);
 
 /** Extend a list of arrays with default options
 *
 * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
 */
-arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &fullad);
+arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &arrayclass);
 
 /** Extend a single orthogonal array
  *
@@ -160,8 +160,8 @@ arraylist_t extend_array (const array_link &al, arraydata_t &arrayclass);
 int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions,
                   OAextend const &oaextend);
 
-/// Run the extension algorithm starting from the array root
-arraylist_t runExtendRoot (arraydata_t adata, int nmax, int verbose = 0);
+/// Run the extension algorithm starting with the root array 
+arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
 enum { DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI };

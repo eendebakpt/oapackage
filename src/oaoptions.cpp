@@ -113,10 +113,6 @@ std::string print_options_string () {
         outx << "USEZLIB" << sep;
 #endif
 
-#ifdef OAANALYZE
-        outx << "OAANALYZE" << sep;
-#endif
-
 #ifdef OACHECK
         outx << "OACHECK" << sep;
 #endif

@@ -102,7 +102,7 @@ int main (int argc, char *argv[]) {
         }
 
 
-        arraydata_t *ad = readConfigFile (oaconfigfile);
+        arraydata_t *arrayclass = readConfigFile (oaconfigfile);
 
         arraylist_t extensions;
         arraylist_t *arraylist2 = arraylist;
@@ -116,7 +116,7 @@ int main (int argc, char *argv[]) {
                 oaextend.init_column_previous = 0;
                 oaextend.checkarrays = 0;
 
-                extend_arraylist (*arraylist, *ad, oaextend, ecol, extensions);
+                extend_arraylist (*arraylist, *arrayclass, oaextend, ecol, extensions);
                 if (verbose)
                         printf ("  extended %d arrays to %d arrays\n", (int)arraylist->size (),
                                 (int)extensions.size ());
@@ -132,7 +132,7 @@ int main (int argc, char *argv[]) {
                 printf ("  writing %ld arrays to %s\n", reduced_arrays.size (), outfile.c_str ());
         writearrayfile (outfile.c_str (), &reduced_arrays, arrayfile::ABINARY);
 
-        delete ad;
+        delete arrayclass;
         delete arraylist;
 
         logstream (QUIET) << "#time end: " << currenttime () << std::endl;

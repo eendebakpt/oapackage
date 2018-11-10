@@ -712,10 +712,8 @@ void array_link::setvalue (int r, int c, int val) {
 
 void array_link::setvalue (int r, int c, double val) {
         if ((r < 0) || (r >= this->n_rows) || (c < 0) || (c >= this->n_columns)) {
-#ifdef FULLPACKAGE
                 myprintf ("array_link::setvalue: index out of bounds %d %d shape (%d %d)!!\n", r, c, this->n_rows,
                           this->n_columns);
-#endif
                 return;
         }
 
@@ -724,6 +722,20 @@ void array_link::setvalue (int r, int c, double val) {
 
 void array_link::_setvalue (int r, int c, int val) { this->array[r + this->n_rows * c] = val; }
 
+void array_link::negateRow (rowindex_t row) {
+          for (int c = 0; c < this->n_columns; c++) {
+               this->atfast (row, c) *= -1;
+          }
+}
+void array_link::show () const { myprintf ("array_link: index: %d, shape (%d, %d), data pointer %p\n", index, n_rows, n_columns, (void *)array); }
+
+std::string array_link::showstr () const {
+          std::stringstream s;
+          s << "array_link: " << n_rows << ", " << n_columns << "";
+          std::string rs = s.str ();
+          return rs;
+}
+        
 bool array_link::_valid_index (int index) const {
         if ((index < 0) || (index >= this->n_rows*this->n_columns)) {
                 return false;
@@ -1996,6 +2008,14 @@ double array_link::nonzero_fraction () const {
         return nz / nn;
 }
 
+void array_link::setcolumn (int target_column, const array_link &source_array, int source_column ) const {
+          assert (target_column >= 0);
+          assert (target_column <= this->n_columns);
+          assert (this->n_rows == source_array.n_rows);
+          std::copy (source_array.array + source_column * this->n_rows, source_array.array + (source_column + 1) * this->n_rows,
+                    this->array + this->n_rows * target_column);
+}
+        
 bool array_link::is_conference (int nz) const {
         if (!this->is_conference ()) {
                 return false;
@@ -2197,7 +2217,8 @@ std::vector< int > numberModelParametersConference(const array_link &conference_
 std::vector< int > numberModelParams(const array_link &array, int order)
 {
 	if (order > 0) {
-		myprintf("numberModelParams: order argument is not used any more\n");
+		myprintf("numberModelParams: warning: order argument is not used any more\n");
+                exit(0);
 	}
 
 	if (array.is_conference()) {
@@ -2238,6 +2259,7 @@ std::vector< int > numberModelParams(const array_link &array, int order)
 	}
 	throw_runtime_exception("array type invalid");
 
+        return std::vector<int>();
 }
 
 MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) const {
@@ -2391,7 +2413,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                 printfd ("main effects: size %dx%d\n", N, mesize);
         }
 
-        std::vector< int > np = numberModelParams (al, 2);
+        std::vector< int > np = numberModelParams (al);
         MatrixFloat main_effects = MatrixFloat::Zero (N, mesize);
 
         int meoffset = 0;
@@ -2903,7 +2925,7 @@ int arraydata_t::operator== (const arraydata_t &ad2) {
 	}
 
 	return 1;
-};
+}
 
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
@@ -3006,7 +3028,7 @@ std::string arraydata_t::idstrseriesfull () const {
 /// return full identifier string
 std::string arraydata_t::fullidstr (int series) const {
         if (series) {
-                return this->idstrseriesfull (); // + "-t" + printfstring ( "%d", this->strength );
+                return this->idstrseriesfull (); 
         } else {
                 return this->idstr () + "-t" + printfstring ("%d", this->strength);
         }
@@ -3286,7 +3308,6 @@ std::vector< int > jstructbase_t::calculateF () const {
                 int fi = abs (values[i]);
                 int idx = jvalue2index.find (fi)->second;
                 F[idx]++;
-                // printf("value %d: idx %d\n", fi, idx);
         }
         return F;
 }
@@ -3294,9 +3315,8 @@ std::vector< int > jstructbase_t::calculateF () const {
 /* analyse arrays */
 
 jstruct_t::jstruct_t () {
-        // myprintf("jstruct_t()\n");
         this->nc = 0;
-        this->A = -1;
+        this->abberation = -1;
 }
 
 int jstruct_t::maxJ () const {
@@ -3334,6 +3354,15 @@ std::vector< int > jstruct_t::calculateF (int strength) const {
         return F;
 }
 
+void jstruct_t::calculateAberration() {
+	jstruct_t *js = this;
+	js->abberation = 0;
+	for (int i = 0; i < js->nc; i++) {
+		js->abberation += js->values[i] * js->values[i];
+	}
+	js->abberation /= N * N;
+}
+
 void jstruct_t::calc (const array_link &al) {
         int *column_indices = new_perm_init< int > (jj);
 
@@ -3346,6 +3375,19 @@ void jstruct_t::calc (const array_link &al) {
 
         delete_perm (column_indices);
 }
+
+void jstructconference_t::calcJvalues(int N, int jj) {
+	assert(jj == 4);
+	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
+	this->jvalues = std::vector< int >(nn);
+	this->jvalue2index.clear();
+	for (size_t i = 0; i < jvalues.size(); i++) {
+		int jval = (N - jj) - i * 4;
+		jvalues[i] = jval;
+		jvalue2index[jval] = i;
+	}
+}
+void jstructconference_t::calc(const array_link &al) { values = Jcharacteristics_conference(al, this->jj); }
 
 /// create J2 table as intermediate result for J-characteristic calculations for conference matrices
 array_link createJ2tableConference (const array_link &confmatrix) {
@@ -3502,7 +3544,7 @@ void jstruct_t::init (int N_, int k_, int jj_) {
 
         this->nc = ncombs< long > (k_, jj_);
         values = std::vector< int > (nc);
-        this->A = -1;
+        this->abberation = -1;
 }
 
 jstruct_t::jstruct_t (const jstruct_t &js) {
@@ -3510,7 +3552,7 @@ jstruct_t::jstruct_t (const jstruct_t &js) {
         k = js.k;
         jj = js.jj;
         nc = js.nc;
-        A = js.A;
+        abberation = js.abberation;
         values = std::vector< int > (nc);
         std::copy (js.values.begin (), js.values.begin () + nc, values.begin ());
 }
@@ -3521,7 +3563,7 @@ jstruct_t &jstruct_t::operator= (const jstruct_t &rhs) {
         this->jj = rhs.jj;
         this->nc = rhs.nc;
 
-        this->A = rhs.A;
+        this->abberation = rhs.abberation;
         values = std::vector< int > (nc);
         std::copy (rhs.values.begin (), rhs.values.begin () + nc, values.begin ());
 
@@ -3546,13 +3588,13 @@ int jstruct_t::allzero() const {
 	return 1;
 }
 
-void jstruct_t::show () {
+void jstruct_t::show () const {
 #ifdef FULLPACKAGE
-        cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
+        std::cout << "jstruct_t: " << printfstring ("N %d, jj %d, values ", N, jj);
         for (int x = 0; x < this->nc; x++) {
                 cout << printfstring (" %d", values[x]);
         }
-        cout << std::endl;
+        std::cout << std::endl;
 #endif
 }
 
@@ -5336,6 +5378,38 @@ array_link array_link::operator* (const array_link &rhs) const {
         return tmp;
 }
 
+array_link array_link::operator* (array_t val) const {
+          array_link al (*this);
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               al.array[i] *= val;
+          }
+          return al;
+}
+
+array_link array_link::operator*= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] *= val;
+          }
+          return *this;
+}
+
+array_link array_link::operator+= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] += val;
+          }
+          return *this;
+}
+array_link array_link::operator-= (array_t val) {
+          int NN = this->n_rows * this->n_columns;
+          for (int i = 0; i < NN; i++) {
+               this->array[i] -= val;
+          }
+          return *this;
+}
+        
 /// stack to arrays together
 array_link vstack (const array_link &al, const array_link &b) {
         assert (al.n_columns == b.n_columns);

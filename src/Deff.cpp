@@ -182,7 +182,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         }
 
         int nx = 0;
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
         if (optimmethod == DOPTIM_UPDATE) {
                 if (arrayclass.is2level ())
                         optimmethod = DOPTIM_FLIP;
@@ -319,7 +319,7 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
         int nx = 0;
         int N = arrayclass.N;
         int k = arrayclass.ncols;
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
 
         if (!arrayclass.is2level ()) {
                 myprintf ("optimDeff2level: error arrayclass is not 2-level\n");

@@ -528,12 +528,7 @@ class Jcounter {
 
         Jcounter (int N, int jj = 5, int k = -1) { this->init (N, jj, k); }
 
-        bool validData () {
-                if (N == -1 && jj == -1)
-                        return false;
-                else
-                        return true;
-        }
+		bool validData();
 
         /// return true if specified column is in the data
         bool hasColumn (int col) const;
@@ -563,49 +558,17 @@ class Jcounter {
         void addArrays (const arraylist_t &arraylist, int verbose = 0);
 
         /// add single array to statistics object
-        void addArray (const array_link &al, int verbose = 0) {
-                // jstruct_t js ( al, this->jj );
-                jstruct_t js (al.selectFirstColumns (5), this->jj);
-
-                int maxJ = js.maxJ ();
-
-                int k = al.n_columns;
-
-                if (verbose) {
-                        jstruct_t js (al, this->jj);
-                        std::vector< int > FF = js.calculateF ();
-                        myprintf ("addArray: maxJ %d: ", maxJ);
-                        display_vector (FF);
-                        myprintf ("\n");
-                }
-                jindex_t ji = jindex_t (k, maxJ);
-#pragma omp critical
-                maxJcounts[ji]++;
-        }
+		void addArray(const array_link &al, int verbose = 0);
 
       private:
-        void init (int N, int jj, int k = -1) {
-                this->N = N;
-                this->jj = jj;
-                this->fvals = possible_F_values (N, 3);
-                this->dt = 0;
-
-                maxJcounts.clear ();
-
-                if (k > 0) {
-                        for (size_t j = 0; j < fvals.size (); j++) {
-                                jindex_t ji (k, fvals[j]);
-                                maxJcounts[ji] = 0;
-                        }
-                }
-        }
+		  void init(int N, int jj, int k = -1);
 };
 
 /// read statistics object from disk
 Jcounter readStatisticsFile (const char *numbersfile, int verbose);
+
 /// write statistics object to disk
 void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbose);
 
 /// calculate J-value statistics
 Jcounter calculateJstatistics (const char *afile, int jj = 5, int verbose = 1);
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

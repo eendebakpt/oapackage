@@ -12,9 +12,6 @@
 #define MAXCOLS 60
 #define MAXROWS 2048
 
-/* output analysis data */
-//#define OAANALYZE 1
-
 /* add checks for nonsense input from the user */
 #define OACHECK 1
 

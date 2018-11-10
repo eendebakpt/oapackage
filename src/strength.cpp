@@ -15,7 +15,6 @@
 #include "strength.h"
 
 template < class basetype >
-/// Helper function
 vindex_t **set_indices (colindex_t **colcombs, basetype *bases, const int k, colindex_t ncolcombs) {
         int prod, **indices = 0;
 
@@ -265,15 +264,6 @@ rev_index *create_reverse_colcombs (colindex_t **colcombs, const int ncols, cons
         }
         delete[] tmp;
 
-        // print the resulting reverse index
-        if (log_print (DEBUG, "")) {
-                for (int i = 0; i < ncols; i++) {
-                        log_print (DEBUG, "%i:\t", i);
-                        for (int j = 0; j < rev_colcombs[i].nr_elements; j++)
-                                log_print (DEBUG, "%i, ", rev_colcombs[i].index[j]);
-                        log_print (DEBUG, "\n");
-                }
-        }
         return rev_colcombs;
 }
 
@@ -428,7 +418,7 @@ inline int freq_position (rowindex_t N, rowindex_t activerow, colindex_t ncols, 
 
 /* NOTE:
  *
- * The size of the freqtable is pretty larg compared to the number of nonzero elements
+ * The size of the freqtable is pretty largr compared to the number of nonzero elements
  * for a single row-column-value pair. Hence we use a sparse representation of this table where possible.
  *
  */
@@ -465,20 +455,6 @@ void add_element_freqtable_col (extend_data_t *es, rowindex_t activerow, carray_
         }
 }
 
-/*
-void add_element_freqtable_legacy(rowindex_t N, extend_data_t *es, rowindex_t activerow, carray_t *array,
-strength_freq_table freqtable)
-{
-        const array_t elem = array[es->extcolumn*es->N + activerow];
-        int idx = es->adata->s[es->extcolumn]*activerow+elem;
-
-        int *postable = es->freqtable_elem[idx];
-        for(int z=0;z<es->ncolcombs;z++) {
-                int freqpos = postable[z];
-                freqtable[z][freqpos]++;
-        }
-}
-*/
 #else
 
 /* *
@@ -582,8 +558,6 @@ void extend_data_t::init_frequencies (array_t *array) {
  */
 void recount_frequencies (int **frequencies, extend_data_t *es, colindex_t currentcol, rowindex_t rowstart,
                           rowindex_t rowlast, carray_t *array) {
-        // myprintf("recount_frequencies: rowstart %d, rowlast %d, es->ncolcombs %d\n", rowstart, rowlast,
-        // es->ncolcombs);
         // reset old values
         for (int i = 0; i < es->ncolcombs; i++) {
                 memset (frequencies[i], 0, es->nvalues[i] * sizeof (int));
@@ -602,7 +576,6 @@ bool valid_element (const extend_data_t *es, const extendpos *p, carray_t *array
 #ifdef FREQELEM
         /* perform strength check using frequency element cache */
         const int idx = p->row * es->adata->s[es->extcolumn] + p->value;
-        // int *freqpositions = es->freqtable_elem[idx];
         int *freqpositions2 = es->element2freqtable[idx];
 		int *freqtable0 = &(es->freqtable[0][0]);
 
@@ -641,7 +614,6 @@ bool valid_element_2level (const extend_data_t *es, const extendpos *p)
 #ifdef FREQELEM
         /* perform strength check using frequency element cache */
         const int idx = p->row * es->adata->s[es->extcolumn] + p->value;
-        // int *freqpositions = es->freqtable_elem[idx];
         int *freqpositions2 = es->element2freqtable[idx];
 		int *freqtable0 = &(es->freqtable[0][0]);
 
@@ -768,4 +740,3 @@ bool check_divisibility (const arraydata_t *ad) {
         return ret;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

@@ -384,7 +384,7 @@ int main (int argc, char *argv[]) {
                                 }
                                 fprintf (fid, "\n");
 
-                                fprintf (fidgma, "%f\n", results[i].A);
+                                fprintf (fidgma, "%f\n", results[i].abberation);
                         }
                         fclose (fid);
                         fclose (fidgma);
