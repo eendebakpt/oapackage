@@ -22,6 +22,7 @@ script:
   - ./pareto_example
   - ./oaranktest -I ../docs/examples/OAN56K28.oa
   - ./oainfo ../docs/examples/OAN56K28.oa
+  - ./oaextendsingle  -c ../oaconfig.txt -l 1
 
 #addons:
 #  artifacts: true
