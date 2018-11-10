@@ -280,7 +280,7 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
                                                          const arraydata_t &arrayclass) {
         int nrows = al.n_rows;
         int ncols = al.n_columns;
-        const std::vector< int > s = arrayclass.getS ();
+        const std::vector< int > s = arrayclass.factor_levels ();
 		
         int nRowVertices = nrows;
         int nColVertices = ncols;
@@ -409,7 +409,7 @@ array_transformation_t oagraph2transformation (const std::vector< int > &pp, con
                 myprintf ("\n");
         }
 
-        std::vector< int > s = arrayclass.getS ();
+        std::vector< int > s = arrayclass.factor_levels ();
 
         int ns = std::accumulate (s.begin (), s.end (), 0);
         array_transformation_t ttl (arrayclass);

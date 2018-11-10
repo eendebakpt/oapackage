@@ -1945,10 +1945,15 @@ MatrixFloat array2eigenModelMatrix (const array_link &al);
  *
  * @see array2eigenModelMatrixMixed
  */
-MatrixFloat array2eigenMainEffects (const array_link &al, int verbose = 1);
+MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
 
-/// create first and second order model matrix for mixed-level array
-std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose = 1);
+/** Create first and second order model matrix for mixed-level array
+ *
+ * \param array Input array
+ * \param verbose Verbosity level
+ * \returns Pair with main effects and two-factor interaction model
+ */ 
+std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 
 /** calculate number of parameters in the model matrix
 *

@@ -2197,7 +2197,8 @@ std::vector< int > numberModelParametersConference(const array_link &conference_
 std::vector< int > numberModelParams(const array_link &array, int order)
 {
 	if (order > 0) {
-		myprintf("numberModelParams: order argument is not used any more\n");
+		myprintf("numberModelParams: warning: order argument is not used any more\n");
+                exit(0);
 	}
 
 	if (array.is_conference()) {
@@ -2392,7 +2393,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                 printfd ("main effects: size %dx%d\n", N, mesize);
         }
 
-        std::vector< int > np = numberModelParams (al, 2);
+        std::vector< int > np = numberModelParams (al);
         MatrixFloat main_effects = MatrixFloat::Zero (N, mesize);
 
         int meoffset = 0;
