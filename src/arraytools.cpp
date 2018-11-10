@@ -2904,7 +2904,7 @@ int arraydata_t::operator== (const arraydata_t &ad2) {
 	}
 
 	return 1;
-};
+}
 
 void arraydata_t::writeConfigFile (const char *file) const {
         arraydata_t ad = *this;
@@ -3007,7 +3007,7 @@ std::string arraydata_t::idstrseriesfull () const {
 /// return full identifier string
 std::string arraydata_t::fullidstr (int series) const {
         if (series) {
-                return this->idstrseriesfull (); // + "-t" + printfstring ( "%d", this->strength );
+                return this->idstrseriesfull (); 
         } else {
                 return this->idstr () + "-t" + printfstring ("%d", this->strength);
         }
@@ -3287,7 +3287,6 @@ std::vector< int > jstructbase_t::calculateF () const {
                 int fi = abs (values[i]);
                 int idx = jvalue2index.find (fi)->second;
                 F[idx]++;
-                // printf("value %d: idx %d\n", fi, idx);
         }
         return F;
 }
@@ -3295,7 +3294,6 @@ std::vector< int > jstructbase_t::calculateF () const {
 /* analyse arrays */
 
 jstruct_t::jstruct_t () {
-        // myprintf("jstruct_t()\n");
         this->nc = 0;
         this->abberation = -1;
 }

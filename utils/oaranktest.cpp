@@ -126,7 +126,7 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "arrayrankSVD");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank SVD (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
@@ -143,7 +143,7 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "FullPivLU");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank FullPivLU (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
@@ -161,23 +161,23 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "arrayrankColPivQR");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank ColPiv (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
         }
 
         for (int nsub = 2; nsub < 5; nsub++) {
-                rankStructure rs (al0.selectFirstColumns (al0.n_columns - nsub), nsub, 0);
+                rankStructure rank_calculator (al0.selectFirstColumns (al0.n_columns - nsub), nsub, 0);
                 if (verbose >= 2) {
-                        rs.alsub.show ();
-                        printf ("subrank: %d\n", arrayrankFullPivLU (array2xf (rs.alsub)));
+                        rank_calculator.alsub.show ();
+                        printf ("subrank: %d\n", arrayrankFullPivLU (array2xf (rank_calculator.alsub)));
                         printf ("---\n\n");
                 }
                 t0 = get_time_ms ();
                 for (size_t i = 0; i < ll.size (); i++) {
                         array_link A = ll[i];
-                        int r = rs.rankxf (A);
+                        int r = rank_calculator.rankxf (A);
                         if (r != rr[i]) {
                                 printfd ("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
