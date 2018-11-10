@@ -2238,6 +2238,7 @@ std::vector< int > numberModelParams(const array_link &array, int order)
 	}
 	throw_runtime_exception("array type invalid");
 
+        return std::vector<int>();
 }
 
 MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) const {

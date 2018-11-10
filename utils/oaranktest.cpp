@@ -42,7 +42,7 @@ int main (int argc, char *argv[]) {
         opt.setOption ("verbose", 'v');
         opt.setOption ("ii", 'i');
 
-        opt.addUsage ("Orthonal Array: oatest: testing platform");
+        opt.addUsage ("Orthonal Array: oaranktest: testing platform");
         opt.addUsage ("Usage: oatest [OPTIONS] [FILE]");
         opt.addUsage ("");
         opt.addUsage (" -h --help  			Prints this help ");

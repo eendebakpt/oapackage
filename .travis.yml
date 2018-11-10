@@ -20,6 +20,8 @@ script:
   - make package
   - ./oaunittest
   - ./pareto_example
+  - ./oaranktest -I ../docs/examples/OAN56K28.oa
+  - ./oainfo ../docs/examples/OAN56K28.oa
 
 #addons:
 #  artifacts: true
