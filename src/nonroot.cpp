@@ -309,21 +309,6 @@ inline lmc_t LMC_check_col_buffer (const array_t *original, const array_t *array
 }
 
 // check range of elements (inclusive)
-inline lmc_t checkLMChelperSorted (int ix, int iy, const array_t *arraycol, levelperm_t lperm, const arraydata_t *ad) {
-        array_t prevval = 0; 
-
-        for (int cur_row = ix; cur_row <= iy; cur_row++) {
-                array_t cval = lperm[arraycol[cur_row]];
-                if (prevval == 1 && cval == 0)
-                        return LMC_LESS;
-
-                prevval = cval;
-        }
-
-        return LMC_EQUAL;
-}
-
-// check range of elements (inclusive)
 inline lmc_t checkLMChelperSorted (int ix, int iy, const array_t *originalcol, const array_t *arraycol,
                                    levelperm_t lperm, const arraydata_t *ad, rowsortlight_t *rowsort) {
         int v1 = 0, v2 = 0;
@@ -454,29 +439,23 @@ inline void sortzeroone (rowsort_t *rs, int low, int high, carray_t *arraycol) {
         }
 }
 
-/// check column for row symmetry exchanges
-lmc_t LMC_check_col_rowsymm (const array_t *arraycol, const arraydata_t *ad, const symmdata &sd, int col,
-                             int dverbose) {
-        lmc_t ret = LMC_EQUAL;
-        const int scol = col - 1;
-
-        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); // myprintf("LMC_check_col_ft: nb %d\n",nb);
-        array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
-
-        array_t lperm[2] = {(array_t)0, 1};
-
-        /* we check in blocks determined by the ft */
-        for (int j = 0; j < nb; j++) {
-                int x1 = sdp[2 * j];
-                int x2 = sdp[2 * j + 1];
-
-                ret = checkLMChelperSorted (x1, x2 - 1, arraycol, lperm, ad);
-
-                if (ret != LMC_EQUAL) {
-                        return ret;
-                }
-        }
-        return ret;
+/// sort a column using rowsort structure and symmetry data
+void _sort_array_column(rowsortlight_t *rowsort, int nb, const levelperm_t lperm, array_t* symmdata_column_pointer, const array_t * arraycol)
+{
+	if (lperm[0] == 0) {
+		for (int j = 0; j < nb; j++) {
+			int x1 = symmdata_column_pointer[2 * j];
+			int x2 = symmdata_column_pointer[2 * j + 1];
+			sortzeroone(rowsort, x1, x2 - 1, arraycol);
+		}
+	}
+	else {
+		for (int j = 0; j < nb; j++) {
+			int x1 = symmdata_column_pointer[2 * j];
+			int x2 = symmdata_column_pointer[2 * j + 1];
+			sortzerooneR(rowsort, x1, x2 - 1, arraycol);
+		}
+	}
 }
 
 /// Perform LMC check on a single column, special case for 2-level arrays
@@ -487,12 +466,12 @@ lmc_t LMC_check_col_ft_2level_rowsymm (const array_t *originalcol, const array_t
         rowsortlight_t *rowsort = dd->rowsortl;
 
         int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol);
-        array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
+        array_t *symmdata_column_pointer = sd.ft.array + scol * sd.ft.n_rows;
 
         /* we check in blocks determined by the ft */
         for (int j = 0; j < nb; j++) {
-                int x1 = sdp[2 * j];
-                int x2 = sdp[2 * j + 1];
+                int x1 = symmdata_column_pointer[2 * j];
+                int x2 = symmdata_column_pointer[2 * j + 1];
 
                 ret = checkLMChelperSorted (x1, x2 - 1, originalcol, arraycol, lperm, ad, rowsort);
 
@@ -501,22 +480,9 @@ lmc_t LMC_check_col_ft_2level_rowsymm (const array_t *originalcol, const array_t
                 }
         }
 
-        // new method
-        if (lperm[0] == 0) {
-                for (int j = 0; j < nb; j++) {
-                        int x1 = sdp[2 * j];
-                        int x2 = sdp[2 * j + 1];
-                        sortzeroone (rowsort, x1, x2 - 1, arraycol);
-                }
-        } else {
-                for (int j = 0; j < nb; j++) {
-                        int x1 = sdp[2 * j];
-                        int x2 = sdp[2 * j + 1];
-                        sortzerooneR (rowsort, x1, x2 - 1, arraycol);
-                }
-        }
+		_sort_array_column(rowsort, nb, lperm, symmdata_column_pointer, arraycol);
 
-        return ret;
+		return ret;
 }
 
 /** check 2-level column in fast mode
@@ -533,12 +499,12 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
         rowsortlight_t *rowsort = dd->rowsortl;
 
         int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); 
-        array_t *sdp = sd.ft.array + scol * sd.ft.n_rows;
+        array_t *symmdata_column_pointer = sd.ft.array + scol * sd.ft.n_rows;
 
         /* we check in blocks determined by the ft */
         for (int j = 0; j < nb; j++) {
-                int x1 = sdp[2 * j];
-                int x2 = sdp[2 * j + 1];
+                int x1 = symmdata_column_pointer[2 * j];
+                int x2 = symmdata_column_pointer[2 * j + 1];
 
                 ret = checkLMChelper (x1, x2 - 1, originalcol, arraycol, lperm, ad, rowsort);
 
@@ -547,20 +513,7 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
                 }
         }
 
-        // new method
-        if (lperm[0] == 0) {
-                for (int j = 0; j < nb; j++) {
-                        int x1 = sdp[2 * j];
-                        int x2 = sdp[2 * j + 1];
-                        sortzeroone (rowsort, x1, x2 - 1, arraycol);
-                }
-        } else {
-                for (int j = 0; j < nb; j++) {
-                        int x1 = sdp[2 * j];
-                        int x2 = sdp[2 * j + 1];
-                        sortzerooneR (rowsort, x1, x2 - 1, arraycol);
-                }
-        }
+		_sort_array_column(rowsort, nb, lperm, symmdata_column_pointer, arraycol);
 
         return ret;
 }
