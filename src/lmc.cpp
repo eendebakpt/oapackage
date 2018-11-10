@@ -26,8 +26,6 @@ bool operator!= (symmdataPointer const &ptr, int x) {
 
 #else
 // http://choorucode.com/2014/03/11/how-to-ignore-specific-warning-of-gcc/
-//#pragma GCC diagnostic ignored "-Wno-unknown-pragmas"
-//#pragma GCC diagnostic ignored "-Wno-pragmas"
 #pragma GCC diagnostic ignored "-Wenum-compare"
 #endif
 #endif
@@ -83,7 +81,6 @@ void cleanGlobalStatic () { staticDataPool.reset (); }
 std::vector< LMC_static_struct_t * > globalStaticPool;
 LMC_static_struct_t *getGlobalStaticIndexed (int n) {
         const int verbose = 0;
-        // return &globalStatic;
 
         if (verbose)
                 myprintf ("getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size ());
@@ -91,7 +88,6 @@ LMC_static_struct_t *getGlobalStaticIndexed (int n) {
                 myprintf ("  allocating new element in globalStaticPool: n %d, pool size %ld\n", n,
                           (long)globalStaticPool.size ());
                 size_t psize = globalStaticPool.size ();
-                // globalStaticPool.resize(n+1);
                 for (int jj = psize; jj <= n; jj++) {
                         LMC_static_struct_t *p = new LMC_static_struct_t ();
                         if (verbose)
@@ -116,8 +112,6 @@ void cleanGlobalStaticIndexed () {
 }
 
 LMC_static_struct_t::~LMC_static_struct_t () {
-
-        // call free() function (need to extrect from init code)
         this->freeall ();
 }
 
@@ -329,7 +323,6 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata)
         if (!store)
                 return;
         int n = dyndata->col + 1;
-        // myprintf("LMCreduction_t::storeSymmetryPermutation: insert symmetry at %d\n", n);
         arraysymmetry as (dyndata);
         insert_if_not_at_end_of_vector (symmetries[n], as);
 
@@ -349,7 +342,6 @@ void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata)
 }
 
 LMCreduction_t::LMCreduction_t (const arraydata_t *adp) {
-        // log_print(SYSTEM, "LMCreduction_t::constructor\n");
         mode = OA_TEST;
 
         transformation = new array_transformation_t (adp);
@@ -409,7 +401,7 @@ LMCreduction_t::LMCreduction_t (const LMCreduction_t &at) {
         array = create_array (transformation->ad);
 }
 
-LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at) /// Assignment operator
+LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at) 
 {
         mode = at.mode;
         state = at.state;
@@ -423,7 +415,7 @@ LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at) /// Assignm
         ncols = at.ncols;
         nrows = at.nrows;
 
-        staticdata = at.staticdata; // ??
+        staticdata = at.staticdata; 
 
         symms = at.symms;
 
@@ -439,7 +431,7 @@ void LMCreduction_t::reset () {
         lastcol = -1;
         nred = 0;
         state = REDUCTION_INITIAL;
-        init_state = COPY; // ?
+        init_state = COPY;
         transformation->reset ();
 
         targetcol = 0;
@@ -447,6 +439,21 @@ void LMCreduction_t::reset () {
 
         clearSymmetries ();
 }
+
+void LMCreduction_t::show(int verbose) const {
+	myprintf("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, REDUCTION_CHANGED %d), init_state "
+		"%d, lastcol %d\n",
+		this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED, this->init_state,
+		this->lastcol);
+	if (verbose >= 1) {
+		myprintf("LMCreduction_t: nred %ld\n", nred);
+		print_array("array:\n", this->array, this->transformation->ad->N,
+			this->transformation->ad->ncols);
+	}
+	if (verbose >= 2)
+		this->transformation->show();
+}
+
 void LMCreduction_t::clearSymmetries () {
         symms.store = 0;
         symms.ncols = -1;
@@ -471,8 +478,7 @@ void LMCreduction_t::updateTransformation (const arraydata_t &ad, const dyndata_
 
         /* copy row permutation */
         dyndatacpy.getRowperm (this->transformation->rperm);
-        //    for ( rowindex_t x=0; x<ad.N; x++ )
-        //      this->transformation->rperm[x] = dyndatacpy.rowsort[x].r;
+
         /* copy column permutation */
         copy_perm (dyndatacpy.colperm, this->transformation->cperm, ad.ncols);
 
@@ -561,11 +567,49 @@ void dyndata_t::reset () {
         }
 }
 
+void dyndata_t::getRowperm(rowpermtypelight &rp) const {
+	rp.resize(this->N);
+	if (this->rowsortl == 0) {
+		for (int i = 0; i < this->N; i++)
+			rp[i] = this->rowsort[i].r;
+	}
+	else {
+		for (int i = 0; i < this->N; i++)
+			rp[i] = this->rowsortl[i];
+	}
+}
+
+void dyndata_t::getRowperm(rowperm_t &rperm) const {
+	if (this->rowsortl == 0) {
+		for (rowindex_t x = 0; x < this->N; x++)
+			rperm[x] = this->rowsort[x].r;
+	}
+	else {
+		for (rowindex_t x = 0; x < this->N; x++)
+			rperm[x] = this->rowsortl[x];
+	}
+}
+
+rowpermtypelight dyndata_t::getRowperm() const {
+	rowpermtypelight rp(this->N);
+	this->getRowperm(rp);
+	return rp;
+}
+
+colpermtypelight dyndata_t::getColperm() const {
+	colpermtypelight cp(this->colperm, this->col + 1);
+	return cp;
+}
+void dyndata_t::getColperm(colpermtypelight &cp) const {
+	cp.resize(this->col + 1);
+	std::copy(this->colperm, this->colperm + this->col + 1, cp.data_pointer);
+}
+
 dyndata_t::dyndata_t (int N_, int col_) {
         this->N = N_;
         this->col = col_;
         this->rowsort = (rowsort_t *)malloc (sizeof (rowsort_t) * this->N);
-        this->colperm = new_perm_init< colindex_t > (this->N); // TODO: initialization with N too large
+        this->colperm = new_perm_init< colindex_t > (this->N); 
         this->rowsortl = 0;
 
         for (int i = 0; i < N; i++) {
@@ -611,7 +655,7 @@ void dyndata_t::initdata (const dyndata_t &dd) {
                 memcpy (this->rowsort, dd.rowsort, N * sizeof (rowsort_t));
         }
         if (dd.rowsortl != 0) {
-                this->rowsortl = new_perm< rowindex_t > (this->N); // new rowindex_t [N];
+                this->rowsortl = new_perm< rowindex_t > (this->N); 
                 copy_perm (dd.rowsortl, this->rowsortl, this->N);
         }
 }
@@ -646,7 +690,7 @@ void dyndata_t::copydata (const dyndata_t &dd) {
                 }
                 if (dd.rowsortl != 0) {
                         deleterowsortl ();
-                        this->rowsortl = new_perm< rowindex_t > (this->N); // new rowindex_t [N];
+                        this->rowsortl = new_perm< rowindex_t > (this->N); 
                         copy_perm (dd.rowsortl, this->rowsortl, this->N);
                 }
         }
@@ -1102,9 +1146,7 @@ inline void LMC_root_sort (carray_t *array, const arraydata_t *ad, rowsort_t *ro
         }
         delete[] valueindex;
 
-        // OPTIMIZE: select best sort
         std::sort (rowsort, rowsort + ad->N);
-        // bubbleSort(rowsort, ad->N);
 }
 
 /** @brief Static initialization of level permutations
@@ -1179,8 +1221,6 @@ lmc_t LMCreduce_root_level_perm_full (carray_t const *original, const arraydata_
                         dyndatatmp.rowsort[rootrowperms[l][k]].r = rowsort[k].r;
                 }
 
-                // dyndatatmp.show();
-
                 /* pass to non-root stage */
                 ret = LMCreduce_non_root_j4 (original, ad, &dyndatatmp, reduction, oaextend, tmpStatic);
 
@@ -1222,7 +1262,6 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
                 // update sort structure
 
                 for (rowindex_t k = 0; k < ad->N; k++) {
-                        // TODO: is this valid if the root is not properly sorted?
                         // 	this assumes that after the LMC_root_sort the root is already in blocks
                         dyndatatmp.rowsort[rootrowperms[l][k]].r = rowsort[k].r;
                 }
@@ -1332,7 +1371,6 @@ vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int v
 * We assume the array has values 0 and 1
 */
 int fastj3 (carray_t *array, rowindex_t N, const int J, const colindex_t *pp) {
-        // carray_t *x = ar.array;
         int jval = 0;
 
         for (rowindex_t r = 0; r < N; r++) {
@@ -1350,7 +1388,6 @@ int fastj3 (carray_t *array, rowindex_t N, const int J, const colindex_t *pp) {
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj) {
         LMC_static_struct_t &tmpStatic = getGlobalStaticOne ();
-        // tmpStatic.setRef("LMCcheckj4");
 
         const int maxjj = 40;
         assert (jj < maxjj);
@@ -1525,7 +1562,6 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
                 next_comb (lc, 4, 5);
         }
 
-        //   std::sort ( ww, ww+5 );
         // we reverse the values (to keep ordering matched to the original orderings)
         std::reverse (ww.begin (), ww.end ());
         if (verbose >= 2) {
@@ -1541,7 +1577,6 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         // calculate symmetry group of column permutations in the first jj columns
         symmetry_group sg (wws, true, verbose >= 3);
         if (verbose >= 2) {
-                // myprintf("jj45split: values ");  display_vector(ww);   myprintf("\n");
                 myprintf ("jj45split: values sorted ");
                 display_vector (wws);
                 myprintf ("\n  ");
@@ -1566,7 +1601,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         }
 
         dyndata_t dyndata (ad.N);
-        dyndata.col = 0; // ad.strength;	// set at col after root
+        dyndata.col = 0; 
         dyndata.setColperm (perm, ad.ncols);
 
         if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDERXFAST) {
@@ -1601,7 +1636,6 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
 }
 
 inline double jj452double (const double *ww) {
-        //	TODO: check multiplication factor
         // the maximum value of the J4 characteristics is N. we create a unique value out of the pair by multiplication
         double val = 0;
         for (size_t i = 0; i < 6; i++)
@@ -1645,13 +1679,6 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
         return val;
 }
 
-
-#ifdef LMCSTATS
-// this code is not thread safe!
-static long nnn = 0;
-static long nng = 0;
-void lmc_stats () { myprintf ("nng %ld, nnn %ld, fraction %.3f\n", nng, nnn, double(nng) / double(nnn)); }
-#endif
 
 lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int hack) {
@@ -1732,8 +1759,8 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
         const int orig = oaextend.j5structure == J5_ORIGINAL;
 
-        int ncolsfirst = adin.colgroupsize[0]; // = ad.ncols
-        int nc = ncombs (ncolsfirst, jj);      // number of combinations to select the first jj columns
+        int ncolsfirst = adin.colgroupsize[0];
+        int nc = ncombs (ncolsfirst, jj);     
 
         if (dverbose) {
                 myprintf ("LMCcheckj5: selected ncolsfirst %d, nc %d, jbase %d, wbase %f\n", ncolsfirst, nc, jbase,
@@ -1751,7 +1778,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                         myprintf ("--\n");
                         print_array ("al.array:\n", array, al.n_rows, 5);
                 }
-                //        nc=1; //
         }
 
         // loop over all possible combinations for the first jj columns
@@ -1768,7 +1794,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                 // check order based on J5
                 if (j5val ORDER_J5_SMALLER jbase) {
                         ret = LMC_LESS;
-                        // reduction->lastcol=col;
                         reduction.updateLastCol (4);
 
                         if (dverbose) {
@@ -1788,9 +1813,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                 const int dverbose = 0;
                 // check order based on J4-J5 value
                 if (1) {
-#ifdef LMCSTATS
-                        nnn++;
-#endif
+
                         jj45_t w = jj45val (array, ad.N, jj, firstcolcomb, j5val);
                         if (w ORDER_J45_SMALLER wbase) {
                                 ret = LMC_LESS;
@@ -1805,9 +1828,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                                 next_combination (firstcolcomb, jj, ad.ncols); // increase combination
                                 continue;
                         }
-#ifdef LMCSTATS
-                        nng++;
-#endif
                 }
 
                 if (dverbose >= 2) {
@@ -1827,20 +1847,18 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                                 create_perm_from_comb2< colindex_t > (perm, comby, jj, ad.ncols);
 
                                 dyndata_t dyndata (ad.N);
-                                dyndata.col = ad.strength; // set at col after root
+                                dyndata.col = ad.strength;
                                 copy_perm (perm, dyndata.colperm, ad.ncols);
-                                // copy_array ( array, reduction.array, ad.N, ad.ncols );
 
                                 ret = LMCreduce_root_level_perm_full (array, &ad, &dyndata, &reduction, oaextend,
                                                                       tmpStatic);
 
                                 if (ret == LMC_LESS) {
                                         printfd ("LMCcheckj5: note: code unchecked...\n");
-                                        //    reduction.updateLastCol(4);
                                         break;
                                 }
 
-                                next_combination (combroot, ad.strength, jj); // increase combination
+                                next_combination (combroot, ad.strength, jj); 
                         }
                 }
                 int retx = ret;
@@ -1848,19 +1866,14 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
                         retx = jj45split (array, ad.N, jj, firstcolcomb, ad, oaextend, tmpStatic, reduction);
 
-                        if (retx == LMC_LESS) {
-                                // NOTE: is this needed?
-                                // reduction.updateLastCol(4);
-                        }
                 }
                 ret = (lmc_t) (int)retx;
 
                 if (ret == LMC_LESS) {
-                        // myprintf("LMCcheckj5: found LMC_LESS\n");
                         break;
                 }
 
-                next_combination (firstcolcomb, jj, ncolsfirst); // increase combination
+                next_combination (firstcolcomb, jj, ncolsfirst); 
         }
         delete_perm (perm);
         delete_perm (pp);
@@ -1962,7 +1975,6 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
 
         // loop over all symmetries
         for (int i = ad.strength; i < ad.ncols + 1 - 1; i++) {
-                // continue;
                 if (dverbose) {
                         dt = get_time_ms () - t0;
                         myprintf ("LMCcheckSymmetryMethod: symmetryset i %d: %ld, dt %.3f [ms]\n", i,
@@ -1982,7 +1994,7 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                         cprintf (dverbose >= 2, "LMCcheckSymmetryMethod: testing symmetry %d: newcol %d\n", j, newcol);
                       
                         combadd2perm (reductionsub.symms.symmetries[i][j].colperm, newcol, ad.ncols, ww,
-                                      wtmp); // expensive
+                                      wtmp);
                         
                         dyndata.col = ad.strength; // set at col after root
                         dyndata.col = i;           // trick
@@ -2129,7 +2141,7 @@ lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const
                         }
 
                         // split column groups
-                        std::vector< int > splits; // = symmetrygroup2splits(sg, ad.ncols, verbose);
+                        std::vector< int > splits; 
                         for (int k = 0; k <= i + 1; k++)
                                 splits.push_back (k);
                         adfix.set_colgroups (splits);
@@ -2298,7 +2310,6 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                 reduction.setArray (array, ad.N, ad.ncols);
         }
 
-        // printfd("oaextend.getAlgorithm() %d, MODE_ORIGINAL %d\n", oaextend.getAlgorithm(),MODE_ORIGINAL );
         switch (oaextend.getAlgorithm ()) {
         case MODE_ORIGINAL: {
                 lmc = LMCreduce (array, array, &ad, &dynd, &reduction, oaextend);
@@ -2911,7 +2922,6 @@ array_transformation_t reductionDOP (const array_link &input_array, int verbose)
 		if (1)
         {
                 reduction.init_state = INIT;
-                // reduction.init_state=COPY;
                 reduction.setArray (alf);
                 int changed = check_root_update (alf.array, ad, reduction.array);
                 copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns); // hack?
@@ -2982,9 +2992,6 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
 
                 array_link lm (input_array);
 
-                if (verbose >= 3)
-                        ad.show (2);
-
                 reduction.mode = OA_REDUCE;
                 reduction.init_state = COPY;
                 {
@@ -3026,4 +3033,3 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
         if (verbose)
                 myprintf ("  selecting %d/%d arrays\n", (int)output_arrays.size (), (int)xlist.size ());
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

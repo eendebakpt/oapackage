@@ -34,16 +34,15 @@ using namespace Eigen;
 int main (int argc, char *argv[]) {
         AnyOption opt;
         /* parse command line options */
-        opt.setFlag ("help", 'h'); /* a flag (takes no argument), supporting long and short form */
+        opt.setFlag ("help", 'h'); 
         opt.setOption ("output", 'o');
         opt.setOption ("input", 'I');
         opt.setOption ("rand", 'r');
         opt.setOption ("niter", 'n');
         opt.setOption ("verbose", 'v');
         opt.setOption ("ii", 'i');
-        opt.setOption ("oaconfig", 'c'); /* file that specifies the design */
 
-        opt.addUsage ("Orthonal Array: oatest: testing platform");
+        opt.addUsage ("Orthonal Array: oaranktest: testing platform");
         opt.addUsage ("Usage: oatest [OPTIONS] [FILE]");
         opt.addUsage ("");
         opt.addUsage (" -h --help  			Prints this help ");
@@ -127,7 +126,7 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "arrayrankSVD");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank SVD (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
@@ -144,7 +143,7 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "FullPivLU");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank FullPivLU (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
@@ -162,23 +161,23 @@ int main (int argc, char *argv[]) {
                         if (r != rr[i]) {
                                 printfd ("error: i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
-                        assert (r == rr[i]);
+                        myassert (r == rr[i], "arrayrankColPivQR");
                 }
                 dt = get_time_ms () - t0;
                 printf ("oaranktest: rank ColPiv (%.3f [s], %.3f Marrays/s)\n", dt, nn / dt);
         }
 
         for (int nsub = 2; nsub < 5; nsub++) {
-                rankStructure rs (al0.selectFirstColumns (al0.n_columns - nsub), nsub, 0);
+                rankStructure rank_calculator (al0.selectFirstColumns (al0.n_columns - nsub), nsub, 0);
                 if (verbose >= 2) {
-                        rs.alsub.show ();
-                        printf ("subrank: %d\n", arrayrankFullPivLU (array2xf (rs.alsub)));
+                        rank_calculator.alsub.show ();
+                        printf ("subrank: %d\n", arrayrankFullPivLU (array2xf (rank_calculator.alsub)));
                         printf ("---\n\n");
                 }
                 t0 = get_time_ms ();
                 for (size_t i = 0; i < ll.size (); i++) {
                         array_link A = ll[i];
-                        int r = rs.rankxf (A);
+                        int r = rank_calculator.rankxf (A);
                         if (r != rr[i]) {
                                 printfd ("  i %d, r %d rr[i] %d\n", i, r, rr[i]);
                         }
@@ -192,4 +191,3 @@ int main (int argc, char *argv[]) {
         return 0;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;

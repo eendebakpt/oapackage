@@ -614,11 +614,11 @@ struct array_link {
          */
         double CL2discrepancy () const;
 
-        /// apply a random permutation of rows, columns and levels
+        /// apply a random permutation of rows, columns and levels of an orthogonal array
         array_link randomperm () const;
-        /// apply a random permutation of columns
+        /// apply a random permutation of columns of an orthogonal array
         array_link randomcolperm () const;
-        /// apply a random permutation of row
+        /// apply a random permutation of rows of an orthogonal array
         array_link randomrowperm () const;
 
         /** This function calculates Helmert contrasts for the factors of an input design.
@@ -652,37 +652,11 @@ struct array_link {
         /// elementwise multiplication
         array_link operator* (const array_link &rhs) const;
 
-        array_link operator* (array_t val) const {
-                array_link al (*this);
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        al.array[i] *= val;
-                }
-                return al;
-        }
+        array_link operator* (array_t val) const;
 
-        array_link operator*= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] *= val;
-                }
-                return *this;
-        }
-
-        array_link operator+= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] += val;
-                }
-                return *this;
-        }
-        array_link operator-= (array_t val) {
-                int NN = this->n_rows * this->n_columns;
-                for (int i = 0; i < NN; i++) {
-                        this->array[i] -= val;
-                }
-                return *this;
-        }
+        array_link operator*= (array_t val);
+        array_link operator+= (array_t val);
+        array_link operator-= (array_t val);
 
         /// get element from array, no error checking, inline version
         inline const array_t &atfast (const rowindex_t r, const colindex_t c) const {
@@ -703,31 +677,23 @@ struct array_link {
         array_t &at (const rowindex_t, const colindex_t);
 
         /// set all elements in the array to a value
-        void setconstant (array_t val);
+        void setconstant (array_t value);
 
         /// set value of an array
-        void setvalue (int row, int col, int val);
+        void setvalue (int row, int col, int value);
         /// set value of an array
-        void setvalue (int row, int col, double val);
+        void setvalue (int row, int col, double value);
 
         /// set value of an array, no bounds checking!
-        void _setvalue (int row, int col, int val);
+        void _setvalue (int row, int col, int value);
 
         /// multiply a row by -1
-        void negateRow (rowindex_t r) {
-                for (int c = 0; c < this->n_columns; c++) {
-                        this->atfast (r, c) *= -1;
-                }
-        }
+        void negateRow (rowindex_t row);
         /// print information about array
-        void show () const { myprintf ("array_link: index: %d, shape (%d, %d), data pointer %p\n", index, n_rows, n_columns, (void *)array); }
-
-        std::string showstr () const {
-                std::stringstream s;
-                s << "array_link: " << n_rows << ", " << n_columns << "";
-                std::string rs = s.str ();
-                return rs;
-        }
+        void show () const;
+	
+	/// return string describing the array
+        std::string showstr () const;
 
         /// return md5 sum of array representation (as represented with 32bit int datatype in memory)
         std::string md5 () const;
@@ -771,13 +737,7 @@ struct array_link {
         }
 
         /// set column to values
-        void setcolumn (int c, const array_link &al, int sc = 0) {
-                assert (c >= 0);
-                assert (c <= this->n_columns);
-                assert (this->n_rows == al.n_rows);
-                std::copy (al.array + sc * this->n_rows, al.array + (sc + 1) * this->n_rows,
-                           this->array + this->n_rows * c);
-        }
+        void setcolumn (int target_column, const array_link &source_array, int source_column = 0) const;
 
       public:
         array_link (const array_link &, const std::vector< int > &colperm);
@@ -988,7 +948,7 @@ class jstruct_t {
         /// contains calculated J-values
         std::vector< int > values;
         /// calculated abberation
-        double A;
+        double abberation;
 
       public:
         /// Create an object to calculate J-characteristics
@@ -1010,7 +970,7 @@ class jstruct_t {
         void calcj5 (const array_link &al);
 
       public:
-        jstruct_t &operator= (const jstruct_t &rhs); // assignment
+        jstruct_t &operator= (const jstruct_t &rhs); 
 
         /// calculate maximum J value
         int maxJ () const;
@@ -1021,17 +981,11 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        // calculate aberration value
-        void calculateAberration () {
-                jstruct_t *js = this;
-                js->A = 0;
-                for (int i = 0; i < js->nc; i++) {
-                        js->A += js->values[i] * js->values[i];
-                }
-                js->A /= N * N;
-        }
+        /// calculate aberration value
+		void calculateAberration();
+
         /// Show contents of structure
-        void show ();
+        void show () const;
         void showdata ();
         std::string showstr ();
 
@@ -1053,34 +1007,24 @@ class jstructconference_t : public jstructbase_t {
         }
 
       private:
-        void calcJvalues (int N, int jj) {
-                assert (jj == 4);
-                int nn = floor (double(int((N - jj + 1) / 4))) + 1;
-                this->jvalues = std::vector< int > (nn);
-                this->jvalue2index.clear ();
-                for (size_t i = 0; i < jvalues.size (); i++) {
-                        int jval = (N - jj) - i * 4;
-                        jvalues[i] = jval;
-                        jvalue2index[jval] = i;
-                }
-        }
-
-        void calc (const array_link &al) { values = Jcharacteristics_conference (al, this->jj); }
+		void calcJvalues(int N, int jj);
+		void calc(const array_link &al);
 };
 
 /// set first columns of an array to root form
-void create_root (array_t *array, const arraydata_t *ad);
-/// Creates the root of an OA. The root is appended to the current list of arrays
-void create_root (const arraydata_t *ad, arraylist_t &solutions);
+void create_root (array_t *array, const arraydata_t *arrayclass);
+
+/// Creates the root of an orthogonal array. The root is appended to the list of arrays
+void create_root (const arraydata_t *arrayclass, arraylist_t &solutions);
 
 
 /// Compare 2 arrays and return position of first difference
 int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, rowindex_t &rpos, colindex_t &cpos);
 
 /// helper function to calculate J-values
-inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const colindex_t *pp, array_t *tmp) {
+inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const colindex_t *column_indices, array_t *tmp) {
         for (int i = 0; i < J; i++) {
-                carray_t *cp = array + N * pp[i];
+                carray_t *cp = array + N * column_indices[i];
                 for (rowindex_t r = 0; r < N; r++) {
                         tmp[r] += cp[r];
                 }
@@ -1961,10 +1905,15 @@ MatrixFloat array2eigenModelMatrix (const array_link &al);
  *
  * @see array2eigenModelMatrixMixed
  */
-MatrixFloat array2eigenMainEffects (const array_link &al, int verbose = 1);
+MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
 
-/// create first and second order model matrix for mixed-level array
-std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &al, int verbose = 1);
+/** Create first and second order model matrix for mixed-level array
+ *
+ * \param array Input array
+ * \param verbose Verbosity level
+ * \returns Pair with main effects and two-factor interaction model
+ */ 
+std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 
 /** calculate number of parameters in the model matrix
 *

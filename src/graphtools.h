@@ -25,13 +25,8 @@ enum matrix_isomorphism_t { ISOTOPY, MATRIX_ISOMORPHISM, CONFERENCE_ISOMORPHISM,
 /// isomorphism type for column and row permtations and column permutations
 const matrix_isomorphism_t CONFERENCE_RESTRICTED_ISOMORPHISM = OA_ISOMORPHISM;
 
-/* Interface to Nauty code
- *
- */
-
 namespace nauty {
 #include "nauty.h"
-/* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 
 /** Reduce a colored graph to Nauty minimal form
  *
