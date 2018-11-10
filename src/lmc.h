@@ -227,7 +227,7 @@ struct LMC_static_struct_t {
                 rootrowperms = this->rootrowperms;
                 lperm_p = this->current_trans->lperms;
 
-                this->LMC_root_rowperms_init = 1; // OPTIMIZE: is this needed?
+                this->LMC_root_rowperms_init = 1; 
         }
 
         /** @brief Static initialization of root row permutations (full group)
@@ -691,23 +691,6 @@ struct dyndata_t {
       private:
         void initdata (const dyndata_t &dd);
 };
-
-/// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
-inline int check_root_update (array_t *array, const arraydata_t &ad) {
-        int changed = 0;
-        array_t *root = create_array (ad.N, ad.strength);
-        create_root (root, &ad);
-        if (!std::equal (array, array + ad.N * ad.strength, root)) {
-                // printf("check_root_update: copying!\n");
-                copy_array (root, array, ad.N, ad.strength);
-                for (int j = 0; j < ad.N; j++)
-                        array[ad.N * ad.strength + j] = ad.s[ad.strength];
-                changed = 1;
-        }
-        destroy_array (root);
-
-        return changed;
-}
 
 /// return true if target is in root form, otherwise return false
 inline bool check_root_form (const array_t *array, const arraydata_t &ad) {
