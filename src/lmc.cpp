@@ -272,74 +272,7 @@ int check_bounds_rowsort (arraydata_t *ad) {
 }
 #endif
 
-object_pool< larray< rowindex_t > > arraysymmetry::rowpermpool =
-    object_pool< larray< rowindex_t > > (); // rowpermpool;
 
-arraysymmetry::~arraysymmetry () {
-#ifdef USE_ROWPERM_POOL
-        arraysymmetry::rowpermpool.Delete (rowperm);
-#else
-        delete rowperm;
-        rowperm = 0;
-#endif
-
-        rowperm = 0;
-}
-
-arraysymmetry::arraysymmetry (const arraysymmetry &rhs) {
-#ifdef USE_ROWPERM_POOL
-        rowperm = arraysymmetry::rowpermpool.New ();
-#else
-        rowperm = new larray< rowindex_t >;
-#endif
-        *rowperm = *(rhs.rowperm);
-        colperm = rhs.colperm;
-}
-arraysymmetry &arraysymmetry::operator= (const arraysymmetry &rhs) {
-        if (rowperm == 0) {
-#ifdef USE_ROWPERM_POOL
-                rowperm = arraysymmetry::rowpermpool.New ();
-#else
-                rowperm = new larray< rowindex_t >;
-#endif
-        }
-        *rowperm = *(rhs.rowperm);
-        colperm = rhs.colperm;
-        return *this;
-}
-
-arraysymmetry::arraysymmetry (const dyndata_t *dyndata) {
-#ifdef USE_ROWPERM_POOL
-        rowperm = arraysymmetry::rowpermpool.New ();
-#else
-        rowperm = new larray< rowindex_t >;
-#endif
-
-        dyndata->getRowperm (*rowperm);
-        dyndata->getColperm (colperm);
-}
-
-void LMCreduction_t::symm_t::storeSymmetryPermutation (const dyndata_t *dyndata) {
-        if (!store)
-                return;
-        int n = dyndata->col + 1;
-        arraysymmetry as (dyndata);
-        insert_if_not_at_end_of_vector (symmetries[n], as);
-
-        if (symmetries[n].size () % 500000 == 0) {
-                int nrows = symmetries[n][0].rowperm->size ();
-
-                myprintf ("LMCreduction_t::storeSymmetryPermutation: stored permutation %ld for %d cols\n",
-                          (long)symmetries[n].size (), n);
-                long es = 0;
-                for (int i = 0; i < (int)symmetries.size (); i++) {
-                        es += nrows * sizeof (rowindex_t) * symmetries[i].size () +
-                              symmetries[i].size () * sizeof (colindex_t) * n;
-                }
-                myprintf ("LMCreduction_t::storeSymmetryPermutation: raw data size %.1f [MB]\n",
-                          double(es) / (1024 * 1024));
-        }
-}
 
 LMCreduction_t::LMCreduction_t (const arraydata_t *adp) {
         mode = OA_TEST;
@@ -347,7 +280,6 @@ LMCreduction_t::LMCreduction_t (const arraydata_t *adp) {
         transformation = new array_transformation_t (adp);
         array = create_array (adp);
         sd = symmdataPointer ((symmdata *)0);
-        symms.store = 0;
         maxdepth = -1;
 
         staticdata = 0;
@@ -394,9 +326,6 @@ LMCreduction_t::LMCreduction_t (const LMCreduction_t &at) {
 
         sd = symmdataPointer ((symmdata *)0);
 
-        symms = at.symms;
-
-
         transformation = new array_transformation_t (*(at.transformation));
         array = create_array (transformation->ad);
 }
@@ -417,8 +346,6 @@ LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at)
 
         staticdata = at.staticdata; 
 
-        symms = at.symms;
-
         free ();
 
         transformation = new array_transformation_t (*(at.transformation));
@@ -437,7 +364,6 @@ void LMCreduction_t::reset () {
         targetcol = 0;
         mincol = MINCOLMAX;
 
-        clearSymmetries ();
 }
 
 void LMCreduction_t::show(int verbose) const {
@@ -452,19 +378,6 @@ void LMCreduction_t::show(int verbose) const {
 	}
 	if (verbose >= 2)
 		this->transformation->show();
-}
-
-void LMCreduction_t::clearSymmetries () {
-        symms.store = 0;
-        symms.ncols = -1;
-        symms.colcombs.resize (ncols + 1);
-        symms.colperms.resize (ncols + 1);
-        symms.symmetries.resize (ncols + 1);
-        for (size_t i = 0; i <= (size_t)ncols; i++) {
-                symms.colcombs[i].clear ();
-                symms.colperms[i].clear ();
-                symms.symmetries[i].clear ();
-        }
 }
 
 void LMCreduction_t::updateTransformation (const arraydata_t &ad, const dyndata_t &dyndatacpy, levelperm_t *lperm_p,
@@ -1942,332 +1855,6 @@ std::vector< numtype > comb2perm(const std::vector< numtype > comb, int n) {
 	}
 	return w;
 }
-lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const OAextend &oaextend,
-                              LMCreduction_t &reduction, LMCreduction_t &reductionsub, int dverbose) {
-
-        int special = 0;
-        double t0 = get_time_ms ();
-        double dt = 0;
-
-        if (dverbose) {
-                myprintf ("### LMCcheckSymmetryMethod: ncols %d, dverbose %d\n", ad.ncols, dverbose);
-        }
-
-        lmc_t r = LMC_EQUAL;
-
-        std::vector< colindex_t > pinit = permutation< colindex_t > (ad.ncols);
-
-        int newcol = ad.ncols - 1;
-        arraydata_t adfix = ad;
-        dyndata_t dyndata (ad.N);
-
-        symmdata sd (al);
-        if (dverbose >= 2) {
-                al.showarray ();
-                sd.show ();
-        }
-
-        LMC_static_struct_t *tmpStatic = &reduction.getStaticReference ();
-
-        tmpStatic->update (&ad);
-
-        reduction.setArray (al);
-
-        // loop over all symmetries
-        for (int i = ad.strength; i < ad.ncols + 1 - 1; i++) {
-                if (dverbose) {
-                        dt = get_time_ms () - t0;
-                        myprintf ("LMCcheckSymmetryMethod: symmetryset i %d: %ld, dt %.3f [ms]\n", i,
-                                  (long)reductionsub.symms.symmetries[i].size (), 1e3 * dt);
-                }
-                // split column groups
-                std::vector< int > splits; 
-                for (int k = 0; k <= i + 1; k++)
-                        splits.push_back (k);
-                adfix.set_colgroups (splits); // should not be needed
-
-                if (ad.ncols == 0)
-                        myprintf ("ad.ncols==0!\n");
-                larray< colindex_t > ww (ad.ncols);
-                larray< colindex_t > wtmp (ad.ncols);
-                for (int j = 0; j < (int)reductionsub.symms.symmetries[i].size (); j++) {
-                        cprintf (dverbose >= 2, "LMCcheckSymmetryMethod: testing symmetry %d: newcol %d\n", j, newcol);
-                      
-                        combadd2perm (reductionsub.symms.symmetries[i][j].colperm, newcol, ad.ncols, ww,
-                                      wtmp);
-                        
-                        dyndata.col = ad.strength; // set at col after root
-                        dyndata.col = i;           // trick
-
-                        dyndata.setColperm (ww);
-
-                        // initialize dyndata with rowperm and init level perms
-                        dyndata.initsymmetry (reductionsub.symms.symmetries[i][j], sd, i);
-
-                        if (dverbose >= 2) {
-                                myprintf ("  dyndata perm: ");
-                                print_perm (dyndata.colperm, ad.ncols);
-                        }
-
-                        /* pass to non-root stage */
-                        if (oaextend.getAlgorithm () == MODE_LMC_SYMMETRY ||
-                            oaextend.getAlgorithm () == MODE_J5ORDERXFAST ||
-                            oaextend.getAlgorithm () == MODE_LMC_2LEVEL) {
-                                dyndata.initrowsortl ();
-                                r = LMCreduce_non_root_2level (al.array, &adfix, &dyndata, &reduction, oaextend,
-                                                               *tmpStatic);
-
-                        } else {
-                                oaextend.info ();
-                                throw_runtime_exception("oaextend problem: invalid algorithm");
-                                r = LMCreduce_non_root (al.array, &adfix, &dyndata, &reduction, oaextend, *tmpStatic);
-                        }
-
-                        if (dverbose >= 2) {
-                                myprintf ("  i %d: lmc_t returned %d, splits: perm ", i, int(r));
-                                print_perm (dyndata.colperm, ad.ncols);
-                                adfix.show_colgroups ();
-                        }
-
-                        if (r == LMC_LESS) {
-                                if (dverbose) {
-                                        myprintf ("LMCcheckSymmetryMethod: return LMC_LESS: perm ");
-                                        larray< colindex_t > w = reductionsub.symms.symmetries[i][j].colperm;
-                                        w = w.addelement (newcol);
-                                        print_perm (w);
-                                        adfix.show ();
-                                        dyndata.show ();
-                                }
-                                return r;
-                        }
-                }
-        }
-
-        cprintf (dverbose >= 1, "  LMCcheckSymmetryMethod: symmetries done: time: %.1f [ms]\n",
-                 1e3 * (get_time_ms () - t0));
-
-        // loop over all colcomb pairs
-        for (int i = ad.strength; i < ad.ncols + 1 - 1; i++) {
-                if (dverbose) {
-                        dt = get_time_ms () - t0;
-                        myprintf ("LMCcheckSymmetryMethod: colcombs i %d: %ld, dt %.1f [ms]\n", i,
-                                  (long)reductionsub.symms.colcombs[i].size (), 1e3 * dt);
-                }
-
-                // split column groups
-                std::vector< int > splits;
-                splits.push_back (0);
-                splits.push_back (5);
-
-                reduction.setArray (al);
-                for (int j = 0; j < (int)reductionsub.symms.colcombs[i].size (); j++) {
-                        std::vector< int > w = reductionsub.symms.colcombs[i][j];
-                        w.push_back (newcol);
-                        std::vector< colindex_t > ww = comb2perm< colindex_t > (w, ad.ncols);
-
-                        // initialize dyndata with w
-                        dyndata.reset ();
-                        dyndata.col = 0;
-
-                        dyndata.setColperm (ww);
-                        if (dverbose >= 2) {
-                                myprintf ("dyndata perm: ");
-                                print_perm (dyndata.colperm, ad.ncols);
-                        }
-
-                        adfix.set_colgroups (splits);
-                        if (dverbose >= 2) {
-                                myprintf ("LMCcheckSymmetryMethod: adfix.show_colgroups()\n");
-                                adfix.show_colgroups ();
-                        }
-
-                        reduction.mode = OA_TEST;
-
-                        array_link alx = al.selectColumns (ww);
-
-                        cprintf (dverbose >= 2, "  LMCcheckSymmetryMethod: colcombs check : starting...\n");
-
-                        reduction.setArray (al);
-                        r = LMCcheckj5 (alx, adfix, reduction, oaextend, 1);
-
-                        if (dverbose >= 2) {
-                                myprintf ("i %d: lmc_t returned %d, splits: perm ", i, int(r));
-                                print_perm (dyndata.colperm, ad.ncols);
-                                adfix.show_colgroups ();
-
-                        }
-
-                        if (r == LMC_LESS) {
-                                if (dverbose) {
-                                        myprintf ("LMCcheckSymmetryMethod: return LMC_LESS: perm ");
-                                        print_perm (w);
-                                        adfix.show ();
-                                        dyndata.show ();
-                                }
-                                return r;
-                        }
-                }
-        }
-        cprintf (dverbose >= 1, "  LMCcheckSymmetryMethod: colcombs done: time: %.1f [ms]\n",
-                 1e3 * (get_time_ms () - t0));
-
-        // loop over all colperm pairs
-        for (int i = ad.strength; i < ad.ncols + 1 - 1; i++) {
-                if (dverbose >= 2) {
-                        dt = get_time_ms () - t0;
-                        myprintf ("LMCcheckSymmetryMethod: colperms i %d: %ld, dt %.1f [ms]\n", i,
-                                  (long)reductionsub.symms.colperms[i].size (), 1e3 * dt);
-                }
-                for (int j = 0; j < (int)reductionsub.symms.colperms[i].size (); j++) {
-                        std::vector< int > w = reductionsub.symms.colperms[i][j];
-                        w.push_back (newcol);
-                        std::vector< colindex_t > ww = comb2perm< colindex_t > (w, ad.ncols);
-
-                        if (dverbose >= 2 || i == 23) {
-                                myprintf ("processing perm ");
-                                print_perm (w);
-                                myprintf ("	--> ");
-                                print_perm (ww);
-                                myprintf ("	--> ");
-                        }
-
-                        dyndata.reset ();
-                        dyndata.col = 0;           
-
-                        dyndata.setColperm (ww);
-                        if (dverbose >= 2) {
-                                myprintf ("dyndata perm: ");
-                                print_perm (dyndata.colperm, ad.ncols);
-                        }
-
-                        // split column groups
-                        std::vector< int > splits; 
-                        for (int k = 0; k <= i + 1; k++)
-                                splits.push_back (k);
-                        adfix.set_colgroups (splits);
-
-                        r = LMCreduce (al.array, al.array, &adfix, &dyndata, &reduction, oaextend);
-
-                        if (dverbose >= 2) {
-                                myprintf ("i %d: lmc_t returned %d, splits: perm ", i, int(r));
-                                print_perm (dyndata.colperm, ad.ncols);
-                                adfix.show_colgroups ();
-
-                        }
-
-                        if (r == LMC_LESS) {
-                                if (dverbose) {
-                                        myprintf ("LMCcheckSymmetryMethod: return LMC_LESS: perm ");
-                                        print_perm (w);
-                                        adfix.show ();
-                                        dyndata.show ();
-                                }
-                                return r;
-                        }
-                }
-        }
-        cprintf (dverbose >= 1, "  LMCcheckSymmetryMethod: colperms done: time: %.1f [ms]\n",
-                 1e3 * (get_time_ms () - t0));
-
-        releaseGlobalStatic (tmpStatic);
-
-        return LMC_MORE;
-}
-
-LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t &adata, const OAextend &oaextend,
-                                        int dverbose, int hack) {
-        if (dverbose) {
-                myprintf ("calculateSymmetryGroups: array ");
-                al.show ();
-        }
-        // pre-compute
-        array_link alsub = al;
-        arraydata_t adatasub (&adata, al.n_columns);
-        LMCreduction_t reductionsub (&adatasub);
-        reductionsub.init_state = COPY;
-
-        reductionsub.symms.store = 2; // store both symmetries and combintions
-
-        // add elements at strength level
-        int n = adatasub.ncols;
-
-        int baselevel = adata.strength;
-        if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDERXFAST ||
-            oaextend.getAlgorithm () == MODE_LMC_SYMMETRY) {
-                if (dverbose)
-                        myprintf ("calculateSymmetryGroups: setting baselevel to that of J45\n");
-                baselevel = 4;
-
-                std::vector< colindex_t > combp = permutation< colindex_t > (baselevel);
-                int nc = ncombs (adatasub.ncols, baselevel);
-                int np = factorial< int > (baselevel);
-                np = 1;
-                if (dverbose)
-                        myprintf ("calculateSymmetryGroups: colcombs: ncombs %d, np %d\n", nc, np);
-                for (int i = 0; i < nc; i++) {
-                        std::vector< colindex_t > px = permutation< colindex_t > (baselevel);
-                        for (int j = 0; j < np; j++) {
-
-                                std::vector< colindex_t > pv = perform_perm (combp, px);
-                                if (dverbose >= 2)
-                                        myprintf ("calculateSymmetryGroups: colcombs: store combination i %d, j %d\n",
-                                                  i, j);
-
-                                reductionsub.symms.storeColumnCombination (pv);
-                                next_perm (px);
-                        }
-                        next_comb (combp, baselevel, n);
-                }
-
-        } else {
-                std::vector< colindex_t > combp = permutation< colindex_t > (baselevel);
-                int nc = ncombs (adatasub.ncols, baselevel);
-                int np = factorial< int > (baselevel);
-                for (int i = 0; i < nc; i++) {
-                        std::vector< colindex_t > px = permutation< colindex_t > (baselevel);
-                        for (int j = 0; j < np; j++) {
-
-                                std::vector< colindex_t > pv = perform_perm (combp, px);
-                                reductionsub.symms.colperms[adata.strength].push_back (pv);
-                                next_perm (px);
-                        }
-                        next_comb (combp, baselevel, n);
-                }
-        }
-
-        if (dverbose >= 2) {
-                reductionsub.symms.showColcombs ();
-        }
-
-        reductionsub.symms.ncols = al.n_columns;
-
-        if (alsub.n_columns == adata.strength)
-                return reductionsub;
-
-        lmc_t r;
-
-        OAextend x = oaextend;
-        x.setAlgorithm (MODE_J5ORDERXFAST, &adatasub);
-        r = LMCcheck (alsub, adatasub, x, reductionsub);
-        if (dverbose)
-                myprintf ("calculateSymmetryGroups: LMCcheck complete...\n");
-
-        if (dverbose)
-                myprintf ("calculateColpermsGroup: sub lmc_t %d\n", (int)r);
-        if (dverbose >= 2 || 0) {
-                reductionsub.symms.show (2);
-        }
-
-        reductionsub.symms.makeColpermsUnique (dverbose);
-
-        if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDERXFAST ||
-            oaextend.getAlgorithm () == MODE_LMC_SYMMETRY) {
-                for (int i = 0; i < 5; i++) {
-                        reductionsub.symms.symmetries[i].clear ();
-                }
-        }
-        return reductionsub;
-}
 
 lmc_t LMCcheckOriginal (const array_link &al) {
         assert (al.is2level ());
@@ -2329,42 +1916,8 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                 lmc = LMCreduce (array, array, &ad, &dynd, &reduction, oaextend);
         } break;
         case MODE_LMC_SYMMETRY: {
-                int dverbose = 0;
-
-                // testing code!
-                array_link al (array, ad.N, ad.ncols);
-                OAextend x = oaextend;
-                arraydata_t adx (ad);
-                x.setAlgorithm (MODE_J5ORDERX, &adx);
-                x.setAlgorithm (MODE_J5ORDERXFAST, &adx); 
-                if (dverbose) {
-                        myprintf ("LMCcheck: MODE_LMC_SYMMETRY: calculateSymmetryGroups ");
-                }
-
-                LMCreduction_t reductionsub (&adx);
-                if (reduction.symms.valid () == 0 || 0) {
-                        myprintf ("LMCcheck: MODE_LMC_SYMMETRY calculating new symmetry group (al %d %d)\n", al.n_rows,
-                                  al.n_columns);
-                        double t0 = get_time_ms ();
-                        reductionsub = calculateSymmetryGroups (al.deleteColumn (-1), adx, x, 0);
-                        reductionsub.symms.show ();
-                        myprintf (" dt symmetry group: %.1f [ms]\n", 1e3 * (get_time_ms () - t0));
-                } else {
-                        // NOTE: copy symmetries, but extend with new columns as well!
-                        reductionsub.symms = reduction.symms;
-                }
-                if (dverbose) {
-                        myprintf ("LMCcheck: MODE_LMC_SYMMETRY: testing: strength %d, al ", ad.strength);
-                        al.show ();
-                        reductionsub.symms.showColperms (1);
-                }
-
-                OAextend xx = oaextend;
-                xx.setAlgorithm (MODE_J5ORDERXFAST);
-                reduction.updateSDpointer (al);
-
-                lmc = LMCcheckSymmetryMethod (al, ad, xx, reduction, reductionsub, dverbose);
-
+			    myprintf("MODE_LMC_SYMMETRY not supported any more\n");
+				throw_runtime_exception("MODE_LMC_SYMMETRY not supported any more");
         } break;
         case MODE_J5ORDERX: {
                 array_link al (array, ad.N, ad.ncols, -20);

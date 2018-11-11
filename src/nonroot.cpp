@@ -896,8 +896,6 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
                                 reduction->mincol = std::min (reduction->mincol, col);
                         }
                         if (ret == LMC_EQUAL) {
-                                reduction->symms.storeSymmetryPermutation (dyndatacpy);
-
                                 // this column could not decide, go one level deeper
                                 dyndatacpy->col += 1;
                                 if (dyndatacpy->col == arrayclass->ncols) {
@@ -1029,8 +1027,6 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                         }
 
                         if (ret == LMC_EQUAL) {
-                                reduction->symms.storeSymmetryPermutation (dyndatacpy);
-
                                 // this column could not decide, go one level deeper
                                 dyndatacpy->col += 1;
                                 if (dyndatacpy->col == ad->ncols) {
