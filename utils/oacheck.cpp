@@ -95,83 +95,6 @@ string modeString (checkmode_t m) {
         return str;
 }
 
-void hadamardcheck (int i, array_t *array, const char *fname, const arraydata_t &ad, dyndata_t &dynd,
-                    LMCreduction_t *reduction, double Tstart, double &dt) {
-        int verbose = 2;
-        OAextend oaextend;
-
-        /* variables needed within the switch statement */
-        arraylist_t hlist;
-        arraylist_t *classlist;
-        // it;
-        lmc_t result;
-        std::vector< int > indices;
-        /* Hadamard */
-
-        /* read list of arrays for comparing */
-        classlist = new arraylist_t;
-        readarrayfile (fname, classlist);
-
-        // with the current array make all Hadamard transformations
-        reduction->mode = OA_REDUCE;
-        dt = (get_time_ms () - Tstart);
-        logstream (NORMAL) << "  time: " << printfstring ("%.1f [s]", dt) << endl;
-
-        indices.resize (ad.ncols);
-        for (int ij = 0; ij < ad.ncols; ij++)
-                indices[ij] = ij;
-
-        int nn = ad.ncols;
-        int hcolmax = ad.ncols;
-        for (colindex_t hcol = 0; hcol < hcolmax; hcol++) { // 4->
-                logstream (NORMAL) << "array " << i << ": applying Hadamard transformation on column " << hcol << endl;
-
-                array_t *cpy = clone_array (array, ad.N, ad.ncols);
-                apply_hadamard (&ad, cpy, hcol);
-                reduction->transformation->reset ();
-                result = LMCreduction_train (cpy, &ad, &dynd, reduction, oaextend);
-
-                int dbgval = -1;
-
-                array_link link (reduction->array, ad.N, ad.ncols, hcol);
-                hlist.push_back (link);
-                destroy_array (cpy);
-                dt = (get_time_ms () - Tstart);
-                logstream (NORMAL) << "  subtime: " << printfstring ("%.1f [s]", dt) << endl;
-
-                /* find index of this array in array list */
-                arraylist_t::iterator it = find (classlist->begin (), classlist->end (), hlist[hcol]);
-                indices[hcol] = (it - classlist->begin ());
-
-                if (indices[hcol] == (int)classlist->size ()) {
-                        cout << "Problem with col " << hcol << "!" << endl;
-                } else
-                        logstream (NORMAL) << "   subsub: " << i << ", hcol " << hcol << ": " << indices[hcol]
-                                           << printfstring (", dbgval %d", dbgval) << endl;
-        }
-
-        logstream (NORMAL) << "indices: ";
-        for (int ii = 0; ii < ad.ncols; ii++) {
-                logstream (NORMAL) << indices[ii] << " ";
-        }
-        logstream (NORMAL) << endl;
-
-        /* sort the resulting list of arrays, the first element is then a LMC representative */
-        indexsort hlistsort (hlist);
-        int findex = hlistsort.indices[0];
-
-        if (checkloglevel (NORMAL)) {
-                cout << "Found representative for Hadamard orbit:" << endl;
-                cout << " hcol: " << hlist[findex].index << printfstring (", findex %d", findex) << endl;
-        }
-
-        arraylist_t::iterator it = find (classlist->begin (), classlist->end (), hlist[findex]);
-        cout << "Index of " << i << "  is " << (it - classlist->begin ()) << "/" << classlist->size () << " (hcol "
-             << findex << ")" << endl;
-
-        hlist.clear ();
-}
-
 /**
  * @brief Read in a list of array and check for each of the arrays whether they are in LMC form or not
  * @param argc
@@ -232,7 +155,6 @@ int main (int argc, char *argv[]) {
         if (mode >= ncheckopts)
                 mode = MODE_CHECK;
 
-        // logstream(QUIET) << "oacheck: mode  " << modeString(mode) << std::endl;
         logstream (QUIET) << "#time start: " << currenttime () << std::endl;
 
         double t = get_time_ms ();
@@ -429,14 +351,8 @@ int main (int argc, char *argv[]) {
                         result = LMCreduction_train (testarray, &ad, &dynd, reduction, oaextend);
                         break;
                 case MODE_HADAMARD:
-                        /* Hadamard */
-                        oaextend.setAlgorithm (MODE_J4, &ad);
-                        printf ("MODE_HADAMRD: oaextend alg: %s\n", oaextend.getAlgorithmName ().c_str ());
-
-                        if (1)
-                                hadamardcheck (i, array, fname, ad, dynd, reduction, Tstart, dt);
-
-                        break;
+						myprintf("MODE_HADAMARD not supported any more\n");
+						exit(0);
                 default:
                         result = LMC_NONSENSE;
                         std::cout << "function " << __FUNCTION__ << "line " << __LINE__ << "Unknown mode" << std::endl;
@@ -519,8 +435,6 @@ int main (int argc, char *argv[]) {
                                 if (checkloglevel (NORMAL)) {
                                         print_array ("Original:\n", array, afile->nrows, afile->ncols);
                                         print_array ("Randomized:\n", testarray, afile->nrows, afile->ncols);
-                                        // printf("Reduced:\n");
-                                        // reduction->transformation->print_transformed(testarray);
                                         print_array ("Reduction:\n", reduction->array, afile->nrows, afile->ncols);
                                         printf ("---------------\n");
                                 }

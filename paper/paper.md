@@ -35,6 +35,9 @@ the user to:
 * Reduce the designs to their normal form and perform isomorphism testing 
 * Calculate a wide variety of statistical properties of the designs
 
+The analysis of experiments performed with the generated designs is left to 
+existing packages such as R [@Rpackage] and JMP [@wiki:JMP].
+
 To generate orthogonal arrays and conference designs, the Orthogonal Array package uses an exhaustive 
 generation procedure with isomorphism pruning [@Eendebak2009], [@Schoen2018dsd]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
@@ -57,8 +60,7 @@ generation and analysis of designs are available in the OApackage documentation 
 
 The Orthogonal Array package website [@EendebakOA] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
-the website of Neil Sloane [@Sloanewebsite]. Finally, the analysis of data from the designs is left to 
-existing packages such as R [@Rpackage] and JMP [@wiki:JMP].
+the website of Neil Sloane [@Sloanewebsite]. 
 
 # Acknowledgements
 

@@ -767,6 +767,12 @@ int Jcounter::maxCols () const {
 
         return kmax;
 }
+bool Jcounter::validData() {
+	if (N == -1 && jj == -1)
+		return false;
+	else
+		return true;
+}
 bool Jcounter::hasColumn (int col) const {
         for (std::map< jindex_t, long >::const_iterator it = maxJcounts.begin (); it != maxJcounts.end ();
                 ++it) {
@@ -795,6 +801,41 @@ void Jcounter::addArrays (const arraylist_t &arraylist, int verbose) {
         for (size_t i = 0; i < arraylist.size (); i++) {
                 this->addArray (arraylist[i]);
         }
+}
+
+void Jcounter::addArray(const array_link &al, int verbose) {
+	jstruct_t js(al.selectFirstColumns(5), this->jj);
+
+	int maxJ = js.maxJ();
+
+	int k = al.n_columns;
+
+	if (verbose) {
+		jstruct_t js(al, this->jj);
+		std::vector< int > FF = js.calculateF();
+		myprintf("addArray: maxJ %d: ", maxJ);
+		display_vector(FF);
+		myprintf("\n");
+	}
+	jindex_t ji = jindex_t(k, maxJ);
+#pragma omp critical
+	maxJcounts[ji]++;
+}
+
+void Jcounter::init(int N, int jj, int k) {
+	this->N = N;
+	this->jj = jj;
+	this->fvals = possible_F_values(N, 3);
+	this->dt = 0;
+
+	maxJcounts.clear();
+
+	if (k > 0) {
+		for (size_t j = 0; j < fvals.size(); j++) {
+			jindex_t ji(k, fvals[j]);
+			maxJcounts[ji] = 0;
+		}
+	}
 }
 
 Jcounter &Jcounter::operator+= (Jcounter &jc) {

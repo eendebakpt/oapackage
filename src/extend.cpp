@@ -1050,7 +1050,6 @@ arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &array
         return extend_arraylist (alist, atmp, oaextend);
 }
 
-//%newobject extend_arraylist;
 arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend const &oaextend) {
         colindex_t extensioncol = -1;
 
@@ -1080,22 +1079,22 @@ int extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend co
         return n;
 }
 
-arraylist_t runExtendRoot (arraydata_t adata, int nmax, int verbose) {
+arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose) {
 
-        array_link al = adata.create_root ();
+        array_link al = arrayclass.create_root ();
         OAextend oaoptions;
-        oaoptions.setAlgorithmAuto (&adata);
+        oaoptions.setAlgorithmAuto (&arrayclass);
 
-        arraylist_t sols;
-        sols.push_back (al);
+        arraylist_t solutions;
+        solutions.push_back (al);
 
-        for (int ii = adata.strength; ii < nmax; ii++) {
-                arraylist_t solsx;
-                extend_arraylist (sols, adata, oaoptions, ii, solsx);
+        for (int ii = arrayclass.strength; ii < max_number_columns; ii++) {
+                arraylist_t extensions;
+                extend_arraylist (solutions, arrayclass, oaoptions, ii, extensions);
                 if (verbose) {
-                        myprintf ("runExtend: ncols %d: %ld arrays\n", ii + 1, (long)solsx.size ());
+                        myprintf ("runExtend: ncols %d: %ld arrays\n", ii + 1, (long)extensions.size ());
                 }
-                sols = solsx;
+                solutions = extensions;
         }
-        return sols;
+        return solutions;
 }
