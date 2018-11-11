@@ -1,9 +1,10 @@
 ---
 title: 'OApackage: A Python package for generation and analysis of orthogonal arrays and conference designs'
 tags:
-  - Python
   - orthogonal arrays
+  - optimal designs
   - conference matrices
+  - conference designs
   - design of experiments
 authors:
   - name: Pieter Thijs Eendebak
@@ -15,11 +16,11 @@ authors:
 affiliations:
  - name: University of Antwerp
    index: 1
- - name: TNO
+ - name: Netherlands Organisation for Applied Scientific Research (TNO)
    index: 2
  - name: University of Leuven
    index: 3
-date: 27 September 2018
+date: 11 November 2018
 bibliography: paper.bib
 ---
 
@@ -53,7 +54,7 @@ the package calculates the generalized wordlength pattern [@Tang1999], confoundi
 on the J-characteristics [@Deng1999] 
 and the number of degrees of freedom available for estimating selected factors' effects.
 
-The Orthogonal Array package consists of a C++ library with a user-friendly Python interface generated
+The Orthogonal Array package consists of a C++ library with a Python interface generated
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
 
