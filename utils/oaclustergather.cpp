@@ -30,28 +30,7 @@ inline std::vector< int > tovec (std::vector< int > ii, int i) {
         return ii;
 }
 
-// convert integer to split vector
-inline std::vector< int > tovec (int i) {
-        std::vector< int > ii;
-        ii.push_back (i);
-        return ii;
-}
 
-// convert two integers to split vector
-inline std::vector< int > tovec (int i, int j) {
-        std::vector< int > ii;
-        ii.push_back (i);
-        ii.push_back (j);
-        return ii;
-}
-
-inline std::vector< int > tovec (int i, int j, int k) {
-        std::vector< int > ii;
-        ii.push_back (i);
-        ii.push_back (j);
-        ii.push_back (k);
-        return ii;
-}
 
 /** read number of arrays and number of Pareto arrays from text file
  *
@@ -61,7 +40,6 @@ inline std::vector< int > tovec (int i, int j, int k) {
 bool readNumbersFile (const char *numbersfile, std::vector< long > &na, std::vector< long > &npareto, int kmin = -1,
                       int kmax = -1) {
         FILE *fid = fopen (numbersfile, "rt");
-        // printf("read numbers file %s\n", numbersfile);
         if (fid == 0) {
                 // printf ( "error: read numbers file %s: error\n" );
                 return 0;
@@ -73,7 +51,6 @@ bool readNumbersFile (const char *numbersfile, std::vector< long > &na, std::vec
 
         while (1) {
                 int r = fscanf (fid, "k %ld: %ld %ld\n", &k, &n, &np);
-                // printf("read numbers file: %s: r %d: %ld %ld %ld\n", numbersfile, r, k, n, np);
                 if (r < 3)
                         break;
                 if (k >= (int)na.size ())
@@ -608,12 +585,8 @@ int main (int argc, char *argv[]) {
                                         int loop = 0;
                                         while (true) {
                                                 long n = std::min (narraymax, narrays - naread);
-                                                // printf(" try to read %ld/%ld arrays\n", n, narraymax);
                                                 arraylist_t arraylist = afile.readarrays (n);
 
-                                                // http://www.cs.kent.edu/~jbaker/23Workshop/Chesebrough/mergesort/mergesortOMP.cpp
-                                                // ???
-                                                // http://berenger.eu/blog/c-openmp-a-shared-memory-quick-sort-using-with-openmp-tasks-example-source-code/
                                                 gfx::timsort (arraylist.begin (),
                                                               arraylist.end ()); // sorting the arrays makes the rank
                                                                                  // calculations with subrank re-use
@@ -668,8 +641,6 @@ int main (int argc, char *argv[]) {
                         }
                         npareto[k] = pset.numberindices ();
 
-                        // printfd("cleanrunK %d needcleanrun %d, outputprefix %s\n", cleanrunK,needcleanrun
-                        // ,outputprefix );
                         if ((cleanrunK || (!needcleanrun)) && (outputprefix != 0)) {
                                 std::string cdir = splitDir (lvls); // printfstring ( "sp0-split-%d/", split0 );
                                 std::string xxx = splitFile (lvls);
@@ -693,7 +664,6 @@ int main (int argc, char *argv[]) {
                                 writearrayfile (pfile.c_str (), &pp, arrayfilemode, adata->N, k);
                                 if (debug) {
                                 }
-                                // fflush ( 0 );
                         }
 
                         fflush (0);

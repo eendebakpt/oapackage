@@ -264,41 +264,6 @@ typedef larray< colindex_t > colpermtypelight;
 typedef std::vector< int > colpermtype;
 typedef std::vector< colpermtype > colpermset;
 
-#define USE_ROWPERM_POOL
-
-/// class representing array symmetries
-struct arraysymmetry {
-        larray< rowindex_t > *rowperm;
-
-        larray< colindex_t > colperm;
-
-      public:
-        static object_pool< larray< rowindex_t > > rowpermpool;
-
-      public:
-        ~arraysymmetry ();
-
-        arraysymmetry (const dyndata_t *dyndata);
-
-        /// copy constructor
-        arraysymmetry (const arraysymmetry &rhs);
-
-        // Copy assignment operator
-        arraysymmetry &operator= (const arraysymmetry &rhs);
-
-        inline int operator== (const arraysymmetry &as2) {
-                return (((*rowperm) == *(as2.rowperm)) && (this->colperm == as2.colperm));
-        }
-
-        int N () const { return rowperm->size (); }
-        void show () const {
-                myprintf ("arraysymmetry: rowperm ");
-                print_perm< rowindex_t > (*rowperm, 24);
-                myprintf ("             : colperm ");
-                print_perm (colperm);
-        }
-};
-
 #ifdef _WIN32
 // on windows do not use smart pointers, it is a mess
 //#if _MSC_VER >= 1600
@@ -339,8 +304,6 @@ typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
 #else
 typedef symmdata *symmdataPointer;
 #endif
-
-typedef std::vector< arraysymmetry > symmetryset;
 
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
@@ -384,112 +347,6 @@ struct LMCreduction_t {
 
         LMC_static_struct_t *staticdata;
 
-        class symm_t {
-              public:
-		/// which kind of data to store
-                int store;
-                int ncols;
-                std::vector< colpermset > colperms;
-                std::vector< colpermset > colcombs;
-                std::vector< symmetryset > symmetries;
-
-                symm_t () { ncols = -1; }
-                void show (int verbose = 1) const {
-                        long ns = 0, ncp = 0, ncc = 0;
-                        for (size_t i = 0; i < symmetries.size (); i++) {
-                                if (verbose >= 2) {
-                                        myprintf ("  symm_t: k %ld: symms %ld\n", (long)i,
-                                                  (long)symmetries[i].size ());
-                                }
-                                ns += symmetries[i].size ();
-                        }
-                        for (size_t i = 0; i < colperms.size (); i++)
-                                ncp += colperms[i].size ();
-                        for (size_t i = 0; i < colcombs.size (); i++)
-                                ncc += colcombs[i].size ();
-
-                        myprintf ("symm_t: store %d, symms %ld, colperms %ld, colcombs %ld, ncols %d\n", store, ns,
-                                  ncp, ncc, ncols);
-                }
-                bool valid () const { return ncols > 0; }
-                void makeColpermsUnique (int dverbose = 0) {
-                        symm_t &xx = *this;
-                        // create unique elements
-                        for (size_t i = 0; i < xx.colperms.size (); i++) {
-                                std::sort (xx.colperms[i].begin (), xx.colperms[i].end ());
-
-                                std::vector< colpermtype >::iterator last =
-                                    std::unique (xx.colperms[i].begin (), xx.colperms[i].end ());
-                                if (dverbose >= 2) {
-                                        myprintf ("makeColpermsUnique: i %ld vals %ld, unique %d\n", (long)i,
-                                                  (long)xx.colperms[i].size (), (int)(last - xx.colperms[i].begin ()));
-                                }
-                                xx.colperms[i].erase (last, xx.colperms[i].end ());
-
-                                for (size_t j = 0; j < xx.colperms[i].size (); j++) {
-                                }
-                        }
-                }
-
-                void storeColumnCombination (colpermtype cpv) {
-                        if (store < 2)
-                                return;
-                        int n = cpv.size ();
-                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
-                }
-                void storeColumnCombination (const colperm_t cp, int n) {
-                        if (store < 2)
-                                return;
-                        colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insert_if_not_at_end_of_vector (colcombs[n], cpv);
-                }
-                void storeColumnPermutation (const colperm_t cp, int n) {
-                        if (store < 2)
-                                return;
-                        colpermtype cpv = array2vector< int, colindex_t > (cp, n);
-                        insert_if_not_at_end_of_vector (colperms[n], cpv);
-                }
-                void showColperms (int verbose = 1) const {
-                        for (size_t i = 0; i <= (size_t)ncols; i++) {
-                                myprintf ("LMCreduction: column permutations with %d cols: %ld/%ld\n", (int)i,
-                                          (long)colperms[i].size (), ncombs< long > (ncols, i));
-                                if (verbose >= 2) {
-                                        for (colpermset::const_iterator it = colperms[i].begin ();
-                                             it != colperms[i].end (); it++) {
-                                                print_perm (*it);
-                                        }
-                                }
-                        }
-                }
-
-                void showColcombs (int verbose = 1) const {
-                        for (size_t i = 0; i <= (size_t)ncols; i++) {
-                                myprintf ("LMCreduction: column combinations with %d cols: %d/%ld\n", (int)i,
-                                          (int)colcombs[i].size (), ncombs< long > (ncols, i));
-                                if (verbose >= 2) {
-                                        for (colpermset::const_iterator it = colcombs[i].begin ();
-                                             it != colcombs[i].end (); it++) {
-                                                print_perm (*it);
-                                        }
-                                }
-                        }
-                }
-                void showSymmetries (int verbose = 1) const {
-                        for (size_t i = 0; i < (size_t)symmetries.size (); i++) {
-                                myprintf ("LMCreduction: symmetries with %ld cols: %ld/%ld\n", (long)i,
-                                          (long)symmetries[i].size (), ncombs< long > (ncols, i));
-                                if (verbose >= 2 || (i == 60)) {
-                                        for (symmetryset::const_iterator it = symmetries[i].begin ();
-                                             it != symmetries[i].end (); it++) {
-                                                it->show ();
-                                        }
-                                }
-                        }
-                }
-                void storeSymmetryPermutation (const dyndata_t *dyndata);
-
-        } symms;
-
         symmdataPointer sd;
 
       public:
@@ -526,8 +383,6 @@ struct LMCreduction_t {
                         this->sd = symmdataPointer (new symmdata (al, 1));
                 }
         }
-
-        void clearSymmetries ();
 
         void releaseStatic () {
                 if (this->staticdata != 0) {
@@ -625,15 +480,6 @@ struct dyndata_t {
 
         void setColperm (const std::vector< colindex_t > &perm) {
                 std::copy (perm.begin (), perm.end (), this->colperm);
-        }
-
-        /// initialize the rowsort structure from an arraysymmetry object
-        void initsymmetry (const arraysymmetry &arraysymm, const symmdata &sd, int ncols) {
-                const array_t *w = sd.rowvalue.array + (ncols - 1) * N;
-                for (int i = 0; i < N; i++) {
-                        rowsort[i].r = arraysymm.rowperm->at (i);
-                        rowsort[i].val = w[i];
-                }
         }
 
         /// get lightweight row permutation
@@ -747,13 +593,6 @@ lmc_t LMCcheck (const array_link &al, const arraydata_t &ad, const OAextend &oae
 
 /// direct LMC check using the original LMC check
 lmc_t LMCcheckOriginal (const array_link &al);
-
-/// helper function
-LMCreduction_t calculateSymmetryGroups (const array_link &al, const arraydata_t &adata, const OAextend &oaextend,
-                                        int verbose = 1, int hack = 0);
-lmc_t LMCcheckSymmetryMethod (const array_link &al, const arraydata_t &ad, const OAextend &oaextend,
-                              LMCreduction_t &reduction, LMCreduction_t &reductionsub, int dverbose);
-
 
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
