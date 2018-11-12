@@ -58,7 +58,7 @@ The Orthogonal Array package consists of a C++ library with a Python interface g
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
 
-The Orthogonal Array package website [@EendebakOA] contains a large collection of orthogonal arrays, 
+The Orthogonal Array package website [@EendebakOAwebsite] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
 the website of Neil Sloane [@SloaneOAwebsite]. 
 
