@@ -27,7 +27,7 @@ bibliography: paper.bib
 # Summary
 
 Orthogonal arrays, optimal designs and conference designs are important tools for the design of
-experiments [@Elster1995], [@Hedayat1999], [@Wu2009]. The Orthogonal Array package contains functionality 
+experiments [@Elster1995], [@hedayat2012orthogonal], [@Wu2009]. The Orthogonal Array package contains functionality 
 to generate and analyse these types of designs. More specifically, the Orthogonal Array package allows 
 the user to:
 
@@ -60,7 +60,7 @@ generation and analysis of designs are available in the OApackage documentation 
 
 The Orthogonal Array package website [@EendebakOA] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
-the website of Neil Sloane [@Sloanewebsite]. 
+the website of Neil Sloane [@SloaneOAwebsite]. 
 
 # Acknowledgements
 
