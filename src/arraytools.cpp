@@ -396,6 +396,37 @@ void array_transformation_t::apply (array_t *sourcetarget) const {
         destroy_array (tmp);
 }
 
+/** @brief Perform a row permutation
+*
+* @param source Source array
+* @param target Target array
+* @param perm Permutation to perform
+* @param nrows Number of rows
+* @param ncols Numer of columns
+*/
+inline void perform_inv_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows,
+                                         int ncols) {
+        for (int i = 0; i < ncols; i++)
+                for (int j = 0; j < nrows; j++) {
+                        target[nrows * i + j] = source[nrows * i + perm[j]];
+                }
+}
+
+/** @brief Perform inverse column permutation on an array
+ *
+ * @param source
+ * @param target
+ * @param perm
+ * @param nrows
+ * @param ncols
+ */
+inline void perform_inv_column_permutation (const array_t *source, array_t *target, colperm_t perm, int nrows,
+                                            int ncols) {
+        for (int i = 0; i < ncols; i++) {
+                memcpy (&target[i * nrows], &source[perm[i] * nrows], nrows * sizeof (array_t));
+        }
+}
+
 void array_transformation_t::apply (const array_t *source, array_t *target) const {
 
         array_t *tmp = create_array (ad);
@@ -583,6 +614,16 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
 
         free2d (tmpcol, jj + 1);
         delete_comb (pp);
+}
+
+arraylist_t addConstant (const arraylist_t &lst, int value) {
+        arraylist_t output_arrays (lst.size ());
+
+        for (size_t i = 0; i < lst.size (); i++) {
+                output_arrays[i] = lst[i] + value;
+        }
+
+        return output_arrays;
 }
 
 /** Return number of arrays with j_{2n+1}=0 for n<m */
@@ -1983,7 +2024,19 @@ MatrixFloat array_link::getEigenMatrix() const {
 	}
 	return mymatrix;
 }
+/// return true of specified column is smaller than column in another array
+int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) const {
 
+          if ((this->n_rows != rhs.n_rows) || c1 < 0 || c2 < 0 || (c1 > this->n_columns - 1)) {
+               myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
+               return 0;
+          }
+
+          int n_rows = this->n_rows;
+          return std::lexicographical_compare (rhs.array + c2 * n_rows, rhs.array + c2 * n_rows + n_rows,
+                                             array + c1 * n_rows, array + c1 * n_rows + n_rows);
+}
+        
 array_link array_link::reduceLMC () const {
         int strength = this->strength ();
         arraydata_t ad = arraylink2arraydata (*this, 0, strength);

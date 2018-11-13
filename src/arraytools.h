@@ -367,20 +367,6 @@ static inline array_t *create_array (const int nrows, const int ncols) {
  */
 inline array_t *create_array (const arraydata_t *ad) { return create_array (ad->N, ad->ncols); }
 
-/**
- * @brief Compare 2 columns of an array
- * @param A
- * @param col
- * @param col2
- * @param nrows
- * @param rstart
- * @param rend
- * @return
- */
-inline int equal_array_cols (carray_t *A, colindex_t col, colindex_t col2, rowindex_t nrows, rowindex_t rstart,
-                             rowindex_t rend) {
-        return std::equal (A + col * nrows + rstart, A + col * nrows + rend, (A + col2 * nrows + rstart));
-}
 
 /**
  * @brief Clone an array
@@ -392,65 +378,6 @@ inline array_t *clone_array (const array_t *const array, const rowindex_t nrows,
         return clone;
 }
 
-/** @brief Perform inverse column permutation on an array
- *
- * @param source
- * @param target
- * @param perm
- * @param nrows
- * @param ncols
- */
-inline void perform_inv_column_permutation (const array_t *source, array_t *target, colperm_t perm, int nrows,
-                                            int ncols) {
-        for (int i = 0; i < ncols; i++) {
-                memcpy (&target[i * nrows], &source[perm[i] * nrows], nrows * sizeof (array_t));
-        }
-}
-
-/** @brief Perform column permutation on an array
-*
-* @param source
-* @param target
-* @param perm
-* @param nrows
-* @param ncols
-*/
-inline void perform_column_permutation (carray_t *source, array_t *target, colperm_t perm, int nrows, int ncols) {
-        for (int i = 0; i < ncols; i++) {
-                memcpy (&target[perm[i] * nrows], &source[i * nrows], nrows * sizeof (array_t));
-        }
-}
-
-/** @brief Perform a row permutation
- *
- * @param source Source array
- * @param target Target array
- * @param perm Permutation to perform
- * @param nrows Number of rows
- * @param ncols Numer of columns
- */
-inline void perform_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows, int ncols) {
-        for (int i = 0; i < ncols; i++)
-                for (int j = 0; j < nrows; j++) {
-                        target[nrows * i + perm[j]] = source[nrows * i + j];
-                }
-}
-
-/** @brief Perform a row permutation
-*
-* @param source Source array
-* @param target Target array
-* @param perm Permutation to perform
-* @param nrows Number of rows
-* @param ncols Numer of columns
-*/
-inline void perform_inv_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows,
-                                         int ncols) {
-        for (int i = 0; i < ncols; i++)
-                for (int j = 0; j < nrows; j++) {
-                        target[nrows * i + j] = source[nrows * i + perm[j]];
-                }
-}
 
 /*** \brief Class representing an array
  */
@@ -507,7 +434,7 @@ struct array_link {
 		/// return true is the array is array with values in 0, 1, ...,  for each column
 		bool is_orthogonal_array() const;
 
-		/** return true if the array is a +1, 0, -1 valued array
+	/** return true if the array is a +1, 0, -1 valued array
 		 */
         bool is_conference () const;
 
@@ -760,18 +687,8 @@ struct array_link {
 		MatrixFloat getEigenMatrix() const;
 
         /// return true of specified column is smaller than column in another array
-        inline int columnGreater (int c1, const array_link &rhs, int c2) const {
-
-                if ((this->n_rows != rhs.n_rows) || c1 < 0 || c2 < 0 || (c1 > this->n_columns - 1)) {
-                        myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
-                        return 0;
-                }
-
-                int n_rows = this->n_rows;
-                return std::lexicographical_compare (rhs.array + c2 * n_rows, rhs.array + c2 * n_rows + n_rows,
-                                                     array + c1 * n_rows, array + c1 * n_rows + n_rows);
-        }
-
+        inline int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
+	
         std::string showarrayS () const;
 
         void debug () const;
@@ -834,15 +751,7 @@ arraydata_t arraylink2arraydata (const array_link &array, int extracols = 0, int
 typedef std::deque< array_link > arraylist_t;
 
 /// add a constant value to all arrays in a list
-inline arraylist_t addConstant (const arraylist_t &lst, int value) {
-        arraylist_t output_arrays (lst.size ());
-
-        for (size_t i = 0; i < lst.size (); i++) {
-                output_arrays[i] = lst[i] + value;
-        }
-
-        return output_arrays;
-}
+arraylist_t addConstant (const arraylist_t &lst, int value);
 
 /** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
 std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose = 1);
