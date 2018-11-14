@@ -2024,7 +2024,7 @@ MatrixFloat array_link::getEigenMatrix() const {
 	}
 	return mymatrix;
 }
-/// return true of specified column is smaller than column in another array
+
 int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) const {
 
           if ((this->n_rows != rhs.n_rows) || c1 < 0 || rhs_column < 0 || (c1 > this->n_columns - 1)) {
@@ -2044,7 +2044,6 @@ array_link array_link::reduceLMC () const {
         reduction.mode = OA_REDUCE;
 
         OAextend oaextend;
-        // oaextend.setAlgorithmAuto(&ad);
         oaextend.setAlgorithm (MODE_ORIGINAL, &ad);
 
         reduction.init_state = SETROOT;
@@ -2058,17 +2057,17 @@ symmetry_group array_link::row_symmetry_group () const {
 
         const int nc = this->n_columns;
 
-        std::vector< mvalue_t< int > > rr (this->n_rows);
+        std::vector< mvalue_t< int > > row_elements (this->n_rows);
         for (int i = 0; i < this->n_rows; i++) {
-                mvalue_t< int > &m = rr[i];
+                mvalue_t< int > &m = row_elements[i];
                 m.values.resize (nc);
 
                 for (int k = 0; k < nc; k++) {
                         m.values[k] = this->atfast (i, k);
                 }
         }
-        symmetry_group sg (rr, true, 0);
-        return sg;
+        symmetry_group row_symmetry_group (row_elements, true, 0);
+        return row_symmetry_group;
 }
 
 double array_link::nonzero_fraction () const {
@@ -2089,7 +2088,7 @@ void array_link::setcolumn (int target_column, const array_link &source_array, i
                     this->array + this->n_rows * target_column);
 }
         
-bool array_link::is_conference (int nz) const {
+bool array_link::is_conference (int number_of_zeros) const {
         if (!this->is_conference ()) {
                 return false;
         };
@@ -2100,7 +2099,7 @@ bool array_link::is_conference (int nz) const {
                         if (this->atfast (r, c) == 0)
                                 n++;
                 }
-                if (n != nz)
+                if (n != number_of_zeros)
                         return false;
         }
         return true;

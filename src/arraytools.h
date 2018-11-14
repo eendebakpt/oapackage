@@ -687,7 +687,7 @@ struct array_link {
 		MatrixFloat getEigenMatrix() const;
 
         /// return true of specified column is smaller than column in another array
-        inline int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
+        int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
 	
         std::string showarrayS () const;
 
