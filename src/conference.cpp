@@ -20,10 +20,9 @@
 #include "graphtools.h"
 
 #include "conference.h"
-//#include "lmc.h"
 
 
-void print_cperm(const conference_column &c, const char *msg) {
+void print_column(const conference_column &c, const char *msg) {
 	if (msg != 0)
 		myprintf("%s: ", msg);
 	for (size_t i = 0; i < c.size(); i++) {
@@ -33,7 +32,7 @@ void print_cperm(const conference_column &c, const char *msg) {
 }
 
 /// return true of the argument is even
-inline bool iseven (int q) { return (q % 2) == 0; }
+inline bool is_even (int q) { return (q % 2) == 0; }
 
 /** return structure parameters of a conference design
  *
@@ -47,7 +46,7 @@ void getConferenceNumbers (int N, int k, int &q, int &q1, int &q2, int &v) {
         q = (N - 2) / 2;
 
         if (k < 2 + q) {
-                if (iseven (q)) {
+                if (is_even (q)) {
                         q1 = q / 2 - 1;
                         v = 1;
                         q2 = q1 + 1;
@@ -58,7 +57,7 @@ void getConferenceNumbers (int N, int k, int &q, int &q1, int &q2, int &v) {
                 }
         } else {
 
-                if (iseven (q)) {
+                if (is_even (q)) {
                         q1 = q / 2;
                         v = -1;
                         q2 = q1;
@@ -87,7 +86,7 @@ array_link conference2DSD(const array_link &conf, bool add_zeros)
 void showCandidates (const std::vector< conference_column > &column_candidates) {
         for (size_t i = 0; i < column_candidates.size (); i++) {
                 myprintf ("%d: ", (int)i);
-                print_cperm (column_candidates[i]);
+                print_column (column_candidates[i]);
                 myprintf ("\n");
         }
 }
@@ -1369,11 +1368,11 @@ size_t countvalues (const std::vector< NumType > &c, size_t start, size_t end, N
 void debug_candidate (const conference_column &candidate, const std::vector< int > &check_indices, const char *str) {
         printfd ("%s:\n", str);
         printf (" : perm ");
-        print_cperm (candidate);
+        print_column (candidate);
         printf ("\n");
         conference_column xx (check_indices.begin (), check_indices.end ());
         printf (" : chec ");
-        print_cperm (xx);
+        print_column (xx);
         printf ("\n");
 }
 
@@ -1500,7 +1499,7 @@ void inflateCandidateExtensionHelper (std::vector< conference_column > &list, co
                 printfd ("row: %d to %d\n", gstart, gend);
                 conference_column tmp (candidate.begin () + gstart, candidate.begin () + gend);
                 printf ("   current perm: ");
-                print_cperm (tmp);
+                print_column (tmp);
                 printf ("\n");
         }
 
@@ -1681,7 +1680,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
                         n++;
                         if (verbose >= 3) {
                                 myprintf ("n %d: filter %d: ", (int)n, dfilter.filter (c));
-                                print_cperm (c);
+                                print_column (c);
                                 printf ("\n");
                         }
 
@@ -1695,7 +1694,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
 
                                 if (verbose >= 2) {
                                         printfd ("## push candidate   : ");
-                                        print_cperm (c);
+                                        print_column (c);
                                         myprintf ("\n");
                                 }
                                 cc.push_back (c);
@@ -1798,7 +1797,7 @@ std::vector< conference_column > generateDoubleConferenceExtensions (const array
                         if (dfilter.filter (c)) {
                                 if (verbose >= 2) {
                                         printfd ("## push candindate   : ");
-                                        print_cperm (c);
+                                        print_column (c);
                                         myprintf ("\n");
                                 }
                                 cc.push_back (c);
@@ -2700,7 +2699,6 @@ std::vector< conference_column > extensionInflate (const std::vector< conference
                 if (verbose > 2)
                         myprintf ("### inflate candidate %d: (sg ngroups %d, sgfull ngroups %d\n", (int)i,
                                   (int)alsg.ngroups, (int)alfullsg.ngroups);
-                // printf(" "); print_cperm( basecandidate); printf("\n");
                 cc = inflateCandidateExtension (basecandidate, als, alsg, check_indices, ct, verbose, filter);
 
                 if (verbose >= 2) {

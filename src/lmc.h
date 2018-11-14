@@ -112,7 +112,13 @@ inline std::string algorithm_t_list () {
 }
 
 /// method used for initialization of columns
-enum initcolumn_t { INITCOLUMN_ZERO, INITCOLUMN_PREVIOUS, INITCOLUMN_J5 };
+enum initcolumn_t {
+  /// Initialize column with zeros
+  INITCOLUMN_ZERO,
+  /// Initialize column with values of previous column
+  INITCOLUMN_PREVIOUS,
+  /// Initialize column with values based on J5 value
+  INITCOLUMN_J5 };
 
 /// variations of the J45 structures
 enum j5structure_t { J5_ORIGINAL, J5_45 };
@@ -160,7 +166,7 @@ static inline bool operator> (const rowsort_t &a, const rowsort_t &b) {
 }
 
 /// Apply Hadamard transformation to orthogonal array
-void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
+//void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
 
 /// Apply Hadamard transformation to orthogonal array
 void apply_hadamard (array_link &al, colindex_t hcol);
@@ -255,7 +261,13 @@ void clear_LMCreduction_pool ();
 /// variable indicating the state of the reduction process
 enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
 //! main mode for the LMC routine: test, reduce or reduce with initialization
-enum OA_MODE { OA_TEST, OA_REDUCE, OA_REDUCE_PARTIAL };
+enum OA_MODE {
+  /// test for minimal form
+  OA_TEST,
+  /// reduce to minimal form
+  OA_REDUCE, 
+  /// reduce to partial minimal form
+  OA_REDUCE_PARTIAL };
 
 typedef larray< rowindex_t > rowpermtypelight;
 typedef larray< colindex_t > colpermtypelight;
@@ -297,7 +309,6 @@ bool operator!= (symmdataPointer const &ptr, int x);
 #else
 #include <tr1/memory>
 typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
-// typedef std::shared_ptr<symmdata> symmdataPointer;
 #endif
 
 #else
@@ -307,9 +318,9 @@ typedef symmdata *symmdataPointer;
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
 /// Append element to vector if the element the element is not at the end of vector
-template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &cpv) {
+template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &value) {
         if (cp.size () > 0) {
-                if (!(cp.back () == cpv))
+                if (!(cp.back () == value))
                         cp.push_back (cpv);
         } else {
                 cp.push_back (cpv);
@@ -383,6 +394,7 @@ struct LMCreduction_t {
                 }
         }
 
+        /// release internal LMCreduction_helper_t object
         void releaseStatic () {
                 if (this->staticdata != 0) {
                         release_LMCreduction_object (this->staticdata);

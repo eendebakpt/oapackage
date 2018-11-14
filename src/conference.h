@@ -15,7 +15,7 @@
 #include "graphtools.h"
 
 /// print a candidate extension
-void print_cperm(const conference_column &column, const char *msg = 0);
+void print_column(const conference_column &column, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
