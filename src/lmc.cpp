@@ -151,7 +151,7 @@ std::string algnames (algorithm_t m) {
         case MODE_J5ORDERX:
                 str = stringify (MODE_J5ORDERX);
                 break;
-        case MODE_J5ORDERXFAST:
+        case MODE_J5ORDER_2LEVEL:
                 str = stringify (MODE_J5ORDERXFAST);
                 break;
         default:
@@ -370,6 +370,13 @@ void LMCreduction_t::show(int verbose) const {
 		this->transformation->show();
 }
 
+std::string LMCreduction_t::__repr__ () const {
+	std::string ss = printfstring ("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, "
+					"REDUCTION_CHANGED %d), init_state %d, lastcol %d\n",
+					this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED,
+					this->init_state, this->lastcol);
+	return ss;
+}
 void LMCreduction_t::updateTransformation (const arraydata_t &ad, const dyndata_t &dyndatacpy, levelperm_t *lperm_p,
                                            const array_t *original) {
 
@@ -508,10 +515,27 @@ void dyndata_t::getColperm(colpermtypelight &cp) const {
 	std::copy(this->colperm, this->colperm + this->col + 1, cp.data_pointer);
 }
 
+rowsort_t * allocate_rowsort(int N) {
+  return (rowsort_t *)malloc (sizeof (rowsort_t) * N);
+}
+
+void deallocate_rowsort(rowsort_t *& rowsort) {
+  free (rowsort);
+  rowsort = 0;
+}
+
+rowsorter_t::rowsorter_t(int number_of_rows) {
+      this->number_of_rows = number_of_rows;
+      this->rowsort = allocate_rowsort(number_of_rows);	
+  }  
+rowsorter_t::~rowsorter_t() {
+ deallocate_rowsort(this->rowsort); 
+}
+
 dyndata_t::dyndata_t (int N_, int col_) {
         this->N = N_;
         this->col = col_;
-        this->rowsort = (rowsort_t *)malloc (sizeof (rowsort_t) * this->N);
+        this->rowsort = allocate_rowsort(this->N);
         this->colperm = new_perm_init< colindex_t > (this->N); 
         this->rowsortl = 0;
 
@@ -541,7 +565,7 @@ dyndata_t::dyndata_t (const dyndata_t *dd) {
 }
 
 dyndata_t::~dyndata_t () {
-        free (this->rowsort);
+        deallocate_rowsort(this->rowsort);
         delete_perm (colperm);
 
         deleterowsortl ();
@@ -554,7 +578,7 @@ void dyndata_t::initdata (const dyndata_t &dd) {
         copy_perm (dd.colperm, this->colperm, N);
 
         if (dd.rowsort != 0) {
-                this->rowsort = (rowsort_t *)malloc (sizeof (rowsort_t) * this->N);
+                this->rowsort = allocate_rowsort(this->N);
                 memcpy (this->rowsort, dd.rowsort, N * sizeof (rowsort_t));
         }
         if (dd.rowsortl != 0) {
@@ -588,7 +612,7 @@ void dyndata_t::copydata (const dyndata_t &dd) {
                                 this->rowsort = 0;
                         }
 
-                        this->rowsort = (rowsort_t *)malloc (sizeof (rowsort_t) * this->N);
+                        this->rowsort = allocate_rowsort(this->N);
                         memcpy (this->rowsort, dd.rowsort, N * sizeof (rowsort_t));
                 }
                 if (dd.rowsortl != 0) {
@@ -1177,7 +1201,7 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
                 /* pass to non-root stage */
                 if (oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
                     (oaextend.getAlgorithm () == MODE_J5ORDERX && reduction->sd != 0) ||
-                    (oaextend.getAlgorithm () == MODE_J5ORDERXFAST && reduction->sd != 0)) {
+                    (oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL && reduction->sd != 0)) {
                         dyndatatmp.initrowsortl ();
                         ret = LMCreduce_non_root_2level (original, ad, &dyndatatmp, reduction, oaextend,
                                                          tmpStatic); 
@@ -1509,7 +1533,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         dyndata.col = 0; 
         dyndata.setColperm (perm, ad.ncols);
 
-        if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDERXFAST) {
+        if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL) {
                 dyndata.initrowsortl ();
         }
 
@@ -1916,7 +1940,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
                 copy_array (array, reduction.array, ad.N, ad.ncols);
                 lmc = LMCcheckj5 (al, ad, reduction, oaextend);
         } break;
-        case MODE_J5ORDERXFAST: {
+        case MODE_J5ORDER_2LEVEL: {
                 array_link al (array, ad.N, ad.ncols, -20);
                 copy_array (array, reduction.array, ad.N, ad.ncols);
 

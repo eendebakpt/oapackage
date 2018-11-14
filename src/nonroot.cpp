@@ -862,7 +862,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
                                 if (arrayclass->order == ORDER_LEX) {
 
                                         if ((oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
-                                             oaextend.getAlgorithm () == MODE_J5ORDERXFAST) &&
+                                             oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL) &&
                                             reduction->sd != 0) { 
                                                 myassert (reduction->sd != 0, "LMC_check_col_ft");
                                                 ret = LMC_check_col_ft_2level (

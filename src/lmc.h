@@ -78,18 +78,27 @@ void lmc_stats ();
  */
 enum lmc_t { LMC_LESS, LMC_EQUAL, LMC_MORE, LMC_NONSENSE };
 
-/// different algorithms
+/// different algorithms for minimal form check
 enum algorithm_t {
+	/// LMC minimal form
         MODE_ORIGINAL,
+	/// LMC minimal form with J4 method
         MODE_J4,
+	/// J5 minimal form
         MODE_J5ORDER,
+	/// J5 minimal form
         MODE_J5ORDERX,
         MODE_INVALID,
+	/// Automatically select the algorithm
         MODE_AUTOSELECT,
+	/// debugging method
         MODE_LMC_SYMMETRY,
+	/// LMC minimal form, specialized for 2-level arrays
         MODE_LMC_2LEVEL,
+	/// debugging method
         MODE_LMC_DEBUG,
-        MODE_J5ORDERXFAST
+	/// J5 minimal form
+        MODE_J5ORDER_2LEVEL
 };
 #define MODE_LMC MODE_ORIGINAL
 
@@ -97,7 +106,7 @@ inline std::string algorithm_t_list () {
         std::string ss =
             printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (j5 order dominant), %d "
                           "(MODE_J5ORDERXFAST)",
-                          MODE_AUTOSELECT, MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDERXFAST);
+                          MODE_AUTOSELECT, MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDER_2LEVEL);
         ss += printfstring (", %d (MODE_LMC_SYMMETRY), %d (MODE_LMC_2LEVEL)", MODE_LMC_SYMMETRY, MODE_LMC_2LEVEL);
         return ss;
 }
@@ -401,13 +410,7 @@ struct LMCreduction_t {
 
 		void show(int verbose = 2) const;
 
-        std::string __repr__ () const {
-                std::string ss = printfstring ("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, "
-                                               "REDUCTION_CHANGED %d), init_state %d, lastcol %d\n",
-                                               this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED,
-                                               this->init_state, this->lastcol);
-                return ss;
-        }
+        std::string __repr__ () const;
 
         /// called whenever we find a reduction
         void updateFromLoop (const arraydata_t &ad, const dyndata_t &dynd, levelperm_t *lperms,
@@ -415,17 +418,27 @@ struct LMCreduction_t {
         void updateTransformation (const arraydata_t &ad, const dyndata_t &dynd, levelperm_t *lperms,
                                    const array_t *original);
 
-        inline bool doBreak (lmc_t ret) {
-                if (this->mode >= OA_REDUCE)
-                        return false;
-                else {
-                        return ret == LMC_LESS;
-                }
-        }
         inline void updateLastCol (int col) { this->lastcol = col; }
 
       private:
         void free ();
+};
+
+/// allocate structure to keep track of row sorting
+rowsort_t * allocate_rowsort(int N);
+
+/// deallocate row structure 
+void deallocate_rowsort(rowsort_t *& rowsort);
+
+/// Structure to sort rows of arrays
+class rowsorter_t
+{
+public:
+  int number_of_rows;
+  rowsort_t *rowsort;
+  
+  rowsorter_t(int number_of_rows);
+  ~rowsorter_t();
 };
 
 /** @brief Contains dynamic data of an array
@@ -607,10 +620,11 @@ std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, 
 /// Perform LMC check lexicographically
 lmc_t LMCcheckLex (array_link const &al, arraydata_t const &ad);
 
+/// Perform minimal form check for with J4 method
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
-/// Perform LMC check with J5 ordering
+/// Perform minimal form check for J5 ordering
 lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
                   int hack = 0);
 

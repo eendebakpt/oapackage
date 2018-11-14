@@ -20,7 +20,7 @@
 #include "graphtools.h"
 
 #include "conference.h"
-#include "lmc.h"
+//#include "lmc.h"
 
 
 void print_cperm(const conference_column &c, const char *msg) {
@@ -3140,8 +3140,8 @@ lmc_t LMC0checkDC (const array_link &al, int verbose) {
         std::vector< int > rowsignperm (nrows);
         init_signperm (rowsignperm);
 
-        dyndata_t rowperm_data = dyndata_t (nrows);
-        rowsort_t *rowsort = rowperm_data.rowsort;
+        rowsorter_t rowsorter(nrows);
+        rowsort_t *rowsort = rowsorter.rowsort;
 
         for (rowindex_t i = 0; i < nrows; i++) {
                 rowsort[i].val = i;
@@ -3249,8 +3249,8 @@ lmc_t LMC0check (const array_link &al, int verbose) {
         std::vector< int > rowsignperm (nrows);
         init_signperm (rowsignperm);
 
-        dyndata_t rowperm_data = dyndata_t (nrows);
-        rowsort_t *rowsort = rowperm_data.rowsort;
+        rowsorter_t rowsorter(nrows);
+        rowsort_t *rowsort = rowsorter.rowsort;
 
         for (rowindex_t i = 0; i < nrows; i++) {
                 rowsort[i].val = i;
