@@ -3309,6 +3309,26 @@ void arraydata_t::set_colgroups (const symmetry_group &sg) {
         std::copy (sg.gsize.begin (), sg.gsize.end (), this->colgroupsize);
 }
 
+void arraydata_t::show_colgroups () const {
+          myprintf ("arraydata_t: colgroups: ");
+          print_perm (this->colgroupindex, this->ncolgroups);
+          myprintf ("                  size: ");
+          print_perm (this->colgroupsize, this->ncolgroups);
+}
+
+void arraydata_t::calculate_oa_index (colindex_t strength) {
+          int combs = 1;
+          for (int i = 0; i < this->strength; i++) {
+               combs *= this->s[i];
+          }
+
+          if (combs == 0) {
+               this->oaindex = 0;
+          } else {
+               this->oaindex = this->N / combs;
+          }
+}
+        
 /**
  * @brief Complete arraydata but treat last column as single column group
  */

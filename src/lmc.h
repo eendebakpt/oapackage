@@ -315,15 +315,16 @@ typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
 typedef symmdata *symmdataPointer;
 #endif
 
+/// initial state for reduction algorithm
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
 /// Append element to vector if the element the element is not at the end of vector
 template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &value) {
         if (cp.size () > 0) {
                 if (!(cp.back () == value))
-                        cp.push_back (cpv);
+                        cp.push_back (value);
         } else {
-                cp.push_back (cpv);
+                cp.push_back (value);
         }
 }
 
@@ -639,12 +640,6 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &ad, LMCreduction_t &r
 /// Perform minimal form check for J5 ordering
 lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
                   int hack = 0);
-
-/* internal functions LMC reduction */
-#ifdef OAMEM
-lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                                    LMCreduction_t *reduction);
-#endif
 
 
 /**

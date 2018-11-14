@@ -176,23 +176,27 @@ array_link createJ2tableConference (const array_link &confmatrix);
 /// create J2 table as intermediate result for J-characteristic calculations
 array_link createJdtable (const array_link &al);
 
-enum ordering_t { ORDER_LEX, ORDER_J5 };
+enum ordering_t { 
+  /// lexicograph minimal by columns ordering
+  ORDER_LEX,
+  /// J5 based ordering
+  ORDER_J5 };
 
 /** @brief Contains properties of the design (number of rows, columns, levels)
  *
  * Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
  */
 struct arraydata_t {
-        /** number of runs */
+        /// number of runs 
         rowindex_t N;
-        /** total number of columns (factors) in the design */
+        /// total number of columns (factors) in the design 
         colindex_t ncols;
-        /** strength of the design */
+        /// strength of the design 
         colindex_t strength;
-        /** pointer to factor levels of the array */
+        /// pointer to factor levels of the array 
         array_t *s;
 
-        /** Ordering used for arrays */
+        /// Ordering used for arrays 
         ordering_t order;
 
         /* derived data */
@@ -270,26 +274,10 @@ struct arraydata_t {
         void set_colgroups (const symmetry_group &sg);
 
         /// show column groups in the array class
-        void show_colgroups () const {
-                myprintf ("arraydata_t: colgroups: ");
-                print_perm (this->colgroupindex, this->ncolgroups);
-                myprintf ("                  size: ");
-                print_perm (this->colgroupsize, this->ncolgroups);
-        }
+        void show_colgroups () const;
 
-		/// calculate the index of the orthogonal arrays in this class
-        void calculate_oa_index (colindex_t strength) {
-                int combs = 1;
-                for (int i = 0; i < this->strength; i++) {
-                        combs *= this->s[i];
-                }
-
-                if (combs == 0) {
-                        this->oaindex = 0;
-                } else {
-                        this->oaindex = this->N / combs;
-                }
-        }
+	/// calculate the index of the orthogonal arrays in this class
+        void calculate_oa_index (colindex_t strength);
 
         /// return the root array for the class
         array_link create_root (int n_columns = -1, int fill_value = 0) const;

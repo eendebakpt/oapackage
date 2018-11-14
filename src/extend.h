@@ -164,9 +164,19 @@ int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensi
 arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
-enum { DFILTER_NONE, DFILTER_BASIC, DFILTER_MULTI };
+enum dfilter_t {
+  /// no filtering on D-efficiency
+  DFILTER_NONE,
+  /// filtering on D-efficiency
+  DFILTER_BASIC,
+  /// filtering on D-efficiency with multi column prediction
+  DFILTER_MULTI };
 
-enum { DCALC_ALWAYS, DCALC_COND };
+enum dcalc_mode { 
+  /// always calculate efficiency
+  DCALC_ALWAYS,
+  /// only calculate efficiency for LMC_LESS
+  DCALC_COND };
 
 /** @brief Structure for dynamic extension of arrays based on D-efficiencies
  *
@@ -187,8 +197,8 @@ struct dextend_t {
 
         /// check mode: 0: no filter, 1: classic, 2: predict
         int filtermode;
-        /// DCALC_ALWAYS: always calculate A, DCALC_COND: only for LMC_LESS
-        int Dcheck;
+
+	dcalc_mode Dcheck;
 
         /// perform immediate LMC check in extension
         int directcheck;

@@ -424,12 +424,6 @@ void random_transformation (array_t *array, const arraydata_t *adp) {
         transformation->apply (cpy, array);
 }
 
-/// Apply Hadamard transformation to orthogonal array
-void apply_hadamard (array_link &al, colindex_t hcol) {
-        arraydata_t adata = arraylink2arraydata (al);
-        apply_hadamard (&adata, al.array, hcol);
-}
-
 /**
 * @brief Apply Hadamard transformation to orthogonal array
 * @param source
@@ -466,6 +460,12 @@ void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol) {
                         array[c * ad->N + r] = perm[array[ad->N * c + r]];
                 }
         }
+}
+
+/// Apply Hadamard transformation to orthogonal array
+void apply_hadamard (array_link &al, colindex_t hcol) {
+        arraydata_t adata = arraylink2arraydata (al);
+        apply_hadamard (&adata, al.array, hcol);
 }
 
 void dyndata_t::reset () {

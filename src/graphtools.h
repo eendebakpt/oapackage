@@ -20,7 +20,15 @@
  * Conference isomorphism: permute rows, columns and to row and column negations (values in 0, +1, -1)
  * Orthogonal array isomorphism: permutations of rows, columns and column symbol permutations
  */
-enum matrix_isomorphism_t { ISOTOPY, MATRIX_ISOMORPHISM, CONFERENCE_ISOMORPHISM, OA_ISOMORPHISM };
+enum matrix_isomorphism_t { 
+  /// isotopy: permute rows, columns and symbols
+  ISOTOPY,
+  /// permute rows and columns
+  MATRIX_ISOMORPHISM,
+  /// permute rows, columns and to row and column negations (values in 0, +1, -1)
+  CONFERENCE_ISOMORPHISM,
+  /// permutations of rows, columns and column symbol permutations
+  OA_ISOMORPHISM };
 
 /// isomorphism type for column and row permtations and column permutations
 const matrix_isomorphism_t CONFERENCE_RESTRICTED_ISOMORPHISM = OA_ISOMORPHISM;

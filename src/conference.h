@@ -57,7 +57,12 @@ class conference_t {
         colindex_t ncols; 
 
         /// Type of conference design
-        enum conference_type { CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE };
+        enum conference_type { 
+            /// normal conference design CONFERENCE_NORMAL,
+            /// conference design with zeros only on diagonal
+            CONFERENCE_DIAGONAL,
+            /// double conference design
+            DCONFERENCE };
 		/// defines the type of designs
 		conference_type ctype;      
 		/// defines the isomorphism type
