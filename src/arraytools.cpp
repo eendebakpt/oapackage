@@ -5500,78 +5500,78 @@ array_link selectArrays (const std::string filename, int ii) {
 
 #endif // FULLPACKAGE, related to arrayfile_t
 
-void selectArrays (const arraylist_t &al, std::vector< int > &idx, arraylist_t &rl) {
+void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list) {
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); it++) {
-                rl.push_back (al.at (*it));
+                output_list.push_back (input_list.at (*it));
         }
 }
-void selectArrays (const arraylist_t &al, std::vector< long > &idx, arraylist_t &rl) {
+void selectArrays (const arraylist_t &input_list, std::vector< long > &idx, arraylist_t &output_list) {
         for (std::vector< long >::iterator it = idx.begin (); it < idx.end (); it++) {
-                if ((*it) >= 0 && ((*it) < (int)al.size ())) {
-                        rl.push_back (al.at (*it));
+                if ((*it) >= 0 && ((*it) < (int)input_list.size ())) {
+                        output_list.push_back (input_list.at (*it));
                 } else {
                         myprintf ("selectArrays: index %ld out of bounds!\n", *it);
                 }
         }
 }
 
-arraylist_t selectArrays (const arraylist_t &al, std::vector< int > &idx) {
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< int > &idx) {
         arraylist_t rl;
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); ++it) {
                 int val = *it;
-                if (val >= 0 && val <= (int)al.size ()) {
-                        rl.push_back (al.at (val));
+                if (val >= 0 && val <= (int)input_list.size ()) {
+                        rl.push_back (input_list.at (val));
                 } else {
                         myprintf ("selectArrays: error: index out of bounds: index %d, size %d\n", val,
-                                  (int)al.size ());
+                                  (int)input_list.size ());
                 }
         }
         return rl;
 }
 
-arraylist_t selectArrays (const arraylist_t &al, std::vector< long > &idx) {
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< long > &idx) {
         arraylist_t rl;
         for (std::vector< long >::iterator it = idx.begin (); it < idx.end (); ++it) {
                 int val = *it;
-                if (val >= 0 && val <= (int)al.size ()) {
-                        rl.push_back (al.at (val));
+                if (val >= 0 && val <= (int)input_list.size ()) {
+                        rl.push_back (input_list.at (val));
                 } else {
                         myprintf ("selectArrays: error: index out of bounds: index %d, size %ld\n", val,
-                                  (long)al.size ());
+                                  (long)input_list.size ());
                 }
         }
         return rl;
 }
 
-array_link array_link::operator+ (array_t v) const {
+array_link array_link::operator+ (array_t value) const {
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] += v;
+                tmp.array[i] += value;
         }
         return tmp;
 }
-array_link array_link::operator- (array_t v) const {
+array_link array_link::operator- (array_t value) const {
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] -= v;
-        }
-        return tmp;
-}
-
-array_link array_link::operator+ (const array_link &b) const {
-        assert (this->equalsize (b));
-        array_link tmp = (*this);
-        for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] += b.array[i];
+                tmp.array[i] -= value;
         }
         return tmp;
 }
 
-array_link array_link::operator- (const array_link &b) const {
-        assert (this->equalsize (b));
+array_link array_link::operator+ (const array_link &array) const {
+        assert (this->equalsize (array));
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] -= b.array[i];
+                tmp.array[i] += array.array[i];
+        }
+        return tmp;
+}
+
+array_link array_link::operator- (const array_link &array) const {
+        assert (this->equalsize (array));
+        array_link tmp = (*this);
+        for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
+                tmp.array[i] -= array.array[i];
         }
         return tmp;
 }
@@ -5617,7 +5617,7 @@ array_link array_link::operator-= (array_t val) {
           return *this;
 }
         
-/// stack to arrays together
+/// stack two arrays together
 array_link vstack (const array_link &al, const array_link &b) {
         assert (al.n_columns == b.n_columns);
         array_link v (al.n_rows + b.n_rows, al.n_columns, array_link::INDEX_NONE);
@@ -5631,11 +5631,11 @@ array_link vstack (const array_link &al, const array_link &b) {
         return v;
 }
 
-array_link hstack (const array_link &al, const conference_column &b) {
-        assert (al.n_rows == (int)b.size ());
-        array_link v (al.n_rows, al.n_columns + 1, array_link::INDEX_NONE);
-        std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
-        std::copy (b.begin (), b.end (), v.array + v.n_rows * al.n_columns);
+array_link hstack (const array_link &array, const conference_column &column) {
+        assert (array.n_rows == (int)column.size ());
+        array_link v (array.n_rows, array.n_columns + 1, array_link::INDEX_NONE);
+        std::copy (array.array, array.array + array.n_columns * array.n_rows, v.array);
+        std::copy (column.begin (), column.end (), v.array + v.n_rows * array.n_columns);
         return v;
 }
 

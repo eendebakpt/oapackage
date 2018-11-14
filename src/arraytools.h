@@ -1388,13 +1388,14 @@ void write_array_format (std::ostream &ss, const atype *array, const int nrows, 
 }
 
 /// Make a selection of arrays
-arraylist_t selectArrays (const arraylist_t &al, std::vector< int > &idx);
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< int > &idx);
 /// Make a selection of arrays
-arraylist_t selectArrays (const arraylist_t &al, std::vector< long > &idx);
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< long > &idx);
 
 /// Make a selection of arrays, append to list
-void selectArrays (const arraylist_t &al, std::vector< int > &idx, arraylist_t &fl);
-void selectArrays (const arraylist_t &al, std::vector< long > &idx, arraylist_t &fl);
+void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list);
+/// Make a selection of arrays, append to list
+void selectArrays (const arraylist_t &input_list, std::vector< long > &idx, arraylist_t &output_list);
 
 /// Make a selection of arrays, keep
 template < class Container, class IntType > void keepElements (Container &al, std::vector< IntType > &idx) {
@@ -1449,12 +1450,9 @@ void write_array_format (const atype *array, const int nrows, const int ncols, i
                         count += nrows;
                 }
         }
-#ifdef RPACKAGE
-#else
 #ifdef FULLPACKAGE
         fflush (stdout);
         setbuf (stdout, NULL);
-#endif
 #endif
 }
 

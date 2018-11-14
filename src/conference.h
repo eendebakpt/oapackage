@@ -58,7 +58,8 @@ class conference_t {
 
         /// Type of conference design
         enum conference_type { 
-            /// normal conference design CONFERENCE_NORMAL,
+            /// normal conference design
+            CONFERENCE_NORMAL,
             /// conference design with zeros only on diagonal
             CONFERENCE_DIAGONAL,
             /// double conference design
