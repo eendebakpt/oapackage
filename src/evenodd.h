@@ -60,78 +60,28 @@ struct depth_path_t {
 /// structure to count and show number of arrays generated, the structure is thread safe
 struct counter_t {
 
-        std::vector< int > nfound; // vector with number of arrays found
+	// vector with number of arrays found for each column
+        std::vector< int > nfound; 
 
-        counter_t (int n) { nfound.resize (n + 1); }
+        counter_t (int n);
 
-        void addNfound (int col, int num) {
-#ifdef DOOPENMP
-#pragma omp atomic
-#endif
-                this->nfound[col] += num;
-        }
+        void addNfound (int col, int num);
 
-        long nArrays () const {
-                long na = std::accumulate (this->nfound.begin (), this->nfound.end (), 0);
-                ;
-                return na;
-        }
-        void addNumberFound (int n, int k) {
-#ifdef DOOMP
-#pragma omp critical(DEXTEND_NFOUND)
-#endif
-                { this->nfound[k] += n; }
-        }
+        long nArrays () const ;
+        void addNumberFound (int n, int k) ;
 
-        void clearNumberFound () {
-#ifdef DOOPENMP
-#pragma omp critical
-#endif
-                {
-                        for (size_t k = 0; k < this->nfound.size (); k++) {
-                                this->nfound[k] = 0;
-                        }
-                }
-        }
+        void clearNumberFound ();
 
-        void addNumberFound (const counter_t &de) {
-#ifdef DOOPENMP
-#pragma omp critical
-#endif
-                {
-                        for (size_t k = 0; k < this->nfound.size (); k++) {
-                                this->nfound[k] += de.nfound[k];
-                        }
-                }
-        }
+        void addNumberFound (const counter_t &de);
 
         /// show information about the number of arrays found
-        inline void showcountscompact () const {
-#ifdef DOOPENMP
-#pragma omp critical
-#endif
-                {
-                        myprintf ("depth_extend: counts ");
-                        display_vector (this->nfound);
-                        myprintf ("\n");
-                }
-        }
+         void showcountscompact () const;
 
         /// show information about the number of arrays found
-        inline void showcounts (const arraydata_t &ad) const {
-                myprintf ("--results--\n");
-                for (size_t i = ad.strength; i <= (size_t)ad.ncols; i++) {
-                        myprintf ("depth_extend: column %ld: found %d\n", i, this->nfound[i]);
-                }
-        }
+        void showcounts (const arraydata_t &ad) const;
 
         /// show information about the number of arrays found
-        inline void showcounts (const char *str, int first, int last) const {
-                myprintf ("--results--\n");
-                for (size_t i = first; i <= (size_t)last; i++) {
-                        myprintf ("%s: column %ld: found %d\n", str, i, this->nfound[i]);
-                }
-        }
+        void showcounts (const char *str, int first, int last) const;
 };
 
 /** Helper structure for dynamic extension
@@ -208,7 +158,7 @@ struct depth_extend_sub_t {
                 return ga;
         }
 
-        inline arraylist_t selectArraysXX (const array_link &al, const arraylist_t &elist) const {
+	inline arraylist_t selectArraysXX (const array_link &al, const arraylist_t &elist) const {
                 if (verbose >= 2)
                         myprintf ("depth_extend_sub_t: selectArraysXX: alist.size() %ld, lmctype %ld\n", elist.size (),
                                   lmctype.size ());
@@ -228,14 +178,14 @@ struct depth_extend_sub_t {
                 return ga;
         }
 
-        inline void info () const {
-                size_t nl = 0;
+
+        void info () const {
+                size_t number_lmc = 0;
                 for (size_t t = 0; t < lmctype.size (); t++) {
-                        nl += (lmctype[t] > +LMC_EQUAL);
+                        number_lmc += (lmctype[t] > +LMC_EQUAL);
                 }
-                // int ngood =std::accumulate(lmctype.begin(),lmctype.end(),0);//#include <numeric>
                 if (verbose) {
-                        myprintf ("lmc %ld/%d\n", nl, (int)lmctype.size ());
+                        myprintf ("lmc %ld/%d\n", number_lmc, (int)lmctype.size ());
                         myprintf ("valididx size %ld\n", valididx.size ());
                 }
         }
@@ -309,7 +259,6 @@ struct depth_extend_t {
                 ad = de.ad;
                 loglevelcol = de.loglevelcol;
                 logtime = de.logtime;
-                // cache_extensions=de.cache_extensions;
                 extension_column_list = de.extension_column_list;
                 arraywriter = de.arraywriter;
                 writearrays = de.writearrays;
@@ -321,7 +270,6 @@ struct depth_extend_t {
                 counter = de.counter;
         }
         ~depth_extend_t () {
-                // closeafiles();
         }
 
       public:

@@ -1133,7 +1133,7 @@ int leftbit[] =   {8,7,6,6,5,5,5,5,4,4,4,4,4,4,4,4,
 extern "C" {
 #endif
 
-extern void alloc_error(char*);
+extern void alloc_error(const char*);
 extern void breakout(int*,int*,int,int,int,set*,int);
 extern boolean cheapautom(int*,int,boolean,int);
 extern void doref(graph*,int*,int*,int,int*,int*,int*,set*,int*,

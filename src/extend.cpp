@@ -59,8 +59,7 @@ std::vector< int > dextend_t::filterArrays (const array_link &al, const arraylis
         array_link tmparray (al.n_rows, al.n_columns + 1, -1);
         std::copy (al.array, al.array + al.n_columns * al.n_rows, tmparray.array);
 
-        cprintf (verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn,
-                 ngoodcombined, nn);
+	cprintf (verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn, ngoodcombined, nn);
         flush_stdout ();
         const int lastcolx = al.n_columns;
 
