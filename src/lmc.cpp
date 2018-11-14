@@ -38,22 +38,22 @@ using namespace std;
 
 // worker pool of static objects
 
-static object_pool< LMC_static_struct_t > staticDataPool;
+static object_pool< LMCreduction_helper_t > LMCreduction_pool;
 
-LMC_static_struct_t *getGlobalStatic () {
+LMCreduction_helper_t *acquire_LMCreduction_object () {
 #ifdef NOREUSE
-        LMC_static_struct_t *pp = new LMC_static_struct_t ();
+        LMCreduction_helper_t *pp = new LMCreduction_helper_t ();
         pp->id = 100 * omp_get_thread_num () + int(random () % 40);
         return pp;
 #endif
 
 
-        LMC_static_struct_t *p = 0;
+        LMCreduction_helper_t *p = 0;
 #pragma omp critical
-        { p = staticDataPool.New (); }
+        { p = LMCreduction_pool.New (); }
         return p;
 }
-void releaseGlobalStatic (LMC_static_struct_t *p) {
+void release_LMCreduction_object (LMCreduction_helper_t *p) {
 #ifdef NOREUSE
         delete p;
         return;
@@ -61,47 +61,47 @@ void releaseGlobalStatic (LMC_static_struct_t *p) {
 
 #pragma omp critical
         {
-                staticDataPool.Delete (p);
+                LMCreduction_pool.Delete (p);
         }
 }
 
-void cleanGlobalStatic () { staticDataPool.reset (); }
+void clear_LMCreduction_pool () { LMCreduction_pool.reset (); }
 
 // indexed pool of static objects
-std::vector< LMC_static_struct_t * > globalStaticPool;
-LMC_static_struct_t *getGlobalStaticIndexed (int n) {
-        const int verbose = 0;
+// std::vector< LMC_static_struct_t * > globalStaticPool;
+// LMC_static_struct_t *getGlobalStaticIndexed (int n) {
+//         const int verbose = 0;
+// 
+//         if (verbose)
+//                 myprintf ("getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size ());
+//         if (n >= (int(globalStaticPool.size ()))) {
+//                 myprintf ("  allocating new element in globalStaticPool: n %d, pool size %ld\n", n,
+//                           (long)globalStaticPool.size ());
+//                 size_t psize = globalStaticPool.size ();
+//                 for (int jj = psize; jj <= n; jj++) {
+//                         LMC_static_struct_t *p = new LMC_static_struct_t ();
+//                         if (verbose)
+//                                 myprintf ("new element jj %d\n", jj);
+//                         globalStaticPool.push_back (p);
+//                 }
+//         }
+// 
+//         if (verbose) {
+//                 myprintf ("   ");
+//                 globalStaticPool[n]->show ();
+//         }
+//         return globalStaticPool.at (n);
+// }
+// 
+// void cleanGlobalStaticIndexed () {
+//         printfd ("cleanGlobalStaticIndexed: delete %d items\n", globalStaticPool.size ());
+//         for (size_t jj = 0; jj < globalStaticPool.size (); jj++) {
+//                 delete globalStaticPool[jj];
+//         }
+//         globalStaticPool.resize (0);
+// }
 
-        if (verbose)
-                myprintf ("getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size ());
-        if (n >= (int(globalStaticPool.size ()))) {
-                myprintf ("  allocating new element in globalStaticPool: n %d, pool size %ld\n", n,
-                          (long)globalStaticPool.size ());
-                size_t psize = globalStaticPool.size ();
-                for (int jj = psize; jj <= n; jj++) {
-                        LMC_static_struct_t *p = new LMC_static_struct_t ();
-                        if (verbose)
-                                myprintf ("new element jj %d\n", jj);
-                        globalStaticPool.push_back (p);
-                }
-        }
-
-        if (verbose) {
-                myprintf ("   ");
-                globalStaticPool[n]->show ();
-        }
-        return globalStaticPool.at (n);
-}
-
-void cleanGlobalStaticIndexed () {
-        printfd ("cleanGlobalStaticIndexed: delete %d items\n", globalStaticPool.size ());
-        for (size_t jj = 0; jj < globalStaticPool.size (); jj++) {
-                delete globalStaticPool[jj];
-        }
-        globalStaticPool.resize (0);
-}
-
-LMC_static_struct_t::~LMC_static_struct_t () {
+LMCreduction_helper_t::~LMCreduction_helper_t () {
         this->freeall ();
 }
 
@@ -109,7 +109,7 @@ LMC_static_struct_t::~LMC_static_struct_t () {
 static int LMC_static_count = 0;
 #endif
 
-LMC_static_struct_t::LMC_static_struct_t () {
+LMCreduction_helper_t::LMCreduction_helper_t () {
         /* initialize static structure values to zero */
         this->LMC_non_root_init = 0;
         this->LMC_root_init = 0;
@@ -840,7 +840,7 @@ inline void static_init_rp (rowperm_t &rp, rowindex_t N) {
 }
 #endif
 
-void LMC_static_struct_t::init_root_stage (levelperm_t *&lperm_p, colperm_t *&colperm_p, const arraydata_t *adp) {
+void LMCreduction_helper_t::init_root_stage (levelperm_t *&lperm_p, colperm_t *&colperm_p, const arraydata_t *adp) {
         /* permutations buffer */
         lperm_p = this->current_trans->lperms;
         colperm_p = this->colperm_p;
@@ -855,7 +855,7 @@ void LMC_static_struct_t::init_root_stage (levelperm_t *&lperm_p, colperm_t *&co
 *
 * @param adp
 */
-void LMC_static_struct_t::freeall () {
+void LMCreduction_helper_t::freeall () {
 
         /* clear old structures */
         if (this->current_trans != 0) {
@@ -896,7 +896,7 @@ void LMC_static_struct_t::freeall () {
         this->LMC_root_rowperms_init = 0;
 }
 
-void LMC_static_struct_t::init (const arraydata_t *adp) {
+void LMCreduction_helper_t::init (const arraydata_t *adp) {
         log_print (DEBUG, "static_init_LMC: adp->ncols %d, adp->strength %d\n", adp->ncols, adp->strength);
 
         /* clear old structures */
@@ -929,7 +929,7 @@ void LMC_static_struct_t::init (const arraydata_t *adp) {
         this->LMC_root_rowperms_init = 0;
 }
 
-int LMC_static_struct_t::needUpdate (const arraydata_t *adp) const {
+int LMCreduction_helper_t::needUpdate (const arraydata_t *adp) const {
         int update = 0;
         if (this->ad == 0)
                 update = 1;
@@ -941,7 +941,7 @@ int LMC_static_struct_t::needUpdate (const arraydata_t *adp) const {
         return update;
 }
 
-int LMC_static_struct_t::update (const arraydata_t *adp) {
+int LMCreduction_helper_t::update (const arraydata_t *adp) {
         int update = this->needUpdate (adp);
 
         if (update) {
@@ -950,7 +950,7 @@ int LMC_static_struct_t::update (const arraydata_t *adp) {
         return update;
 }
 
-void LMC_static_struct_t::init_nonroot_stage (levelperm_t *&lperm_p, colperm_t *&colperm_p, colperm_t *&localcolperm_p,
+void LMCreduction_helper_t::init_nonroot_stage (levelperm_t *&lperm_p, colperm_t *&colperm_p, colperm_t *&localcolperm_p,
                                               dyndata_t **&dynd_p, int &dynd_p_nelem, array_t *&colbuffer,
                                               const arraydata_t *adp) const {
         int updatevars = 1; // always update variables since there is a second static init function
@@ -1054,7 +1054,7 @@ inline void LMC_root_sort (carray_t *array, const arraydata_t *ad, rowsort_t *ro
 
 /** @brief Static initialization of level permutations
  */
-inline void static_init_lperms (const arraydata_t *adp, levelperm_t *&lperm_p, LMC_static_struct_t &tmpStatic) {
+inline void static_init_lperms (const arraydata_t *adp, levelperm_t *&lperm_p, LMCreduction_helper_t &tmpStatic) {
         /* no static update, we assume this has been done already */
         tmpStatic.update (adp);
 
@@ -1064,7 +1064,7 @@ inline void static_init_lperms (const arraydata_t *adp, levelperm_t *&lperm_p, L
 /** @brief Static initialization of root row permutations
 */
 inline void static_init_rootrowperms (const arraydata_t *adp, int &totalperms, rowperm_t *&rootrowperms,
-                                      levelperm_t *&lperm_p, LMC_static_struct_t &tmpStatic) {
+                                      levelperm_t *&lperm_p, LMCreduction_helper_t &tmpStatic) {
         /* no static update, we assume this has been done already */
 
         totalperms = tmpStatic.nrootrowperms;
@@ -1102,7 +1102,7 @@ void show_array (carray_t *array, const int ncols, const int nrows, colperm_t co
 */
 lmc_t LMCreduce_root_level_perm_full (carray_t const *original, const arraydata_t *ad, const dyndata_t *dyndata,
                                       LMCreduction_t *reduction, const OAextend &oaextend,
-                                      LMC_static_struct_t &tmpStatic) {
+                                      LMCreduction_helper_t &tmpStatic) {
         lmc_t ret = LMC_EQUAL;
         rowsort_t *rowsort = dyndata->rowsort;
 
@@ -1145,7 +1145,7 @@ lmc_t LMCreduce_root_level_perm_full (carray_t const *original, const arraydata_
 * @see LMC
 */
 lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                                 LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic) {
+                                 LMCreduction_t *reduction, const OAextend &oaextend, LMCreduction_helper_t &tmpStatic) {
 
         lmc_t ret = LMC_EQUAL;
         rowsort_t *rowsort = dyndata->rowsort;
@@ -1290,7 +1290,7 @@ int fastj3 (carray_t *array, rowindex_t N, const int J, const colindex_t *pp) {
 
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj) {
-        LMC_static_struct_t &tmpStatic = * (getGlobalStatic () );
+        LMCreduction_helper_t &tmpStatic = * (acquire_LMCreduction_object () );
 
 
         const int maxjj = 40;
@@ -1406,7 +1406,7 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         delete_comb (combroot);
         delete_comb (comb);
 
-	releaseGlobalStatic(&tmpStatic);
+	release_LMCreduction_object(&tmpStatic);
 
         return ret;
 }
@@ -1433,7 +1433,7 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
 
 /// Perform check or reduction using ordering based on delete-one-factor J4 values
 int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, const arraydata_t &ad,
-               const OAextend &oaextend, LMC_static_struct_t &tmpStatic, LMCreduction_t &reduction, int verbose = 0) {
+               const OAextend &oaextend, LMCreduction_helper_t &tmpStatic, LMCreduction_t &reduction, int verbose = 0) {
         assert (jj == 5);
         lmc_t ret;
 
@@ -1588,7 +1588,7 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
 lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int hack) {
         const int dverbose = 0;
-        LMC_static_struct_t &tmpStatic = reduction.getStaticReference ();
+        LMCreduction_helper_t &tmpStatic = reduction.getReferenceReductionHelper ();
 
         const int jj = 5;
 #ifdef OACHECK
@@ -2051,7 +2051,7 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 
 /// full reduction, no root-trick
 lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *adx, const dyndata_t *dyndata,
-                     LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic) {
+                     LMCreduction_t *reduction, const OAextend &oaextend, LMCreduction_helper_t &tmpStatic) {
         arraydata_t *ad = new arraydata_t (*adx); 
         ad->oaindex = ad->N;                      // NOTE: this is to prevent processing on blocks in LMC_check_col
 
@@ -2093,7 +2093,7 @@ lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t
 lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
                  LMCreduction_t *reduction, const OAextend &oaextend) {
 
-        LMC_static_struct_t &tmpStatic = reduction->getStaticReference();
+        LMCreduction_helper_t &tmpStatic = reduction->getReferenceReductionHelper();
 
         if (dyndata->col == 0) {
                 /* update information of static variables */

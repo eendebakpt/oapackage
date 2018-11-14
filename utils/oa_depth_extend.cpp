@@ -284,7 +284,7 @@ int main (int argc, char *argv[]) {
         delete adfull;
         delete arraylist;
 
-        cleanGlobalStatic ();
+        clear_LMCreduction_pool ();
         
         logstream (SYSTEM) << "#time end: " << currenttime () << std::endl;
         if (verbose)

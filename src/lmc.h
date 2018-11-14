@@ -162,7 +162,7 @@ void apply_hadamard (array_link &al, colindex_t hcol);
  *  Part of the allocations is for structures that are constant and are re-used each time an LMC calculation is
  * performed. Some other structures are temporary buffers that are written to all the time.
  */
-struct LMC_static_struct_t {
+struct LMCreduction_helper_t {
       public:
         /* variable data */
         int LMC_non_root_init;
@@ -189,8 +189,8 @@ struct LMC_static_struct_t {
 
         array_transformation_t *current_trans; /* not used at the moment? */
 
-        LMC_static_struct_t ();
-        ~LMC_static_struct_t ();
+        LMCreduction_helper_t ();
+        ~LMCreduction_helper_t ();
 
         void show (int verbose = 1) const {
                 myprintf ("LMC_static_struct_t: ad %p, LMC_non_root_init %d\n", (void *)(this->ad),
@@ -237,11 +237,11 @@ struct LMC_static_struct_t {
 //void cleanGlobalStaticIndexed ();
 
 /// return static structure from dynamic global pool, return with releaseGlobalStatic
-LMC_static_struct_t *getGlobalStatic ();
-void releaseGlobalStatic (LMC_static_struct_t *p);
+LMCreduction_helper_t *acquire_LMCreduction_object ();
+void release_LMCreduction_object (LMCreduction_helper_t *p);
 
 /// release all objects in the pool
-void cleanGlobalStatic ();
+void clear_LMCreduction_pool ();
 
 /// variable indicating the state of the reduction process
 enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
@@ -335,7 +335,7 @@ struct LMCreduction_t {
 
         int nrows, ncols;
 
-        LMC_static_struct_t *staticdata;
+        LMCreduction_helper_t *staticdata;
 
         symmdataPointer sd;
 
@@ -376,20 +376,20 @@ struct LMCreduction_t {
 
         void releaseStatic () {
                 if (this->staticdata != 0) {
-                        releaseGlobalStatic (this->staticdata);
+                        release_LMCreduction_object (this->staticdata);
                         this->staticdata = 0;
                 }
         }
 
-        /// acquire a reference to a LMC_static_struct_t object
+        /// acquire a reference to a LMCreduction_helper_t object
         void initStatic () {
                 if (this->staticdata == 0) {
-                        this->staticdata = getGlobalStatic ();
+                        this->staticdata = acquire_LMCreduction_object ();
                 }
         }
 
         /// return a reference to a object with LMC reduction data
-        LMC_static_struct_t &getStaticReference () {
+        LMCreduction_helper_t &getReferenceReductionHelper () {
                 if (this->staticdata == 0) {
 		        this->initStatic();
 		}
@@ -570,9 +570,6 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 /// helper function
 lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
                 LMCreduction_t *reduction, const OAextend &oaextend);
-/// Perform reduction or LMC check without root trick
-lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
-                     LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic);
 
 /// generic LMCcheck function
 lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
