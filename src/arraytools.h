@@ -300,9 +300,9 @@ struct arraydata_t {
         
         /**
          * @brief Reset strength of arraydata
-         * @param t
+         * @param strength The strength to reset the structure to
          */
-		void reset_strength(colindex_t t);
+		void reset_strength(colindex_t strength);
 
         /// Return index of the column group for a column
 		colindex_t get_col_group(const colindex_t col) const;
@@ -1111,15 +1111,21 @@ void showArrayList (const arraylist_t &lst);
 
 namespace arrayfile {
 
-/// format mode
+/// file format mode
 enum arrayfilemode_t {
+	/// text based format
         ATEXT,
         ALATEX,
+	/// binary format
         ABINARY,
+	/// binary format storing differences of arrays
         ABINARY_DIFF,
+	/// binary format storing differences of arrays and zero offsets
         ABINARY_DIFFZERO,
         AERROR,
+	/// automatically determine the format
         A_AUTOMATIC,
+	/// automatically determine the format (but binary)
         A_AUTOMATIC_BINARY
 };
 enum afilerw_t { READ, WRITE, READWRITE };
