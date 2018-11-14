@@ -1,0 +1,6 @@
+runs 32
+strength 3
+nfactors 9
+2 2 2 2 2 2 2 2 2 2 2 2 
+
+

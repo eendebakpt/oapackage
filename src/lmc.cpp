@@ -36,16 +36,6 @@ bool operator!= (symmdataPointer const &ptr, int x) {
 
 using namespace std;
 
-// legacy global static object
-LMC_static_struct_t _globalStaticX;
-LMC_static_struct_t &getGlobalStaticOne () {
-        return _globalStaticX;
-}
-
-LMC_static_struct_t *getGlobalStaticOnePointer () {
-        return &_globalStaticX;
-}
-
 // worker pool of static objects
 
 static object_pool< LMC_static_struct_t > staticDataPool;
@@ -1300,7 +1290,8 @@ int fastj3 (carray_t *array, rowindex_t N, const int J, const colindex_t *pp) {
 
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj) {
-        LMC_static_struct_t &tmpStatic = getGlobalStaticOne ();
+        LMC_static_struct_t &tmpStatic = * (getGlobalStatic () );
+
 
         const int maxjj = 40;
         assert (jj < maxjj);
@@ -1415,6 +1406,7 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         delete_comb (combroot);
         delete_comb (comb);
 
+	releaseGlobalStatic(&tmpStatic);
 
         return ret;
 }
@@ -2100,15 +2092,8 @@ lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t
   */
 lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
                  LMCreduction_t *reduction, const OAextend &oaextend) {
-        LMC_static_struct_t *tpp = 0;
-        if (reduction->staticdata == 0) {
-                tpp = getGlobalStaticOnePointer ();
 
-        } else {
-                tpp = (reduction->staticdata);
-        }
-
-        LMC_static_struct_t &tmpStatic = *tpp;
+        LMC_static_struct_t &tmpStatic = reduction->getStaticReference();
 
         if (dyndata->col == 0) {
                 /* update information of static variables */

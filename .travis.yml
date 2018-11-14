@@ -23,6 +23,9 @@ script:
   - ./oaranktest -I ../docs/examples/OAN56K28.oa
   - ./oainfo ../docs/examples/OAN56K28.oa
   - ./oaextendsingle  -c ../oaconfig.txt -l 1
+  - ./oaextendsingle -m 3 -l 1 -c ../oaconfig3.txt --maxk 5 # J4 algorithm
+  - ./oaconference -N 12 -k 6 -v 0
+
 
 #addons:
 #  artifacts: true

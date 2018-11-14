@@ -285,8 +285,7 @@ int main (int argc, char *argv[]) {
         delete arraylist;
 
         cleanGlobalStatic ();
-        arraysymmetry::rowpermpool.reset ();
-
+        
         logstream (SYSTEM) << "#time end: " << currenttime () << std::endl;
         if (verbose)
                 std::cout << "#time total: " << printfstring ("%.1f", get_time_ms () - time0) << " [s]" << std::endl;

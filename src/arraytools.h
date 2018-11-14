@@ -1162,7 +1162,7 @@ struct arrayfile_t {
         /// file opened for reading or writing
         afilerw_t rwmode;
 
-        // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
+        // we cannot define SWIG variables as int32_t, we get errors in the Python module 
 
         /// number of arrays in the file
         int narrays;
@@ -1215,59 +1215,11 @@ struct arrayfile_t {
         /// append a single array to the file
         void append_array (const array_link &a, int specialindex = -1);
 
-        int swigcheck () const {
-#ifdef SWIGCODE
-                if (sizeof (int) != 4) {
-                        fprintf (stderr, "arrayfile_t: error int is not 32-bit?!\n");
-                }
-                return 1;
-#else
-                return 0;
-#endif
-        }
+	/// return True if code is wrapper by SWIG
+        int swigcheck () const;
 
-        std::string showstr () const {
-                if (this->isopen ()) {
-                        std::string modestr;
-                        switch (mode) {
-                        case ALATEX:
-                                modestr = "latex";
-                                break;
-                        case ATEXT:
-                                modestr = "text";
-                                break;
-                        case ABINARY:
-                                modestr = "binary";
-                                break;
-                        case ABINARY_DIFF:
-                                modestr = "binary_diff";
-                                break;
-                        case ABINARY_DIFFZERO:
-                                modestr = "binary_diffzero";
-                                break;
-                        case AERROR:
-                                modestr = "invalid";
-                                break;
-                        default:
-                                modestr = "error";
-                                myprintf ("arrayfile_t: showstr(): no such mode\n");
-                                break;
-                        }
-
-                        int na = narrays;
-                        if (this->rwmode == WRITE) {
-                                na = narraycounter;
-                        }
-
-                        std::string s = printfstring ("file %s: %d rows, %d columns, %d arrays", filename.c_str (),
-                                                      nrows, ncols, na);
-                        s += printfstring (", mode %s, nbits %d", modestr.c_str (), nbits);
-                        return s;
-                } else {
-                        std::string s = "file " + filename + ": invalid file";
-                        return s;
-                }
-        }
+	/// return string describing the object
+        std::string showstr () const;
 
         /// return current position in file
         size_t pos () const { return narraycounter; }
@@ -1292,37 +1244,12 @@ struct arrayfile_t {
         array_link diffarray;
 
         /// return header size for binary format array
-        int headersize () const { return 8 * sizeof (int32_t); };
+        int headersize () const;
         /// return size of bit array
-        int barraysize () const {
-                int num = sizeof (int32_t);
-
-                switch (this->nbits) {
-                case 8:
-                        num += nrows * ncols;
-                        break;
-                case 32:
-                        num += nrows * ncols * 4;
-                        break;
-                case 1: {
-                        word_addr_t num_of_words = nwords (nrows * ncols);
-                        num += sizeof (word_t) * num_of_words;
-                } break;
-                default:
-                        myprintf ("error: number of bits undefined\n");
-                        break;
-                }
-                return num;
-        };
+        int barraysize () const;
 
         /// wrapper function for fwrite or gzwrite
-        size_t afwrite (void *ptr, size_t t, size_t n) {
-                if (this->nfid == 0) {
-                        myprintf ("afwrite: not implemented, we cannot write compressed files\n");
-                        return 0;
-                }
-                return fwrite (ptr, t, n, nfid);
-        }
+        size_t afwrite (void *ptr, size_t t, size_t n);
 
         /// wrapper function for fread or gzread
         size_t afread (void *ptr, size_t sz, size_t cnt);
@@ -1351,35 +1278,10 @@ struct arrayfile_t {
         void write_array_binary_diffzero (const array_link &A); 
 
       public:
-        int getnbits () { return nbits; }
+        int getnbits ();
 
         /// parse string to determine the file mode
-        static arrayfile::arrayfilemode_t parseModeString (const std::string format) {
-                arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
-                if (format == "AUTO" || format == "A") {
-                        mode = arrayfile::A_AUTOMATIC;
-
-                } else {
-                        if (format == "BINARY" || format == "B") {
-                                mode = arrayfile::ABINARY;
-                        } else {
-                                if (format == "D" || format == "DIFF") {
-                                        mode = arrayfile::ABINARY_DIFF;
-                                } else {
-                                        if (format == "Z" || format == "DIFFZERO") {
-                                                mode = arrayfile::ABINARY_DIFFZERO;
-                                        } else {
-                                                if (format == "AB" || format == "AUTOBINARY") {
-                                                        mode = arrayfile::A_AUTOMATIC_BINARY;
-                                                } else {
-                                                        mode = arrayfile::ATEXT;
-                                                }
-                                        }
-                                }
-                        }
-                }
-                return mode;
-        }
+        static arrayfile::arrayfilemode_t parseModeString (const std::string format);
 
         /// return number of bits necessary to store an array
         static int arrayNbits (const arraydata_t &ad) {

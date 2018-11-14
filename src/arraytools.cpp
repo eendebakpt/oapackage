@@ -2027,13 +2027,13 @@ MatrixFloat array_link::getEigenMatrix() const {
 /// return true of specified column is smaller than column in another array
 int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) const {
 
-          if ((this->n_rows != rhs.n_rows) || c1 < 0 || c2 < 0 || (c1 > this->n_columns - 1)) {
+          if ((this->n_rows != rhs.n_rows) || c1 < 0 || rhs_column < 0 || (c1 > this->n_columns - 1)) {
                myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
                return 0;
           }
 
           int n_rows = this->n_rows;
-          return std::lexicographical_compare (rhs.array + c2 * n_rows, rhs.array + c2 * n_rows + n_rows,
+          return std::lexicographical_compare (rhs.array + rhs_column * n_rows, rhs.array + rhs_column * n_rows + n_rows,
                                              array + c1 * n_rows, array + c1 * n_rows + n_rows);
 }
         
@@ -4042,6 +4042,61 @@ bool arrayfile_t::isbinary () const {
         return (this->mode == ABINARY || this->mode == ABINARY_DIFF || this->mode == ABINARY_DIFFZERO);
 }
 
+int arrayfile_t::swigcheck () const {
+#ifdef SWIGCODE
+          if (sizeof (int) != 4) {
+               fprintf (stderr, "arrayfile_t: error int is not 32-bit?!\n");
+          }
+          return 1;
+#else
+          return 0;
+#endif
+}
+
+/// return string describing the object
+std::string arrayfile_t::showstr () const {
+          if (this->isopen ()) {
+               std::string modestr;
+               switch (mode) {
+               case ALATEX:
+                         modestr = "latex";
+                         break;
+               case ATEXT:
+                         modestr = "text";
+                         break;
+               case ABINARY:
+                         modestr = "binary";
+                         break;
+               case ABINARY_DIFF:
+                         modestr = "binary_diff";
+                         break;
+               case ABINARY_DIFFZERO:
+                         modestr = "binary_diffzero";
+                         break;
+               case AERROR:
+                         modestr = "invalid";
+                         break;
+               default:
+                         modestr = "error";
+                         myprintf ("arrayfile_t: showstr(): no such mode\n");
+                         break;
+               }
+
+               int na = narrays;
+               if (this->rwmode == WRITE) {
+                         na = narraycounter;
+               }
+
+               std::string s = printfstring ("file %s: %d rows, %d columns, %d arrays", filename.c_str (),
+                                             nrows, ncols, na);
+               s += printfstring (", mode %s, nbits %d", modestr.c_str (), nbits);
+               return s;
+          } else {
+               std::string s = "file " + filename + ": invalid file";
+               return s;
+          }
+}
+        
 void arrayfile_t::append_array (const array_link &a, int specialindex) {
         int r;
         if (!this->isopen ()) {
@@ -4124,6 +4179,37 @@ arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int nar
         createfile (fname, nrows, ncols, narrays_, m, nb);
 }
 
+int arrayfile_t::headersize () const { return 8 * sizeof (int32_t); }
+
+int arrayfile_t::barraysize () const {
+          int num = sizeof (int32_t);
+
+          switch (this->nbits) {
+          case 8:
+               num += nrows * ncols;
+               break;
+          case 32:
+               num += nrows * ncols * 4;
+               break;
+          case 1: {
+               word_addr_t num_of_words = nwords (nrows * ncols);
+               num += sizeof (word_t) * num_of_words;
+          } break;
+          default:
+               myprintf ("error: number of bits undefined\n");
+               break;
+          }
+          return num;
+}
+
+size_t arrayfile_t::afwrite (void *ptr, size_t t, size_t n) {
+          if (this->nfid == 0) {
+               myprintf ("afwrite: not implemented, we cannot write compressed files\n");
+               return 0;
+          }
+          return fwrite (ptr, t, n, nfid);
+}
+        
 size_t arrayfile_t::afread (void *ptr, size_t sz, size_t cnt) {
 #ifdef USEZLIB
         size_t r;
@@ -5090,6 +5176,35 @@ void arrayfile_t::write_array_binary_diff (const array_link &A) {
 
         // update with previous array
         this->diffarray = A;
+}
+
+int arrayfile_t::getnbits () { return nbits; }
+
+arrayfile::arrayfilemode_t arrayfile_t::parseModeString (const std::string format) {
+          arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
+          if (format == "AUTO" || format == "A") {
+               mode = arrayfile::A_AUTOMATIC;
+
+          } else {
+               if (format == "BINARY" || format == "B") {
+                         mode = arrayfile::ABINARY;
+               } else {
+                         if (format == "D" || format == "DIFF") {
+                              mode = arrayfile::ABINARY_DIFF;
+                         } else {
+                              if (format == "Z" || format == "DIFFZERO") {
+                                        mode = arrayfile::ABINARY_DIFFZERO;
+                              } else {
+                                        if (format == "AB" || format == "AUTOBINARY") {
+                                                  mode = arrayfile::A_AUTOMATIC_BINARY;
+                                        } else {
+                                                  mode = arrayfile::ATEXT;
+                                        }
+                              }
+                         }
+               }
+          }
+          return mode;
 }
 
 /**

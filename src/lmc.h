@@ -157,11 +157,10 @@ void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
 void apply_hadamard (array_link &al, colindex_t hcol);
 
 /**
- * @brief Contains initialization data for static allocations
+ * @brief Contains structures used by the LMC reduction or LMC check
  *
  *  Part of the allocations is for structures that are constant and are re-used each time an LMC calculation is
- * performed.
- *  Some other structures are temporary buffers that are written to all the time.
+ * performed. Some other structures are temporary buffers that are written to all the time.
  */
 struct LMC_static_struct_t {
       public:
@@ -189,15 +188,6 @@ struct LMC_static_struct_t {
         colindex_t **localcolperm_p; /** local column permutation */
 
         array_transformation_t *current_trans; /* not used at the moment? */
-
-#ifdef OADEBUG
-        std::string ref;
-        inline void setRef (const std::string s) {
-                ref = s;
-                myprintf ("LMC_static_struct_t: set ref %s\n", ref.c_str ());
-        }
-        int id;
-#endif
 
         LMC_static_struct_t ();
         ~LMC_static_struct_t ();
@@ -243,15 +233,15 @@ struct LMC_static_struct_t {
         }
 };
 
-// pool of available structures
-LMC_static_struct_t *getGlobalStaticIndexed (int n);
-void cleanGlobalStaticIndexed ();
+//LMC_static_struct_t *getGlobalStaticIndexed (int n);
+//void cleanGlobalStaticIndexed ();
 
 /// return static structure from dynamic global pool, return with releaseGlobalStatic
 LMC_static_struct_t *getGlobalStatic ();
 void releaseGlobalStatic (LMC_static_struct_t *p);
+
+/// release all objects in the pool
 void cleanGlobalStatic ();
-LMC_static_struct_t &getGlobalStaticOne ();
 
 /// variable indicating the state of the reduction process
 enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
@@ -398,13 +388,12 @@ struct LMCreduction_t {
                 }
         }
 
-        /// return a reference to a LMC_static_struct_t object
+        /// return a reference to a object with LMC reduction data
         LMC_static_struct_t &getStaticReference () {
                 if (this->staticdata == 0) {
-                        return getGlobalStaticOne ();
-                } else {
-                        return *(this->staticdata);
-                }
+		        this->initStatic();
+		}
+		return *(this->staticdata);
         }
 
         /// reset the reduction: clears the symmetries and sets the transformation to zero
