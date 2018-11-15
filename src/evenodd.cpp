@@ -31,6 +31,74 @@
 #endif
 #endif
 
+counter_t::counter_t (int n) { nfound.resize (n + 1); }
+
+void counter_t::addNfound (int col, int num) {
+#ifdef DOOPENMP
+#pragma omp atomic
+#endif
+        this->nfound[col] += num;
+}
+
+long counter_t::nArrays () const {
+        long na = std::accumulate (this->nfound.begin (), this->nfound.end (), 0);
+        ;
+        return na;
+}
+void counter_t::addNumberFound (int n, int k) {
+#ifdef DOOMP
+#pragma omp critical(DEXTEND_NFOUND)
+#endif
+        { this->nfound[k] += n; }
+}
+
+void counter_t::clearNumberFound () {
+#ifdef DOOPENMP
+#pragma omp critical
+#endif
+        {
+                for (size_t k = 0; k < this->nfound.size (); k++) {
+                        this->nfound[k] = 0;
+                }
+        }
+}
+
+void counter_t::addNumberFound (const counter_t &de) {
+#ifdef DOOPENMP
+#pragma omp critical
+#endif
+        {
+                for (size_t k = 0; k < this->nfound.size (); k++) {
+                        this->nfound[k] += de.nfound[k];
+                }
+        }
+}
+        
+void counter_t::showcountscompact () const {
+#ifdef DOOPENMP
+#pragma omp critical
+#endif
+        {
+                myprintf ("depth_extend: counts ");
+                display_vector (this->nfound);
+                myprintf ("\n");
+        }
+}
+
+void counter_t::showcounts (const arraydata_t &ad) const {
+        myprintf ("--results--\n");
+        for (size_t i = ad.strength; i <= (size_t)ad.ncols; i++) {
+                myprintf ("depth_extend: column %ld: found %d\n", i, this->nfound[i]);
+        }
+}
+
+void counter_t::showcounts (const char *str, int first, int last) const {
+        myprintf ("--results--\n");
+        for (size_t i = first; i <= (size_t)last; i++) {
+                myprintf ("%s: column %ld: found %d\n", str, i, this->nfound[i]);
+        }
+}
+
 /// helper function, OpenMP variation of depth_extend
 void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_extend_sub_t &dextendsub, int extcol,
                        int verbose = 1, int nomp = 0);

@@ -22,6 +22,27 @@ using namespace std;
 
 static nullStream staticNullStream;
 
+/// function to print debugging messages
+void printfd_handler (const char *file, const char *func, int line, const char *message, ...) {
+        std::string s = file;
+        s = base_name (s);
+
+        const char *fileshort = s.c_str ();
+        myprintf ("file %s: function %s: line %d: ", fileshort, func, line);
+#ifdef FULLPACKAGE
+        char buf[64 * 1024];
+
+        va_list va;
+        va_start (va, message);
+        // vprintf ( message, va );
+        vsprintf (buf, message, va);
+        va_end (va);
+        myprintf ("%s", buf);
+#else
+        myprintf ("printfd_handler not implemented");
+#endif
+}
+
 /** @brief Return string describing the system
  */
 string system_uname () {
@@ -220,23 +241,23 @@ std::string currenttime () {
 }
 
 /* this integer determines to level of logging */
-static int streamloglvl = NORMAL;
+static int stream_logging_level = NORMAL;
 
-bool checkloglevel (int l) {
+bool checkloglevel (int level) {
         bool b;
 #pragma omp critical
         {
-                b = l <= streamloglvl;
+                b = level <= stream_logging_level;
         }
         return b;
 }
 
-int getloglevel () { return streamloglvl; }
+int getloglevel () { return stream_logging_level; }
 
 void setloglevel (int n) {
 #pragma omp critical
-        { streamloglvl = n; }
-        log_print (-n, ""); // for log_print
+        { stream_logging_level = n; }
+        log_print (-n, ""); 
 }
 
 #ifdef FULLPACKAGE
@@ -248,7 +269,7 @@ void setloglevel (int n) {
  * @return
  */
 ostream &logstream (int level) {
-        if (level <= streamloglvl)
+        if (level <= stream_logging_level)
                 return std::cout;
         else {
                 // nullStream ns; return ns;

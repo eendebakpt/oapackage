@@ -23,15 +23,15 @@
 
 /// default reduction function for non-root stage
 lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *ad, dyndata_t *dyndata,
-                          LMCreduction_t *reduction, const OAextend &oaextend, const LMC_static_struct_t &tmpStatic);
+                          LMCreduction_t *reduction, const OAextend &oaextend, const LMCreduction_helper_t &helper_structure);
 
 /// default reduction function for non-root stage with J4 algorithm
 lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                             LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic);
+                             LMCreduction_t *reduction, const OAextend &oaextend, LMCreduction_helper_t &helper_structure);
 
 /// specialized reduction function for 2-level arrays
 lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad, dyndata_t *dyndata,
                                  LMCreduction_t *reduction, const OAextend &oaextend,
-                                 const LMC_static_struct_t &tmpStatic);
+                                 const LMCreduction_helper_t &helper_structure);
 
 

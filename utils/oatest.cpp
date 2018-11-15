@@ -21,7 +21,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "arraytools.h"
 #include "extend.h"
 #include "graphtools.h"
-#include "graphtools.h"
+#include "unittests.h"
 #include "tools.h"
 
 #include "evenodd.h"
@@ -210,6 +210,16 @@ int main (int argc, char *argv[]) {
                 srand (randvalseed);
         }
 
+
+
+		array_link al = exampleArray(36, verbose);
+		myassert(al.is_conference(2), "check on double conference design type");
+
+		for (int i = 0; i < 100; i++) {
+			myprintf("iteration %d\n", i);
+			myassert(testLMC0checkDC(al, verbose >= 2), "testLMC0checkDC");
+		}
+		exit(0);
 
 		try {
 			array_link al = exampleArray(r);

@@ -396,6 +396,37 @@ void array_transformation_t::apply (array_t *sourcetarget) const {
         destroy_array (tmp);
 }
 
+/** @brief Perform a row permutation
+*
+* @param source Source array
+* @param target Target array
+* @param perm Permutation to perform
+* @param nrows Number of rows
+* @param ncols Numer of columns
+*/
+inline void perform_inv_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows,
+                                         int ncols) {
+        for (int i = 0; i < ncols; i++)
+                for (int j = 0; j < nrows; j++) {
+                        target[nrows * i + j] = source[nrows * i + perm[j]];
+                }
+}
+
+/** @brief Perform inverse column permutation on an array
+ *
+ * @param source
+ * @param target
+ * @param perm
+ * @param nrows
+ * @param ncols
+ */
+inline void perform_inv_column_permutation (const array_t *source, array_t *target, colperm_t perm, int nrows,
+                                            int ncols) {
+        for (int i = 0; i < ncols; i++) {
+                memcpy (&target[i * nrows], &source[perm[i] * nrows], nrows * sizeof (array_t));
+        }
+}
+
 void array_transformation_t::apply (const array_t *source, array_t *target) const {
 
         array_t *tmp = create_array (ad);
@@ -583,6 +614,16 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
 
         free2d (tmpcol, jj + 1);
         delete_comb (pp);
+}
+
+arraylist_t addConstant (const arraylist_t &lst, int value) {
+        arraylist_t output_arrays (lst.size ());
+
+        for (size_t i = 0; i < lst.size (); i++) {
+                output_arrays[i] = lst[i] + value;
+        }
+
+        return output_arrays;
 }
 
 /** Return number of arrays with j_{2n+1}=0 for n<m */
@@ -1939,6 +1980,26 @@ array_link exampleArray (int idx, int verbose) {
 			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
+		 case 49: {
+			 dstr = "array 4347 C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,-1,-1,0,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,0,1,-1,-1,-1,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,0,1,1,-1,1,-1,-1,1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,-1,1,0,1,1,-1,1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 50: {
+			 dstr = "array 4506 C(20,8)";
+			 if (verbose) {
+				 myprintf("exampleArray: %s\n", dstr.c_str());
+			 }
+			 array_link array(20, 8, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,-1,-1,0,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,-1,0,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,0,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,-1,-1,1,1,-1,1,1,-1,1,0,1,-1,-1,1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
 
         } // end of switch
 
@@ -1964,6 +2025,18 @@ MatrixFloat array_link::getEigenMatrix() const {
 	return mymatrix;
 }
 
+int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) const {
+
+          if ((this->n_rows != rhs.n_rows) || c1 < 0 || rhs_column < 0 || (c1 > this->n_columns - 1)) {
+               myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
+               return 0;
+          }
+
+          int n_rows = this->n_rows;
+          return std::lexicographical_compare (rhs.array + rhs_column * n_rows, rhs.array + rhs_column * n_rows + n_rows,
+                                             array + c1 * n_rows, array + c1 * n_rows + n_rows);
+}
+        
 array_link array_link::reduceLMC () const {
         int strength = this->strength ();
         arraydata_t ad = arraylink2arraydata (*this, 0, strength);
@@ -1971,7 +2044,6 @@ array_link array_link::reduceLMC () const {
         reduction.mode = OA_REDUCE;
 
         OAextend oaextend;
-        // oaextend.setAlgorithmAuto(&ad);
         oaextend.setAlgorithm (MODE_ORIGINAL, &ad);
 
         reduction.init_state = SETROOT;
@@ -1985,17 +2057,17 @@ symmetry_group array_link::row_symmetry_group () const {
 
         const int nc = this->n_columns;
 
-        std::vector< mvalue_t< int > > rr (this->n_rows);
+        std::vector< mvalue_t< int > > row_elements (this->n_rows);
         for (int i = 0; i < this->n_rows; i++) {
-                mvalue_t< int > &m = rr[i];
+                mvalue_t< int > &m = row_elements[i];
                 m.values.resize (nc);
 
                 for (int k = 0; k < nc; k++) {
                         m.values[k] = this->atfast (i, k);
                 }
         }
-        symmetry_group sg (rr, true, 0);
-        return sg;
+        symmetry_group row_symmetry_group (row_elements, true, 0);
+        return row_symmetry_group;
 }
 
 double array_link::nonzero_fraction () const {
@@ -2016,7 +2088,7 @@ void array_link::setcolumn (int target_column, const array_link &source_array, i
                     this->array + this->n_rows * target_column);
 }
         
-bool array_link::is_conference (int nz) const {
+bool array_link::is_conference (int number_of_zeros) const {
         if (!this->is_conference ()) {
                 return false;
         };
@@ -2027,7 +2099,7 @@ bool array_link::is_conference (int nz) const {
                         if (this->atfast (r, c) == 0)
                                 n++;
                 }
-                if (n != nz)
+                if (n != number_of_zeros)
                         return false;
         }
         return true;
@@ -3237,6 +3309,26 @@ void arraydata_t::set_colgroups (const symmetry_group &sg) {
         std::copy (sg.gsize.begin (), sg.gsize.end (), this->colgroupsize);
 }
 
+void arraydata_t::show_colgroups () const {
+          myprintf ("arraydata_t: colgroups: ");
+          print_perm (this->colgroupindex, this->ncolgroups);
+          myprintf ("                  size: ");
+          print_perm (this->colgroupsize, this->ncolgroups);
+}
+
+void arraydata_t::calculate_oa_index (colindex_t strength) {
+          int combs = 1;
+          for (int i = 0; i < this->strength; i++) {
+               combs *= this->s[i];
+          }
+
+          if (combs == 0) {
+               this->oaindex = 0;
+          } else {
+               this->oaindex = this->N / combs;
+          }
+}
+        
 /**
  * @brief Complete arraydata but treat last column as single column group
  */
@@ -3969,6 +4061,61 @@ bool arrayfile_t::isbinary () const {
         return (this->mode == ABINARY || this->mode == ABINARY_DIFF || this->mode == ABINARY_DIFFZERO);
 }
 
+int arrayfile_t::swigcheck () const {
+#ifdef SWIGCODE
+          if (sizeof (int) != 4) {
+               fprintf (stderr, "arrayfile_t: error int is not 32-bit?!\n");
+          }
+          return 1;
+#else
+          return 0;
+#endif
+}
+
+/// return string describing the object
+std::string arrayfile_t::showstr () const {
+          if (this->isopen ()) {
+               std::string modestr;
+               switch (mode) {
+               case ALATEX:
+                         modestr = "latex";
+                         break;
+               case ATEXT:
+                         modestr = "text";
+                         break;
+               case ABINARY:
+                         modestr = "binary";
+                         break;
+               case ABINARY_DIFF:
+                         modestr = "binary_diff";
+                         break;
+               case ABINARY_DIFFZERO:
+                         modestr = "binary_diffzero";
+                         break;
+               case AERROR:
+                         modestr = "invalid";
+                         break;
+               default:
+                         modestr = "error";
+                         myprintf ("arrayfile_t: showstr(): no such mode\n");
+                         break;
+               }
+
+               int na = narrays;
+               if (this->rwmode == WRITE) {
+                         na = narraycounter;
+               }
+
+               std::string s = printfstring ("file %s: %d rows, %d columns, %d arrays", filename.c_str (),
+                                             nrows, ncols, na);
+               s += printfstring (", mode %s, nbits %d", modestr.c_str (), nbits);
+               return s;
+          } else {
+               std::string s = "file " + filename + ": invalid file";
+               return s;
+          }
+}
+        
 void arrayfile_t::append_array (const array_link &a, int specialindex) {
         int r;
         if (!this->isopen ()) {
@@ -4051,6 +4198,37 @@ arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int nar
         createfile (fname, nrows, ncols, narrays_, m, nb);
 }
 
+int arrayfile_t::headersize () const { return 8 * sizeof (int32_t); }
+
+int arrayfile_t::barraysize () const {
+          int num = sizeof (int32_t);
+
+          switch (this->nbits) {
+          case 8:
+               num += nrows * ncols;
+               break;
+          case 32:
+               num += nrows * ncols * 4;
+               break;
+          case 1: {
+               word_addr_t num_of_words = nwords (nrows * ncols);
+               num += sizeof (word_t) * num_of_words;
+          } break;
+          default:
+               myprintf ("error: number of bits undefined\n");
+               break;
+          }
+          return num;
+}
+
+size_t arrayfile_t::afwrite (void *ptr, size_t t, size_t n) {
+          if (this->nfid == 0) {
+               myprintf ("afwrite: not implemented, we cannot write compressed files\n");
+               return 0;
+          }
+          return fwrite (ptr, t, n, nfid);
+}
+        
 size_t arrayfile_t::afread (void *ptr, size_t sz, size_t cnt) {
 #ifdef USEZLIB
         size_t r;
@@ -5019,6 +5197,35 @@ void arrayfile_t::write_array_binary_diff (const array_link &A) {
         this->diffarray = A;
 }
 
+int arrayfile_t::getnbits () { return nbits; }
+
+arrayfile::arrayfilemode_t arrayfile_t::parseModeString (const std::string format) {
+          arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
+          if (format == "AUTO" || format == "A") {
+               mode = arrayfile::A_AUTOMATIC;
+
+          } else {
+               if (format == "BINARY" || format == "B") {
+                         mode = arrayfile::ABINARY;
+               } else {
+                         if (format == "D" || format == "DIFF") {
+                              mode = arrayfile::ABINARY_DIFF;
+                         } else {
+                              if (format == "Z" || format == "DIFFZERO") {
+                                        mode = arrayfile::ABINARY_DIFFZERO;
+                              } else {
+                                        if (format == "AB" || format == "AUTOBINARY") {
+                                                  mode = arrayfile::A_AUTOMATIC_BINARY;
+                                        } else {
+                                                  mode = arrayfile::ATEXT;
+                                        }
+                              }
+                         }
+               }
+          }
+          return mode;
+}
+
 /**
  * @brief Write an array in binary mode to a file
  * @param fid
@@ -5293,78 +5500,78 @@ array_link selectArrays (const std::string filename, int ii) {
 
 #endif // FULLPACKAGE, related to arrayfile_t
 
-void selectArrays (const arraylist_t &al, std::vector< int > &idx, arraylist_t &rl) {
+void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list) {
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); it++) {
-                rl.push_back (al.at (*it));
+                output_list.push_back (input_list.at (*it));
         }
 }
-void selectArrays (const arraylist_t &al, std::vector< long > &idx, arraylist_t &rl) {
+void selectArrays (const arraylist_t &input_list, std::vector< long > &idx, arraylist_t &output_list) {
         for (std::vector< long >::iterator it = idx.begin (); it < idx.end (); it++) {
-                if ((*it) >= 0 && ((*it) < (int)al.size ())) {
-                        rl.push_back (al.at (*it));
+                if ((*it) >= 0 && ((*it) < (int)input_list.size ())) {
+                        output_list.push_back (input_list.at (*it));
                 } else {
                         myprintf ("selectArrays: index %ld out of bounds!\n", *it);
                 }
         }
 }
 
-arraylist_t selectArrays (const arraylist_t &al, std::vector< int > &idx) {
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< int > &idx) {
         arraylist_t rl;
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); ++it) {
                 int val = *it;
-                if (val >= 0 && val <= (int)al.size ()) {
-                        rl.push_back (al.at (val));
+                if (val >= 0 && val <= (int)input_list.size ()) {
+                        rl.push_back (input_list.at (val));
                 } else {
                         myprintf ("selectArrays: error: index out of bounds: index %d, size %d\n", val,
-                                  (int)al.size ());
+                                  (int)input_list.size ());
                 }
         }
         return rl;
 }
 
-arraylist_t selectArrays (const arraylist_t &al, std::vector< long > &idx) {
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< long > &idx) {
         arraylist_t rl;
         for (std::vector< long >::iterator it = idx.begin (); it < idx.end (); ++it) {
                 int val = *it;
-                if (val >= 0 && val <= (int)al.size ()) {
-                        rl.push_back (al.at (val));
+                if (val >= 0 && val <= (int)input_list.size ()) {
+                        rl.push_back (input_list.at (val));
                 } else {
                         myprintf ("selectArrays: error: index out of bounds: index %d, size %ld\n", val,
-                                  (long)al.size ());
+                                  (long)input_list.size ());
                 }
         }
         return rl;
 }
 
-array_link array_link::operator+ (array_t v) const {
+array_link array_link::operator+ (array_t value) const {
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] += v;
+                tmp.array[i] += value;
         }
         return tmp;
 }
-array_link array_link::operator- (array_t v) const {
+array_link array_link::operator- (array_t value) const {
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] -= v;
-        }
-        return tmp;
-}
-
-array_link array_link::operator+ (const array_link &b) const {
-        assert (this->equalsize (b));
-        array_link tmp = (*this);
-        for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] += b.array[i];
+                tmp.array[i] -= value;
         }
         return tmp;
 }
 
-array_link array_link::operator- (const array_link &b) const {
-        assert (this->equalsize (b));
+array_link array_link::operator+ (const array_link &array) const {
+        assert (this->equalsize (array));
         array_link tmp = (*this);
         for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
-                tmp.array[i] -= b.array[i];
+                tmp.array[i] += array.array[i];
+        }
+        return tmp;
+}
+
+array_link array_link::operator- (const array_link &array) const {
+        assert (this->equalsize (array));
+        array_link tmp = (*this);
+        for (int i = 0; i < tmp.n_columns * tmp.n_rows; i++) {
+                tmp.array[i] -= array.array[i];
         }
         return tmp;
 }
@@ -5410,7 +5617,7 @@ array_link array_link::operator-= (array_t val) {
           return *this;
 }
         
-/// stack to arrays together
+/// stack two arrays together
 array_link vstack (const array_link &al, const array_link &b) {
         assert (al.n_columns == b.n_columns);
         array_link v (al.n_rows + b.n_rows, al.n_columns, array_link::INDEX_NONE);
@@ -5424,11 +5631,11 @@ array_link vstack (const array_link &al, const array_link &b) {
         return v;
 }
 
-array_link hstack (const array_link &al, const conference_column &b) {
-        assert (al.n_rows == (int)b.size ());
-        array_link v (al.n_rows, al.n_columns + 1, array_link::INDEX_NONE);
-        std::copy (al.array, al.array + al.n_columns * al.n_rows, v.array);
-        std::copy (b.begin (), b.end (), v.array + v.n_rows * al.n_columns);
+array_link hstack (const array_link &array, const conference_column &column) {
+        assert (array.n_rows == (int)column.size ());
+        array_link v (array.n_rows, array.n_columns + 1, array_link::INDEX_NONE);
+        std::copy (array.array, array.array + array.n_columns * array.n_rows, v.array);
+        std::copy (column.begin (), column.end (), v.array + v.n_rows * array.n_columns);
         return v;
 }
 

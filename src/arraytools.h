@@ -176,23 +176,27 @@ array_link createJ2tableConference (const array_link &confmatrix);
 /// create J2 table as intermediate result for J-characteristic calculations
 array_link createJdtable (const array_link &al);
 
-enum ordering_t { ORDER_LEX, ORDER_J5 };
+enum ordering_t { 
+  /// lexicograph minimal by columns ordering
+  ORDER_LEX,
+  /// J5 based ordering
+  ORDER_J5 };
 
 /** @brief Contains properties of the design (number of rows, columns, levels)
  *
  * Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
  */
 struct arraydata_t {
-        /** number of runs */
+        /// number of runs 
         rowindex_t N;
-        /** total number of columns (factors) in the design */
+        /// total number of columns (factors) in the design 
         colindex_t ncols;
-        /** strength of the design */
+        /// strength of the design 
         colindex_t strength;
-        /** pointer to factor levels of the array */
+        /// pointer to factor levels of the array 
         array_t *s;
 
-        /** Ordering used for arrays */
+        /// Ordering used for arrays 
         ordering_t order;
 
         /* derived data */
@@ -270,26 +274,10 @@ struct arraydata_t {
         void set_colgroups (const symmetry_group &sg);
 
         /// show column groups in the array class
-        void show_colgroups () const {
-                myprintf ("arraydata_t: colgroups: ");
-                print_perm (this->colgroupindex, this->ncolgroups);
-                myprintf ("                  size: ");
-                print_perm (this->colgroupsize, this->ncolgroups);
-        }
+        void show_colgroups () const;
 
-		/// calculate the index of the orthogonal arrays in this class
-        void calculate_oa_index (colindex_t strength) {
-                int combs = 1;
-                for (int i = 0; i < this->strength; i++) {
-                        combs *= this->s[i];
-                }
-
-                if (combs == 0) {
-                        this->oaindex = 0;
-                } else {
-                        this->oaindex = this->N / combs;
-                }
-        }
+	/// calculate the index of the orthogonal arrays in this class
+        void calculate_oa_index (colindex_t strength);
 
         /// return the root array for the class
         array_link create_root (int n_columns = -1, int fill_value = 0) const;
@@ -312,9 +300,9 @@ struct arraydata_t {
         
         /**
          * @brief Reset strength of arraydata
-         * @param t
+         * @param strength The strength to reset the structure to
          */
-		void reset_strength(colindex_t t);
+		void reset_strength(colindex_t strength);
 
         /// Return index of the column group for a column
 		colindex_t get_col_group(const colindex_t col) const;
@@ -367,20 +355,6 @@ static inline array_t *create_array (const int nrows, const int ncols) {
  */
 inline array_t *create_array (const arraydata_t *ad) { return create_array (ad->N, ad->ncols); }
 
-/**
- * @brief Compare 2 columns of an array
- * @param A
- * @param col
- * @param col2
- * @param nrows
- * @param rstart
- * @param rend
- * @return
- */
-inline int equal_array_cols (carray_t *A, colindex_t col, colindex_t col2, rowindex_t nrows, rowindex_t rstart,
-                             rowindex_t rend) {
-        return std::equal (A + col * nrows + rstart, A + col * nrows + rend, (A + col2 * nrows + rstart));
-}
 
 /**
  * @brief Clone an array
@@ -392,65 +366,6 @@ inline array_t *clone_array (const array_t *const array, const rowindex_t nrows,
         return clone;
 }
 
-/** @brief Perform inverse column permutation on an array
- *
- * @param source
- * @param target
- * @param perm
- * @param nrows
- * @param ncols
- */
-inline void perform_inv_column_permutation (const array_t *source, array_t *target, colperm_t perm, int nrows,
-                                            int ncols) {
-        for (int i = 0; i < ncols; i++) {
-                memcpy (&target[i * nrows], &source[perm[i] * nrows], nrows * sizeof (array_t));
-        }
-}
-
-/** @brief Perform column permutation on an array
-*
-* @param source
-* @param target
-* @param perm
-* @param nrows
-* @param ncols
-*/
-inline void perform_column_permutation (carray_t *source, array_t *target, colperm_t perm, int nrows, int ncols) {
-        for (int i = 0; i < ncols; i++) {
-                memcpy (&target[perm[i] * nrows], &source[i * nrows], nrows * sizeof (array_t));
-        }
-}
-
-/** @brief Perform a row permutation
- *
- * @param source Source array
- * @param target Target array
- * @param perm Permutation to perform
- * @param nrows Number of rows
- * @param ncols Numer of columns
- */
-inline void perform_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows, int ncols) {
-        for (int i = 0; i < ncols; i++)
-                for (int j = 0; j < nrows; j++) {
-                        target[nrows * i + perm[j]] = source[nrows * i + j];
-                }
-}
-
-/** @brief Perform a row permutation
-*
-* @param source Source array
-* @param target Target array
-* @param perm Permutation to perform
-* @param nrows Number of rows
-* @param ncols Numer of columns
-*/
-inline void perform_inv_row_permutation (const array_t *source, array_t *target, rowperm_t perm, int nrows,
-                                         int ncols) {
-        for (int i = 0; i < ncols; i++)
-                for (int j = 0; j < nrows; j++) {
-                        target[nrows * i + j] = source[nrows * i + perm[j]];
-                }
-}
 
 /*** \brief Class representing an array
  */
@@ -507,7 +422,7 @@ struct array_link {
 		/// return true is the array is array with values in 0, 1, ...,  for each column
 		bool is_orthogonal_array() const;
 
-		/** return true if the array is a +1, 0, -1 valued array
+	/** return true if the array is a +1, 0, -1 valued array
 		 */
         bool is_conference () const;
 
@@ -760,18 +675,8 @@ struct array_link {
 		MatrixFloat getEigenMatrix() const;
 
         /// return true of specified column is smaller than column in another array
-        inline int columnGreater (int c1, const array_link &rhs, int c2) const {
-
-                if ((this->n_rows != rhs.n_rows) || c1 < 0 || c2 < 0 || (c1 > this->n_columns - 1)) {
-                        myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
-                        return 0;
-                }
-
-                int n_rows = this->n_rows;
-                return std::lexicographical_compare (rhs.array + c2 * n_rows, rhs.array + c2 * n_rows + n_rows,
-                                                     array + c1 * n_rows, array + c1 * n_rows + n_rows);
-        }
-
+        int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
+	
         std::string showarrayS () const;
 
         void debug () const;
@@ -834,15 +739,7 @@ arraydata_t arraylink2arraydata (const array_link &array, int extracols = 0, int
 typedef std::deque< array_link > arraylist_t;
 
 /// add a constant value to all arrays in a list
-inline arraylist_t addConstant (const arraylist_t &lst, int value) {
-        arraylist_t output_arrays (lst.size ());
-
-        for (size_t i = 0; i < lst.size (); i++) {
-                output_arrays[i] = lst[i] + value;
-        }
-
-        return output_arrays;
-}
+arraylist_t addConstant (const arraylist_t &lst, int value);
 
 /** Return number of arrays with j_{2n+1}=0 for number_of_arrays<m */
 std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose = 1);
@@ -1214,15 +1111,21 @@ void showArrayList (const arraylist_t &lst);
 
 namespace arrayfile {
 
-/// format mode
+/// file format mode
 enum arrayfilemode_t {
+	/// text based format
         ATEXT,
         ALATEX,
+	/// binary format
         ABINARY,
+	/// binary format storing differences of arrays
         ABINARY_DIFF,
+	/// binary format storing differences of arrays and zero offsets
         ABINARY_DIFFZERO,
         AERROR,
+	/// automatically determine the format
         A_AUTOMATIC,
+	/// automatically determine the format (but binary)
         A_AUTOMATIC_BINARY
 };
 enum afilerw_t { READ, WRITE, READWRITE };
@@ -1253,7 +1156,7 @@ struct arrayfile_t {
         /// file opened for reading or writing
         afilerw_t rwmode;
 
-        // we cannot define SWIG variables as int32_t, we get errors in the Python module for some reason
+        // we cannot define SWIG variables as int32_t, we get errors in the Python module 
 
         /// number of arrays in the file
         int narrays;
@@ -1306,59 +1209,11 @@ struct arrayfile_t {
         /// append a single array to the file
         void append_array (const array_link &a, int specialindex = -1);
 
-        int swigcheck () const {
-#ifdef SWIGCODE
-                if (sizeof (int) != 4) {
-                        fprintf (stderr, "arrayfile_t: error int is not 32-bit?!\n");
-                }
-                return 1;
-#else
-                return 0;
-#endif
-        }
+	/// return True if code is wrapper by SWIG
+        int swigcheck () const;
 
-        std::string showstr () const {
-                if (this->isopen ()) {
-                        std::string modestr;
-                        switch (mode) {
-                        case ALATEX:
-                                modestr = "latex";
-                                break;
-                        case ATEXT:
-                                modestr = "text";
-                                break;
-                        case ABINARY:
-                                modestr = "binary";
-                                break;
-                        case ABINARY_DIFF:
-                                modestr = "binary_diff";
-                                break;
-                        case ABINARY_DIFFZERO:
-                                modestr = "binary_diffzero";
-                                break;
-                        case AERROR:
-                                modestr = "invalid";
-                                break;
-                        default:
-                                modestr = "error";
-                                myprintf ("arrayfile_t: showstr(): no such mode\n");
-                                break;
-                        }
-
-                        int na = narrays;
-                        if (this->rwmode == WRITE) {
-                                na = narraycounter;
-                        }
-
-                        std::string s = printfstring ("file %s: %d rows, %d columns, %d arrays", filename.c_str (),
-                                                      nrows, ncols, na);
-                        s += printfstring (", mode %s, nbits %d", modestr.c_str (), nbits);
-                        return s;
-                } else {
-                        std::string s = "file " + filename + ": invalid file";
-                        return s;
-                }
-        }
+	/// return string describing the object
+        std::string showstr () const;
 
         /// return current position in file
         size_t pos () const { return narraycounter; }
@@ -1383,37 +1238,12 @@ struct arrayfile_t {
         array_link diffarray;
 
         /// return header size for binary format array
-        int headersize () const { return 8 * sizeof (int32_t); };
+        int headersize () const;
         /// return size of bit array
-        int barraysize () const {
-                int num = sizeof (int32_t);
-
-                switch (this->nbits) {
-                case 8:
-                        num += nrows * ncols;
-                        break;
-                case 32:
-                        num += nrows * ncols * 4;
-                        break;
-                case 1: {
-                        word_addr_t num_of_words = nwords (nrows * ncols);
-                        num += sizeof (word_t) * num_of_words;
-                } break;
-                default:
-                        myprintf ("error: number of bits undefined\n");
-                        break;
-                }
-                return num;
-        };
+        int barraysize () const;
 
         /// wrapper function for fwrite or gzwrite
-        size_t afwrite (void *ptr, size_t t, size_t n) {
-                if (this->nfid == 0) {
-                        myprintf ("afwrite: not implemented, we cannot write compressed files\n");
-                        return 0;
-                }
-                return fwrite (ptr, t, n, nfid);
-        }
+        size_t afwrite (void *ptr, size_t t, size_t n);
 
         /// wrapper function for fread or gzread
         size_t afread (void *ptr, size_t sz, size_t cnt);
@@ -1442,35 +1272,10 @@ struct arrayfile_t {
         void write_array_binary_diffzero (const array_link &A); 
 
       public:
-        int getnbits () { return nbits; }
+        int getnbits ();
 
         /// parse string to determine the file mode
-        static arrayfile::arrayfilemode_t parseModeString (const std::string format) {
-                arrayfile::arrayfilemode_t mode = arrayfile::ATEXT;
-                if (format == "AUTO" || format == "A") {
-                        mode = arrayfile::A_AUTOMATIC;
-
-                } else {
-                        if (format == "BINARY" || format == "B") {
-                                mode = arrayfile::ABINARY;
-                        } else {
-                                if (format == "D" || format == "DIFF") {
-                                        mode = arrayfile::ABINARY_DIFF;
-                                } else {
-                                        if (format == "Z" || format == "DIFFZERO") {
-                                                mode = arrayfile::ABINARY_DIFFZERO;
-                                        } else {
-                                                if (format == "AB" || format == "AUTOBINARY") {
-                                                        mode = arrayfile::A_AUTOMATIC_BINARY;
-                                                } else {
-                                                        mode = arrayfile::ATEXT;
-                                                }
-                                        }
-                                }
-                        }
-                }
-                return mode;
-        }
+        static arrayfile::arrayfilemode_t parseModeString (const std::string format);
 
         /// return number of bits necessary to store an array
         static int arrayNbits (const arraydata_t &ad) {
@@ -1583,13 +1388,14 @@ void write_array_format (std::ostream &ss, const atype *array, const int nrows, 
 }
 
 /// Make a selection of arrays
-arraylist_t selectArrays (const arraylist_t &al, std::vector< int > &idx);
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< int > &idx);
 /// Make a selection of arrays
-arraylist_t selectArrays (const arraylist_t &al, std::vector< long > &idx);
+arraylist_t selectArrays (const arraylist_t &input_list, std::vector< long > &idx);
 
 /// Make a selection of arrays, append to list
-void selectArrays (const arraylist_t &al, std::vector< int > &idx, arraylist_t &fl);
-void selectArrays (const arraylist_t &al, std::vector< long > &idx, arraylist_t &fl);
+void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list);
+/// Make a selection of arrays, append to list
+void selectArrays (const arraylist_t &input_list, std::vector< long > &idx, arraylist_t &output_list);
 
 /// Make a selection of arrays, keep
 template < class Container, class IntType > void keepElements (Container &al, std::vector< IntType > &idx) {
@@ -1644,12 +1450,9 @@ void write_array_format (const atype *array, const int nrows, const int ncols, i
                         count += nrows;
                 }
         }
-#ifdef RPACKAGE
-#else
 #ifdef FULLPACKAGE
         fflush (stdout);
         setbuf (stdout, NULL);
-#endif
 #endif
 }
 

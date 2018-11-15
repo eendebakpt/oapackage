@@ -722,7 +722,7 @@ nautil_check(int wordsize, int m, int n, int version)
 *****************************************************************************/
 
 void
-alloc_error(char *s)
+alloc_error(const char *s)
 {
     fprintf(ERRFILE,"Dynamic allocation failed: %s\n",s);
     exit(2);

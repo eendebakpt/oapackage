@@ -178,8 +178,8 @@ extend_data_t::~extend_data_t () {
         free2d (es->indices); //, es->ncolcombs);
 
 #ifdef COUNTELEMENTCHECK
-        // OPTIMIZE: better to check these pointers are non-zero
-        free (this->elements);
+        if (this->elements!=0)
+	  free (this->elements);
 #endif
 
         free2d_irr (this->freqtable);

@@ -284,9 +284,8 @@ int main (int argc, char *argv[]) {
         delete adfull;
         delete arraylist;
 
-        cleanGlobalStatic ();
-        arraysymmetry::rowpermpool.reset ();
-
+        clear_LMCreduction_pool ();
+        
         logstream (SYSTEM) << "#time end: " << currenttime () << std::endl;
         if (verbose)
                 std::cout << "#time total: " << printfstring ("%.1f", get_time_ms () - time0) << " [s]" << std::endl;

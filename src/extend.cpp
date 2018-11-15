@@ -59,8 +59,7 @@ std::vector< int > dextend_t::filterArrays (const array_link &al, const arraylis
         array_link tmparray (al.n_rows, al.n_columns + 1, -1);
         std::copy (al.array, al.array + al.n_columns * al.n_rows, tmparray.array);
 
-        cprintf (verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn,
-                 ngoodcombined, nn);
+	cprintf (verbose >= 3, "dextend_t::filterArrays: filtering fraction %.3f: %d/%d\n", double(ngoodcombined) / nn, ngoodcombined, nn);
         flush_stdout ();
         const int lastcolx = al.n_columns;
 
@@ -178,7 +177,7 @@ void OAextend::updateArraydata (arraydata_t *ad) const {
                 ad->order = ORDER_J5;
                 break;
         case MODE_J5ORDERX:
-        case MODE_J5ORDERXFAST:
+        case MODE_J5ORDER_2LEVEL:
                 ad->order = ORDER_J5;
                 ad->order = ORDER_LEX;
                 break;
@@ -195,7 +194,7 @@ std::string OAextend::__repr__ () const {
         s += printfstring ("OAextend: singleExtendTime %.1f [s], nLMC %d", singleExtendTime, nLMC) + split;
         s += printfstring ("OAextend: init_column_previous %d", init_column_previous) + split;
         s += printfstring ("OAextend: algorithm %s", this->getAlgorithmName ().c_str ()) + split;
-        if (this->algmode == MODE_J5ORDERX || this->algmode == MODE_J5ORDERXFAST) {
+        if (this->algmode == MODE_J5ORDERX || this->algmode == MODE_J5ORDER_2LEVEL) {
                 s += printfstring ("OAextend: special: j5structure %d", this->j5structure) + split;
         }
         return s;
@@ -226,7 +225,7 @@ void OAextend::setAlgorithm (algorithm_t algorithm, arraydata_t *ad) {
         switch (this->algmode) {
         case MODE_J5ORDER:
         case MODE_J5ORDERX:
-        case MODE_J5ORDERXFAST:
+        case MODE_J5ORDER_2LEVEL:
                 init_column_previous = INITCOLUMN_J5;
                 j5structure = J5_45;
                 break;
