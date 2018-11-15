@@ -452,6 +452,10 @@ public:
   
   rowsorter_t(int number_of_rows);
   ~rowsorter_t();
+
+private:
+	void reset_rowsort();
+
 };
 
 /** @brief Contains dynamic data of an array

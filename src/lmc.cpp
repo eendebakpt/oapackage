@@ -527,7 +527,17 @@ void deallocate_rowsort(rowsort_t *& rowsort) {
 rowsorter_t::rowsorter_t(int number_of_rows) {
       this->number_of_rows = number_of_rows;
       this->rowsort = allocate_rowsort(number_of_rows);	
+	  this->reset_rowsort();
   }  
+
+void rowsorter_t::reset_rowsort()
+{
+	for (int i = 0; i < this->number_of_rows; i++) {
+		this->rowsort[i].r = i;
+		this->rowsort[i].val = 0;
+	}
+}
+
 rowsorter_t::~rowsorter_t() {
  deallocate_rowsort(this->rowsort); 
 }
