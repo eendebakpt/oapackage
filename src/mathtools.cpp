@@ -142,6 +142,40 @@ symmetry_group::symmetry_group () {
         ascending = 0;
 }
 
+/// representation function (for python interface)
+std::string symmetry_group::__repr__() const {
+	std::stringstream ss;
+	ss << "symmetry group: " << n << " elements, " << ngroups << " subgroups: ";
+	for (int i = 0; i < ngroups; i++)
+		ss << gsize[i] << " ";
+
+	std::string s = ss.str();
+	return s;
+}
+
+/// show the symmetry group
+void symmetry_group::show(int verbose = 1) const {
+	myprintf("symmetry group: %d elements, %d subgroups: ", n, ngroups);
+	for (int i = 0; i < ngroups; i++)
+		myprintf("%d ", gsize[i]);
+	myprintf("\n");
+
+	if (verbose >= 2) {
+		myprintf("gidx: ");
+		for (int i = 0; i < n; i++)
+			myprintf("%d, ", gidx[i]);
+		myprintf("\n");
+		myprintf("gstart: ");
+		for (int i = 0; i < ngroups; i++)
+			myprintf("%d, ", gstart[i]);
+		myprintf("\n");
+		myprintf("gsize: ");
+		for (int i = 0; i < ngroups; i++)
+			myprintf("%d, ", gsize[i]);
+		myprintf("\n");
+	}
+}
+
 void symmetry_group_walker::show (int verbose) const {
         myprintf ("symmetry_group_walker: ");
         if (verbose >= 2)

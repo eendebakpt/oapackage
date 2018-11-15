@@ -1223,15 +1223,15 @@ returntype *new_valueindex (const basetype *bases, const numtype n) {
         return valueindex;
 }
 
-template < class numtype >
-numtype *init_valueindex_forward (numtype *valueindex, const numtype *bases, const numtype n) {
-        valueindex[0] = 1;
-
-        for (int i = 0; i < (n - 1); i++)
-                valueindex[i + 1] = valueindex[i] * bases[i];
-
-        return valueindex;
-}
+//template < class numtype >
+//numtype *init_valueindex_forward (numtype *valueindex, const numtype *bases, const numtype n) {
+//        valueindex[0] = 1;
+//
+//        for (int i = 0; i < (n - 1); i++)
+//                valueindex[i + 1] = valueindex[i] * bases[i];
+//
+//        return valueindex;
+//}
 
 template < class numtype > numtype *init_valueindex (numtype *valueindex, const numtype *bases, const numtype n) {
         valueindex[n - 1] = 1;
@@ -1518,38 +1518,10 @@ class symmetry_group {
         }
 
         /// representation function (for python interface)
-        std::string __repr__ () const {
-                std::stringstream ss;
-                ss << "symmetry group: " << n << " elements, " << ngroups << " subgroups: ";
-                for (int i = 0; i < ngroups; i++)
-                        ss << gsize[i] << " ";
-
-                std::string s = ss.str ();
-                return s;
-        }
+		std::string __repr__() const;
 
         /// show the symmetry group
-        void show (int verbose = 1) const {
-                myprintf ("symmetry group: %d elements, %d subgroups: ", n, ngroups);
-                for (int i = 0; i < ngroups; i++)
-                        myprintf ("%d ", gsize[i]);
-                myprintf ("\n");
-
-                if (verbose >= 2) {
-                        myprintf ("gidx: ");
-                        for (int i = 0; i < n; i++)
-                                myprintf ("%d, ", gidx[i]);
-                        myprintf ("\n");
-                        myprintf ("gstart: ");
-                        for (int i = 0; i < ngroups; i++)
-                                myprintf ("%d, ", gstart[i]);
-                        myprintf ("\n");
-                        myprintf ("gsize: ");
-                        for (int i = 0; i < ngroups; i++)
-                                myprintf ("%d, ", gsize[i]);
-                        myprintf ("\n");
-                }
-        }
+		void show(int verbose = 1) const;
 };
 
 /** Class to walk over all elements of a symmetry group
