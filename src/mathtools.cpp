@@ -16,7 +16,6 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         n = vals.size ();
         ascending = ascendingx;
 
-        // check we are sorted
         if (verbose >= 2)
                 myprintf ("symmetry_group::init: check sorting\n");
 
@@ -245,8 +244,6 @@ void Combinations::initialize_number_combinations (int N) {
                 }
 
                 ncombsdata = new long *[nrows];
-                // if debugging, check for memory allocation
-                assert (ncombsdata);
 
                 ncombsdata[0] = new long[nrows * rowsize];
 
@@ -272,8 +269,8 @@ Combinations::~Combinations() {
 int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
 
 long Combinations::number_combinations (int n, int k) {
-#ifdef OADEBUG
-        assert (Combinations::ncombsdata != 0);
+#ifdef SWIGPYTHON
+        myassert (Combinations::ncombsdata != 0);
 #endif
         return Combinations::ncombsdata[n][k];
 }
