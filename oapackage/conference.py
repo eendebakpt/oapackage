@@ -115,13 +115,9 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
     Deff=np.zeros(number_combinations)
     invAPV_values=np.zeros(number_combinations)
     dsd = oapackage.conference2DSD(oapackage.array_link(al))
-    #dsd_np=np.array(dsd)
     moment_matrix = momentMatrix(ncolumns)
     for idx, c in enumerate(list(itertools.combinations(range(nc), ncolumns)) ):
-        #proj_array = array_np[:, c]
-        #proj_dsd = oapackage.conference2DSD(oapackage.array_link(proj_array))
         proj_dsd = dsd.selectColumns(c)
-        #proj_dsd = oapackage.array_link(dsd_np[:,c])
         
         Eest, D, invAPV = modelStatistics(proj_dsd, verbose=0, moment_matrix = moment_matrix)
 

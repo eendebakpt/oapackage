@@ -21,25 +21,8 @@
 
 inline std::string base_name (std::string const &path) { return path.substr (path.find_last_of ("/\\") + 1); }
 
-inline void printfd_handler (const char *file, const char *func, int line, const char *message, ...) {
-        std::string s = file;
-        s = base_name (s);
-
-        const char *fileshort = s.c_str ();
-        myprintf ("file %s: function %s: line %d: ", fileshort, func, line);
-#ifdef FULLPACKAGE
-        char buf[64 * 1024];
-
-        va_list va;
-        va_start (va, message);
-        // vprintf ( message, va );
-        vsprintf (buf, message, va);
-        va_end (va);
-        myprintf ("%s", buf);
-#else
-        myprintf ("printfd_handler not implemented");
-#endif
-}
+/// function to print debugging messages
+void printfd_handler (const char *file, const char *func, int line, const char *message, ...);
 
 #define printfd(...) printfd_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
@@ -63,10 +46,13 @@ enum loglevel_t { LOGERROR, SYSTEM, QUIET, NORMAL, DEBUG, EXTRADEBUG };
 
 int log_print (const int level, const char *message, ...);
 
-// struct split;
+/// return current level of logging
 int getloglevel ();
+/// rset the level of logging
 void setloglevel (int n);
-bool checkloglevel (int l);
+
+/// return True if the current logging level is smaller or equal than the specified level
+bool checkloglevel (int level);
 
 /** \brief Null stream */
 class nullStream : public std::ostream {
@@ -75,9 +61,11 @@ class nullStream : public std::ostream {
 };
 
 #ifdef FULLPACKAGE
+/// log a stream to stdout if level specied is higher than the current logging level
 std::ostream &logstream (int level);
 #endif
 
+/// Return string describing the system
 std::string system_uname ();
 
 /// return path separator symbol for the current platform
@@ -97,6 +85,7 @@ void myassert (int condition, const char *error_message = 0);
  */
 void throw_runtime_exception (const std::string exception_message);
 
+/// conditional printf
 inline int cprintf (int check, const char *message, ...) {
         int n = 0;
         if (check) {

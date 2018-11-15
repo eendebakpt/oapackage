@@ -162,6 +162,17 @@ class TestConferenceDesigns(unittest.TestCase):
         np.testing.assert_array_equal(0 * conf[0], dsd[-1, :])
 
 
+class TestArrayFiles(unittest.TestCase):
+    def test_write_latex_format(self):
+        import tempfile
+        import oapackage
+        lst = [oapackage.exampleArray(2)]
+        filename = tempfile.mktemp(suffix='.tex' )
+        oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
+        with open(filename, 'rt') as fid:
+            latex = fid.read()
+        self.assertIsInstance(latex, str)
+        
 class TestCppLibrary(unittest.TestCase):
 
     def test_projectionDOFvalues(self):

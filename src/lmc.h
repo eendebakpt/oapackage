@@ -78,18 +78,27 @@ void lmc_stats ();
  */
 enum lmc_t { LMC_LESS, LMC_EQUAL, LMC_MORE, LMC_NONSENSE };
 
-/// different algorithms
+/// different algorithms for minimal form check
 enum algorithm_t {
+	/// LMC minimal form
         MODE_ORIGINAL,
+	/// LMC minimal form with J4 method
         MODE_J4,
+	/// J5 minimal form
         MODE_J5ORDER,
+	/// J5 minimal form
         MODE_J5ORDERX,
         MODE_INVALID,
+	/// Automatically select the algorithm
         MODE_AUTOSELECT,
+	/// debugging method
         MODE_LMC_SYMMETRY,
+	/// LMC minimal form, specialized for 2-level arrays
         MODE_LMC_2LEVEL,
+	/// debugging method
         MODE_LMC_DEBUG,
-        MODE_J5ORDERXFAST
+	/// J5 minimal form
+        MODE_J5ORDER_2LEVEL
 };
 #define MODE_LMC MODE_ORIGINAL
 
@@ -97,13 +106,19 @@ inline std::string algorithm_t_list () {
         std::string ss =
             printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (j5 order dominant), %d "
                           "(MODE_J5ORDERXFAST)",
-                          MODE_AUTOSELECT, MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDERXFAST);
+                          MODE_AUTOSELECT, MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDER_2LEVEL);
         ss += printfstring (", %d (MODE_LMC_SYMMETRY), %d (MODE_LMC_2LEVEL)", MODE_LMC_SYMMETRY, MODE_LMC_2LEVEL);
         return ss;
 }
 
 /// method used for initialization of columns
-enum initcolumn_t { INITCOLUMN_ZERO, INITCOLUMN_PREVIOUS, INITCOLUMN_J5 };
+enum initcolumn_t {
+  /// Initialize column with zeros
+  INITCOLUMN_ZERO,
+  /// Initialize column with values of previous column
+  INITCOLUMN_PREVIOUS,
+  /// Initialize column with values based on J5 value
+  INITCOLUMN_J5 };
 
 /// variations of the J45 structures
 enum j5structure_t { J5_ORIGINAL, J5_45 };
@@ -151,19 +166,18 @@ static inline bool operator> (const rowsort_t &a, const rowsort_t &b) {
 }
 
 /// Apply Hadamard transformation to orthogonal array
-void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
+//void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
 
 /// Apply Hadamard transformation to orthogonal array
 void apply_hadamard (array_link &al, colindex_t hcol);
 
 /**
- * @brief Contains initialization data for static allocations
+ * @brief Contains structures used by the LMC reduction or LMC check
  *
  *  Part of the allocations is for structures that are constant and are re-used each time an LMC calculation is
- * performed.
- *  Some other structures are temporary buffers that are written to all the time.
+ * performed. Some other structures are temporary buffers that are written to all the time.
  */
-struct LMC_static_struct_t {
+struct LMCreduction_helper_t {
       public:
         /* variable data */
         int LMC_non_root_init;
@@ -190,17 +204,8 @@ struct LMC_static_struct_t {
 
         array_transformation_t *current_trans; /* not used at the moment? */
 
-#ifdef OADEBUG
-        std::string ref;
-        inline void setRef (const std::string s) {
-                ref = s;
-                myprintf ("LMC_static_struct_t: set ref %s\n", ref.c_str ());
-        }
-        int id;
-#endif
-
-        LMC_static_struct_t ();
-        ~LMC_static_struct_t ();
+        LMCreduction_helper_t ();
+        ~LMCreduction_helper_t ();
 
         void show (int verbose = 1) const {
                 myprintf ("LMC_static_struct_t: ad %p, LMC_non_root_init %d\n", (void *)(this->ad),
@@ -243,20 +248,26 @@ struct LMC_static_struct_t {
         }
 };
 
-// pool of available structures
-LMC_static_struct_t *getGlobalStaticIndexed (int n);
-void cleanGlobalStaticIndexed ();
+//LMC_static_struct_t *getGlobalStaticIndexed (int n);
+//void cleanGlobalStaticIndexed ();
 
 /// return static structure from dynamic global pool, return with releaseGlobalStatic
-LMC_static_struct_t *getGlobalStatic ();
-void releaseGlobalStatic (LMC_static_struct_t *p);
-void cleanGlobalStatic ();
-LMC_static_struct_t &getGlobalStaticOne ();
+LMCreduction_helper_t *acquire_LMCreduction_object ();
+void release_LMCreduction_object (LMCreduction_helper_t *p);
+
+/// release all objects in the pool
+void clear_LMCreduction_pool ();
 
 /// variable indicating the state of the reduction process
 enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
 //! main mode for the LMC routine: test, reduce or reduce with initialization
-enum OA_MODE { OA_TEST, OA_REDUCE, OA_REDUCE_PARTIAL };
+enum OA_MODE {
+  /// test for minimal form
+  OA_TEST,
+  /// reduce to minimal form
+  OA_REDUCE, 
+  /// reduce to partial minimal form
+  OA_REDUCE_PARTIAL };
 
 typedef larray< rowindex_t > rowpermtypelight;
 typedef larray< colindex_t > colpermtypelight;
@@ -298,22 +309,22 @@ bool operator!= (symmdataPointer const &ptr, int x);
 #else
 #include <tr1/memory>
 typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
-// typedef std::shared_ptr<symmdata> symmdataPointer;
 #endif
 
 #else
 typedef symmdata *symmdataPointer;
 #endif
 
+/// initial state for reduction algorithm
 enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
 
 /// Append element to vector if the element the element is not at the end of vector
-template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &cpv) {
+template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &value) {
         if (cp.size () > 0) {
-                if (!(cp.back () == cpv))
-                        cp.push_back (cpv);
+                if (!(cp.back () == value))
+                        cp.push_back (value);
         } else {
-                cp.push_back (cpv);
+                cp.push_back (value);
         }
 }
 
@@ -345,7 +356,7 @@ struct LMCreduction_t {
 
         int nrows, ncols;
 
-        LMC_static_struct_t *staticdata;
+        LMCreduction_helper_t *staticdata;
 
         symmdataPointer sd;
 
@@ -384,27 +395,27 @@ struct LMCreduction_t {
                 }
         }
 
+        /// release internal LMCreduction_helper_t object
         void releaseStatic () {
                 if (this->staticdata != 0) {
-                        releaseGlobalStatic (this->staticdata);
+                        release_LMCreduction_object (this->staticdata);
                         this->staticdata = 0;
                 }
         }
 
-        /// acquire a reference to a LMC_static_struct_t object
+        /// acquire a reference to a LMCreduction_helper_t object
         void initStatic () {
                 if (this->staticdata == 0) {
-                        this->staticdata = getGlobalStatic ();
+                        this->staticdata = acquire_LMCreduction_object ();
                 }
         }
 
-        /// return a reference to a LMC_static_struct_t object
-        LMC_static_struct_t &getStaticReference () {
+        /// return a reference to a object with LMC reduction data
+        LMCreduction_helper_t &getReferenceReductionHelper () {
                 if (this->staticdata == 0) {
-                        return getGlobalStaticOne ();
-                } else {
-                        return *(this->staticdata);
-                }
+		        this->initStatic();
+		}
+		return *(this->staticdata);
         }
 
         /// reset the reduction: clears the symmetries and sets the transformation to zero
@@ -412,13 +423,7 @@ struct LMCreduction_t {
 
 		void show(int verbose = 2) const;
 
-        std::string __repr__ () const {
-                std::string ss = printfstring ("LMCreduction_t: mode %d, state %d (REDUCTION_INITIAL %d, "
-                                               "REDUCTION_CHANGED %d), init_state %d, lastcol %d\n",
-                                               this->mode, this->state, REDUCTION_INITIAL, REDUCTION_CHANGED,
-                                               this->init_state, this->lastcol);
-                return ss;
-        }
+        std::string __repr__ () const;
 
         /// called whenever we find a reduction
         void updateFromLoop (const arraydata_t &ad, const dyndata_t &dynd, levelperm_t *lperms,
@@ -426,17 +431,31 @@ struct LMCreduction_t {
         void updateTransformation (const arraydata_t &ad, const dyndata_t &dynd, levelperm_t *lperms,
                                    const array_t *original);
 
-        inline bool doBreak (lmc_t ret) {
-                if (this->mode >= OA_REDUCE)
-                        return false;
-                else {
-                        return ret == LMC_LESS;
-                }
-        }
         inline void updateLastCol (int col) { this->lastcol = col; }
 
       private:
         void free ();
+};
+
+/// allocate structure to keep track of row sorting
+rowsort_t * allocate_rowsort(int N);
+
+/// deallocate row structure 
+void deallocate_rowsort(rowsort_t *& rowsort);
+
+/// Structure to sort rows of arrays
+class rowsorter_t
+{
+public:
+  int number_of_rows;
+  rowsort_t *rowsort;
+  
+  rowsorter_t(int number_of_rows);
+  ~rowsorter_t();
+
+private:
+	void reset_rowsort();
+
 };
 
 /** @brief Contains dynamic data of an array
@@ -581,9 +600,6 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
 /// helper function
 lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
                 LMCreduction_t *reduction, const OAextend &oaextend);
-/// Perform reduction or LMC check without root trick
-lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
-                     LMCreduction_t *reduction, const OAextend &oaextend, LMC_static_struct_t &tmpStatic);
 
 /// generic LMCcheck function
 lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
@@ -621,18 +637,13 @@ std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, 
 /// Perform LMC check lexicographically
 lmc_t LMCcheckLex (array_link const &al, arraydata_t const &ad);
 
+/// Perform minimal form check for with J4 method
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
-/// Perform LMC check with J5 ordering
+/// Perform minimal form check for J5 ordering
 lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
                   int hack = 0);
-
-/* internal functions LMC reduction */
-#ifdef OAMEM
-lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                                    LMCreduction_t *reduction);
-#endif
 
 
 /**

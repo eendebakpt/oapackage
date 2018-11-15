@@ -15,7 +15,7 @@
 #include "graphtools.h"
 
 /// print a candidate extension
-void print_cperm(const conference_column &column, const char *msg = 0);
+void print_column(const conference_column &column, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
@@ -57,7 +57,13 @@ class conference_t {
         colindex_t ncols; 
 
         /// Type of conference design
-        enum conference_type { CONFERENCE_NORMAL, CONFERENCE_DIAGONAL, DCONFERENCE };
+        enum conference_type { 
+            /// normal conference design
+            CONFERENCE_NORMAL,
+            /// conference design with zeros only on diagonal
+            CONFERENCE_DIAGONAL,
+            /// double conference design
+            DCONFERENCE };
 		/// defines the type of designs
 		conference_type ctype;      
 		/// defines the isomorphism type

@@ -21,7 +21,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "arraytools.h"
 #include "extend.h"
 #include "graphtools.h"
-#include "graphtools.h"
+#include "unittests.h"
 #include "tools.h"
 
 #include "evenodd.h"
@@ -48,47 +48,6 @@ using namespace Eigen;
 
 #include "graphtools.h"
 
-array_link array2xf2 (const array_link &al) {
-        const int k = al.n_columns;
-        const int n = al.n_rows;
-        const int m = 1 + k + k * (k - 1) / 2;
-        array_link out (n, m, array_link::INDEX_DEFAULT);
-
-        // init first column
-        int ww = 0;
-        for (int r = 0; r < n; ++r) {
-                out.array[r] = 1;
-        }
-
-        // init array
-        ww = 1;
-        for (int c = 0; c < k; ++c) {
-                int ci = c * n;
-                array_t *pout = out.array + (ww + c) * out.n_rows;
-                for (int r = 0; r < n; ++r) {
-                        pout[r] = 2 * al.array[r + ci] - 1;
-                }
-        }
-
-        // init interactions
-        ww = k + 1;
-        for (int c = 0; c < k; ++c) {
-                int ci = c * n + n;
-                for (int c2 = 0; c2 < c; ++c2) {
-                        int ci2 = c2 * n + n;
-
-                        const array_t *p1 = out.array + ci;
-                        const array_t *p2 = out.array + ci2;
-                        array_t *pout = out.array + ww * out.n_rows;
-
-                        for (int r = 0; r < n; ++r) {
-                                pout[r] = -(p1[r] * p2[r]);
-                        }
-                        ww++;
-                }
-        }
-        return out;
-}
 
 /// show information about Pareto criteria for conference matrix
 void paretoInfo (const array_link &alx) {
@@ -122,47 +81,6 @@ int arrayInPareto (const Pareto< mvalue_t< long >, array_link > &pset, const arr
         return jx;
 }
 
-/// check composition operator. returns 0 if test id good
-int checkConferenceComposition (const array_link &al, int verbose = 0) {
-        conference_transformation_t T1 (al);
-        // T1.randomizecolperm();
-        T1.randomizecolflips ();
-        // T1.randomizerowperm();
-        T1.randomizerowflips ();
-        T1.randomize ();
-
-        conference_transformation_t T2 (al);
-        // T2.randomize();
-        T2.randomizerowperm ();
-        // T2.randomizerowflips();
-        // T2.randomizecolperm();
-        // T2.randomizecolflips();
-
-        conference_transformation_t T3 = T2 * T1;
-
-        array_link al1 = T1.apply (al);
-        array_link al1t2 = T2.apply (al1);
-        array_link al3 = T3.apply (al);
-
-        if (verbose) {
-                printfd ("checkTransformationComposition: transforms\n");
-                printf ("-- T1 \n");
-                T1.show ();
-                printf ("-- T2 \n");
-                T2.show ();
-                printf ("-- T3 \n");
-                T3.show ();
-                printfd ("checkTransformationComposition: arrays\n");
-                al.showarray ();
-                al1.showarray ();
-                al1t2.showarray ();
-                al3.showarray ();
-        }
-
-        myassert (al3 == al1t2, "unittest error: composition of conference transformations\n");
-
-        return 0;
-}
 
 int main (int argc, char *argv[]) {
         AnyOption opt;
@@ -210,6 +128,16 @@ int main (int argc, char *argv[]) {
                 srand (randvalseed);
         }
 
+
+
+		array_link al = exampleArray(36, verbose);
+		myassert(al.is_conference(2), "check on double conference design type");
+
+		for (int i = 0; i < 100; i++) {
+			myprintf("iteration %d\n", i);
+			myassert(testLMC0checkDC(al, verbose >= 2), "testLMC0checkDC");
+		}
+		exit(0);
 
 		try {
 			array_link al = exampleArray(r);

@@ -23,19 +23,15 @@ script:
   - ./oaranktest -I ../docs/examples/OAN56K28.oa
   - ./oainfo ../docs/examples/OAN56K28.oa
   - ./oaextendsingle  -c ../oaconfig.txt -l 1
-
-#addons:
-#  artifacts: true
-  
-# Python build
-#language: python
-#python:
-#  - "2.7"
-#  - "3.4"
+# tools
+  - ./oasplit -i result-20.2-2-2.oa
+  - ./oajoin split-split-0.oa split-split-1.oa -o temp.oa
+  - ./oacat result-20.2-2-2.oa
+  - ./oaanalyse result-20.2-2-2.oa
+  - ./oaconvert result-20.2-2-2.oa -f B dummy-binary.oa
 #
-#before_install:
-#  - sudo apt-get update -qq
-#  - sudo apt-get install swig
-#install:
-#  - python setup.py build
+  - ./oaextendsingle -m 3 -l 1 -c ../oaconfig3.txt --maxk 5 # J4 algorithm
+  - ./oaconference -N 12 -k 6 -v 0
+  - ./oapareto result-20.2-2-2.oa -f B -o dummy.oa
+
 

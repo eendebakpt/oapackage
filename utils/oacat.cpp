@@ -58,7 +58,6 @@ int main (int argc, char *argv[]) {
                 arrayfile_t afile (opt.getArgv (i), 0);
 
                 if (afile.isopen ()) {
-                        //            std::cout << afile.showstr() << std::endl;
                         if (verbose)
                                 cout << "file " << opt.getArgv (i) << endl;
                         arraylist_t arraylist = readarrayfile (opt.getArgv (i), 0);
@@ -80,7 +79,6 @@ int main (int argc, char *argv[]) {
                         bool valid = false;
                         FILE *fid = fopen (fname, "rb");
                         if (fid != 0) {
-                                // printf("fid %d\n", fid);
                                 valid = readbinheader (fid, nr, nc);
                                 if (valid) {
                                         if (verbose) {

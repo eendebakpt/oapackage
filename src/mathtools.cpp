@@ -16,7 +16,6 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         n = vals.size ();
         ascending = ascendingx;
 
-        // check we are sorted
         if (verbose >= 2)
                 myprintf ("symmetry_group::init: check sorting\n");
 
@@ -142,6 +141,40 @@ symmetry_group::symmetry_group () {
         ascending = 0;
 }
 
+/// representation function (for python interface)
+std::string symmetry_group::__repr__() const {
+	std::stringstream ss;
+	ss << "symmetry group: " << n << " elements, " << ngroups << " subgroups: ";
+	for (int i = 0; i < ngroups; i++)
+		ss << gsize[i] << " ";
+
+	std::string s = ss.str();
+	return s;
+}
+
+/// show the symmetry group
+void symmetry_group::show(int verbose) const {
+	myprintf("symmetry group: %d elements, %d subgroups: ", n, ngroups);
+	for (int i = 0; i < ngroups; i++)
+		myprintf("%d ", gsize[i]);
+	myprintf("\n");
+
+	if (verbose >= 2) {
+		myprintf("gidx: ");
+		for (int i = 0; i < n; i++)
+			myprintf("%d, ", gidx[i]);
+		myprintf("\n");
+		myprintf("gstart: ");
+		for (int i = 0; i < ngroups; i++)
+			myprintf("%d, ", gstart[i]);
+		myprintf("\n");
+		myprintf("gsize: ");
+		for (int i = 0; i < ngroups; i++)
+			myprintf("%d, ", gsize[i]);
+		myprintf("\n");
+	}
+}
+
 void symmetry_group_walker::show (int verbose) const {
         myprintf ("symmetry_group_walker: ");
         if (verbose >= 2)
@@ -211,8 +244,6 @@ void Combinations::initialize_number_combinations (int N) {
                 }
 
                 ncombsdata = new long *[nrows];
-                // if debugging, check for memory allocation
-                assert (ncombsdata);
 
                 ncombsdata[0] = new long[nrows * rowsize];
 
@@ -238,8 +269,8 @@ Combinations::~Combinations() {
 int Combinations::number_combinations_max_n () { return Combinations::ncombscachemax; }
 
 long Combinations::number_combinations (int n, int k) {
-#ifdef OADEBUG
-        assert (Combinations::ncombsdata != 0);
+#ifdef SWIGPYTHON
+        myassert (Combinations::ncombsdata != 0);
 #endif
         return Combinations::ncombsdata[n][k];
 }
