@@ -8,6 +8,87 @@
 
 #include "conference.h"
 
+int unittest_reduceConferenceTransformation()
+{
+	array_link conference_design = exampleArray(45);
+	conference_transformation_t tranformation = reduceConferenceTransformation(conference_design, 0);
+
+	return 0;
+}
+
+/// unittest: return 1 if all tests are good
+int unittest_nautynormalform(const array_link &al, int verbose) {
+	arraydata_t arrayclass = arraylink2arraydata(al);
+
+	if (verbose >= 2) {
+		myprintf("unittest_nautynormalform: testing on array\n");
+		al.showarray();
+	}
+
+	array_link alr1 = al.randomperm();
+	array_link alr2 = al.randomperm();
+
+	array_transformation_t ttx1 = reduceOAnauty(alr1, 0);
+	array_link alx1 = ttx1.apply(alr1);
+
+	array_transformation_t ttx2 = reduceOAnauty(alr2, 0);
+	array_link alx2 = ttx2.apply(alr2);
+
+	if (alx1 != alx2) {
+		printfd("unittest_nautynormalform: error: transformed graphs unequal!\n");
+
+		myprintf("alx1: \n");
+		alx1.showarray();
+		myprintf("alx2: \n");
+		alx2.showarray();
+
+		return 0;
+	}
+
+	return 1;
+}
+
+/// check composition operator. returns 0 if test id good
+int checkTransformationComposition(const array_link &al, int verbose = 0) {
+	arraydata_t adataX = arraylink2arraydata(al);
+
+	array_transformation_t T1(&adataX);
+	T1.randomize();
+	array_transformation_t T2(&adataX);
+	T2.randomize();
+	array_transformation_t T3;
+	T3 = T1 * T2;
+
+	array_link al2 = T2.apply(al);
+
+	array_link al12 = T1.apply(al2);
+	array_link al3 = T3.apply(al);
+
+	if (verbose) {
+		printfd("checkTransformationComposition\n");
+		T1.show();
+		T2.show();
+		T3.show();
+		al.showarray();
+		al2.showarray();
+		al12.showarray();
+		al3.showarray();
+	}
+
+	myassert(al3 == al12, "unittest error: composition of array transformations\n");
+
+	return 0;
+}
+
+void test_array_manipulation(int verbose) {
+	array_link al = exampleArray(4, 0);
+
+	if (verbose >= 2)
+		myprintf("test selectFirstColumns\n");
+	array_link al5 = al.selectFirstColumns(5);
+	assert(al5.n_columns == 5);
+}
+
 /// check transformation inverse. return 0 if test is good
 int checkConferenceInverse(const array_link &al) {
 	conference_transformation_t T1(al);
