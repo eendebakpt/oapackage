@@ -27,6 +27,8 @@ script:
   - ./oajoin split-split-0.oa split-split-1.oa -o temp.oa
   - ./oaextendsingle -m 3 -l 1 -c ../oaconfig3.txt --maxk 5 # J4 algorithm
   - ./oaconference -N 12 -k 6 -v 0
+  - ./oapareto.exe result-20.2-2-2.oa -f B -o dummy.oa
+  - ./oacat dummy.oa
 
 
 #addons:
