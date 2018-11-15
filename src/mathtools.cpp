@@ -154,7 +154,7 @@ std::string symmetry_group::__repr__() const {
 }
 
 /// show the symmetry group
-void symmetry_group::show(int verbose = 1) const {
+void symmetry_group::show(int verbose) const {
 	myprintf("symmetry group: %d elements, %d subgroups: ", n, ngroups);
 	for (int i = 0; i < ngroups; i++)
 		myprintf("%d ", gsize[i]);
