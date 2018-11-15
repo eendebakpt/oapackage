@@ -24,6 +24,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "tools.h"
 
 #include "graphtools.h"
+#include "unittests.h"
 
 #include "Eigen/Dense"
 
@@ -88,50 +89,6 @@ int unittest_nautynormalform(const array_link &al, int verbose) {
 	}
 
 	return 1;
-}
-
-bool testLMC0checkDC (const array_link &al, int verbose = 1) {
-        const int niter = 20; // number of iterations used in check
-
-        myassert (al.is_conference (2));
-
-        // perform LMC0 test
-        lmc_t r = LMC0checkDC (al, verbose >= 2);
-
-        if (verbose >= 2) {
-                printf ("testLMC0checkDC: result %d (LMC_LESS %d, LMC_MORE %d)\n", (int)r, LMC_LESS, LMC_MORE);
-        }
-        if (r == LMC_MORE)
-                return true;
-
-        // array is in LMC0 format, perform random transformations
-        for (int jj = 0; jj < niter; jj++) {
-                conference_transformation_t tr (al);
-                tr.randomizecolperm ();
-                tr.randomizerowperm ();
-                tr.randomizecolflips ();
-
-                array_link alx = tr.apply (al);
-
-                if (al != alx) {
-                        lmc_t r = LMC0checkDC (alx, verbose >= 2);
-
-                        if (verbose >= 2) {
-                                printf ("testLMC0checkDC: randomized array: result %d (LMC_LESS %d, LMC_MORE %d)\n",
-                                        (int)r, LMC_LESS, LMC_MORE);
-                        }
-
-                        if (r != LMC_LESS) {
-                                printf ("testLMC0checkDC: error?: LMC0checkDC on randomized array did not return "
-                                        "LMC_LESS\n");
-                                return false;
-                        }
-                } else {
-                        if (verbose >= 2)
-                                printf ("testLMC0checkDC: randomized array resulted in same array\n");
-                }
-        }
-        return true;
 }
 
 /// check composition operator. returns 0 if test id good
@@ -657,7 +614,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 array_link al = exampleArray (1, 1);
 
                 lmc_t r = LMCcheckOriginal (al);
-                // printfd("r %d, strength %d\n", r, strength);
 
                 myassert (r != LMC_LESS, "LMC check of array in normal form");
 
