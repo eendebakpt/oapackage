@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "anyoption.h"
+#include "mathtools.h"
 #include "arrayproperties.h"
 #include "arraytools.h"
 #include "extend.h"
@@ -51,8 +52,8 @@ template < class fwditer > fwditer random_unique (fwditer begin, fwditer end, si
 }
 
 /// generate a range of numbers
-struct rangegenerator {
-        rangegenerator (int init) : start (init) {}
+struct range_generator {
+        range_generator (int init) : start (init) {}
 
         int operator() () { return start++; }
 
@@ -70,8 +71,23 @@ T2 subvector (const T2 &full, const T &ind) {
         return target;
 }
 
-enum reduction_method { NONE, NAUTY, LMC0, LMC0DC };       // method to perform reduction to isomorphism classes
-enum max_selection_method { SELECT_RANDOM, SELECT_FIRST }; /// method to reduce the generated set of designs
+/// method to perform reduction to isomorphism classes
+enum reduction_method {
+	/// no reduction
+	NONE,
+	/// reduction by ismorphism pruning using Nauty normal form
+	NAUTY,
+	/// reduction by LMC0 check
+	LMC0,
+	/// reduction by LMC0DC check
+	LMC0DC };       
+
+/// method to reduce the generated set of designs
+enum max_selection_method {
+	/// select elements at random
+	SELECT_RANDOM,
+	/// only select the first elements
+	SELECT_FIRST }; 
 
 /** select a subset of arrays
  *
@@ -92,13 +108,13 @@ arraylist_t selectArraysMax (const arraylist_t &lst, int nmax, max_selection_met
                 return out;
         }
         std::vector< size_t > indices (lst.size ());
-        generate (indices.begin (), indices.end (), rangegenerator (0));
-        std::random_shuffle (indices.begin (), indices.end ()); // TODO: more efficient with Fischer-Yates shuffle
+        generate (indices.begin (), indices.end (), range_generator (0));
+        std::random_shuffle (indices.begin (), indices.end ()); 
         indices.resize (nmax);
         std::sort (indices.begin (), indices.end ());
 
         if (verbose) {
-                printfd ("indices: generated ");
+                myprintf ("indices: generated ");
                 display_vector (indices);
                 printf ("\n");
         }
@@ -165,10 +181,7 @@ int main (int argc, char *argv[]) {
                           .c_str ());
         opt.processCommandArgs (argc, argv);
 
-        // testx();
-
         print_copyright ();
-        // cout << system_uname();
         setloglevel (NORMAL);
 
         std::string format = opt.getStringValue ('f', "AUTO");
@@ -212,19 +225,16 @@ int main (int argc, char *argv[]) {
         arraylist_t inputarrays;
         if (input.length () > 1) {
                 inputarrays = readarrayfile (input.c_str ());
-                // al=kk[0];
                 kstart = inputarrays[0].n_columns;
 
                 if (inputarrays.size () > 0) {
                         ctype = conference_t (N, kstart, j1zero);
-                        assert (inputarrays[0].n_rows == N);
+                        myassert (inputarrays[0].n_rows == N);
                 }
                 ctype.ctype = ctx;
                 ctype.itype = itype;
                 ctype.j3zero = j3zero;
                 ctype.j1zero = j1zero;
-                // kmax=inputarrays[0].n_columns+1;
-
         } else {
                 ctype.ctype = ctx;
                 ctype.itype = itype;
@@ -350,12 +360,9 @@ int main (int argc, char *argv[]) {
                         (int)outlist.size (), get_time_ms (t0));
 
                 if (nmax >= 0) {
-                        // select arrays
                         outlist = selectArraysMax (outlist, nmax, nmaxmethod);
-                } else {
                 }
 
-                // loop
                 inputarrays = outlist;
         }
         printf ("done...\n");
