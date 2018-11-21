@@ -80,8 +80,8 @@ $ make
 $ make install
 ````
 
-Contributions, unit testing and support
----------------------------------------
+Contributing, unit testing and support
+--------------------------------------
 
 See the file [CONTRIBUTING.md](https://github.com/eendebakpt/oapackage/blob/master/CONTRIBUTING.md) on GitHub.
              
