@@ -14,7 +14,8 @@ By contributing to the repository you state you own the copyright to those contr
 
 ### Bugs reports and feature requests
 
-To submit a bug report or feature request use the [Github issue tracker](https://github.com/eendebakpt/oapackage/issues) are for. Search for existing and closed issues. If your problem or idea is not yet addressed, please open a new issue.
+To submit a bug report or feature request use the [Github issue tracker](https://github.com/eendebakpt/oapackage/issues).
+Search for existing and closed issues first. If your problem or idea is not yet addressed, please open a new issue.
 
 ### Testing
 
