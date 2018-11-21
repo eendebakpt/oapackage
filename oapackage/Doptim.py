@@ -28,7 +28,7 @@ import oapackage.oahelper as oahelper
 
 from oapackage.markup import oneliner as e
 
-#%%
+# %%
 
 
 def array2Dtable(sols, verbose=1, titlestr=None):
@@ -144,7 +144,6 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         pltlegend = None
     hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
     return hh
-#%%
 
 
 def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0],
@@ -189,8 +188,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
             print('generateDpage: writen scatterplot to %s' % scatterfile)
         plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
 
-    #%% Create page
-
     page = markup.page()
 
     if makeheader:
@@ -206,8 +203,6 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
 
     page.h1('Results for array class %s ' % xstr)
 
-    # mathjax is not updated properly...
-    ss = r'The Pareto optimaly was calculated according to the statistics \(D\), \(D1\) and \(Ds\).'
     ss = r'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
     if npareto == 1:
         page.p('Generated %d arrays, %d is Pareto optimal. %s' %
@@ -390,7 +385,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     return d, A
 
 
-#%%
+# %%
 def filterPareto(scores, dds, sols, verbose=0):
     """ From a list of designs select only the pareto optimal designs
 
@@ -411,8 +406,6 @@ def filterPareto(scores, dds, sols, verbose=0):
     psols = [sols[i] for i in paretoidx]
 
     return pscores, pdds, psols
-
-#%%
 
 
 def scoreDn(dds, optimfunc):
@@ -462,7 +455,7 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
     scores = scores[idx]
     dds = dds[idx, :]
     sols = [sols[ii] for ii in idx]
-    if not nout is None:
+    if nout is not None:
         # sort the arrays
         nout = np.minimum(nout, scores.size)
         scores = scores[0:nout]
