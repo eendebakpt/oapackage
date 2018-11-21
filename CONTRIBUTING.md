@@ -16,6 +16,15 @@ By contributing to the repository you state you own the copyright to those contr
 
 To submit a bug report or feature request use the [Github issue tracker](https://github.com/eendebakpt/oapackage/issues) are for. Search for existing and closed issues. If your problem or idea is not yet addressed, please open a new issue.
 
+### Testing
+
+Continuous integration and testing for the C++ library is performed on [Travis](https://travis-ci.org/eendebakpt/oapackage) and for the Python package on [AppVeyor](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8).
+
+To perform tests run [`pytest`](https://docs.pytest.org/en/latest/). To obtain a [coverage](https://coverage.readthedocs.io) report, run
+```
+$ coverage run --source='./oapackage' -m pytest
+$ coverage report --omit oapackage/markup.py,oapackage/tests/*.py,oapackage/deprecated.py
+```
 
 ### Contact
 
