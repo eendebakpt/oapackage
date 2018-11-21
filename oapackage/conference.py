@@ -9,24 +9,19 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 
 from __future__ import print_function
 
-import os
 import numpy as np
-import time
 import itertools
 
 
 import oapackage
-import oapackage.markup as markup
-import oapackage.oahelper as oahelper
 
-
-#%%
+# %%
 
 def momentMatrix(k):
-    """ Return the moment matrix of a conference design 
+    """ Return the moment matrix of a conference design
 
     Args
-        k (int): number of columns of the conference design 
+        k (int): number of columns of the conference design
     Returns
         array: moment matrix
     """
@@ -61,7 +56,6 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None):
     Args:
         dsd (array): definitive screening design
     """
-    nrows = dsd.shape[0]
     ncolumns = dsd.shape[1]
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
     M = (modelmatrix.T).dot(modelmatrix)
@@ -70,19 +64,18 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None):
         mr = np.linalg.matrix_rank(M)
         fullrank = mr == modelmatrix.shape[1]
     else:
-        fullrank = np.linalg.cond(M)<1000
-        
+        fullrank = np.linalg.cond(M) < 1000
+
     if verbose >= 2:
         print('conferenceProjectionStatistics: condition number: %s' % (np.linalg.cond(M)))
     if verbose:
         print('%d, cond %.5f' % (mr == modelmatrix.shape[1], np.linalg.cond(M), ))
-    if fullrank: 
+    if fullrank:
         if moment_matrix is None:
             moment_matrix = momentMatrix(ncolumns)
         Eest = 1
         pk = int(1 + ncolumns + ncolumns * (ncolumns + 1) / 2)
         kappa = np.linalg.det(M)
-        #kappa=scipy.linalg.det(M)
         lnkappa = np.log(kappa) / (pk)
         Defficiency = np.exp(lnkappa)
 
@@ -109,17 +102,16 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
         pec, pic, ppc (float)
     """
     nc = al.shape[1]
-    
-    number_combinations=oapackage.choose(nc, ncolumns)
-    Eestx=np.zeros(number_combinations)
-    Deff=np.zeros(number_combinations)
-    invAPV_values=np.zeros(number_combinations)
+
+    number_combinations = oapackage.choose(nc, ncolumns)
+    Eestx = np.zeros(number_combinations)
+    Deff = np.zeros(number_combinations)
+    invAPV_values = np.zeros(number_combinations)
     dsd = oapackage.conference2DSD(oapackage.array_link(al))
     moment_matrix = momentMatrix(ncolumns)
-    for idx, c in enumerate(list(itertools.combinations(range(nc), ncolumns)) ):
+    for idx, c in enumerate(list(itertools.combinations(range(nc), ncolumns))):
         proj_dsd = dsd.selectColumns(c)
-        
-        Eest, D, invAPV = modelStatistics(proj_dsd, verbose=0, moment_matrix = moment_matrix)
+        Eest, D, invAPV = modelStatistics(proj_dsd, verbose = 0, moment_matrix = moment_matrix)
 
         Deff[idx] = D
         Eestx[idx] = Eest

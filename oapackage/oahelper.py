@@ -62,8 +62,7 @@ def deprecated(func):
         return func(*args, **kwargs)
     return new_func
 
-#%% Load Qt support
-
+# %%
 
 try:
     try:
@@ -174,8 +173,7 @@ def plot2Dline(line, *args, **kwargs):
         plt.plot(xx, yy, *args, **kwargs)
 
 
-#%% Make nice plots
-# http://blog.olgabotvinnik.com/prettyplotlib/
+# %% Make nice plots
 
 def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
              tightlayout=True, legend=None, almost_black='#222222'):
@@ -210,7 +208,7 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
     ax.tick_params(axis='both', direction='out')
 
-    if not legend is None:
+    if legend is not None:
         if verbose:
             print('niceplot: adjust legend')
 
@@ -229,7 +227,7 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
         for t in texts:
             t.set_color(almost_black)
 
-    if not fig is None and tightlayout:
+    if (fig is not None) and tightlayout:
         fig.tight_layout(pad=1.0)
 
     if figurebg and fig is not None:
@@ -253,11 +251,11 @@ def enlargelims(factor=1.05):
     yl = (yl[0] - d, yl[1] + d)
     plt.ylim(yl)
 
-#%%
+# %%
 
 
 def selectParetoArrays(array_list, pareto_object):
-    """ Select arrays using a Pareto object 
+    """ Select arrays using a Pareto object
 
     Args:
         array_list (list): list of arrays
@@ -294,7 +292,7 @@ def createPareto(dds, verbose=1):
     return pp
 
 
-#%% Utils
+# %% Utils
 
 
 def static_var(varname, value):
@@ -354,7 +352,7 @@ def findfilesR(directory, pattern):
 
 
 def findfiles(directory, pattern=None):
-    """ Get a list of files 
+    """ Get a list of files
     Args:
         directory (str): directory to search
         patt (str): pattern
@@ -362,14 +360,14 @@ def findfiles(directory, pattern=None):
         list: list of matched files
     """
     lst = os.listdir(directory)
-    if not pattern is None:
+    if pattern is not None:
         rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
     return lst
 
 
 def finddirectories(directory, pattern=None):
-    """ Get a list of directories 
+    """ Get a list of directories
     Args:
         directory (str): directory to search
         patt (str): pattern
@@ -377,7 +375,7 @@ def finddirectories(directory, pattern=None):
         list: list of matched directories
     """
     lst = os.listdir(directory)
-    if not pattern is None:
+    if pattern is not None:
         rr = re.compile(pattern)
         lst = [l for l in lst if re.match(rr, l)]
     lst = [l for l in lst if os.path.isdir(os.path.join(directory, l))]
@@ -400,7 +398,7 @@ def oaIsBinary(filename):
 
 
 def fac(n):
-    """ Return n! (factorial) 
+    """ Return n! (factorial)
 
     Args:
         n (int): number to calculate factorial
@@ -528,7 +526,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
     Returns:
         r (int): return value of the shell command
     """
-    if not idstr is None:
+    if idstr is not None:
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
@@ -682,7 +680,7 @@ def test_checkFiles():
     r = checkFiles(lst, cache=1, verbose=1)
     assert(r is True)
 
-#%%
+# %%
 
 
 def checkFilesOA(lst, cache=1, verbose=0):
@@ -787,7 +785,7 @@ def floatformat(number, mind=2, maxd=4):
 
 
 def safemin(data, default=0):
-    """ Return mininum of array with default value for empty array 
+    """ Return mininum of array with default value for empty array
 
     Args:
         data (array or list): data to return the maximum
@@ -915,11 +913,9 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
     if gmadata is None:
         return '-'
     if isinstance(gmadata, tuple):
-        # do nothing
         pass
     else:
         if isinstance(gmadata, list):
-            # do nothing
             pass
         else:
             gmadata[gmadata < 0] = 0
@@ -927,7 +923,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
             print('warning: data are not good GWPL data!!!!')
             return ''
     bgma = np.around(gmadata, decimals=12)
-    if not t is None:
+    if t is not None:
         bgma = bgma[(t + 1):]
     if sformat is None:
         gstr = jstr.join([floatformat(v, mind=2, maxd=4) for v in bgma])
@@ -1005,7 +1001,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))
-    if isinstance(l, list):  # types.ListType):
+    if isinstance(l, list):  
         ll = l
     else:
         ll = [l]
@@ -1121,7 +1117,7 @@ def sortcols(array):
     sind = sortrows(array.transpose())
     return sind
 
-#%%
+# %%
 
 
 def testHtml(html_code=None):
@@ -1171,7 +1167,7 @@ def designStandardError(al):
     return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)
 
 
-#%%
+# %%
 def DefficiencyBound(D, k, k2):
     """ Calculate the D-efficiency bound of an array extension
 
@@ -1189,7 +1185,7 @@ def DefficiencyBound(D, k, k2):
     D2 = D**(m / m2)
     return D2
 
-#%% Misc
+# %% Misc
 
 
 def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
@@ -1243,8 +1239,6 @@ def formatC(al, wrap=True):
         s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (
             al.n_rows, al.n_columns) + s + '};'
     return s
-
-#%%
 
 
 def create_pareto_element(values, pareto=None):
