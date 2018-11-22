@@ -14,11 +14,11 @@ authors:
     orcid: 0000-0002-3658-0911
     affiliation: "1, 3"
 affiliations:
- - name: University of Antwerp
+ - name: Department of Engineering Management, University of Antwerp, Belgium
    index: 1
- - name: Netherlands Organisation for Applied Scientific Research (TNO)
+ - name: Netherlands Organisation for Applied Scientific Research (TNO), P.O. Box 155, 2600 AD Delft, The Netherlands
    index: 2
- - name: University of Leuven
+ - name: Department of Biosystems, KU Leuven, Leuven, Belgium
    index: 3
 date: 11 November 2018
 bibliography: paper.bib
