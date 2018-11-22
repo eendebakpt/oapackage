@@ -42,54 +42,27 @@ enum checkmode_t {
 };
 
 /// return mode for oacheck in std::string
-string modeString (checkmode_t m) {
+string modeString (checkmode_t checkmode) {
         std::string str = "invalid";
-        switch (m) {
+        switch (checkmode) {
         case MODE_CHECK:
-                str = stringify (MODE_CHECK);
-                break;
-        case MODE_REDUCE:
-                str = stringify (MODE_REDUCE);
-                break;
-        case MODE_REDUCETRAIN:
-                str = stringify (MODE_REDUCETRAIN);
-                break;
-        case MODE_REDUCETRAINRANDOM:
-                str = stringify (MODE_REDUCETRAINRANDOM);
-                break;
-        case MODE_REDUCERANDOM:
-                str = stringify (MODE_REDUCERANDOM);
-                break;
-        case MODE_HADAMARD:
-                str = stringify (MODE_HADAMARD);
-                break;
-        case MODE_NONE:
-                str = stringify (MODE_NONE);
-                break;
-        case MODE_CHECKJ4:
-                str = stringify (MODE_CHECKJ4);
-                break;
-        case MODE_CHECK_SYMMETRY:
-                str = stringify (MODE_CHECK_SYMMETRY);
-                break;
-
-        case MODE_REDUCEJ4:
-                str = stringify (MODE_REDUCEJ4);
-                break;
-        case MODE_CHECKJ5X:
-                str = stringify (MODE_CHECKJ5X);
-                break;
-        case MODE_CHECKJ5XFAST:
-                str = stringify (MODE_CHECKJ5XFAST);
-                break;
-        case MODE_REDUCEJ5X:
-                str = stringify (MODE_REDUCEJ5X);
-                break;
-        case MODE_REDUCEJ4RANDOM:
-                str = stringify (MODE_REDUCEJ4RANDOM);
-                break;
+		case MODE_REDUCE:
+		case MODE_REDUCETRAIN:
+		case MODE_REDUCETRAINRANDOM:
+		case MODE_REDUCERANDOM:
+		case MODE_HADAMARD:
+		case MODE_NONE:
+		case MODE_CHECKJ4:
+		case MODE_CHECK_SYMMETRY:
+		case MODE_REDUCEJ4:
+		case MODE_CHECKJ5X:
+		case MODE_CHECKJ5XFAST:
+		case MODE_REDUCEJ5X:
+		case MODE_REDUCEJ4RANDOM:
+			str = stringify (checkmode);
+            break;
         default:
-                printf ("error: no such mode %d\n", m);
+                printf ("error: no such mode %d\n", checkmode);
                 break;
         }
         return str;
@@ -238,33 +211,8 @@ int main (int argc, char *argv[]) {
                         break;
                 }
                 case MODE_CHECK_SYMMETRY: {
-                        const int verbose = 0;
-
-                        {
-                                oaextend.setAlgorithm (MODE_LMC_SYMMETRY, &ad);
-
-                                oaextend.j5structure = J5_45;
-                                if (verbose >= 2) {
-                                        printf ("oacheck : MODE_CHECK_SYMMETRY: array %d...\n", i);
-                                }
-
-                                if (verbose >= 2) {
-                                        printf ("oacheck : MODE_CHECK_SYMMETRY...\n");
-                                }
-                                /* LMC test with special code */
-                                reduction->reset ();
-                                reduction->mode = OA_TEST;
-                                reduction->init_state = INIT;
-                                array_link al (array, ad.N, ad.ncols, -10);
-                                reduction->setArray (al);
-                                result = LMCcheck (al, ad, oaextend, *reduction);
-                                if (verbose) {
-                                        printf ("oacheck : MODE_CHECK_SYMMETRY: result %d\n", (int)result);
-                                }
-                        }
-
-                        arraydata_t adata (ad);
-                        break;
+					myprintf("MODE_CHECK_SYMMETRY not supported any more");
+					exit(1);
                 }
                 case MODE_CHECKJ5X: {
                         oaextend.setAlgorithm (MODE_J5ORDERX, &ad);
@@ -352,7 +300,7 @@ int main (int argc, char *argv[]) {
                         break;
                 case MODE_HADAMARD:
 						myprintf("MODE_HADAMARD not supported any more\n");
-						exit(0);
+						exit(1);
                 default:
                         result = LMC_NONSENSE;
                         std::cout << "function " << __FUNCTION__ << "line " << __LINE__ << "Unknown mode" << std::endl;
@@ -366,8 +314,6 @@ int main (int argc, char *argv[]) {
                         if (result == LMC_LESS) {
                                 ++wrong;
                                 log_print (NORMAL, "Found array nr %i/%i NOT in lmc form:\n", i, afile->narrays);
-                                // show_array(array, afile->ncols, afile->nrows );
-                                // printf ( "---------------\n" );
                         } else {
                                 ++correct;
                                 log_print (NORMAL, "Found array nr %i/%i in lmc form.\n", i, afile->narrays);
@@ -381,8 +327,6 @@ int main (int argc, char *argv[]) {
                         if (result == LMC_LESS) {
                                 ++wrong;
                                 log_print (NORMAL, "Found array nr %i/%i NOT in minimal form:\n", i, afile->narrays);
-                                // show_array(array, afile->ncols, afile->nrows );
-                                // printf ( "---------------\n" );
                         } else {
                                 ++correct;
                                 log_print (NORMAL, "Found array nr %i/%i in minimal form.\n", i, afile->narrays);
@@ -401,9 +345,7 @@ int main (int argc, char *argv[]) {
                                 if (checkloglevel (NORMAL)) {
                                         log_print (QUIET, "Original:\n");
 
-                                        // print_array(array, afile->ncols, afile->nrows );
                                         print_array (array, afile->nrows, afile->ncols);
-                                        // print_array("Reduction:\n", reduction->array, afile->ncols, afile->nrows );
                                         print_array ("Reduction:\n", reduction->array, afile->nrows, afile->ncols);
                                         printf ("---------------\n");
                                 }
@@ -411,11 +353,11 @@ int main (int argc, char *argv[]) {
                                         cout << "Transformation: " << endl;
                                         reduction->transformation->show (cout);
 
-                                        rowindex_t r;
-                                        colindex_t c;
-                                        array_diff (array, reduction->array, ad.N, ad.ncols, r, c);
+                                        rowindex_t row;
+                                        colindex_t column;
+                                        array_diff (array, reduction->array, ad.N, ad.ncols, row, column);
                                         cout << "Difference at: ";
-                                        printf (" row %d, col %d\n", r, c);
+                                        printf (" row %d, col %d\n", row, column);
                                 }
                         } else {
                                 ++correct;

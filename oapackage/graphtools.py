@@ -4,7 +4,7 @@
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
 
-#%% Load packages
+# %% Load packages
 import numpy as np
 import oapackage
 
@@ -63,8 +63,6 @@ def oa2graph(al, adata, verbose=1):
     # vertices.
     return im, colors, dict({'adata': adata, 'im': im, 'colors': colors, 'nVertices': nVertices})
 
-
-#%%
 
 def selectIsomorphismClasses(sols, verbose=1):
     """ Select isomorphism classes from a list of designs

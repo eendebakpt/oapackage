@@ -74,21 +74,21 @@ int main (int argc, char *argv[]) {
                         }
                 } else {
                         // try to read as binary data file
-                        int nr;
-                        int nc;
-                        bool valid = false;
+                        int number_rows;
+                        int number_columns;
+                        bool valid_binary_data = false;
                         FILE *fid = fopen (fname, "rb");
                         if (fid != 0) {
-                                valid = readbinheader (fid, nr, nc);
-                                if (valid) {
+                                valid_binary_data = readbinheader (fid, number_rows, number_columns);
+                                if (valid_binary_data) {
                                         if (verbose) {
-                                                printf ("data file %s: %d %d\n", fname, nr, nc);
+                                                printf ("data file %s: %d %d\n", fname, number_rows, number_columns);
                                         }
-                                        double *dd = new double[nc];
-                                        for (size_t r = 0; r < (size_t)nr; r++) {
-                                                fread (dd, sizeof (double), nc, fid);
-                                                for (size_t c = 0; c < (size_t)nc; c++) {
-                                                        printf ("%f ", dd[c]);
+                                        double *dd = new double[number_columns];
+                                        for (size_t r = 0; r < (size_t)number_rows; r++) {
+                                                fread (dd, sizeof (double), number_columns, fid);
+                                                for (size_t column = 0; column < (size_t)number_columns; column++) {
+                                                        printf ("%f ", dd[column]);
                                                 }
                                                 printf ("\n");
                                         }
