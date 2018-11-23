@@ -289,9 +289,61 @@ public:
 	}
 };
 
+std::vector<int> double_conference_foldover_permutation(const array_link &double_conference) {
+        int N = double_conference.n_rows/2;
+        
+        if (! double_conference.is_conference() ) {
+         throw_runtime_exception("input array should be conference design");    
+             
+        }
+        myprintf("double_conference_foldover_permutation N %d\n", N);
+        
+        if (2*N != double_conference.n_rows) {
+         throw_runtime_exception("double conference design should have even number of rows");    
+        }
+        
+        array_link alt = double_conference.transposed ();
+        array_link alt_minus = alt * -1;
+
+        std::vector< int > ri (double_conference.n_rows);
+        std::fill (ri.begin (), ri.end (), -1);
+        std::vector< int > foldover_permutation (double_conference.n_rows);
+        foldover_permutation[0]=-1;
+        
+        for (int row = 0; row < double_conference.n_rows; row++) {
+                if (ri[row] > -1)
+                        continue;
+                int foundcol = 0;
+                for (int j = row + 1; j < double_conference.n_rows; j++) {
+                        if (ri[j] > -1)
+                                continue;
+                        if (alt.columnEqual (row, alt_minus, j)) {
+                                foundcol = 1;
+                                ri[row] = j;
+                                ri[j] = row;
+                                break;
+                        }
+                }
+                if (!foundcol) {
+                        return foldover_permutation;
+                }
+        }
+        int row_index=0;
+        for (int row = 0; row < double_conference.n_rows; row++) {
+             if (row<ri[row]) {
+               foldover_permutation[row_index] = row;
+               foldover_permutation[row_index+N] = ri[row];
+               row_index++;
+             }
+        }
+        
+        return foldover_permutation;
+ 
+     
+}
 bool isConferenceFoldover (const array_link &array, int verbose) {
         array_link alt = array.transposed ();
-        array_link alt2 = alt * -1;
+        array_link alt_minus = alt * -1;
 
         std::vector< int > ri (array.n_rows);
         std::fill (ri.begin (), ri.end (), -1);
@@ -303,7 +355,7 @@ bool isConferenceFoldover (const array_link &array, int verbose) {
                 for (int j = i + 1; j < array.n_rows; j++) {
                         if (ri[j] > -1)
                                 continue;
-                        if (alt.columnEqual (i, alt2, j)) {
+                        if (alt.columnEqual (i, alt_minus, j)) {
                                 foundcol = 1;
                                 ri[i] = j;
                                 ri[j] = i;
@@ -781,7 +833,7 @@ conference_column getColumn (const array_link &al, int c) {
 }
 
 // return true if the extension column satisfies the inner product check
-int ipcheck (const conference_column &col, const array_link &al, int cstart, int verbose) {
+int ipcheck (const conference_column &col, const array_link &al, int cstart = 2, int verbose = 0) {
         for (int c = cstart; c < al.n_columns; c++) {
                 if (innerprod (col, al, c) != 0) {
                         if (verbose) {
@@ -1106,6 +1158,9 @@ bool DconferenceFilter::filterJlast(const conference_column &c, int j2start) con
 
 /// return True of the candidate satisfies the symmetry check
 bool DconferenceFilter::filterSymmetry (const conference_column &c) const { return satisfy_symm (c, check_indices, 0); }
+
+bool DconferenceFilter::filterJ2 (const conference_column &c) const { return ipcheck (c, als, 0); }
+bool DconferenceFilter::filterJ2last (const conference_column &c) const { return ipcheck (c, als, als.n_columns - 1); }
 
 bool DconferenceFilter::filterZero(const conference_column &c) const {
 	for (int i = 0; i < minzvalue - 1; i++) {
@@ -2769,6 +2824,16 @@ CandidateGeneratorBase::CandidateGeneratorBase (const array_link &al, const conf
         this->candidate_list.resize (ct.N + 1); // set a safe max
 }
 
+void CandidateGeneratorBase::showCandidates (int verbose) const {
+          myprintf ("CandidateGenerator: N %d\n", this->ct.N);
+          for (int i = 2; i <= last_valid; i++) {
+               myprintf ("CandidateGenerator: number of candidates for %dth column: %ld\n", i,
+                         (long)candidate_list[i].size ());
+               if (verbose >= 2) {
+                         ::showCandidates (candidate_list[i]);
+               }
+          }
+}
 CandidateGeneratorConference::CandidateGeneratorConference (const array_link &al, const conference_t &ct_)
     : CandidateGeneratorBase (al, ct_) {
         if (ct_.j1zero != 0) {
