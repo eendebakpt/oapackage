@@ -296,7 +296,6 @@ std::vector<int> double_conference_foldover_permutation(const array_link &double
          throw_runtime_exception("input array should be conference design");    
              
         }
-        myprintf("double_conference_foldover_permutation N %d\n", N);
         
         if (2*N != double_conference.n_rows) {
          throw_runtime_exception("double conference design should have even number of rows");    
