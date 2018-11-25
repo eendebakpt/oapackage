@@ -2466,7 +2466,6 @@ class ConferenceIsomorphismSelector {
                         }
 
                         if (nadd % 1000 == 0) {
-                                // reduce...
                                 std::vector< int > ridx = selectUniqueArrayIndices (reductions, verbose);
 
                                 arraylist_t tmp;
@@ -2508,9 +2507,9 @@ arraylist_t extend_conference_plain (const arraylist_t &lst, const conference_t 
         for (size_t i = 0; i < lst.size (); i++) {
                 const array_link &al = lst[i];
                 int extcol = al.n_columns;
-                conference_extend_t ce = extend_conference_matrix (al, ctype, extcol, vb, -1);
+                conference_extend_t conference_extensions = extend_conference_matrix (al, ctype, extcol, vb, -1);
 
-                arraylist_t ll = ce.getarrays (al);
+                arraylist_t ll = conference_extensions.getarrays (al);
                 const int nn = ll.size ();
 
                 selector.add (ll);
@@ -2581,8 +2580,6 @@ std::pair< arraylist_t, std::vector< int > > selectConferenceIsomorpismHelper (c
         for (int i = 0; i < (int)lst.size (); i++) {
                 if (verbose >= 1 && (i % 20000 == 0 || i == (int)lst.size () - 1))
                         printf ("selectConferenceIsomorpismClasses: reduce %d/%d\n", i, (int)lst.size ());
-                // array_link alx;
-
                 array_link alx = reduceMatrix (lst[i], itype, 2 * (verbose >= 3));
 
                 lstr.push_back (alx);
@@ -3025,20 +3022,6 @@ void init_lmc0_rowsort (const array_link &al, int sutk_col, rowsort_t *rowperm, 
         std::stable_sort (rowperm, rowperm + al.n_rows);
 }
 
-// int get_zero_pos_blockX (const array_link &al, const int x1, const int x2, rowsort_t *rowperm,
-//                          const std::vector< int > &colperm, int column, const int nrows) {
-// 
-//         int position_zero = nrows + 1;
-//         for (int i = x1; i < x2; i++) {
-//                 int current_val = al.atfast (rowperm[i].r, colperm[column]);
-//                 if (current_val == 0) {
-//                         position_zero = i;
-//                 }
-//         }
-// 
-//         return position_zero;
-// }
-
 /*** compare zero positions in a block of a design
  *
  *
@@ -3084,7 +3067,7 @@ lmc_t init_lmc0_sort_comp (const array_link &al, int column, int sel_col, rowsor
         lmc_t r = LMC_NONSENSE;
         for (int i = 0; i < n_rows; i++) {
 
-                int rx = rowperm[i].r; // play with current rowperm structure
+                int rx = rowperm[i].r; 
                 int posit_al = al.at (rx, sel_col);
                 int trans_val = (colsignperm[sel_col] * rowsignperm[rx]) * posit_al;
                 int m = ((trans_val + 3) % 3);
