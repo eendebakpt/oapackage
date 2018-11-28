@@ -17,7 +17,7 @@
 #include "tools.h"
 
 /**
- * @brief Read in files with arrays and join them into a single file
+ * @brief Read in files with arrays and print to stdout
  * @param argc
  * @param argv[]
  * @return
@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
         AnyOption opt;
 
         /* parse command line options */
-        opt.setFlag ("help", 'h'); /* a flag (takes no argument), supporting long and short form */
+        opt.setFlag ("help", 'h'); 
         opt.setOption ("verbose", 'v');
         opt.setOption ("md5", 'm');
 
@@ -34,6 +34,7 @@ int main (int argc, char *argv[]) {
         opt.addUsage ("Usage: oacat [OPTIONS] [FILES]");
         opt.addUsage ("");
         opt.addUsage (" -h --help  			Prints this help ");
+        opt.addUsage (" -m --md5 [INT] 			If 1, then display md5 sum for each array. Default is 0.");
         opt.processCommandArgs (argc, argv);
 
         /* parse options */
