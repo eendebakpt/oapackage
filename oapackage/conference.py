@@ -37,7 +37,7 @@ def momentMatrix(k):
 
 
 def _leftDivide(A, B):
-    """ Perform left division of a matrix
+    r""" Perform left division of a matrix
 
     Args:
         A (aray)
@@ -50,7 +50,7 @@ def _leftDivide(A, B):
     return x
 
 
-def modelStatistics(dsd, verbose=0, moment_matrix=None):
+def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = True):
     """ Calculate statistics of a definitive screening design from the model matrix
 
     Args:
@@ -60,11 +60,11 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None):
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
     M = (modelmatrix.T).dot(modelmatrix)
 
-    if 0:
+    if use_condition_number:
+        fullrank = np.linalg.cond(M) < 1000
+    else:
         mr = np.linalg.matrix_rank(M)
         fullrank = mr == modelmatrix.shape[1]
-    else:
-        fullrank = np.linalg.cond(M) < 1000
 
     if verbose >= 2:
         print('conferenceProjectionStatistics: condition number: %s' % (np.linalg.cond(M)))
