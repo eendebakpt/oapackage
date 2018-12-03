@@ -161,18 +161,62 @@ class TestConferenceDesigns(unittest.TestCase):
         np.testing.assert_array_equal(conf, -dsd[al.n_rows:2 * al.n_rows, :])
         np.testing.assert_array_equal(0 * conf[0], dsd[-1, :])
 
+    def test_isConferenceFoldover(self):
+        al = oapackage.exampleArray(37, 0)
+        self.assertTrue(oapackage.isConferenceFoldover(al))
+        al[2, 0] = -1
+        self.assertFalse(oapackage.isConferenceFoldover(al))
+        al = oapackage.exampleArray(7, 0)
+        self.assertFalse(oapackage.isConferenceFoldover(al))
+        al = oapackage.exampleArray(45, 0)
+        self.assertFalse(oapackage.isConferenceFoldover(al))
+
+    def test_double_conference_foldover_permutation(self):
+        import oapackage
+        al = oapackage.exampleArray(37, 1)
+        expected = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11, 16, 19, 17, 18, 15, 14, 13, 12]
+        permutation = oapackage.double_conference_foldover_permutation(al)
+        self.assertEqual(list(permutation), expected)
+
+        N = int(al.n_rows / 2)
+        folded = np.array(oapackage.array_link(np.array(al)[permutation, :]))
+        np.testing.assert_array_equal(folded[0:N, :], -folded[N:, :])
+
+        expected[5], expected[3] = expected[3], expected[5]
+        expected[-1], expected[4] = expected[4], expected[-1]
+        expected[-3], expected[7] = expected[7], expected[-3]
+        al = oapackage.array_link(np.array(al)[expected, :])
+        permutation = oapackage.double_conference_foldover_permutation(al)
+        folded = np.array(oapackage.array_link(np.array(al)[permutation, :]))
+        N = int(al.n_rows / 2)
+        np.testing.assert_array_equal(folded[0:N, :], -folded[N:, :])
+
+        al = oapackage.exampleArray(45, 1)
+        permutation = oapackage.double_conference_foldover_permutation(al)
+        self.assertEqual(permutation[0], -1)
+
+        al = oapackage.exampleArray(5, 1)
+        with self.assertRaises(RuntimeError):
+            permutation = oapackage.double_conference_foldover_permutation(al)
+
+        al = oapackage.array_link(3, 4, 0)
+        with self.assertRaises(RuntimeError):
+            permutation = oapackage.double_conference_foldover_permutation(al)
+
 
 class TestArrayFiles(unittest.TestCase):
+
     def test_write_latex_format(self):
         import tempfile
         import oapackage
         lst = [oapackage.exampleArray(2)]
-        filename = tempfile.mktemp(suffix='.tex' )
+        filename = tempfile.mktemp(suffix='.tex')
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
         with open(filename, 'rt') as fid:
             latex = fid.read()
         self.assertIsInstance(latex, str)
-        
+
+
 class TestCppLibrary(unittest.TestCase):
 
     def test_projectionDOFvalues(self):

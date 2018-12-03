@@ -50,7 +50,7 @@ int main (int argc, char *argv[]) {
         opt.addUsage (
             " --nb [NUMBER]  					Number of bits for binary file (1 or 8, default: 8) ");
         opt.addUsage (" -o [STR]  --output [FILE]		Output prefix (default: split) ");
-        opt.addUsage (" -f [FORMAT]					Output format (default: TEXT, or BINARY; B) ");
+        opt.addUsage (" -f [FORMAT]					Output format (default: TEXT, or BINARY; B, or DIFF; D, or DIFFZERO; Z) ");
         opt.addUsage (" -v [INTEGER]					Verbose (default: 2) ");
         opt.processCommandArgs (argc, argv);
 

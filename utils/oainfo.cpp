@@ -16,7 +16,7 @@
 #include "arraytools.h"
 
 /**
- * @brief Read in files with arrays and join them into a single file
+ * @brief Display information about a file with arrays 
  * @param argc
  * @param argv[]
  * @return

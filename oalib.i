@@ -80,7 +80,6 @@ import_array();
   double *  values = ((double *) PyArray_DATA( pp ));
   for (long int i = 0; i != rows; ++i){
       for(long int j = 0; j != cols; ++j){
-          // std::cout << "data " << data[i] << std::endl;
           inputEigen(i,j) = values[i*rows+j];
       }
   }  
@@ -458,12 +457,9 @@ mvalueVector = vector_mvalue_t_long
 
 
 %template(conference_columnVector) std::vector< conference_column >;
-
 %template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
 %template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
 %template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
-
-
 %template(vector_vector_double) std::vector< std::vector<double> >;
 
 /* representation functions */
@@ -524,14 +520,3 @@ Python Orthogonal Array Interface
 #endif
 
 
-%inline %{
-
-double iarray_get(int *a, int index) {
-  return a[index];
-}
-
-// note: the size of the array is not easy to pass to the C function
-// see: http://www.scipy.org/Cookbook/SWIG_Memory_Deallocation
-// see also: http://stackoverflow.com/questions/2209395/in-python-how-to-access-a-uint163-array-wrapped-by-swig-i-e-unwrap-a-pyswigo
-
-%}

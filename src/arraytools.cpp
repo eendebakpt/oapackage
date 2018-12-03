@@ -1100,7 +1100,7 @@ array_link exampleArray (int idx, int verbose) {
         case 39: {
                 dstr = "first LMC0 conference design in C(8,6)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (8, 6, 0);
                 int tmp[] = {0, 1,  1,  1, 1, 1, 1,  1, 1, 0,  1, 1,  1, -1, -1, -1, 1, -1, 0,  1,  -1, 1, 1, -1,
@@ -1113,7 +1113,7 @@ array_link exampleArray (int idx, int verbose) {
         case 38: {
                 dstr = "LMC0 conference design in C(30,3)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (30, 3, 0);
                 int tmp[] = {0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 1, 1,
@@ -1127,7 +1127,7 @@ array_link exampleArray (int idx, int verbose) {
         case 35: {
                 dstr = "first double conference design in DC(20,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (20, 4, 0);
                 int tmp[] = {0, 0,  1, 1, 1, 1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1141,7 +1141,7 @@ array_link exampleArray (int idx, int verbose) {
         case 36: {
                 dstr = "second double conference design in DC(20,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (20, 4, 0);
                 int tmp[] = {0, 0,  1, 1,  1, 1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1155,7 +1155,7 @@ array_link exampleArray (int idx, int verbose) {
         case 37: {
                 dstr = "third double conference design in DC(20,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (20, 4, 0);
                 int tmp[] = {0, 0,  1, 1,  1,  1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1169,7 +1169,7 @@ array_link exampleArray (int idx, int verbose) {
         case 32: {
                 dstr = "first double conference design in DC(18,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (18, 4, 0);
                 int tmp[] = {0, 0, 1, 1, 1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1183,7 +1183,7 @@ array_link exampleArray (int idx, int verbose) {
         case 33: {
                 dstr = "second double conference design in DC(18,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (18, 4, 0);
                 int tmp[] = {0, 0, 1, 1,  1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1197,7 +1197,7 @@ array_link exampleArray (int idx, int verbose) {
         case 34: {
                 dstr = "third double conference design in DC(18,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (18, 4, 0);
                 int tmp[] = {0, 0,  1, 1, 1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1212,7 +1212,7 @@ array_link exampleArray (int idx, int verbose) {
         case 31: {
                 dstr = "conference design in C(8,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (4, 8, 0);
                 int tmp[] = {0, 1, 1,  1, 1, 0,  -1, -1, 1, 1,  0, -1, 1, 1,  1,  0,
@@ -1225,7 +1225,7 @@ array_link exampleArray (int idx, int verbose) {
         case 30: {
                 dstr = "conference design in C(8,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (8, 4, 0);
                 int tmp[] = {0, 1,  1, 1, 1,  1, 1, 1,  1, 0,  1, 1,  1, -1, -1, -1,
@@ -1237,7 +1237,7 @@ array_link exampleArray (int idx, int verbose) {
         case 0: {
                 dstr = "array in OA(8,2, 2^2)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (8, 2, 0);
                 std::vector< int > s;
@@ -1251,7 +1251,7 @@ array_link exampleArray (int idx, int verbose) {
         case 1: {
                 dstr = "array 3 in OA(16, 2, 2^5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (16, 5, 0);
                 int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
@@ -1264,7 +1264,7 @@ array_link exampleArray (int idx, int verbose) {
         case 2: {
                 dstr = "array 6 in OA(16, 2, 2^6)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (16, 6, 0);
@@ -1279,7 +1279,7 @@ array_link exampleArray (int idx, int verbose) {
         case 3: {
                 dstr = "array ? in OA(32, 3, 2^7)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (32, 7, 0);
@@ -1300,7 +1300,7 @@ array_link exampleArray (int idx, int verbose) {
         case 4: {
                 dstr = "array 4 in OA(16, 2, 2^7)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 // array 4 in OA(16, 2, 2^7)
@@ -1316,7 +1316,7 @@ array_link exampleArray (int idx, int verbose) {
         case 5: {
                 dstr = "array 0 in OA(24, 2, 4 3 2^a)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (24, 5, 0);
@@ -1333,7 +1333,7 @@ array_link exampleArray (int idx, int verbose) {
 
                 dstr = "array in OA(4, 2, 2^a)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (4, 3, 0);
                 int tmp[] = {0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1};
@@ -1344,7 +1344,7 @@ array_link exampleArray (int idx, int verbose) {
         case 7: {
                 dstr = "array 0 in OA(4, 2, 2^a)?";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (4, 3, 0);
                 int tmp[] = {0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0};
@@ -1355,7 +1355,7 @@ array_link exampleArray (int idx, int verbose) {
         case 8: {
                 dstr = "array in OA(40, 3, 2^7)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (40, 7, 0);
                 int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1377,7 +1377,7 @@ array_link exampleArray (int idx, int verbose) {
         case 9: {
                 dstr = "array in A(40, 2^7), D-optimal";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (40, 7, 0);
@@ -1398,7 +1398,7 @@ array_link exampleArray (int idx, int verbose) {
         }
         case 10: {
                 if (verbose) {
-                        myprintf ("exampleArray: array in OA(9, 3^2)\n");
+                        myprintf ("exampleArray %d: array in OA(9, 3^2)\n", idx);
                 }
                 array_link al (9, 3, 0);
                 int tmp[] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 1, 2, 1, 1, 2, 0, 0, 2, 2, 0, 2, 0, 2, 1, 0, 1, 1};
@@ -1409,7 +1409,7 @@ array_link exampleArray (int idx, int verbose) {
         }
         case 11: {
                 if (verbose) {
-                        myprintf ("exampleArray: D-optimal array in OA(44, 2^8)\n");
+                        myprintf ("exampleArray %d: D-optimal array in OA(44, 2^8)\n", idx);
                 }
                 array_link al (44, 8, 0);
                 int tmp[] = {1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1,
@@ -1432,7 +1432,7 @@ array_link exampleArray (int idx, int verbose) {
 
         case 12: {
                 if (verbose) {
-                        myprintf ("exampleArray: even-odd array OA(64, 2^13)\n");
+                        myprintf ("exampleArray %d: even-odd array OA(64, 2^13)\n", idx);
                 }
                 array_link al (64, 13, 0);
                 int tmp[] = {
@@ -1471,7 +1471,7 @@ array_link exampleArray (int idx, int verbose) {
         case 13: {
                 dstr = "array in OA(25, 2^5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (24, 5, 0);
@@ -1488,7 +1488,7 @@ array_link exampleArray (int idx, int verbose) {
         case 14: {
                 dstr = "design in D(28, 2^5), D-efficiency is low";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (28, 5, 0);
@@ -1506,7 +1506,7 @@ array_link exampleArray (int idx, int verbose) {
         case 15: {
                 dstr = "design in D(56, 2^10), D-efficiency is low";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
 
                 array_link al (56, 10, 0);
@@ -1537,7 +1537,7 @@ array_link exampleArray (int idx, int verbose) {
         case 16: {
                 dstr = "array in OA(32, 2, 2^5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (32, 5, 0);
                 int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1554,7 +1554,7 @@ array_link exampleArray (int idx, int verbose) {
         case 17: {
                 dstr = "unique array in OA(64, 4, 2^7)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (64, 7, 0);
                 int tmp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1581,7 +1581,7 @@ array_link exampleArray (int idx, int verbose) {
         case 18: {
                 dstr = "conference matrix of size 16, 7";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (7, 16, 0);
                 int tmp[] = {0,  1,  1,  1, 1,  1,  1,  1,  0,  -1, -1, -1, -1, -1, 1,  1,  0,  -1, -1, -1, 1, 1,  1,
@@ -1599,7 +1599,7 @@ array_link exampleArray (int idx, int verbose) {
         case 19: {
                 dstr = "conference matrix of size 4, 3";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (3, 4, 0);
                 int tmp[] = {0, 1, 1, 1, 0, -1, 1, 1, 0, 1, -1, 1};
@@ -1613,7 +1613,7 @@ array_link exampleArray (int idx, int verbose) {
         case 20: {
                 dstr = "first LMC-0 double conference matrix in DC(24,3)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (24, 3, 0);
                 int tmp[] = {0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1,
@@ -1629,7 +1629,7 @@ array_link exampleArray (int idx, int verbose) {
         case 21: {
                 dstr = "second LMC-0 double conference matrix in DC(16,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (16, 4, 0);
                 int tmp[] = {0,  0,  1,  1,  1, 1,  1, 1,  1,  -1, -1, -1, -1, -1, -1, -1, 1, -1, 0,  1, 1, 1,
@@ -1643,7 +1643,7 @@ array_link exampleArray (int idx, int verbose) {
         case 22: {
                 dstr = "LMC-0 double conference matrix in DC(32,4)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (32, 4, 0);
                 int tmp[] = {0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1,
@@ -1661,7 +1661,7 @@ array_link exampleArray (int idx, int verbose) {
         case 23: {
                 dstr = "LMC-0 double conference matrix in DC(32,6)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (32, 6, 0);
                 int tmp[] = {0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  -1, -1, -1, -1, -1,
@@ -1681,7 +1681,7 @@ array_link exampleArray (int idx, int verbose) {
         case 24: {
                 dstr = "design in OA(64, 3, 2^16) (even-odd)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (64, 16, 0);
                 int tmp[] = {
@@ -1725,7 +1725,7 @@ array_link exampleArray (int idx, int verbose) {
         case 25: {
                 dstr = "design in OA(64, 3, 2^16) (even-odd)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (64, 16, 0);
                 int tmp[] = {
@@ -1769,7 +1769,7 @@ array_link exampleArray (int idx, int verbose) {
         case 26: {
                 dstr = "design in OA(64, 3, 2^16) (even-odd)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (16, 64, 0);
                 int tmp[] = {
@@ -1814,7 +1814,7 @@ array_link exampleArray (int idx, int verbose) {
         case 27: {
                 dstr = "design in OA(64, 3, 2^16) (even-odd)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (16, 64, 0);
                 int tmp[] = {
@@ -1859,7 +1859,7 @@ array_link exampleArray (int idx, int verbose) {
         case 28: {
                 dstr = "conference design in C(4, 3) in LMC0 form";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (4, 3, 0);
                 int tmp[] = {0, 1, 1, 1, 1, 0, 1, -1, 1, -1, 0, 1};
@@ -1870,7 +1870,7 @@ array_link exampleArray (int idx, int verbose) {
         case 29: {
                 dstr = "conference design in C(4, 3)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (4, 3, 0);
                 int tmp[] = {0, 1, 1, 1, 1, 0, 1, -1, 1, 1, -1, 0};
@@ -1882,7 +1882,7 @@ array_link exampleArray (int idx, int verbose) {
         case 40: {
                 dstr = "first conference design in C(14, 5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (14, 5, 0);
                 int tmp[] = {0,  1,  1,  1,  1,  1, 1, 1,  1, 1,  1,  1,  1, 1,  1, 0,  1,  1,  1,  1, 1,  1, -1, -1,
@@ -1895,7 +1895,7 @@ array_link exampleArray (int idx, int verbose) {
         case 41: {
                 dstr = "second conference design in C(14, 5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (14, 5, 0);
                 int tmp[] = {0,  1,  1,  1,  1,  1, 1, 1,  1, 1,  1,  1,  1, 1, 1, 0,  1,  1,  1,  1, 1,  1, -1, -1,
@@ -1908,7 +1908,7 @@ array_link exampleArray (int idx, int verbose) {
         case 42: {
                 dstr = "third conference design in C(14, 5)";
                 if (verbose) {
-                        myprintf ("exampleArray: %s\n", dstr.c_str ());
+                        myprintf ("exampleArray %d: %s\n", idx, dstr.c_str ());
                 }
                 array_link al (14, 5, 0);
                 int tmp[] = {0,  1,  1,  1,  1,  1, 1, 1,  1, 1,  1,  1,  1, 1,  1, 0,  1,  1,  1,  1, 1,  1, -1, -1,
@@ -1921,7 +1921,7 @@ array_link exampleArray (int idx, int verbose) {
 		case 43: {
 			dstr = "2x2 array with zeros and a singe value -1";
 			if (verbose) {
-				myprintf("exampleArray: %s\n", dstr.c_str());
+				myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			}
 			array_link al(2, 2, 0);
 			int tmp[] = { 0,  0,  0,  -1 };
@@ -1932,7 +1932,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 44: {
                         dstr = "D-optimal strength 3 ortogonal array in OA(40,3, 2^7)";
                         if (verbose) {
-                                myprintf("exampleArray: %s\n", dstr.c_str());
+                                myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
                         }
                          array_link array (40, 7, 0); 
                          int array_data_tmp[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,0,0,1,0,1,0,1,0,0,1,1};
@@ -1943,7 +1943,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 45: {
 			 dstr = "first conference design in C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,-1,-1,-1,1,0,-1,1,1,1,1,-1,1,-1,-1,1,-1,1 };
@@ -1953,7 +1953,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 46: {
 			 dstr = "second conference design in C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,-1,-1,1,0,1,-1,1,1,-1,1,-1,-1,-1,1,1 };
@@ -1963,7 +1963,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 47: {
 			 dstr = "third conference design in C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,1,1,-1,-1,-1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,0,1,-1,1,1,1,-1,-1,1,1,1,-1,1,1,-1,-1,1,-1,-1,-1,-1,0,1,1,1,-1,1,-1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,0,-1,1,1,1,1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,-1,-1,1,0,1,-1,1,1,-1,-1,1,1,-1,-1,1 };
@@ -1973,7 +1973,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 48: {
 			 dstr = "last conference design in C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,1,-1,1,1,-1,-1,1,1,-1,-1,-1,1,1,1,-1,1,-1,1,-1,1,1,-1,0,-1,1,-1,-1,-1,1,1,-1,1,1,-1,1,1,1,-1,-1,1,-1,-1,1,1,-1,1,0,1,1,1,-1,-1,-1,-1,1,1,1,-1,1,1,-1,1,-1,-1,-1,1,-1,-1,0,1,-1,1,1,1,-1,1,1,1,-1,1,-1,-1,-1,-1,1,1,1,1,-1,-1,1,0,1,-1,-1 };
@@ -1983,7 +1983,7 @@ array_link exampleArray (int idx, int verbose) {
 		 case 49: {
 			 dstr = "array 4347 C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,-1,-1,0,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,1,0,1,-1,-1,-1,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,0,1,1,-1,1,-1,-1,1,1,1,-1,1,-1,-1,1,1,1,-1,-1,-1,-1,1,0,1,1,-1,1,-1 };
@@ -1993,10 +1993,39 @@ array_link exampleArray (int idx, int verbose) {
 		 case 50: {
 			 dstr = "array 4506 C(20,8)";
 			 if (verbose) {
-				 myprintf("exampleArray: %s\n", dstr.c_str());
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
 			 }
 			 array_link array(20, 8, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,0,1,1,1,1,-1,-1,-1,-1,1,1,1,1,1,-1,-1,-1,-1,1,-1,-1,0,1,-1,-1,1,1,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,-1,-1,0,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,1,-1,-1,1,-1,0,1,-1,1,1,1,-1,-1,1,1,-1,-1,1,1,1,-1,-1,1,1,-1,-1,1,-1,1,-1,0,1,1,-1,-1,1,-1,1,1,1,-1,1,-1,-1,-1,1,1,-1,1,1,-1,1,0,1,-1,-1,1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 51: {
+			 dstr = "first array in C(12,4)";
+			 if (verbose) {
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+			 }
+			 array_link array(12, 4, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,0,-1,1,1,1,1,-1,1,-1 };
+			 return array;
+		 }
+		 case 52: {
+			 dstr = "second array in C(12,4)";
+			 if (verbose) {
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+			 }
+			 array_link array(12, 4, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,1,-1,1,-1,1,-1,0,1,-1,1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 53: {
+			 dstr = "third array in C(12,4)";
+			 if (verbose) {
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+			 }
+			 array_link array(12, 4, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,0,1,1,-1,-1 };
 			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
