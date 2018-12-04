@@ -45,8 +45,8 @@ optimization algorithm [@Eendebak2015].
 
 The reduction of the designs to their normal form is done by either reduction to a minimal form 
 (such as lexicographically minimal in columns or delete-one-factor projection normal form [@EendebakDOF])
-or reduction using graph algorithms. For designs with a specified isomorphism group, the Orthogonal 
-Array package provides a generic interface to the graph reduction algorithms that effectively perform isomorphism 
+or reduction using graph algorithms. For designs with a specified isomorphism group,
+the OApackage provides a generic interface to the graph reduction algorithms that effectively perform isomorphism 
 testing and reduction to normal form.
 
 The OApackage evaluates the orthogonal arrays, optimal designs and conference designs using well-known statistical criteria. For instance,
@@ -59,7 +59,6 @@ conference designs [@Schoen2018dsd] and the D-efficiency of optimal designs [@Go
 The OApackage consists of a C++ library with a Python interface generated
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
-
 The Orthogonal Array package website [@EendebakOAwebsite] contains a large collection of orthogonal arrays, 
 optimal designs and conference designs. An alternative collection of orthogonal arrays is available from
 the website of Neil Sloane [@SloaneOAwebsite]. 
