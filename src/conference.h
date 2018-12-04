@@ -1,6 +1,13 @@
 /** \file conference.h
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2016
+Contains functionality to generate and analyse conference designs.
+
+For more information see:
+
+* https://en.wikipedia.org/wiki/Conference_matrix
+* "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2018
+
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2018
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */

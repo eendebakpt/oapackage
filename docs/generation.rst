@@ -63,7 +63,7 @@ Conference designs
 An :math:`n\times k` conference design is an :math:`N\times k` matrix
 with entries 0, -1, +1 such that i) in each column the symbol 0 occurs
 exactly one time and ii) all columns are orthogonal to each other.
-For details see :cite:`EendebakSO`, :cite:`wiki:ConferenceMatrix`.
+For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
 
 .. code-block:: python
  :caption: Generate conference designs with 8 rows
