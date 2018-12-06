@@ -50,8 +50,8 @@ the OApackage provides a generic interface to the graph reduction algorithms tha
 testing and reduction to normal form.
 
 The OApackage evaluates the orthogonal arrays, optimal designs and conference designs using well-known statistical criteria. For instance,
-the package can calculate the generalized wordlength pattern [@Tang1999], confounding frequency vector, which is based
-on the J-characteristics [@Deng1999] 
+the package can calculate the generalized wordlength pattern and confounding frequency vector [@Tang1999], which are based
+on the J-characteristics [@Deng1999],
 and the number of degrees of freedom available for estimating selected factors' effects.
 The package can also calculate the $F_4$ vector of
 conference designs [@Schoen2018dsd] and the D-efficiency of optimal designs [@Goos2011]. 
