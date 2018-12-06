@@ -123,7 +123,6 @@ try:
         """ Get SWIG executable """
         # stolen from https://github.com/FEniCS/ffc/blob/master/setup.py
 
-        # Find SWIG executable
         swig_executable = None
         swig_version = None
         swig_valid = False
@@ -146,7 +145,7 @@ except:
         return None, None, False
     swig_valid = False
 
-#%% Hack to remove option for c++ code
+#%% Trick to remove option for c++ code compilation
 try:
     # see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
     from setuptools.py31compat import get_config_vars
@@ -182,8 +181,8 @@ class OATest(TestCommand):
             pass
 
     def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
         print('## oapackage test: load package')
+        # import here, cause outside the eggs aren't loaded
         import oapackage.tests
         import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
@@ -288,13 +287,12 @@ else:
                                         '-Wno-return-type', '-Wno-unused-variable', '-Wno-unused-result', '-fPIC']
     oalib_module.extra_compile_args += ['-Wno-date-time', ]
 
-if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'pte':
+if platform.node() == 'marmot' or platform.node() == 'goffer' or platform.node() == 'woelmuis':
     # openmp version of code
     oalib_module.extra_compile_args += ['-fopenmp', '-DDOOPENMP']
     oalib_module.extra_link_args += ['-fopenmp']
 
 print('find_packages: %s' % find_packages())
-#print('swig_opts: %s' % str(swig_opts) )
 
 data_files = []
 scripts = ['misc/scripts/example_oapackage_python.py']

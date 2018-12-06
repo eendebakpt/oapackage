@@ -1,6 +1,13 @@
 /** \file conference.h
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2016
+Contains functionality to generate and analyse conference designs.
+
+For more information see:
+
+* https://en.wikipedia.org/wiki/Conference_matrix
+* "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2018
+
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2018
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -150,16 +157,7 @@ class CandidateGeneratorBase {
         /** Show the candidate extensions for each column
          *
          */
-        void showCandidates (int verbose = 1) const {
-                myprintf ("CandidateGenerator: N %d\n", this->ct.N);
-                for (int i = 2; i <= last_valid; i++) {
-                        myprintf ("CandidateGenerator: number of candidates for %dth column: %ld\n", i,
-                                  (long)candidate_list[i].size ());
-                        if (verbose >= 2) {
-                                ::showCandidates (candidate_list[i]);
-                        }
-                }
-        }
+        void showCandidates (int verbose = 1) const;
 
         /// return all candidates for the kth column
         conference_column_list candidates (int k);
@@ -308,8 +306,15 @@ lmc_t LMC0check (const array_link &al, int verbose = 0);
 /// return true if the design is a foldover array
 bool isConferenceFoldover (const array_link &al, int verbose = 0);
 
-// return true if the extension column satisfies the inner product check
-int ipcheck (const conference_column &col, const array_link &al, int cstart = 2, int verbose = 0);
+/** For a double conference design return a row permutation to a single conference design
+ * 
+ * If the design is not a foldover design then the first element of the returned permutation is -1.
+ * 
+ * \param double_conference A double conference design
+ * \returns Permutation
+ * 
+ */
+std::vector<int> double_conference_foldover_permutation(const array_link &double_conference);
 
 /// return minimal position of zero in design
 int minz (const array_link &al, int column_index);
@@ -391,9 +396,9 @@ class DconferenceFilter {
         bool filterSymmetry (const conference_column &column) const;
 
         /// return True of the candidate extension satisfies the J2 check
-        bool filterJ2 (const conference_column &c) const { return ipcheck (c, als, 0); }
+        bool filterJ2 (const conference_column &c) const;
         /// return True of the candidate extension satisfies the J2 check for the last column of the array checked against
-        bool filterJ2last (const conference_column &c) const { return ipcheck (c, als, als.n_columns - 1); }
+        bool filterJ2last (const conference_column &c) const;
         /** return True of the candidate extension satisfies the zero check
          *
          * This means that the first entries of the extension do not contain a zero.
@@ -415,4 +420,3 @@ std::vector< conference_column > inflateCandidateExtension (const conference_col
                                                 const symmetry_group &alsg, const std::vector< int > &check_indices,
                                                 const conference_t &ct, int verbose, const DconferenceFilter &filter);
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; ;

@@ -227,6 +227,7 @@ class TestOAfiles(unittest.TestCase):
 
 
 class TestParetoFunctionality:
+
     def test_selectParetoArrays(self):
 
         arrays = [oapackage.array_link(np.array([[ii]])) for ii in range(5)]
@@ -389,14 +390,14 @@ class TestOAhelper(unittest.TestCase):
         s = oapackage.oahelper.sortrows(a)
         self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
 
-        x=-np.array( [[0,0,1],[0,1,0], [0,1,1]] )
-        idx=oapackage.oahelper.sortrows( x)
-        assert(np.all(idx== np.array([2, 1, 0], dtype=np.int64)) )
+        x = -np.array([[0, 0, 1], [0, 1, 0], [0, 1, 1]])
+        idx = oapackage.oahelper.sortrows(x)
+        assert(np.all(idx == np.array([2, 1, 0], dtype=np.int64)))
 
-        x=np.array([])
-        idx=oapackage.oahelper.sortrows( x)
-        self.assertTrue(len(idx)==0)
-    
+        x = np.array([])
+        idx = oapackage.oahelper.sortrows(x)
+        self.assertTrue(len(idx) == 0)
+
     def test_sortcols(self):
         a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]]).T
         s = oapackage.oahelper.sortcols(a)

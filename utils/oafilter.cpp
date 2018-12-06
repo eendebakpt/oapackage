@@ -70,7 +70,7 @@ void intvector2file (std::string fname, std::vector< Type > vals) {
 }
 
 /**
- * @brief Read in files with arrays and join them into a single file
+ * @brief Filter arrays in a file and write filtered arrays to output file
  * @param argc
  * @param argv[]
  * @return

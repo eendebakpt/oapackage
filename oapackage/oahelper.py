@@ -1036,11 +1036,20 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
 
 
 def compressOAfile(afile, decompress=False, verbose=1):
-    """ Compress an OA array file """
+    """ Compress an OA array file 
+    
+    Args:
+        afile (str): array to compress
+        decompress (bool): If True then decompress
+        verbose (int): verbosity level
+    """
     af = oalib.arrayfile_t(afile, 0)
+    if decompress:
+        raise NotImplementedError('decompressing file not implemted')
+        
     if verbose >= 2:
         print('file %s: binary %s' % (afile, af.isbinary()))
-    if not sys.platform == 'linux2':
+    if not (sys.platform == 'linux2' or sys.platform=='linux'):
         if verbose:
             print('compressOAfile: not compressing file %s (platform not supported)' %
                   afile)

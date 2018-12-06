@@ -1,5 +1,5 @@
 ---
-title: 'OApackage: A Python package for generation and analysis of orthogonal arrays and conference designs'
+title: 'OApackage: A Python package for generation and analysis of orthogonal arrays, optimal designs and conference designs'
 tags:
   - orthogonal arrays
   - optimal designs
@@ -27,39 +27,40 @@ bibliography: paper.bib
 # Summary
 
 Orthogonal arrays, optimal designs and conference designs are important tools for the design of
-experiments [@Elster1995], [@hedayat2012orthogonal], [@Wu2009]. The Orthogonal Array package contains functionality 
-to generate and analyse these types of designs. More specifically, the Orthogonal Array package allows 
+experiments [@Elster1995], [@hedayat2012orthogonal], [@Wu2009]. The OApackage (Orthogonal Array package) contains functionality 
+to generate and analyse these types of designs. More specifically, the OApackage allows 
 the user to:
 
 * Efficiently generate orthogonal arrays, optimal designs and conference designs
 * Reduce the designs to their normal form and perform isomorphism testing 
 * Calculate a wide variety of statistical properties of the designs
 
-The analysis of experiments performed with the generated designs is left to 
-existing packages such as R [@Rpackage] and JMP [@wiki:JMP].
+The data analysis of the experiments conducted using the generated designs is left to 
+existing statistical software such as R [@Rpackage] and JMP [@wiki:JMP].
 
-To generate orthogonal arrays and conference designs, the Orthogonal Array package uses an exhaustive 
+To generate orthogonal arrays and conference designs, the OApackage uses an exhaustive 
 generation procedure with isomorphism pruning [@Eendebak2009], [@Schoen2018dsd]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
 optimization algorithm [@Eendebak2015].
 
 The reduction of the designs to their normal form is done by either reduction to a minimal form 
 (such as lexicographically minimal in columns or delete-one-factor projection normal form [@EendebakDOF])
-or reduction using graph algorithms. For designs with a specified isomorphism group, the Orthogonal 
-Array package provides a generic interface to the graph reduction algorithms that effectively perform isomorphism 
+or reduction using graph algorithms. For designs with a specified isomorphism group,
+the OApackage provides a generic interface to the graph reduction algorithms that effectively perform isomorphism 
 testing and reduction to normal form.
 
-The Orthogonal Array package evaluates the designs using well-known statistical criteria. For instance,
-the package calculates the generalized wordlength pattern [@Tang1999], confounding frequency vector, which is based
-on the J-characteristics [@Deng1999] 
+The OApackage evaluates the orthogonal arrays, optimal designs and conference designs using well-known statistical criteria. For instance,
+the package can calculate the generalized wordlength pattern and confounding frequency vector [@Tang1999], which are based
+on the J-characteristics [@Deng1999],
 and the number of degrees of freedom available for estimating selected factors' effects.
+The package can also calculate the $F_4$ vector of
+conference designs [@Schoen2018dsd] and the D-efficiency of optimal designs [@Goos2011]. 
 
-The Orthogonal Array package consists of a C++ library with a Python interface generated
+The OApackage consists of a C++ library with a Python interface generated
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
-
 The Orthogonal Array package website [@EendebakOAwebsite] contains a large collection of orthogonal arrays, 
-optimal designs and conference designs. An alternative collection of orthogonal arrays can be found in 
+optimal designs and conference designs. An alternative collection of orthogonal arrays is available from
 the website of Neil Sloane [@SloaneOAwebsite]. 
 
 # Acknowledgements
