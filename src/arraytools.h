@@ -890,6 +890,9 @@ class jstruct_t {
 		int allzero() const;
 };
 
+/** Calculate J-characteristics of conference designs
+ *
+ **/
 class jstructconference_t : public jstructbase_t {
       public:
         jstructconference_t (int N, int jj = 4) {
