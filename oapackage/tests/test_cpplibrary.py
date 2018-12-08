@@ -147,6 +147,27 @@ class TestArraydata_t(unittest.TestCase):
         self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
 
 
+class TestJcharacteristics(unittest.TestCase):
+    
+    def test_jstruct_conference(self):
+        al=oapackage.exampleArray(30,0)
+        js=oapackage.jstructconference_t(al, 4)
+        self.assertEqual(js.Jvalues(), (4,0))
+        
+        with self.assertRaises(RuntimeError):
+            js=oapackage.jstructconference_t(al, 3)
+
+    def test_Jcharacteristics(self):
+        al=oapackage.exampleArray(30,0)
+        jx=al.Jcharacteristics(4)
+        self.assertEqual(jx, (0,))
+        jx=al.Jcharacteristics(2)
+        self.assertEqual(jx, (0, 0, 0, 0, 0, 0))
+
+        al=oapackage.exampleArray(48,0).selectFirstColumns(6)
+        jx=al.Jcharacteristics(4)
+        self.assertEqual(jx, (4, 4, 4, 0, 8, -8, 8, 4, -4, -4, 8, 4, -4, 8, -4))
+        
 class TestConferenceDesigns(unittest.TestCase):
 
     def test_conf2dsd(self):
