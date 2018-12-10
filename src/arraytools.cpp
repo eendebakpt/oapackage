@@ -9,6 +9,7 @@
 #include "mathtools.h"
 #include "strength.h"
 #include "tools.h"
+#include <errno.h>
 
 #ifdef RPACKAGE
 #define printf notallowed
@@ -5370,7 +5371,76 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
         }
 }
 
-#include <errno.h>
+/** Read header for binary data file. Return true if valid header file
+*
+* The header consists of 4 integers: 2 magic numbers, then the number of rows and columns
+*/
+bool readbinheader(FILE *fid, int &nr, int &nc) {
+	if (fid == 0) {
+		return false;
+	}
+
+	double h[4];
+	int nn = fread(h, sizeof(double), 4, fid);
+	nr = (int)h[2];
+	nc = (int)h[3];
+
+	// myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],
+	// h[0]==30397995, h[1]==12224883);
+	bool valid = false;
+
+	// check 2 numbers of the magic header
+	if (nn == 4 && h[0] == 30397995 && h[1] == 12224883) {
+		return true;
+	}
+
+	return valid;
+}
+
+/// Write header for binary data file
+void writebinheader(FILE *fid, int nr, int nc) {
+	double h[4];
+	// write 2 numbers of the magic header
+	h[0] = 30397995;
+	h[1] = 12224883;
+	h[2] = nr;
+	h[3] = nc;
+	fwrite(h, sizeof(double), 4, fid);
+}
+
+/// Write a vector of vector elements to binary file
+void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
+	int writeheader, int na) {
+	FILE *fid = fopen(fname.c_str(), "wb");
+
+	if (fid == 0) {
+		fprintf(stderr, "vectorvector2binfile: error with file %s\n", fname.c_str());
+
+		throw_runtime_exception("vectorvector2binfile: error with file");
+	}
+
+	if (na == -1) {
+		if (vals.size() > 0) {
+			na = vals[0].size();
+		}
+	}
+	if (writeheader) {
+		writebinheader(fid, vals.size(), na);
+	}
+	else {
+		myprintf("warning: legacy file format\n");
+	}
+	for (unsigned int i = 0; i < vals.size(); i++) {
+		const std::vector< double > x = vals[i];
+		if ((int)x.size() != na) {
+			myprintf("error: writing incorrect number of elements to binary file\n");
+		}
+		for (unsigned int j = 0; j < x.size(); j++) {
+			fwrite(&(x[j]), sizeof(double), 1, fid);
+		}
+	}
+	fclose(fid);
+}
 
 int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode) {
         arraylist_t s;

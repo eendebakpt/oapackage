@@ -1601,42 +1601,14 @@ struct arraywriter_t {
  *
  * The header consists of 4 integers: 2 magic numbers, then the number of rows and columns
  */
-inline bool readbinheader (FILE *fid, int &nr, int &nc) {
-        if (fid == 0) {
-                return false;
-        }
-
-        double h[4];
-        int nn = fread (h, sizeof (double), 4, fid);
-        nr = (int)h[2];
-        nc = (int)h[3];
-
-        // myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],
-        // h[0]==30397995, h[1]==12224883);
-        bool valid = false;
-
-        // check 2 numbers of the magic header
-        if (nn == 4 && h[0] == 30397995 && h[1] == 12224883) {
-                return true;
-        }
-
-        return valid;
-}
+bool readbinheader(FILE *fid, int &nr, int &nc);
 
 /// Write header for binary data file
-inline void writebinheader (FILE *fid, int nr, int nc) {
-        double h[4];
-        // write 2 numbers of the magic header
-        h[0] = 30397995;
-        h[1] = 12224883;
-        h[2] = nr;
-        h[3] = nc;
-        fwrite (h, sizeof (double), 4, fid);
-}
+void writebinheader(FILE *fid, int number_rows, int number_columns);
 
 template < class Type >
-/// Write a vector of integer elements to file
-void doublevector2binfile (const std::string fname, std::vector< Type > vals, int writeheader = 1) {
+/// Write a vector of numeric elements to binary file as double values
+void vector2doublebinfile (const std::string fname, std::vector< Type > vals, int writeheader = 1) {
         FILE *fid = fopen (fname.c_str (), "wb");
         if (fid == 0) {
                 fprintf (stderr, "doublevector2binfile: error with file %s\n", fname.c_str ());
@@ -1653,37 +1625,8 @@ void doublevector2binfile (const std::string fname, std::vector< Type > vals, in
 }
 
 /// Write a vector of vector elements to binary file
-inline void vectorvector2binfile (const std::string fname, const std::vector< std::vector< double > > vals,
-                                  int writeheader, int na) {
-        FILE *fid = fopen (fname.c_str (), "wb");
-
-        if (fid == 0) {
-                fprintf (stderr, "vectorvector2binfile: error with file %s\n", fname.c_str ());
-
-                throw_runtime_exception("vectorvector2binfile: error with file");
-        }
-
-        if (na == -1) {
-                if (vals.size () > 0) {
-                        na = vals[0].size ();
-                }
-        }
-        if (writeheader) {
-                writebinheader (fid, vals.size (), na);
-        } else {
-                myprintf ("warning: legacy file format\n");
-        }
-        for (unsigned int i = 0; i < vals.size (); i++) {
-                const std::vector< double > x = vals[i];
-                if ((int)x.size () != na) {
-                        myprintf ("error: writing incorrect number of elements to binary file\n");
-                }
-                for (unsigned int j = 0; j < x.size (); j++) {
-                        fwrite (&(x[j]), sizeof (double), 1, fid);
-                }
-        }
-        fclose (fid);
-}
+void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
+	int writeheader, int na);
 
 /* Conversion to Eigen matrices */
 
@@ -1704,8 +1647,12 @@ MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
  */
 MatrixFloat array2eigenX2 (const array_link &array);
 
-/// convert 2-level array to second order model matrix (intercept, X1, X2)
-MatrixFloat array2eigenModelMatrix (const array_link &al);
+/** Convert 2-level array to second order model matrix (intercept, X1, X2)
+ *
+ * \param array Design of which to calculate the model matrix
+ * \returns Eigen matrix with the model matrix
+ */
+MatrixFloat array2eigenModelMatrix (const array_link &array);
 
 /** Convert array to model matrix in Eigen format
  *
@@ -1727,8 +1674,8 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 *
 * - The intercept (always 1)
 * - The main effects
-* - The interaction effects (second order without quadratics)
-* - The the quadratic effects
+* - The interaction effects (second order interaction terms without quadratics)
+* - The quadratic effects
 */
 std::vector< int > numberModelParams(const array_link &array, int order = -1);
 
