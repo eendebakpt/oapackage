@@ -882,7 +882,7 @@ def parseProcessingTime(logfile, verbose=0):
 
 def series2htmlstr(ad, html=1, case=0):
     """ Convert arraydata_t to html formatted string """
-    s = list(ad.getS())
+    s = list(ad.factor_levels())
     p = -1
     n = 0
     aa = []
