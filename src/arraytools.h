@@ -287,7 +287,7 @@ struct arraydata_t {
 
         /// return factor levels
         std::vector< int > getS () const {
-                myprintf("deprecated method: use factor_levels instead\n");
+                myprintf("getS(): deprecated method: use factor_levels instead\n");
                 std::vector< int > s (this->ncols);
                 for (int i = 0; i < this->ncols; i++) {
                         s[i] = this->s[i];
@@ -890,6 +890,9 @@ class jstruct_t {
 		int allzero() const;
 };
 
+/** Calculate J-characteristics of conference designs
+ *
+ **/
 class jstructconference_t : public jstructbase_t {
       public:
         jstructconference_t (int N, int jj = 4) {

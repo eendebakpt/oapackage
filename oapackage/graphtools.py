@@ -28,12 +28,12 @@ def oa2graph(al, adata, verbose=1):
         print('oa2graph: array of shape %s' % (A.shape, ))
     nrows = adata.N
     ncols = A.shape[1]
-    nColumnLevelVertices = sum(adata.getS())
+    nColumnLevelVertices = sum(adata.factor_levels())
     nVertices = adata.N + ncols + nColumnLevelVertices
     nColVertices = ncols
     colOffset = adata.N
 
-    s = np.array(adata.getS())
+    s = np.array(adata.factor_levels())
     sc = np.cumsum(s)
     sc0 = np.hstack(([0], sc))
     qq = np.ones(nColumnLevelVertices)  # colors for column level vertices

@@ -298,7 +298,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     if arrayclass is None:
         s = A0.getarray().max(axis=0) + 1
     else:
-        s = arrayclass.getS()
+        s = arrayclass.factor_levels()
     sx = tuple(s.astype(np.int64))
     sx = tuple([int(v) for v in sx])
 

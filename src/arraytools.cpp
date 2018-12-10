@@ -3498,7 +3498,12 @@ void jstruct_t::calc (const array_link &al) {
 }
 
 void jstructconference_t::calcJvalues(int N, int jj) {
-	assert(jj == 4);
+	if (jj % 2 != 0) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for even J");
+	}
+	if (jj != 4) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for J=4");
+	}
 	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
 	this->jvalues = std::vector< int >(nn);
 	this->jvalue2index.clear();
