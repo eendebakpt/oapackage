@@ -14,6 +14,7 @@ if sys.version_info >= (3, 4):
 else:
     import mock
     python3 = False
+    patch = None
 
 
 def is_sorted(l):
@@ -28,7 +29,8 @@ def only_python3(function):
         def only_python3_function(*args, **kwargs):
             return None
     return only_python3_function
-    
+
+
 import oapackage
 
 
@@ -58,7 +60,7 @@ class TestReductions(unittest.TestCase):
 
         al = oapackage.exampleArray(8, 0)
         transformation = oapackage.reductionDOP(al)
-        
+
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             transformation.show()
             stdout = mock_stdout.getvalue()
@@ -66,7 +68,7 @@ class TestReductions(unittest.TestCase):
             self.assertIn('column permutation: {2,0,3,1,4,5,6}', stdout)
         alr = oapackage.reduceDOPform(al)
         self.assertTrue(transformation.apply(al) == alr)
-            
+
 
 class TestModelmatrix(unittest.TestCase):
 
@@ -77,7 +79,7 @@ class TestModelmatrix(unittest.TestCase):
         k = al.n_columns
         self.assertEqual(sizes, (1, 1 + k, int(1 + k + k * (k - 1) / 2), int(1 + k + k * (k + 1) / 2)))
 
-        model_matrix = oapackage.array2modelmatrix(al, "main", 1)
+        model_matrix = oapackage.array2modelmatrix(al, "main", verbose=0)
         np.testing.assert_array_equal(2 * np.array(al) - 1, model_matrix[:, 1:])
 
         conf_design = oapackage.exampleArray(41, 0)
@@ -162,26 +164,27 @@ class TestArraydata_t(unittest.TestCase):
 
 
 class TestJcharacteristics(unittest.TestCase):
-    
+
     def test_jstruct_conference(self):
-        al=oapackage.exampleArray(30,0)
-        js=oapackage.jstructconference_t(al, 4)
-        self.assertEqual(js.Jvalues(), (4,0))
-        
+        al = oapackage.exampleArray(30, 0)
+        js = oapackage.jstructconference_t(al, 4)
+        self.assertEqual(js.Jvalues(), (4, 0))
+
         with self.assertRaises(RuntimeError):
-            js=oapackage.jstructconference_t(al, 3)
+            js = oapackage.jstructconference_t(al, 3)
 
     def test_Jcharacteristics(self):
-        al=oapackage.exampleArray(30,0)
-        jx=al.Jcharacteristics(4)
+        al = oapackage.exampleArray(30, 0)
+        jx = al.Jcharacteristics(4)
         self.assertEqual(jx, (0,))
-        jx=al.Jcharacteristics(2)
+        jx = al.Jcharacteristics(2)
         self.assertEqual(jx, (0, 0, 0, 0, 0, 0))
 
-        al=oapackage.exampleArray(48,0).selectFirstColumns(6)
-        jx=al.Jcharacteristics(4)
+        al = oapackage.exampleArray(48, 0).selectFirstColumns(6)
+        jx = al.Jcharacteristics(4)
         self.assertEqual(jx, (4, 4, 4, 0, 8, -8, 8, 4, -4, -4, 8, 4, -4, 8, -4))
-        
+
+
 class TestConferenceDesigns(unittest.TestCase):
 
     def test_conf2dsd(self):
@@ -270,7 +273,7 @@ class TestCppLibrary(unittest.TestCase):
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             oapackage.exampleArray(5, 1)
             self.assertEqual(mock_stdout.getvalue(), 'exampleArray 5: array 0 in OA(24, 2, 4 3 2^a)\n')
-        
+
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
         m = oapackage.mvalue_t_double(input_vector)
@@ -282,6 +285,7 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(oapackage.splitFile([]), '')
         self.assertEqual(oapackage.splitDir([1, 2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
 
+    @only_python3
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
         if python3:
@@ -338,20 +342,22 @@ class TestCppLibrary(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
 
-    @patch('sys.stdout')
-    def test_arrayrankInfo(self, my_stdout):        
-        rank = oapackage.arrayrankInfo(oapackage.exampleArray(21))
-        print(my_stdout)
-        self.assertEqual(rank, 4)
+    @only_python3
+    def test_arrayrankInfo(self):
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            rank = oapackage.arrayrankInfo(oapackage.exampleArray(21))
+            self.assertEqual(rank, 4)
 
-    @patch('sys.stdout')
-    def test_rankStructure(self, my_stdout):
+    def test_rankStructure(self):
         array = oapackage.exampleArray(45, 0)
         array2 = oapackage.exampleArray(46, 0)
         rank_structure = oapackage.rankStructure(array)
         rank_structure.verbose = 2
-        rank_structure.info()
+        if python3:
+            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+                rank_structure.info()
 
+        rank_structure.verbose = 0
         rank_direct = rank_structure.rankxf(array)
         rank = rank_structure.rankxf(array)
         rank2 = rank_structure.rankxf(array2)
@@ -373,9 +379,10 @@ class TestCppLibrary(unittest.TestCase):
         distance_distrib = oapackage.distance_distribution(al)
         self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
 
+    @only_python3
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 0)
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout: 
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             d = oapackage.projDeff(al, 3, 1)
             D = al.selectFirstColumns(3).Defficiency()
             std_output = mock_stdout.getvalue()
