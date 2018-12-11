@@ -1258,12 +1258,7 @@ struct arrayfile_t {
         /// read array and return index
         int read_array (array_t *array, const int nrows, const int ncols);
 
-        void finisharrayfile () {
-                if (this->mode == ATEXT) {
-                        fprintf (this->nfid, "-1\n");
-                }
-                this->closefile ();
-        }
+		void finisharrayfile();
 
         void setVerbose (int v) { this->verbose = v; }
 
@@ -1324,18 +1319,12 @@ long nArrays (const char *fname);
 
 /** return information about file with arrays
  *
- * \param fname Filename of array file
+ * \param filename Filename of array file
  * \param number_of_arrays Variable is set with number of arrays
  * \param number_of_rows Variable is set with number of rows
  * \param number_of_columns Variable is set with number of columns
  */
-inline void arrayfileinfo (const char *fname, int &number_of_arrays, int &number_of_rows, int &number_of_columns) {
-        arrayfile_t af (fname, 0);
-        number_of_arrays = af.narrays;
-        number_of_rows = af.nrows;
-        number_of_columns = af.ncols;
-        af.closefile ();
-}
+void arrayfileinfo(const char *filename, int &number_of_arrays, int &number_of_rows, int &number_of_columns);
 
 /** Read all arrays in a file
 *
@@ -1361,14 +1350,14 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist,
                     arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO);
 
 /// write a list of arrays to file on disk
-int writearrayfile (const char *fname, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
+int writearrayfile (const char *filename, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
                     int nrows = NRAUTO, int ncols = NRAUTO);
 
 /// write a single array to file
-int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT);
+int writearrayfile (const char *filename, const array_link &array, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT);
 
 /// append a single array to an array file. creates a new file if no file exists
-int appendarrayfile (const char *fname, const array_link al);
+int append_arrayfile (const char *filename, const array_link array);
 
 /// Make a selection of arrays from binary array file, append to list
 void selectArrays (const std::string filename, std::vector< int > &idx, arraylist_t &fl, int verbose = 0);

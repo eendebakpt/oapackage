@@ -4499,6 +4499,13 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
         return index;
 }
 
+void arrayfile_t::finisharrayfile() {
+	if (this->mode == ATEXT) {
+		fprintf(this->nfid, "-1\n");
+	}
+	this->closefile();
+}
+
 void arrayfile_t::writeheader () {
         assert (this->nfid);
 
@@ -4615,6 +4622,14 @@ long nArrays (const char *fname) {
         long n = af.narrays;
         af.closefile ();
         return n;
+}
+
+void arrayfileinfo(const char *filename, int &number_of_arrays, int &number_of_rows, int &number_of_columns) {
+	arrayfile_t af(filename, 0);
+	number_of_arrays = af.narrays;
+	number_of_rows = af.nrows;
+	number_of_columns = af.ncols;
+	af.closefile();
 }
 
 void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst) {
@@ -5431,7 +5446,7 @@ int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfil
 }
 
 /// append a single array to an array file. creates a new file if no file exists
-int appendarrayfile (const char *fname, const array_link al) {
+int append_arrayfile (const char *fname, const array_link al) {
         int dverbose = 0;
         int nb = 8; // default: char
         int nrows = -1, ncols = -1;
