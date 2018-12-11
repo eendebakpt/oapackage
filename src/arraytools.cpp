@@ -938,6 +938,22 @@ void showArrayList (const arraylist_t &lst) {
         }
 }
 
+template < class atype >
+/// write array to output stream
+void write_array_format(std::ostream &ss, const atype *array, const int nrows, const int ncols, int width = 3) {
+	assert(array != 0 || ncols == 0);
+
+	int count;
+	for (int j = 0; j < nrows; j++) {
+		count = j;
+		for (int k = 0; k < ncols; k++) {
+			const char *s = (k < ncols - 1) ? " " : "\n";
+			ss << std::setw(width) << array[count] << s;
+			count += nrows;
+		}
+	}
+}
+
 #ifdef FULLPACKAGE
 
 /**
@@ -4662,13 +4678,8 @@ arraylist_t readarrayfile (const char *fname, int verbose, int *setcols) {
         return v;
 }
 
-/**
- * @brief Read all arrays in a file and store then in an array list
- * @param fname
- * @param arraylist
- * @return
- */
-int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, colindex_t *setcols, rowindex_t *setrows,
+
+int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, int *setcols, int *setrows,
                    int *setbits) {
         if (arraylist == 0) {
                 arraylist = new arraylist_t;
@@ -5033,34 +5044,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
         }
 }
 
-/*!
-  save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of processors,
-  the number of factors and the number of columns so far. Then the file header contains the number of columns in the
-  design,
-  the number of runs and the number of arrays in the file.
-  \brief Saves the arrays from solutions
-  \param solutions List of arrays
-  \param p Characteristic numbers of OA
-  \param n_arrays Number of arrays found
-  \param n_procs Number of processors in system, for filename
-  */
-int save_arrays (arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs,
-                 const char *resultprefix, arrayfile::arrayfilemode_t mode) {
-        // OPTIMIZE: make this modular, save arrays in blocks
-
-        string fname = resultprefix;
-        fname += "-" + oafilestring (ad);
-
-        int nb = arrayfile_t::arrayNbits (*ad);
-        arrayfile_t *afile = new arrayfile_t (fname.c_str (), ad->N, ad->ncols, n_arrays, mode, nb);
-        int startidx = 1;
-        afile->append_arrays (solutions, startidx);
-        afile->finisharrayfile ();
-        delete afile;
-
-        return 0;
-}
-
 void arrayfile_t::closefile () {
         if (verbose >= 2) {
                 myprintf ("arrayfile_t::closefile(): nfid %ld\n", (long)nfid);
@@ -5140,7 +5123,6 @@ arrayfile_t::~arrayfile_t () {
  */
 arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode,
                                int nbits) {
-        // myprintf("create array file: mode %d\n", mode);
         std::string s = fname;
         arrayfile_t *afile = new arrayfile_t (s, rows, cols, narrays, mode, nbits);
 

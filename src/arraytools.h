@@ -1337,12 +1337,23 @@ inline void arrayfileinfo (const char *fname, int &number_of_arrays, int &number
         af.closefile ();
 }
 
-/// read list of arrays from file and append to list
-int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose = 1, int *setcols = 0,
-                   rowindex_t *setrows = 0, int *setbits = 0);
-
-/// read list of arrays from file
+/** Read all arrays in a file
+*
+* @param fname Filename to read from
+* @param verbose Verbosity level
+* @param setcols Pointer to return number of columns from array file
+* @return List of arrays
+*/
 arraylist_t readarrayfile (const char *fname, int verbose = 1, int *setcols = 0);
+
+/** Read all arrays in a file and append then to an array list
+*
+* @param fname Filename to read from
+* @param arraylist Pointer to list of arrays
+* @return
+*/
+int readarrayfile(const char *fname, arraylist_t *arraylist, int verbose = 1, int *setcols = 0,
+	int *setrows = 0, int *setbits = 0);
 
 const int NRAUTO = 0;
 /// write a list of arrays to file on disk
@@ -1368,27 +1379,7 @@ array_link selectArrays (std::string filename, int ii);
 arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays,
                                arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits = 8);
 
-/// save a list of arrays to disk
-int save_arrays (arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs,
-                 const char *resultprefix, arrayfile::arrayfilemode_t mode = ATEXT);
-
 #endif // FULLPACKAGE
-
-template < class atype >
-/// write array to output stream
-void write_array_format (std::ostream &ss, const atype *array, const int nrows, const int ncols, int width = 3) {
-        assert (array != 0 || ncols == 0);
-
-        int count;
-        for (int j = 0; j < nrows; j++) {
-                count = j;
-                for (int k = 0; k < ncols; k++) {
-                        const char *s = (k < ncols - 1) ? " " : "\n";
-                        ss << std::setw (width) << array[count] << s;
-                        count += nrows;
-                }
-        }
-}
 
 /// Make a selection of arrays
 arraylist_t selectArrays (const arraylist_t &input_list, std::vector< int > &idx);
@@ -1400,7 +1391,7 @@ void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, array
 /// Make a selection of arrays, append to list
 void selectArrays (const arraylist_t &input_list, std::vector< long > &idx, arraylist_t &output_list);
 
-/// Make a selection of arrays, keep
+/// From a container keep all elements with specified indices
 template < class Container, class IntType > void keepElements (Container &al, std::vector< IntType > &idx) {
         for (int jj = idx.size () - 1; jj >= 0; jj--) {
                 if (!idx[jj]) {
@@ -1409,7 +1400,7 @@ template < class Container, class IntType > void keepElements (Container &al, st
         }
 }
 
-/// Make a selection of arrays, remove
+/// From a container remove all elements with specified indices
 template < class Container, class IntType > void removeElements (Container &al, std::vector< IntType > &idx) {
         for (int jj = idx.size () - 1; jj >= 0; jj--) {
                 if (idx[jj]) {

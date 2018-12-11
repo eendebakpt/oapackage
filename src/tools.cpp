@@ -86,11 +86,6 @@ void print_array (const char *message, const array_t *array, int nrows, int ncol
         print_array (array, nrows, ncols);
 }
 
-/*! @brief Print array, overloaded function */
-void print_array (const array_link &A) {
-        write_array_format (stdout, A.array, A.n_rows, A.n_columns);
-}
-
 /*!
   Gives next combination for k elements out of n based on an algorithm from wikipedia.
   The generation is sorted.
