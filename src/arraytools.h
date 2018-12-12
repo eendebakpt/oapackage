@@ -1118,7 +1118,8 @@ namespace arrayfile {
 enum arrayfilemode_t {
 	/// text based format
         ATEXT,
-        ALATEX,
+	/// write arrays to a text file in a format that can be parsed by LaTeX
+		ALATEX,
 	/// binary format
         ABINARY,
 	/// binary format storing differences of arrays

@@ -63,7 +63,7 @@ int main (int argc, char *argv[]) {
         if (verbose)
                 std::cout << "oajoin: reading " << opt.getArgc () << " file(s)" << endl;
 
-        rowindex_t nrows;
+        int nrows;
         int ncols, nbits;
 
         for (int i = 0; i < opt.getArgc (); i++) {

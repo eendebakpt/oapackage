@@ -10,15 +10,12 @@
 #include <stack>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <vector>
 
 #include "arrayproperties.h"
 #include "arraytools.h"
 #include "extend.h"
-
 #include "graphtools.h"
-
 #include "conference.h"
 
 
@@ -101,7 +98,6 @@ conference_t::conference_t (const conference_t &rhs) {
         this->j3zero = rhs.j3zero;
 }
 
-/// dummy constructor
 conference_t::conference_t () {
         this->N = -1;
         this->ncols = -1;
@@ -122,21 +118,21 @@ conference_t::conference_t (int N, int k, int _j1zero) {
 }
 
 array_link conference_t::create_root_three () const {
-        array_link al (this->N, 3, 0); 
+        array_link array (this->N, 3, 0); 
 
-        al.at (0, 0) = 0;
+        array.at (0, 0) = 0;
         for (int i = 1; i < this->N; i++) {
-                al.at (i, 0) = 1;
+                array.at (i, 0) = 1;
         }
         for (int i = 0; i < this->N; i++) {
                 if (i == 1) {
-                        al.at (1, 1) = 0;
+                        array.at (1, 1) = 0;
                         continue;
                 }
                 if (i <= this->N / 2)
-                        al.at (i, 1) = 1;
+                        array.at (i, 1) = 1;
                 else
-                        al.at (i, 1) = -1;
+                        array.at (i, 1) = -1;
         }
 
         int q, q1, q2, v;
@@ -145,16 +141,16 @@ array_link conference_t::create_root_three () const {
         getConferenceNumbers (this->N, k, q, q1, q2, v);
 
         for (int i = 3; i < N; i++)
-                al.at (i, 2) = -1;
-        al.at (0, 2) = 1;
-        al.at (1, 2) = v;
-        al.at (2, 2) = 0;
+                array.at (i, 2) = -1;
+        array.at (0, 2) = 1;
+        array.at (1, 2) = v;
+        array.at (2, 2) = 0;
         for (int i = 0; i < q1; i++)
-                al.at (2 + 1 + i, 2) = 1;
+                array.at (2 + 1 + i, 2) = 1;
         for (int i = 0; i < q2; i++)
-                al.at (2 + q + i, 2) = 1;
+                array.at (2 + q + i, 2) = 1;
 
-        return al;
+        return array;
 }
 void conference_t::addRootArrays (arraylist_t &lst) const {
         switch (this->ctype) {
@@ -219,7 +215,6 @@ arraylist_t conference_t::createDconferenceRootArrays () const {
                         al.at (row, 0) = 1;
                 }
                 lst.push_back (al);
-
         } else {
                 for (int i = N / 2 + 1; i <= N; i++) {
                         al.setconstant (-1);
@@ -3073,7 +3068,7 @@ lmc_t init_lmc0_sort_comp (const array_link &al, int column, int sel_col, rowsor
                 int m = ((trans_val + 3) % 3);
                 rowperm[i].val = m;
         }
-        std::stable_sort (rowperm, rowperm + n_rows); // and now play with rowperm.rr
+        std::stable_sort (rowperm, rowperm + n_rows); 
 
         // Compare zero position
         r = lmc0_compare_zeropos_block (al, 0, n_rows, rowperm, colperm, column, rowsignperm, colsignperm);
@@ -3335,4 +3330,3 @@ lmc_t LMC0check (const array_link &al, int verbose) {
         return result;
 }
 
-// kate: indent-mode cstyle; indent-width 5; replace-tabs on;
