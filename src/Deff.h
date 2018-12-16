@@ -6,7 +6,7 @@
  */
 
 #pragma once
-
+#include <vector>
 
 #include "arrayproperties.h"
 #include "arraytools.h"

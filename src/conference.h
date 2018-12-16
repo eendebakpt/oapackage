@@ -90,10 +90,10 @@ class conference_t {
         // return short string describing the class
         std::string idstr () const;
 
-        /// create the unique representative of the 2 column design (for conference matrices)
+        /// create the unique representative of the 2 column conference design 
         array_link create_root () const;
 
-        /// create the unique representative of the 3 column design
+        /// create the unique representative of the 3 column conference design
         array_link create_root_three () const;
 
         /// create the root arrays with 1 column for the double conference matrices

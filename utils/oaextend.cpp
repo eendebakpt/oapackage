@@ -47,6 +47,27 @@ const int MASTER = 0;
 int extend_slave_code (const int this_rank, OAextend const &oaextend) { return 0; }
 #endif
 
+/*!
+Save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of factors and the number of columns so far. Then the file header contains the number of columns in the
+design,
+the number of runs and the number of arrays in the file.
+\brief Saves the arrays from solutions
+\param solutions List of arrays
+\param ad Arrayclass
+\param resultprefix Prefix string for filename
+\param mode Mode for output file
+*/
+int save_arrays(arraylist_t &solutions, const arraydata_t *ad, 
+	const char *resultprefix, arrayfile::arrayfilemode_t mode) {
+
+	string fname = resultprefix;
+	fname += "-" + oafilestring(ad);
+
+	writearrayfile(fname.c_str(), solutions, mode, ad->N, ad->ncols);
+
+	return 0;
+}
+
 inline void print_progress (int csol, arraylist_t &solutions, arraylist_t &extensions, double Tstart, colindex_t col) {
         time_t seconds;
         struct tm *tminfo;
@@ -407,7 +428,7 @@ int main (int argc, char *argv[]) {
                                         log_print (DEBUG, "   sorting time: %.3f [s]\n", get_time_ms () - Ttmp);
                                 }
 
-                                save_arrays (extensions, adcol, extensions.size (), n_processors, resultprefix, mode);
+                                save_arrays (extensions, adcol, resultprefix, mode);
                                 solutions.swap (extensions); // swap old and newly found solutions
                                 extensions.clear ();         // clear old to free up space for new extensions
 

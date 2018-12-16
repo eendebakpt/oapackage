@@ -352,7 +352,7 @@ int main (int argc, char *argv[]) {
                 }
                 if (docl2d) {
                         std::string c2file = analysisfile + printfstring ("-cl2d.bin");
-                        doublevector2binfile (c2file, c2list);
+                        vector2doublebinfile (c2file, c2list);
                         if (verbose >= 2)
                                 std::cout << "writing centered L2 discrepancy file " << c2file << std::endl;
                 }
@@ -400,7 +400,7 @@ int main (int argc, char *argv[]) {
                         std::string DeffFile = abase + "-Dvalues.bin";
                         if (verbose >= 2)
                                 printf ("writing: %s\n", DeffFile.c_str ());
-                        doublevector2binfile< double > (DeffFile, AA, 1);
+                        vector2doublebinfile< double > (DeffFile, AA, 1);
                 }
         }
 
