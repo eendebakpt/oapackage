@@ -64,12 +64,12 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
         fullrank = np.linalg.cond(M) < 1000
     else:
         mr = np.linalg.matrix_rank(M)
-        fullrank = mr == modelmatrix.shape[1]
+        fullrank = (mr == modelmatrix.shape[1])
+        if verbose>=2:
+            print('modelStatistics: fullrank %d, condition number %.4f' % (fullrank, np.linalg.cond(M), ))
 
     if verbose >= 2:
-        print('conferenceProjectionStatistics: condition number: %s' % (np.linalg.cond(M)))
-    if verbose:
-        print('%d, cond %.5f' % (mr == modelmatrix.shape[1], np.linalg.cond(M), ))
+        print('modelStatistics: condition number: %s' % (np.linalg.cond(M)))
     if fullrank:
         if moment_matrix is None:
             moment_matrix = momentMatrix(ncolumns)

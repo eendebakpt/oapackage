@@ -16,7 +16,7 @@ import oapackage.conference
 def _statistics_equal(statistics, expected):
     np.testing.assert_array_almost_equal( np.array(statistics), np.array(expected) ) 
 
-class TestResearchConference(unittest.TestCase):
+class TestConferenceStatistics(unittest.TestCase):
 
     def test_momentMatrix(self):
         M1 = np.array([[1., 0., 1. / 3],
