@@ -257,6 +257,9 @@ class TestArrayFiles(unittest.TestCase):
 
 class TestCppLibrary(unittest.TestCase):
 
+    def setUp(self):
+        self.assertRaisesRegex=self.assertRaisesRegexp
+        
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
