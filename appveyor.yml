@@ -117,6 +117,9 @@ install:
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
+  # to run the tests
+   - "%CMD_IN_ENV% pip install mock" 
+
   # lint the code
   - "%CMD_IN_ENV36% pip install pylint"
   # fix issues with incompatible package versions
