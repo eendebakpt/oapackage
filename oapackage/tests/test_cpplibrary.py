@@ -14,7 +14,7 @@ if sys.version_info >= (3, 4):
 else:
     try:
         import mock
-    except ModuleNotFoundError:
+    except ImportError:
         raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
     python3 = False
     patch = None
