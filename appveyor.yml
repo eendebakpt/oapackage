@@ -12,15 +12,15 @@ environment:
 
   matrix:
    
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.x"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
           
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python34-x64"
       PYTHON_VERSION: "3.4.x"
       PYTHON_ARCH: "64"
@@ -118,7 +118,8 @@ install:
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
   # to run the tests
-   - "%CMD_IN_ENV% pip install mock" 
+   - "%CMD_IN_ENV% pip install mock"
+   - "%CMD_IN_ENV% python -c \"import mock\""
 
   # lint the code
   - "%CMD_IN_ENV36% pip install pylint"

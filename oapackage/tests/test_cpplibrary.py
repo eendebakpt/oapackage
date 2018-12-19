@@ -5,7 +5,9 @@ import sys
 import os
 import numpy as np
 import numpy
+import logging
 import unittest
+
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
     import io
@@ -14,7 +16,8 @@ if sys.version_info >= (3, 4):
 else:
     try:
         import mock
-    except ImportError:
+    except ImportError as ex:
+        logging.exception(ex)
         raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
     python3 = False
     patch = None
