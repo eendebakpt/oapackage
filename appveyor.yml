@@ -118,8 +118,8 @@ install:
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
   # to run the tests
-   - "%CMD_IN_ENV% pip install mock"
-   - "%CMD_IN_ENV% python -c \"import mock\""
+  - "%CMD_IN_ENV% pip install mock"
+  - "%CMD_IN_ENV% python -c \"import mock\""
 
   # lint the code
   - "%CMD_IN_ENV36% pip install pylint"
