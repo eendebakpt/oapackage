@@ -362,7 +362,7 @@ setup(name='OApackage',
       scripts=scripts,
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
       zip_safe=False,
-      install_requires=['numpy>=1.13', 'scanf'],
+      install_requires=['numpy>=1.13', 'scanf', 'mock; python<"3.0"'],
       extras_require={
           'GUI':  ["qtpy", 'matplotlib'],
       },

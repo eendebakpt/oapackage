@@ -12,7 +12,10 @@ if sys.version_info >= (3, 4):
     from unittest.mock import patch
     python3 = True
 else:
-    import mock
+    try:
+        import mock
+    except ModuleNotFoundError:
+        raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
     python3 = False
     patch = None
 

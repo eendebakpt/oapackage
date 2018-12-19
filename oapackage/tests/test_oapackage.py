@@ -10,8 +10,11 @@ if sys.version_info >= (3, 4):
     import unittest.mock as mock
     from unittest.mock import patch
 else:
-    import mock
-    from mock import patch
+    try:
+        import mock
+        from mock import patch
+    except ModuleNotFoundError:
+        raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
 
 import oalib
 import oapackage
