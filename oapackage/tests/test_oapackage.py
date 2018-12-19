@@ -13,7 +13,7 @@ else:
     try:
         import mock
         from mock import patch
-    except ModuleNotFoundError:
+    except ImportError:
         raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
 
 import oalib
