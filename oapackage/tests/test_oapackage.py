@@ -484,6 +484,7 @@ class TestDoptimize(unittest.TestCase):
             # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
             #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
             try:
+                import matplotlib
                 matplotlib.pyplot.close(100)
             except:
                 pass

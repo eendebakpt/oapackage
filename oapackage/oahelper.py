@@ -23,6 +23,7 @@ import warnings
 import webbrowser
 import tempfile
 import subprocess
+import dateutil.parser
 
 try:
     import matplotlib
