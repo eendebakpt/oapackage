@@ -428,7 +428,7 @@ class TestDoptimize(unittest.TestCase):
 
     def setUp(self):
 
-        self.arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
+        self.arrayclass = oapackage.arraydata_t(2, 16, 0, 6)
         self.dds = np.random.rand(20, 3)
         self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
 
@@ -448,11 +448,17 @@ class TestDoptimize(unittest.TestCase):
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
                                                           maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
-    def test_unittest(self):
+    def test_Doptimize_nonzero_strength(self):
+        arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
+        with self.assertWarns(UserWarning):
+            scores, dds, sols, _ = oapackage.Doptim.Doptimize(arrayclass, nrestarts=1, verbose=0, maxtime=9, selectpareto=False, nout=None, niter=1000, dverbose=0)
+        
+    def test_Doptimize_selectDn(self):
         scores, dds, sols, _ = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
                                                           1, 0, 0], verbose=1, maxtime=9, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
 
         result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
+        self.assertTrue(len(result[2])==1)
 
     def test_optimDeffPython(self):
         al = oapackage.exampleArray(2, 0)

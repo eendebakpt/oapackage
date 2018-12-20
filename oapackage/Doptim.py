@@ -13,6 +13,7 @@ import os
 import numpy as np
 import time
 import logging
+import warnings
 
 class MissingMatplotLibException(Exception):
     pass
@@ -513,6 +514,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
 
     """
+    if arrayclass.strength !=0:
+        warnings.warn('Doptimize can only handle designs with strength 0', UserWarning)
+        
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr())
     t0 = time.time()
