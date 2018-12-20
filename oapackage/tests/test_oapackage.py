@@ -296,6 +296,7 @@ class TestOAhelper(unittest.TestCase):
         idx = oapackage.oahelper.argsort([2, 2, 1])
         assert(idx == [2, 0, 1])
 
+    @only_python3
     def test_plot2Dline(self):
         if importlib.util.find_spec('matplotlib') is not None:
             with mock.patch('matplotlib.pyplot.plot') as MockPlt:
@@ -466,10 +467,10 @@ class TestDoptimize(unittest.TestCase):
     def test_generateDscatter(self):
         if self.guitest:
             fig = 100
-        else:
-            fig = None
-        r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
+            r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
                                               ndata=3, nofig=True, fig=fig, scatterarea=80)
+        else:
+            pass
 
     def test_generateDpage(self):
         outputdir = tempfile.mkdtemp()

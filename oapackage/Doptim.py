@@ -14,6 +14,9 @@ import numpy as np
 import time
 import logging
 
+class MissingMatplotLibException(Exception):
+    pass
+
 try:
     import matplotlib
     import matplotlib.pyplot as plt
@@ -60,7 +63,15 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 
 def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
                      scatterarea=80, verbose=0, setWindowRectangle=False):
-    """ Generate scatter plot for D and Ds efficiencies """
+    """ Generate scatter plot for D and Ds efficiencies
+    
+    Args:
+        dds (array): array with D-efficiencies
+    Returns:
+        dict: contains handles to plotting elements
+    """
+    if matplotlib is None:
+        raise MissingMatplotLibException
     data = dds.T
     pp = oahelper.createPareto(dds)
     paretoidx = np.array(pp.allindices())
