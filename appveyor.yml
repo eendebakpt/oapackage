@@ -109,6 +109,7 @@ install:
 
   # part of the testing requirements
   - "%CMD_IN_ENV% pip install python-dateutil"
+  - "%CMD_IN_ENV% python -c \"import dateutil; print(dateutil)\""
   - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
