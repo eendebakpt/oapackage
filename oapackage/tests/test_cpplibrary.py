@@ -265,7 +265,8 @@ class TestArrayFiles(unittest.TestCase):
 class TestCppLibrary(unittest.TestCase):
 
     def setUp(self):
-        self.assertRaisesRegex = self.assertRaisesRegexp
+        if getattr(self, 'assertRaisesRegex', None) is None:
+            self.assertRaisesRegex = self.assertRaisesRegexp
 
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
@@ -348,15 +349,16 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(interaction_effects.shape, (24, 24))
 
     def test_mycheck_handler(self):
-        oapackage.mycheck_handler('a', 'b', 1, 1, 'bla')
+        oapackage.mycheck_handler('a', 'b', 1, 1, 'test mycheck_handler')
         with self.assertRaises(RuntimeError):
-            oapackage.mycheck_handler('a', 'b', 1, 0, 'bla')
+            oapackage.mycheck_handler('a', 'b', 1, 0, 'mycheck_handler raise')
 
     @only_python3
     def test_arrayrankInfo(self):
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             rank = oapackage.arrayrankInfo(oapackage.exampleArray(21))
             self.assertEqual(rank, 4)
+            self.assertIn('FullPivLU: rank 4', mock_stdout.getvalue())
 
     def test_rankStructure(self):
         array = oapackage.exampleArray(45, 0)

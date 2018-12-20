@@ -834,10 +834,7 @@ def mkdirc(directory_name):
 def parseProcessingTime(logfile, verbose=0):
     """ Parse a log file to calculate the processing time """
 
-    try:
-        import dateutil.parser
-    except BaseException:
-        warnings.warn('oahelper: could not load dateutil package...')
+    import dateutil.parser
 
     fileinput.close()
     tstart = None
