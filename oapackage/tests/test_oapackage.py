@@ -437,7 +437,6 @@ class TestDoptimize(unittest.TestCase):
             import matplotlib.pyplot
         except:
             self.guitest = False
-        print('guitest %s' % self.guitest)
 
     def test_custom_optim(self):
         def optimfunc(x): return x[0] + x[1] + x[2]
