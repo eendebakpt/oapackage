@@ -254,7 +254,7 @@ class TestArrayFiles(unittest.TestCase):
     def test_write_latex_format(self):
         import tempfile
         import oapackage
-        lst = [oapackage.exampleArray(2)]
+        lst = [oapackage.exampleArray(2, 0)]
         filename = tempfile.mktemp(suffix='.tex')
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
         with open(filename, 'rt') as fid:

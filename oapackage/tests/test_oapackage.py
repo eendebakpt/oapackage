@@ -59,11 +59,11 @@ class TestMisc(unittest.TestCase):
 
     def test_exampleArray(self):
         # test a selection of the example arrays
-        al = oapackage.exampleArray(5)
+        al = oapackage.exampleArray(5, 0)
         assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
-        al = oapackage.exampleArray(20)
+        al = oapackage.exampleArray(20, 0)
         assert(np.array(al).shape == (24, 3))
-        al = oapackage.exampleArray(40)
+        al = oapackage.exampleArray(40, 0)
         assert(np.array(al).shape == (14, 5))
 
     def test_scanf(self):
@@ -116,7 +116,7 @@ def test_numpy_interface(verbose=0):
 def test_nauty(verbose=0):
     if verbose:
         print('test_nauty: test reduction to normal form')
-    al = oapackage.exampleArray(1, verbose)
+    al = oapackage.exampleArray(0, verbose)
     alr = al.randomperm()
     tr = oapackage.reduceOAnauty(alr)
     alx = tr.apply(alr)
@@ -161,7 +161,7 @@ def miscunittest(verbose=1):
     # DOP reduction
     if verbose >= 2:
         print('unittest: test delete-one-factor GWLP reduction')
-    al = oalib.exampleArray(5, 1)
+    al = oalib.exampleArray(5, verbose)
     al2 = al.randomperm()
 
     alr = al.reduceDOP()
@@ -199,10 +199,10 @@ class TestOAfiles(unittest.TestCase):
 
     def test_misc_file_operations(self):
         array_filename = tempfile.mktemp(suffix='.oa')
-        lst = [oapackage.exampleArray(4, 1)]
+        lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         assert(oapackage.oahelper.oaIsBinary(array_filename) is False)
-        oapackage.writearrayfile(array_filename, oapackage.exampleArray(4, 1), oapackage.ABINARY)
+        oapackage.writearrayfile(array_filename, oapackage.exampleArray(4, 0), oapackage.ABINARY)
         assert(oapackage.oahelper.oaIsBinary(array_filename))
 
         oapackage.oahelper.oainfo(array_filename)
@@ -212,7 +212,7 @@ class TestOAfiles(unittest.TestCase):
     def test_selectArrays(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
         array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1), oapackage.exampleArray(4, 1)])
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 1)])
         oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
         oapackage.oahelper.selectArrays(array_filename, array_filename_out,
@@ -220,13 +220,13 @@ class TestOAfiles(unittest.TestCase):
 
     def test_nArrayFile(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 1)])
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0)])
         self.assertEqual(oapackage.oahelper.nArrayFile(array_filename), 1)
         self.assertEqual(oapackage.oahelper.nArrayFile('notavalidfile.oa'), -1)
 
     def test_findfiles(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        lst = [oapackage.exampleArray(4, 1)]
+        lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
         self.assertIn(os.path.split(array_filename)[-1], lst)
@@ -266,7 +266,7 @@ class TestOAhelper(unittest.TestCase):
     #   oapackage.oahelper.tilefigs([], geometry=[2,2])
 
     def setUp(self):
-        self.test_array = oapackage.exampleArray(1, 1)
+        self.test_array = oapackage.exampleArray(1, 0)
 
     def test_array2latex(self):
 
@@ -326,8 +326,8 @@ class TestOAhelper(unittest.TestCase):
         self.assertTrue(len(rx) == 63)
 
     def test_joinArrayLists(self):
-        l1 = [oapackage.exampleArray(2)]
-        l2 = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
+        l1 = [oapackage.exampleArray(2, 0)]
+        l2 = [oapackage.exampleArray(2, 0), oapackage.exampleArray(2, 0)]
         l = oapackage.oahelper.joinArrayLists([l1, l2])
         assert(len(l) == len(l1) + len(l2))
 
@@ -456,7 +456,7 @@ class TestDoptimize(unittest.TestCase):
         result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
 
     def test_optimDeffPython(self):
-        al = oapackage.exampleArray(2)
+        al = oapackage.exampleArray(2, 0)
         _, al = oapackage.Doptim.optimDeffPython(
             al, arrayclass=None, niter=1000, nabort=1500, verbose=1, alpha=[1, 0, 0], method=0)
 
@@ -474,7 +474,7 @@ class TestDoptimize(unittest.TestCase):
 
     def test_generateDpage(self):
         outputdir = tempfile.mkdtemp()
-        allarrays = [oapackage.exampleArray(2), oapackage.exampleArray(2)]
+        allarrays = [oapackage.exampleArray(2, 0), oapackage.exampleArray(2, 0)]
         dds = np.array([A.Defficiencies() for A in allarrays])
         arrayclass = oapackage.arraylink2arraydata(allarrays[0])
         page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
