@@ -138,6 +138,7 @@ build_script:
 
 
 test_script:
+   - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV% pytest" 
 
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
