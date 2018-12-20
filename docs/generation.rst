@@ -29,11 +29,11 @@ The main functions for array extension are the following:
 Here, :meth:`~oalib.arraydata_t` is the structure describing the type of arrays and
 :meth:`~oalib.OAextend` contains various options for the algorithm.
 
-An example of a session is the following:
+An example of a session that extends a designs is:
 
 .. .. code-block:: python
-.. doctest::
    :caption: Extend an array
+.. doctest::
    
    >>> import oapackage
    >>> N=8; ncols=3;
