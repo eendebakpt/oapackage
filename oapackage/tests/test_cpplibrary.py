@@ -47,13 +47,13 @@ class TestReductions(unittest.TestCase):
         al[1, 1] = -1
         self.assertRaises(RuntimeError, oapackage.reduceLMCform, al)
 
-        al = oapackage.exampleArray(8)
+        al = oapackage.exampleArray(8, 0)
         alr = oapackage.reduceLMCform(al)
         self.assertTrue(alr == al)
 
     @only_python3
     def test_DOP(self):
-        al = oapackage.exampleArray(1)
+        al = oapackage.exampleArray(1, 0)
         transformation = oapackage.reductionDOP(al)
         self.assertTrue(transformation.isIdentity())
 
@@ -80,7 +80,7 @@ class TestReductions(unittest.TestCase):
 class TestModelmatrix(unittest.TestCase):
 
     def test_modelmatrix(self):
-        al = oapackage.exampleArray(1)
+        al = oapackage.exampleArray(1, 0)
 
         sizes = oapackage.array2modelmatrix_sizes(al)
         k = al.n_columns
@@ -132,22 +132,22 @@ class TestArrayLink(unittest.TestCase):
 
     def test_array_link_dimensions(self):
         for example_idx in [0, 2, 6, 10]:
-            al = oapackage.exampleArray(example_idx)
+            al = oapackage.exampleArray(example_idx, 0)
             self.assertEqual(al.size, al.n_rows * al.n_columns)
             self.assertEqual(al.shape, (al.n_rows, al.n_columns))
         with self.assertRaises(AttributeError):
             al.shape = 1
 
     def test_is_ortogonal_array(self):
-        al = oapackage.exampleArray(1)
+        al = oapackage.exampleArray(1, 0)
         self.assertTrue(al.is_orthogonal_array())
         al[1, 2] = -1
         self.assertFalse(al.is_orthogonal_array())
-        al = oapackage.exampleArray(41)
+        al = oapackage.exampleArray(41, 0)
         self.assertFalse(al.is_orthogonal_array())
 
     def test_array_class_functions(self):
-        al = oapackage.exampleArray(1)
+        al = oapackage.exampleArray(1, 0)
         self.assertTrue(al.is2level())
         self.assertFalse(al.is_mixed_level())
 
@@ -195,7 +195,7 @@ class TestJcharacteristics(unittest.TestCase):
 class TestConferenceDesigns(unittest.TestCase):
 
     def test_conf2dsd(self):
-        al = oapackage.exampleArray(42)
+        al = oapackage.exampleArray(42, 0)
         dsd = oapackage.conference2DSD(al)
         self.assertEqual(dsd.n_rows, 2 * al.n_rows + 1)
 
@@ -305,7 +305,7 @@ class TestCppLibrary(unittest.TestCase):
                 std_output = mock_stdout.getvalue()
                 self.assertEqual(std_output, 'array transformation: no class defined\n')
 
-        al = oapackage.exampleArray(0)
+        al = oapackage.exampleArray(0, 0)
         arrayclass = oapackage.arraylink2arraydata(al)
         at = oapackage.array_transformation_t(arrayclass)
         at.setcolperm([1, 0])
@@ -313,7 +313,7 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(at.colperm(), (1, 0))
 
     def test_arraylink2arraydata(self):
-        al = oapackage.exampleArray(0)
+        al = oapackage.exampleArray(0, 0)
         adata = oapackage.arraylink2arraydata(al)
         self.assertEqual(str(adata), r'arrayclass: N 8, k 2, strength 2, s {2,2}, order 0')
         al = oapackage.array_link(4, 4, 0)
@@ -324,7 +324,7 @@ class TestCppLibrary(unittest.TestCase):
             _ = oapackage.arraylink2arraydata(al)
 
         for ii in [0, 4, 8, 10]:
-            al = oapackage.exampleArray(ii)
+            al = oapackage.exampleArray(ii, 0)
             arrayclass = oapackage.arraylink2arraydata(al, strength=-1)
             self.assertEqual(arrayclass.strength, al.strength())
 
@@ -409,7 +409,7 @@ class TestCppLibrary(unittest.TestCase):
                                              0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
     def test_arraylink(self):
-        al = oapackage.exampleArray(0)
+        al = oapackage.exampleArray(0, 0)
         self.assertEqual(al.at(0, 1), 0)
         self.assertEqual(al.at(0), 0)
         with self.assertRaises(IndexError):
@@ -437,7 +437,7 @@ class TestCppLibrary(unittest.TestCase):
 
     def test_conference_generation(self):
 
-        al = oapackage.exampleArray(42)
+        al = oapackage.exampleArray(42, 0)
         lst = [al]
         conference_type = oapackage.conference_t(al.n_rows, al.n_rows, 0)
 

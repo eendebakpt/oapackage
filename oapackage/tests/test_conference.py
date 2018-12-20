@@ -30,13 +30,13 @@ class TestConferenceStatistics(unittest.TestCase):
         self.assertEqual(M.shape, (15, 15))
 
     def test_conference_model_statistics(self):
-        arrays = [oapackage.exampleArray(idx, 1).selectFirstColumns(4) for idx in [46, 47, 48]]
+        arrays = [oapackage.exampleArray(idx, 0).selectFirstColumns(4) for idx in [46, 47, 48]]
         dsds = [oapackage.conference2DSD(array) for array in arrays]
         statistics = [oapackage.conference.modelStatistics(al, verbose=2) for al in dsds]
         expected = [(0, 0, 0), (0, 0, 0), (1, 17.081221494279234, 1.7610790263409104)]
         _statistics_equal(statistics, expected)
 
-        arrays = [oapackage.exampleArray(idx, 1).selectLastColumns(4) for idx in [46, 47, 48]]
+        arrays = [oapackage.exampleArray(idx, 0).selectLastColumns(4) for idx in [46, 47, 48]]
         dsds = [oapackage.conference2DSD(array) for array in arrays]
         statistics = [oapackage.conference.modelStatistics(al, verbose=0) for al in dsds]
         expected = [(1, 17.312358463836613, 1.8538666749267378), (1, 17.312358463836613,
@@ -44,7 +44,7 @@ class TestConferenceStatistics(unittest.TestCase):
         _statistics_equal(statistics, expected)
 
     def test_conference_projection_statistics(self):
-        arrays = [oapackage.exampleArray(idx, 1) for idx in [45, 46, 47, 48]]
+        arrays = [oapackage.exampleArray(idx, 0) for idx in [45, 46, 47, 48]]
         statistics = [oapackage.conference.conferenceProjectionStatistics(array, verbose=1) for array in arrays]
         expected = [(0.9857142857142858, 16.831420420862223, 1.7523727421346018), (0.9857142857142858, 16.782711360159983, 1.7515927378529395),
                     (0.9714285714285714, 16.594006884359878, 1.7298655460036123), (1.0, 16.80031370680457, 1.7750342960753236)]
