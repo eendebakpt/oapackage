@@ -10,6 +10,7 @@ import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
     from unittest.mock import patch
+    python3 = True
 else:
     try:
         import mock
@@ -17,6 +18,7 @@ else:
     except ImportError as ex:
         logging.exception(ex)
         raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
+    python3 = False
 
 import oalib
 import oapackage
@@ -24,6 +26,15 @@ import oapackage.scanf
 import oapackage.Doptim
 import oapackage.graphtools
 
+
+def only_python3(function):
+    if python3:
+        def only_python3_function(*args, **kwargs):
+            return function(*args, **kwargs)
+    else:
+        def only_python3_function(*args, **kwargs):
+            return None
+    return only_python3_function
 
 def autodoctest():
     """ Test the module using autodoc
@@ -289,6 +300,7 @@ class TestOAhelper(unittest.TestCase):
             _ = oapackage.oahelper.plot2Dline([1, 0, 0])
             self.assertTrue(MockPlt.called)
 
+    @only_python3
     def test_deprecated(self):
         def func():
             return 'hi'
