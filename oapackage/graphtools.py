@@ -78,11 +78,10 @@ def selectIsomorphismClasses(sols, verbose=1):
     Example:
         >>> import oapackage.graphtools; import numpy as np
         >>> sols=[oapackage.exampleArray(idx) for idx in [26,26,27,26]]
-        >>> idx, mm = oapackage.graphtools.selectIsomorphismClasses(sols)
-        selectIsomorphismClasses: process aray 0/4
-        selectIsomorphismClasses: reduce 4 to 2
-        >>> # To select one representative array from each isomorphism class one can use:
+        >>> idx, mm = oapackage.graphtools.selectIsomorphismClasses(sols, verbose=0)
         >>> _, unique_indices = np.unique(idx, return_index=True)
+        >>> print('found %d isomorphism classes from %d arrays' % (len(unique_indices), len(sols)) )
+        found 2 isomorphism classes from 4 arrays
         >>> representatives = [sols[idx] for idx in unique_indices]
 
     """

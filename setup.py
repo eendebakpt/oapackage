@@ -31,6 +31,8 @@ except ImportError:
 npinclude = np.get_include()
 setup_directory = path.abspath(path.dirname(__file__))
 
+is_python3 = sys.version_info >= (3, 4)
+
 # %%
 
 
@@ -347,6 +349,11 @@ long_description = readme()
 version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
+if is_python3:
+    python27_requirements = []
+else:
+    python27_requirements = ['backports.functools_lru_cache;python_version<"2.9"']
+    
 setup(name='OApackage',
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
       version=version,
@@ -363,9 +370,9 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil','backports.functools_lru_cache;python_version<"2.9"'],
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil']+python27_requirements,
       zip_safe=False,
-      install_requires=['numpy>=1.13', 'mock; python_version <"3.0"', 'python-dateutil','backports.functools_lru_cache;python_version<"2.9"'],
+      install_requires=['numpy>=1.13', 'mock; python_version <"3.0"', 'python-dateutil']+python27_requirements,
       extras_require={
           'GUI':  ["qtpy", 'matplotlib'],
       },
