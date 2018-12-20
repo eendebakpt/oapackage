@@ -360,7 +360,7 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil'],
       zip_safe=False,
       install_requires=['numpy>=1.13', 'mock; python_version <"3.0"'],
       extras_require={

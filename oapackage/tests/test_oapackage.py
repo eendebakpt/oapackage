@@ -6,6 +6,7 @@ import os
 import numpy as np
 import tempfile
 import logging
+import importlib
 import unittest
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
@@ -296,9 +297,10 @@ class TestOAhelper(unittest.TestCase):
         assert(idx == [2, 0, 1])
 
     def test_plot2Dline(self):
-        with mock.patch('matplotlib.pyplot.plot') as MockPlt:
-            _ = oapackage.oahelper.plot2Dline([1, 0, 0])
-            self.assertTrue(MockPlt.called)
+        if importlib.util.find_spec('matplotlib') is not None:
+            with mock.patch('matplotlib.pyplot.plot') as MockPlt:
+                _ = oapackage.oahelper.plot2Dline([1, 0, 0])
+                self.assertTrue(MockPlt.called)
 
     @only_python3
     def test_deprecated(self):
