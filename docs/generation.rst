@@ -73,16 +73,24 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
 
    .. doctest::     
                    
-     >>> import oapackage
-     >>> ctype=oapackage.conference_t(8, 8, 0) 
-     >>> al = ctype.create_root_three()
-     >>> al.showarray()
-     array: 0 1 1 1 0 -1 1 1 0 1 1 1 1 1 -1 1 -1 1 1 -1 1 1 -1 -1
-     >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
-     >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
-     >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
-     >>> print('number of non-isomorphic conference designs: number of conference designs: %d'  % len(l6) )
-     non-isomorphic conference designs: 11
+    >>> import oapackage
+    >>> ctype=oapackage.conference_t(8, 8, 0) 
+    >>> al = ctype.create_root_three()
+    >>> al.showarray()
+    array:
+      0   1   1
+      1   0  -1
+      1   1   0
+      1   1   1
+      1   1  -1
+      1  -1   1
+      1  -1   1
+      1  -1  -1
+    >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
+    >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
+    >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
+    >>> print('number of non-isomorphic conference designs: %d'  % len(l6) )
+    number of non-isomorphic conference designs: 11
 
 
 The full interface for conference designs is available
@@ -104,10 +112,9 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
 
    .. testsetup::
    
-       >>> import oapackage
+       import oapackage
        
-   .. doctest::     
-
+   .. code-block:: python
 
      >>> N=40; s=2; k=7;
      >>> arrayclass=oapackage.arraydata_t(s, N, 0, k) 
@@ -118,7 +125,8 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
      >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True)
      Doptim: optimization class 40.2-2-2-2-2-2-2
      Doptimize: iteration 0/40
-     Doptimize: iteration 39/40 Doptim: done (8 arrays, 0.6 [s]) 
+     Doptimize: iteration 39/40
+     Doptim: done (8 arrays, 0.6 [s]) 
      >>> print('Generated %d designs, the best D-efficiency is %.4f’ % (len(designs), dds[:,0].max() ))
      Generated 8 designs, the best D-efficiency is 0.9098
 

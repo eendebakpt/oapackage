@@ -47,16 +47,38 @@ Reduction using graph isomorphisms
 The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Nauty canonical form. To reduce general graphs to Nauty canonical form, the OApackage includes the function :py:meth:`~oalib.reduceGraphNauty`.
 
 
-.. code-block:: python
-   :caption: Reduce a design to normal form using Nauty
-   
-   >>> al = oapackage.exampleArray(0).randomperm()
-   >>> al.showarray()
-   array: 0 1 1 1 1 0 0 0 0 0 1 1 1 0 0 1
-   >>> t=oapackage.reduceOAnauty(al, verbose=0)
-   >>> t.show()
-   array transformation: N 8 column permutation: 0,1 level perms: 0,1 0,1 row permutation: 3,4,0,7,2,6,1,5
-   >>> alr=t.apply(al)
-   >>> alr.showarray()
-   array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1
+.. admonition:: Reduce a design to normal form using Nauty
+ 
+   .. code-block:: python
+    
+    >>> al = oapackage.exampleArray(0).randomperm()
+    >>> al.showarray()
+    array: 
+      1   1
+      0   0
+      0   1
+      1   0
+      1   0
+      0   1
+      1   1
+      0   0
+    >>> transformation=oapackage.reduceOAnauty(al, 0)
+    >>> transformation.show()
+    array transformation: N 8
+    column permutation: {0,1}
+    level perms:
+    {0,1}
+    {0,1}
+    row permutation: {1,7,2,5,3,4,0,6}
+    >>> alr=transformation.apply(al)
+    >>> alr.showarray()
+    array: 
+      0   0
+      0   0
+      0   1
+      0   1
+      1   0
+      1   0
+      1   1
+      1   1
 
