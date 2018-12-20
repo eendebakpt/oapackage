@@ -76,16 +76,15 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
     >>> import oapackage
     >>> ctype=oapackage.conference_t(8, 8, 0) 
     >>> al = ctype.create_root_three()
-    >>> al.showarray()
-    array:
-      0   1   1
-      1   0  -1
-      1   1   0
-      1   1   1
-      1   1  -1
-      1  -1   1
-      1  -1   1
-      1  -1  -1
+    >>> al.showarraycompact()
+    011
+    10-1
+    110
+    111
+    11-1
+    1-11
+    1-11
+    1-1-1
     >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
     >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
     >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)

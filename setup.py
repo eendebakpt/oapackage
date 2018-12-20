@@ -352,7 +352,7 @@ print('OApackage: version %s' % version)
 if is_python3:
     python27_requirements = []
 else:
-    python27_requirements = ['backports.functools_lru_cache;python_version<"2.9"']
+    python27_requirements = ['mock; python_version <"3.0"', 'backports.functools_lru_cache;python_version<"2.9"']
     
 setup(name='OApackage',
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
@@ -372,7 +372,7 @@ setup(name='OApackage',
       scripts=scripts,
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil']+python27_requirements,
       zip_safe=False,
-      install_requires=['numpy>=1.13', 'mock; python_version <"3.0"', 'python-dateutil']+python27_requirements,
+      install_requires=['numpy>=1.13', 'python-dateutil'] + python27_requirements,
       extras_require={
           'GUI':  ["qtpy", 'matplotlib'],
       },
