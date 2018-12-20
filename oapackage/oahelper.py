@@ -240,8 +240,9 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
 def enlargelims(factor=1.05):
     """ Enlarge the limits of a plot
-    Example:
-      >>> enlargelims(1.1)
+    
+    Args:
+        factor (float): factor by which to make the plot margins wider
     """
     xl = plt.xlim()
     d = (factor - 1) * (xl[1] - xl[0]) / 2
@@ -995,7 +996,9 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     Returns:
         list: list of generated designs
 
-    >>> r = runExtend(16, 5, 3, verbose=0)
+    Example:
+       >>> import oapackage
+       >>> designs = oapackage.oahelper.runExtend(16, 5, 3, verbose=0)
     """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))

@@ -120,6 +120,9 @@ install:
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
+  # for running the jupyter notebooks
+  - "%CMD_IN_ENV27% pip install jupyter matplotlib"
+  
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""

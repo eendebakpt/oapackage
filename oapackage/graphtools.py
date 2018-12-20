@@ -68,24 +68,25 @@ def selectIsomorphismClasses(sols, verbose=1):
     """ Select isomorphism classes from a list of designs
 
     Args:
-        sols (list of arrays)
-        verbose (int)
+        sols (list of arrays): list of arrays from which to determine the unique ones
+        verbose (int): verbosity level
     Return:
         indices (list of integers): indices of the isomorphism classes
         mm (list of arrays): the arrays in normal form
 
 
     Example:
-        >>> sols=[oapackage.exampleArray(i) for i in [26,26,27,26]]
-        >>> idx, mm = selectIsomorphismClasses(sols)
-
-    To select one representative array from each isomorphism class one can use:
-        >>> _, ui = np.unique(idx, return_index=True)
-        >>> representatives = [sols[i] for i in ui]
+        >>> import oapackage.graphtools; import numpy as np
+        >>> sols=[oapackage.exampleArray(idx) for idx in [26,26,27,26]]
+        >>> idx, mm = oapackage.graphtools.selectIsomorphismClasses(sols)
+        selectIsomorphismClasses: process aray 0/4
+        selectIsomorphismClasses: reduce 4 to 2
+        >>> # To select one representative array from each isomorphism class one can use:
+        >>> _, unique_indices = np.unique(idx, return_index=True)
+        >>> representatives = [sols[idx] for idx in unique_indices]
 
     """
 
-    # perform check on array data type
     mm = []
     for ii, al in enumerate(sols):
         if verbose:

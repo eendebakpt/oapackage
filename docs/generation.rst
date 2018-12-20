@@ -31,7 +31,8 @@ Here, :meth:`~oalib.arraydata_t` is the structure describing the type of arrays 
 
 An example of a session is the following:
 
-.. code-block:: python
+.. .. code-block:: python
+.. doctest::
    :caption: Extend an array
    
    >>> import oapackage
