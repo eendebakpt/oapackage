@@ -186,6 +186,7 @@ class OATest(TestCommand):
         # import here, cause outside the eggs aren't loaded
         import oapackage.tests
         import oapackage.oahelper
+        import oapackage.scanf
         import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())

@@ -7,6 +7,7 @@ environment:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
     CMD_IN_ENV_ARCH64: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env_arch64.cmd"
+    CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
 
@@ -109,6 +110,7 @@ install:
 
   # part of the testing requirements
   - "%CMD_IN_ENV% pip install python-dateutil"
+  - "%CMD_IN_ENV27% pip install backports.functools_lru_cache"
   - "%CMD_IN_ENV% python -c \"import dateutil; print(dateutil)\""
   - "%CMD_IN_ENV% pip install pytest"
 
@@ -159,6 +161,9 @@ test_script:
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
+
+   # selected execution for python2.7
+   - "%CMD_IN_ENV276% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
      
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
