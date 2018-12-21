@@ -447,6 +447,7 @@ class TestDoptimize(unittest.TestCase):
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
                                                           maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
+    @only_python3
     def test_Doptimize_nonzero_strength(self):
         arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
         with self.assertWarns(UserWarning):
