@@ -6,8 +6,8 @@ The Orthogonal Array package contains functionality to generate and analyse orth
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the
-documentation at [oapackage.readthedocs.io](https://oapackage.readthedocs.io/en/latest/)
-and the webpage <http://pietereendebak.nl/oapackage/>.
+documentation at [oapackage.readthedocs.io](https://oapackage.readthedocs.io/en/latest/). A large collection of results generated
+with the package can be found at <http://pietereendebak.nl/oapackage/>.
 
 Usage
 -------
