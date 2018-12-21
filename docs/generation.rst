@@ -121,7 +121,6 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
      >>> print('We generate optimal designs with: %s' % arrayclass)
      We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s 2,2,2,2,2,2,2, order 0.
      >>> alpha=[1,2,0] 
-     >>> method=oapackage.DOPTIM_UPDATE 
      >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True)
      Doptim: optimization class 40.2-2-2-2-2-2-2
      Doptimize: iteration 0/40
