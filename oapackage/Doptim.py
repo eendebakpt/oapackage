@@ -480,6 +480,10 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
               1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
 
+   The optimization is performed multiple times (specified by the nrestarts parameter) to prevent finding a 
+   design in a local minmum of the target function. The method uses a coordinate-exchange algorithm to optimze
+   a target function defined by the optimziation paramaters.
+
 
     For more details see the paper "Two-Level Designs to Estimate All Main
     Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903

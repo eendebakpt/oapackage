@@ -174,6 +174,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         const int k = arrayclass.ncols;
 
         if (nabort <= 0) {
+			/// select a sane default
                 if (arrayclass.is2level ()) {
                         nabort = (N * k) * 2.5 + 1; // factor 2 to compensate for equal error switches
                 } else {
@@ -182,13 +183,13 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         }
 
         int nx = 0;
-        std::vector< int > s = arrayclass.factor_levels ();
+        std::vector< int > factor_levels = arrayclass.factor_levels ();
         if (optimmethod == DOPTIM_UPDATE) {
                 if (arrayclass.is2level ())
                         optimmethod = DOPTIM_FLIP;
         }
         array_link A = A0;
-        symmetry_group sg = symmetry_group (s);
+        symmetry_group sg = symmetry_group (factor_levels);
 
         std::vector< int > gidx = sg.gidx;
 
@@ -199,7 +200,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         }
 
         // initialize score
-        double d = scoreD (dd0, alpha);
+        double current_score = scoreD (dd0, alpha);
 
         int lc = 0; // index of last change to array
 
@@ -222,7 +223,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
 
                 // get values
                 array_t o = A._at (r, c);
-                array_t o2 = A._at (r2, c2); // no extra error checking
+                array_t o2 = A._at (r2, c2);
 
                 // update
 
@@ -235,7 +236,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                         A._setvalue (r2, c2, o);
                         break;
                 case DOPTIM_UPDATE: { // random update
-                        int val = fastrandK (s[c]);
+                        int val = fastrandK (factor_levels[c]);
                         A._setvalue (r, c, val);
                         break;
                 }
@@ -251,34 +252,34 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                 // evaluate
                 std::vector< double > dd = A.Defficiencies ();
                 nx++;
-                double dn = scoreD (dd, alpha);
+                double next_score = scoreD (dd, alpha);
 
                 if (verbose >= 4) {
                         myprintf ("  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,
-                                  o, o2, d, dn);
+                                  o, o2, current_score, next_score);
                 }
 
                 // switch back if necessary
 
-                if (dn >= d) {
-                        if (dn > d) {
+                if (next_score >= current_score) {
+                        if (next_score > current_score) {
                                 lc = ii;
                                 // std::random_shuffle ( updatepos.begin(), updatepos.end() );	// update the
                                 // sequence of positions to try
 
                                 if (verbose >= 3)
-                                        myprintf ("optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn);
-                                d = dn;
+                                        myprintf ("optimDeff: ii %d: %.6f -> %.6f\n", ii, current_score, next_score);
+                                current_score = next_score;
                         } else {
                                 if (verbose >= 2) {
-                                        myprintf ("optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn);
+                                        myprintf ("optimDeff: equal ii %d: %.6f -> %.6f\n", ii, current_score, next_score);
                                 }
                         }
                 } else {
 
-                        if ((dn + 1e-10) >= d) {
+                        if ((next_score + 1e-10) >= current_score) {
                                 if (verbose >= 2) {
-                                        myprintf ("element within 1e-12! d %f, dn %f\n", d, dn);
+                                        myprintf ("element within 1e-12! d %f, dn %f\n", current_score, next_score);
                                 }
                         }
                         // restore to original
