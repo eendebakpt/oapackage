@@ -26,7 +26,7 @@ void print_column(const conference_column &column, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
- * \param cc List of candidates to show
+ * \param column_candidates List of candidates to show
  */
 void showCandidates (const std::vector< conference_column > &column_candidates);
 

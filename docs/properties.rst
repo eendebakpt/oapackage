@@ -6,13 +6,19 @@ object. Some properties are calculated using a function from the package
 
 For example, to calculate the rank of an array and determine whether the array is a foldover array, one can use:
 
-.. code-block:: python
+.. testsetup::
    
- >>> al=oapackage.exampleArray(1)
- >>> print(al.rank())
- 5 
- >>> print(al.foldover())
- False
+   import oapackage
+   
+.. admonition:: Calculate rank of array and test for foldover 
+
+  .. doctest:: 
+   
+     >>> array = oapackage.exampleArray(1)
+     >>> print(array.rank())
+     5 
+     >>> print(array.foldover())
+     False
 
 .. doxygenfunction:: array_link::rank
 .. doxygenfunction:: array_link::foldover
@@ -80,20 +86,21 @@ From an :meth:`~oalib.array_link` object, we can calculate the generalized
 worldlength patterns :cite:`Xu2001`, :math:`F`-values and
 :math:`J`-characteristics.
 
-.. code-block:: python
- :caption: Calculate GWLP and :math:`F`-values 
-   
- >>> al=oapackage.exampleArray(1)
- >>> al.showarray() array: 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 1 0 1 0 1 0 1 0 0 1 1 0 0 0 1 1 1 1 0 1 1 1 1 1 0 0 1 1 1 0 1 0 1 1 0 1 1 0 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1 1 1 0 1 0 1 1 1 0 0
- >>> g=al.GWLP()
- >>> print('print(’GWLP: %s’% str(g) )
- GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
- >>> print('F3-value: %s' % str(al.Fvalues(3)))
- F3-value: (4, 6)
- >>> print('F4-value: %s' % str(al.Fvalues(4)))
- F4-value: (1, 4)
- >>> print('J3-characteristics: %s’ % str(al.Jcharacteristics(3)))
- J3-characteristics: (8, 8, 0, 0, 0, 8, 0, 8, 0, 0)
+.. admonition:: Calculate GWLP and F-values 
+
+  .. doctest:: 
+     
+     >>> al=oapackage.exampleArray(1, 1)
+     exampleArray 1: array 3 in OA(16, 2, 2^5)
+     >>> gwlp = al.GWLP()
+     >>> print('GWLP: %s'% str(gwlp) )
+     GWLP: (1.0, 0.0, 0.0, 1.0, 1.0, 0.0)
+     >>> print('F3-value: %s' % str(al.Fvalues(3)))
+     F3-value: (4, 6)
+     >>> print('F4-value: %s' % str(al.Fvalues(4)))
+     F4-value: (1, 4)
+     >>> print('J3-characteristics: %s' % str(al.Jcharacteristics(3)))
+     J3-characteristics: (-8, -8, 0, 0, 0, -8, 0, -8, 0, 0)
 
 The documentation:
 
@@ -108,12 +115,13 @@ MD5 sums
 To check data structures on disk the packages includes functions to
 generate MD5 sums of designs. 
 
-.. code-block:: python
- :caption: Calculate md5 sum of a design
+.. admonition:: Calculate md5 sum of a design
 
- >>> import oapackage; al=oapackage.exampleArray(0)
- >>> al.md5()
- '6454c492239a8e01e3c01a864583abf2'
+  .. doctest:: 
+
+     >>> import oapackage; al=oapackage.exampleArray(0)
+     >>> al.md5()
+     '6454c492239a8e01e3c01a864583abf2'
 
 The C++ functions are:
 

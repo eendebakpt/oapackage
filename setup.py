@@ -31,6 +31,8 @@ except ImportError:
 npinclude = np.get_include()
 setup_directory = path.abspath(path.dirname(__file__))
 
+is_python3 = sys.version_info >= (3, 4)
+
 # %%
 
 
@@ -164,6 +166,7 @@ except:
 
 #%% Test suite
 
+""" Run a limited set of tests for the package """
 class OATest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
@@ -184,6 +187,8 @@ class OATest(TestCommand):
         print('## oapackage test: load package')
         # import here, cause outside the eggs aren't loaded
         import oapackage.tests
+        import oapackage.oahelper
+        import oapackage.scanf
         import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
@@ -344,6 +349,11 @@ long_description = readme()
 version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
+if is_python3:
+    python27_requirements = []
+else:
+    python27_requirements = ['mock; python_version <"3.0"', 'backports.functools_lru_cache;python_version<"2.9"']
+    
 setup(name='OApackage',
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
       version=version,
@@ -360,9 +370,9 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock'],
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil']+python27_requirements,
       zip_safe=False,
-      install_requires=['numpy>=1.13', 'scanf'],
+      install_requires=['numpy>=1.13', 'python-dateutil'] + python27_requirements,
       extras_require={
           'GUI':  ["qtpy", 'matplotlib'],
       },

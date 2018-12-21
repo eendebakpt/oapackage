@@ -51,6 +51,7 @@ std::vector< double > Aefficiencies (const array_link &orthogonal_array, int ver
 *
 * \param al Design to calculate D-efficiencies for
 * \param number_of_factors Number of factors into which to project
+* \param verbose Verbosity level
 * \returns Vector with calculated D-efficiencies
 */
 std::vector< double > projDeff (const array_link &al, int number_of_factors, int verbose = 0);

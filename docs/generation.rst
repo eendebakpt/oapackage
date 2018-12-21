@@ -29,10 +29,11 @@ The main functions for array extension are the following:
 Here, :meth:`~oalib.arraydata_t` is the structure describing the type of arrays and
 :meth:`~oalib.OAextend` contains various options for the algorithm.
 
-An example of a session is the following:
+An example of a session that extends a designs is:
 
-.. code-block:: python
+.. .. code-block:: python
    :caption: Extend an array
+.. doctest::
    
    >>> import oapackage
    >>> N=8; ncols=3;
@@ -65,19 +66,31 @@ with entries 0, -1, +1 such that i) in each column the symbol 0 occurs
 exactly one time and ii) all columns are orthogonal to each other.
 For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
 
-.. code-block:: python
+.. .. code-block:: python
  :caption: Generate conference designs with 8 rows
-                    
- >>> import oapackage
- >>> ctype=oapackage.conference_t(N=8, k=8)
- >>> al = ctype.create_root_three()
- >>> al.showarray() array: 0 1 1 1 0 -1 1 1 0 1 1 1 1 1 -1 1 -1 1 1 -1 1 1 -1 -1
- >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
- >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
- >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
- >>>
- >>> print('number of non-isomorphic conference designs: number of conference designs: %d'  % len(l6) )
- non-isomorphic conference designs: 11
+
+.. admonition:: Generate conference designs with 8 rows
+
+   .. doctest::     
+                   
+    >>> import oapackage
+    >>> ctype=oapackage.conference_t(8, 8, 0) 
+    >>> al = ctype.create_root_three()
+    >>> al.showarray()
+    array:
+      0   1   1
+      1   0  -1
+      1   1   0
+      1   1   1
+      1   1  -1
+      1  -1   1
+      1  -1   1
+      1  -1  -1
+    >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
+    >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
+    >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
+    >>> print('number of non-isomorphic conference designs: %d'  % len(l6) )
+    number of non-isomorphic conference designs: 11
 
 
 The full interface for conference designs is available
@@ -95,21 +108,27 @@ with good properties for the :math:`D`-efficiency.
 
 A Python script to generate optimal designs with 40 runs and 7 factors is shown below.
 
-.. code-block:: python
- :caption: Doptimize
- 
- >>> N=40; s=2; k=7;
- >>> arrayclass=oapackage.arraydata_t(s, N, 0, k) 
- >>> print('We generate optimal designs with: %s' % arrayclass)
- We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s 2,2,2,2,2,2,2, order 0.
- >>> alpha=[1,2,0] 
- >>> method=oapackage.DOPTIM_UPDATE 
- >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True)
- Doptim: optimization class 40.2-2-2-2-2-2-2
- Doptimize: iteration 0/40
- Doptimize: iteration 39/40 Doptim: done (8 arrays, 0.6 [s]) 
- >>> print('Generated %d designs, the best D-efficiency is %.4f’ % (len(designs), dds[:,0].max() ))
- Generated 8 designs, the best D-efficiency is 0.9098
+.. admonition:: Example of Doptimize usage
+
+   .. testsetup::
+   
+       import oapackage
+       
+   .. code-block:: python
+
+     >>> N=40; s=2; k=7;
+     >>> arrayclass=oapackage.arraydata_t(s, N, 0, k) 
+     >>> print('We generate optimal designs with: %s' % arrayclass)
+     We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s 2,2,2,2,2,2,2, order 0.
+     >>> alpha=[1,2,0] 
+     >>> method=oapackage.DOPTIM_UPDATE 
+     >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True)
+     Doptim: optimization class 40.2-2-2-2-2-2-2
+     Doptimize: iteration 0/40
+     Doptimize: iteration 39/40
+     Doptim: done (8 arrays, 0.6 [s]) 
+     >>> print('Generated %d designs, the best D-efficiency is %.4f’ % (len(designs), dds[:,0].max() ))
+     Generated 8 designs, the best D-efficiency is 0.9098
 
 The parameters of the :meth:`~oapackage.Doptim.Doptimize` function are documented in the code.
 

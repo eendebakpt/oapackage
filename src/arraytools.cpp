@@ -2245,7 +2245,7 @@ void array_link::showarraycompact () const {
 }
 
 void array_link::showarray () const {
-        myprintf ("array: \n");
+        myprintf ("array:\n");
         write_array_format (array, this->n_rows, this->n_columns);
 }
 

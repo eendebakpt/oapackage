@@ -1340,6 +1340,10 @@ arraylist_t readarrayfile (const char *fname, int verbose = 1, int *setcols = 0)
 *
 * @param fname Filename to read from
 * @param arraylist Pointer to list of arrays
+* @param verbose Verbosity level
+* @param setcols Reference that is set with the number of columns from the file
+* @param setrows Reference that is set with the number of rows from the file
+* @param setbits Reference that is set with the number of bits from the file
 * @return
 */
 int readarrayfile(const char *fname, arraylist_t *arraylist, int verbose = 1, int *setcols = 0,

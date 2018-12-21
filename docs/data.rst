@@ -74,18 +74,41 @@ It is also possible to convert to a Numpy array. The
 operations from packages such as Numpy work on the :meth:`~oalib.array_link`
 object.
 
-.. code-block:: python
- :caption: Array representation and indexing in Python
+.. testsetup::
+   
+   import sys
+   # doctest: +NORMALIZE_WHITESPACE
 
- >>> import oapackage
- >>> al=oapackage.exampleArray(0)
- >>> al.showarray() 
- array: 0 0 0 0 0 1 0 1 1 0 1 0 1 1 1 1 
- >>> al[2,1] 
- 1L 
- >>> X=np.array(al)
- >>> X 
- array([[0, 0], [0, 0], [0, 1], [0, 1], [1, 0], [1, 0], [1, 1], [1, 1]], dtype=int32)
+
+.. admonition:: Array representation and indexing in Python
+
+  .. doctest:: 
+  
+    >>> import oapackage; import numpy as np
+    >>> al=oapackage.exampleArray(0)
+    >>> al.showarray() # doctest: +NORMALIZE_WHITESPACE
+    array:
+      0   0
+      0   0
+      0   1
+      0   1
+      1   0
+      1   0
+      1   1
+      1   1
+      
+    >>> al[2,1] 
+    1
+    >>> X=np.array(al)
+    >>> X 
+    array([[0, 0],
+           [0, 0],
+           [0, 1],
+           [0, 1],
+           [1, 0],
+           [1, 0],
+           [1, 1],
+           [1, 1]], dtype=int16)
 
 The C++ class is:
 
@@ -100,8 +123,9 @@ Reading and writing arrays
 Reading and writing arrays to disk can be done with the :meth:`oalib.arrayfile_t`
 class. 
 
-.. code-block:: python
-   :caption: Write an array to disk
+.. admonition:: Write an array to disk
+
+  .. doctest:: 
 
    >>> import oapackage
    >>> al=oapackage.exampleArray()
