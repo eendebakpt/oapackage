@@ -3175,9 +3175,9 @@ std::string arraydata_t::idstr () const {
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
-		if (!is_sorted(this->s, this->s + this->ncols) ) {
+		if (!this->is_factor_levels_sorted() ) {
 			
-			myprintf("the factor levels of the structure are not sorted, this can lead to undefined behaviour");
+			myprintf("arraydata_t: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
 			this->show();
 		}
         if (verbose) {
@@ -3200,9 +3200,7 @@ void arraydata_t::complete_arraydata () {
         this->calculate_oa_index (ad->strength);
 
         /* calculate column group structure */
-        std::vector< int > xx (ad->s, ad->s + ad->ncols);
-
-        symmetry_group sg (xx, 0);
+        symmetry_group sg (ad->factor_levels(), 0);
 
         ad->ncolgroups = sg.ngroups;
         ad->colgroupindex = new colindex_t[ad->ncolgroups + 1];
@@ -3314,6 +3312,17 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 	return j;
 }
 
+bool arraydata_t::is_factor_levels_sorted() const
+{
+	std::vector<int> factor_levels_reverse = this->factor_levels();
+	std::reverse(factor_levels_reverse.begin(), factor_levels_reverse.end());
+
+	if (is_sorted(factor_levels_reverse.begin(), factor_levels_reverse.end()) ) {
+		return true;
+	}
+	return false;
+}
+
 bool arraydata_t::is2level () const {
         for (int i = 0; i < this->ncols; i++) {
                 if (this->s[i] != 2) {
@@ -3372,7 +3381,7 @@ void arraydata_t::calculate_oa_index (colindex_t strength) {
                combs *= this->s[i];
           }
 
-		  if ( check_divisibility(this) ) {
+		  if ( ! check_divisibility(this) ) {
 			  this->oaindex = 0;
 			  return;
 		  }

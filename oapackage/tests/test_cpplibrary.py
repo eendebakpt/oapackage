@@ -169,6 +169,25 @@ class TestArraydata_t(unittest.TestCase):
         factor_levels = arrayclass.factor_levels()
         self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
 
+    def test_arraydata_t_oaindex(self):
+        for ii in range(1, 4):
+            arrayclass=oapackage.arraydata_t([2,2,2], 4*ii, 2, 3)
+            self.assertEqual(arrayclass.oaindex, ii)
+
+        arrayclass = oapackage.arraydata_t([4,3, 3], 20, 2, 3)
+        self.assertEqual(arrayclass.oaindex, 0)
+                             
+        arrayclass=oapackage.arraydata_t([4,3,2], 20, 2, 3)
+
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass=oapackage.arraydata_t([2,3,4], 20, 2, 3)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('the factor levels of the structure are not sorted, this can lead to undefined behaviour', std_output)
+
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass=oapackage.arraydata_t([6,5], 10, 1, 2)
+            self.assertEqual(arrayclass.oaindex, 0)
+            std_output = mock_stdout.getvalue()
 
 class TestJcharacteristics(unittest.TestCase):
 

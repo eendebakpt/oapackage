@@ -704,6 +704,9 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
  *
  * check_divisibility checks if the number of runs is a multiple of any combination of the number of factors.
  * The function only returns true or false, further alction should be done by the calling function.
+ *
+ * \param ad Specification of array class
+ * \returns True if the structure satisfies the test
  **/
 bool check_divisibility (const arraydata_t *ad) {
         const int ncolcombs = ncombs (ad->ncols, ad->strength);
