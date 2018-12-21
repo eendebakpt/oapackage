@@ -10,9 +10,6 @@
 #include "tools.h"
 #include <errno.h>
 
-#ifdef RPACKAGE
-#define printf notallowed
-#endif
 
 #ifdef FULLPACKAGE
 #include "bitarray/bit_array.h"
@@ -3314,12 +3311,19 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 	return j;
 }
 
+/// return True if the vector is sorting in descending order
+bool is_sorted_descending(const std::vector<int> values) {
+	for (int i = 0; i < values.size() - 1; i++) {
+		if (values[i] < values[i + 1])
+			return false;
+	}
+	return true;
+}
 bool arraydata_t::is_factor_levels_sorted() const
 {
-	std::vector<int> factor_levels_reverse = this->factor_levels();
-	std::reverse(factor_levels_reverse.begin(), factor_levels_reverse.end());
+	std::vector<int> factor_levels = this->factor_levels();
 
-	if (std::is_sorted(factor_levels_reverse.begin(), factor_levels_reverse.end()) ) {
+	if (is_sorted_descending(factor_levels) ) {
 		return true;
 	}
 	return false;
