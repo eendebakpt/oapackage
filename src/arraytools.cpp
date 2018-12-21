@@ -1,6 +1,5 @@
 #include <sstream>
 #include <string>
-
 #include <algorithm>
 
 #include "arraytools.h"
@@ -11,9 +10,6 @@
 #include "tools.h"
 #include <errno.h>
 
-#ifdef RPACKAGE
-#define printf notallowed
-#endif
 
 #ifdef FULLPACKAGE
 #include "bitarray/bit_array.h"
@@ -521,7 +517,7 @@ void get_factors (array_t *s, carray_t *array, const rowindex_t N, const colinde
 arraydata_t arraylink2arraydata (const array_link &al, int extracols, int strength) {
         int verbose = 0;
 
-        if(al.min()<0) {
+        if(al.min() < 0) {
          throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
         }
         // create arraydatya
@@ -2881,9 +2877,8 @@ int array_link::rank () const { return arrayrank (*this); }
 int array_link::strength () const {
         int t = -1;
         for (int i = 0; i <= this->n_columns; i++) {
-                int b = strength_check (*this, i);
-                // myprintf("strength_check %d->%d\n", i, b);
-                if (b) {
+                int has_strength = strength_check (*this, i);
+                if (has_strength) {
                         t = i;
                 } else {
                         break;
@@ -3170,11 +3165,19 @@ std::string arraydata_t::idstr () const {
         return fname;
 }
 
-/**
- * @brief Calculate derived data such as the index and column groups from a design
+/** Calculate derived data such as the index and column groups from a design
  */
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
+
+		if (!this->is_factor_levels_sorted() ) {			
+			myprintf("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
+			this->show();
+		}
+		
+		if (!check_divisibility(this)) {
+			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
+		}
 
         if (verbose) {
                 myprintf ("complete_arraydata: strength %d\n", this->strength);
@@ -3196,9 +3199,7 @@ void arraydata_t::complete_arraydata () {
         this->calculate_oa_index (ad->strength);
 
         /* calculate column group structure */
-        std::vector< int > xx (ad->s, ad->s + ad->ncols);
-
-        symmetry_group sg (xx, 0);
+        symmetry_group sg (ad->factor_levels(), 0);
 
         ad->ncolgroups = sg.ngroups;
         ad->colgroupindex = new colindex_t[ad->ncolgroups + 1];
@@ -3310,6 +3311,21 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 	return j;
 }
 
+/// return True if the vector is sorting in descending order
+bool is_sorted_descending(const std::vector<int> values) {
+	for (int i = 0; i < values.size() - 1; i++) {
+		if (values[i] < values[i + 1])
+			return false;
+	}
+	return true;
+}
+bool arraydata_t::is_factor_levels_sorted() const
+{
+	std::vector<int> factor_levels = this->factor_levels();
+
+	return is_sorted_descending(factor_levels);
+}
+
 bool arraydata_t::is2level () const {
         for (int i = 0; i < this->ncols; i++) {
                 if (this->s[i] != 2) {
@@ -3368,7 +3384,12 @@ void arraydata_t::calculate_oa_index (colindex_t strength) {
                combs *= this->s[i];
           }
 
-          if (combs == 0) {
+		  if ( ! check_divisibility(this) ) {
+			  this->oaindex = 0;
+			  return;
+		  }
+
+          if (combs == 0 || (this->N % combs) != 0) {
                this->oaindex = 0;
           } else {
                this->oaindex = this->N / combs;
@@ -3398,7 +3419,6 @@ void arraydata_t::complete_arraydata_splitn (int ns) {
         ad->oaindex = ad->N / combs;
         ad->ncolgroups = 2;
 
-        // ad->colgroupindex = new colindex_t[ad->N];
         colgroupindex = new colindex_t[ad->ncolgroups + 1];
         colgroupsize = new colindex_t[ad->ncolgroups + 1];
         colgroupindex[0] = 0;

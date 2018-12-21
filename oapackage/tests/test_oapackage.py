@@ -359,7 +359,6 @@ class TestOAhelper(unittest.TestCase):
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
         for args, expected in test_cases:
-            print(args)
             result = oapackage.oahelper.choose(*args)
             self.assertEqual(result, expected)
 
@@ -448,6 +447,7 @@ class TestDoptimize(unittest.TestCase):
         scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
                                                           maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
 
+    @only_python3
     def test_Doptimize_nonzero_strength(self):
         arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
         with self.assertWarns(UserWarning):

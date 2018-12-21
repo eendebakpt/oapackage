@@ -93,9 +93,9 @@ class TestModelmatrix(unittest.TestCase):
         sizes = oapackage.array2modelmatrix_sizes(conf_design)
         k = conf_design.n_columns
         self.assertEqual(sizes, (1, 1 + k, int(1 + k + k * (k - 1) / 2), int(1 + k + k * (k + 1) / 2)))
-        model_matrix = oapackage.array2modelmatrix(conf_design, "i", 1)
+        model_matrix = oapackage.array2modelmatrix(conf_design, "i", 0)
         self.assertTrue(model_matrix.shape[1] == sizes[2])
-        model_matrix = oapackage.array2modelmatrix(conf_design, "q", 1)
+        model_matrix = oapackage.array2modelmatrix(conf_design, "q", 0)
 
         last_column = np.array(conf_design)[:, -1]
 
@@ -103,6 +103,13 @@ class TestModelmatrix(unittest.TestCase):
 
         self.assertTrue(model_matrix.shape[1] == sizes[3])
 
+    @only_python3
+    def test_modelmatrix_verbosity(self):
+        conf_design = oapackage.exampleArray(41, 0)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            oapackage.array2modelmatrix(conf_design, "i", 1)
+            stdout = mock_stdout.getvalue()
+            self.assertIn('array2modelmatrix: type conference, model_type_idx 2', stdout)
 
 class TestArrayLink(unittest.TestCase):
 
@@ -115,6 +122,12 @@ class TestArrayLink(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             al = al.selectFirstColumns(1)
+
+    def test_strength(self):
+        example_strength_pairs = [(2,2), (3,3), (4,2), (6,2), (7,2)]
+        for idx, strength in example_strength_pairs:
+            array = oapackage.exampleArray(idx, 0)
+            self.assertEqual(array.strength(), strength)
 
     def test_basic_array_link_functionality(self):
         al2a = oapackage.array_link(2, 2, 0)
@@ -169,6 +182,27 @@ class TestArraydata_t(unittest.TestCase):
         factor_levels = arrayclass.factor_levels()
         self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
 
+    @only_python3
+    def test_arraydata_t_oaindex(self):
+        for ii in range(1, 4):
+            arrayclass=oapackage.arraydata_t([2,2,2], 4*ii, 2, 3)
+            self.assertEqual(arrayclass.oaindex, ii)
+
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass = oapackage.arraydata_t([4,3, 3], 20, 2, 3)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('arraydata_t: warning: no orthogonal arrays exist with the specified strength', std_output)
+            self.assertEqual(arrayclass.oaindex, 0)
+                             
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass=oapackage.arraydata_t([2,3,4], 20, 2, 3)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('the factor levels of the structure are not sorted, this can lead to undefined behaviour', std_output)
+
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass=oapackage.arraydata_t([6,5], 10, 1, 2)
+            self.assertEqual(arrayclass.oaindex, 0)
+            std_output = mock_stdout.getvalue()
 
 class TestJcharacteristics(unittest.TestCase):
 
@@ -299,8 +333,7 @@ class TestCppLibrary(unittest.TestCase):
     @only_python3
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
-        if python3:
-            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 at.show()
                 std_output = mock_stdout.getvalue()
                 self.assertEqual(std_output, 'array transformation: no class defined\n')
@@ -309,7 +342,10 @@ class TestCppLibrary(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(al)
         at = oapackage.array_transformation_t(arrayclass)
         at.setcolperm([1, 0])
-        _ = at.show()
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            _ = at.show()
+            std_output = mock_stdout.getvalue()
+            self.assertEqual(std_output, 'array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n')
         self.assertEqual(at.colperm(), (1, 0))
 
     def test_arraylink2arraydata(self):

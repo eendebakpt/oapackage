@@ -182,9 +182,9 @@ enum ordering_t {
   /// J5 based ordering
   ORDER_J5 };
 
-/** @brief Contains properties of the design (number of rows, columns, levels)
+/** @brief Specifies a class of arrays
  *
- * Constructor: arrayclass = arraydata_t(s, N, strength,ncolumns)
+ * The specification includes the number of rows, number of columns, factor levels and strength. 
  */
 struct arraydata_t {
         /// number of runs 
@@ -210,17 +210,39 @@ struct arraydata_t {
         int oaindex;
 
       public:
-        /// create new arraydata_t object
-        arraydata_t (array_t s, rowindex_t N, colindex_t strength, colindex_t ncols);
-        arraydata_t (const std::vector< int > s, rowindex_t N, colindex_t strength, colindex_t ncols);
+		/** Specifies a class of orthogonal arrays
+		 *
+		 * The specification includes the number of rows, number of columns, factor levels and strength.
+		 * 
+		 * An orthogonal array of strength t, N runs, k factors (columns) and factor levels s[i] is an N times k array with
+		 * symbols 0, 1, ..., s[i]-1 in column i such that for every t columns every t-tuple of elements occurs equally often.
+		 */
+		arraydata_t();
+		/**
+		* @copydoc arraydata_t::arraydata_t()
+		*
+		* \param s Factor levels
+		* \param N Number of rows
+		* \param strength Strength for class
+		* \param ncols Number of columns for the class
+		*/
+		arraydata_t (array_t s, rowindex_t N, colindex_t strength, colindex_t ncols);
+		/**
+		* @copydoc arraydata_t::arraydata_t()
+		*
+		* \param s Factor levels
+		* \param N Number of rows
+		* \param strength Strength for class
+		* \param ncols Number of columns for the class
+		*/
+		arraydata_t (const std::vector< int > s, rowindex_t N, colindex_t strength, colindex_t ncols);
+		/// @copydoc arraydata_t::arraydata_t()
         arraydata_t (const array_t *s_, rowindex_t N, colindex_t strength, colindex_t ncols);
-        /// copy constructor
+        /// @copydoc arraydata_t::arraydata_t()
         arraydata_t (const arraydata_t &adp);
 
-        /// copy constructor
+        /// @copydoc arraydata_t::arraydata_t()
         arraydata_t (const arraydata_t *adp, colindex_t newncols);
-        /// dummy constructor
-        arraydata_t ();
 
         ~arraydata_t ();
 
@@ -256,6 +278,8 @@ struct arraydata_t {
         }
         std::string showstr () const;
         void show (int verbose = 1) const;
+
+		/// Calculate derived data such as the index and column groups from a design
         void complete_arraydata ();
 
         /// check whether the LMC calculation will overflow
@@ -306,6 +330,10 @@ struct arraydata_t {
 
         /// Return index of the column group for a column
 		colindex_t get_col_group(const colindex_t col) const;
+
+	public:
+		/// Return True if the factor levels are sorted from large to small
+		bool is_factor_levels_sorted() const;
 };
 
 /// Read array configuration from file
