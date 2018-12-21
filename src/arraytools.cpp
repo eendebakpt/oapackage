@@ -3323,10 +3323,7 @@ bool arraydata_t::is_factor_levels_sorted() const
 {
 	std::vector<int> factor_levels = this->factor_levels();
 
-	if (is_sorted_descending(factor_levels) ) {
-		return true;
-	}
-	return false;
+	return is_sorted_descending(factor_levels);
 }
 
 bool arraydata_t::is2level () const {
