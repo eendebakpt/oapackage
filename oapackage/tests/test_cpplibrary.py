@@ -123,6 +123,12 @@ class TestArrayLink(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             al = al.selectFirstColumns(1)
 
+    def test_strength(self):
+        example_strength_pairs = [(2,2), (3,3), (4,2), (6,2), (7,2)]
+        for idx, strength in example_strength_pairs:
+            array = oapackage.exampleArray(idx, 0)
+            self.assertEqual(array.strength(), strength)
+
     def test_basic_array_link_functionality(self):
         al2a = oapackage.array_link(2, 2, 0)
         al2b = oapackage.array_link(2, 2, 0)
@@ -326,8 +332,7 @@ class TestCppLibrary(unittest.TestCase):
     @only_python3
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
-        if python3:
-            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 at.show()
                 std_output = mock_stdout.getvalue()
                 self.assertEqual(std_output, 'array transformation: no class defined\n')
@@ -336,7 +341,10 @@ class TestCppLibrary(unittest.TestCase):
         arrayclass = oapackage.arraylink2arraydata(al)
         at = oapackage.array_transformation_t(arrayclass)
         at.setcolperm([1, 0])
-        _ = at.show()
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            _ = at.show()
+            std_output = mock_stdout.getvalue()
+            self.assertEqual(std_output, 'array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n')
         self.assertEqual(at.colperm(), (1, 0))
 
     def test_arraylink2arraydata(self):

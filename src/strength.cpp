@@ -729,12 +729,6 @@ bool check_divisibility(int N, int ncols, int strength, const array_t * s) {
                         prod *= s[colcombs[j]];
                 }
                 if (N % prod != 0) {
-                        log_print (SYSTEM, "Failed divisibility test!\n");
-                        log_print (SYSTEM, "Column combination: ");
-                        print_perm (colcombs, strength);
-                        log_print (SYSTEM, "N %d, product of s[j] is %d and %i %% %i != %i\n", N, prod, N,
-                                   prod, N % prod);
-                        fflush (NULL);
                         ret = false;
                         break;
                 }
