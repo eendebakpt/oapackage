@@ -181,11 +181,12 @@ class TestArraydata_t(unittest.TestCase):
             arrayclass=oapackage.arraydata_t([2,2,2], 4*ii, 2, 3)
             self.assertEqual(arrayclass.oaindex, ii)
 
-        arrayclass = oapackage.arraydata_t([4,3, 3], 20, 2, 3)
-        self.assertEqual(arrayclass.oaindex, 0)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            arrayclass = oapackage.arraydata_t([4,3, 3], 20, 2, 3)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('arraydata_t: warning: no orthogonal arrays exist with the specified strength', std_output)
+            self.assertEqual(arrayclass.oaindex, 0)
                              
-        arrayclass=oapackage.arraydata_t([4,3,2], 20, 2, 3)
-
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             arrayclass=oapackage.arraydata_t([2,3,4], 20, 2, 3)
             std_output = mock_stdout.getvalue()

@@ -146,6 +146,9 @@ struct extend_data_t {
 		void init_frequencies(array_t *array);
 };
 
+/// Checks on the divisibility of the number of runs by the product of the levels in the factors for all t-tuples
+bool check_divisibility(int N, int ncols, int strength, const array_t * s);
+
 /// check whether an array passes divisibility test
 bool check_divisibility (const arraydata_t *);
 

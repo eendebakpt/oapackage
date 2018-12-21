@@ -359,7 +359,6 @@ class TestOAhelper(unittest.TestCase):
     def test_choose(self):
         test_cases = [((3, 2), 3), ((10, 1), 10), ((5, 2), 10), ((1, 0), 1), ((-1, 0), 1)]
         for args, expected in test_cases:
-            print(args)
             result = oapackage.oahelper.choose(*args)
             self.assertEqual(result, expected)
 

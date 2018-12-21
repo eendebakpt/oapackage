@@ -55,7 +55,7 @@ strength_freq_table new_strength_freq_table (int ncolcombs, int *nvalues, int &n
 }
 
 /// Return index of an orthogonal array
-inline int get_oaindex(const array_t *s, const colindex_t strength, const colindex_t N) {
+int get_oaindex(const array_t *s, const colindex_t strength, const colindex_t N) {
 	int oaindex = N;
 	for (colindex_t z = 0; z < strength; z++) {
 		oaindex /= s[z];
@@ -326,6 +326,11 @@ void strength_check_t::create_reverse_colcombs_fixed() { r_index = ::create_reve
 bool strength_check (const array_link &al, int strength, int verbose) {
         if (strength == 0)
                 return true;
+
+		// first a plain test of divisibility
+		arraydata_t ad0 = arraylink2arraydata(al, 0, 0);
+		if (!check_divisibility(al.n_rows, al.n_columns, strength, ad0.s) )
+			return false;
 
         arraydata_t ad = arraylink2arraydata (al, 0, strength);
         strength_check_t strengthcheck (strength);
@@ -702,37 +707,33 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
 
 /***  Checks on the divisibility of the number of runs by the product of the levels in the factors for all t-tuples
  *
- * check_divisibility checks if the number of runs is a multiple of any combination of the number of factors.
- * The function only returns true or false, further alction should be done by the calling function.
- *
- * \param ad Specification of array class
- * \returns True if the structure satisfies the test
- **/
-bool check_divisibility (const arraydata_t *ad) {
-        const int ncolcombs = ncombs (ad->ncols, ad->strength);
+ */
+bool check_divisibility(int N, int ncols, int strength, const array_t * s) {
+
+        const int ncolcombs = ncombs (ncols, strength);
         int prod, *colcombs = 0;
         bool ret = true;
 
-        colcombs = (int *)malloc (ad->strength * sizeof (int));
+        colcombs = (int *)malloc (strength * sizeof (int));
 
         /* loop over all combinations of t-tuples of columns */
         for (int i = 0; i < ncolcombs; i++) {
                 if (i == 0) // first combination needs to be set
-                        for (int j = 0; j < ad->strength; j++)
+                        for (int j = 0; j < strength; j++)
                                 colcombs[j] = j;
                 else
-                        next_comb (colcombs, ad->strength, ad->ncols); // get next combination
+                        next_comb (colcombs, strength, ncols); // get next combination
 
                 prod = 1;
-                for (int j = 0; j < ad->strength; j++) {
-                        prod *= ad->s[colcombs[j]];
+                for (int j = 0; j < strength; j++) {
+                        prod *= s[colcombs[j]];
                 }
-                if (ad->N % prod != 0) {
+                if (N % prod != 0) {
                         log_print (SYSTEM, "Failed divisibility test!\n");
                         log_print (SYSTEM, "Column combination: ");
-                        print_perm (colcombs, ad->strength);
-                        log_print (SYSTEM, "N %d, product of s[j] is %d and %i %% %i != %i\n", ad->N, prod, ad->N,
-                                   prod, ad->N % prod);
+                        print_perm (colcombs, strength);
+                        log_print (SYSTEM, "N %d, product of s[j] is %d and %i %% %i != %i\n", N, prod, N,
+                                   prod, N % prod);
                         fflush (NULL);
                         ret = false;
                         break;
@@ -743,3 +744,14 @@ bool check_divisibility (const arraydata_t *ad) {
         return ret;
 }
 
+/***  Checks on the divisibility of the number of runs by the product of the levels in the factors for all t-tuples
+*
+* check_divisibility checks if the number of runs is a multiple of any combination of the number of factors.
+* The function only returns true or false, further alction should be done by the calling function.
+*
+* \param ad Specification of array class
+* \returns True if the structure satisfies the test
+**/
+bool check_divisibility(const arraydata_t *ad) {
+	return check_divisibility(ad->N, ad->ncols, ad->strength, ad->s);
+}

@@ -521,7 +521,7 @@ void get_factors (array_t *s, carray_t *array, const rowindex_t N, const colinde
 arraydata_t arraylink2arraydata (const array_link &al, int extracols, int strength) {
         int verbose = 0;
 
-        if(al.min()<0) {
+        if(al.min() < 0) {
          throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
         }
         // create arraydatya
@@ -2881,9 +2881,8 @@ int array_link::rank () const { return arrayrank (*this); }
 int array_link::strength () const {
         int t = -1;
         for (int i = 0; i <= this->n_columns; i++) {
-                int b = strength_check (*this, i);
-                // myprintf("strength_check %d->%d\n", i, b);
-                if (b) {
+                int has_strength = strength_check (*this, i);
+                if (has_strength) {
                         t = i;
                 } else {
                         break;
@@ -3181,7 +3180,7 @@ void arraydata_t::complete_arraydata () {
 		}
 		
 		if (!check_divisibility(this)) {
-			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n");
+			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
 		}
 
         if (verbose) {
