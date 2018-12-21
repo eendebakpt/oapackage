@@ -700,11 +700,11 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
         return val;
 }
 
-/*!
-  check_divisibility checks if the number of runs is a multiple of any combination of the number of factors.
-  The function only returns true or false, further alction should be done by the calling function.
-  \brief Checks on the divisibility of the number of runs by the product of the levels in the factors for all t-tuples
-  */
+/***  Checks on the divisibility of the number of runs by the product of the levels in the factors for all t-tuples
+ *
+ * check_divisibility checks if the number of runs is a multiple of any combination of the number of factors.
+ * The function only returns true or false, further alction should be done by the calling function.
+ **/
 bool check_divisibility (const arraydata_t *ad) {
         const int ncolcombs = ncombs (ad->ncols, ad->strength);
         int prod, *colcombs = 0;

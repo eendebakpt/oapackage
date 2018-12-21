@@ -256,6 +256,8 @@ struct arraydata_t {
         }
         std::string showstr () const;
         void show (int verbose = 1) const;
+
+		/// Calculate derived data such as the index and column groups from a design
         void complete_arraydata ();
 
         /// check whether the LMC calculation will overflow

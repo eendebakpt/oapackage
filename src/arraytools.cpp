@@ -3170,12 +3170,16 @@ std::string arraydata_t::idstr () const {
         return fname;
 }
 
-/**
- * @brief Calculate derived data such as the index and column groups from a design
+/** Calculate derived data such as the index and column groups from a design
  */
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
+		if (!is_sorted(this->s, this->s + this->ncols) ) {
+			
+			myprintf("the factor levels of the structure are not sorted, this can lead to undefined behaviour");
+			this->show();
+		}
         if (verbose) {
                 myprintf ("complete_arraydata: strength %d\n", this->strength);
                 for (int i = 0; i < this->ncols; i++) {
@@ -3368,7 +3372,12 @@ void arraydata_t::calculate_oa_index (colindex_t strength) {
                combs *= this->s[i];
           }
 
-          if (combs == 0) {
+		  if ( check_divisibility(this) ) {
+			  this->oaindex = 0;
+			  return;
+		  }
+
+          if (combs == 0 || (this->N % combs) != 0) {
                this->oaindex = 0;
           } else {
                this->oaindex = this->N / combs;
