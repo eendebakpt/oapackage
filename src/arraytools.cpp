@@ -1,6 +1,5 @@
 #include <sstream>
 #include <string>
-
 #include <algorithm>
 
 #include "arraytools.h"
@@ -3320,7 +3319,7 @@ bool arraydata_t::is_factor_levels_sorted() const
 	std::vector<int> factor_levels_reverse = this->factor_levels();
 	std::reverse(factor_levels_reverse.begin(), factor_levels_reverse.end());
 
-	if (is_sorted(factor_levels_reverse.begin(), factor_levels_reverse.end()) ) {
+	if (std::is_sorted(factor_levels_reverse.begin(), factor_levels_reverse.end()) ) {
 		return true;
 	}
 	return false;
