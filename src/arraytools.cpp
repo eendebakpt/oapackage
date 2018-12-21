@@ -3175,11 +3175,15 @@ std::string arraydata_t::idstr () const {
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
-		if (!this->is_factor_levels_sorted() ) {
-			
-			myprintf("arraydata_t: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
+		if (!this->is_factor_levels_sorted() ) {			
+			myprintf("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
 			this->show();
 		}
+		
+		if (!check_divisibility(this)) {
+			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n");
+		}
+
         if (verbose) {
                 myprintf ("complete_arraydata: strength %d\n", this->strength);
                 for (int i = 0; i < this->ncols; i++) {
@@ -3416,7 +3420,6 @@ void arraydata_t::complete_arraydata_splitn (int ns) {
         ad->oaindex = ad->N / combs;
         ad->ncolgroups = 2;
 
-        // ad->colgroupindex = new colindex_t[ad->N];
         colgroupindex = new colindex_t[ad->ncolgroups + 1];
         colgroupsize = new colindex_t[ad->ncolgroups + 1];
         colgroupindex[0] = 0;

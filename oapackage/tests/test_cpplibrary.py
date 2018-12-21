@@ -93,9 +93,9 @@ class TestModelmatrix(unittest.TestCase):
         sizes = oapackage.array2modelmatrix_sizes(conf_design)
         k = conf_design.n_columns
         self.assertEqual(sizes, (1, 1 + k, int(1 + k + k * (k - 1) / 2), int(1 + k + k * (k + 1) / 2)))
-        model_matrix = oapackage.array2modelmatrix(conf_design, "i", 1)
+        model_matrix = oapackage.array2modelmatrix(conf_design, "i", 0)
         self.assertTrue(model_matrix.shape[1] == sizes[2])
-        model_matrix = oapackage.array2modelmatrix(conf_design, "q", 1)
+        model_matrix = oapackage.array2modelmatrix(conf_design, "q", 0)
 
         last_column = np.array(conf_design)[:, -1]
 
@@ -103,6 +103,13 @@ class TestModelmatrix(unittest.TestCase):
 
         self.assertTrue(model_matrix.shape[1] == sizes[3])
 
+    @only_python3
+    def test_modelmatrix_verbosity(self):
+        conf_design = oapackage.exampleArray(41, 0)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            oapackage.array2modelmatrix(conf_design, "i", 1)
+            stdout = mock_stdout.getvalue()
+            self.assertIn('array2modelmatrix: type conference, model_type_idx 2', stdout)
 
 class TestArrayLink(unittest.TestCase):
 
