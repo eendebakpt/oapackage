@@ -13,20 +13,20 @@ environment:
 
   matrix:
    
-    - PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4.x"
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
-      WINDOWS_SDK_VERSION: "v7.1"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x"
       PYTHON_ARCH: "64"
       WINDOWS_SDK_VERSION: "v7.0"
-          
-    - PYTHON: "C:\\Python36-x64"
-      PYTHON_VERSION: "3.6.x"
-      PYTHON_ARCH: "64"
 
+    - PYTHON: "C:\\Python34-x64"
+      PYTHON_VERSION: "3.4.x"
+      PYTHON_ARCH: "64"
+      WINDOWS_SDK_VERSION: "v7.1"
+         
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.x"
       PYTHON_ARCH: "64"
@@ -176,5 +176,5 @@ artifacts:
     name: binaries
   
 #on_success:
-#  - TODO: upload the content of dist/*.whl to a public wheelhouse
+#  - TODO: automatically upload the content of dist/*.whl to pypi
 
