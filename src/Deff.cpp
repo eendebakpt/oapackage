@@ -3,8 +3,10 @@
  *
  */
 
-#include <printfheader.h>
+#include <algorithm>
+#include <cmath>
 
+#include "printfheader.h"
 #include "arrayproperties.h"
 #include "arraytools.h"
 
@@ -27,6 +29,8 @@
 #define MATLABUPDATE
 #endif
 #endif
+
+const double NaN = std::numeric_limits< double >::quiet_NaN();
 
 DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestartsmax, std::vector< double > alpha, int verbose,
                         int method, int niter, double maxtime, int nabort) {
@@ -145,7 +149,6 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
                 array_link alu2 = optimDeff (alu, arrayclass, alpha, verbose >= 3, method2, niter, 0);
                 double score2 = scoreD (alu2.Defficiencies (), alpha);
 
-                //#pragma omp critical
                 dds[i] = alu2.Defficiencies ();
                 AA[i] = alu2;
 
@@ -182,7 +185,6 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                 }
         }
 
-        int nx = 0;
         std::vector< int > factor_levels = arrayclass.factor_levels ();
         if (optimmethod == DOPTIM_UPDATE) {
                 if (arrayclass.is2level ())
@@ -202,7 +204,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         // initialize score
         double current_score = scoreD (dd0, alpha);
 
-        int lc = 0; // index of last change to array
+        int last_update = 0; // index of last change to array
 
         // initialize arary with random permutation
         const int nn = N * k;
@@ -251,7 +253,6 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                 }
                 // evaluate
                 std::vector< double > dd = A.Defficiencies ();
-                nx++;
                 double next_score = scoreD (dd, alpha);
 
                 if (verbose >= 4) {
@@ -263,9 +264,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
 
                 if (next_score >= current_score) {
                         if (next_score > current_score) {
-                                lc = ii;
-                                // std::random_shuffle ( updatepos.begin(), updatepos.end() );	// update the
-                                // sequence of positions to try
+                                last_update = ii;
 
                                 if (verbose >= 3)
                                         myprintf ("optimDeff: ii %d: %.6f -> %.6f\n", ii, current_score, next_score);
@@ -298,9 +297,9 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                 }
 
                 // check progress
-                if ((ii - lc) > nabort) {
+                if ((ii - last_update) > nabort) {
                         if (verbose >= 2)
-                                myprintf ("optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, (ii - lc));
+                                myprintf ("optimDeff: early abort ii %d, lc %d: %d\n", ii, last_update, (ii - last_update));
                         break;
                 }
         }
@@ -317,7 +316,6 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
 
 array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass, std::vector< double > alpha,
                             int verbose, int optimmethod, int niter, int nabort) {
-        int nx = 0;
         int N = arrayclass.N;
         int k = arrayclass.ncols;
         std::vector< int > s = arrayclass.factor_levels ();
@@ -349,17 +347,14 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
         int updateidx = 0;
 
         // initialize score
-        double d = scoreD (dd0, alpha);
+        double current_score = scoreD (dd0, alpha);
 
-        int lc = 0; // index of last change to array
+        int last_update = 0; // index of last change to array
 
         int nn = updatepos.size ();
 
-        //#pragma omp for
         for (int ii = 0; ii < niter; ii++) {
-
                 // select random row and column
-                // int r = updatepos[updateidx] % N; int c = updatepos[updateidx] / N;
                 int r = fastrandK (N);
                 int c = fastrandK (k);
                 updateidx = (updateidx + 1) % (nn);
@@ -372,7 +367,6 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
                 array_t o2 = A._at (r2, c2); // no extra error checking
 
                 // update
-
                 if (optimmethod == DOPTIM_SWAP && o == o2)
                         continue;
 
@@ -397,24 +391,22 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
                 }
                 // evaluate
                 std::vector< double > dd = A.Defficiencies ();
-                nx++;
-                double dn = scoreD (dd, alpha);
+                double next_score = scoreD (dd, alpha);
 
                 if (verbose >= 4) {
                         myprintf ("  optimDeff: switch %d, %d: %d with %d, %d: %d: d %.4f -> dn %.4f \n", r, c, r2, c2,
-                                  o, o2, d, dn);
+                                  o, o2, current_score, next_score);
                 }
 
                 // switch back if necessary
-
-                if (dn >= d) {
-                        if (dn > d) {
-                                lc = ii;
+                if (next_score >= current_score) {
+                        if (next_score > current_score) {
+                                last_update = ii;
                                 if (verbose >= 3)
-                                        myprintf ("optimDeff: ii %d: %.6f -> %.6f\n", ii, d, dn);
-                                d = dn;
+                                        myprintf ("optimDeff: ii %d: %.6f -> %.6f\n", ii, current_score, next_score);
+                                current_score = next_score;
                         } else {
-                                myprintf ("optimDeff: equal ii %d: %.6f -> %.6f\n", ii, d, dn);
+                                myprintf ("optimDeff: equal ii %d: %.6f -> %.6f\n", ii, current_score, next_score);
                         }
                 } else {
                         // restore to original
@@ -433,10 +425,9 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
                 }
 
                 // check progress
-                if ((ii - lc) > nabort) {
+                if ((ii - last_update) > nabort) {
                         if (verbose >= 2)
-                                myprintf ("optimDeff: early abort ii %d, lc %d: %d\n", ii, lc, (ii - lc));
-                        // abort=true;
+                                myprintf ("optimDeff: early abort ii %d, lc %d: %d\n", ii, last_update, (ii - last_update));
                         break;
                 }
         }
@@ -450,87 +441,5 @@ array_link optimDeff2level (const array_link &A0, const arraydata_t &arrayclass,
 
         return A;
 }
-
-#include <algorithm>
-#include <cmath>
-
-const double NaN = std::numeric_limits< double >::quiet_NaN ();
-
-extern "C" {
-
-void DefficienciesR (int *N, int *k, double *input, double *D, double *Ds, double *D1) {
-        array_link al (*N, *k, array_link::INDEX_DEFAULT);
-        std::copy (input, input + (*N) * (*k), al.array);
-
-        if (al.min () < 0) {
-                *D = NaN;
-                *Ds = NaN;
-                *D1 = NaN;
-                myprintf ("DefficienciesR: error: design should have input elements from 0 to s-1\n");
-        }
-
-        std::vector< double > dd = al.Defficiencies ();
-
-        *D = dd[0];
-        *Ds = dd[1];
-        *D1 = dd[2];
-        return;
-}
-
-double DoptimizeR (int *pN, int *pk, int *nrestarts, double *alpha1, double *alpha2, double *alpha3, int *_verbose,
-                   int *pointer_method, int *_niter, double *maxtime, int *nabort, double *output) {
-        int niter = *_niter;
-        int method = *pointer_method;
-        int N = *pN;
-        int k = *pk;
-        int verbose = *_verbose;
-
-        output[0] = 1;
-        output[1] = 2;
-        output[2] = 3;
-        output[3] = 4;
-
-        if (verbose >= 2)
-                myprintf ("DoptimizeR: N %d, k %d, nrestarts %d, niter %d, alpha1 %f\n", N, k, *nrestarts, niter,
-                          *alpha1);
-
-        arraydata_t arrayclass (2, N, 0, k);
-        std::vector< double > alpha (3);
-        alpha[0] = std::max (*alpha1, 0.);
-        alpha[1] = std::max (*alpha2, 0.);
-        alpha[2] = std::max (*alpha3, 0.);
-
-        DoptimReturn rr = Doptimize (arrayclass, *nrestarts, alpha, verbose, method, niter, *maxtime, *nabort);
-
-        std::vector< std::vector< double > > dds = rr.dds;
-        arraylist_t AA = rr.designs;
-
-        // sort according to values
-        std::vector< double > sval (AA.size ());
-        for (size_t i = 0; i < AA.size (); i++) {
-                sval[i] = -scoreD (dds[i], alpha);
-        }
-
-        indexsort sorter (sval);
-
-        AA = sorter.sorted (AA);
-        dds = sorter.sorted (dds);
-
-        array_link best = AA[0];
-        std::vector< double > dd = best.Defficiencies ();
-
-        std::copy (best.array, best.array + N * k, output);
-
-        if (verbose >= 1) {
-                myprintf ("Doptimize: generated design with D = %.6f, Ds = %.6f\n", dd[0], dd[1]);
-        }
-        if (verbose >= 2) {
-                myprintf ("DoptimizeR: done\n");
-        }
-
-        return best.Defficiency ();
-}
-
-} // extern "C"
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
