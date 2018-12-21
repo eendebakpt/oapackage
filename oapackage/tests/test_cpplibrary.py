@@ -182,6 +182,7 @@ class TestArraydata_t(unittest.TestCase):
         factor_levels = arrayclass.factor_levels()
         self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
 
+    @only_python3
     def test_arraydata_t_oaindex(self):
         for ii in range(1, 4):
             arrayclass=oapackage.arraydata_t([2,2,2], 4*ii, 2, 3)
