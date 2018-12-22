@@ -480,42 +480,29 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
               1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
 
-   The method uses a coordinate-exchange algorithm find a D-optimal design in the class specified by the
-   arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
-   multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
-   target function. 
+    The method uses a coordinate-exchange algorithm find a D-optimal design in the class specified by the
+    arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
+    multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
+    target function. 
 
     The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
     (or Ds-optimality) and the D1-efficiency of the design. For more details see the paper "Two-Level Designs to Estimate All Main
     Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903
 
-    Parameters
-    ----------
-    arrayclass : object
-        Specifies the type of design to optimize
-    nrestarts : integer
-        Number of restarts of the algorithm
-    optimfunc : list with 3 floats
-        Gives the optimization weights :math:`\\alpha` of the target function :math:`\\alpha[0]*D+\\alpha[1]*D_s+\\alpha[2]*D_1`
-    verbose : integer
-        Verbosity level. A higher numer gives more output
-    maxtime: float
-        Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
-    selectpareto : boolean, default is True
-        If True then only the Pareto optimal designs are returned
-    nout : integer, default None
-        Number of designs to return. If None,  return all designs
+    Args:
+      arrayclass (object): Specifies the type of design to optimize
+      nrestarts (int): Number of restarts of the algorithm
+      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
+      verbose (int): Verbosity level. A higher numer gives more output
+      maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
+      selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
+      nout (int or None): Number of designs to return. If None,  return all designs
 
-    Returns
-    -------
-    scores: list
-        list of scores
-    dds: array
-        array with calculated efficiencies
-    designs: list
-        list of generated designs
-    nrestarts: int
-        number of restarts used
+    Returns:
+        scores (list): list of scores
+        dds (array): array with calculated efficiencies
+        designs (list): list of generated designs
+        nrestarts (int): number of restarts used
 
 
     """
