@@ -31,7 +31,7 @@ enum {
 	/// automatically select one of the methods
 	DOPTIM_AUTOMATIC, 
 	/// perform no optimization
-	DOPTIM_NONE };
+	DOPTIM_NONE } DOPTIM_METHODS;
 
 /** Optimize a design according to the optimization function specified.
  *
