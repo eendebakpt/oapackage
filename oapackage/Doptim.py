@@ -498,11 +498,16 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
       nout (int or None): Number of designs to return. If None,  return all designs
 
-    Returns:
-        scores (list): list of scores
-        dds (array): array with calculated efficiencies
-        designs (list): list of generated designs
-        nrestarts (int): number of restarts used
+    Returns
+    -------
+            scores : list:
+                list of scores
+            dds: array
+                array with calculated efficiencies            
+            designs:
+                list of generated designs
+            nrestarts: int
+                number of restarts used
 
 
     """
@@ -522,7 +527,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         dds, sols = rr.dds, rr.designs
         dds = np.array([x for x in dds])
         # needed because of SWIG wrapping of struct type
-        sols = [x.clone() for x in sols]
+        sols = [design.clone() for design in sols]
         nrestarts = rr.nrestarts
         scores = np.array(
             [oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
