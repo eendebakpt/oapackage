@@ -289,10 +289,7 @@ void free2d_irr (DataType **data, const int nrows) {
 }
 
 void print_array (const char *str, const array_t *array, const int nrows, const int ncols);
-void print_array (const array_t *array, const rowindex_t r, const colindex_t c);
-
-/// Print array to stdout
-void print_array (const array_link &array);
+void print_array (const array_t *array, const rowindex_t nrows, const colindex_t ncols);
 
 #ifdef FULLPACKAGE
 template < class atype >

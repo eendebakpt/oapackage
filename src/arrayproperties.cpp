@@ -1222,7 +1222,8 @@ Eigen::MatrixXd array2modelmatrix(const array_link & array, const char*mode, int
 			throw_runtime_exception("quadratic mode not implemented");
 
 		MatrixFloat model_matrix = array.getModelMatrix(2, 1);
-		eigenInfo(model_matrix, "?", 1);
+		if (verbose>=2)
+			eigenInfo(model_matrix, "array2modelmatrix: model_matrix", 1);
 		model_matrix = model_matrix.block(0,0,n_rows, sizes[model_type_idx]);
 		return model_matrix;
 

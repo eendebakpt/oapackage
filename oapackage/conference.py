@@ -28,11 +28,11 @@ def momentMatrix(k):
     pk = int(1 + 0.5 * k * (k + 1) + k)
     M = np.zeros((pk, pk))
     M[0, 0] = 1
-    M[0, int(0.5 * k * (k + 1) + 1):] = 1 / 3
-    M[int(0.5 * k * (k + 1) + 1):, 0] = 1 / 3
+    M[0, int(0.5 * k * (k + 1) + 1):] = 1. / 3
+    M[int(0.5 * k * (k + 1) + 1):, 0] = 1. / 3
     M[1:(k + 1), 1:(k + 1)] = np.eye(k) * 1. / 3
-    M[(k + 1):int(0.5 * k * (k + 1) + 1), (k + 1):int(0.5 * k * (k + 1) + 1)] = np.eye(int(0.5 * k * (k - 1))) / 9
-    M[int(0.5 * k * (k + 1) + 1):, int(0.5 * k * (k + 1) + 1):] = np.eye(k) / 5 + (np.ones((k, k)) - np.eye(k)) / 9
+    M[(k + 1):int(0.5 * k * (k + 1) + 1), (k + 1):int(0.5 * k * (k + 1) + 1)] = np.eye(int(0.5 * k * (k - 1))) / 9.
+    M[int(0.5 * k * (k + 1) + 1):, int(0.5 * k * (k + 1) + 1):] = np.eye(k) / 5 + (np.ones((k, k)) - np.eye(k)) / 9.
     return M
 
 
@@ -64,12 +64,12 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
         fullrank = np.linalg.cond(M) < 1000
     else:
         mr = np.linalg.matrix_rank(M)
-        fullrank = mr == modelmatrix.shape[1]
+        fullrank = (mr == modelmatrix.shape[1])
+        if verbose>=2:
+            print('modelStatistics: fullrank %d, condition number %.4f' % (fullrank, np.linalg.cond(M), ))
 
     if verbose >= 2:
-        print('conferenceProjectionStatistics: condition number: %s' % (np.linalg.cond(M)))
-    if verbose:
-        print('%d, cond %.5f' % (mr == modelmatrix.shape[1], np.linalg.cond(M), ))
+        print('modelStatistics: condition number: %s' % (np.linalg.cond(M)))
     if fullrank:
         if moment_matrix is None:
             moment_matrix = momentMatrix(ncolumns)

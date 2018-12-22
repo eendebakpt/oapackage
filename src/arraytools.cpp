@@ -1,6 +1,5 @@
 #include <sstream>
 #include <string>
-
 #include <algorithm>
 
 #include "arraytools.h"
@@ -9,10 +8,8 @@
 #include "mathtools.h"
 #include "strength.h"
 #include "tools.h"
+#include <errno.h>
 
-#ifdef RPACKAGE
-#define printf notallowed
-#endif
 
 #ifdef FULLPACKAGE
 #include "bitarray/bit_array.h"
@@ -520,7 +517,7 @@ void get_factors (array_t *s, carray_t *array, const rowindex_t N, const colinde
 arraydata_t arraylink2arraydata (const array_link &al, int extracols, int strength) {
         int verbose = 0;
 
-        if(al.min()<0) {
+        if(al.min() < 0) {
          throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
         }
         // create arraydatya
@@ -935,6 +932,22 @@ void showArrayList (const arraylist_t &lst) {
                 myprintf ("array %d:\n", (int)i);
                 lst[i].showarray ();
         }
+}
+
+template < class atype >
+/// write array to output stream
+void write_array_format(std::ostream &ss, const atype *array, const int nrows, const int ncols, int width = 3) {
+	assert(array != 0 || ncols == 0);
+
+	int count;
+	for (int j = 0; j < nrows; j++) {
+		count = j;
+		for (int k = 0; k < ncols; k++) {
+			const char *s = (k < ncols - 1) ? " " : "\n";
+			ss << std::setw(width) << array[count] << s;
+			count += nrows;
+		}
+	}
 }
 
 #ifdef FULLPACKAGE
@@ -2228,7 +2241,7 @@ void array_link::showarraycompact () const {
 }
 
 void array_link::showarray () const {
-        myprintf ("array: \n");
+        myprintf ("array:\n");
         write_array_format (array, this->n_rows, this->n_columns);
 }
 
@@ -2864,9 +2877,8 @@ int array_link::rank () const { return arrayrank (*this); }
 int array_link::strength () const {
         int t = -1;
         for (int i = 0; i <= this->n_columns; i++) {
-                int b = strength_check (*this, i);
-                // myprintf("strength_check %d->%d\n", i, b);
-                if (b) {
+                int has_strength = strength_check (*this, i);
+                if (has_strength) {
                         t = i;
                 } else {
                         break;
@@ -3153,11 +3165,19 @@ std::string arraydata_t::idstr () const {
         return fname;
 }
 
-/**
- * @brief Calculate derived data such as the index and column groups from a design
+/** Calculate derived data such as the index and column groups from a design
  */
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
+
+		if (!this->is_factor_levels_sorted() ) {			
+			myprintf("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
+			this->show();
+		}
+		
+		if (!check_divisibility(this)) {
+			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
+		}
 
         if (verbose) {
                 myprintf ("complete_arraydata: strength %d\n", this->strength);
@@ -3179,9 +3199,7 @@ void arraydata_t::complete_arraydata () {
         this->calculate_oa_index (ad->strength);
 
         /* calculate column group structure */
-        std::vector< int > xx (ad->s, ad->s + ad->ncols);
-
-        symmetry_group sg (xx, 0);
+        symmetry_group sg (ad->factor_levels(), 0);
 
         ad->ncolgroups = sg.ngroups;
         ad->colgroupindex = new colindex_t[ad->ncolgroups + 1];
@@ -3293,6 +3311,21 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 	return j;
 }
 
+/// return True if the vector is sorting in descending order
+bool is_sorted_descending(const std::vector<int> values) {
+	for (int i = 0; i < values.size() - 1; i++) {
+		if (values[i] < values[i + 1])
+			return false;
+	}
+	return true;
+}
+bool arraydata_t::is_factor_levels_sorted() const
+{
+	std::vector<int> factor_levels = this->factor_levels();
+
+	return is_sorted_descending(factor_levels);
+}
+
 bool arraydata_t::is2level () const {
         for (int i = 0; i < this->ncols; i++) {
                 if (this->s[i] != 2) {
@@ -3351,7 +3384,12 @@ void arraydata_t::calculate_oa_index (colindex_t strength) {
                combs *= this->s[i];
           }
 
-          if (combs == 0) {
+		  if ( ! check_divisibility(this) ) {
+			  this->oaindex = 0;
+			  return;
+		  }
+
+          if (combs == 0 || (this->N % combs) != 0) {
                this->oaindex = 0;
           } else {
                this->oaindex = this->N / combs;
@@ -3381,7 +3419,6 @@ void arraydata_t::complete_arraydata_splitn (int ns) {
         ad->oaindex = ad->N / combs;
         ad->ncolgroups = 2;
 
-        // ad->colgroupindex = new colindex_t[ad->N];
         colgroupindex = new colindex_t[ad->ncolgroups + 1];
         colgroupsize = new colindex_t[ad->ncolgroups + 1];
         colgroupindex[0] = 0;
@@ -3498,7 +3535,12 @@ void jstruct_t::calc (const array_link &al) {
 }
 
 void jstructconference_t::calcJvalues(int N, int jj) {
-	assert(jj == 4);
+	if (jj % 2 != 0) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for even J");
+	}
+	if (jj != 4) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for J=4");
+	}
 	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
 	this->jvalues = std::vector< int >(nn);
 	this->jvalue2index.clear();
@@ -4477,6 +4519,13 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
         return index;
 }
 
+void arrayfile_t::finisharrayfile() {
+	if (this->mode == ATEXT) {
+		fprintf(this->nfid, "-1\n");
+	}
+	this->closefile();
+}
+
 void arrayfile_t::writeheader () {
         assert (this->nfid);
 
@@ -4595,6 +4644,14 @@ long nArrays (const char *fname) {
         return n;
 }
 
+void arrayfileinfo(const char *filename, int &number_of_arrays, int &number_of_rows, int &number_of_columns) {
+	arrayfile_t af(filename, 0);
+	number_of_arrays = af.narrays;
+	number_of_rows = af.nrows;
+	number_of_columns = af.ncols;
+	af.closefile();
+}
+
 void appendArrays(const arraylist_t &arrays_to_append, arraylist_t &dst) {
 	for (arraylist_t::const_iterator it = arrays_to_append.begin(); it < arrays_to_append.end(); ++it) {
 		dst.push_back(*it);
@@ -4656,13 +4713,8 @@ arraylist_t readarrayfile (const char *fname, int verbose, int *setcols) {
         return v;
 }
 
-/**
- * @brief Read all arrays in a file and store then in an array list
- * @param fname
- * @param arraylist
- * @return
- */
-int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, colindex_t *setcols, rowindex_t *setrows,
+
+int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, int *setcols, int *setrows,
                    int *setbits) {
         if (arraylist == 0) {
                 arraylist = new arraylist_t;
@@ -5027,34 +5079,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
         }
 }
 
-/*!
-  save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of processors,
-  the number of factors and the number of columns so far. Then the file header contains the number of columns in the
-  design,
-  the number of runs and the number of arrays in the file.
-  \brief Saves the arrays from solutions
-  \param solutions List of arrays
-  \param p Characteristic numbers of OA
-  \param n_arrays Number of arrays found
-  \param n_procs Number of processors in system, for filename
-  */
-int save_arrays (arraylist_t &solutions, const arraydata_t *ad, const int n_arrays, const int n_procs,
-                 const char *resultprefix, arrayfile::arrayfilemode_t mode) {
-        // OPTIMIZE: make this modular, save arrays in blocks
-
-        string fname = resultprefix;
-        fname += "-" + oafilestring (ad);
-
-        int nb = arrayfile_t::arrayNbits (*ad);
-        arrayfile_t *afile = new arrayfile_t (fname.c_str (), ad->N, ad->ncols, n_arrays, mode, nb);
-        int startidx = 1;
-        afile->append_arrays (solutions, startidx);
-        afile->finisharrayfile ();
-        delete afile;
-
-        return 0;
-}
-
 void arrayfile_t::closefile () {
         if (verbose >= 2) {
                 myprintf ("arrayfile_t::closefile(): nfid %ld\n", (long)nfid);
@@ -5134,7 +5158,6 @@ arrayfile_t::~arrayfile_t () {
  */
 arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode,
                                int nbits) {
-        // myprintf("create array file: mode %d\n", mode);
         std::string s = fname;
         arrayfile_t *afile = new arrayfile_t (s, rows, cols, narrays, mode, nbits);
 
@@ -5365,7 +5388,76 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
         }
 }
 
-#include <errno.h>
+/** Read header for binary data file. Return true if valid header file
+*
+* The header consists of 4 integers: 2 magic numbers, then the number of rows and columns
+*/
+bool readbinheader(FILE *fid, int &nr, int &nc) {
+	if (fid == 0) {
+		return false;
+	}
+
+	double h[4];
+	int nn = fread(h, sizeof(double), 4, fid);
+	nr = (int)h[2];
+	nc = (int)h[3];
+
+	// myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],
+	// h[0]==30397995, h[1]==12224883);
+	bool valid = false;
+
+	// check 2 numbers of the magic header
+	if (nn == 4 && h[0] == 30397995 && h[1] == 12224883) {
+		return true;
+	}
+
+	return valid;
+}
+
+/// Write header for binary data file
+void writebinheader(FILE *fid, int nr, int nc) {
+	double h[4];
+	// write 2 numbers of the magic header
+	h[0] = 30397995;
+	h[1] = 12224883;
+	h[2] = nr;
+	h[3] = nc;
+	fwrite(h, sizeof(double), 4, fid);
+}
+
+/// Write a vector of vector elements to binary file
+void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
+	int writeheader, int na) {
+	FILE *fid = fopen(fname.c_str(), "wb");
+
+	if (fid == 0) {
+		fprintf(stderr, "vectorvector2binfile: error with file %s\n", fname.c_str());
+
+		throw_runtime_exception("vectorvector2binfile: error with file");
+	}
+
+	if (na == -1) {
+		if (vals.size() > 0) {
+			na = vals[0].size();
+		}
+	}
+	if (writeheader) {
+		writebinheader(fid, vals.size(), na);
+	}
+	else {
+		myprintf("warning: legacy file format\n");
+	}
+	for (unsigned int i = 0; i < vals.size(); i++) {
+		const std::vector< double > x = vals[i];
+		if ((int)x.size() != na) {
+			myprintf("error: writing incorrect number of elements to binary file\n");
+		}
+		for (unsigned int j = 0; j < x.size(); j++) {
+			fwrite(&(x[j]), sizeof(double), 1, fid);
+		}
+	}
+	fclose(fid);
+}
 
 int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode) {
         arraylist_t s;
@@ -5374,7 +5466,7 @@ int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfil
 }
 
 /// append a single array to an array file. creates a new file if no file exists
-int appendarrayfile (const char *fname, const array_link al) {
+int append_arrayfile (const char *fname, const array_link al) {
         int dverbose = 0;
         int nb = 8; // default: char
         int nrows = -1, ncols = -1;

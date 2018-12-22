@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "arraytools.h"
 #include <vector>
+#include "arraytools.h"
 
 /** Isomorphism types for matrices
  *

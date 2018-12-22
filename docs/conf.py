@@ -81,6 +81,8 @@ extensions += ['sphinx.ext.intersphinx']
 extensions += ['sphinx.ext.autosectionlabel']
 extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
+extensions += ['sphinx.ext.doctest']
+
 
 
 extensions += ['breathe']

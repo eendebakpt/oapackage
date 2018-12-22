@@ -13,6 +13,10 @@ import os
 import numpy as np
 import time
 import logging
+import warnings
+
+class MissingMatplotLibException(Exception):
+    pass
 
 try:
     import matplotlib
@@ -60,7 +64,15 @@ def array2Dtable(sols, verbose=1, titlestr=None):
 
 def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
                      scatterarea=80, verbose=0, setWindowRectangle=False):
-    """ Generate scatter plot for D and Ds efficiencies """
+    """ Generate scatter plot for D and Ds efficiencies
+    
+    Args:
+        dds (array): array with D-efficiencies
+    Returns:
+        dict: contains handles to plotting elements
+    """
+    if matplotlib is None:
+        raise MissingMatplotLibException
     data = dds.T
     pp = oahelper.createPareto(dds)
     paretoidx = np.array(pp.allindices())
@@ -298,7 +310,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     if arrayclass is None:
         s = A0.getarray().max(axis=0) + 1
     else:
-        s = arrayclass.getS()
+        s = arrayclass.factor_levels()
     sx = tuple(s.astype(np.int64))
     sx = tuple([int(v) for v in sx])
 
@@ -468,40 +480,40 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
               1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
     """ Calculate D-optimal designs
 
+    The method uses a coordinate-exchange algorithm find a D-optimal design in the class specified by the
+    arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
+    multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
+    target function. 
 
-    For more details see the paper "Two-Level Designs to Estimate All Main
+    The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
+    (or Ds-optimality) and the D1-efficiency of the design. For more details see the paper "Two-Level Designs to Estimate All Main
     Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903
 
-    Parameters
-    ----------
-    arrayclass : object
-        Specifies the type of design to optimize
-    nrestarts : integer
-        Number of restarts of the algorithm
-    optimfunc : list with 3 floats
-        Gives the optimization weights
-    verbose : integer
-        A higher numer gives more output
-    maxtime: float
-        Maximum running time of the algorithm
-    selectpareto : boolean, default is True
-        If True then only the Pareto optimal designs are returned
-    nout : integer, default None
-        Number of designs to return. If None,  return all designs
+    Args:
+      arrayclass (object): Specifies the type of design to optimize
+      nrestarts (int): Number of restarts of the algorithm
+      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
+      verbose (int): Verbosity level. A higher numer gives more output
+      maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
+      selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
+      nout (int or None): Number of designs to return. If None,  return all designs
 
     Returns
     -------
-    scores: list
-        list of scores
-    dds: array
-        array with calculated efficiencies
-    designs: list
-        list of generated designs
-    nrestarts: int
-        number of restarts used
+            scores : list:
+                list of scores
+            dds: array
+                array with calculated efficiencies            
+            designs:
+                list of generated designs
+            nrestarts: int
+                number of restarts used
 
 
     """
+    if arrayclass.strength !=0:
+        warnings.warn('Doptimize can only handle designs with strength 0', UserWarning)
+        
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr())
     t0 = time.time()
@@ -515,7 +527,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         dds, sols = rr.dds, rr.designs
         dds = np.array([x for x in dds])
         # needed because of SWIG wrapping of struct type
-        sols = [x.clone() for x in sols]
+        sols = [design.clone() for design in sols]
         nrestarts = rr.nrestarts
         scores = np.array(
             [oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])

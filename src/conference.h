@@ -26,7 +26,7 @@ void print_column(const conference_column &column, const char *msg = 0);
 
 /** Show a list of candidate extensions
  *
- * \param cc List of candidates to show
+ * \param column_candidates List of candidates to show
  */
 void showCandidates (const std::vector< conference_column > &column_candidates);
 
@@ -90,10 +90,10 @@ class conference_t {
         // return short string describing the class
         std::string idstr () const;
 
-        /// create the unique representative of the 2 column design (for conference matrices)
+        /// create the unique representative of the 2 column conference design 
         array_link create_root () const;
 
-        /// create the unique representative of the 3 column design
+        /// create the unique representative of the 3 column conference design
         array_link create_root_three () const;
 
         /// create the root arrays with 1 column for the double conference matrices
