@@ -264,7 +264,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
              style="margin: 10px; width:95%; min-width: 300px;  max-width:1100px; height: auto; ")
 
     citationstr = markup.oneliner.a(
-        'Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='http://dx.doi.org/10.1002/jcd.20236')
+        'Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='https://doi.org/10.1002/jcd.20236')
 
     page.br(clear='both')
     page.p(
@@ -487,7 +487,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
     The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
     (or Ds-optimality) and the D1-efficiency of the design. For more details see the paper "Two-Level Designs to Estimate All Main
-    Effects and Two-Factor Interactions", http://dx.doi.org/10.1080/00401706.2016.1142903
+    Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903
 
     Args:
       arrayclass (object): Specifies the type of design to optimize

@@ -66,7 +66,7 @@ struct DoptimReturn {
  * The optimization is performed multiple times to prevent finding a design in a local minmum of the target function.
  *
  * The method is described in more detail in "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions",
- * Eendebak et al., 2015, Technometrics, http://dx.doi.org/10.1080/00401706.2016.1142903.
+ * Eendebak et al., 2015, Technometrics, https://doi.org/10.1080/00401706.2016.1142903.
  *
  * \param arrayclass Class of designs to optimize
  * \param nrestarts Number of restarts to perform
