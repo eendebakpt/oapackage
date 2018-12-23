@@ -21,7 +21,7 @@
 double scoreD (const std::vector< double > efficiencies, const std::vector< double > alpha);
 
 /// Different methods for the optimization. The default method DOPTIM_SWAP is a coordinate-exchange algorithms
-enum {
+enum DOPTIM_METHODS {
 	/// replace a random element with a random value
 	DOPTIM_UPDATE,
 	/// swap two elements at random
@@ -31,7 +31,7 @@ enum {
 	/// automatically select one of the methods
 	DOPTIM_AUTOMATIC, 
 	/// perform no optimization
-	DOPTIM_NONE } DOPTIM_METHODS;
+	DOPTIM_NONE } ;
 
 /** Optimize a design according to the optimization function specified.
  *
