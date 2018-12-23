@@ -316,9 +316,19 @@ class TestCppLibrary(unittest.TestCase):
     @only_python3
     def test_exampleArray(self):
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            oapackage.exampleArray(5, 1)
+            al = oapackage.exampleArray(5, 1)
             self.assertEqual(mock_stdout.getvalue(), 'exampleArray 5: array 0 in OA(24, 2, 4 3 2^a)\n')
+            self.assertEqual(al.md5(), '3885c883d3bee0c7546511255bb5c3ae')
+        
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            al = oapackage.exampleArray(-1, 1)
+            lines = mock_stdout.getvalue().strip().split('\n')
+            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii ) for ii in range(len(lines)-1)]))
+            self.assertTrue(lines[-1].startswith('exampleArray: no example array with index'))
 
+        al = oapackage.exampleArray(51, 0)
+        self.assertEqual(al.md5(), '662c1d9c51475b42539620385fa22338')
+            
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
         m = oapackage.mvalue_t_double(input_vector)
