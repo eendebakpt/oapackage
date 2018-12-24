@@ -2020,6 +2020,7 @@ array_link exampleArray (int idx, int verbose) {
 			 }
 			 array_link array(12, 4, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,0,-1,1,1,1,1,-1,1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
 		 case 52: {
