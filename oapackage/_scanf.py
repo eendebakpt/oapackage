@@ -44,32 +44,32 @@ DEBUG = False
 #   few characters needed to handle the field ommision.
 scanf_translate = [
     (re.compile(_token), _pattern, _cast) for _token, _pattern, _cast in [
-        ("%c", "(.)", lambda x:x),
-        ("%\*c", "(?:.)", None),
+        (r"%c", r"(.)", lambda x:x),
+        (r"%\*c", r"(?:.)", None),
 
-        ("%(\d)c", "(.{%s})", lambda x:x),
-        ("%\*(\d)c", "(?:.{%s})", None),
+        (r"%(\d)c", r"(.{%s})", lambda x:x),
+        (r"%\*(\d)c", r"(?:.{%s})", None),
 
-        ("%(\d)[di]", "([+-]?\d{%s})", int),
-        ("%\*(\d)[di]", "(?:[+-]?\d{%s})", None),
+        (r"%(\d)[di]", r"([+-]?\d{%s})", int),
+        (r"%\*(\d)[di]", r"(?:[+-]?\d{%s})", None),
 
-        ("%[di]", "([+-]?\d+)", int),
-        ("%\*[di]", "(?:[+-]?\d+)", None),
+        ("%[di]", r"([+-]?\d+)", int),
+        (r"%\*[di]", r"(?:[+-]?\d+)", None),
 
-        ("%u", "(\d+)", int),
-        ("%\*u", "(?:\d+)", None),
+        ("%u", r"(\d+)", int),
+        (r"%\*u", r"(?:\d+)", None),
 
-        ("%[fgeE]", "([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", float),
-        ("%\*[fgeE]", "(?:[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", None),
+        (r"%[fgeE]", r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", float),
+        (r"%\*[fgeE]", r"(?:[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", None),
 
-        ("%s", "(\S+)", lambda x:x),
-        ("%\*s", "(?:\S+)", None),
+        (r"%s", r"(\S+)", lambda x:x),
+        (r"%\*s", r"(?:\S+)", None),
 
-        ("%([xX])", "(0%s[\dA-Za-f]+)", lambda x:int(x, 16)),
-        ("%\*([xX])", "(?:0%s[\dA-Za-f]+)", None),
+        (r"%([xX])", r"(0%s[\dA-Za-f]+)", lambda x:int(x, 16)),
+        (r"%\*([xX])", r"(?:0%s[\dA-Za-f]+)", None),
 
-        ("%o", "(0[0-7]*)", lambda x:int(x, 8)),
-        ("%\*o", "(?:0[0-7]*)", None),
+        (r"%o", r"(0[0-7]*)", lambda x:int(x, 8)),
+        (r"%\*o", r"(?:0[0-7]*)", None),
     ]]
 
 
