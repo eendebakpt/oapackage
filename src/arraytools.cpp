@@ -2220,13 +2220,6 @@ void *array_link::data () {
 #else
 #endif
 
-std::string array_link::showarrayS () const {
-        std::stringstream ss;
-        ss << "array: \n";
-        write_array_format (ss, array, this->n_rows, this->n_columns);
-        return ss.str ();
-}
-
 bool array_link::equal_size(const array_link &rhs_array) const {
      if( (this->n_rows != rhs_array.n_rows) || (this->n_columns != rhs_array.n_columns) ) return false;
      else return true;
@@ -2244,6 +2237,13 @@ void array_link::showarraycompact () const {
 void array_link::showarray () const {
         myprintf ("array:\n");
         write_array_format (array, this->n_rows, this->n_columns);
+}
+
+std::string array_link::showarrayString () const {
+        std::stringstream ss;
+        ss << "array:\n";
+        write_array_format (ss, array, this->n_rows, this->n_columns);
+        return ss.str ();
 }
 
 void perform_column_permutation (const array_link source, array_link &target, const std::vector< int > perm) {

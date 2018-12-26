@@ -435,6 +435,9 @@ struct array_link {
         /// print array to stdout
         void showarray () const;
 
+        /// print array to string
+	std::string showarrayString () const;
+
         /// print array to stdout
         void showarraycompact () const;
 
@@ -705,8 +708,6 @@ struct array_link {
         /// return true of specified column is smaller than column in another array
         int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
 	
-        std::string showarrayS () const;
-
         void debug () const;
 #ifdef SWIGCODE
         void *data (); /// return pointer to data, needed for swig interface
