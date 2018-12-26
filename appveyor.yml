@@ -134,6 +134,7 @@ install:
   - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
 
   - cinst -y swig
+  - cinst -y make
 
 build: off
 
