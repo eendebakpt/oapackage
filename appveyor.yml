@@ -128,6 +128,7 @@ install:
   - "%CMD_IN_ENV% python -c \"import mock\""
 
   # for running doctest
+  - "%CMD_IN_ENV36% pip install python-doctest"
   - "%CMD_IN_ENV36% pip install sphinx"
 
   # lint the code
