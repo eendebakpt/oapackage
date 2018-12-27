@@ -155,7 +155,9 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - "%CMD_IN_ENV_ARCH64% cd docs && dir && make doctest"
+   - ps: cd docs
+   - "%CMD_IN_ENV_ARCH64% dir && make doctest"
+   - ps: cd ..
    
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
