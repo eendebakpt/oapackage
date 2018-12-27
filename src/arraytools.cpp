@@ -2235,8 +2235,8 @@ void array_link::showarraycompact () const {
 }
 
 void array_link::showarray () const {
-        myprintf ("array:\n");
-        write_array_format (array, this->n_rows, this->n_columns);
+        std::string out = this->showarrayString();
+        myprintf("%s", out.c_str());
 }
 
 std::string array_link::showarrayString () const {
