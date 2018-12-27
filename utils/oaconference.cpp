@@ -229,7 +229,7 @@ int main (int argc, char *argv[]) {
 
                 if (inputarrays.size () > 0) {
                         ctype = conference_t (N, kstart, j1zero);
-                        myassert (inputarrays[0].n_rows == N);
+                        myassert (inputarrays[0].n_rows == N, "invalid specification of number of rows");
                 }
                 ctype.ctype = ctx;
                 ctype.itype = itype;

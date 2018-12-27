@@ -383,7 +383,7 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
 
         for (int c = 0; c < array.n_columns; c++) {
                 std::vector< int > lp = at.lvlperm (c);
-                myassert (lp[1] == 1);                  // 0 should go to 0
+                myassert (lp[1] == 1, "error in reduction");                  // 0 should go to 0
                 t.cswitch[c] = (lp[0] == 0) ? 1 : -1; 
         }
 
@@ -1803,7 +1803,7 @@ std::vector< conference_column > generateDoubleConferenceExtensions (const array
                     "generateDoubleConferenceExtensions: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n",
                     filtersymm, filtersymminline, filterj2, filterj3);
 
-        myassert (ct.j1zero == 1);
+        myassert (ct.j1zero == 1, "for DC designs j1zero should 1");
 
         const int N = al.n_rows;
         DconferenceFilter dfilter (al, filtersymm, filterj2);

@@ -166,8 +166,8 @@ void test_conference_candidate_generators(int verbose = 1) {
 			myprintf("checking generator on array:\n");
 			al.showarray();
 		}
-		myassert(al.is_conference());
-		myassert(al.min() == -1);
+		myassert(al.is_conference(), "array is not conference design");
+		myassert(al.min() == -1, "conference design should have elements -1,0,1");
 
 		int filterj2 = 1;
 		int filtersymminline = 1;
@@ -212,7 +212,7 @@ int checkTransformationInverse(const array_link &al) {
 bool testLMC0checkDC(const array_link &al, int verbose = 1) {
 	const int niter = 20; // number of iterations used in check
 
-	myassert(al.is_conference(2));
+	myassert(al.is_conference(2), "array is not double conference design");
 
 	// perform LMC0 test
 	lmc_t r = LMC0checkDC(al, verbose >= 2);

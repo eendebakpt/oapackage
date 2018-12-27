@@ -2854,7 +2854,7 @@ int jvalue_conference (const array_link &ar, const int J, const int *column_indi
 
 /// calculate J-characteristics for a conference design
 std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, int verbose) {
-        myassert (al.max () == 1 && al.min () == -1);
+        myassert (al.max () == 1 && al.min () == -1, "array is not conference design");
 
         const int k = al.n_columns;
         const int nc = ncombs (k, jj);
@@ -3314,7 +3314,7 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 
 /// return True if the vector is sorting in descending order
 bool is_sorted_descending(const std::vector<int> values) {
-	for (int i = 0; i < values.size() - 1; i++) {
+	for (size_t i = 0; i < values.size() - 1; i++) {
 		if (values[i] < values[i + 1])
 			return false;
 	}

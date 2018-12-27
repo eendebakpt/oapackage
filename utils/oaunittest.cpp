@@ -68,7 +68,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
         }
 
 		cprintf(verbose, "%s: reduceConferenceTransformation\n", bstr);
-		myassert(unittest_reduceConferenceTransformation()==0);
+		myassert(unittest_reduceConferenceTransformation()==0, "unittest unittest_reduceConferenceTransformation failed");
 
         /* constructors */
         {

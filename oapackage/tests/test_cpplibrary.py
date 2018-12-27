@@ -214,6 +214,10 @@ class TestJcharacteristics(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             js = oapackage.jstructconference_t(al, 3)
 
+        array = oapackage.array_link(10, 4, 0)
+        with self.assertRaises(Exception):
+            js=oapackage.jstructconference_t(array, 4)
+            
     def test_Jcharacteristics(self):
         al = oapackage.exampleArray(30, 0)
         jx = al.Jcharacteristics(4)
