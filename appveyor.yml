@@ -145,6 +145,8 @@ build_script:
   # Build the compiled extension
   - "%CMD_IN_ENV% python setup.py build"
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - make -v
+  - "%CMD_IN_ENV_ARCH64% cd docs && make doctest"
 
 
 test_script:
@@ -155,9 +157,6 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - ps: cd docs
-   - "%CMD_IN_ENV_ARCH64% make doctest"
-   - ps: cd ..
    
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
