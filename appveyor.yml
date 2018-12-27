@@ -156,8 +156,6 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - ps: cd docs
-   - ps: dir
-   - "%CMD_IN_ENV_ARCH64% dir"
    - "%CMD_IN_ENV_ARCH64% make doctest"
    - ps: cd ..
    
