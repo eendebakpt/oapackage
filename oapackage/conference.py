@@ -56,7 +56,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
     Args:
         dsd (array): definitive screening design
     Returns:
-      list: calculated statistics
+      list: calculated statistics. Calculated are whether the model is estible, the Defficiency and the inverse APV.
     """
     ncolumns = dsd.shape[1]
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
