@@ -128,7 +128,6 @@ install:
   - "%CMD_IN_ENV% python -c \"import mock\""
 
   # for running doctest
-  - "%CMD_IN_ENV36% pip install python-doctest"
   - "%CMD_IN_ENV36% pip install sphinx"
 
   # lint the code
@@ -156,7 +155,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - "%CMD_IN_ENV_ARCH64% cd docs && make doctest"
+   - "%CMD_IN_ENV_ARCH64% cd docs && dir && make doctest"
    
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
