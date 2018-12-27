@@ -79,7 +79,7 @@ SCANF_CACHE_SIZE = 1000
 
 @lru_cache(maxsize=SCANF_CACHE_SIZE)
 def scanf_compile(format, collapseWhitespace=True):
-    """
+    r"""
     Translate the format into a regular expression
 
     For example:

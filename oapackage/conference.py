@@ -20,9 +20,9 @@ import oapackage
 def momentMatrix(k):
     """ Return the moment matrix of a conference design
 
-    Args
+    Args:
         k (int): number of columns of the conference design
-    Returns
+    Returns:
         array: moment matrix
     """
     pk = int(1 + 0.5 * k * (k + 1) + k)
@@ -55,6 +55,8 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
 
     Args:
         dsd (array): definitive screening design
+    Returns:
+      list: calculated statistics
     """
     ncolumns = dsd.shape[1]
     modelmatrix = oapackage.array2modelmatrix(dsd, 'q')

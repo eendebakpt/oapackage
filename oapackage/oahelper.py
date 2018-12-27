@@ -452,7 +452,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
         else:
             ss += '  ' + chr(10)
         if ii in hlines:
-            ss += '\hline' + chr(10)
+            ss += r'\hline' + chr(10)
             if hlinespace is not None:
                 ss += '\\rule[+%.2fex]{0pt}{0pt}' % hlinespace
     if header:
