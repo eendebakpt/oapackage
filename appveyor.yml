@@ -127,8 +127,10 @@ install:
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
 
-  # lint the code
-  - "%CMD_IN_ENV36% pip install pylint"
+  # for running doctest
+  #- "%CMD_IN_ENV36% pip install sphinx"
+  #- cinst -y make
+
   # fix issues with incompatible package versions
   - "%CMD_IN_ENV35PLUS% pip install --upgrade prompt_toolkit"
   - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
@@ -150,6 +152,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
+
    
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "

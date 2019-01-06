@@ -199,10 +199,9 @@ def size(self):
     return self.n_rows*self.n_columns
                              
 def showarray(self):
-  """ Show array"""
+  """ Show array """
   # overridden to fix problems with ipython
-  #print(self.showarrayS(), end='',flush=True)	# not valid in python2
-  sys.stdout.write(self.showarrayS())
+  sys.stdout.write(self.showarrayString())
 
 def getarray(self, verbose=0, *args):
   """ Return Numpy style array """

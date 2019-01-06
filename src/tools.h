@@ -77,7 +77,7 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 #define mycheck(...) mycheck_handler (__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /// Check whether the condition is true and throw an expception otherwise
-void myassert (int condition, const char *error_message = 0);
+void myassert (int condition, const char *error_message );
 
 /** Throw a runtime_error exception with specified error message
  * 

@@ -375,6 +375,7 @@ setup(name='OApackage',
       install_requires=['numpy>=1.13', 'python-dateutil'] + python27_requirements,
       extras_require={
           'GUI':  ["qtpy", 'matplotlib'],
+          'documentation': ['sphinx']
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',

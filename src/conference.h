@@ -257,14 +257,14 @@ arraylist_t selectLMC0 (const arraylist_t &list, int verbose, const conference_t
 
 /** Generate candidate extensions (wrapper function)
  *
- * \param al Design to be extended
+ * \param array Design to be extended
  * \param conference_type Class of conference designs
  * \param zero_index index of zero in candidate column
  * \param verbose Verbosity level
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
  */
-std::vector< conference_column > generateConferenceExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateConferenceExtensions (const array_link &array, const conference_t &conference_type,
                                                    int zero_index, int verbose = 1, int filtersymm = 1,
                                                    int filterj2 = 1);
 

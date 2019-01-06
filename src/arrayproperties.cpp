@@ -464,7 +464,7 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
  * \returns Vector with calculated D-efficiencies
  */
 std::vector< double > projDeff (const array_link &orthogonal_array, int number_of_factors, int verbose) {
-        myassert (orthogonal_array.is2level ());
+        myassert (orthogonal_array.is2level (), "array is not 2-level");
 
         int number_of_columns = orthogonal_array.n_columns;
         std::vector< int > column_combination (number_of_factors);
@@ -1353,7 +1353,7 @@ int array2rank_Deff_Beff (const array_link &al, std::vector< double > *return_va
 }
 
 std::vector< double > Aefficiencies (const array_link &al, int verbose) {
-        myassert (al.is2level ());
+        myassert (al.is2level (), "array is not 2-level");
         int N = al.n_rows;
         int k = al.n_columns;
         int m = 1 + k + (k * (k - 1)) / 2;

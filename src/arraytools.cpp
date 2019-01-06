@@ -2220,13 +2220,6 @@ void *array_link::data () {
 #else
 #endif
 
-std::string array_link::showarrayS () const {
-        std::stringstream ss;
-        ss << "array: \n";
-        write_array_format (ss, array, this->n_rows, this->n_columns);
-        return ss.str ();
-}
-
 bool array_link::equal_size(const array_link &rhs_array) const {
      if( (this->n_rows != rhs_array.n_rows) || (this->n_columns != rhs_array.n_columns) ) return false;
      else return true;
@@ -2242,8 +2235,15 @@ void array_link::showarraycompact () const {
 }
 
 void array_link::showarray () const {
-        myprintf ("array:\n");
-        write_array_format (array, this->n_rows, this->n_columns);
+        std::string out = this->showarrayString();
+        myprintf("%s", out.c_str());
+}
+
+std::string array_link::showarrayString () const {
+        std::stringstream ss;
+        ss << "array:\n";
+        write_array_format (ss, array, this->n_rows, this->n_columns);
+        return ss.str ();
 }
 
 void perform_column_permutation (const array_link source, array_link &target, const std::vector< int > perm) {
@@ -2854,7 +2854,7 @@ int jvalue_conference (const array_link &ar, const int J, const int *column_indi
 
 /// calculate J-characteristics for a conference design
 std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, int verbose) {
-        myassert (al.max () == 1 && al.min () == -1);
+        myassert (al.max () == 1 && al.min () == -1, "array is not conference design");
 
         const int k = al.n_columns;
         const int nc = ncombs (k, jj);
@@ -3314,7 +3314,7 @@ colindex_t arraydata_t::get_col_group(const colindex_t col) const {
 
 /// return True if the vector is sorting in descending order
 bool is_sorted_descending(const std::vector<int> values) {
-	for (int i = 0; i < values.size() - 1; i++) {
+	for (size_t i = 0; i < values.size() - 1; i++) {
 		if (values[i] < values[i + 1])
 			return false;
 	}
