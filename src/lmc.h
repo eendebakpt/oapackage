@@ -583,10 +583,10 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 typedef double jj45_t;
 
 
-/* helper function for LMC reduction */
+/** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
                           const OAextend &oaextend);
-/* helper function for LMC reduction */
+/** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
                           LMCreduction_t *reduction, const OAextend &oaextend);
 

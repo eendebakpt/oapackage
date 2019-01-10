@@ -55,6 +55,7 @@ class OAextend {
 
         /// determines how the extension arrays are stored
 		extendarray_mode_t extendarraymode;
+
         arrayfile_t storefile; 
 
         // special cases
