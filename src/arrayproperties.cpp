@@ -603,40 +603,40 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
         return gma;
 }
 
+std::vector< double > GWLP2level(const array_link &al, int verbose, int truncate) {
+	int N = al.n_rows;
+	int s = 2;
+
+	// calculate distance distribution
+	std::vector< double > B = distance_distributionT(al);
+	if (verbose) {
+		myprintf("distance_distributionT: ");
+		display_vector(B);
+		myprintf("\n");
+	}
+	// calculate GWLP
+	std::vector< double > gma = macwilliams_transform(B, N, s);
+
+	if (truncate)
+		round_GWLP_zero_values(gma, N);
+
+	return gma;
+}
+
 std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int N = al.n_rows;
         int n = al.n_columns;
 
-        array_t *me = std::max_element (al.array, al.array + (N * n));
-        int s = *me + 1;
-        int k;
-        for (k = 0; k < al.n_columns; k++) {
-                array_t *max_column_value = std::max_element (al.array + N * k, al.array + (N * (k + 1)));
-                if (*max_column_value + 1 != s)
-                        break;
-        }
-        int domixed = (k < al.n_columns);
+		int domixed = al.is_mixed_level();
 
         if (verbose)
-                myprintf ("GWLP: N %d, s %d, domixed %d\n", N, s, domixed);
+                myprintf ("GWLP: N %d, domixed %d\n", N, domixed);
 
         if (domixed) {
                 std::vector< double > gma = GWLPmixed (al, verbose, truncate);
                 return gma;
         } else {
-                // calculate distance distribution
-                std::vector< double > B = distance_distributionT (al);
-                if (verbose) {
-                        myprintf ("distance_distributionT: ");
-                        display_vector (B);
-                        myprintf ("\n");
-                }
-                // calculate GWP
-                std::vector< double > gma = macwilliams_transform (B, N, s);
-
-				if (truncate)
-					round_GWLP_zero_values(gma, N);
-
+				std::vector< double > gma = GWLP2level(al, verbose, truncate);
                 return gma;
         }
 }
