@@ -742,16 +742,17 @@ bool next_perm (std::vector< permutationType > &s) {
 
 // return random integer
 int fastrand ();
+// seed the fast random number generator 
 void seedfastrand (int s);
 
 // return random integer in range 0 to k-1
 int fastrandK (int k);
 
 
-/// set the random number seed using srand
+/// seed the C rand method with the srand function
 void set_srand (unsigned int s);
-#define myrand rand
 
+#define myrand rand
 
 #define my_random_shuffle std::random_shuffle
 
