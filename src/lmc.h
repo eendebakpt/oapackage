@@ -2,7 +2,6 @@
 
 \brief This file contains definitions and functions to perform LMC tests and reductions
 
-
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2008
 
 Copyright: See LICENSE file that comes with this distribution
@@ -63,20 +62,17 @@ class OAextend;
 %ignore dyndata_t::dyndata_t (dyndata_t const &);
 #endif
 
-#ifdef LMCSTATS
-// function is not thread safe
-void lmc_stats ();
-#endif
-
-/* constants and structures */
-
 /** Possible results for the LMC check
- *
- * LMC_LESS: Found a permutation which leads to a lexicographically smaller array
- * LMC_EQUAL: Found a permutation which leads to a lexicographically equal array
- * LMC_MORE: Found a permutation which leads to a lexicographically larger array
  */
-enum lmc_t { LMC_LESS, LMC_EQUAL, LMC_MORE, LMC_NONSENSE };
+enum lmc_t {
+	/// Found a permutation which leads to a lexicographically smaller array
+	LMC_LESS,
+	/// Found a permutation which leads to a lexicographically equal array
+	LMC_EQUAL,
+	/// Found a permutation which leads to a lexicographically larger array
+	LMC_MORE,
+	/// No valid result
+	LMC_NONSENSE };
 
 /// different algorithms for minimal form check
 enum algorithm_t {
@@ -130,9 +126,9 @@ struct dyndata_t;
 
 // NOTE: unsigned long is enough for 2-factor arrays up to 60 columns
 typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
-                                      /*!
-                                       * @brief structure to perform row sorting
-                                       */
+
+/** structure to perform row sorting
+*/
 struct rowsort_t {
         //! index of row
         rowindex_t r;
@@ -164,9 +160,6 @@ static inline bool operator> (const rowsort_t &a, const rowsort_t &b) {
 
         return a.val > b.val;
 }
-
-/// Apply Hadamard transformation to orthogonal array
-//void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
 
 /// Apply Hadamard transformation to orthogonal array
 void apply_hadamard (array_link &al, colindex_t hcol);

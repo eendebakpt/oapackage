@@ -130,11 +130,19 @@ struct extendpos {
 };
 
 /// Extend a list of orthogonal arrays
-int extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend, colindex_t extensioncol,
+int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
                       arraylist_t &extensions);
 
-/// Extend a list of orthogonal arrays
-arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend_options);
+/** Extend a list of orthogonal arrays
+*
+* \param array_list The list of arrays to be extended
+* \param array_class Class of arrays to generate
+* \param oaextend_options Parameters for the extension algorithm
+* \return List of all generated arrays
+* 
+* @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+*/
+arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options);
 
 /** Extend a list of arrays with default options
 *
@@ -145,10 +153,10 @@ arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &array
 /** Extend a single orthogonal array
  *
  * \param al The array to be extended
- * \param fullad Class of arrays to generate
+ * \param array_class Class of arrays to generate
  * \param oaextend Parameters for the extension algorithm
  */
-arraylist_t extend_array (const array_link &al, arraydata_t &fullad, OAextend const &oaextend);
+arraylist_t extend_array (const array_link &al, arraydata_t &array_class, OAextend const &oaextend);
 
 /** Extend a single orthogonal array with the default LMC algorithm
  *
@@ -156,11 +164,17 @@ arraylist_t extend_array (const array_link &al, arraydata_t &fullad, OAextend co
  */
 arraylist_t extend_array (const array_link &al, arraydata_t &arrayclass);
 
-/// extend an array with a single column
+/** Extend an array with a single column
+ *
+ * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ */
 int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions,
                   OAextend const &oaextend);
 
-/// Run the extension algorithm starting with the root array 
+/** Run the LMC extension algorithm starting with the root array 
+ *
+ * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ */
 arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
