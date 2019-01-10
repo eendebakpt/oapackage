@@ -42,18 +42,27 @@ class OAextend {
         /// init column with previous column in extension (if in the same column group)
         int init_column_previous;
 
-        /// append full array, append only extension column, store array to disk, or do nothing
-        enum { APPENDEXTENSION, APPENDFULL, STOREARRAY, NONE };
-        /// determined how the arrays are stored
-        int extendarraymode;
-        arrayfile_t storefile; // NOTE: we should make a copy constructor and assignment operator
+        /// Specification of how to use the generated extensions
+        enum extendarray_mode_t {
+			/// append extension column to extension list
+			APPENDEXTENSION,
+			/// append full array to extension list
+			APPENDFULL,
+			/// store extension to disk
+			STOREARRAY,
+			/// do not store generated extensions
+			NONE };
+
+        /// determines how the extension arrays are stored
+		extendarray_mode_t extendarraymode;
+        arrayfile_t storefile; 
 
         // special cases
         j5structure_t j5structure;
 
       private:
         /// Algorithm mode
-        algorithm_t algmode; // MODE_ORIGINAL: original, MODE_J4: j4 check, ...
+        algorithm_t algmode; 
 
       public:
         OAextend ()
@@ -86,13 +95,18 @@ class OAextend {
         /// Return algorithm used (as string)
         std::string getAlgorithmName () const { return algnames (this->algmode); };
 
-        void updateArraydata (arraydata_t *ad = 0) const;
+		/// update the options structuer with the specified class of designs
+        void updateArraydata (arraydata_t *arrayclass = 0) const;
 
-        /// return preferred extension algorithm
-        static inline algorithm_t getPreferredAlgorithm (const arraydata_t &ad, int verbose = 0) {
+        /** return preferred extension algorithm
+		 *
+		 * \param arrayclass Class of designs to extend
+		 * \param verbose Verbosity level
+		 */
+        static algorithm_t getPreferredAlgorithm (const arraydata_t &arrayclass, int verbose = 0) {
                 if (verbose)
-                        myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
-                if (ad.ncolgroups == 1 && ad.s[0] == 2 && (ad.strength == 3)) {
+                        myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", arrayclass.ncolgroups, arrayclass.s[0]);
+                if (arrayclass.ncolgroups == 1 && arrayclass.s[0] == 2 && (arrayclass.strength == 3)) {
                         return MODE_J4;
                 } else
                         return MODE_ORIGINAL;
