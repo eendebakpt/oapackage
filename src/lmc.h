@@ -2,7 +2,6 @@
 
 \brief This file contains definitions and functions to perform LMC tests and reductions
 
-
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2008
 
 Copyright: See LICENSE file that comes with this distribution
@@ -63,20 +62,17 @@ class OAextend;
 %ignore dyndata_t::dyndata_t (dyndata_t const &);
 #endif
 
-#ifdef LMCSTATS
-// function is not thread safe
-void lmc_stats ();
-#endif
-
-/* constants and structures */
-
 /** Possible results for the LMC check
- *
- * LMC_LESS: Found a permutation which leads to a lexicographically smaller array
- * LMC_EQUAL: Found a permutation which leads to a lexicographically equal array
- * LMC_MORE: Found a permutation which leads to a lexicographically larger array
  */
-enum lmc_t { LMC_LESS, LMC_EQUAL, LMC_MORE, LMC_NONSENSE };
+enum lmc_t {
+	/// Found a permutation which leads to a lexicographically smaller array
+	LMC_LESS,
+	/// Found a permutation which leads to a lexicographically equal array
+	LMC_EQUAL,
+	/// Found a permutation which leads to a lexicographically larger array
+	LMC_MORE,
+	/// No valid result
+	LMC_NONSENSE };
 
 /// different algorithms for minimal form check
 enum algorithm_t {
@@ -130,9 +126,9 @@ struct dyndata_t;
 
 // NOTE: unsigned long is enough for 2-factor arrays up to 60 columns
 typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
-                                      /*!
-                                       * @brief structure to perform row sorting
-                                       */
+
+/** structure to perform row sorting
+*/
 struct rowsort_t {
         //! index of row
         rowindex_t r;
@@ -164,9 +160,6 @@ static inline bool operator> (const rowsort_t &a, const rowsort_t &b) {
 
         return a.val > b.val;
 }
-
-/// Apply Hadamard transformation to orthogonal array
-//void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol);
 
 /// Apply Hadamard transformation to orthogonal array
 void apply_hadamard (array_link &al, colindex_t hcol);
@@ -248,9 +241,6 @@ struct LMCreduction_helper_t {
         }
 };
 
-//LMC_static_struct_t *getGlobalStaticIndexed (int n);
-//void cleanGlobalStaticIndexed ();
-
 /// return static structure from dynamic global pool, return with releaseGlobalStatic
 LMCreduction_helper_t *acquire_LMCreduction_object ();
 void release_LMCreduction_object (LMCreduction_helper_t *p);
@@ -259,7 +249,11 @@ void release_LMCreduction_object (LMCreduction_helper_t *p);
 void clear_LMCreduction_pool ();
 
 /// variable indicating the state of the reduction process
-enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
+enum REDUCTION_STATE {
+	/// the reduction is till 
+	REDUCTION_INITIAL,
+	/// the reduction was changed 
+	REDUCTION_CHANGED };
 //! main mode for the LMC routine: test, reduce or reduce with initialization
 enum OA_MODE {
   /// test for minimal form
@@ -316,7 +310,15 @@ typedef symmdata *symmdataPointer;
 #endif
 
 /// initial state for reduction algorithm
-enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
+enum INIT_STATE {
+	// invalid state
+	INIT_STATE_INVALID,
+	/// copy from array argument
+	COPY,
+	///  initialized by user
+	INIT,
+	/// set initial state to root array
+	SETROOT };
 
 /// Append element to vector if the element the element is not at the end of vector
 template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &value) {
@@ -340,7 +342,7 @@ struct LMCreduction_t {
         OA_MODE mode;
         REDUCTION_STATE state;
 
-        INIT_STATE init_state; // initalization mode: INIT: initialized by user, COPY: copy from array argument
+        INIT_STATE init_state; 
 
         //! maximum depth for search tree
         int maxdepth;
@@ -590,10 +592,10 @@ inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t
 typedef double jj45_t;
 
 
-/* helper function for LMC reduction */
+/** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
                           const OAextend &oaextend);
-/* helper function for LMC reduction */
+/** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
                           LMCreduction_t *reduction, const OAextend &oaextend);
 
