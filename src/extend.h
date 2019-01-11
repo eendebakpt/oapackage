@@ -214,20 +214,20 @@ struct dextend_t {
 
         static const int NO_VALUE = 0;
 
+		/// results of minimal form calculations
         std::vector< lmc_t > lmctype;
         /// last column changed in lmc check
         std::vector< int > lastcol;
 
-        /// A values
+        /// calculated efficiency values
         std::vector< double > Deff;
 
         /// indices of filtered arrays
         std::vector< int > filter;
 
-        /// check mode: 0: no filter, 1: classic, 2: predict
-        int filtermode;
+		dfilter_t filtermode;
 
-	dcalc_mode Dcheck;
+		dcalc_mode Dcheck;
 
         /// perform immediate LMC check in extension
         int directcheck;
