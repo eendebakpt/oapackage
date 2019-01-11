@@ -241,9 +241,6 @@ struct LMCreduction_helper_t {
         }
 };
 
-//LMC_static_struct_t *getGlobalStaticIndexed (int n);
-//void cleanGlobalStaticIndexed ();
-
 /// return static structure from dynamic global pool, return with releaseGlobalStatic
 LMCreduction_helper_t *acquire_LMCreduction_object ();
 void release_LMCreduction_object (LMCreduction_helper_t *p);
@@ -252,7 +249,11 @@ void release_LMCreduction_object (LMCreduction_helper_t *p);
 void clear_LMCreduction_pool ();
 
 /// variable indicating the state of the reduction process
-enum REDUCTION_STATE { REDUCTION_INITIAL, REDUCTION_CHANGED };
+enum REDUCTION_STATE {
+	/// the reduction is till 
+	REDUCTION_INITIAL,
+	/// the reduction was changed 
+	REDUCTION_CHANGED };
 //! main mode for the LMC routine: test, reduce or reduce with initialization
 enum OA_MODE {
   /// test for minimal form
@@ -309,7 +310,15 @@ typedef symmdata *symmdataPointer;
 #endif
 
 /// initial state for reduction algorithm
-enum INIT_STATE { INIT_STATE_INVALID, COPY, INIT, SETROOT };
+enum INIT_STATE {
+	// invalid state
+	INIT_STATE_INVALID,
+	/// copy from array argument
+	COPY,
+	///  initialized by user
+	INIT,
+	/// set initial state to root array
+	SETROOT };
 
 /// Append element to vector if the element the element is not at the end of vector
 template < class Type > void insert_if_not_at_end_of_vector (std::vector< Type > &cp, const Type &value) {
@@ -333,7 +342,7 @@ struct LMCreduction_t {
         OA_MODE mode;
         REDUCTION_STATE state;
 
-        INIT_STATE init_state; // initalization mode: INIT: initialized by user, COPY: copy from array argument
+        INIT_STATE init_state; 
 
         //! maximum depth for search tree
         int maxdepth;
