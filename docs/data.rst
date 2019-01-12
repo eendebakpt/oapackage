@@ -144,96 +144,35 @@ The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 
 .. doxygenstruct:: arrayfile::arrayfile_t
 
+
+Classes of arrays
+-----------------
+
+The :cpp:class:`arraydata_t` object represents data about a class of orthogonal
+arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
+The :cpp:class:`conference_t` object represents data about a class of conference designs.
+
+
+.. comment
+    .. doxygenstruct:: arraydata_t
+        :members:
+
 Array transformations
 ---------------------
 
 Transformations of (orthogonal) arrays consist of row, column and 
-level permutations. A transformation is represented by the :meth:`~oalib.array_transformation_t` object.
+level permutations. A transformation is represented by 
+.. the :meth:`~oalib.array_transformation_t` object.
+the :cpp:class:`array_transformation_t` object.
 
 For a given transformation the column permutations are applied first,
 then the level permutations and finally the row permutations. The level
 and column permutations are not commutative.
 
-.. code-block:: c++
+The conference transformations also allow for row sign switches and are
+described by the class :cpp:class:`conference_transformation_t`.
 
 
-    class array_transformation_t
-    {
-    public:
-        rowperm_t   rperm;      /// row permutation
-        colperm_t   colperm;    /// column permutation
-        levelperm_t *lperms;    /// level permutations
-        const arraydata_t *ad;  /// type of array
-
-    public:
-        array_transformation_t ( const arraydata_t *ad );
-        array_transformation_t ( );     /// default constructor
-        array_transformation_t ( const array_transformation_t  &at );   
-        array_transformation_t & operator= ( const array_transformation_t &at );    
-        ~array_transformation_t();  /// destructor
-
-        /// show the array transformation
-        void show() const;
-
-        /// return true if the transformation is equal to the identity
-        bool isIdentity() const;
-
-        /// return the inverse transformation
-        array_transformation_t inverse() const;
-
-        /// return the transformation to the identity transformation
-        void reset();
-
-        /// initialize to a random transformation
-        void randomize();
-
-        /// initialize with a random column transformation
-        void randomizecolperm();
-
-        /// apply transformation to an array_link object
-        array_link apply ( const array_link &al ) const;
-
-        /// composition operator. the transformations are applied from the left
-        array_transformation_t operator*(const array_transformation_t b);
-        
-        ...
-
-Classes of arrays
------------------
-
-The :meth:`~oalib.arraydata_t` object represents data about a class of orthogonal
-arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
-
-.. code-block:: c++
-
-
-    struct arraydata_t
-    {
-        rowindex_t N;   /** number of runs */
-        array_t *s; /** pointer to levels of the array */
-        colindex_t ncols; /** total number of columns (factors) in the design */
-        colindex_t strength;    /** strength of the design */
-
-        ordering_t  order; /** Ordering used for arrays */
-
-    public:
-        /// create new arraydata_t object
-        arraydata_t(std::vector<int> s, rowindex_t N_, colindex_t t, colindex_t nc);
-        arraydata_t(carray_t *s_, rowindex_t N_, colindex_t t, colindex_t nc);
-        arraydata_t(const arraydata_t &adp);
-        
-        ...
-        
-        /// return true if the array is of mixed type
-        bool ismixed() const;
-        /// return true if the array is a 2-level array
-        bool is2level() const;
-        /// set column group equal to that of a symmetry group
-        void set_colgroups(const symmetry_group &sg);
-            /// return random array from the class
-        array_link randomarray ( int strength = 0, int ncols=-1 ) const;
-
-    }
 
 File formats
 ------------

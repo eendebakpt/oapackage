@@ -105,7 +105,7 @@ int main (int argc, char *argv[]) {
 
         algorithm_t algorithm = MODE_INVALID;
         AnyOption *opt = parseOptions (argc, argv, algorithm);
-        print_copyright_old ();
+        print_copyright ();
 
         if (opt->getFlag ("help") || (opt->getValue ("coptions") != NULL)) {
                 if (opt->getFlag ("help"))
