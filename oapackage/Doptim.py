@@ -500,11 +500,11 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
     Returns
     -------
-            scores : list:
+            scores : list
                 list of scores
             dds: array
                 array with calculated efficiencies            
-            designs:
+            designs: list
                 list of generated designs
             nrestarts: int
                 number of restarts used

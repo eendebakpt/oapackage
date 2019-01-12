@@ -14,11 +14,12 @@ in :cite:`Eendebak2009`.
 
 The main functions for array extension are the following:
 
-.. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
 .. doxygenfunction:: extend_arraylist(const arraylist_t&, const arraydata_t&)
-
+    :outline:
+.. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
+    :outline:
                      
-Here, :meth:`~oalib.arraydata_t` is the structure describing the type of arrays and
+Here, :meth:`~oalib.arraydata_t` is the structure describing the class of arrays and
 :meth:`~oalib.OAextend` contains various options for the algorithm.
 
 An example of a session that extends a designs is:
@@ -44,11 +45,7 @@ An example of a session that extends a designs is:
    >>> print('found %d extensions of the root array' % len(array_list))
    found 2 extensions of the root array
 
-Even-odd
---------
-
-The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
-More information on this class of designs will appear later.
+A more detailed example is :ref:`Enumerate orthogonal arrays`.
 
 Conference designs
 ------------------
@@ -87,10 +84,12 @@ An example notebook with more functionality is
 The full interface for conference designs is available
 in the :ref:`Interface for conference designs`.
 
+The main functions to extend conference and double conference designs are
+:meth:`~oalib.extend_conference` and :meth:`~oalib.extend_double_conference`.
 
-The low-level functions for generating extension columns of conference and double conference designs
-are :meth:`~oapackage.oalib.generateConferenceExtensions` and
-:meth:`~oapackage.oalib.generateDoubleConferenceExtensions`.
+The low-level functions for generating candidate extension columns of conference and double conference designs
+are :meth:`~oalib.generateConferenceExtensions` and
+:meth:`~oalib.generateDoubleConferenceExtensions`.
 
 
 Calculation of D-optimal designs
@@ -161,3 +160,9 @@ to Pareto optimality can be selected.
    Pareto optimal designs are colored, while the non-Pareto optimal
    designs are grey. For reference the strength-3 orthogonal array with
    highest D-efficiency is also included in the plot.
+
+Even-odd
+--------
+
+The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
+More information on this class of designs will appear later.

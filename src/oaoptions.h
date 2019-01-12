@@ -57,8 +57,6 @@ std::string version ();
 /// Print copyright statement
 void print_copyright ();
 
-/// Print copyright statement
-void print_copyright_old ();
 
 /// Print copyright statement
 void print_copyright_light ();

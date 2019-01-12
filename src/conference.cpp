@@ -1639,6 +1639,16 @@ void inflateCandidateExtensionHelper (std::vector< conference_column > &list, co
         }
 }
 
+
+/** Inflate a candidate column
+ *
+ * The extensions are generated according to the symmertry specified by the symmetry group. Filtering is performed
+ *using the filter object.
+ *
+ * From the filtering object only the J2 filtering is used.
+ *
+ * \return List of inflated extensions
+ **/
 std::vector< conference_column > inflateCandidateExtension (const conference_column &basecandidate, const array_link &als,
                                                 const symmetry_group &alsg, const std::vector< int > &check_indices,
                                                 const conference_t &ct, int verbose, const DconferenceFilter &filter) {
@@ -2252,6 +2262,22 @@ template < typename T >
 size_t vectorsizeof (const typename std::vector< T > &vec) {
         return sizeof (T) * vec.size ();
 }
+
+/// structure to cache a list of candidate extensions
+struct conf_candidates_t {
+      public:
+        /// list of candidate extentions for each number of columns
+        std::vector< std::vector< conference_column > > ce;
+
+        /// print information about the set of candidate extentions
+        void info (int verbose = 1) const {
+                for (int i = 2; i < (int)ce.size (); i++) {
+                        if (verbose) {
+                                myprintf ("generateCandidateExtensions: k %d: %d candinates\n", i, (int)ce[i].size ());
+                        }
+                }
+        }
+};
 
 conf_candidates_t generateCandidateExtensions (const conference_t ctype, int verbose = 1, int ncstart = 3,
                                                int ncmax = -1, int root = -1) {

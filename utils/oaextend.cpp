@@ -213,7 +213,7 @@ int main (int argc, char *argv[]) {
 
                 algorithm_t algorithm = MODE_INVALID;
                 AnyOption *opt = parseOptions (argc, argv, algorithm);
-                print_copyright_old ();
+                print_copyright ();
 
                 int loglevel = opt->getIntValue ('l', NORMAL);
                 setloglevel (loglevel);
