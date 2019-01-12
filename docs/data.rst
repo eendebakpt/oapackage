@@ -148,28 +148,30 @@ The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
 Classes of arrays
 -----------------
 
-The :meth:`~oalib.arraydata_t` object represents data about a class of orthogonal
+The :cpp:class:`arraydata_t` object represents data about a class of orthogonal
 arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
-The :meth:`~oalib.conference_t` object represents data about a class of conference designs.
+The :cpp:class:`conference_t` object represents data about a class of conference designs.
 
 
-.. doxygenstruct:: arraydata_t
-    :members:
+.. comment
+    .. doxygenstruct:: arraydata_t
+        :members:
 
 Array transformations
 ---------------------
 
 Transformations of (orthogonal) arrays consist of row, column and 
-level permutations. A transformation is represented by the :meth:`~oalib.array_transformation_t` object.
+level permutations. A transformation is represented by 
+.. the :meth:`~oalib.array_transformation_t` object.
+the :cpp:class:`array_transformation_t` object.
+
 For a given transformation the column permutations are applied first,
 then the level permutations and finally the row permutations. The level
 and column permutations are not commutative.
 
 The conference transformations also allow for row sign switches and are
-described by the class :meth:`~oalib.conference_transformation_t` 
+described by the class :cpp:class:`conference_transformation_t`.
 
-.. doxygenclass:: array_transformation_t
-    :members:
 
 
 File formats

@@ -259,8 +259,7 @@ struct arraydata_t {
 
         /** @brief Write file with specification of orthognal array class
 		 *
-         * @param filename
-         * @return
+         * @param filename Filename to write to
          */
         void writeConfigFile (const char *filename) const;
 
