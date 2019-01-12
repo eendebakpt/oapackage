@@ -1,29 +1,17 @@
 /** \file lmc.h
 
-\brief This file contains definitions and functions to perform LMC tests and reductions
+\brief This file contains definitions and functions to perform minimal form tests and reductions.
 
-Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2008
+Author: Pieter Eendebak <pieter.eendebak@gmail.com>
 
 Copyright: See LICENSE file that comes with this distribution
 */
 
-/*! \mainpage	Orthogonal Arrays
+/*! \mainpage Orthogonal Arrays
 
-This package contains code to calculate orthogonal arrays with a specified number of runs, factor levels and strength.
-The main program is oaextendsingle (or oaextendmpi for the multi-core version), which starts with the specifications of
-an OA and creates the root of th arrray. Then the array is extended column wise.
-For a more complete description of the algoritm see the article
-"Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays", E.D. Schoen, P.T. Eendebak, M.V.M. Nguyen.
-
-The programs in this package are:
-
-- oaextendsingle/oaextendmpi: Extend LMC arrays with additional columns
-- oainfo: Return information about files containing arrays
-- oasplit: Split array files into multiple files
-- oajoin: Join multiple files
-- oacheck: Check a file with arrays using the LMC check. Optionally the arrays are reduced to LMC form
-- oafilter: Filter a file with arrays using a binary file with indices
-- oaanalyse: Calculate statistics for each array in an array file
+The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
+Features include generation of complete series of orthogonal arrays, reduction of arrays to normal form and calculation of properties
+such as the strength or D-efficiency of an array. For more information about the package see the documentation at http://oapackage.readthedocs.io.
 
 For more information please contact Pieter Eendebak, <pieter.eendebak@gmail.com>.
 
@@ -130,9 +118,9 @@ typedef unsigned int rowsort_value_t; /** type for value for sorting rows*/
 /** structure to perform row sorting
 */
 struct rowsort_t {
-        //! index of row
+        /// index of row
         rowindex_t r;
-        //! value of row
+        /// value of row
         rowsort_value_t val;
 };
 

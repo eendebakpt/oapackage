@@ -112,7 +112,6 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 %ignore::write_array;
 %ignore::finish_arrayfile;
 %ignore arrayfile_t::arrayNbits;
-%ignore arraydata_t::complete_arraydata_splitn;
 %ignore::writebinheader;
 #endif
 
@@ -980,23 +979,23 @@ std::vector< jstruct_t > analyseArrays (const arraylist_t &arraylist, const int 
  */
 class array_transformation_t {
       public:
-		/// row permutation
-        rowperm_t rperm;       
-		/// column permutation
-        colperm_t cperm;       
-		/// level permutations
-        levelperm_t *lperms;   
-		/// type of array
-        const arraydata_t *ad; 
+	/// row permutation
+	rowperm_t rperm;       
+	/// column permutation
+	colperm_t cperm;       
+	/// level permutations
+	levelperm_t *lperms;   
+	/// type of array
+	const arraydata_t *ad; 
 
       public:
-        array_transformation_t (const arraydata_t *ad);
-        array_transformation_t (const arraydata_t &ad);
+        array_transformation_t (const arraydata_t *arrayclass);
+        array_transformation_t (const arraydata_t &arrayclass);
         array_transformation_t ();                                           
-		/// copy constructor
-        array_transformation_t (const array_transformation_t &at);            
-		/// assignment operator
-		array_transformation_t &operator= (const array_transformation_t &at); 
+	/// copy constructor
+        array_transformation_t (const array_transformation_t &transformation);            
+	/// assignment operator
+	array_transformation_t &operator= (const array_transformation_t &at); 
         ~array_transformation_t ();                                          
 
         /// show the array transformation
@@ -1026,7 +1025,7 @@ class array_transformation_t {
         int operator== (const array_transformation_t &t2) const;
 
         /// composition operator. the transformations are applied from the left
-		array_transformation_t operator* (const array_transformation_t b) const;
+	array_transformation_t operator* (const array_transformation_t b) const;
 
         /// apply transformation to an array (inplace)
         void apply (array_t *sourcetarget) const;
