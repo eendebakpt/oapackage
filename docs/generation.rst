@@ -85,11 +85,11 @@ The full interface for conference designs is available
 in the :ref:`Interface for conference designs`.
 
 The main functions to extend conference and double conference designs are
-:meth:`~oalib.extend_conference` and :meth:`~oalib.extend_double_conference`.
+:cpp:func:`extend_conference` and :cpp:func:`extend_double_conference`.
 
 The low-level functions for generating candidate extension columns of conference and double conference designs
-are :meth:`~oalib.generateConferenceExtensions` and
-:meth:`~oalib.generateDoubleConferenceExtensions`.
+are :cpp:func:`generateConferenceExtensions` and
+:cpp:func:`generateDoubleConferenceExtensions`.
 
 
 Calculation of D-optimal designs
