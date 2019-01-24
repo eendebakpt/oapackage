@@ -583,12 +583,9 @@ typedef double jj45_t;
 /** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
                           const OAextend &oaextend);
-/** helper function for LMC reduction */
-lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                          LMCreduction_t *reduction, const OAextend &oaextend);
 
 /// helper function
-lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
+lmc_t LMCreduction (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
                 LMCreduction_t *reduction, const OAextend &oaextend);
 
 /// generic LMCcheck function
@@ -597,7 +594,20 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
 /// generic LMCcheck function
 lmc_t LMCcheck (const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
 
-/// direct LMC check using the original LMC check
+/** Perform LMC check on an orthogonal array
+ *
+ * \param array Array to be checked for LMC minimal form
+ * \returns Result of the LMC check
+ */
+lmc_t LMCcheck(const array_link &array);
+
+/** Perform LMC check on a 2-level orthogonal array
+*
+* The algorithm used is the original algorithm from "Complete enumeration of pure-level and mixed-level orthogonal arrays", Schoen et al, 2009
+*
+* \param array Array to be checked for LMC minimal form
+* \returns Result of the LMC check
+*/
 lmc_t LMCcheckOriginal (const array_link &al);
 
 /// reduce arrays to canonical form using delete-1-factor ordering

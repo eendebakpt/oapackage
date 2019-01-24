@@ -26,7 +26,16 @@ reduce orthogonal arrays to their LMC normal form. The C++ function to perform t
 
 .. doxygenfunction:: reduceLMCform(const array_link&)
 
+It is also possible to check whether an array is in normal form:
 
+.. doctest::
+   
+    >>> import oapackage
+    >>> array = oapackage.exampleArray(1)
+    >>> lmc_type = oapackage.LMCcheck(array)
+    >>> print(lmc_type)
+    ???
+    
 Reduction to delete-one-factor projection form
 ----------------------------------------------
 
