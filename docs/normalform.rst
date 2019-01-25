@@ -33,8 +33,11 @@ It is also possible to check whether an array is in normal form:
     >>> import oapackage
     >>> array = oapackage.exampleArray(1)
     >>> lmc_type = oapackage.LMCcheck(array)
-    >>> print(lmc_type)
-    ???
+    >>> if lmc_type == oapackage.LMC_MORE:
+    ...      print('array is in minimal form')
+    ... elif lmc_type == oapackage.LMC_LESS:
+    ...      print('array is not in minimal form')
+    array is in minimal form
     
 Reduction to delete-one-factor projection form
 ----------------------------------------------
@@ -58,19 +61,24 @@ The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Naut
 
 .. admonition:: Reduce a design to normal form using Nauty
  
-   .. code-block:: python
+  .. testsetup::
+     
+     import oapackage
+     oapackage.set_srand(1)
+     
+  .. doctest::
     
     >>> al = oapackage.exampleArray(0).randomperm()
     >>> al.showarray()
     array: 
-      1   1
       0   0
       0   1
-      1   0
-      1   0
-      0   1
       1   1
+      0   1
+      1   0
       0   0
+      1   0
+      1   1
     >>> transformation=oapackage.reduceOAnauty(al, 0)
     >>> transformation.show()
     array transformation: N 8
@@ -78,7 +86,7 @@ The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Naut
     level perms:
     {0,1}
     {0,1}
-    row permutation: {1,7,2,5,3,4,0,6}
+    row permutation: {0,5,1,3,4,6,2,7}
     >>> alr=transformation.apply(al)
     >>> alr.showarray()
     array: 

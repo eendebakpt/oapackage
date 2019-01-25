@@ -107,8 +107,6 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
    
        import oapackage
        
-   .. .. code-block:: python
-
    .. doctest::  
 
      >>> N=40; s=2; k=7;

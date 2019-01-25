@@ -43,7 +43,6 @@ import oapackage
 class TestMinimalFormCheck(unittest.TestCase):
     def test_LMCcheck(self):
         array = oapackage.exampleArray(1)
-        arrayclass = oapackage.arraylink2arraydata(array)
     
         lmc_type = oapackage.LMCcheck(array)
         self.assertEqual(lmc_type, oapackage.LMC_MORE)
@@ -54,6 +53,12 @@ class TestMinimalFormCheck(unittest.TestCase):
 
         array2 = array.selectColumns([2,1,0,3,4])
         lmc_type = oapackage.LMCcheck(array2)
+        self.assertEqual(lmc_type, oapackage.LMC_LESS)
+
+        arrayclass = oapackage.arraylink2arraydata(array)
+        reduction =oapackage.LMCreduction_t(arrayclass)
+        oaextend=oapackage.OAextend(arrayclass)
+        lmc_type=oapackage.LMCcheck (array2.array, arrayclass, oaextend, reduction)
         self.assertEqual(lmc_type, oapackage.LMC_LESS)
        
     def test_LMCcheckOriginal(self):

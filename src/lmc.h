@@ -586,7 +586,7 @@ lmc_t LMCcheck(const array_link &array);
 * \param array Array to be checked for LMC minimal form
 * \returns Result of the LMC check
 */
-lmc_t LMCcheckOriginal (const array_link &al);
+lmc_t LMCcheckOriginal (const array_link &array);
 
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
