@@ -26,7 +26,8 @@ reduce orthogonal arrays to their LMC normal form. The C++ function to perform t
 
 .. doxygenfunction:: reduceLMCform(const array_link&)
 
-It is also possible to check whether an array is in normal form:
+It is also possible to check whether an array is in normal form
+with the :cpp:func:`LMCcheck` method:
 
 .. doctest::
    
