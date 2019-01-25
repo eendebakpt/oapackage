@@ -24,15 +24,15 @@ calculate some of their statistical properties. The following example shows how 
    >>> import oapackage
    >>> array=oapackage.exampleArray(0) # define an orthogonal array 
    >>> array.showarray() 
-     array:
-       0   0
-       0   0
-       0   1
-       0   1
-       1   0
-       1   0
-       1   1
-       1   1
+   array:
+     0   0
+     0   0
+     0   1
+     0   1
+     1   0
+     1   0
+     1   1
+     1   1
    >>> D = array.Defficiency() # calculate the D-efficiency for estimating the [main-effects model?]
    >>> array_rank = array.rank() # calculate the rank of the design
    >>> print('D-efficiency %f, rank %d' % (D, array_rank) )
