@@ -21,6 +21,10 @@
 #include "oaoptions.h"
 #include "tools.h"
 
+/// helper function from lmc.h
+lmc_t LMCreduction(array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
+	LMCreduction_t *reduction, const OAextend &oaextend);
+
 #define stringify(name) #name
 
 const int ncheckopts = 14;
@@ -173,41 +177,43 @@ int main (int argc, char *argv[]) {
                 index = afile->read_array (al);
                 array_t *array = al.array;
 
-                arraydata_t ad = arraylink2arraydata (al, 0, strength);
-                ad.lmc_overflow_check ();
+                arraydata_t arrayclass = arraylink2arraydata (al, 0, strength);
+                arrayclass.lmc_overflow_check ();
 
-                dyndata_t dynd = dyndata_t (ad.N);
                 OAextend oaextend;
 
                 lmc_t result = LMC_NONSENSE;
 
-                LMCreduction_t *reduction = new LMCreduction_t (&ad);
-                LMCreduction_t *randtest = new LMCreduction_t (&ad);
-                array_t *testarray = clone_array (array, ad.N, ad.ncols);
+                LMCreduction_t *reduction = new LMCreduction_t (&arrayclass);
+                LMCreduction_t *randtest = new LMCreduction_t (&arrayclass);
+				array_link test_arraylink = al.clone();
+				array_t *testarray = test_arraylink.array;
                 randtest->transformation->randomize ();
                 reduction->setArray ( al); 
                 /* variables needed within the switch statement */
                 switch (mode) {
                 case MODE_CHECK:
-                        /* LMC test with reduction code */
-                        reduction->mode = OA_TEST;
-                        result = LMCreduce (array, array, &ad, &dynd, reduction, oaextend);
-                        break;
+				{
+					/* LMC test with reduction code */
+					reduction->mode = OA_TEST;
+					result = LMCcheck(array, arrayclass, oaextend, *reduction);
+					break;
+				}
                 case MODE_CHECKJ4: {
                         /* LMC test with special code */
                         reduction->mode = OA_TEST;
                         reduction->init_state = COPY;
-                        array_link al (array, ad.N, ad.ncols, -10);
-                        oaextend.setAlgorithm (MODE_J4, &ad);
-                        result = LMCcheck (al, ad, oaextend, *reduction);
+                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
+                        oaextend.setAlgorithm (MODE_J4, &arrayclass);
+                        result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
                 case MODE_REDUCEJ4: {
                         /* LMC test with special code */
                         reduction->mode = OA_REDUCE;
-                        array_link al (array, ad.N, ad.ncols, -10);
+                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
                         reduction->setArray (al);
-                        result = LMCcheckj4 (al, ad, *reduction, oaextend);
+                        result = LMCcheckj4 (al, arrayclass, *reduction, oaextend);
                         break;
                 }
                 case MODE_CHECK_SYMMETRY: {
@@ -215,88 +221,80 @@ int main (int argc, char *argv[]) {
 					exit(1);
                 }
                 case MODE_CHECKJ5X: {
-                        oaextend.setAlgorithm (MODE_J5ORDERX, &ad);
+                        oaextend.setAlgorithm (MODE_J5ORDERX, &arrayclass);
 
                         /* LMC test with special code */
                         reduction->mode = OA_TEST;
                         reduction->init_state = COPY;
 
-                        result = LMCcheck (al, ad, oaextend, *reduction);
+                        result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
                 case MODE_CHECKJ5XFAST: {
-                        oaextend.setAlgorithm (MODE_J5ORDERX, &ad);
+                        oaextend.setAlgorithm (MODE_J5ORDERX, &arrayclass);
 
                         /* LMC test with special code */
                         reduction->mode = OA_TEST;
                         reduction->init_state = COPY;
                         if (1) {
-                                array_link al (array, ad.N, ad.ncols, al.INDEX_NONE);
+                                array_link al (array, arrayclass.N, arrayclass.ncols, al.INDEX_NONE);
                                 reduction->updateSDpointer (al);
                         }
-                        result = LMCcheck (al, ad, oaextend, *reduction);
+                        result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
                 case MODE_REDUCEJ5X: {
                         OAextend oaextend;
-                        oaextend.setAlgorithm (MODE_J5ORDERX, &ad);
+                        oaextend.setAlgorithm (MODE_J5ORDERX, &arrayclass);
 
                         /* LMC test with special code */
                         printf ("oacheck: WARNING: MODE_CHECKJ5X: untested code, not complete\n");
                         reduction->mode = OA_REDUCE;
-                        array_link al (array, ad.N, ad.ncols, -10);
-                        result = LMCcheck (al, ad, oaextend, *reduction);
+                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
+                        result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
-                case MODE_REDUCEJ4RANDOM: {
-                        /* LMC test with special code */
-                        printf ("WARNING: untested code\n");
-                        reduction->mode = OA_REDUCE;
 
-                        randtest->transformation->apply (array, testarray);
-
-                        copy_array (testarray, reduction->array, ad.N, ad.ncols);
-                        check_root_update (testarray, ad, reduction->array);
-
-                        array_link al (testarray, ad.N, ad.ncols, -10);
-                        result = LMCcheckj4 (al, ad, *reduction, oaextend);
-                        break;
-                }
                 case MODE_REDUCE:
                         /* LMC reduction */
-                        reduction->mode = OA_REDUCE;
-                        copy_array (array, reduction->array, ad.N, ad.ncols);
+				{
+					reduction->mode = OA_REDUCE;
+					copy_array(array, reduction->array, arrayclass.N, arrayclass.ncols);
+					dyndata_t dynd = dyndata_t(arrayclass.N);
 
-                        result = LMCreduce (array, array, &ad, &dynd, reduction, oaextend);
-                        break;
-                case MODE_REDUCERANDOM: {
-                        /* random LMC reduction */
-                        oaextend.setAlgorithm (MODE_ORIGINAL, &ad);
-                        reduction->mode = OA_REDUCE;
-                        randtest->transformation->apply (array, testarray);
-                        copy_array (testarray, reduction->array, ad.N, ad.ncols);
-                        reduction->init_state = INIT;
-                        array_link alp = ad.create_root (ad.ncols, 1000);
-                        reduction->setArray (alp);
+					result = LMCreduction(array, array, &arrayclass, &dynd, reduction, oaextend);
+					break;
+				}
+				case MODE_REDUCERANDOM: 
+					{
+						/* random LMC reduction */
+						oaextend.setAlgorithm(MODE_ORIGINAL, &arrayclass);
+						reduction->mode = OA_REDUCE;
+						randtest->transformation->apply(array, testarray);
+						copy_array(testarray, reduction->array, arrayclass.N, arrayclass.ncols);
+						reduction->init_state = INIT;
+						array_link alp = arrayclass.create_root(arrayclass.ncols, 1000);
+						reduction->setArray(alp);
+						dyndata_t dynd = dyndata_t(arrayclass.N);
 
-                        result = LMCreduce (testarray, testarray, &ad, &dynd, reduction, oaextend);
+						result = LMCreduction(testarray, testarray, &arrayclass, &dynd, reduction, oaextend);
 
-                        if (log_print (NORMAL, "")) {
-                                reduction->transformation->show ();
-                        }
-                } break;
+						if (log_print(NORMAL, "")) {
+							reduction->transformation->show();
+						}
+					} break;
+				
                 case MODE_REDUCETRAIN:
                         /* LMC reduction with train*/
                         reduction->mode = OA_REDUCE;
-
-                        result = LMCreduction_train (array, &ad, &dynd, reduction, oaextend);
+                        result = LMCreduction_train (al, &arrayclass, reduction, oaextend);
                         break;
                 case MODE_REDUCETRAINRANDOM:
                         /* random LMC reduction with train*/
                         reduction->mode = OA_REDUCE;
 
                         randtest->transformation->apply (array, testarray);
-                        result = LMCreduction_train (testarray, &ad, &dynd, reduction, oaextend);
+                        result = LMCreduction_train (test_arraylink, &arrayclass, reduction, oaextend);
                         break;
                 case MODE_HADAMARD:
 						myprintf("MODE_HADAMARD not supported any more\n");
@@ -337,7 +335,7 @@ int main (int argc, char *argv[]) {
                 case MODE_REDUCEJ4:
                 case MODE_REDUCEJ5X:
                 case MODE_REDUCETRAIN:
-                        aequal = std::equal (array, array + ad.N * ad.ncols, reduction->array);
+                        aequal = std::equal (array, array + arrayclass.N * arrayclass.ncols, reduction->array);
 
                         if ((!aequal) || reduction->state == REDUCTION_CHANGED) {
                                 ++wrong;
@@ -355,7 +353,7 @@ int main (int argc, char *argv[]) {
 
                                         rowindex_t row;
                                         colindex_t column;
-                                        array_diff (array, reduction->array, ad.N, ad.ncols, row, column);
+                                        array_diff (array, reduction->array, arrayclass.N, arrayclass.ncols, row, column);
                                         cout << "Difference at: ";
                                         printf (" row %d, col %d\n", row, column);
                                 }
@@ -367,7 +365,7 @@ int main (int argc, char *argv[]) {
                 case MODE_REDUCETRAINRANDOM:
                 case MODE_REDUCERANDOM:
                 case MODE_REDUCEJ4RANDOM:
-                        aequal = std::equal (array, array + ad.N * ad.ncols, reduction->array);
+                        aequal = std::equal (array, array + arrayclass.N * arrayclass.ncols, reduction->array);
 
                         if (!aequal) {
                                 ++wrong;

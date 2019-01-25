@@ -110,12 +110,7 @@ object.
            [1, 1],
            [1, 1]], dtype=int16)
 
-The C++ class is:
-
-.. doxygenstruct:: array_link
-..    :no-link:
-
-..    :outline:
+The C++ class is :cpp:func:`array_link`.
     
 Reading and writing arrays
 --------------------------

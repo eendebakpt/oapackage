@@ -1322,6 +1322,10 @@ int fastj3 (carray_t *array, rowindex_t N, const int J, const colindex_t *pp) {
         return (jval);
 }
 
+// forward declaration
+lmc_t LMCreduction(array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
+	LMCreduction_t *reduction, const OAextend &oaextend);
+
 lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj) {
         LMCreduction_helper_t &tmpStatic = * (acquire_LMCreduction_object () );
@@ -1352,7 +1356,7 @@ lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                 // fall back to original method
                 dyndata_t dyndata (adin.N);
 
-                lmc_t ret = LMCreduce (al.array, al.array, &adin, &dyndata, &reduction, oaextend);
+                lmc_t ret = LMCreduction (al.array, al.array, &adin, &dyndata, &reduction, oaextend);
                 return ret;
         }
 
@@ -1563,7 +1567,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
                 adfix.show_colgroups ();
         }
 
-        ret = LMCreduce (array, array, &adfix, &dyndata, &reduction, oaextend);
+        ret = LMCreduction (array, array, &adfix, &dyndata, &reduction, oaextend);
 
         if (verbose)
                 myprintf ("  ret %d\n", ret);
@@ -1580,6 +1584,39 @@ inline double jj452double (const double *ww) {
         for (size_t i = 0; i < 6; i++)
                 val = val * 64 + ww[i];
         return val;
+}
+
+/// return true if target is in root form, otherwise return false
+inline bool check_root_form(const array_t *array, const arraydata_t &arrayclass) {
+	array_t *root = create_array(arrayclass.N, arrayclass.strength);
+	create_root(root, &arrayclass);
+	if (std::equal(array, array + arrayclass.N * arrayclass.strength, root)) {
+		destroy_array(root);
+		return true;
+	}
+	else {
+		destroy_array(root);
+		return false;
+	}
+}
+
+/// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
+inline int check_root_update(carray_t *original, const arraydata_t &arrayclass, array_t *target) {
+	int changed = 0;
+
+	array_t *root = create_array(arrayclass.N, arrayclass.strength);
+	create_root(root, &arrayclass);
+	if (!std::equal(original, original + arrayclass.N * arrayclass.strength, root)) {
+		copy_array(root, target, arrayclass.N, arrayclass.strength);
+		if (arrayclass.ncols>arrayclass.strength) {
+		  for (int j = 0; j < arrayclass.N; j++)
+			  target[arrayclass.N * arrayclass.strength + j] = arrayclass.s[arrayclass.strength] + 100;
+	}
+		changed = 1;
+	}
+	destroy_array(root);
+
+	return changed;
 }
 
 /// helper function to calculate J-values
@@ -1619,8 +1656,7 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
 }
 
 
-lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend,
-                  int hack) {
+lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t &reduction, const OAextend &oaextend) {
         const int dverbose = 0;
         LMCreduction_helper_t &tmpStatic = reduction.getReferenceReductionHelper ();
 
@@ -1630,14 +1666,12 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         assert (jj < maxjj);
 #endif
         // perform basic integrity checks
-        if (!hack)
-                assert (adin.ncolgroups == 1);
 
         assert (adin.s[0] == 2);
         assert (jj >= adin.strength);
         myassert (adin.strength >= 3, "LMCcheckj5: strength should be >=3!");
 
-        if (reduction.mode >= OA_REDUCE && !hack) {
+        if (reduction.mode >= OA_REDUCE) {
                 printfd ("error: reduction mode not implemented for J5 ordering!!!\n");
         }
 
@@ -1664,7 +1698,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         if (al.n_columns < jj) {
                 // fall back to original method
                 dyndata_t dyndata (adin.N);
-                lmc_t ret = LMCreduce (al.array, al.array, &adin, &dyndata, &reduction, oaextend);
+                lmc_t ret = LMCreduction (al.array, al.array, &adin, &dyndata, &reduction, oaextend);
                 return ret;
         }
 
@@ -1683,8 +1717,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         colindex_t comby[maxjj];
 
         carray_t *array = al.array;
-        if (hack)
-                array = reduction.array;
 
         lmc_t ret = LMC_EQUAL;
 
@@ -1704,19 +1736,6 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         if (dverbose) {
                 myprintf ("LMCcheckj5: selected ncolsfirst %d, nc %d, jbase %d, wbase %f\n", ncolsfirst, nc, jbase,
                           wbase);
-        }
-
-        if (hack) {
-                if (hack >= 2) {
-                        myprintf ("LMCcheckj5: selected ncolsfirst %d, nc %d, jbase %d, wbase %f\n", ncolsfirst, nc,
-                                  jbase, wbase);
-                        print_array ("array:", array, al.n_rows, 5);
-                }
-                array = al.array;
-                if (hack >= 2) {
-                        myprintf ("--\n");
-                        print_array ("al.array:\n", array, al.n_rows, 5);
-                }
         }
 
         // loop over all possible combinations for the first jj columns
@@ -1835,7 +1854,7 @@ lmc_t LMCcheckLex (array_link const &al, arraydata_t const &ad) {
         arraydata_t adx = arraydata_t (&ad, al.n_columns);
         LMCreduction_t *reduction = new LMCreduction_t (&adx);
         OAextend oaextend;
-        result = LMCreduce (al.array, al.array, &ad, &dynd, reduction, oaextend);
+        result = LMCreduction (al.array, al.array, &ad, &dynd, reduction, oaextend);
 
         return result;
 }
@@ -1882,8 +1901,18 @@ std::vector< numtype > comb2perm(const std::vector< numtype > comb, int n) {
 	return w;
 }
 
+lmc_t LMCcheck(const array_link &al) {
+	myassert(al.is_orthogonal_array(), "input array is not an orthogonal array");
+	arraydata_t arrayclass = arraylink2arraydata(al);
+
+	OAextend oaextend(arrayclass);
+	LMCreduction_t reduction(&arrayclass);
+	reduction.init_state = INIT_STATE::COPY;
+	return LMCcheck(al, arrayclass, oaextend, reduction);
+}
+
 lmc_t LMCcheckOriginal (const array_link &al) {
-        assert (al.is2level ());
+        myassert (al.is2level (), "input array is not a 2-level array");
         arraydata_t ad = arraylink2arraydata (al);
         int strength = al.strength ();
 
@@ -1925,7 +1954,7 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
 
         switch (oaextend.getAlgorithm ()) {
         case MODE_ORIGINAL: {
-                lmc = LMCreduce (array, array, &ad, &dynd, &reduction, oaextend);
+                lmc = LMCreduction (array, array, &ad, &dynd, &reduction, oaextend);
         } break;
         case MODE_J4: {
                 array_link al (array, ad.N, ad.ncols, -20);
@@ -1934,12 +1963,12 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
         } break;
         case MODE_J5ORDER: {
                 myprintf ("LMCcheck: algorithm MODE_J5ORDER: code path untested\n");
-                lmc = LMCreduce (array, array, &ad, &dynd, &reduction, oaextend);
+                lmc = LMCreduction (array, array, &ad, &dynd, &reduction, oaextend);
         } break;
         case MODE_LMC_2LEVEL: {
                 array_link al (array, ad.N, ad.ncols, -20);
                 reduction.updateSDpointer (al, true);
-                lmc = LMCreduce (array, array, &ad, &dynd, &reduction, oaextend);
+                lmc = LMCreduction (array, array, &ad, &dynd, &reduction, oaextend);
         } break;
         case MODE_LMC_SYMMETRY: {
 			    myprintf("MODE_LMC_SYMMETRY not supported any more\n");
@@ -1969,12 +1998,6 @@ lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oae
         }
 
         return lmc;
-}
-
-lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
-                          const OAextend &oaextend) {
-        dyndata_t dyndata (ad->N, 0);
-        return LMCreduction_train (al.array, ad, &dyndata, reduction, oaextend);
 }
 
 /**
@@ -2042,7 +2065,7 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
                 reductiontmp.mode = OA_REDUCE;
                 reductiontmp.nred = 0;
 
-                ret = LMCreduce (atmp, atmp, ad, dyndata, &reductiontmp, oaextend);
+                ret = LMCreduction (atmp, atmp, ad, dyndata, &reductiontmp, oaextend);
 
                 if (verbose >= 3) {
                         myprintf ("### LMCreduction_train: concatenate the transformations (z=%d, column %d)\n", z,
@@ -2060,7 +2083,7 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
         reduction->maxdepth = -1;
         reductiontmp.transformation->reset ();
 
-        ret = LMCreduce (atmp, atmp, ad, dyndata, &reductiontmp, oaextend);
+        ret = LMCreduction (atmp, atmp, ad, dyndata, &reductiontmp, oaextend);
 
         if (verbose >= 2) {
                 myprintf ("### LMCreduction_train: concatenate the transformations (final round)\n");
@@ -2081,6 +2104,12 @@ lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const 
         destroy_array (atmp);
         delete[] cols;
         return ret;
+}
+
+lmc_t LMCreduction_train(const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
+	const OAextend &oaextend) {
+	dyndata_t dyndata(ad->N, 0);
+	return LMCreduction_train(al.array, ad, &dyndata, reduction, oaextend);
 }
 
 /// full reduction, no root-trick
@@ -2109,6 +2138,15 @@ lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t
         return ret;
 }
 
+bool is_root_form(const array_link &array, int strength) {
+	arraydata_t arrayclass = arraylink2arraydata(array, strength);
+
+	array_link root_array = array.selectFirstColumns(strength);
+	root_array.create_root(arrayclass);
+
+	return array.selectFirstColumns(strength) == root_array;
+}
+
 /*!
   LMC performs an LMC test or LMC reduction on a given array.
 
@@ -2124,7 +2162,7 @@ lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t
   \param dyndata Pointer to the dynamic OA data
   \return Value for LMC test
   */
-lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
+lmc_t LMCreduction (const array_t *original, const array_t *array, const arraydata_t *ad, const dyndata_t *dyndata,
                  LMCreduction_t *reduction, const OAextend &oaextend) {
 
         LMCreduction_helper_t &tmpStatic = reduction->getReferenceReductionHelper();
@@ -2139,13 +2177,13 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
 
                 if (reduction->init_state == COPY) {
                         reduction->setArray (array, ad->N, ad->ncols);
-                        reduction->init_state = COPY;
                 }
 
                 bool rootform = check_root_form (reduction->array, *ad);
 
                 if (!rootform) {
-                        printfd ("LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs "
+						if (checkloglevel(DEBUG) )
+	                        printfd ("LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs "
                                  "special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d, OA_REDUCE_PARTIAL %d)\n",
                                  reduction->mode, OA_TEST, OA_REDUCE, OA_REDUCE_PARTIAL);
 
@@ -2233,7 +2271,7 @@ lmc_t LMCreduce (const array_t *original, const array_t *array, const arraydata_
                                 print_perm (newdyndata.colperm, ad->ncols);
                         }
 
-                        ret = LMCreduce (original, array, ad, &newdyndata, reduction, oaextend);
+                        ret = LMCreduction (original, array, ad, &newdyndata, reduction, oaextend);
 
                         if (ret == LMC_LESS) {
                                 log_print (DEBUG + 1, "LMC at level %d: received LMC_less, doing break\n",
@@ -2331,22 +2369,22 @@ void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, 
         }
 }
 
-array_link reduceLMCform (const array_link &al) {
-		if (! (al.strength() >= 2) ) {
+array_link reduceLMCform (const array_link &array) {
+		if (! (array.strength() >= 2) ) {
 			throw_runtime_exception("strength should be at least 2");
 		}
         int strength = 2; // assume strength is  2
 
-        arraydata_t ad = arraylink2arraydata (al, 0, strength);
+        arraydata_t ad = arraylink2arraydata (array, 0, strength);
         LMCreduction_t *reduction = new LMCreduction_t (&ad);
         dyndata_t dynd = dyndata_t (ad.N);
-        const array_t *array = al.array;
         reduction->mode = OA_REDUCE;
-        reduction->setArray (al);
+        reduction->setArray (array);
         OAextend oaextend;
-        lmc_t result = LMCreduce (array, array, &ad, &dynd, reduction, oaextend);
+		const array_t *array_pointer = array.array;
+		lmc_t result = LMCreduction (array_pointer, array_pointer, &ad, &dynd, reduction, oaextend);
 
-        array_link nf = reduction->transformation->apply (al);
+        array_link nf = reduction->transformation->apply (array);
 
         return nf;
 }
@@ -2496,7 +2534,7 @@ array_transformation_t reductionDOP (const array_link &input_array, int verbose)
                 reduction.init_state = INIT;
                 reduction.setArray (alf);
                 int changed = check_root_update (alf.array, ad, reduction.array);
-                copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns); // hack?
+                copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns); 
         }
 
         lmc_t ret = LMCcheck (alf, ad, oaextend, reduction);

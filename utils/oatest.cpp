@@ -130,13 +130,14 @@ int main (int argc, char *argv[]) {
 
 
 
-		array_link al = exampleArray(36, verbose);
-		myassert(al.is_conference(2), "check on double conference design type");
+		array_link array = exampleArray(0);
+		lmc_t lmc_type = LMCcheck(array);
 
-		for (int i = 0; i < 100; i++) {
-			myprintf("iteration %d\n", i);
-			myassert(testLMC0checkDC(al, verbose >= 2), "testLMC0checkDC");
-		}
+
+		array = array.randomperm();
+		array.showarray();
+		array_link reduced_array = reduceLMCform(array);
+		reduced_array.showarray();
 		exit(0);
 
 		try {

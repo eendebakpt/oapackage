@@ -352,7 +352,7 @@ struct LMCreduction_t {
 
       public:
         LMCreduction_t (const LMCreduction_t &at); /// copy constructor
-        LMCreduction_t (const arraydata_t *ad);
+        LMCreduction_t (const arraydata_t *arrayclass);
         ~LMCreduction_t ();
 
         LMCreduction_t &operator= (const LMCreduction_t &at); /// Assignment operator
@@ -547,58 +547,42 @@ struct dyndata_t {
         void initdata (const dyndata_t &dd);
 };
 
-/// return true if target is in root form, otherwise return false
-inline bool check_root_form (const array_t *array, const arraydata_t &ad) {
-        array_t *root = create_array (ad.N, ad.strength);
-        create_root (root, &ad);
-        if (std::equal (array, array + ad.N * ad.strength, root)) {
-                destroy_array (root);
-                return true;
-        } else {
-                destroy_array (root);
-                return false;
-        }
-}
+/** Return True if the array is in root form 
+ *
+ * \param array Array to check
+ * \param strength Strength to use
+ * \return True if the array is in root form for the specified strength
+ */
+bool is_root_form(const array_link &array, int strength);
 
-/// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
-inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t *target) {
-        int changed = 0;
-
-        array_t *root = create_array (ad.N, ad.strength);
-        create_root (root, &ad);
-        if (!std::equal (original, original + ad.N * ad.strength, root)) {
-                copy_array (root, target, ad.N, ad.strength);
-                for (int j = 0; j < ad.N; j++)
-                        target[ad.N * ad.strength + j] = ad.s[ad.strength] + 100;
-                changed = 1;
-        }
-        destroy_array (root);
-
-        return changed;
-}
 
 typedef double jj45_t;
-
 
 /** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
                           const OAextend &oaextend);
-/** helper function for LMC reduction */
-lmc_t LMCreduction_train (const array_t *original, const arraydata_t *ad, const dyndata_t *dyndata,
-                          LMCreduction_t *reduction, const OAextend &oaextend);
 
-/// helper function
-lmc_t LMCreduce (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
-                LMCreduction_t *reduction, const OAextend &oaextend);
-
-/// generic LMCcheck function
+/// Perform LMC check or reduction on an array
 lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
 
-/// generic LMCcheck function
-lmc_t LMCcheck (const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
+/// Perform LMC check or reduction on an array
+lmc_t LMCcheck (const array_link &array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
 
-/// direct LMC check using the original LMC check
-lmc_t LMCcheckOriginal (const array_link &al);
+/** Perform LMC check on an orthogonal array
+ *
+ * \param array Array to be checked for LMC minimal form
+ * \returns Result of the LMC check
+ */
+lmc_t LMCcheck(const array_link &array);
+
+/** Perform LMC check on a 2-level orthogonal array
+*
+* The algorithm used is the original algorithm from "Complete enumeration of pure-level and mixed-level orthogonal arrays", Schoen et al, 2009
+*
+* \param array Array to be checked for LMC minimal form
+* \returns Result of the LMC check
+*/
+lmc_t LMCcheckOriginal (const array_link &array);
 
 /// reduce arrays to canonical form using delete-1-factor ordering
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
@@ -616,24 +600,23 @@ void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, 
 std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose = 0);
 
 /// reduce an array to canonical form using LMC ordering
-array_link reduceLMCform (const array_link &al);
+array_link reduceLMCform (const array_link &array);
 
 /// reduce an array to canonical form using delete-1-factor ordering
-array_link reduceDOPform (const array_link &al, int verbose = 0);
+array_link reduceDOPform (const array_link &array, int verbose = 0);
 
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);
 
-/// Perform LMC check lexicographically
-lmc_t LMCcheckLex (array_link const &al, arraydata_t const &ad);
+/// Perform  minimal form check with LMC orderin
+lmc_t LMCcheckLex(array_link const &array, arraydata_t const &arrayclass);
 
-/// Perform minimal form check for with J4 method
-lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
+/// Perform minimal form check with J4 ordering
+lmc_t LMCcheckj4 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
 /// Perform minimal form check for J5 ordering
-lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
-                  int hack = 0);
+lmc_t LMCcheckj5 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend);
 
 
 /**

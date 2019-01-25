@@ -1627,7 +1627,6 @@ double Defficiency (const array_link &al, int verbose) {
         int N = n;
         double Deff = -1;
 
-        // DMatrix mymatrix(n, m); array2eigenxf(al, mymatrix);
         DMatrix mymatrix = array2eigenModelMatrix (al);
 
         Eigen::FullPivLU< DMatrix > lu_decomp (mymatrix);
@@ -1637,7 +1636,7 @@ double Defficiency (const array_link &al, int verbose) {
         SelfAdjointEigenSolver< DMatrix > es;
         es.compute (mm);
         const DVector evs = es.eigenvalues ();
-        DVector S = evs; // sqrt(S);
+        DVector S = evs; 
 
         if (S[m - 1] < 1e-15 || rank < m) {
                 if (verbose >= 2) {
