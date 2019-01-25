@@ -1604,8 +1604,10 @@ inline int check_root_update(carray_t *original, const arraydata_t &arrayclass, 
 	create_root(root, &arrayclass);
 	if (!std::equal(original, original + arrayclass.N * arrayclass.strength, root)) {
 		copy_array(root, target, arrayclass.N, arrayclass.strength);
-		for (int j = 0; j < arrayclass.N; j++)
-			target[arrayclass.N * arrayclass.strength + j] = arrayclass.s[arrayclass.strength] + 100;
+		if (arrayclass.ncols>arrayclass.strength) {
+		  for (int j = 0; j < arrayclass.N; j++)
+			  target[arrayclass.N * arrayclass.strength + j] = arrayclass.s[arrayclass.strength] + 100;
+	}
 		changed = 1;
 	}
 	destroy_array(root);
