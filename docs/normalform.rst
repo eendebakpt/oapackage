@@ -22,9 +22,26 @@ Reduction to LMC normal form
 ----------------------------
 
 The OApackage implements theory and methods from the article `Complete enumeration of pure-level and mixed-level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ to
-reduce orthogonal arrays to their LMC normal form. The C++ function to perform the reduction is:
+reduce orthogonal arrays to their LMC normal form. The C++ function to perform
+the reduction is :cpp:func:`reduceLMCform`:
 
-.. doxygenfunction:: reduceLMCform(const array_link&)
+.. doctest::
+
+  >>> import oapackage
+  >>> oapackage.set_srand(1)
+  >>> array = oapackage.exampleArray(1, 0).selectFirstColumns(3)
+  >>> array = array.randomperm()
+  >>> print('input array:'); array.transposed().showarraycompact()
+  input array:
+  1100010111010001
+  0101100110100011
+  0000001111101101
+  >>> reduced_array = oapackage.reduceLMCform(array)
+  >>> print('reduced array:'); reduced_array.transposed().showarraycompact()
+  reduced array:
+  0000000011111111
+  0000111100001111
+  0001011101110001
 
 It is also possible to check whether an array is in normal form
 with the :cpp:func:`LMCcheck` method:
@@ -39,15 +56,22 @@ with the :cpp:func:`LMCcheck` method:
     ... elif lmc_type == oapackage.LMC_LESS:
     ...      print('array is not in minimal form')
     array is in minimal form
+
+.. comment
+    The :cpp:func:`LMCcheck` method can also check on other normal form such as the J4 ordering or J5 ordering. 
+    For example: oaextend.setAlgorithm(oapackage.MODE_J4)
     
 Reduction to delete-one-factor projection form
 ----------------------------------------------
 
 The article `A canonical form for non-regular arrays based on generalized word length pattern values of delete-one-factor projections <https://econpapers.repec.org/paper/antwpaper/2014007.htm>`_
 :cite:`EendebakDOF` describes a canonical form of an orthogonal array based on delete-one-factor projections. 
-The C++ interface to delete-one-factor projection form is:
+The C++ interface to delete-one-factor projection form is :cpp:func:`reduceDOPform`.
+The reduction method works well for large arrays with a large variation in the projection values.
+    
 
-.. doxygenfunction:: reduceDOPform(const array_link&)
+.. comment
+    .. doxygenfunction:: reduceDOPform(const array_link&)
 
 
 An example on how to use this reduction is shown in :ref:`Example code for delete-one-factor projections`, which can be found
@@ -69,6 +93,7 @@ The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Naut
      
   .. doctest::
     
+    >>> oapackage.set_srand(1)
     >>> al = oapackage.exampleArray(0).randomperm()
     >>> al.showarray()
     array: 

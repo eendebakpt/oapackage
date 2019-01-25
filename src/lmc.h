@@ -562,15 +562,11 @@ typedef double jj45_t;
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,
                           const OAextend &oaextend);
 
-/// helper function
-lmc_t LMCreduction (array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
-                LMCreduction_t *reduction, const OAextend &oaextend);
-
-/// generic LMCcheck function
+/// Perform LMC check or reduction on an array
 lmc_t LMCcheck (const array_t *array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
 
-/// generic LMCcheck function
-lmc_t LMCcheck (const array_link &al, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
+/// Perform LMC check or reduction on an array
+lmc_t LMCcheck (const array_link &array, const arraydata_t &ad, const OAextend &oaextend, LMCreduction_t &reduction);
 
 /** Perform LMC check on an orthogonal array
  *
@@ -604,24 +600,23 @@ void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, 
 std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose = 0);
 
 /// reduce an array to canonical form using LMC ordering
-array_link reduceLMCform (const array_link &al);
+array_link reduceLMCform (const array_link &array);
 
 /// reduce an array to canonical form using delete-1-factor ordering
-array_link reduceDOPform (const array_link &al, int verbose = 0);
+array_link reduceDOPform (const array_link &array, int verbose = 0);
 
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);
 
-/// Perform LMC check lexicographically
-lmc_t LMCcheckLex (array_link const &al, arraydata_t const &ad);
+/// Perform  minimal form check with LMC orderin
+lmc_t LMCcheckLex(array_link const &array, arraydata_t const &arrayclass);
 
-/// Perform minimal form check for with J4 method
-lmc_t LMCcheckj4 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
+/// Perform minimal form check with J4 ordering
+lmc_t LMCcheckj4 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
 /// Perform minimal form check for J5 ordering
-lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &ad, LMCreduction_t &reduction, const OAextend &oaextend,
-                  int hack = 0);
+lmc_t LMCcheckj5 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend);
 
 
 /**

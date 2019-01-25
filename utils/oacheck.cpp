@@ -21,6 +21,10 @@
 #include "oaoptions.h"
 #include "tools.h"
 
+/// helper function from lmc.h
+lmc_t LMCreduction(array_t const *original, array_t const *array, const arraydata_t *ad, const dyndata_t *dyndata,
+	LMCreduction_t *reduction, const OAextend &oaextend);
+
 #define stringify(name) #name
 
 const int ncheckopts = 14;

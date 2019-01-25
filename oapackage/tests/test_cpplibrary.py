@@ -85,6 +85,11 @@ class TestReductions(unittest.TestCase):
         alr = oapackage.reduceLMCform(al)
         self.assertTrue(alr == al)
 
+        array = oapackage.exampleArray(1,1).selectFirstColumns(3)
+        array = array.randomperm()
+        reduced_array = oapackage.reduceLMCform(array)
+        self.assertEqual(array, reduced_array)
+    
     @only_python3
     def test_DOP(self):
         al = oapackage.exampleArray(1, 0)

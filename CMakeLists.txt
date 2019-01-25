@@ -9,7 +9,7 @@ PROJECT(OApackage)
 
 if(WIN32)
 	#message(STATUS "Set build type...")
-	set(CMAKE_CONFIGURATION_TYPES Release Debug CACHE TYPE INTERNAL FORCE) # no Debug
+	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
 	#set(CMAKE_BUILD_TYPE Release STRING)
 endif()
 
