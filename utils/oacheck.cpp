@@ -250,20 +250,7 @@ int main (int argc, char *argv[]) {
                         result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
-                case MODE_REDUCEJ4RANDOM: {
-                        /* LMC test with special code */
-                        printf ("WARNING: untested code\n");
-                        reduction->mode = OA_REDUCE;
 
-                        randtest->transformation->apply (array, testarray);
-
-                        copy_array (testarray, reduction->array, arrayclass.N, arrayclass.ncols);
-                        check_root_update (testarray, arrayclass, reduction->array);
-
-                        array_link al (testarray, arrayclass.N, arrayclass.ncols, -10);
-                        result = LMCcheckj4 (al, arrayclass, *reduction, oaextend);
-                        break;
-                }
                 case MODE_REDUCE:
                         /* LMC reduction */
 				{

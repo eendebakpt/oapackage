@@ -655,13 +655,13 @@ struct array_link {
 		bool firstDiff(const array_link &A, int &r, int &c, int verbose = 1) const;
 
         /// create root in arraylink
-        void create_root (const arraydata_t &ad, int fill_value = 0);
+        void create_root (const arraydata_t &arrayclass, int fill_value = 0);
 
         /// return fraction of nonzero elements in array
         double nonzero_fraction () const;
 
         /// fill array with zeros
-        void clear () { std::fill (array, array + n_rows * n_columns, 0); };
+		void clear();
 
         // getarraydata (Python interface). this needs to be of type int32 (default python int type)
         void getarraydata (int *pymat1, int n) { std::copy (this->array, this->array + n, pymat1); }

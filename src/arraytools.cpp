@@ -2123,6 +2123,8 @@ double array_link::nonzero_fraction () const {
         return nz / nn;
 }
 
+void array_link::clear() { std::fill(array, array + n_rows * n_columns, 0); };
+
 void array_link::setcolumn (int target_column, const array_link &source_array, int source_column ) const {
           assert (target_column >= 0);
           assert (target_column <= this->n_columns);

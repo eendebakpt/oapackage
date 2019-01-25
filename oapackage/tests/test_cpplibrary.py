@@ -40,6 +40,35 @@ def only_python3(function):
 import oapackage
 
 
+class TestMinimalFormCheck(unittest.TestCase):
+    def test_LMCcheck(self):
+        array = oapackage.exampleArray(1)
+        arrayclass = oapackage.arraylink2arraydata(array)
+    
+        lmc_type = oapackage.LMCcheck(array)
+        self.assertEqual(lmc_type, oapackage.LMC_MORE)
+
+        array2 = array.selectColumns([0,1,2,4,3])
+        lmc_type = oapackage.LMCcheck(array2)
+        self.assertEqual(lmc_type, oapackage.LMC_LESS)
+
+        array2 = array.selectColumns([2,1,0,3,4])
+        lmc_type = oapackage.LMCcheck(array2)
+        self.assertEqual(lmc_type, oapackage.LMC_LESS)
+       
+    def test_LMCcheckOriginal(self):
+        array = oapackage.exampleArray(1)
+        lmc_type = oapackage.LMCcheckOriginal(array)
+        self.assertEqual(lmc_type, oapackage.LMC_MORE)
+
+        array2 = array.selectColumns([0,1,2,4,3])
+        lmc_type = oapackage.LMCcheck(array2)
+        self.assertEqual(lmc_type, oapackage.LMC_LESS)
+
+        array = oapackage.exampleArray(5,0)
+        with self.assertRaises(RuntimeError):
+            lmc_type = oapackage.LMCcheckOriginal(array)
+
 class TestReductions(unittest.TestCase):
 
     def test_LMC(self):
@@ -306,6 +335,11 @@ class TestCppLibrary(unittest.TestCase):
         if getattr(self, 'assertRaisesRegex', None) is None:
             self.assertRaisesRegex = self.assertRaisesRegexp
 
+    def test_root_form(self):
+        array = oapackage.exampleArray(1,0)
+        self.assertTrue( oapackage.is_root_form(array,2))
+        self.assertFalse( oapackage.is_root_form(array,5))
+        
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)

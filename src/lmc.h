@@ -352,7 +352,7 @@ struct LMCreduction_t {
 
       public:
         LMCreduction_t (const LMCreduction_t &at); /// copy constructor
-        LMCreduction_t (const arraydata_t *ad);
+        LMCreduction_t (const arraydata_t *arrayclass);
         ~LMCreduction_t ();
 
         LMCreduction_t &operator= (const LMCreduction_t &at); /// Assignment operator
@@ -547,38 +547,16 @@ struct dyndata_t {
         void initdata (const dyndata_t &dd);
 };
 
-/// return true if target is in root form, otherwise return false
-inline bool check_root_form (const array_t *array, const arraydata_t &ad) {
-        array_t *root = create_array (ad.N, ad.strength);
-        create_root (root, &ad);
-        if (std::equal (array, array + ad.N * ad.strength, root)) {
-                destroy_array (root);
-                return true;
-        } else {
-                destroy_array (root);
-                return false;
-        }
-}
+/** Return True if the array is in root form 
+ *
+ * \param array Array to check
+ * \param strength Strength to use
+ * \return True if the array is in root form for the specified strength
+ */
+bool is_root_form(const array_link &array, int strength);
 
-/// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
-inline int check_root_update (carray_t *original, const arraydata_t &ad, array_t *target) {
-        int changed = 0;
-
-        array_t *root = create_array (ad.N, ad.strength);
-        create_root (root, &ad);
-        if (!std::equal (original, original + ad.N * ad.strength, root)) {
-                copy_array (root, target, ad.N, ad.strength);
-                for (int j = 0; j < ad.N; j++)
-                        target[ad.N * ad.strength + j] = ad.s[ad.strength] + 100;
-                changed = 1;
-        }
-        destroy_array (root);
-
-        return changed;
-}
 
 typedef double jj45_t;
-
 
 /** helper function for LMC reduction */
 lmc_t LMCreduction_train (const array_link &al, const arraydata_t *ad, LMCreduction_t *reduction,

@@ -1582,6 +1582,37 @@ inline double jj452double (const double *ww) {
         return val;
 }
 
+/// return true if target is in root form, otherwise return false
+inline bool check_root_form(const array_t *array, const arraydata_t &arrayclass) {
+	array_t *root = create_array(arrayclass.N, arrayclass.strength);
+	create_root(root, &arrayclass);
+	if (std::equal(array, array + arrayclass.N * arrayclass.strength, root)) {
+		destroy_array(root);
+		return true;
+	}
+	else {
+		destroy_array(root);
+		return false;
+	}
+}
+
+/// return 0 if target is equal to original, otherwise return 1 and copy root initialization + 1
+inline int check_root_update(carray_t *original, const arraydata_t &arrayclass, array_t *target) {
+	int changed = 0;
+
+	array_t *root = create_array(arrayclass.N, arrayclass.strength);
+	create_root(root, &arrayclass);
+	if (!std::equal(original, original + arrayclass.N * arrayclass.strength, root)) {
+		copy_array(root, target, arrayclass.N, arrayclass.strength);
+		for (int j = 0; j < arrayclass.N; j++)
+			target[arrayclass.N * arrayclass.strength + j] = arrayclass.s[arrayclass.strength] + 100;
+		changed = 1;
+	}
+	destroy_array(root);
+
+	return changed;
+}
+
 /// helper function to calculate J-values
 inline int fastJupdateValue(rowindex_t N, carray_t *tmpval) {
 	int jval = 0;
@@ -1888,7 +1919,7 @@ lmc_t LMCcheck(const array_link &al) {
 
 	OAextend oaextend(arrayclass);
 	LMCreduction_t reduction(&arrayclass);
-	reduction.init_state = INIT;
+	reduction.init_state = INIT_STATE::COPY;
 	return LMCcheck(al, arrayclass, oaextend, reduction);
 }
 
@@ -2119,6 +2150,15 @@ lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t
         return ret;
 }
 
+bool is_root_form(const array_link &array, int strength) {
+	arraydata_t arrayclass = arraylink2arraydata(array, strength);
+
+	array_link root_array = array.selectFirstColumns(strength);
+	root_array.create_root(arrayclass);
+
+	return array.selectFirstColumns(strength) == root_array;
+}
+
 /*!
   LMC performs an LMC test or LMC reduction on a given array.
 
@@ -2149,13 +2189,13 @@ lmc_t LMCreduction (const array_t *original, const array_t *array, const arrayda
 
                 if (reduction->init_state == COPY) {
                         reduction->setArray (array, ad->N, ad->ncols);
-                        reduction->init_state = COPY;
                 }
 
                 bool rootform = check_root_form (reduction->array, *ad);
 
                 if (!rootform) {
-                        printfd ("LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs "
+						if (checkloglevel(DEBUG) )
+	                        printfd ("LMCreduce: WARNING: LMC test or LMC reduction for arrays not in root form needs "
                                  "special initialization! reduction->mode %d (OA_TEST %d, OA_REDUCE %d, OA_REDUCE_PARTIAL %d)\n",
                                  reduction->mode, OA_TEST, OA_REDUCE, OA_REDUCE_PARTIAL);
 
