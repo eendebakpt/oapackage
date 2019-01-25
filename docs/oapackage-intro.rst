@@ -17,34 +17,36 @@ The Orthogonal Array package can be used to generate and manipulate designs. Add
 calculate some of their statistical properties. The following example shows how to generate an orthogonal array with
 8 runs and 2 factors, and calculate three relevant statistical properties:
 
-.. code-block:: python
-   :caption: Calculate D-efficiency 
+.. admonition::  Calculate D-efficiency
 
+  .. doctest:: 
+  
    >>> import oapackage
-   >>> al=oapackage.exampleArray(0) # Generate an orthogonal array 
-   >>> al.showarray() 
-   array: 
-   0  0
-   0  0 
-   0  1 
-   0  1
-   1  0
-   1  0
-   1  1
-   1  1
-   >>> D = al.Defficiency() # calculate the D-efficiency for estimating the [main-effects model?]
-   >>> array_rank = al.rank() # calculate the rank of the design
-   >>> print('D-efficiency D-efficiency %f, rank %d' % (D, array_rank) )
+   >>> array=oapackage.exampleArray(0) # define an orthogonal array 
+   >>> array.showarray() 
+     array:
+       0   0
+       0   0
+       0   1
+       0   1
+       1   0
+       1   0
+       1   1
+       1   1
+   >>> D = array.Defficiency() # calculate the D-efficiency for estimating the [main-effects model?]
+   >>> array_rank = array.rank() # calculate the rank of the design
+   >>> print('D-efficiency %f, rank %d' % (D, array_rank) )
    D-efficiency 1.000000, rank 2
-   >>> gwlp = al.GWLP() # calculate the generalized word length pattern
-   >>> print('Generalized wordlength pattern: %s' % gwlp )
+   >>> gwlp = array.GWLP() # calculate the generalized word length pattern
+   >>> print('Generalized wordlength pattern: %s' % (gwlp,) )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
 Interfaces
 ----------
 
-The Orthogonal Array package has interfaces in C++ and Python. These interfaces include command line 
-tools for generating, manipulating and analyzing all the types of designs. 
+The Orthogonal Array package has interfaces in C++ and Python. These package also includes command line 
+tools for generating, manipulating and analyzing all the types of designs. In the documentation here you will find references to
+both the Python and the C++ interface.
 
 For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab and R interfaces; see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_
