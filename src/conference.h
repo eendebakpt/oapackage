@@ -4,10 +4,10 @@ Contains functionality to generate and analyse conference designs.
 
 For more information see:
 
-* https://en.wikipedia.org/wiki/Conference_matrix
-* "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2018
+- https://en.wikipedia.org/wiki/Conference_matrix
+- "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2019
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2018
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -220,7 +220,7 @@ class CandidateGeneratorDouble : public CandidateGeneratorBase {
 arraylist_t extend_conference (const arraylist_t &lst, const conference_t conference_type, int verbose,
                                int select_isomorphism_classes = 0);
 
-/// plain version without caching
+/// Extend a list of conference designs with a single column, plain version without caching
 arraylist_t extend_conference_plain (const arraylist_t &lst, const conference_t conference_type, int verbose,
                                      int select_isomorphism_classes = 0);
 
