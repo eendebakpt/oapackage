@@ -975,8 +975,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
                                         print_array (array, ad->N, ad->ncols);
                                 }
                                 /* the extension found is LMC */
-                                // printf("found array: oaextend.extendarraymode %d (APPENDFULL %d)\n",
-                                // oaextend.extendarraymode, OAextend::APPENDFULL);
                                 switch (oaextend.extendarraymode) {
                                 case OAextend::APPENDFULL: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);

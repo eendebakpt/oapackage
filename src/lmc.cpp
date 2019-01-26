@@ -515,6 +515,7 @@ void dyndata_t::getColperm(colpermtypelight &cp) const {
 	std::copy(this->colperm, this->colperm + this->col + 1, cp.data_pointer);
 }
 
+/// allocate structure to keep track of row sorting
 rowsort_t * allocate_rowsort(int N) {
   return (rowsort_t *)malloc (sizeof (rowsort_t) * N);
 }

@@ -65,7 +65,7 @@ enum lmc_t {
 /// different algorithms for minimal form check
 enum algorithm_t {
 	/// LMC minimal form
-        MODE_ORIGINAL,
+	MODE_LMC,
 	/// LMC minimal form with J4 method
         MODE_J4,
 	/// J5 minimal form
@@ -84,7 +84,8 @@ enum algorithm_t {
 	/// J5 minimal form
         MODE_J5ORDER_2LEVEL
 };
-#define MODE_LMC MODE_ORIGINAL
+
+const algorithm_t MODE_ORIGINAL = MODE_LMC;
 
 inline std::string algorithm_t_list () {
         std::string ss =
@@ -238,7 +239,7 @@ void clear_LMCreduction_pool ();
 
 /// variable indicating the state of the reduction process
 enum REDUCTION_STATE {
-	/// the reduction is till 
+	/// the reduction is equal to the initial
 	REDUCTION_INITIAL,
 	/// the reduction was changed 
 	REDUCTION_CHANGED };
@@ -426,12 +427,6 @@ struct LMCreduction_t {
       private:
         void free ();
 };
-
-/// allocate structure to keep track of row sorting
-rowsort_t * allocate_rowsort(int N);
-
-/// deallocate row structure 
-void deallocate_rowsort(rowsort_t *& rowsort);
 
 /// Structure to sort rows of arrays
 class rowsorter_t

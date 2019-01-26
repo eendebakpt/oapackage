@@ -4529,6 +4529,8 @@ void arrayfile_t::finisharrayfile() {
 	this->closefile();
 }
 
+void arrayfile_t::setVerbose(int v) { this->verbose = v; }
+
 void arrayfile_t::writeheader () {
         assert (this->nfid);
 
@@ -5151,14 +5153,6 @@ arrayfile_t::~arrayfile_t () {
         closefile ();
 }
 
-/**
- * @brief Create array file
- * @param fname
- * @param rows
- * @param cols
- * @param narrays
- * @return
- */
 arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode,
                                int nbits) {
         std::string s = fname;
@@ -5167,13 +5161,7 @@ arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narray
         return afile;
 }
 
-/**
- * @brief Read a binary array from a file
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
+
 void arrayfile_t::read_array_binary (array_t *array, const int nrows, const int ncols) {
         switch (this->nbits) {
         case 1: {
@@ -5186,7 +5174,6 @@ void arrayfile_t::read_array_binary (array_t *array, const int nrows, const int 
 
                 // fill bit array
                 for (int i = 0; i < nrows * ncols; i++) {
-                        // IDEA: this can be made faster by parsing multiple bits
                         array[i] = bit_array_get_bit_nocheck (bitarr, i);
                 }
                 bit_array_free (bitarr);
@@ -5214,15 +5201,7 @@ void arrayfile_t::read_array_binary (array_t *array, const int nrows, const int 
         }
 }
 
-/**
- * @brief Write an array in binary mode to a file
- *
- * We only write the section of columns of the array that differs from the previous array.
- * @param fid
- * @param array
- * @param nrows
- * @param ncols
- */
+
 void arrayfile_t::write_array_binary_diff (const array_link &A) {
         myassert (this->rwmode == WRITE || this->rwmode == READWRITE, "error: arrayfile_t not in write mode");
         myassert (A.max () <= 1, "arrayfile_t::write_array_binary_diff: array is not binary");
