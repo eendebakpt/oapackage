@@ -86,7 +86,10 @@ void test_array_manipulation(int verbose) {
 	if (verbose >= 2)
 		myprintf("test selectFirstColumns\n");
 	array_link al5 = al.selectFirstColumns(5);
-	assert(al5.n_columns == 5);
+	myassert(al5.n_columns == 5);
+
+	al.at(0, 0) = -1;
+	myassert(al.at(0) == -1, "element of array set to negative value"  );
 }
 
 /// check transformation inverse. return 0 if test is good

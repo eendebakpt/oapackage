@@ -2127,7 +2127,7 @@ void array_link::clear() { std::fill(array, array + n_rows * n_columns, 0); }
 
 void array_link::setcolumn (int target_column, const array_link &source_array, int source_column ) const {
           assert (target_column >= 0);
-          assert (target_column <= this->n_columns);
+		  assert(target_column <= this->n_columns);
           assert (this->n_rows == source_array.n_rows);
           std::copy (source_array.array + source_column * this->n_rows, source_array.array + (source_column + 1) * this->n_rows,
                     this->array + this->n_rows * target_column);
@@ -2276,7 +2276,7 @@ void array_link::create_root (const arraydata_t &ad, int fill_value) {
                           this->n_columns, ad.strength);
                 return;
         }
-        assert (ad.strength <= this->n_columns);
+        myassert (ad.strength <= this->n_columns, "strength invalid");
         std::fill (this->array, this->array + this->n_rows * this->n_columns, fill_value);
         ::create_root ((this->array), &ad);
 }
@@ -2688,7 +2688,7 @@ Eigen::MatrixXi array2eigenModelMatrixInt (const array_link &al) {
         int m = 1 + k + k * (k - 1) / 2;
 
         if (n * k > 0) {
-                assert (*std::max_element (al.array, al.array + al.n_columns * al.n_rows) < 2);
+			myassert(al.max() < 2, "array should be 2-level array");
         }
 
         // create data in integer type (we are working with 2-level arrays, convert them later */
@@ -2932,7 +2932,7 @@ arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colind
 arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
         s = new array_t[ncols];
-        assert (factor_levels.size () > 0);
+        myassert (factor_levels.size () > 0, "array class should have at least 1 factor");
         if ((int)factor_levels.size () < nc) {
                 myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
                 nc = factor_levels.size ();
@@ -3410,7 +3410,7 @@ void arraydata_t::complete_arraydata_splitn (int ns) {
                 if (this->s[i] != this->s[i + 1]) {
                         myprintf ("complete_arraydata_splitn: s[%d]=%d, s[%d]=%d, NOT IMPLEMENTED\n", i, this->s[i],
                                   i + 1, this->s[i + 1]);
-                        assert (0);
+                        myassert(0, "not implemented");
                 }
         }
 
@@ -3527,7 +3527,7 @@ void jstruct_t::calculateAberration() {
 void jstruct_t::calc (const array_link &al) {
         int *column_indices = new_perm_init< int > (jj);
 
-        assert (al.is2level ());
+        myassert (al.is2level (), "array is not 2-level array");
         for (int x = 0; x < this->nc; x++) {
                 int jv = jvaluefast (al.array, al.n_rows, jj, column_indices);
                 this->values[x] = jv;
@@ -3607,7 +3607,7 @@ array_link createJdtable (const array_link &al) {
 }
 
 void jstruct_t::calcj4 (const array_link &al) {
-        assert (jj == 4);
+        myassert (jj == 4, "jj should be 4");
         int *pp = new_perm_init< int > (jj);
         int ncolcombs = ncombs (k, jj);
         const int nr = al.n_rows;
@@ -3637,7 +3637,7 @@ void jstruct_t::calcj4 (const array_link &al) {
 }
 
 void jstruct_t::calcj5 (const array_link &al) {
-        assert (jj == 5);
+        myassert (jj == 5, "jj should be 5");
         int *pp = new_perm_init< int > (jj);
         int ncolcombs = ncombs (k, jj);
         const int nr = al.n_rows;
@@ -4247,7 +4247,7 @@ int arrayfile_t::isopen () const {
 }
 
 int arrayfile_t::append_arrays (const arraylist_t &arrays, int startidx) {
-        assert (this->nfid);
+         myassert (this->nfid!=0, "file pointer is zero");
 
         for (arraylist_t::const_iterator it = arrays.begin (); it != arrays.end (); it++) {
                 this->append_array (*it, startidx);

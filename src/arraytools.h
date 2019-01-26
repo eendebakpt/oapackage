@@ -117,8 +117,8 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
 extern "C" {}
 
-
-typedef short int array_t; /** type of elements in an orthogonal array */ /* array_t should be signed! */
+/// data type for elements of orthogonal arrays
+typedef short int array_t; 
 typedef const short int carray_t;                                         /** constant version of array_t */
 
 /* change definition below together with array_t !!!! */
@@ -729,6 +729,7 @@ array_link exampleArray(int idx = 0, int verbose = 0);
 /// calculate J-characteristics for a conference design
 std::vector< int > Jcharacteristics_conference(const array_link &al, int jj, int verbose = 0);
 
+/// data type for elements of conference designs
 typedef signed char conf_t;
 typedef std::vector< conf_t > conference_column;
 typedef std::vector< conference_column > conference_column_list;
@@ -1433,7 +1434,7 @@ template < class Container, class IntType > void removeElements (Container &al, 
 template < class MType >
 /// Make a selection of arrays from a list, append to list
 void selectArraysMask (const arraylist_t &al, std::vector< MType > &mask, arraylist_t &rl) {
-        assert (al.size () == mask.size ());
+        myassert (al.size () == mask.size ());
         for (int idx = 0; idx < al.size (); idx++) {
                 if (mask[idx]) {
                         rl.push_back (al.at (idx));
