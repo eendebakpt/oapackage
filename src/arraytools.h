@@ -117,9 +117,10 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
 extern "C" {}
 
-
-typedef short int array_t; /** type of elements in an orthogonal array */ /* array_t should be signed! */
-typedef const short int carray_t;                                         /** constant version of array_t */
+/// data type for elements of orthogonal arrays
+typedef short int array_t; 
+/// constant version of array_t 
+typedef const short int carray_t;                                         
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_SHORT
@@ -129,8 +130,10 @@ typedef short int rowindex_t;       /** type used for row indexing */
 typedef int colindex_t;             /** type used for column indexing */
 typedef const int const_colindex_t; /** constant version of type used for column indexing */
 
-typedef array_t *array_p;   /** pointer to array */
-typedef carray_t *carray_p; /** point to constant array */
+/// pointer to array 
+typedef array_t *array_p;   
+/// pointer to constant array 
+typedef carray_t *carray_p; 
 
 typedef rowindex_t *rowperm_t; /** type of row permutation */
 typedef colindex_t *colperm_t; /** type of column permutation */
@@ -729,8 +732,11 @@ array_link exampleArray(int idx = 0, int verbose = 0);
 /// calculate J-characteristics for a conference design
 std::vector< int > Jcharacteristics_conference(const array_link &al, int jj, int verbose = 0);
 
+/// data type for elements of conference designs
 typedef signed char conf_t;
+/// data type for column of a conference design
 typedef std::vector< conf_t > conference_column;
+/// list of columns of conference designs
 typedef std::vector< conference_column > conference_column_list;
 
 /// concatenate 2 arrays in vertical direction
@@ -1159,6 +1165,8 @@ enum arrayfilemode_t {
 	/// automatically determine the format (but binary)
         A_AUTOMATIC_BINARY
 };
+
+/// file mode for array file
 enum afilerw_t { READ, WRITE, READWRITE };
 
 /** @brief Structure for reading or writing a file with arrays
@@ -1288,13 +1296,19 @@ struct arrayfile_t {
 
 		void finisharrayfile();
 
-        void setVerbose (int v) { this->verbose = v; }
+		/// set verbosity level
+		void setVerbose(int v);
 
       private:
         int read_array_binary_zero (array_link &a);
         void write_array_binary (carray_t *array, const int nrows, const int ncols);
-        void write_array_binary (const array_link &A);          
-        void write_array_binary_diff (const array_link &A);     
+        void write_array_binary (const array_link &A);      
+		/** Write an array in binary diff mode to a file
+		*
+		* We only write the section of columns of the array that differs from the previous array.
+		*/
+        void write_array_binary_diff (const array_link &A);    
+		/** Write an array in binary diffzero mode */
         void write_array_binary_diffzero (const array_link &A); 
 
       public:
@@ -1336,6 +1350,7 @@ struct arrayfile_t {
 
       protected:
         void writeheader ();
+		/// Read a binary array from a file
         void read_array_binary (array_t *array, const int nrows, const int ncols);
 };
 }
@@ -1397,6 +1412,8 @@ void selectArrays (const std::string filename, std::vector< int > &idx, arraylis
 /// Select a single array from a file
 array_link selectArrays (std::string filename, int ii);
 
+/** Create file containing arrays
+*/
 arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays,
                                arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits = 8);
 
@@ -1433,7 +1450,7 @@ template < class Container, class IntType > void removeElements (Container &al, 
 template < class MType >
 /// Make a selection of arrays from a list, append to list
 void selectArraysMask (const arraylist_t &al, std::vector< MType > &mask, arraylist_t &rl) {
-        assert (al.size () == mask.size ());
+        myassert (al.size () == mask.size ());
         for (int idx = 0; idx < al.size (); idx++) {
                 if (mask[idx]) {
                         rl.push_back (al.at (idx));

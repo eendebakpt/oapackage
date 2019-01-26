@@ -196,14 +196,13 @@ int main (int argc, char *argv[]) {
 				{
 					/* LMC test with reduction code */
 					reduction->mode = OA_TEST;
-					result = LMCcheck(array, arrayclass, oaextend, *reduction);
+					result = LMCcheck(al, arrayclass, oaextend, *reduction);
 					break;
 				}
                 case MODE_CHECKJ4: {
                         /* LMC test with special code */
                         reduction->mode = OA_TEST;
                         reduction->init_state = COPY;
-                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
                         oaextend.setAlgorithm (MODE_J4, &arrayclass);
                         result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
@@ -211,7 +210,6 @@ int main (int argc, char *argv[]) {
                 case MODE_REDUCEJ4: {
                         /* LMC test with special code */
                         reduction->mode = OA_REDUCE;
-                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
                         reduction->setArray (al);
                         result = LMCcheckj4 (al, arrayclass, *reduction, oaextend);
                         break;
@@ -250,7 +248,6 @@ int main (int argc, char *argv[]) {
                         /* LMC test with special code */
                         printf ("oacheck: WARNING: MODE_CHECKJ5X: untested code, not complete\n");
                         reduction->mode = OA_REDUCE;
-                        array_link al (array, arrayclass.N, arrayclass.ncols, -10);
                         result = LMCcheck (al, arrayclass, oaextend, *reduction);
                         break;
                 }
@@ -342,7 +339,7 @@ int main (int argc, char *argv[]) {
                                 log_print (QUIET, "Reduced array %i/%i to lmc form.\n", i, afile->narrays);
                                 if (checkloglevel (NORMAL)) {
                                         log_print (QUIET, "Original:\n");
-
+										
                                         print_array (array, afile->nrows, afile->ncols);
                                         print_array ("Reduction:\n", reduction->array, afile->nrows, afile->ncols);
                                         printf ("---------------\n");
