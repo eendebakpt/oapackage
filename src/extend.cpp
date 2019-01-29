@@ -160,26 +160,26 @@ struct split {
 	}
 };
 
-void OAextend::updateArraydata (arraydata_t *ad) const {
-        if (ad == 0)
+void OAextend::updateArraydata (arraydata_t *arrayclass) const {
+        if (arrayclass == 0)
                 return;
 
         switch (this->algmode) {
         case MODE_LMC_SYMMETRY:
         case MODE_ORIGINAL:
         case MODE_LMC_2LEVEL:
-                ad->order = ORDER_LEX;
+                arrayclass->order = ORDER_LEX;
                 break;
         case MODE_J4:
-                ad->order = ORDER_LEX;
+                arrayclass->order = ORDER_LEX;
                 break;
         case MODE_J5ORDER:
-                ad->order = ORDER_J5;
+                arrayclass->order = ORDER_J5;
                 break;
         case MODE_J5ORDERX:
         case MODE_J5ORDER_2LEVEL:
-                ad->order = ORDER_J5;
-                ad->order = ORDER_LEX;
+                arrayclass->order = ORDER_J5;
+                arrayclass->order = ORDER_LEX;
                 break;
         case MODE_AUTOSELECT:
         default:
@@ -975,8 +975,6 @@ int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex
                                         print_array (array, ad->N, ad->ncols);
                                 }
                                 /* the extension found is LMC */
-                                // printf("found array: oaextend.extendarraymode %d (APPENDFULL %d)\n",
-                                // oaextend.extendarraymode, OAextend::APPENDFULL);
                                 switch (oaextend.extendarraymode) {
                                 case OAextend::APPENDFULL: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);

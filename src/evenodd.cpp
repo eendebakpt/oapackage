@@ -147,7 +147,7 @@ arraylist_t depth_extend_sub_t::initialize (const arraylist_t &alist, const arra
                 lmc_t rx = LMC_EQUAL;
                 reduction.updateSDpointer (alist[k]);
 
-                lmc_t lmc = LMCcheck (alist[k].array, ad, oaextend, reduction);
+                lmc_t lmc = LMCcheck (alist[k], ad, oaextend, reduction);
                 int lc = reduction.lastcol;
                 //#pragma omp critical
                 {

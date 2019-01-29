@@ -39,7 +39,7 @@ The data analysis of the experiments conducted using the generated designs is le
 existing statistical software such as R [@Rpackage] and JMP [@wiki:JMP].
 
 To generate orthogonal arrays and conference designs, the OApackage uses an exhaustive 
-generation procedure with isomorphism pruning [@Eendebak2009], [@Schoen2018dsd]. To generate 
+generation procedure with isomorphism pruning [@Eendebak2009], [@Schoen2019]. To generate 
 optimal designs, the package uses a flexible optimality criterion and a coordinate-exchange 
 optimization algorithm [@Eendebak2015].
 

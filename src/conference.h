@@ -4,10 +4,10 @@ Contains functionality to generate and analyse conference designs.
 
 For more information see:
 
-* https://en.wikipedia.org/wiki/Conference_matrix
-* "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2018
+- https://en.wikipedia.org/wiki/Conference_matrix
+- "A Classification Criterion for Definitive Screening Designs", Schoen et al., The Annals of Statistics, 2019
 
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2018
+ Author: Pieter Eendebak <pieter.eendebak@gmail.com>
 
  Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -20,6 +20,11 @@ For more information see:
 #include "arrayproperties.h"
 #include "arraytools.h"
 #include "graphtools.h"
+
+#ifdef SWIG
+%ignore CandidateGeneratorBase;
+#endif
+
 
 /// print a candidate extension
 void print_column(const conference_column &column, const char *msg = 0);
@@ -38,22 +43,6 @@ void showCandidates (const std::vector< conference_column > &column_candidates);
  * \param add_zeros If True, then append a row of zeros
  */
 array_link conference2DSD(const array_link &conference_design, bool add_zeros = 1);
-
-/// structure to cache a list of candidate extensions
-struct conf_candidates_t {
-      public:
-        /// list of candidate extentions for each number of columns
-        std::vector< std::vector< conference_column > > ce;
-
-        /// print information about the set of candidate extentions
-        void info (int verbose = 1) const {
-                for (int i = 2; i < (int)ce.size (); i++) {
-                        if (verbose) {
-                                myprintf ("generateCandidateExtensions: k %d: %d candinates\n", i, (int)ce[i].size ());
-                        }
-                }
-        }
-};
 
 /// Structure representing the type of conference designs
 class conference_t {
@@ -231,7 +220,7 @@ class CandidateGeneratorDouble : public CandidateGeneratorBase {
 arraylist_t extend_conference (const arraylist_t &lst, const conference_t conference_type, int verbose,
                                int select_isomorphism_classes = 0);
 
-/// plain version without caching
+/// Extend a list of conference designs with a single column, plain version without caching
 arraylist_t extend_conference_plain (const arraylist_t &lst, const conference_t conference_type, int verbose,
                                      int select_isomorphism_classes = 0);
 
@@ -255,7 +244,7 @@ arraylist_t selectLMC0doubleconference (const arraylist_t &list, int verbose, co
 /// select conference arrays in LMC0 form
 arraylist_t selectLMC0 (const arraylist_t &list, int verbose, const conference_t &ctype);
 
-/** Generate candidate extensions (wrapper function)
+/** Generate candidate extensions for a conference design
  *
  * \param array Design to be extended
  * \param conference_type Class of conference designs
@@ -263,23 +252,24 @@ arraylist_t selectLMC0 (const arraylist_t &list, int verbose, const conference_t
  * \param verbose Verbosity level
  * \param filtersymm If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
+ * \return List of generated extensions
  */
 std::vector< conference_column > generateConferenceExtensions (const array_link &array, const conference_t &conference_type,
                                                    int zero_index, int verbose = 1, int filtersymm = 1,
                                                    int filterj2 = 1);
 
 /** Generate candidate extensions for restricted isomorphism classes */
-std::vector< conference_column > generateConferenceRestrictedExtensions (const array_link &al, const conference_t &conference_type,
+std::vector< conference_column > generateConferenceRestrictedExtensions (const array_link &array, const conference_t &conference_type,
                                                              int zero_index, int verbose = 1, int filtersymm = 1,
                                                              int filterip = 1);
 
-// generate extensions for double conference matrices in LMC0 form
-std::vector< conference_column > generateDoubleConferenceExtensions (const array_link &al, const conference_t &conference_type,
+/// generate extensions for double conference matrices in LMC0 form
+std::vector< conference_column > generateDoubleConferenceExtensions (const array_link &array, const conference_t &conference_type,
                                                          int verbose = 1, int filtersymm = 1, int filterip = 1,
                                                          int filterJ3 = 0, int filtersymminline = 1);
 
-// generate extensions for conference matrices in LMC0 form
-std::vector< conference_column > generateSingleConferenceExtensions (const array_link &al, const conference_t &conference_type,
+/// generate extensions for conference matrices in LMC0 form
+std::vector< conference_column > generateSingleConferenceExtensions (const array_link &array, const conference_t &conference_type,
                                                          int zero_index, int verbose, int filtersymm, int filterj2,
                                                          int filterj3, int filtersymminline = 0);
 
@@ -353,7 +343,7 @@ class DconferenceFilter {
         symmdata sd;
 
       public:
-		  DconferenceFilter(const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1);
+        DconferenceFilter(const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1);
 
         /// print object to stdout
 		void show() const;
@@ -369,11 +359,12 @@ class DconferenceFilter {
         /// return True if the extension satisfies all checks
         bool filter (const conference_column &c) const;
 
-        /** filter on partial column (only last col)
+        /** Filter on partial column (only last col)
          *
-         * maxrow (int): the number of rows that are valid
+         * \param column Extension column
+         * \param maxrow the number of rows that are valid
          **/
-        bool filterJpartial (const conference_column &c, int maxrow) const;
+        bool filterJpartial (const conference_column &column, int maxrow) const;
 
         /// return True if the extension satisfies all J-characteristic checks
 		bool filterJ(const conference_column &column, int j2start = 0) const;
@@ -407,16 +398,5 @@ class DconferenceFilter {
 
 };
 
-/** Inflate a candidate column
- *
- * The extensions are generated according to the symmertry specified by the symmetry group. Filtering is performed
- *using the filter object.
- *
- * From the filtering object only the J2 filtering is used.
- *
- * \return List of inflated extensions
- **/
-std::vector< conference_column > inflateCandidateExtension (const conference_column &basecandidate, const array_link &als,
-                                                const symmetry_group &alsg, const std::vector< int > &check_indices,
-                                                const conference_t &ct, int verbose, const DconferenceFilter &filter);
+
 

@@ -1,8 +1,9 @@
 numpy
+matplotlib
+iPython
+
+sphinx==1.7
 sphinxcontrib.bibtex
 nbsphinx
 sphinxcontrib.napoleon
-scanf
-matplotlib
-iPython
 breathe

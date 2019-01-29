@@ -42,18 +42,28 @@ class OAextend {
         /// init column with previous column in extension (if in the same column group)
         int init_column_previous;
 
-        /// append full array, append only extension column, store array to disk, or do nothing
-        enum { APPENDEXTENSION, APPENDFULL, STOREARRAY, NONE };
-        /// determined how the arrays are stored
-        int extendarraymode;
-        arrayfile_t storefile; // NOTE: we should make a copy constructor and assignment operator
+        /// Specification of how to use the generated extensions
+        enum extendarray_mode_t {
+			/// append extension column to extension list
+			APPENDEXTENSION,
+			/// append full array to extension list
+			APPENDFULL,
+			/// store extension to disk
+			STOREARRAY,
+			/// do not store generated extensions
+			NONE };
+
+        /// determines how the extension arrays are stored
+		extendarray_mode_t extendarraymode;
+
+        arrayfile_t storefile; 
 
         // special cases
         j5structure_t j5structure;
 
       private:
         /// Algorithm mode
-        algorithm_t algmode; // MODE_ORIGINAL: original, MODE_J4: j4 check, ...
+        algorithm_t algmode; 
 
       public:
         OAextend ()
@@ -86,13 +96,18 @@ class OAextend {
         /// Return algorithm used (as string)
         std::string getAlgorithmName () const { return algnames (this->algmode); };
 
-        void updateArraydata (arraydata_t *ad = 0) const;
+		/// update the options structuer with the specified class of designs
+        void updateArraydata (arraydata_t *arrayclass = 0) const;
 
-        /// return preferred extension algorithm
-        static inline algorithm_t getPreferredAlgorithm (const arraydata_t &ad, int verbose = 0) {
+        /** return preferred extension algorithm
+		 *
+		 * \param arrayclass Class of designs to extend
+		 * \param verbose Verbosity level
+		 */
+        static algorithm_t getPreferredAlgorithm (const arraydata_t &arrayclass, int verbose = 0) {
                 if (verbose)
-                        myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", ad.ncolgroups, ad.s[0]);
-                if (ad.ncolgroups == 1 && ad.s[0] == 2 && (ad.strength == 3)) {
+                        myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", arrayclass.ncolgroups, arrayclass.s[0]);
+                if (arrayclass.ncolgroups == 1 && arrayclass.s[0] == 2 && (arrayclass.strength == 3)) {
                         return MODE_J4;
                 } else
                         return MODE_ORIGINAL;
@@ -130,11 +145,19 @@ struct extendpos {
 };
 
 /// Extend a list of orthogonal arrays
-int extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend, colindex_t extensioncol,
+int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
                       arraylist_t &extensions);
 
-/// Extend a list of orthogonal arrays
-arraylist_t extend_arraylist (const arraylist_t &alist, arraydata_t &arrayclass, OAextend const &oaextend_options);
+/** Extend a list of orthogonal arrays
+*
+* \param array_list The list of arrays to be extended
+* \param array_class Class of arrays to generate
+* \param oaextend_options Parameters for the extension algorithm
+* \return List of all generated arrays
+* 
+* @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+*/
+arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options);
 
 /** Extend a list of arrays with default options
 *
@@ -145,10 +168,10 @@ arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &array
 /** Extend a single orthogonal array
  *
  * \param al The array to be extended
- * \param fullad Class of arrays to generate
+ * \param array_class Class of arrays to generate
  * \param oaextend Parameters for the extension algorithm
  */
-arraylist_t extend_array (const array_link &al, arraydata_t &fullad, OAextend const &oaextend);
+arraylist_t extend_array (const array_link &al, arraydata_t &array_class, OAextend const &oaextend);
 
 /** Extend a single orthogonal array with the default LMC algorithm
  *
@@ -156,11 +179,17 @@ arraylist_t extend_array (const array_link &al, arraydata_t &fullad, OAextend co
  */
 arraylist_t extend_array (const array_link &al, arraydata_t &arrayclass);
 
-/// extend an array with a single column
+/** Extend an array with a single column
+ *
+ * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ */
 int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions,
                   OAextend const &oaextend);
 
-/// Run the extension algorithm starting with the root array 
+/** Run the LMC extension algorithm starting with the root array 
+ *
+ * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ */
 arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
@@ -185,20 +214,20 @@ struct dextend_t {
 
         static const int NO_VALUE = 0;
 
+		/// results of minimal form calculations
         std::vector< lmc_t > lmctype;
         /// last column changed in lmc check
         std::vector< int > lastcol;
 
-        /// A values
+        /// calculated efficiency values
         std::vector< double > Deff;
 
         /// indices of filtered arrays
         std::vector< int > filter;
 
-        /// check mode: 0: no filter, 1: classic, 2: predict
-        int filtermode;
+		dfilter_t filtermode;
 
-	dcalc_mode Dcheck;
+		dcalc_mode Dcheck;
 
         /// perform immediate LMC check in extension
         int directcheck;

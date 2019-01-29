@@ -178,7 +178,7 @@ int main (int argc, char *argv[]) {
 
         oaextendx.checkarrays = 0;
         oaextendx.use_row_symmetry = 0;
-        oaextendx.extendarraymode = 1;
+        oaextendx.extendarraymode = APPENDFULL;
         oaextendx.init_column_previous = INITCOLUMN_J5;
         // oaextendx.init_column_previous=INITCOLUMN_ZERO;
         oaextendx.nLMC = 500000;

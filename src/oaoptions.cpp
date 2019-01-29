@@ -31,15 +31,6 @@ std::string version () {
 
 /** @brief Print copyright notice
  */
-void print_copyright_old () {
-        myprintf (
-            "Orthogonal Arrays %s: Copyright TNO Science & Industry (2010), Copyright Pieter Eendebak (2011-2015)\n",
-            version ().c_str ());
-        myprintf ("For more details see the files README.txt and LICENSE.txt\n");
-}
-
-/** @brief Print copyright notice
- */
 void print_copyright () {
         myprintf ("Orthogonal Arrays %s\n", version ().c_str ());
         myprintf ("For more details see the files README.txt and LICENSE.txt\n");
