@@ -534,6 +534,9 @@ struct array_link {
         /// Calculate the projective estimation capacity sequence
         std::vector< double > PECsequence (int verbose = 0) const;
 
+		/// Calculate the projective information capacity sequence
+		std::vector< double > PICsequence(int verbose = 0) const;
+
         /// calculate rank of array
         int rank () const;
 

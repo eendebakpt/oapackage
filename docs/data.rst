@@ -253,7 +253,22 @@ The format is consists of a binary header:
 
 After the header there follow ``nc*nr [FLOAT64]`` values.
 
+MD5 sums
+~~~~~~~~
 
+To check data integrity on disk the packages includes functions to
+generate MD5 sums of designs. 
+
+.. admonition:: Calculate md5 sum of a design
+
+  .. doctest:: 
+
+     >>> import oapackage; al=oapackage.exampleArray(0)
+     >>> al.md5()
+     '6454c492239a8e01e3c01a864583abf2'
+
+The C++ functions are: :cpp:func:`array_link::md5`, 
+`md5`.
 
 Command line interface
 ----------------------

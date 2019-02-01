@@ -21,17 +21,25 @@ an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`. A :math:`{N}\times {N}` conference design :math:`E` such that :math:`E{E}^{T} = (n-1) I_{n}` is called a conference matrix; see :cite:`Elster1995`, :cite:`Colbourn2006` and :cite:`Xiao2012`. 
 
-Let :math:`{X}` be the :math:`{N}\times {p}` interaction model matrix consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. A D-efficient design :cite:`Donev2007` (:math:`D`) is an :math:`{N}\times {n}` array that maximizes the :math:`D`-efficiency, define as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`, where the model matrix :math:`{X}` is constructed using :math:`D`.
+Let :math:`{X}` be the :math:`{N}\times {p}` interaction model matrix consisting of a column of
+ones and the contrast vectors associated to the main and two-factor interactions
+of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`.
+A D-efficient design :cite:`Donev2007` (:math:`D`) is an :math:`{N}\times {n}` array that maximizes
+the :math:`D`-efficiency, define as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
+where the model matrix :math:`{X}` is constructed using :math:`D`.
 
 Structural properties of an array
 ----------------------------------
 
-The OApackage can calculate the rank of an array, defined as the maximum number of linearly independent column or row vectors in the array. The rank of an array is useful for several other functions in the package. For two-level arrays, the OApackage can also check if the arrays are foldover arrays. A two-level array is called a foldover array if half of its runs are mirror images of the other half, in the sense that the factor levels are swapped. 
+The OApackage can calculate the rank of an array, defined as the maximum number of linearly independent column
+or row vectors in the array. The rank of an array is useful for several other functions in the package.
+For two-level arrays, the OApackage can also check if the arrays are foldover arrays.
+A two-level array is called a foldover array if half of its runs are mirror images of the other half,
+in the sense that the factor levels are swapped. 
 
-.. doxygenfunction:: array_link::rank
-.. doxygenfunction:: array_link::foldover
-
-For example, to calculate the rank of a two-level orthogonal array and determine whether the array is a foldover array, one can use:
+For example, to calculate the rank of a two-level orthogonal array and determine whether
+the array is a foldover array, one can use
+the methods :cpp:func:`array_link::rank` and :cpp:func:`array_link::foldover`:
 
 .. testsetup::
    
@@ -41,44 +49,43 @@ For example, to calculate the rank of a two-level orthogonal array and determine
 
   .. doctest:: 
    
-     >>> array = oapackage.exampleArray(1) # Select an example two-level orthogonal array
-     >>> array.showarray() # Show the two-level orthogonal array
-     array:  
-     0   0   0   0   0
-     0   0   0   0   0
-     0   0   0   1   1
-     0   0   1   0   1
-     0   1   0   1   0
-     0   1   1   0   0
-     0   1   1   1   1
-     0   1   1   1   1
-     1   0   0   1   1
-     1   0   1   0   1
-     1   0   1   1   0
-     1   0   1   1   0
-     1   1   0   0   1
-     1   1   0   0   1
-     1   1   0   1   0
-     1   1   1   0   0
+    >>> array = oapackage.exampleArray(1) # Select an example two-level orthogonal array
+    >>> array.showarray() # Show the two-level orthogonal array
+    array:
+      0   0   0   0   0
+      0   0   0   0   0
+      0   0   0   1   1
+      0   0   1   0   1
+      0   1   0   1   0
+      0   1   1   0   0
+      0   1   1   1   1
+      0   1   1   1   1
+      1   0   0   1   1
+      1   0   1   0   1
+      1   0   1   1   0
+      1   0   1   1   0
+      1   1   0   0   1
+      1   1   0   0   1
+      1   1   0   1   0
+      1   1   1   0   0
      >>> print(array.rank()) # Calculate the rank of the array
      5 
      >>> print(array.foldover()) # Determine if the array is foldover
      False
 
-Other structural properties such as whether an array involves two levels or is symetric can be found in the documentation of :class:`~oalib.array_link`, which shows the full set of methods available.
+Other structural properties such as whether an array involves two levels or is symetric can be found in the
+documentation of :cpp:class:`array_link`, which shows the full set of methods available.
 
 
 Statistical properties of orthogonal arrays
 -------------------------------------------
 
-Orthogonal arrays are commonly evaluated in terms of their generalized wordlength pattern :cite:`Xu2001` (GWLP). Two-level OAs are also commonly evaluated in terms of their :math:`{J}_{k}`-characteristics and :math:`F`-vectors :cite:`Deng1999`. The OApackage can calculate all these statistical criteria: 
-
-.. doxygenfunction:: array_link::GWLP
-.. doxygenfunction:: array_link::Fvalues
-.. doxygenfunction:: array_link::Jcharacteristics
+Orthogonal arrays are commonly evaluated in terms of their generalized wordlength pattern :cite:`Xu2001` (GWLP).
+Two-level OAs are also commonly evaluated in terms of their :math:`{J}_{k}`-characteristics
+and :math:`F`-vectors :cite:`Deng1999`. The OApackage can calculate all these statistical criteria: :cpp:func:`array_link::GWLP`, :cpp:func:`array_link::Fvalues`, :cpp:func:`array_link::Jcharacteristics`.
 
 The following example shows how to calculate the GWLP, :math:`{F}_{k}`-values and
-:math:`{J}_{k}`-characteristics from an :meth:`~oalib.array_link` object:
+:math:`{J}_{k}`-characteristics from an :cpp:class:`array_link` object:
 
 .. admonition:: Calculate GWLP and F-values 
 
@@ -99,7 +106,7 @@ The following example shows how to calculate the GWLP, :math:`{F}_{k}`-values an
 We now briefly mention some technical details of the :math:`{J}_{k}`-characteristics, the :math:`{F}_{k}`-values and the GWLP.
 
 .. topic:: :math:`{J}_{k}`-characteristics
-   :name: Jcharacteristics
+ :name: Jcharacteristics
 
    To calculate :math:`{J}_{k}`-characteristics of a two-level OA, the OApackage codes the levels of the array as :math:`-1` and :math:`+1`. To this end, the package uses the mapping :math:`{0 \rightharrow -1}` and :math:`{1 \rightarrow +1}`. Let :math:`D` be an :math:`{N}\times {n}` with coded levels :math:`-1` and :math:`+1`. For :math:`{S} = \{l_1, \ldots, l_k\}`, a subset of :math:`k` different factors of :math:`D = (d_{il})`, define 
 
@@ -109,12 +116,12 @@ We now briefly mention some technical details of the :math:`{J}_{k}`-characteris
    The :math:`{|{j}_{k} (S; D)|}` values are called the :math:`{J}_{k}`-characteristics, which necessarily equal :math:`N - 4q` :cite:`Deng2002`, where :math:`{q} \leq N/4` is a non-negative integer. 
 
 .. topic:: :math:`{F}_{k}`-values
-   :name: Fvalues
+  :name: Fvalues
 
     The :math:`{F}_{k}`-vector collects the frequencies of all the :math:`{J}_{k}`-characteristics. More specifically, the vector :math:`{F}_{k} = (f_{k1}, \ldots, f_{kv})`, where :math:`v = N/4` and :math:`f_{ku}` denotes the frequency of the :math:`{J}_{k}`-characteristics which are equal to :math:`4(v + 1 - u)`. When calculating an :math:`{F}_{k}`-vector, the OApackage shows only the vector :math:`(f_{k1}, \ldots, f_{kv})`, whose elements are referred to as the :math:`{F}_{k}`-values. 
 
 .. topic:: Generalized word length pattern
-   :name: GWLPname
+ :name: GWLPname
 
    Consider an OA, :math:`{D}`, of strength :math:`{t}` with :math:`{N}` runs and :math:`{n}` factors at :math:`{s}` levels. Let :math:`{X_0}` be a column of ones, :math:`{X_1}` the matrix involving the contrast vectors associated with the main effects, and :math:`{X_j}` the matrix involving the contrast vectors associated with the :math:`{j}`-factor interactions, :math:`{j \geq 2}`. We assume that the column vectors in :math:`{X_1}` are normalized so that they have the same length :math:`{\sqrt{N}}`. For :math:`{j = 0, \ldots, n}`, let 
 
@@ -128,12 +135,14 @@ We now briefly mention some technical details of the :math:`{J}_{k}`-characteris
 Optimality criteria for D-efficient designs
 -------------------------------------------
 
-In :cite:`EendebakSO`, D-efficient designs for the model including the intercept, all main effects and all two-factor interactions are generated. The OApackage provides functionality to compute the optimality criteria used to generate the D-efficient designs in :cite:`EendebakSO`. Moreover, the package can calculate the well-known :math:`A`- and :math:`E`-optimality criteria from the literature on Optimal Experimental Design :cite:`Donev2007`.
-
-.. doxygenfunction:: array_link::Defficiency
-.. doxygenfunction:: array_link::DsEfficiency
-.. doxygenfunction:: array_link::Aefficiency
-.. doxygenfunction:: array_link::Eefficiency
+In :cite:`EendebakSO`, D-efficient designs for the model including the intercept, all main effects and all two-factor interactions are generated. The OApackage provides functionality to compute the optimality criteria used to generate the D-efficient designs in :cite:`EendebakSO`.
+Moreover, the package can calculate the well-known :math:`A`- and :math:`E`-optimality criteria from the literature
+on Optimal Experimental Design :cite:`Donev2007`.
+The functions to perform the calulcations are
+:cpp:func:`array_link::Defficiency`,
+:cpp:func:`array_link::DsEfficiency`,
+:cpp:func:`array_link::Aefficiency`,
+:cpp:func:`array_link::Eefficiency`.
 
 The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :math:`A`- and :math:`E`-efficiency for a design that permits the estimation of the interaction model.
 
@@ -144,14 +153,14 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
      # Select an array that can estimate the interaction model
      >>> al = oapackage.exampleArray(11, 1)
      exampleArray: D-optimal array in OA(44, 2^8)
-     >>> print(al.Defficiency()) # D-efficiency for the interaction model
-     0.8879176205539139
-     >>> print(al.Dsefficiency())  # Ds-efficiency as defined in Eendebak and Schoen (2017)
-     0.8879176205539139
-     >>> print(al.Aefficiency())  # A-efficiency for the interaction model
-     0.7906263649851002
-     >>> print(al.Eefficiency())  # E-efficiency for the interaction model
-     0.360236938840698
+     >>> print('D-efficiency: %.4f' % al.Defficiency())
+     0.8879
+     >>> print('Ds-efficiency (Eendebak and Schoen, 2017): %.4f' % al.Dsefficiency()) 
+     0.8879
+     >>> print('A-efficiency for the interaction model: %.4f' % al.Aefficiency())
+     0.7906
+     >>> print('E-efficiency for the interaction model: %.4f' % al.Eefficiency())  
+     0.3602
 
 .. topic:: Calculation of :math:`D`-, :math:`A`- and :math:`E`-efficiency
    :name: DAE
@@ -167,7 +176,8 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
        {E_{eff}(D)} = \min_j \lambda_j. \label{formula:E-efficiency}
 
 .. topic:: :math:`D_s`-efficiency
-   :name: DS
+  :name: DS
+   
    In :cite:`EendebakSO`, the :math:`D_s`-efficiency is used to assess the joint precision of the main effects in the interaction model. Let the interaction model matrix :math:`{X}` be split into :math:`{X_{1}}`, containing the contrast vectors associated with the main effects only, and :math:`{X_{02}}`, containing the intercept column and the contrast vectors associated to the two-factor interactions. The :math:`D_{s}`-criterion of a design :math:`D` is defined as 
 
    .. math::
@@ -180,9 +190,12 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
 Projection Capacities
 ---------------------
 
-Other relevant statistical criteria to evaluate a two-level design with :math:`N` runs and :math:`k` factors include the so-called projection estimation capacity (PEC) and projection information capacity (PIC) :cite:`Loeppky2007`. These criteria focus on the projections of the two-level design onto a smaller number of factors. More specifically, the PEC and PIC summarize the performance of all the :math:`N`-run subdesigns with :math:`l \leq k` factors in terms of the capacity to estimate the interaction model and the :math:`D`-efficiency for this model, respectively. 
+Other relevant statistical criteria to evaluate a two-level design with :math:`N` runs and :math:`k` factors
+include the so-called projection estimation capacity (PEC) and
+projection information capacity (PIC) :cite:`Loeppky2007`. These criteria focus on the projections of the two-level design onto a smaller number of factors. More specifically, the PEC and PIC summarize the performance of all the :math:`N`-run subdesigns with :math:`l \leq k` factors in terms of the capacity to estimate the interaction model and the :math:`D`-efficiency for this model, respectively. 
 
-The PEC and PIC are based on the so-called PEC and PIC sequences, which are formally defined as follows. Let :math:`PEC_{l}` denote the proportion of :math:`N`-run :math:`l`-factor subdesigns that permit the estimation of the interaction model in :math:`l` factors, that is, the model including the intercept, all :math:`l` main effects and all :math:`l(l-1)/2` two-factor interactions. The PEC sequence is the vector :math:`(PEC_{1}, PEC_{2}, \ldots, PEC_{k})`. Now, let :math:`PIC_{l}` denote the average :math:`D`-efficiency for the interaction model in :math:`l` factors accross all :math:`N`-run :math:`l`-factor subdesigns. The PIC sequence is the vector :math:`(PIC_{1}, PIC_{2}, \ldots, PIC_{k})`. The OApackage can calculate the PEC and PIC sequences of two-level designs. 
+The PEC and PIC are based on the so-called PEC and PIC sequences, which are formally defined as follows.
+Let :math:`PEC_{l}` denote the proportion of :math:`N`-run :math:`l`-factor subdesigns that permit the estimation of the interaction model in :math:`l` factors, that is, the model including the intercept, all :math:`l` main effects and all :math:`l(l-1)/2` two-factor interactions. The PEC sequence is the vector :math:`(PEC_{1}, PEC_{2}, \ldots, PEC_{k})`. Now, let :math:`PIC_{l}` denote the average :math:`D`-efficiency for the interaction model in :math:`l` factors accross all :math:`N`-run :math:`l`-factor subdesigns. The PIC sequence is the vector :math:`(PIC_{1}, PIC_{2}, \ldots, PIC_{k})`. The OApackage can calculate the PEC and PIC sequences of two-level designs. 
     
 .. doxygenfunction:: array_link::PECsequence
 .. doxygenfunction:: PICsequence
@@ -193,7 +206,7 @@ The following example shows how to compute the PEC and PIC sequences of a two-le
 
   .. doctest:: 
      
-     >>> al=oapackage.exampleArray(1,1) # Select an example array
+     >>> al=oapackage.exampleArray(1,1) 
      exampleArray 1: array 3 in OA(16, 2, 2^5)
      >>> PEC = al.PECsequence() 
      >>> print('PEC sequence: %s'% str(PEC) )
@@ -205,6 +218,7 @@ The following example shows how to compute the PEC and PIC sequences of a two-le
 Properties of conference designs
 --------------------------------
 
+To be added.
 
 
 

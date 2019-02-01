@@ -2803,7 +2803,7 @@ double array_link::Aefficiency () const {
 double array_link::Eefficiency () const { return ::Eefficiency (*this); }
 
 std::vector< int > array_link::Fvalues (int jj) const {
-        /// TODO: this assumes the strength is at least 3
+        /// NOTE: this assumes the strength is at least 3
         jstruct_t js (*this, jj);
         std::vector< int > FF = js.calculateF ();
         return FF;
@@ -2819,9 +2819,9 @@ std::vector< int > array_link::FvaluesConference (int jj) const {
         return FF;
 }
 
-#ifdef FULLPACKAGE
 std::vector< double > array_link::PECsequence (int verbose) const { return ::PECsequence (*this, verbose); }
-#endif
+
+std::vector< double > array_link::PICsequence(int verbose) const { return ::PICsequence(*this, verbose); }
 
 /** Calculate J-characteristics of matrix (the values are signed)
  *
