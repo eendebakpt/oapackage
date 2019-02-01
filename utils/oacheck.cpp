@@ -403,7 +403,7 @@ int main (int argc, char *argv[]) {
 
         if (writeoutput) {
                 logstream (NORMAL) << "Writing output (" << outputlist.size () << " arrays)" << endl;
-                writearrayfile (outputfile, &outputlist);
+                writearrayfile (outputfile, outputlist);
         }
 
         logstream (QUIET) << "#time end: " << currenttime () << std::endl;

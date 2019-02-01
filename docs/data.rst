@@ -112,34 +112,6 @@ object.
 
 The C++ class is :cpp:class:`array_link`.
     
-Reading and writing arrays
---------------------------
-
-Reading and writing arrays to disk can be done with the :meth:`oalib.arrayfile_t`
-class. 
-
-.. admonition:: Write an array to disk
-
-  .. doctest:: 
-
-   >>> import oapackage
-   >>> al=oapackage.exampleArray()
-   >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
-   >>> af.append_array(al)
-   >>> print(af)
-   file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
-   >>> af.closefile()
-
-The arrays can be written in text or binary format. For more details on
-the file format, see Section :ref:`File formats`.
-
-The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
-
-.. see https://breathe.readthedocs.io/en/latest/directives.html
-
-.. doxygenstruct:: arrayfile::arrayfile_t
-
-
 Classes of arrays
 -----------------
 
@@ -167,7 +139,28 @@ and column permutations are not commutative.
 The conference transformations also allow for row sign switches and are
 described by the class :cpp:class:`conference_transformation_t`.
 
+Reading and writing arrays
+--------------------------
 
+Reading and writing arrays to disk can be done with the :cpp:class`arrayfile_t`
+class. 
+
+.. admonition:: Write an array to disk
+
+  .. doctest:: 
+
+   >>> import oapackage
+   >>> al=oapackage.exampleArray()
+   >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
+   >>> af.append_array(al)
+   >>> print(af)
+   file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
+   >>> af.closefile()
+
+The arrays can be written in text or binary format. For more details on
+the file format, see Section :ref:`File formats`.
+
+The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is  :cpp:class`arrayfile_t`.
 
 File formats
 ------------

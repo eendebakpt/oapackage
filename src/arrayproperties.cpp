@@ -1795,7 +1795,7 @@ void calculateParetoEvenOdd (const std::vector< std::string > infiles, const cha
         }
 
         if (outfile != 0) {
-                writearrayfile (outfile, &lst, afmode, nrows, ncols);
+                writearrayfile (outfile, lst, afmode, nrows, ncols);
         }
         return;
 }

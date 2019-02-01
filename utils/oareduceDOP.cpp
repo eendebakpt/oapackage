@@ -130,7 +130,7 @@ int main (int argc, char *argv[]) {
         std::string outfile = outputprefix;
         if (verbose)
                 printf ("  writing %ld arrays to %s\n", reduced_arrays.size (), outfile.c_str ());
-        writearrayfile (outfile.c_str (), &reduced_arrays, arrayfile::ABINARY);
+        writearrayfile (outfile.c_str (), reduced_arrays, arrayfile::ABINARY);
 
         delete arrayclass;
         delete arraylist;

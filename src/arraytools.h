@@ -746,7 +746,7 @@ array_link exampleArray(int idx = 0, int verbose = 0);
  * \param k Specifies the number of columns to use 
  * \return A vector of calculated inner products between all combinations of k columns.
  */
-std::vector< int > Jcharacteristics_conference(const array_link &array, int k, int verbose = 0);
+std::vector< int > Jcharacteristics_conference(const array_link &array, int jj, int verbose = 0);
 
 /// data type for elements of conference designs
 typedef signed char conf_t;
@@ -1222,19 +1222,28 @@ struct arrayfile_t {
         static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
 
       public:
-        /// default constructor
+		  /** Structure for reading or writing a file with arrays
+		  */
         arrayfile_t ();
 
-        /// open existing array file
-        arrayfile_t (const std::string fname, int verbose = 1);
-        /// open new array file for writing
-        arrayfile_t (const std::string fname, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
+        /** @copydoc arraydata_t::arrayfile_t()
+		 *
+		 * \param filename File to open for reading
+		 */
+        arrayfile_t (const std::string filename, int verbose = 1);
+		/** @copydoc arraydata_t::arrayfile_t()
+		*
+		* Open new array file for writing
+		*
+		* \param filename File to open
+		*/ 
+        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
                      int nb = 8);
         /// destructor function, closes all filehandles
         ~arrayfile_t ();
 
-        /// close current file and open a new file for writing
-        void createfile (const std::string fname, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
+        /// Close current file and open a new file for writing
+        void createfile (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
                          int nb = 8);
 
         /// close the array file
@@ -1396,7 +1405,7 @@ arraylist_t readarrayfile (const char *fname, int verbose = 1, int *setcols = 0)
 
 /** Read all arrays in a file and append then to an array list
 *
-* @param fname Filename to read from
+* @param filename Filename to read from
 * @param arraylist Pointer to list of arrays
 * @param verbose Verbosity level
 * @param setcols Reference that is set with the number of columns from the file
@@ -1404,16 +1413,13 @@ arraylist_t readarrayfile (const char *fname, int verbose = 1, int *setcols = 0)
 * @param setbits Reference that is set with the number of bits from the file
 * @return
 */
-int readarrayfile(const char *fname, arraylist_t *arraylist, int verbose = 1, int *setcols = 0,
+int readarrayfile(const char *filename, arraylist_t *arraylist, int verbose = 1, int *setcols = 0,
 	int *setrows = 0, int *setbits = 0);
 
 const int NRAUTO = 0;
-/// write a list of arrays to file on disk
-int writearrayfile (const char *fname, const arraylist_t *arraylist,
-                    arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nrows = NRAUTO, int ncols = NRAUTO);
 
 /// write a list of arrays to file on disk
-int writearrayfile (const char *filename, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
+int writearrayfile (const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
                     int nrows = NRAUTO, int ncols = NRAUTO);
 
 /// write a single array to file
