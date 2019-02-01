@@ -34,6 +34,9 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #endif
 
 
+// functions with no public header
+array_link createJdtable(const array_link &al);
+
 
 enum { UNITTEST_SUCCESS, UNITTEST_FAIL };
 

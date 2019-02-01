@@ -112,7 +112,7 @@ We now briefly mention some technical details of the :math:`{J}_{k}`-characteris
 .. topic:: :math:`{J}_{k}`-characteristics
  :name: Jcharacteristics
 
-   To calculate :math:`{J}_{k}`-characteristics of a two-level OA, the OApackage codes the levels of the array as :math:`-1` and :math:`+1`. To this end, the package uses the mapping :math:`{0 \rightharrow -1}` and :math:`{1 \rightarrow +1}`. Let :math:`D` be an :math:`{N}\times {n}` with coded levels :math:`-1` and :math:`+1`. For :math:`{S} = \{l_1, \ldots, l_k\}`, a subset of :math:`k` different factors of :math:`D = (d_{il})`, define 
+   To calculate :math:`{J}_{k}`-characteristics of a two-level OA, the OApackage codes the levels of the array as :math:`-1` and :math:`+1`. To this end, the package uses the mapping :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. Let :math:`D` be an :math:`{N}\times {n}` with coded levels :math:`-1` and :math:`+1`. For :math:`{S} = \{l_1, \ldots, l_k\}`, a subset of :math:`k` different factors of :math:`D = (d_{il})`, define 
 
    .. math::
        j_k (S; D) = \sum_{i = 1}^{N} d_{i l_1} \cdots d_{i l_k}. 
@@ -122,7 +122,12 @@ We now briefly mention some technical details of the :math:`{J}_{k}`-characteris
 .. topic:: :math:`{F}_{k}`-values
   :name: Fvalues
 
-    The :math:`{F}_{k}`-vector collects the frequencies of all the :math:`{J}_{k}`-characteristics. More specifically, the vector :math:`{F}_{k} = (f_{k1}, \ldots, f_{kv})`, where :math:`v = N/4` and :math:`f_{ku}` denotes the frequency of the :math:`{J}_{k}`-characteristics which are equal to :math:`4(v + 1 - u)`. When calculating an :math:`{F}_{k}`-vector, the OApackage shows only the vector :math:`(f_{k1}, \ldots, f_{kv})`, whose elements are referred to as the :math:`{F}_{k}`-values. 
+    The :math:`{F}_{k}`-vector collects the frequencies of all the :math:`{J}_{k}`-characteristics.
+    More specifically, the vector :math:`{F}_{k} = (f_{k1}, \ldots, f_{kv})`, where :math:`v = N/4` and
+    :math:`f_{ku}` denotes the frequency of the :math:`{J}_{k}`-characteristics which are equal
+    to :math:`4(v + 1 - u)`. When calculating an :math:`{F}_{k}`-vector, the OApackage shows only
+    the vector :math:`(f_{k1}, \ldots, f_{kv})`, whose elements are referred to
+    as the :math:`{F}_{k}`-values. 
 
 .. topic:: Generalized word length pattern
  :name: GWLPname
@@ -204,7 +209,7 @@ the interaction model in :math:`l` factors, that is, the model including the
 intercept, all :math:`l` main effects and all :math:`l(l-1)/2` two-factor
 interactions. The PEC sequence is the vector :math:`(PEC_{1}, PEC_{2}, \ldots, PEC_{k})`. Now, let :math:`PIC_{l}` denote the average :math:`D`-efficiency for the interaction model in :math:`l` factors accross all :math:`N`-run :math:`l`-factor subdesigns. The PIC sequence is the vector :math:`(PIC_{1}, PIC_{2}, \ldots, PIC_{k})`.
 The OApackage can calculate the PEC and PIC sequences of two-level designs with
-:cpp:func:`PICsequence` and :cpp:func:`PICsequence`.
+:cpp:func:`PECsequence` and :cpp:func:`PICsequence`.
     
 
 The following example shows how to compute the PEC and PIC sequences of a two-level orthogonal array using the OApackage.

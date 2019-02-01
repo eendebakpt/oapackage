@@ -144,9 +144,6 @@ typedef array_t *levelperm_t;  /** type of level permutation */
 // maximum value if of order max(s)*t
 typedef int vindex_t; /* value index type */
 
-/// Class representing an array
-struct array_link;
-
 /// return size in bytes of array_t type
 int sizeof_array_t ();
 
@@ -172,17 +169,14 @@ bool oa_file_exists (const char *filename);
 /// return true if the specified oa file exists
 bool oa_file_exists (const std::string filename);
 
-/// create J2 table as intermediate result for J-characteristic calculations for conference matrices
-array_link createJ2tableConference (const array_link &confmatrix);
+enum ordering_t {
+	/// lexicograph minimal by columns ordering
+	ORDER_LEX,
+	/// J5 based ordering
+	ORDER_J5
+};
 
-/// create J2 table as intermediate result for J-characteristic calculations
-array_link createJdtable (const array_link &al);
-
-enum ordering_t { 
-  /// lexicograph minimal by columns ordering
-  ORDER_LEX,
-  /// J5 based ordering
-  ORDER_J5 };
+struct array_link;
 
 /** @brief Specifies a class of arrays
  *
@@ -412,15 +406,29 @@ struct array_link {
         static const int INDEX_ERROR = -1;
         static const int INDEX_DEFAULT = 0;
 
-        /// Constructor functions
-        array_link ();
-        /// Create array link filled with zeros
+		/** A class representing an integer valued array
+		*
+		*/
+		array_link ();
+        /** @copydoc arraydata_t::arraydata_t()
+		 *
+		 * The arary is iitialized with zeros.
+		 */
         array_link (rowindex_t nrows, colindex_t ncols, int index);
-        /// create array_link structure with data from raw data
+		/** @copydoc arraydata_t::arraydata_t()
+		*
+		* Initialize with data from a pointer.
+		*/
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-        /// create array_link structure with data from another array_link structure
+		/** @copydoc arraydata_t::arraydata_t()
+		*
+		* Initialize with data from another array_link object.
+		*/
         array_link (const array_link &);
-        /// create array_link structure with data from Eigen matrix
+		/** @copydoc arraydata_t::arraydata_t()
+		*
+		* Initialize with data from anEigen matrix.
+		*/
         array_link (Eigen::MatrixXd &eigen_matrix);
         ~array_link ();
 
@@ -732,8 +740,13 @@ private:
 */
 array_link exampleArray(int idx = 0, int verbose = 0);
 
-/// calculate J-characteristics for a conference design
-std::vector< int > Jcharacteristics_conference(const array_link &al, int jj, int verbose = 0);
+/** Calculate Jk-characteristics for a conference design
+ *
+ * \param array Conference design
+ * \param k Specifies the number of columns to use 
+ * \return A vector of calculated inner products between all combinations of k columns.
+ */
+std::vector< int > Jcharacteristics_conference(const array_link &array, int k, int verbose = 0);
 
 /// data type for elements of conference designs
 typedef signed char conf_t;

@@ -61,7 +61,8 @@ std::vector< double > projDeff (const array_link &al, int number_of_factors, int
 * The PEC of a design is the fraction of estimable second-order models in x factors.
 * See "Ranking Non-regular Designs", J.L. Loeppky
 *
-*/std::vector< double > PECsequence (const array_link &array, int verbose = 0);
+*/
+std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 
 /**Calculate the projection information capacity sequence for a design.
 *
