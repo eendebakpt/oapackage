@@ -3,11 +3,12 @@ Introduction
 
 Orthogonal arrays, optimal designs and conference designs are important tools for the design of
 experiments :cite:`Elster1995` :cite:`Hedayat1999` :cite:`Wu2009`. The Orthogonal Array
-package contains functionality to generate and analyse these types of designs. The algorithms and methods in this package
-are described in :cite:`Eendebak2009` and :cite:`EendebakSO`. A large
-collection of results generated with the package can be found on the Orthogonal Array
-package website :cite:`EendebakOApackageResults`. An alternative collection of orthogonal arrays can be found on the website of Neil
-Sloane :cite:`Sloanewebsite`.
+package contains functionality to generate and analyse these types of designs.
+To generate the arrays and designs, the package uses the exhaustive enumeration algorithm of :cite:`Eendebak2009` and
+the optimization algorithm of :cite:`EendebakSO`.
+To analyze the arrays and designs, the package includes a set of relevant statistical and combinatorial
+criteria.
+A large collection of orthogonal arrays, optimal designs and conference designs generated with the package are available in the Orthogonal Array package website :cite:`EendebakOApackageResults`.
 
 
 Example usage
