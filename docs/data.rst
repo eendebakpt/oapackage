@@ -65,12 +65,12 @@ Representing arrays
 -------------------
 
 The structure containing an orthogonal array is called the
-:class:`~oalib.array_link` structure. It consists of a specified number of rows and
+:cpp:class:`array_link` structure. It consists of a specified number of rows and
 columns, the data (integer valued) and an index. In the Python interface the :meth:`array_link` object can be indexed just as
 normal arrays. 
 
 It is also possible to convert to a Numpy array. The
-:class:`~oalib.array_link` object implements to Python array interface, so most
+:class:`~oalib.array_link` object implements the Python array interface, so most
 operations from packages such as Numpy work on the :meth:`~oalib.array_link`
 object.
 
@@ -267,8 +267,7 @@ generate MD5 sums of designs.
      >>> al.md5()
      '6454c492239a8e01e3c01a864583abf2'
 
-The C++ functions are: :cpp:func:`array_link::md5`, 
-`md5`.
+The C++ functions :cpp:func:`array_link::md5` and :cpp:func:`md5`.
 
 Command line interface
 ----------------------
