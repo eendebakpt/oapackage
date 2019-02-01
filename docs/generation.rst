@@ -19,8 +19,8 @@ The main functions for array extension are the following:
 .. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
     :outline:
                      
-Here, :meth:`~oalib.arraydata_t` is the structure describing the class of arrays and
-:meth:`~oalib.OAextend` contains various options for the algorithm.
+Here, :cpp:class:`arraydata_t` is the structure describing the class of
+arrays and :cpp:class:`OAextend` contains various options for the algorithm.
 
 An example of a session that extends a designs is:
 

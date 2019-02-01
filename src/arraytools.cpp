@@ -2796,14 +2796,13 @@ double array_link::Defficiency () const {
 }
 double array_link::VIFefficiency () const { return ::VIFefficiency (*this); }
 double array_link::Aefficiency () const {
-        myprintf ("warning: definition of Aefficiency has changed!\n");
         return ::Aefficiency (*this);
 }
 
 double array_link::Eefficiency () const { return ::Eefficiency (*this); }
 
 std::vector< int > array_link::Fvalues (int jj) const {
-        /// TODO: this assumes the strength is at least 3
+        /// NOTE: this assumes the strength is at least 3
         jstruct_t js (*this, jj);
         std::vector< int > FF = js.calculateF ();
         return FF;
@@ -2819,9 +2818,9 @@ std::vector< int > array_link::FvaluesConference (int jj) const {
         return FF;
 }
 
-#ifdef FULLPACKAGE
 std::vector< double > array_link::PECsequence (int verbose) const { return ::PECsequence (*this, verbose); }
-#endif
+
+std::vector< double > array_link::PICsequence(int verbose) const { return ::PICsequence(*this, verbose); }
 
 /** Calculate J-characteristics of matrix (the values are signed)
  *
@@ -3554,31 +3553,6 @@ void jstructconference_t::calcJvalues(int N, int jj) {
 	}
 }
 void jstructconference_t::calc(const array_link &al) { values = Jcharacteristics_conference(al, this->jj); }
-
-/// create J2 table as intermediate result for J-characteristic calculations for conference matrices
-array_link createJ2tableConference (const array_link &confmatrix) {
-        const int nr = confmatrix.n_rows;
-        const int nc = (confmatrix.n_columns + 1) * confmatrix.n_columns / 2;
-        // fill double column table
-        array_link dtable (nr, nc, -1);
-
-        // loop over all column pairs
-        int idx = 0;
-        for (int i = 0; i < confmatrix.n_columns; i++) {
-                for (int j = 0; j <= i; j++) {
-                        // loop over all rows of original array
-                        const array_t *p1 = confmatrix.array + confmatrix.n_rows * i;
-                        const array_t *p2 = confmatrix.array + confmatrix.n_rows * j;
-                        array_t *pout = dtable.array + idx * dtable.n_rows;
-                        for (int x = 0; x < nr; x++) {
-                                pout[x] = p1[x] * p2[x];
-                        }
-                        idx++;
-                }
-        }
-
-        return dtable;
-}
 
 /// create J2 table as intermediate result for J-characteristic calculations
 array_link createJdtable (const array_link &al) {
