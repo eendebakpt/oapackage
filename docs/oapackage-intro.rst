@@ -113,5 +113,13 @@ The R interface to the optimal design functionality of the package is available 
 For the Matlab and Octave interface to the optimal design functionality see the 
 file `README.Matlab.md <https://github.com/eendebakpt/oapackage/blob/master/README.Matlab.md>`_.
 
+Related sites of orthogonal arrays
+----------------------------------
+
+There are several related sites available online which include collections
+of orthogonal arrays. For instance, the website of Neil Sloane :cite:`Sloanewebsite`,
+the website of Hongquan Xu :cite:`HongquanXuOnline`, the SAS website managed
+by Warren Kuhfeld :cite:`WK19`, and the R package _DoE.base_ :cite:`DoEbase` includes lists
+ or surveys of attractive orthogonal arrays gathered from different sources. 
 
 
