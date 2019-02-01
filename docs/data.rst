@@ -242,7 +242,7 @@ Data files
 ~~~~~~~~~~
 
 The analysis tool (``oaanalyse``) writes data to disk in binary format.
-The format is consists of a binary header:
+The format consists of a binary header:
 
 ::
 
@@ -251,7 +251,7 @@ The format is consists of a binary header:
   [FLOAT64] nc: Number of rows
   [FLOAT64] nr: Number of columns
 
-After the header there follow ``nc*nr [FLOAT64]`` values.
+After the header there follow ``nc*nr`` ``[FLOAT64]`` values.
 
 MD5 sums
 ~~~~~~~~
