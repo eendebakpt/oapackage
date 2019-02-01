@@ -361,9 +361,9 @@ class MD5 {
         }
 };
 
-std::string md5 (void *data, int len) {
+std::string md5 (void *data, int number_of_bytes) {
         MD5 m;
-        char *str = m.digestMemory ((unsigned char *)data, len);
+        char *str = m.digestMemory ((unsigned char *)data, number_of_bytes);
         std::string s = str;
         return s;
 }
