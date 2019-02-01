@@ -110,7 +110,7 @@ object.
            [1, 1],
            [1, 1]], dtype=int16)
 
-The C++ class is :cpp:func:`array_link`.
+The C++ class is :cpp:class:`array_link`.
     
 Reading and writing arrays
 --------------------------

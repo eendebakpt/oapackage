@@ -2796,7 +2796,6 @@ double array_link::Defficiency () const {
 }
 double array_link::VIFefficiency () const { return ::VIFefficiency (*this); }
 double array_link::Aefficiency () const {
-        myprintf ("warning: definition of Aefficiency has changed!\n");
         return ::Aefficiency (*this);
 }
 

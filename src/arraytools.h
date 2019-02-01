@@ -507,9 +507,9 @@ struct array_link {
         /// calculate D-efficiency, calculate main effect robustness (or Ds-optimality) and D1-efficiency for an orthogonal array
         std::vector< double > Defficiencies (int verbose = 0, int addDs0 = 0) const;
 
-        /*** calculate average variation inflation factor
+        /*** Calculate average variation inflation factor
          *
-         * If the VIF is infinite, the value 0 is return. The VIF takes values between 1 and infinity.
+         * If the VIF is infinite, the value 0 is returned. The VIF takes values between 1 and infinity.
          */
         double VIFefficiency () const;
 

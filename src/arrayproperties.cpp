@@ -1409,12 +1409,11 @@ double VIFefficiency (const array_link &al, int verbose) {
 }
 
 double Aefficiency (const array_link &al, int verbose) {
-        std::vector< double > ret;
-        array2rank_Deff_Beff (al, &ret, verbose);
-        if (ret[2] == 0)
+		double vif = VIFefficiency(al);
+        if (vif == 0)
                 return 0;
         else
-                return 1. / ret[2];
+                return 1. / vif;
 }
 
 double Eefficiency (const array_link &al, int verbose) {
