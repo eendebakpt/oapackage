@@ -165,7 +165,7 @@ int main (int argc, char *argv[]) {
         if (verbose)
                 cout << "Writing " << filtered->size () << " arrays (input " << arraylist->size () << ") to file "
                      << outfile << endl;
-        writearrayfile (outfile.c_str (), filtered, mode);
+        writearrayfile (outfile.c_str (), *filtered, mode);
 
         /* free allocated structures */
         delete[] a;
