@@ -4756,18 +4756,6 @@ int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, int *
         return i;
 }
 
-int writearrayfile (const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode, int nrows,
-                    int ncols) {
-        return writearrayfile (filename, &arraylist, mode, nrows, ncols);
-}
-
-/**
- * @brief Write all arrays in a list to file
- * @param fname
- * @param arraylist
- * @param mode
- * @return
- */
 int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode, int nrows,
                     int ncols) {
         int nb = 8; // default: char
@@ -4799,6 +4787,11 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
         delete afile;
 
         return i;
+}
+
+int writearrayfile(const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode, int nrows,
+	int ncols) {
+	return writearrayfile(filename, &arraylist, mode, nrows, ncols);
 }
 
 arrayfile_t::arrayfile_t () {
@@ -5125,14 +5118,6 @@ arrayfile_t::~arrayfile_t () {
         }
 
         closefile ();
-}
-
-arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode,
-                               int nbits) {
-        std::string s = fname;
-        arrayfile_t *afile = new arrayfile_t (s, rows, cols, narrays, mode, nbits);
-
-        return afile;
 }
 
 

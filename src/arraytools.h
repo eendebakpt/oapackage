@@ -1418,26 +1418,29 @@ int readarrayfile(const char *filename, arraylist_t *arraylist, int verbose = 1,
 
 const int NRAUTO = 0;
 
-/// write a list of arrays to file on disk
+/** Write a list of arrays to file on disk
+*
+* @param filename Filename to use
+* @param arraylist List of arrays to write
+* @param mode Mode for the file with designs
+* @param nrows If the list of arrays is empty, use this number of rows for the design file
+* @param ncols If the list of arrays is empty, use this number of rows for the design file
+* @return
+*/
 int writearrayfile (const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
                     int nrows = NRAUTO, int ncols = NRAUTO);
 
-/// write a single array to file
+/// Write a single array to file
 int writearrayfile (const char *filename, const array_link &array, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT);
 
-/// append a single array to an array file. creates a new file if no file exists
+/// Append a single array to an array file. creates a new file if no file exists
 int append_arrayfile (const char *filename, const array_link array);
 
 /// Make a selection of arrays from binary array file, append to list
 void selectArrays (const std::string filename, std::vector< int > &idx, arraylist_t &fl, int verbose = 0);
 
 /// Select a single array from a file
-array_link selectArrays (std::string filename, int ii);
-
-/** Create file containing arrays
-*/
-arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays,
-                               arrayfile::arrayfilemode_t mode = arrayfile::ATEXT, int nbits = 8);
+array_link selectArrays (std::string filename, int index);
 
 #endif // FULLPACKAGE
 
