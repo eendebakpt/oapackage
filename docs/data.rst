@@ -145,11 +145,15 @@ Reading and writing arrays
 Reading and writing arrays to disk can be done with the :cpp:class`arrayfile_t`
 class. 
 
-.. admonition:: Write an array to disk
+.. admonition:: Write an array or a list of arrays to disk
 
   .. doctest:: 
 
    >>> import oapackage
+   >>> list_of_arrays = [oapackage.exampleArray(24), oapackage.exampleArray(25)]
+   >>> oapackage.writearrayfile('test.oa', list_of_arrays)
+   >>> oapackage.oainfo('test.oa')
+   file test.oa: 64 rows, 16 columns, 2 arrays, mode text, nbits 0
    >>> al=oapackage.exampleArray()
    >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
    >>> af.append_array(al)
