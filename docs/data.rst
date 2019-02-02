@@ -120,10 +120,6 @@ arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
 The :cpp:class:`conference_t` object represents data about a class of conference designs.
 
 
-.. comment
-    .. doxygenstruct:: arraydata_t
-        :members:
-
 Array transformations
 ---------------------
 
@@ -151,7 +147,7 @@ class.
 
    >>> import oapackage
    >>> list_of_arrays = [oapackage.exampleArray(24), oapackage.exampleArray(25)]
-   >>> oapackage.writearrayfile('test.oa', list_of_arrays)
+   >>> _ = oapackage.writearrayfile('test.oa', list_of_arrays)
    >>> oapackage.oainfo('test.oa')
    file test.oa: 64 rows, 16 columns, 2 arrays, mode text, nbits 0
    >>> al=oapackage.exampleArray()
