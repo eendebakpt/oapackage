@@ -12,10 +12,9 @@ A list of arrays in LMC form (i.e., lexicographically minimum in columns) can be
 form with one additional column. Details about the algorithm are described
 in :cite:`Eendebak2009`.
 
-The main functions for array extension are the following:
+The main function for array extension is the function :cpp:function:`extend_arraylist`. The signature is
 
-.. doxygenfunction:: extend_arraylist(const arraylist_t&, const arraydata_t&)
-    :outline:
+
 .. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
     :outline:
                      

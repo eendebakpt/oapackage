@@ -65,12 +65,12 @@ Representing arrays
 -------------------
 
 The structure containing an orthogonal array is called the
-:class:`~oalib.array_link` structure. It consists of a specified number of rows and
+:cpp:class:`array_link` structure. It consists of a specified number of rows and
 columns, the data (integer valued) and an index. In the Python interface the :meth:`array_link` object can be indexed just as
 normal arrays. 
 
 It is also possible to convert to a Numpy array. The
-:class:`~oalib.array_link` object implements to Python array interface, so most
+:class:`~oalib.array_link` object implements the Python array interface, so most
 operations from packages such as Numpy work on the :meth:`~oalib.array_link`
 object.
 
@@ -112,34 +112,6 @@ object.
 
 The C++ class is :cpp:class:`array_link`.
     
-Reading and writing arrays
---------------------------
-
-Reading and writing arrays to disk can be done with the :meth:`oalib.arrayfile_t`
-class. 
-
-.. admonition:: Write an array to disk
-
-  .. doctest:: 
-
-   >>> import oapackage
-   >>> al=oapackage.exampleArray()
-   >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
-   >>> af.append_array(al)
-   >>> print(af)
-   file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
-   >>> af.closefile()
-
-The arrays can be written in text or binary format. For more details on
-the file format, see Section :ref:`File formats`.
-
-The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is
-
-.. see https://breathe.readthedocs.io/en/latest/directives.html
-
-.. doxygenstruct:: arrayfile::arrayfile_t
-
-
 Classes of arrays
 -----------------
 
@@ -167,7 +139,32 @@ and column permutations are not commutative.
 The conference transformations also allow for row sign switches and are
 described by the class :cpp:class:`conference_transformation_t`.
 
+Reading and writing arrays
+--------------------------
 
+Reading and writing arrays to disk can be done with the :cpp:class`arrayfile_t`
+class. 
+
+.. admonition:: Write an array or a list of arrays to disk
+
+  .. doctest:: 
+
+   >>> import oapackage
+   >>> list_of_arrays = [oapackage.exampleArray(24), oapackage.exampleArray(25)]
+   >>> oapackage.writearrayfile('test.oa', list_of_arrays)
+   >>> oapackage.oainfo('test.oa')
+   file test.oa: 64 rows, 16 columns, 2 arrays, mode text, nbits 0
+   >>> al=oapackage.exampleArray()
+   >>> af=oapackage.arrayfile_t('test.oa', al.n_rows, al.n_columns)
+   >>> af.append_array(al)
+   >>> print(af)
+   file test.oa: 8 rows, 2 columns, 1 arrays, mode text, nbits 8
+   >>> af.closefile()
+
+The arrays can be written in text or binary format. For more details on
+the file format, see Section :ref:`File formats`.
+
+The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is  :cpp:class`arrayfile_t`.
 
 File formats
 ------------
@@ -242,7 +239,7 @@ Data files
 ~~~~~~~~~~
 
 The analysis tool (``oaanalyse``) writes data to disk in binary format.
-The format is consists of a binary header:
+The format consists of a binary header:
 
 ::
 
@@ -251,7 +248,7 @@ The format is consists of a binary header:
   [FLOAT64] nc: Number of rows
   [FLOAT64] nr: Number of columns
 
-After the header there follow ``nc*nr [FLOAT64]`` values.
+After the header there follow ``nc*nr`` ``[FLOAT64]`` values.
 
 MD5 sums
 ~~~~~~~~
@@ -267,8 +264,7 @@ generate MD5 sums of designs.
      >>> al.md5()
      '6454c492239a8e01e3c01a864583abf2'
 
-The C++ functions are: :cpp:func:`array_link::md5`, 
-`md5`.
+The C++ functions :cpp:func:`array_link::md5` and :cpp:func:`md5`.
 
 Command line interface
 ----------------------

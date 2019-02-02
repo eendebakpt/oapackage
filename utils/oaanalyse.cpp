@@ -413,7 +413,7 @@ int main (int argc, char *argv[]) {
                         outfile += ".oa";
                         cout << "Writing " << filtered.size () << " arrays (input " << arraylist->size ()
                              << ") to file " << outfile << endl;
-                        writearrayfile (outfile.c_str (), &filtered);
+                        writearrayfile (outfile.c_str (), filtered);
                 } else {
                         outfile += "<standard output>";
                 }

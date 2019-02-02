@@ -164,7 +164,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
      exampleArray 11: D-optimal array in OA(44, 2^8)
      >>> print('D-efficiency: %.4f' % al.Defficiency())
      D-efficiency: 0.8879
-     >>> print('Ds-efficiency (Eendebak and Schoen, 2017): %.4f' % al.Dsefficiency()) 
+     >>> print('Ds-efficiency (Eendebak and Schoen, 2017): %.4f' % al.DsEfficiency()) 
      Ds-efficiency (Eendebak and Schoen, 2017): 0.8879
      >>> print('A-efficiency for the interaction model: %.4f' % al.Aefficiency())
      A-efficiency for the interaction model: 0.7906

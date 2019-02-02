@@ -94,14 +94,14 @@ int main (int argc, char *argv[]) {
                 std::cout << "oajoin: writing " << arraylist->size () << " arrays to file " << outfile << std::endl;
 
         if (opt.getFlag ('l') != 0) {
-                writearrayfile (outfile.c_str (), arraylist, arrayfile::ALATEX);
+                writearrayfile (outfile.c_str (), *arraylist, arrayfile::ALATEX);
         } else {
                 if (arraylist->size () == 0) {
                         if (verbose >= 2)
                                 printf ("mode %d, nr %d, nc %d\n", mode, nrows, ncols);
-                        writearrayfile (outfile.c_str (), arraylist, mode, nrows, ncols);
+                        writearrayfile (outfile.c_str (), *arraylist, mode, nrows, ncols);
                 } else {
-                        writearrayfile (outfile.c_str (), arraylist, mode);
+                        writearrayfile (outfile.c_str (), *arraylist, mode);
                 }
         }
 

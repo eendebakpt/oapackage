@@ -117,11 +117,11 @@ int main (int argc, char *argv[]) {
                         logstream (NORMAL) << "oasplit: outputfile " << i << ": " << outputfiles[i] << endl;
                 }
 
-                int nars = floor ((double)narrays / nsplit);
+                int narrays_split = floor ((double)narrays / nsplit);
                 if ((narrays % nsplit) > i)
-                        nars++;
-                logstream (DEBUG) << printfstring ("  creating arrayfile %d (%d arrays)\n", i, nars);
-                outfid[i] = create_arrayfile (outputfiles[i].c_str (), rows, cols, nars, mode, nb);
+                        narrays_split++;
+                logstream (DEBUG) << printfstring ("  creating arrayfile %d (%d arrays)\n", i, narrays_split);
+				outfid[i] = new arrayfile_t(outputfiles[i], rows, cols, narrays_split, mode, nb);
                 if (!outfid[i]->isopen ()) {
                         printf ("oasplit: error opening %s, aborting program\n", outputfiles[i].c_str ());
                         exit (1);

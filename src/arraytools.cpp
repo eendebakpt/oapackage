@@ -4756,18 +4756,6 @@ int readarrayfile (const char *fname, arraylist_t *arraylist, int verbose, int *
         return i;
 }
 
-int writearrayfile (const char *fname, const arraylist_t arraylist, arrayfile::arrayfilemode_t mode, int nrows,
-                    int ncols) {
-        return writearrayfile (fname, &arraylist, mode, nrows, ncols);
-}
-
-/**
- * @brief Write all arrays in a list to file
- * @param fname
- * @param arraylist
- * @param mode
- * @return
- */
 int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::arrayfilemode_t mode, int nrows,
                     int ncols) {
         int nb = 8; // default: char
@@ -4799,6 +4787,11 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
         delete afile;
 
         return i;
+}
+
+int writearrayfile(const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode, int nrows,
+	int ncols) {
+	return writearrayfile(filename, &arraylist, mode, nrows, ncols);
 }
 
 arrayfile_t::arrayfile_t () {
@@ -5127,14 +5120,6 @@ arrayfile_t::~arrayfile_t () {
         closefile ();
 }
 
-arrayfile_t *create_arrayfile (const char *fname, int rows, int cols, int narrays, arrayfile::arrayfilemode_t mode,
-                               int nbits) {
-        std::string s = fname;
-        arrayfile_t *afile = new arrayfile_t (s, rows, cols, narrays, mode, nbits);
-
-        return afile;
-}
-
 
 void arrayfile_t::read_array_binary (array_t *array, const int nrows, const int ncols) {
         switch (this->nbits) {
@@ -5415,10 +5400,10 @@ void vectorvector2binfile(const std::string fname, const std::vector< std::vecto
 	fclose(fid);
 }
 
-int writearrayfile (const char *fname, const array_link &al, arrayfile::arrayfilemode_t mode) {
+int writearrayfile (const char *filename, const array_link &array, arrayfile::arrayfilemode_t mode) {
         arraylist_t s;
-        s.push_back (al);
-        return writearrayfile (fname, &s, mode);
+        s.push_back (array);
+        return writearrayfile (filename, s, mode);
 }
 
 /// append a single array to an array file. creates a new file if no file exists
