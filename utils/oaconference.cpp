@@ -241,7 +241,7 @@ int main (int argc, char *argv[]) {
                 ctype.j3zero = j3zero;
                 ctype.j1zero = j1zero;
 
-                ctype.addRootArrays (inputarrays);
+				inputarrays = ctype.createRootArrays ();
                 kstart = inputarrays[0].n_columns;
         }
 

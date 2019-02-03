@@ -117,7 +117,7 @@ conference_t::conference_t (int N, int k, int _j1zero) {
         this->j3zero = 0;
 }
 
-array_link conference_t::create_root_three () const {
+array_link conference_t::create_root_three_columns () const {
         array_link array (this->N, 3, 0); 
 
         array.at (0, 0) = 0;
@@ -152,13 +152,14 @@ array_link conference_t::create_root_three () const {
 
         return array;
 }
-void conference_t::addRootArrays (arraylist_t &lst) const {
-        switch (this->ctype) {
+arraylist_t conference_t::createRootArrays () const {
+	arraylist_t root_arrays;
+	switch (this->ctype) {
         case CONFERENCE_NORMAL:
         case CONFERENCE_DIAGONAL:
                 switch (this->itype) {
                 case CONFERENCE_ISOMORPHISM:
-                        lst.push_back (this->create_root ());
+                        root_arrays.push_back (this->create_root ());
                         break;
                 case CONFERENCE_RESTRICTED_ISOMORPHISM: {
                         array_link al (this->N, 1, array_link::INDEX_DEFAULT);
@@ -168,7 +169,7 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
                                 for (int k = 1; k < i; k++) {
                                         al.at (k, 0) = 1;
                                 }
-                                lst.push_back (al);
+                                root_arrays.push_back (al);
                         }
                 } break;
                 default:
@@ -178,8 +179,8 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
         case DCONFERENCE: {
                 switch (this->itype) {
                 case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                        arraylist_t tmp = this->createDconferenceRootArrays ();
-                        lst.insert (lst.end (), tmp.begin (), tmp.end ());
+                        arraylist_t tmp = this->createDoubleConferenceRootArrays ();
+                        root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
                 case CONFERENCE_ISOMORPHISM: {
                         if (this->j1zero) {
@@ -192,19 +193,18 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
                         }
                         assert (this->j1zero == 0);
                         assert (this->j3zero == 0);
-                        arraylist_t tmp = this->createDconferenceRootArrays ();
-                        lst.insert (lst.end (), tmp.begin (), tmp.end ());
+                        arraylist_t tmp = this->createDoubleConferenceRootArrays ();
+                        root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
                 default:
-
-                        printfd ("ERROR: not implemented (itype %d)\n", this->itype);
-                        exit (0);
+			throw_runtime_exception(printfstring("root array geneated not implemented for class with itype=%d", this->itype));
                 }
         }
         }
+	return root_arrays;
 }
 
-arraylist_t conference_t::createDconferenceRootArrays () const {
+arraylist_t conference_t::createDoubleConferenceRootArrays () const {
         arraylist_t lst;
         array_link al (this->N, 1, array_link::INDEX_DEFAULT);
         if (j1zero) {
@@ -2312,7 +2312,7 @@ conf_candidates_t generateCandidateExtensions (const conference_t ctype, int ver
         cande.ce.resize (ctype.N);
 
         array_link al2 = ctype.create_root ();
-        array_link al3 = ctype.create_root_three ();
+        array_link al3 = ctype.create_root_three_columns ();
 
         if (ncmax == -1) {
                 ncmax = ctype.N;

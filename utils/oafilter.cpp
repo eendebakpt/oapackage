@@ -106,7 +106,6 @@ int main (int argc, char *argv[]) {
                 opt.printUsage ();
                 exit (0);
         }
-        int sortarrays = opt.getIntValue ('s', 0);
         int verbose = opt.getIntValue ('v', 1);
         int na = opt.getIntValue ('a', 1);
         int index = opt.getIntValue ("index", 0);
@@ -126,12 +125,6 @@ int main (int argc, char *argv[]) {
 
         arraylist_t *arraylist = new arraylist_t;
         int n = readarrayfile (opt.getArgv (0), arraylist);
-
-        /* perform operations on arrays */
-        if (sortarrays) {
-                cout << "Sorting arrays" << endl;
-                sort (arraylist->begin (), arraylist->end ());
-        }
 
         if (verbose)
                 printf ("oafilter: filtering %d arrays\n", n);

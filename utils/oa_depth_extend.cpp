@@ -178,9 +178,8 @@ int main (int argc, char *argv[]) {
 
         oaextendx.checkarrays = 0;
         oaextendx.use_row_symmetry = 0;
-        oaextendx.extendarraymode = APPENDFULL;
+        oaextendx.extendarraymode = OAextend::APPENDFULL;
         oaextendx.init_column_previous = INITCOLUMN_J5;
-        // oaextendx.init_column_previous=INITCOLUMN_ZERO;
         oaextendx.nLMC = 500000;
         oaextendx.info ();
 

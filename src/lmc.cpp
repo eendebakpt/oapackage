@@ -1908,7 +1908,7 @@ lmc_t LMCcheck(const array_link &al) {
 
 	OAextend oaextend(arrayclass);
 	LMCreduction_t reduction(&arrayclass);
-	reduction.init_state = INIT_STATE::COPY;
+	reduction.init_state = COPY;
 	return LMCcheck(al, arrayclass, oaextend, reduction);
 }
 

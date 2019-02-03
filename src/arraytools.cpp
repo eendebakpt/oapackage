@@ -2825,6 +2825,9 @@ std::vector< double > array_link::PICsequence(int verbose) const { return ::PICs
 /** Calculate J-characteristics of matrix (the values are signed)
  *
  * The actual calculation depends on the type of array (2-level or conference)
+ * 
+ * \param jj Number of columns
+ * \returns Vector with calculated Jk-characteristics
  */
 std::vector< int > array_link::Jcharacteristics (int jj) const {
         if (this->is2level ()) {
@@ -2834,7 +2837,7 @@ std::vector< int > array_link::Jcharacteristics (int jj) const {
                         /// assume design is conference matrix
                         return ::Jcharacteristics_conference (*this, jj, 0);
                 } else {
-                        myprintf ("not implemented\n");
+                        myprintf ("Jcharacteristics not implemented for this type of array\n");
                         return std::vector< int > ();
                 }
         }
@@ -4782,7 +4785,7 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
                 return 0;
         }
 
-        int i = afile->append_arrays (*arraylist, 1); // append_arrays ( afile, *arraylist, 1 );
+        int i = afile->append_arrays (*arraylist, 1); 
         afile->finisharrayfile ();
         delete afile;
 

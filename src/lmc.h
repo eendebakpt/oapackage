@@ -583,8 +583,25 @@ lmc_t LMCcheckOriginal (const array_link &array);
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
-/// Caculate the transformation to delete-on-factor normal for from an array
+/** Caculate the transformation reducing an array to delete-on-factor normal 
+ * 
+ * The normal form is described in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014
+ * 
+ * \param array Orthogonal array
+ * \param verbose Verbosity level
+ * \returns The transformation that reduces the array to normal form
+ */
 array_transformation_t reductionDOP (const array_link &array, int verbose = 0);
+
+/** Reduce an array to canonical form using delete-1-factor ordering
+ * 
+ * The normal form is described in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014
+ * 
+ * \param array Orthogonal array
+ * \param verbose Verbosity level
+ * \returns The array transformed to normal form
+ */
+array_link reduceDOPform (const array_link &array, int verbose = 0);
 
 /// select the unique arrays in a list, the original list is sorted in place. the unique arrays are append to the output list
 void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose = 1);
@@ -596,9 +613,6 @@ std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbo
 
 /// reduce an array to canonical form using LMC ordering
 array_link reduceLMCform (const array_link &array);
-
-/// reduce an array to canonical form using delete-1-factor ordering
-array_link reduceDOPform (const array_link &array, int verbose = 0);
 
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);

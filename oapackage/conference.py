@@ -17,6 +17,7 @@ import oapackage
 
 # %%
 
+
 def momentMatrix(k):
     """ Return the moment matrix of a conference design
 
@@ -45,12 +46,11 @@ def _leftDivide(A, B):
     Returns:
         array: the result of A\B
     """
-    #x, resid, rank, s = np.linalg.lstsq(A, B, rcond=None)
-    x = np.linalg.solve(A.T.dot(A), A.T.dot(B))
-    return x
+    solution = np.linalg.solve(A.T.dot(A), A.T.dot(B))
+    return solution
 
 
-def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = True):
+def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=True):
     """ Calculate statistics of a definitive screening design from the model matrix
 
     Args:
@@ -59,7 +59,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
       list: calculated statistics. Calculated are whether the model is estible, the Defficiency and the inverse APV.
     """
     ncolumns = dsd.shape[1]
-    modelmatrix = oapackage.array2modelmatrix(dsd, 'q')
+    modelmatrix = np.array(oapackage.conference_design2modelmatrix(dsd, 'q', verbose=0))
     M = (modelmatrix.T).dot(modelmatrix)
 
     if use_condition_number:
@@ -67,7 +67,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number = T
     else:
         mr = np.linalg.matrix_rank(M)
         fullrank = (mr == modelmatrix.shape[1])
-        if verbose>=2:
+        if verbose >= 2:
             print('modelStatistics: fullrank %d, condition number %.4f' % (fullrank, np.linalg.cond(M), ))
 
     if verbose >= 2:
@@ -95,13 +95,16 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
     """ Calculate the projection statistics of a conference design
 
     The PECk, PICk and PPCk are calculated with k the number of columns specified.
+    The projection statistics are calculated by determining the :ref:`modelStatistics` of all k-column subdesigns
+    and then taking the mean of the statistics for the subdesigns.
+    For more details of the calculation, see https://oapackage.readthedocs.io/.
 
     Args:
         al (array): conference design
-        ncolumns (int): number of column on which to project
+        ncolumns (int): number of columns on which to project
 
     Returns:
-        pec, pic, ppc (float)
+        pec, pic, ppc (float): calculated statistics
     """
     nc = al.shape[1]
 
@@ -113,7 +116,7 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
     moment_matrix = momentMatrix(ncolumns)
     for idx, c in enumerate(list(itertools.combinations(range(nc), ncolumns))):
         proj_dsd = dsd.selectColumns(c)
-        Eest, D, invAPV = modelStatistics(proj_dsd, verbose = 0, moment_matrix = moment_matrix)
+        Eest, D, invAPV = modelStatistics(proj_dsd, verbose=0, moment_matrix=moment_matrix)
 
         Deff[idx] = D
         Eestx[idx] = Eest

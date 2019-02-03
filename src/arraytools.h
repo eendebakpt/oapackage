@@ -536,7 +536,11 @@ struct array_link {
         /// Calculate F-values of a conference design
         std::vector< int > FvaluesConference (int jj) const;
 
-        /// Calculate J-characteristics of matrix (the values are signed)
+        /** Calculate the Jk-characteristics of matrix (the values are signed)
+	 * 
+	 * 
+	 * 
+	 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
@@ -548,7 +552,7 @@ struct array_link {
         /// calculate rank of array
         int rank () const;
 
-        /** calculate generalized wordlength pattern
+        /** Calculate generalized wordlength pattern
 		 *
 		 * @see ::GWLP
 		 */
@@ -743,10 +747,11 @@ array_link exampleArray(int idx = 0, int verbose = 0);
 /** Calculate Jk-characteristics for a conference design
  *
  * \param array Conference design
- * \param k Specifies the number of columns to use 
+ * \param number_of_columns Specifies the number of columns to use 
+ * \param verbose Verbosity level
  * \return A vector of calculated inner products between all combinations of k columns.
  */
-std::vector< int > Jcharacteristics_conference(const array_link &array, int jj, int verbose = 0);
+std::vector< int > Jcharacteristics_conference(const array_link &array, int number_of_columns, int verbose = 0);
 
 /// data type for elements of conference designs
 typedef signed char conf_t;
@@ -1425,7 +1430,7 @@ const int NRAUTO = 0;
 * @param mode Mode for the file with designs
 * @param nrows If the list of arrays is empty, use this number of rows for the design file
 * @param ncols If the list of arrays is empty, use this number of rows for the design file
-* @return
+* @return Value zero if succesfull
 */
 int writearrayfile (const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
                     int nrows = NRAUTO, int ncols = NRAUTO);
@@ -1701,7 +1706,7 @@ MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
  */
 MatrixFloat array2eigenX2 (const array_link &array);
 
-/** Convert 2-level array to second order model matrix (intercept, X1, X2)
+/** Convert 2-level array to second order interaction model matrix (intercept, X1, X2)
  *
  * \param array Design of which to calculate the model matrix
  * \returns Eigen matrix with the model matrix
@@ -1722,7 +1727,7 @@ MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
  */ 
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 
-/** calculate number of parameters in the model matrix
+/** Calculate number of parameters in the model matrix
 *
 * A list of integers is returned, with the number of columns in:
 *
@@ -1730,6 +1735,10 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 * - The main effects
 * - The interaction effects (second order interaction terms without quadratics)
 * - The quadratic effects
+* 
+* \param array Orthogonal array or conference design
+* \param order Not used any more
+* \returns List of sizes
 */
 std::vector< int > numberModelParams(const array_link &array, int order = -1);
 

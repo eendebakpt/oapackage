@@ -77,35 +77,43 @@ std::vector< double > PICsequence(const array_link &array, int verbose = 0);
  */
 std::vector< double > distance_distribution (const array_link &array);
 
-/// Calculate J-characteristics of matrix (the values are signed)
-std::vector< int > Jcharacteristics (const array_link &al, int jj = 4, int verbose = 0);
+/** Calculate Jk-characteristics of a matrix
+ *
+ * The calcualted Jk-values are signed.
+ * 
+ * \param array Array to calculate Jk-characteristics for
+ * \param number_of_columns Number of columns
+ * \param verbose Verbosity level
+ * \returns Vector with calculated Jk-characteristics
+ */
+std::vector< int > Jcharacteristics (const array_link &array, int number_of_columns = 4, int verbose = 0);
 
 /** @brief Calculate GWLP (generalized wordlength pattern)
  *
  * The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
  * fractional factorial desings"
  * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
- * Sizes", Xu
+ * Sizes", Xu, Technometrics, 2009.
  *
  * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
+ * \returns Vector with calculated generalized wordlength pattern
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
 /** @brief Calculate GWLP (generalized wordlength pattern) for mixed-level arrays
 *
-*  The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
-* fractional factorial desings"
-*  The non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
-* Sizes", Xu
+*  The method used for calculation is from "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+* Sizes", Xu, Technometrics, 2009.
 *
-* \param al Array to calculate the GWLP value for
+* \param array Array to calculate the GWLP value for
 * \param verbose Verbosity level
 * \param truncate If True then round values near zero to solve double precision errors
+* \returns Vector with calculated generalized wordlength pattern
 *
 */
-std::vector< double > GWLPmixed (const array_link &al, int verbose = 0, int truncate = 1);
+std::vector< double > GWLPmixed (const array_link &array, int verbose = 0, int truncate = 1);
 
 // SWIG has some issues with typedefs, so we use a define
 #define GWLPvalue mvalue_t< double >
@@ -141,13 +149,14 @@ array_link array2secondorder (const array_link &array);
  */
 array_link array2xf (const array_link &array);
 
-/**
+/** Calculate model matrix for a conference design
  *
  * \param conference_design Conference design
  * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
+ * \returns Calculated model matrix
  */
-array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose);
+array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose= 0);
 
 /** Convert orthogonal array or conference design to model matrix
  *
@@ -157,10 +166,16 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
  * \param array Orthogonal array or conference design
  * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
+ * \returns Calculated model matrix
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 
 
+/** Return the sizes of the model matrices calculated
+ * 
+ * \param array Orthogonal array or conference designs
+ * \returns List with the sizes of the model matrix for: only intercept; intercept, main; intercept, main, and iteraction terms, intercept, main and full second order
+ */
 std::vector<int> array2modelmatrix_sizes(const array_link &array);
 
 /** calculate second order interaction model for 2-level array
@@ -306,9 +321,9 @@ inline mvalue_t< long > F4 (const array_link &al, int verbose = 1) {
 }
 
 template < class IndexType >
-/** Add array to list of Pareto optimal arrays
+/** Calculate properties of an array and create a Pareto element
  *
- * The values to be optimized are:
+ * The values calculated are:
  *
  * 1) Rank (higher is better)
  * 2) A3, A4 (lower is better)
@@ -317,13 +332,13 @@ template < class IndexType >
  * Valid for 2-level arrays of strength at least 3
  *
  * */
-typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankFA (const array_link &al,
+typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankFA (const array_link &array,
                                                                                           int verbose) {
-        int N = al.n_rows;
-        int model_rank = arrayrankFullPivLU (array2secondorder (al), 1e-12) + 1 +
-                         al.n_columns; // valid for 2-level arrays of strength at least 3
-        mvalue_t< long > a3a4_values = A3A4 (al);
-        mvalue_t< long > f4 = F4 (al);
+        int N = array.n_rows;
+        int model_rank = arrayrankFullPivLU (array2secondorder (array), 1e-12) + 1 +
+                         array.n_columns; // valid for 2-level arrays of strength at least 3
+        mvalue_t< long > a3a4_values = A3A4 (array);
+        mvalue_t< long > f4 = F4 (array);
 
         // add the 3 values to the combined value
         typename Pareto< mvalue_t< long >, IndexType >::pValue p;
@@ -333,11 +348,11 @@ typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankF
 
         if (verbose >= 2) {
                 if (verbose >= 3) {
-                        std::vector< double > gwlp = al.GWLP ();
+                        std::vector< double > gwlp = array.GWLP ();
                         myprintf ("parseArrayPareto: A4 (scaled) %ld, %f\n", a3a4_values.raw_values()[1], gwlp[4]);
                 }
 
-                myprintf ("  parseArrayPareto: rank %d, verbose %d\n", al.rank (), verbose);
+                myprintf ("  parseArrayPareto: rank %d, verbose %d\n", array.rank (), verbose);
         }
 
         return p;
@@ -361,6 +376,7 @@ void addJmax (const array_link &al, typename Pareto< mvalue_t< long >, IndexType
 }
 
 template < class IndexType >
+/// Calculate Pareto element with J5 criterium
 typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoJ5 (const array_link &al, int verbose) {
         typename Pareto< mvalue_t< long >, IndexType >::pValue p =
             calculateArrayParetoRankFA< IndexType > (al, verbose);
@@ -379,10 +395,10 @@ template < class IndexType >
  * 3) F4 (lower is better, sum of elements is constant)
  *
  * */
-inline void parseArrayPareto (const array_link &al, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
+inline void parseArrayPareto (const array_link &array, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
                               int verbose) {
         typename Pareto< mvalue_t< long >, IndexType >::pValue p =
-            calculateArrayParetoRankFA< IndexType > (al, verbose);
+            calculateArrayParetoRankFA< IndexType > (array, verbose);
 
         // add the new tuple to the Pareto set
         pset.addvalue (p, i);
