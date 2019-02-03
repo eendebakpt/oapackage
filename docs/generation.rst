@@ -12,14 +12,9 @@ A list of arrays in LMC form (i.e., lexicographically minimum in columns) can be
 form with one additional column. Details about the algorithm are described
 in :cite:`Eendebak2009`.
 
-The main function for array extension is the function :cpp:func:`extend_arraylist`. The signature is
-
-
-.. doxygenfunction:: extend_arraylist(const arraylist_t&, arraydata_t&, OAextend const&)
-    :outline:
-                     
-Here, :cpp:class:`arraydata_t` is the structure describing the class of
-arrays and :cpp:class:`OAextend` contains various options for the algorithm.
+The main function for array extension is the function :cpp:func:`extend_arraylist`. The arguments for this function are the list of arrays
+to extend, a specification of the class of arrays in :cpp:class:`arraydata_t` and the
+options :cpp:class:`OAextend` for the algorithm.
 
 An example of a session that extends a designs is:
 
@@ -85,8 +80,7 @@ The main functions to extend conference and double conference designs are
 :cpp:func:`extend_conference` and :cpp:func:`extend_double_conference`.
 
 The low-level functions for generating candidate extension columns of conference and double conference designs
-are :cpp:func:`generateConferenceExtensions` and
-:cpp:func:`generateDoubleConferenceExtensions`.
+are :cpp:func:`generateConferenceExtensions` and :cpp:func:`generateDoubleConferenceExtensions`.
 
 
 Calculation of D-optimal designs
