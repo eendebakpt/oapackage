@@ -536,7 +536,11 @@ struct array_link {
         /// Calculate F-values of a conference design
         std::vector< int > FvaluesConference (int jj) const;
 
-        /// Calculate J-characteristics of matrix (the values are signed)
+        /** Calculate the Jk-characteristics of matrix (the values are signed)
+	 * 
+	 * 
+	 * 
+	 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
@@ -548,7 +552,7 @@ struct array_link {
         /// calculate rank of array
         int rank () const;
 
-        /** calculate generalized wordlength pattern
+        /** Calculate generalized wordlength pattern
 		 *
 		 * @see ::GWLP
 		 */
@@ -1702,7 +1706,7 @@ MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
  */
 MatrixFloat array2eigenX2 (const array_link &array);
 
-/** Convert 2-level array to second order model matrix (intercept, X1, X2)
+/** Convert 2-level array to second order interaction model matrix (intercept, X1, X2)
  *
  * \param array Design of which to calculate the model matrix
  * \returns Eigen matrix with the model matrix
