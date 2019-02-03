@@ -125,7 +125,6 @@ Array transformations
 
 Transformations of (orthogonal) arrays consist of row, column and 
 level permutations. A transformation is represented by 
-.. the :meth:`~oalib.array_transformation_t` object.
 the :cpp:class:`array_transformation_t` object.
 
 For a given transformation the column permutations are applied first,
