@@ -17,6 +17,18 @@ import oapackage.conference
 def _statistics_equal(statistics, expected):
     np.testing.assert_array_almost_equal(np.array(statistics), np.array(expected))
 
+class TestJcharacteristics(unittest.TestCase):
+    
+    def test_Jcharacteristics(self):
+        array = oapackage.exampleArray(46, 0)
+        JJ = oapackage.Jcharacteristics_conference(array, number_of_columns=3)
+        self.assertEqual( len(JJ), oapackage.choose(array.n_columns, 3))
+
+        JJ = oapackage.Jcharacteristics_conference(array, 4)
+        
+        self.assertEqual( len(JJ), oapackage.choose(array.n_columns, 4))
+        hist=np.histogram(np.abs(JJ), bins=np.arange(0,21,2))[0]
+        self.assertEqual(list(hist), [ 9,  0, 52,  0,  8,  0,  1,  0,  0,  0])
 
 class TestConferenceStatistics(unittest.TestCase):
 
