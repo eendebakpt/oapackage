@@ -152,8 +152,9 @@ array_link conference_t::create_root_three () const {
 
         return array;
 }
-void conference_t::addRootArrays (arraylist_t &lst) const {
-        switch (this->ctype) {
+arraylist_t lst conference_t::createRootArrays (arraylist_t &lst) const {
+	arraylist_t lst;
+	switch (this->ctype) {
         case CONFERENCE_NORMAL:
         case CONFERENCE_DIAGONAL:
                 switch (this->itype) {
@@ -178,7 +179,7 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
         case DCONFERENCE: {
                 switch (this->itype) {
                 case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                        arraylist_t tmp = this->createDconferenceRootArrays ();
+                        arraylist_t tmp = this->createDoubleConferenceRootArrays ();
                         lst.insert (lst.end (), tmp.begin (), tmp.end ());
                 } break;
                 case CONFERENCE_ISOMORPHISM: {
@@ -192,19 +193,18 @@ void conference_t::addRootArrays (arraylist_t &lst) const {
                         }
                         assert (this->j1zero == 0);
                         assert (this->j3zero == 0);
-                        arraylist_t tmp = this->createDconferenceRootArrays ();
+                        arraylist_t tmp = this->createDoubleConferenceRootArrays ();
                         lst.insert (lst.end (), tmp.begin (), tmp.end ());
                 } break;
                 default:
-
-                        printfd ("ERROR: not implemented (itype %d)\n", this->itype);
-                        exit (0);
+						throw_runtime_exception("root array geneated not implemented for class with itype=%d\n", this->itype);
                 }
         }
         }
+	return lst;
 }
 
-arraylist_t conference_t::createDconferenceRootArrays () const {
+arraylist_t conference_t::createDoubleConferenceRootArrays () const {
         arraylist_t lst;
         array_link al (this->N, 1, array_link::INDEX_DEFAULT);
         if (j1zero) {

@@ -71,25 +71,33 @@ class conference_t {
         bool j3zero; 
 
       public:
-        /// create new conference_t object
-        conference_t ();
+		/** Structure representing the type of conference designs
+		 *
+		 */
+		conference_t ();
+		/** @copydoc conference_t::conference_t()
+		 *
+		 * \param N Number of rows
+		 * \param k Numbe of columns
+		 * \param 
+		 */
         conference_t (int N, int k, int j1zero);
         conference_t (const conference_t &rhs);
 
         // return short string describing the class
         std::string idstr () const;
 
-        /// create the unique representative of the 2 column conference design 
+        /// create the unique representative of the 2 column conference design in LMC0 form
         array_link create_root () const;
 
-        /// create the unique representative of the 3 column conference design
+        /// create the unique representative of the 3 column conference design  in LMC0 form
         array_link create_root_three () const;
 
         /// create the root arrays with 1 column for the double conference matrices
-        arraylist_t createDconferenceRootArrays () const;
+        arraylist_t createDoubleConferenceRootArrays () const;
 
-        /// add the root arrays to a list
-        void addRootArrays (arraylist_t &lst) const;
+        /// returnt the list of root arrays for the class of conference designs
+		arraylist_t createRootArrays (arraylist_t) const;
 
         /// return string representation of the object
         std::string __repr__ () const {
