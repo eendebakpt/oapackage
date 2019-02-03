@@ -166,7 +166,7 @@ Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int
 /** Return the sizes of the model matrices calculated
  * 
  * \param array Orthogonal array or conference designs
- * \param List with the sizes of the model matrix for: only intercept; intercept, main; intercept, main, and iteraction terms, intercept, main and full second order
+ * \returns List with the sizes of the model matrix for: only intercept; intercept, main; intercept, main, and iteraction terms, intercept, main and full second order
  */
 std::vector<int> array2modelmatrix_sizes(const array_link &array);
 

@@ -743,10 +743,11 @@ array_link exampleArray(int idx = 0, int verbose = 0);
 /** Calculate Jk-characteristics for a conference design
  *
  * \param array Conference design
- * \param k Specifies the number of columns to use 
+ * \param number_of_columns Specifies the number of columns to use 
+ * \param verbose Verbosity level
  * \return A vector of calculated inner products between all combinations of k columns.
  */
-std::vector< int > Jcharacteristics_conference(const array_link &array, int jj, int verbose = 0);
+std::vector< int > Jcharacteristics_conference(const array_link &array, int number_of_columns, int verbose = 0);
 
 /// data type for elements of conference designs
 typedef signed char conf_t;
