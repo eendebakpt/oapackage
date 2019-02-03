@@ -209,7 +209,7 @@ the interaction model in :math:`l` factors, that is, the model including the
 intercept, all :math:`l` main effects and all :math:`l(l-1)/2` two-factor
 interactions. The PEC sequence is the vector :math:`(PEC_{1}, PEC_{2}, \ldots, PEC_{k})`. Now, let :math:`PIC_{l}` denote the average :math:`D`-efficiency for the interaction model in :math:`l` factors accross all :math:`N`-run :math:`l`-factor subdesigns. The PIC sequence is the vector :math:`(PIC_{1}, PIC_{2}, \ldots, PIC_{k})`.
 The OApackage can calculate the PEC and PIC sequences of two-level designs with
-:cpp:func:`PECsequence` and :cpp:func:`PICsequence`.
+:cpp:function:`PECsequence` and :cpp:function:`PICsequence`.
     
 
 The following example shows how to compute the PEC and PIC sequences of a two-level orthogonal array using the OApackage.

@@ -90,14 +90,14 @@ class conference_t {
         /// create the unique representative of the 2 column conference design in LMC0 form
         array_link create_root () const;
 
-        /// create the unique representative of the 3 column conference design  in LMC0 form
+        /// create the unique representative of the 3 column conference design in LMC0 form
         array_link create_root_three () const;
 
         /// create the root arrays with 1 column for the double conference matrices
         arraylist_t createDoubleConferenceRootArrays () const;
 
-        /// returnt the list of root arrays for the class of conference designs
-		arraylist_t createRootArrays (arraylist_t) const;
+        /// return the list of root arrays for the class of conference designs
+	arraylist_t createRootArrays () const;
 
         /// return string representation of the object
         std::string __repr__ () const {

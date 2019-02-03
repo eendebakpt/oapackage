@@ -152,14 +152,14 @@ array_link conference_t::create_root_three () const {
 
         return array;
 }
-arraylist_t lst conference_t::createRootArrays (arraylist_t &lst) const {
-	arraylist_t lst;
+arraylist_t conference_t::createRootArrays () const {
+	arraylist_t root_arrays;
 	switch (this->ctype) {
         case CONFERENCE_NORMAL:
         case CONFERENCE_DIAGONAL:
                 switch (this->itype) {
                 case CONFERENCE_ISOMORPHISM:
-                        lst.push_back (this->create_root ());
+                        root_arrays.push_back (this->create_root ());
                         break;
                 case CONFERENCE_RESTRICTED_ISOMORPHISM: {
                         array_link al (this->N, 1, array_link::INDEX_DEFAULT);
@@ -169,7 +169,7 @@ arraylist_t lst conference_t::createRootArrays (arraylist_t &lst) const {
                                 for (int k = 1; k < i; k++) {
                                         al.at (k, 0) = 1;
                                 }
-                                lst.push_back (al);
+                                root_arrays.push_back (al);
                         }
                 } break;
                 default:
@@ -180,7 +180,7 @@ arraylist_t lst conference_t::createRootArrays (arraylist_t &lst) const {
                 switch (this->itype) {
                 case CONFERENCE_RESTRICTED_ISOMORPHISM: {
                         arraylist_t tmp = this->createDoubleConferenceRootArrays ();
-                        lst.insert (lst.end (), tmp.begin (), tmp.end ());
+                        root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
                 case CONFERENCE_ISOMORPHISM: {
                         if (this->j1zero) {
@@ -194,14 +194,14 @@ arraylist_t lst conference_t::createRootArrays (arraylist_t &lst) const {
                         assert (this->j1zero == 0);
                         assert (this->j3zero == 0);
                         arraylist_t tmp = this->createDoubleConferenceRootArrays ();
-                        lst.insert (lst.end (), tmp.begin (), tmp.end ());
+                        root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
                 default:
-						throw_runtime_exception("root array geneated not implemented for class with itype=%d\n", this->itype);
+			throw_runtime_exception(printfstring("root array geneated not implemented for class with itype=%d", this->itype));
                 }
         }
         }
-	return lst;
+	return root_arrays;
 }
 
 arraylist_t conference_t::createDoubleConferenceRootArrays () const {

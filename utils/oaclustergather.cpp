@@ -661,7 +661,7 @@ int main (int argc, char *argv[]) {
                                         if (verbose >= 2)
                                                 printfd ("pfile %s\n", pfile.c_str ());
                                 }
-                                writearrayfile (pfile.c_str (), &pp, arrayfilemode, adata->N, k);
+                                writearrayfile (pfile.c_str (), pp, arrayfilemode, adata->N, k);
                                 if (debug) {
                                 }
                         }
