@@ -1722,7 +1722,7 @@ MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
  */ 
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 
-/** calculate number of parameters in the model matrix
+/** Calculate number of parameters in the model matrix
 *
 * A list of integers is returned, with the number of columns in:
 *
@@ -1730,6 +1730,10 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 * - The main effects
 * - The interaction effects (second order interaction terms without quadratics)
 * - The quadratic effects
+* 
+* \param array Orthogonal array or conference design
+* \param order Not used any more
+* \returns List of sizes
 */
 std::vector< int > numberModelParams(const array_link &array, int order = -1);
 

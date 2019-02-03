@@ -180,7 +180,6 @@ int main (int argc, char *argv[]) {
         oaextendx.use_row_symmetry = 0;
         oaextendx.extendarraymode = OAextend::APPENDFULL;
         oaextendx.init_column_previous = INITCOLUMN_J5;
-        // oaextendx.init_column_previous=INITCOLUMN_ZERO;
         oaextendx.nLMC = 500000;
         oaextendx.info ();
 

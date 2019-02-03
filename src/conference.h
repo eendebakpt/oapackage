@@ -91,7 +91,7 @@ class conference_t {
         array_link create_root () const;
 
         /// create the unique representative of the 3 column conference design in LMC0 form
-        array_link create_root_three () const;
+        array_link create_root_three_columns () const;
 
         /// create the root arrays with 1 column for the double conference matrices
         arraylist_t createDoubleConferenceRootArrays () const;

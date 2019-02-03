@@ -117,7 +117,7 @@ conference_t::conference_t (int N, int k, int _j1zero) {
         this->j3zero = 0;
 }
 
-array_link conference_t::create_root_three () const {
+array_link conference_t::create_root_three_columns () const {
         array_link array (this->N, 3, 0); 
 
         array.at (0, 0) = 0;
@@ -2312,7 +2312,7 @@ conf_candidates_t generateCandidateExtensions (const conference_t ctype, int ver
         cande.ce.resize (ctype.N);
 
         array_link al2 = ctype.create_root ();
-        array_link al3 = ctype.create_root_three ();
+        array_link al3 = ctype.create_root_three_columns ();
 
         if (ncmax == -1) {
                 ncmax = ctype.N;

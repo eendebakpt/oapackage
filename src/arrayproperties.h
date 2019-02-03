@@ -146,6 +146,7 @@ array_link array2xf (const array_link &array);
  * \param conference_design Conference design
  * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
+ * \returns Calculated model matrix
  */
 array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose);
 
@@ -157,10 +158,16 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
  * \param array Orthogonal array or conference design
  * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
+ * \returns Calculated model matrix
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 
 
+/** Return the sizes of the model matrices calculated
+ * 
+ * \param array Orthogonal array or conference designs
+ * \param List with the sizes of the model matrix for: only intercept; intercept, main; intercept, main, and iteraction terms, intercept, main and full second order
+ */
 std::vector<int> array2modelmatrix_sizes(const array_link &array);
 
 /** calculate second order interaction model for 2-level array
