@@ -1425,7 +1425,7 @@ const int NRAUTO = 0;
 * @param mode Mode for the file with designs
 * @param nrows If the list of arrays is empty, use this number of rows for the design file
 * @param ncols If the list of arrays is empty, use this number of rows for the design file
-* @return
+* @return Value zero if succesfull
 */
 int writearrayfile (const char *filename, const arraylist_t &arraylist, arrayfile::arrayfilemode_t mode = arrayfile::ATEXT,
                     int nrows = NRAUTO, int ncols = NRAUTO);

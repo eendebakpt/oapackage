@@ -4782,7 +4782,7 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
                 return 0;
         }
 
-        int i = afile->append_arrays (*arraylist, 1); // append_arrays ( afile, *arraylist, 1 );
+        int i = afile->append_arrays (*arraylist, 1); 
         afile->finisharrayfile ();
         delete afile;
 
