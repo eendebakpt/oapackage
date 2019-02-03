@@ -149,7 +149,7 @@ Moreover, the package can calculate the well-known :math:`A`- and :math:`E`-opti
 on Optimal Experimental Design :cite:`Donev2007`.
 The functions to perform the calulcations are
 :cpp:func:`array_link::Defficiency`,
-:cpp:func:`array_link::Defficiencies`,
+:cpp:func:`array_link::DsEfficiency`,
 :cpp:func:`array_link::Aefficiency`,
 :cpp:func:`array_link::Eefficiency`.
 
@@ -172,7 +172,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
      E-efficiency for the interaction model: 0.3602
 
 .. topic:: Calculation of :math:`D`-, :math:`A`- and :math:`E`-efficiency
-   :name: DAE
+  :name: DAE
 
    Let :math:`{X}` be again the :math:`{N}\times {p}` interaction model matrix consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. The :math:`D`-, :math:`A`- and :math:`E`-efficiency are calculated using the eigenvalues of the singular-value decomposition (SVD) of :math:`{X}`. To calculate the rank of a matrix, the lower-upper (LU) decomposition, as implemented in the Eigen package :cite:`eigenweb`, is used.
 
@@ -180,9 +180,9 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
 
    .. math::
     
-       {D_{eff}(D)} = (\prod_j \lambda_j)^{1/p} / N \label{formula:Defficiency} \\
-       {A_{eff}(D)} = N (\sum_j \lambda_j^{-1})/m \label{formula:VIF} \\ 
-       {E_{eff}(D)} = \min_j \lambda_j. \label{formula:E-efficiency}
+       {D_{\text{eff}}(D)} = (\prod_j \lambda_j)^{1/p} / N \label{formula:Defficiency}, \\
+       {A_{\text{eff}}(D)} = N (\sum_j \lambda_j^{-1})/m \label{formula:VIF}, \\ 
+       {E_{\text{eff}}(D)} = \min_j \lambda_j. \label{formula:E-efficiency}
 
 .. topic:: :math:`D_s`-efficiency
   :name: DS
