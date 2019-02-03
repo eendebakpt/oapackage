@@ -231,7 +231,7 @@ Properties of conference designs
 --------------------------------
 
 For conference designs we can calculate the projection statistics using
-:meth:`conferenceProjectionStatistics`. The Jk-characteristics can be calculated with the method
+:meth:`~oalib.conferenceProjectionStatistics`. The Jk-characteristics can be calculated with the method
 :cpp:func:`Jcharacteristics_conference`.
 
 .. admonition:: Calculate projection statistics for conference designs
