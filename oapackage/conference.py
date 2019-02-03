@@ -59,7 +59,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=Tru
       list: calculated statistics. Calculated are whether the model is estible, the Defficiency and the inverse APV.
     """
     ncolumns = dsd.shape[1]
-    modelmatrix = oapackage.conference_design2modelmatrix(dsd, 'q')
+    modelmatrix = np.array(oapackage.conference_design2modelmatrix(dsd, 'q', verbose=0))
     M = (modelmatrix.T).dot(modelmatrix)
 
     if use_condition_number:

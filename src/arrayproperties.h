@@ -149,14 +149,14 @@ array_link array2secondorder (const array_link &array);
  */
 array_link array2xf (const array_link &array);
 
-/**
+/** Calculate model matrix for a conference design
  *
  * \param conference_design Conference design
  * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
  * \returns Calculated model matrix
  */
-array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose);
+array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose= 0);
 
 /** Convert orthogonal array or conference design to model matrix
  *
