@@ -230,7 +230,20 @@ The following example shows how to compute the PEC and PIC sequences of a two-le
 Properties of conference designs
 --------------------------------
 
-To be added.
+For conference designs we can calculate the projection statistics using
+:meth:`conferenceProjectionStatistics`. The Jk-characteristics can be calculated with the method
+:cpp:func:`Jcharacteristics_conference`.
+
+.. admonition:: Calculate projection statistics for conference designs
+
+  .. doctest:: 
+   
+    >>> array = oapackage.exampleArray(46, 1) 
+    exampleArray 46: second conference design in C(20,8)
+    >>> pec, pic, ppc = oapackage.conference.conferenceProjectionStatistics(array)
+    >>> print('Projection estimation capacity for 4 columns: %.3f'  % pec)
+    Projection estimation capacity for 4 columns: 0.986
+    >>> J3 = oapackage.Jcharacteristics_conference(array, number_of_columns = 3)
 
 
 

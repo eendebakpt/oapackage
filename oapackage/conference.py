@@ -95,7 +95,7 @@ def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
     """ Calculate the projection statistics of a conference design
 
     The PECk, PICk and PPCk are calculated with k the number of columns specified.
-    The projection statistics are calculated by determining the :ref:`modelStatistics` of all k-column subdesigns
+    The projection statistics are calculated by determined the :ref:`modelStatistics` of all k-column subdesigns
     and then taking the mean of the statistics for the subdesigns.
     For more details of the calculation, see https://oapackage.readthedocs.io/.
 
