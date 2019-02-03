@@ -919,7 +919,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
         else:
             gmadata[gmadata < 0] = 0
         if not(np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
-            print('warning: data are not good GWPL data!!!!')
+            warnings.warn('data does not represent GWPL data', UserWarning)
             return ''
     bgma = np.around(gmadata, decimals=12)
     if t is not None:

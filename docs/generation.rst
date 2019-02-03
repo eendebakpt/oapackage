@@ -52,7 +52,7 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
    .. doctest::     
                    
     >>> import oapackage
-    >>> ctype=oapackage.conference_t(8, 8, 0) 
+    >>> ctype=oapackage.conference_t(8, 6, 0) 
     >>> al = ctype.create_root_three_columns()
     >>> al.showarray()
     array:

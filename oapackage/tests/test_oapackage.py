@@ -174,8 +174,8 @@ def miscunittest(verbose=1):
         al2r.showarraycompact()
         return False
 
-    at = oalib.reductionDOP(al)
-    check = at.apply(al) == al.reduceDOP()
+    transformation = oalib.reductionDOP(al)
+    check = transformation.apply(al) == al.reduceDOP()
     if not check:
         print('error: DOP reduction transformation is invalid')
 
@@ -262,9 +262,6 @@ class TestParetoFunctionality:
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 
-    # def test_tilefigs(self):
-    #   oapackage.oahelper.tilefigs([], geometry=[2,2])
-
     def setUp(self):
         self.test_array = oapackage.exampleArray(1, 0)
 
@@ -277,8 +274,10 @@ class TestOAhelper(unittest.TestCase):
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='pmatrix')
         self.assertEqual(latex_str[0:15], r'\begin{pmatrix}')
 
+    @only_python3
     def test_gwlp2str(self):
-        self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
+        with self.assertWarns(UserWarning):
+            self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
 
     def test_parseProcessingTime(self):
