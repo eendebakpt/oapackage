@@ -410,26 +410,35 @@ struct array_link {
 		*
 		*/
 		array_link ();
-        /** @copydoc arraydata_t::arraydata_t()
+        /** @copydoc array_link::array_link()
 		 *
-		 * The arary is iitialized with zeros.
+		 * The array is intialized with zeros.
 		 */
         array_link (rowindex_t nrows, colindex_t ncols, int index);
-		/** @copydoc arraydata_t::arraydata_t()
+		/** @copydoc array_link::array_link()
 		*
 		* Initialize with data from a pointer.
 		*/
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-		/** @copydoc arraydata_t::arraydata_t()
+		/** @copydoc array_link::array_link()
 		*
 		* Initialize with data from another array_link object.
 		*/
         array_link (const array_link &);
-		/** @copydoc arraydata_t::arraydata_t()
+		/** @copydoc array_link::array_link()
 		*
 		* Initialize with data from anEigen matrix.
 		*/
         array_link (Eigen::MatrixXd &eigen_matrix);
+		/// @copydoc array_link::array_link()
+		array_link(const array_link &, const std::vector< int > &colperm);
+		/// @copydoc array_link::array_link()
+		array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
+		/// @copydoc array_link::array_link()
+		array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
+		/// @copydoc array_link::array_link()
+		array_link(const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index = 0);
+
         ~array_link ();
 
 #ifdef SWIGCODE
@@ -537,10 +546,10 @@ struct array_link {
         std::vector< int > FvaluesConference (int jj) const;
 
         /** Calculate the Jk-characteristics of matrix (the values are signed)
-	 * 
-	 * 
-	 * 
-	 */
+		 * 
+		 * \param jj Number of columns to use
+		 *	\returns Vector with calculated Jk values
+		 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
@@ -569,7 +578,7 @@ struct array_link {
         // return value of maximum element in array
         array_t max () const;
 
-        /** calculate centered L2 discrepancy
+        /** Calculate centered L2 discrepancy
          *
          * The method is from "A connection between uniformity and aberration in regular fractions of two-level
          * factorials", Fang and Mukerjee, 2000
@@ -607,18 +616,17 @@ struct array_link {
         /// elementwise addition
         array_link operator+ (const array_link &) const;
         /// elementwise addition
-        array_link operator+ (array_t v) const;
+        array_link operator+ (array_t value) const;
         array_link operator- (const array_link &) const;
-        array_link operator- (array_t v) const;
+        array_link operator- (array_t value) const;
 
         /// elementwise multiplication
         array_link operator* (const array_link &rhs) const;
 
-        array_link operator* (array_t val) const;
-
-        array_link operator*= (array_t val);
-        array_link operator+= (array_t val);
-        array_link operator-= (array_t val);
+        array_link operator* (array_t value) const;
+        array_link operator*= (array_t value);
+        array_link operator+= (array_t value);
+        array_link operator-= (array_t value);
 
         /// get element from array, no error checking, inline version
         inline const array_t &atfast (const rowindex_t r, const colindex_t c) const {
@@ -700,12 +708,6 @@ struct array_link {
 
         /// set column to values
         void setcolumn (int target_column, const array_link &source_array, int source_column = 0) const;
-
-      public:
-        array_link (const array_link &, const std::vector< int > &colperm);
-        array_link (const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
-        array_link (const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
-        array_link (const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index = 0);
 
       public:
         void init (rowindex_t r, colindex_t c); // made public for python interface
@@ -806,13 +808,16 @@ std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose
  */
 class jstructbase_t {
       public:
-        std::vector< int > values;         // calculated J-characteristics
-        std::vector< int > jvalues;        // possible values for J-characteristics
-        std::map< int, int > jvalue2index; // map from j-value to index
+		/// calculated J-characteristics
+        std::vector< int > values;         
+		// possible values for Jk-characteristics
+		std::vector< int > jvalues;       
+		/// map from Jk-value to index in the jvalues variable
+        std::map< int, int > jvalue2index; 
+
+		/// number of columns
         int jj;
 
-      public:
-      private:
       public:
         /// calculate maximum J value
         int maxJ () const;
@@ -820,10 +825,16 @@ class jstructbase_t {
         /// calculate possible values in F vector
         std::vector< int > Jvalues () const { return this->jvalues; }
 
-        /// calculate histogram of J values
+        /** Calculate histogram of J values
+		 *
+		 * The histogram bins are given by the values of @ref Jvalues
+		 *
+		 * \returns Histogram of J values
+		 */
         std::vector< int > calculateF () const;
 
-        virtual void calc (const array_link &al) = 0;
+		/// Calculate the J-values for a given array
+        virtual void calc (const array_link &array) = 0;
 
         /// Show contents of structure
         void show ();
@@ -899,7 +910,7 @@ class jstruct_t {
         /// contains calculated J-values
         std::vector< int > values;
         /// calculated abberation
-        double abberation;
+        double abberration;
 
       public:
         /// Create an object to calculate J-characteristics
@@ -932,7 +943,10 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        /// calculate aberration value
+        /** Calculate aberration value
+		 *
+		 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
+		 */
 		void calculateAberration();
 
         /// Show contents of structure
@@ -949,15 +963,25 @@ class jstruct_t {
  **/
 class jstructconference_t : public jstructbase_t {
       public:
+		 /** Create structure to calculate J-characteristics of conference designs
+		  *
+		  * \param N Number of rows
+		  * \param jj Number of columns to use for the Jk-characteristics
+		  **/
         jstructconference_t (int N, int jj = 4) {
                 this->jj = jj;
                 calcJvalues (N, jj);
         }
-        jstructconference_t (const array_link &al, int jj = 4) {
+		/** Calculate J-characteristics of a conference design
+		*
+		* \param array Array to calculate the J-characteristics for
+		* \param jj Number of columns to use for the Jk-characteristics
+		**/ 
+		jstructconference_t (const array_link &array, int jj = 4) {
                 this->jj = jj;
-                const int N = al.n_rows;
+                const int N = array.n_rows;
                 calcJvalues (N, jj);
-                calc (al);
+                calc (array);
         }
 
       private:
@@ -990,8 +1014,11 @@ inline void fastJupdate (const array_t *array, rowindex_t N, const int J, const 
  */
 int jvalue (const array_link &array, const int J, const int *column_indices);
 
-/// calculate J-value for a 2-level array
-int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *pp);
+/** Calculate J-value for a column combination of a 2-level array
+*
+* We assume the array has values 0 and 1. No boundary checks are performed.
+*/
+int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *column_indices);
 
 /// Analyse a list of arrays
 std::vector< jstruct_t > analyseArrays (const arraylist_t &arraylist, const int verbose, const int jj = 4);

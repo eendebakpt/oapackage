@@ -3479,7 +3479,7 @@ std::vector< int > jstructbase_t::calculateF () const {
 
 jstruct_t::jstruct_t () {
         this->nc = 0;
-        this->abberation = -1;
+        this->abberration = -1;
 }
 
 int jstruct_t::maxJ () const {
@@ -3754,7 +3754,7 @@ std::string jstructbase_t::showstr () {
 }
 void jstructbase_t::show () {
 #ifdef FULLPACKAGE
-        cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
+        std::cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
         for (size_t x = 0; x < this->values.size (); x++) {
                 std::cout << printfstring (" %d", values[x]);
         }
@@ -3883,15 +3883,12 @@ int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *p
         return (jval);
 }
 
-/** @brief Calculate J-characteristic for a column combination
-*
-* We assume the array has values 0 and 1. No bounds checks
-*/
-int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *pp) {
+
+int jvaluefast (const array_t *array, rowindex_t N, const int J, const colindex_t *column_indices) {
         array_t tmpval[MAXROWS];
 
         std::fill_n (tmpval, N, 0);
-        fastJupdate (array, N, J, pp, tmpval);
+        fastJupdate (array, N, J, column_indices, tmpval);
         int jval = 0;
         for (rowindex_t r = 0; r < N; r++) {
                 jval += tmpval[r] % 2;

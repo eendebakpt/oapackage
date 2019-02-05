@@ -1645,7 +1645,7 @@ jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int
                 int ii = 5 - i - 1;
                 fastJupdate (array, N, 1, comb + ii, tmpval);
                 ww[i + 1] = abs (fastJupdateValue (N, tmpval));
-                fastJupdate (array, N, 1, comb + ii, tmpval); // OPTIMIZE: eliminate swap back here
+                fastJupdate (array, N, 1, comb + ii, tmpval); 
         }
 
         if (dosort) {
