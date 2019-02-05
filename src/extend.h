@@ -144,10 +144,6 @@ struct extendpos {
         }
 };
 
-/// Extend a list of orthogonal arrays
-int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
-                      arraylist_t &extensions);
-
 /** Extend a list of orthogonal arrays
 *
 * \param array_list The list of arrays to be extended
@@ -164,6 +160,12 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_
 * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
 */
 arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &arrayclass);
+
+/** @copydoc extend_arraylist(const arraylist_t, arraydata_t &, OAextend const &, colindex_t, arraylist_t &)
+ * 
+ */
+int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
+                      arraylist_t &extensions);
 
 /** Extend a single orthogonal array
  *
