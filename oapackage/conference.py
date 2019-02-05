@@ -91,28 +91,28 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=Tru
     return Eest, Defficiency, invAPV
 
 
-def conferenceProjectionStatistics(al, ncolumns=4, verbose=0):
+def conferenceProjectionStatistics(array, ncolumns=4, verbose=0):
     """ Calculate the projection statistics of a conference design
 
     The PECk, PICk and PPCk are calculated with k the number of columns specified.
-    The projection statistics are calculated by determined the :ref:`modelStatistics` of all k-column subdesigns
+    The projection statistics are calculated by determined the :meth:`modelStatistics` of all k-column subdesigns
     and then taking the mean of the statistics for the subdesigns.
     For more details of the calculation, see https://oapackage.readthedocs.io/.
 
     Args:
-        al (array): conference design
+        array (array): conference design
         ncolumns (int): number of columns on which to project
 
     Returns:
         pec, pic, ppc (float): calculated statistics
     """
-    nc = al.shape[1]
+    nc = array.shape[1]
 
     number_combinations = oapackage.choose(nc, ncolumns)
     Eestx = np.zeros(number_combinations)
     Deff = np.zeros(number_combinations)
     invAPV_values = np.zeros(number_combinations)
-    dsd = oapackage.conference2DSD(oapackage.array_link(al))
+    dsd = oapackage.conference2DSD(oapackage.array_link(array))
     moment_matrix = momentMatrix(ncolumns)
     for idx, c in enumerate(list(itertools.combinations(range(nc), ncolumns))):
         proj_dsd = dsd.selectColumns(c)

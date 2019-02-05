@@ -540,15 +540,19 @@ struct array_link {
          *
          * This assumes the strength is at least 3. Otherwise use the jstruct_t object
          */
-        std::vector< int > Fvalues (int jj) const;
+        std::vector< int > Fvalues (int number_of_columns) const;
 
-        /// Calculate F-values of a conference design
-        std::vector< int > FvaluesConference (int jj) const;
+        /** Calculate F-values of a conference design
+		 *
+		 * \param number_of_columns Number of columns to use
+		 * \returns The Fk vector with k the number of columns specified
+		 */
+        std::vector< int > FvaluesConference (int number_of_columns) const;
 
-        /** Calculate the Jk-characteristics of matrix (the values are signed)
+        /** Calculate the Jk-characteristics of the matrix (the values are signed)
 		 * 
 		 * \param jj Number of columns to use
-		 *	\returns Vector with calculated Jk values
+		 * \returns Vector with calculated Jk values
 		 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
@@ -1545,7 +1549,7 @@ void write_array_format (const atype *array, const int nrows, const int ncols, i
 #endif
 }
 
-/** @brief Write a formatted array
+/** @brief Write an array to a file pointer
  */
 template < class atype > void write_array_format (FILE *fid, const atype *array, const int nrows, const int ncols) {
         int count;
@@ -1589,9 +1593,9 @@ void convert_array_file(std::string input_filename, std::string output_filename,
 struct arraywriter_t {
       public:
         /** Pointers to different data files.
-             *
-             * Since depth_extend is a depth first approach we need to store arrays with a different number of columns
-             */
+         *
+         * Since depth_extend is a depth first approach we need to store arrays with a different number of columns
+         */
         std::vector< arrayfile_t * > afiles;
 
         /// only write arrays if this variable is true

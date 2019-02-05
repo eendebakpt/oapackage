@@ -3519,11 +3519,11 @@ std::vector< int > jstruct_t::calculateF (int strength) const {
 
 void jstruct_t::calculateAberration() {
 	jstruct_t *js = this;
-	js->abberation = 0;
+	js->abberration = 0;
 	for (int i = 0; i < js->nc; i++) {
-		js->abberation += js->values[i] * js->values[i];
+		js->abberration += js->values[i] * js->values[i];
 	}
-	js->abberation /= N * N;
+	js->abberration /= N * N;
 }
 
 void jstruct_t::calc (const array_link &al) {
@@ -3687,7 +3687,7 @@ void jstruct_t::init (int N_, int k_, int jj_) {
 
         this->nc = ncombs< long > (k_, jj_);
         values = std::vector< int > (nc);
-        this->abberation = -1;
+        this->abberration = -1;
 }
 
 jstruct_t::jstruct_t (const jstruct_t &js) {
@@ -3695,7 +3695,7 @@ jstruct_t::jstruct_t (const jstruct_t &js) {
         k = js.k;
         jj = js.jj;
         nc = js.nc;
-        abberation = js.abberation;
+        abberration = js.abberration;
         values = std::vector< int > (nc);
         std::copy (js.values.begin (), js.values.begin () + nc, values.begin ());
 }
@@ -3706,7 +3706,7 @@ jstruct_t &jstruct_t::operator= (const jstruct_t &rhs) {
         this->jj = rhs.jj;
         this->nc = rhs.nc;
 
-        this->abberation = rhs.abberation;
+        this->abberration = rhs.abberration;
         values = std::vector< int > (nc);
         std::copy (rhs.values.begin (), rhs.values.begin () + nc, values.begin ());
 
