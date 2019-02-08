@@ -149,6 +149,19 @@ array_link array2secondorder (const array_link &array);
  */
 array_link array2xf (const array_link &array);
 
+enum model_matrix_t {
+	/// only the intercept
+	MODEL_CONSTANT,
+	/// intercept and main effects
+	MODEL_MAIN,
+	/// intercept, main effects and second order interactions
+	MODEL_INTERACTION,
+	/// intercept, main effects and second order effects(interactions and quadratic effects)
+	MODEL_SECONDORDER,
+	/// invalid model
+	MODEL_INVALID
+};
+
 /** Calculate model matrix for a conference design
  *
  * \param conference_design Conference design

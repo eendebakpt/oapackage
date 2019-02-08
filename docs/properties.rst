@@ -80,6 +80,40 @@ the methods :cpp:func:`array_link::rank` and :cpp:func:`array_link::foldover`:
 Other structural properties such as whether an array involves two levels or is symetric can be found in the
 documentation of :cpp:class:`array_link`, which shows the full set of methods available.
 
+Model matrices
+--------------
+
+
+For orthogonal arrays and conference designs we can calculate model matrices. For 2-level orthogonal arrays the array is
+converted to a -1,+1 array and then the model matrix is calculated. For mixel-level orthogonal arrays Helmert contrasts are used.
+
+.. admonition:: Calculate interaction effects model matrix 
+
+  .. doctest:: 
+
+    >>> array=oapackage.exampleArray(0,1)
+    exampleArray 0: array in OA(8,2, 2^2)
+    >>> array.showarray()
+    array:
+      0   0
+      0   0
+      0   1
+      0   1
+      1   0
+      1   0
+      1   1
+      1   1
+    >>> M=oapackage.array2modelmatrix(array, 'i')
+    >>> print(M)
+    [[ 1. -1. -1.  1.]
+     [ 1. -1. -1.  1.]
+     [ 1. -1.  1. -1.]
+     [ 1. -1.  1. -1.]
+     [ 1.  1. -1. -1.]
+     [ 1.  1. -1. -1.]
+     [ 1.  1.  1.  1.]
+     [ 1.  1.  1.  1.]]    
+
 
 Statistical properties of orthogonal arrays
 -------------------------------------------

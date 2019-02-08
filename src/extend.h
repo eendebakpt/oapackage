@@ -161,7 +161,7 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_
 */
 arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &arrayclass);
 
-/** @copydoc extend_arraylist(const arraylist_t, arraydata_t &, OAextend const &, colindex_t, arraylist_t &)
+/** @copydoc extend_arraylist(const arraylist_t &, arraydata_t &, OAextend const &)
  * 
  */
 int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,

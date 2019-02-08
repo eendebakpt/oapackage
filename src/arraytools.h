@@ -106,14 +106,6 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 #include "md5.h"
 #endif
 
-#ifdef SWIG
-// only export high level IO functions
-%ignore::array_diff;
-%ignore::write_array;
-%ignore::finish_arrayfile;
-%ignore arrayfile_t::arrayNbits;
-%ignore::writebinheader;
-#endif
 
 extern "C" {}
 
@@ -1258,20 +1250,23 @@ struct arrayfile_t {
         static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
 
       public:
-		  /** Structure for reading or writing a file with arrays
-		  */
+		/** Structure for reading or writing a file with arrays
+		 */
         arrayfile_t ();
 
-        /** @copydoc arraydata_t::arrayfile_t()
+        /** @copydoc arrayfile_t::arrayfile_t()
 		 *
 		 * \param filename File to open for reading
+		 * \param verbose Verbosity level
 		 */
         arrayfile_t (const std::string filename, int verbose = 1);
-		/** @copydoc arraydata_t::arrayfile_t()
+
+		/** @copydoc arrayfile_t::arrayfile_t()
 		*
 		* Open new array file for writing
 		*
 		* \param filename File to open
+		* \param m File mode
 		*/ 
         arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
                      int nb = 8);
@@ -1717,8 +1712,6 @@ void vector2doublebinfile (const std::string fname, std::vector< Type > vals, in
 /// Write a vector of vector elements to binary file
 void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
 	int writeheader, int na);
-
-/* Conversion to Eigen matrices */
 
 /** convert 2-level array to main effects in Eigen format
  *

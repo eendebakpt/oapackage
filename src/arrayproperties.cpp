@@ -1152,24 +1152,24 @@ array_link array2xf (const array_link &al) {
         return modelmatrix;
 }
 
-int _model2idx(const std::string mode) {
+model_matrix_t _model2idx(const std::string mode) {
 	if (mode == "c" || mode == "constant")
-		return 0;
-	else if (mode == "linear" || mode == "main")
-		return 1;
+		return MODEL_CONSTANT;
+	else if (mode == "linear" || mode == "main" || mode =="m")
+		return MODEL_MAIN;
 	else if (mode == "i" || mode == "interaction")
-		return 2;
+		return MODEL_INTERACTION;
 	else if (mode == "q" || mode == "quadratic")
-		return 3;
+		return MODEL_SECONDORDER;
 	else throw_runtime_exception(printfstring("mode %s is not valid for model matrix", mode.c_str()));
 
-	return -1;
+	return MODEL_INVALID;
 }
 
 array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose)
 {
 	std::vector<int> sizes = array2modelmatrix_sizes(conference_design);
-	int model_type_idx = _model2idx(mode);
+	model_matrix_t model_type_idx = _model2idx(mode);
 	const int n_columns = conference_design.n_columns;
 	const int n_rows = conference_design.n_rows;
 
@@ -1213,12 +1213,12 @@ Eigen::MatrixXd array2modelmatrix(const array_link & array, const char*mode, int
 		const int n_columns = array.n_columns;
 		const int n_rows = array.n_rows;
 		std::vector<int> sizes = array2modelmatrix_sizes(array);
-		int model_type_idx = _model2idx(mode);
+		model_matrix_t model_type_idx = _model2idx(mode);
 
 		if (verbose)
-			myprintf("array2modelmatrix: type orthogonal array, model_type_idx %d\n", _model2idx(mode));
+			myprintf("array2modelmatrix: type orthogonal array, model_matrix_t %d\n", _model2idx(mode));
 
-		if (model_type_idx == 3)
+		if (model_type_idx == MODEL_SECONDORDER)
 			throw_runtime_exception("quadratic mode not implemented");
 
 		MatrixFloat model_matrix = array.getModelMatrix(2, 1);
