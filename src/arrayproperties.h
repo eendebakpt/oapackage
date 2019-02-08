@@ -28,7 +28,7 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix
 int array2rank_Deff_Beff (const array_link &al, std::vector< double > *ret = 0, int verbose = 0);
 
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition
-double Defficiency (const array_link &al, int verbose = 0);
+double Defficiency (const array_link &orthogonal_array, int verbose = 0);
 
 /** Calculate efficiencies for an array
  *

@@ -2569,14 +2569,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                         MatrixFloat tmp = Z.block (0, 0, N, ii + 1).transpose () * Z.block (0, 0, N, ii + 1);
                         MatrixFloat tmp2 =
                             Z.block (0, 0, N, ii + 1).transpose () * Z.block (0, ii + 1, N, 1); // right part
-#ifdef FULLPACKAGE
-                        if (verbose >= 3) {
-                                eigenInfo (tmp, "tmp");
-                                std::cout << tmp << std::endl;
-                                eigenInfo (tmp2, "tmp2");
-                                std::cout << tmp2 << std::endl;
-                        }
-#endif
+
                         MatrixFloat b = tmp.colPivHouseholderQr ().solve (tmp2);
 
                         b *= 0;
@@ -2618,14 +2611,14 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
         int tel = 0;
         int n = al.n_columns;
         int po = 0, qo = 0; // offsets
-        for (int ii = 0; ii < n - 1; ii++) {
-                int n1 = df[ii];
-                po = std::accumulate (df.begin (), df.begin () + ii, 0);
+        for (int column1 = 0; column1 < n - 1; column1++) {
+                int n1 = df[column1];
+                po = std::accumulate (df.begin (), df.begin () + column1, 0);
 
-                for (int jj = ii + 1; jj < n; jj++) {
-                        int n2 = df[jj];
+                for (int column2 = column1 + 1; column2 < n; column2++) {
+                        int n2 = df[column2];
 
-                        qo = std::accumulate (df.begin (), df.begin () + jj, 0);
+                        qo = std::accumulate (df.begin (), df.begin () + column2, 0);
 
                         if (verbose >= 3) {
                                 printfd ("create 2fi: p0=o %d, qo %d\n", po, qo);
