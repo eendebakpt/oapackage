@@ -269,7 +269,7 @@ class TestOAhelper(unittest.TestCase):
         hc=oapackage.oahelper.helmert_contrasts(2, verbose=0)
         np.testing.assert_array_almost_equal(hc, np.array([[-1.],[1.]]) )
         
-        hc==oapackage.oahelper.helmert_contrasts(3, verbose=0)
+        hc=oapackage.oahelper.helmert_contrasts(3, verbose=0)
         np.testing.assert_array_almost_equal(hc, np.array([[-1.22474487, -0.70710678],
            [ 1.22474487, -0.70710678],
            [ 0.        ,  1.41421356]]))
