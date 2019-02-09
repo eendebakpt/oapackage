@@ -213,7 +213,7 @@ class TestOAfiles(unittest.TestCase):
     def test_selectArrays(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
         array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 1)])
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
         oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
         oapackage.oahelper.selectArrays(array_filename, array_filename_out,

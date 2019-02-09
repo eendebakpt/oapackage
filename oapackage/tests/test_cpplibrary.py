@@ -120,6 +120,14 @@ class TestReductions(unittest.TestCase):
 
 class TestModelmatrix(unittest.TestCase):
 
+    def test_modelmatrix_main_effects(self):
+        # test model matrix main effects are helmert contrasts
+        array=oapackage.array_link( np.array([[0,1,2,3]]).T)
+        
+        M=oapackage.array2modelmatrix(array, 'm')
+        hc=oapackage.oahelper.helmert_contrasts(4)
+        np.testing.assert_array_equal(hc, M[:,1:])
+    
     def test_modelmatrix(self):
         al = oapackage.exampleArray(1, 0)
 
@@ -538,7 +546,8 @@ class TestCppLibrary(unittest.TestCase):
             efficiencies = array.Defficiencies()
             D = array.Defficiency()
             Ds = array.DsEfficiency()
-            self.assertEqual(efficiencies[0:2], (D, Ds))
+            self.assertAlmostEqual(efficiencies[0], D)
+            self.assertAlmostEqual(efficiencies[1], Ds)
 
     @only_python3
     def test_projection_efficiencies(self):

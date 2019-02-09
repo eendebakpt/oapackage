@@ -1531,8 +1531,10 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
 
         EigenMatrixFloat X;
 
-        int n2fi = -1; /// number of 2-factor interactions in contrast matrix
-        int nme = -1;  /// number of main effects in contrast matrix
+		/// number of 2-factor interactions in contrast matrix
+        int n2fi = -1; 
+        /// number of main effects in contrast matrix
+        int nme = -1;  
 
         if (arrayclass.is2level ()) {
 
@@ -1556,14 +1558,14 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
 
         double f1 = matXtX.determinant ();
 
-        int nm = 1 + nme + n2fi;
+        int number_model_columns = 1 + nme + n2fi;
 
-        EigenMatrixFloat tmp (nm, 1 + n2fi);
-        tmp << matXtX.block (0, 0, nm, 1), matXtX.block (0, 1 + nme, nm, n2fi);
-        EigenMatrixFloat mX2i (1 + n2fi, 1 + n2fi); 
-        mX2i << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + nme, 0, n2fi, 1 + n2fi);
+        EigenMatrixFloat tmp (number_model_columns, 1 + n2fi);
+        tmp << matXtX.block (0, 0, number_model_columns, 1), matXtX.block (0, 1 + nme, number_model_columns, n2fi);
+        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi); 
+        mX02 << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + nme, 0, n2fi, 1 + n2fi);
 
-        double f2i = (mX2i).determinant ();
+        double f2i = (mX02).determinant ();
         double t = (matXtX.block (0, 0, 1 + nme, 1 + nme)).determinant ();
 
         double D = 0, Ds = 0, D1 = 0;

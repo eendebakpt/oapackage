@@ -2726,23 +2726,26 @@ double array_link::DsEfficiency (int verbose) const {
         const array_link &al = *this;
         int k = al.n_columns;
         int n = al.n_rows;
+        int n2fi = k*(k-1)/2;
 
         MatrixFloat X = array2eigenModelMatrix (al);
-        MatrixFloat X2 = X.block(0,1, n, k);
-
+        MatrixFloat X2 = X.block(0,1+k, n, n2fi);
+        MatrixFloat X02 (n, 1 + n2fi);
+        X02 << X.block (0, 0, n, 1), X2;
+        
         MatrixFloat matXtX = (X.transpose () * X / n);
         double f1 = matXtX.determinant ();
-        double f2 = (X2.transpose () * X2 / n).determinant ();
+        double f2i = (X02.transpose () * X02 / n).determinant ();
         double Ds = 0;
         if (fabs (f1) < 1e-15) {
                 if (verbose) {
                         myprintf ("DsEfficiency: f1 < 1e-15, setting Ds to zero\n");
                 }
         } else {
-                Ds = pow ((f1 / f2), 1. / k);
+                Ds = pow ((f1 / f2i), 1. / k);
         }
         if (verbose) {
-                myprintf ("f1 %e, f2 %e, Ds %f\n", f1, f2, Ds);
+                myprintf ("f1 %e, f2i %e, Ds %f\n", f1, f2i, Ds);
         }
 
         return Ds;
