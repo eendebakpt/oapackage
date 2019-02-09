@@ -478,9 +478,9 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
 
 def Doptimize(arrayclass, nrestarts=10, optimfunc=[
               1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
-    """ Calculate D-optimal designs
+    """ Calculate D-efficient designs
 
-    The method uses a coordinate-exchange algorithm find a D-optimal design in the class specified by the
+    The method uses a coordinate-exchange algorithm find a D-efficient (sometimes called D-optimal) design in the class specified by the
     arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
     multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
     target function. 
