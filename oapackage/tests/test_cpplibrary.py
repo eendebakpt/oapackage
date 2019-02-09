@@ -41,38 +41,40 @@ import oapackage
 
 
 class TestMinimalFormCheck(unittest.TestCase):
+
     def test_LMCcheck(self):
         array = oapackage.exampleArray(1)
-    
+
         lmc_type = oapackage.LMCcheck(array)
         self.assertEqual(lmc_type, oapackage.LMC_MORE)
 
-        array2 = array.selectColumns([0,1,2,4,3])
+        array2 = array.selectColumns([0, 1, 2, 4, 3])
         lmc_type = oapackage.LMCcheck(array2)
         self.assertEqual(lmc_type, oapackage.LMC_LESS)
 
-        array2 = array.selectColumns([2,1,0,3,4])
+        array2 = array.selectColumns([2, 1, 0, 3, 4])
         lmc_type = oapackage.LMCcheck(array2)
         self.assertEqual(lmc_type, oapackage.LMC_LESS)
 
         arrayclass = oapackage.arraylink2arraydata(array)
-        reduction =oapackage.LMCreduction_t(arrayclass)
-        oaextend=oapackage.OAextend(arrayclass)
-        lmc_type=oapackage.LMCcheck (array2.array, arrayclass, oaextend, reduction)
+        reduction = oapackage.LMCreduction_t(arrayclass)
+        oaextend = oapackage.OAextend(arrayclass)
+        lmc_type = oapackage.LMCcheck(array2.array, arrayclass, oaextend, reduction)
         self.assertEqual(lmc_type, oapackage.LMC_LESS)
-       
+
     def test_LMCcheckOriginal(self):
         array = oapackage.exampleArray(1)
         lmc_type = oapackage.LMCcheckOriginal(array)
         self.assertEqual(lmc_type, oapackage.LMC_MORE)
 
-        array2 = array.selectColumns([0,1,2,4,3])
+        array2 = array.selectColumns([0, 1, 2, 4, 3])
         lmc_type = oapackage.LMCcheck(array2)
         self.assertEqual(lmc_type, oapackage.LMC_LESS)
 
-        array = oapackage.exampleArray(5,0)
+        array = oapackage.exampleArray(5, 0)
         with self.assertRaises(RuntimeError):
             lmc_type = oapackage.LMCcheckOriginal(array)
+
 
 class TestReductions(unittest.TestCase):
 
@@ -85,11 +87,11 @@ class TestReductions(unittest.TestCase):
         alr = oapackage.reduceLMCform(al)
         self.assertTrue(alr == al)
 
-        array0 = oapackage.exampleArray(1,1).selectFirstColumns(3)
+        array0 = oapackage.exampleArray(1, 1).selectFirstColumns(3)
         array = array0.randomperm()
         reduced_array = oapackage.reduceLMCform(array)
         self.assertEqual(array0, reduced_array)
-    
+
     @only_python3
     def test_DOP(self):
         al = oapackage.exampleArray(1, 0)
@@ -118,6 +120,14 @@ class TestReductions(unittest.TestCase):
 
 class TestModelmatrix(unittest.TestCase):
 
+    def test_modelmatrix_main_effects(self):
+        # test model matrix main effects are helmert contrasts
+        array=oapackage.array_link( np.array([[0,1,2,3]]).T)
+        
+        M=oapackage.array2modelmatrix(array, 'm')
+        hc=oapackage.oahelper.helmert_contrasts(4)
+        np.testing.assert_array_equal(hc, M[:,1:])
+    
     def test_modelmatrix(self):
         al = oapackage.exampleArray(1, 0)
 
@@ -142,6 +152,35 @@ class TestModelmatrix(unittest.TestCase):
 
         self.assertTrue(model_matrix.shape[1] == sizes[3])
 
+    def test_array2eigenModelMatrixMixed(self):
+        array = oapackage.exampleArray(0, 0)
+        r = oapackage.array2eigenModelMatrixMixed(array.selectFirstColumns(1), verbose=0)
+        main_effects = r[0]
+        np.testing.assert_array_equal(main_effects, np.array([[-1., -1., -1., -1.,  1.,  1.,  1.,  1.]]).T)
+
+        array = oapackage.exampleArray(10, 0).selectFirstColumns(2)
+        r = oapackage.array2eigenModelMatrixMixed(array, verbose=0)
+        main_effects = r[0]
+        interaction_model = r[1]
+        np.testing.assert_array_almost_equal(main_effects, np.array([[-1.22474487, -0.70710678, -1.22474487, -0.70710678],
+                                                                     [-1.22474487, -0.70710678,  1.22474487, -0.70710678],
+                                                                     [-1.22474487, -0.70710678,  0.,  1.41421356],
+                                                                     [1.22474487, -0.70710678,  1.22474487, -0.70710678],
+                                                                     [1.22474487, -0.70710678,  1.22474487, -0.70710678],
+                                                                     [1.22474487, -0.70710678,  0.,  1.41421356],
+                                                                     [0.,  1.41421356, -1.22474487, -0.70710678],
+                                                                     [0.,  1.41421356, -1.22474487, -0.70710678],
+                                                                     [0.,  1.41421356,  0.,  1.41421356]]))
+        np.testing.assert_array_almost_equal(interaction_model, np.array([[1.5,  0.8660254,  0.8660254,  0.5],
+                                                                          [-1.5,  0.8660254, -0.8660254,  0.5],
+                                                                          [-0., -1.73205081, -0., -1.],
+                                                                          [1.5, -0.8660254, -0.8660254,  0.5],
+                                                                          [1.5, -0.8660254, -0.8660254,  0.5],
+                                                                          [0.,  1.73205081, -0., -1.],
+                                                                          [-0., -0., -1.73205081, -1.],
+                                                                          [-0., -0., -1.73205081, -1.],
+                                                                          [0.,  0.,  0.,  2.]]))
+
     @only_python3
     def test_modelmatrix_verbosity(self):
         conf_design = oapackage.exampleArray(41, 0)
@@ -149,6 +188,7 @@ class TestModelmatrix(unittest.TestCase):
             oapackage.array2modelmatrix(conf_design, "i", 1)
             stdout = mock_stdout.getvalue()
             self.assertIn('array2modelmatrix: type conference, model_type_idx 2', stdout)
+
 
 class TestArrayLink(unittest.TestCase):
 
@@ -163,7 +203,7 @@ class TestArrayLink(unittest.TestCase):
             al = al.selectFirstColumns(1)
 
     def test_strength(self):
-        example_strength_pairs = [(2,2), (3,3), (4,2), (6,2), (7,2)]
+        example_strength_pairs = [(2, 2), (3, 3), (4, 2), (6, 2), (7, 2)]
         for idx, strength in example_strength_pairs:
             array = oapackage.exampleArray(idx, 0)
             self.assertEqual(array.strength(), strength)
@@ -224,24 +264,25 @@ class TestArraydata_t(unittest.TestCase):
     @only_python3
     def test_arraydata_t_oaindex(self):
         for ii in range(1, 4):
-            arrayclass=oapackage.arraydata_t([2,2,2], 4*ii, 2, 3)
+            arrayclass = oapackage.arraydata_t([2, 2, 2], 4 * ii, 2, 3)
             self.assertEqual(arrayclass.oaindex, ii)
 
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            arrayclass = oapackage.arraydata_t([4,3, 3], 20, 2, 3)
+            arrayclass = oapackage.arraydata_t([4, 3, 3], 20, 2, 3)
             std_output = mock_stdout.getvalue()
             self.assertIn('arraydata_t: warning: no orthogonal arrays exist with the specified strength', std_output)
             self.assertEqual(arrayclass.oaindex, 0)
-                             
+
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            arrayclass=oapackage.arraydata_t([2,3,4], 20, 2, 3)
+            arrayclass = oapackage.arraydata_t([2, 3, 4], 20, 2, 3)
             std_output = mock_stdout.getvalue()
             self.assertIn('the factor levels of the structure are not sorted, this can lead to undefined behaviour', std_output)
 
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            arrayclass=oapackage.arraydata_t([6,5], 10, 1, 2)
+            arrayclass = oapackage.arraydata_t([6, 5], 10, 1, 2)
             self.assertEqual(arrayclass.oaindex, 0)
             std_output = mock_stdout.getvalue()
+
 
 class TestJcharacteristics(unittest.TestCase):
 
@@ -255,8 +296,8 @@ class TestJcharacteristics(unittest.TestCase):
 
         array = oapackage.array_link(10, 4, 0)
         with self.assertRaises(Exception):
-            js=oapackage.jstructconference_t(array, 4)
-            
+            js = oapackage.jstructconference_t(array, 4)
+
     def test_Jcharacteristics(self):
         al = oapackage.exampleArray(30, 0)
         jx = al.Jcharacteristics(4)
@@ -346,10 +387,10 @@ class TestCppLibrary(unittest.TestCase):
             self.assertRaisesRegex = self.assertRaisesRegexp
 
     def test_root_form(self):
-        array = oapackage.exampleArray(1,0)
-        self.assertTrue( oapackage.is_root_form(array,2))
-        self.assertFalse( oapackage.is_root_form(array,5))
-        
+        array = oapackage.exampleArray(1, 0)
+        self.assertTrue(oapackage.is_root_form(array, 2))
+        self.assertFalse(oapackage.is_root_form(array, 5))
+
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
@@ -367,16 +408,16 @@ class TestCppLibrary(unittest.TestCase):
             al = oapackage.exampleArray(5, 1)
             self.assertEqual(mock_stdout.getvalue(), 'exampleArray 5: array 0 in OA(24, 2, 4 3 2^a)\n')
             self.assertEqual(al.md5(), '3885c883d3bee0c7546511255bb5c3ae')
-        
+
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(-1, 1)
             lines = mock_stdout.getvalue().strip().split('\n')
-            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii ) for ii in range(len(lines)-1)]))
+            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines) - 1)]))
             self.assertTrue(lines[-1].startswith('exampleArray: no example array with index'))
 
         al = oapackage.exampleArray(51, 0)
         self.assertEqual(al.md5(), '662c1d9c51475b42539620385fa22338')
-            
+
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
         m = oapackage.mvalue_t_double(input_vector)
@@ -392,9 +433,9 @@ class TestCppLibrary(unittest.TestCase):
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-                at.show()
-                std_output = mock_stdout.getvalue()
-                self.assertEqual(std_output, 'array transformation: no class defined\n')
+            at.show()
+            std_output = mock_stdout.getvalue()
+            self.assertEqual(std_output, 'array transformation: no class defined\n')
 
         al = oapackage.exampleArray(0, 0)
         arrayclass = oapackage.arraylink2arraydata(al)
@@ -485,6 +526,29 @@ class TestCppLibrary(unittest.TestCase):
         distance_distrib = oapackage.distance_distribution(al)
         self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
 
+    def test_Defficiencies(self):
+        array = oapackage.exampleArray(0, 0)
+        efficiencies = array.Defficiencies()
+        self.assertEqual(efficiencies, (1.0, 1.0, 1.0))
+
+        self.assertAlmostEqual(array.Eefficiency(), 1)
+        self.assertAlmostEqual(array.VIFefficiency(), 1)
+
+        array = oapackage.exampleArray(11, 0)
+        efficiencies = array.Defficiencies()
+        self.assertEqual(efficiencies, (0.8879176205539137, 0.8058954593581515, 0.9936928808878267))
+
+        self.assertAlmostEqual(array.Eefficiency(), 0.3602369388406959)
+        self.assertAlmostEqual(array.VIFefficiency(), 1.2648199507220503)
+
+        for idx in [0, 4, 11, 16]:
+            array = oapackage.exampleArray(idx, 0)
+            efficiencies = array.Defficiencies()
+            D = array.Defficiency()
+            Ds = array.DsEfficiency()
+            self.assertAlmostEqual(efficiencies[0], D)
+            self.assertAlmostEqual(efficiencies[1], Ds)
+
     @only_python3
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 0)
@@ -500,7 +564,7 @@ class TestCppLibrary(unittest.TestCase):
         numpy.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
         pic_seq = oapackage.PICsequence(al)
         numpy.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
-                                             0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
+                                                    0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
     def test_arraylink(self):
         al = oapackage.exampleArray(0, 0)

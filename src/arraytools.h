@@ -92,6 +92,10 @@ typedef double eigenFloat;
 */
 void eigenInfo (const MatrixFloat m, const char *str = "eigen", int verbose = 1);
 
+/** Print Eigen matrix to stdout */
+void print_eigen_matrix(const MatrixFloat matrix);
+
+  
 // helper function for Python interface
 void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
@@ -106,14 +110,6 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 #include "md5.h"
 #endif
 
-#ifdef SWIG
-// only export high level IO functions
-%ignore::array_diff;
-%ignore::write_array;
-%ignore::finish_arrayfile;
-%ignore arrayfile_t::arrayNbits;
-%ignore::writebinheader;
-#endif
 
 extern "C" {}
 
@@ -596,8 +592,14 @@ struct array_link {
         /// apply a random permutation of rows of an orthogonal array
         array_link randomrowperm () const;
 
-        /** This function calculates Helmert contrasts for the factors of an input design.
-         * Implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
+        /** Caculate model matrix of an orthogonal array
+	 * 
+	 * \param order For 0 return only the intercept; for 1 return intercept and main effects; for 2 return intercept, main effects and interaction effects.
+	 * \param intercept If 1, then include the intercept in the output.
+	 * \param verbose Verbosity level
+	 * \return Calculated model matrix
+	 * 
+	 * This function uses @ref array2eigenModelMatrixMixed for the calculation.
          */
         MatrixFloat getModelMatrix (int order, int intercept = 1, int verbose = 0) const;
 
@@ -1258,20 +1260,23 @@ struct arrayfile_t {
         static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
 
       public:
-		  /** Structure for reading or writing a file with arrays
-		  */
+		/** Structure for reading or writing a file with arrays
+		 */
         arrayfile_t ();
 
-        /** @copydoc arraydata_t::arrayfile_t()
+        /** @copydoc arrayfile_t::arrayfile_t()
 		 *
 		 * \param filename File to open for reading
+		 * \param verbose Verbosity level
 		 */
         arrayfile_t (const std::string filename, int verbose = 1);
-		/** @copydoc arraydata_t::arrayfile_t()
+
+		/** @copydoc arrayfile_t::arrayfile_t()
 		*
 		* Open new array file for writing
 		*
 		* \param filename File to open
+		* \param m File mode
 		*/ 
         arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
                      int nb = 8);
@@ -1718,9 +1723,7 @@ void vector2doublebinfile (const std::string fname, std::vector< Type > vals, in
 void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
 	int writeheader, int na);
 
-/* Conversion to Eigen matrices */
-
-/** convert 2-level array to main effects in Eigen format
+/** Convert 2-level array to main effects in Eigen format
  *
  * \param array Array to convert
  * \param intercept If True, then include the intercept
@@ -1737,24 +1740,21 @@ MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
  */
 MatrixFloat array2eigenX2 (const array_link &array);
 
-/** Convert 2-level array to second order interaction model matrix (intercept, X1, X2)
+/** Convert 2-level array to second order interaction model matrix (intercept, main effects, interaction effects)
  *
  * \param array Design of which to calculate the model matrix
  * \returns Eigen matrix with the model matrix
  */
 MatrixFloat array2eigenModelMatrix (const array_link &array);
 
-/** Convert array to model matrix in Eigen format
- *
- * @see array2eigenModelMatrixMixed
- */
-MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
 
 /** Create first and second order model matrix for mixed-level array
  *
  * \param array Input array
  * \param verbose Verbosity level
  * \returns Pair with main effects and two-factor interaction model
+ * 
+ * For 2-level arrays a direct calculation is used. For mixel-level arrays Helmert contrasts are used.
  */ 
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 

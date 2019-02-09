@@ -1152,24 +1152,24 @@ array_link array2xf (const array_link &al) {
         return modelmatrix;
 }
 
-int _model2idx(const std::string mode) {
+model_matrix_t _model2idx(const std::string mode) {
 	if (mode == "c" || mode == "constant")
-		return 0;
-	else if (mode == "linear" || mode == "main")
-		return 1;
+		return MODEL_CONSTANT;
+	else if (mode == "linear" || mode == "main" || mode =="m")
+		return MODEL_MAIN;
 	else if (mode == "i" || mode == "interaction")
-		return 2;
+		return MODEL_INTERACTION;
 	else if (mode == "q" || mode == "quadratic")
-		return 3;
+		return MODEL_SECONDORDER;
 	else throw_runtime_exception(printfstring("mode %s is not valid for model matrix", mode.c_str()));
 
-	return -1;
+	return MODEL_INVALID;
 }
 
 array_link conference_design2modelmatrix(const array_link & conference_design, const char*mode, int verbose)
 {
 	std::vector<int> sizes = array2modelmatrix_sizes(conference_design);
-	int model_type_idx = _model2idx(mode);
+	model_matrix_t model_type_idx = _model2idx(mode);
 	const int n_columns = conference_design.n_columns;
 	const int n_rows = conference_design.n_rows;
 
@@ -1213,12 +1213,12 @@ Eigen::MatrixXd array2modelmatrix(const array_link & array, const char*mode, int
 		const int n_columns = array.n_columns;
 		const int n_rows = array.n_rows;
 		std::vector<int> sizes = array2modelmatrix_sizes(array);
-		int model_type_idx = _model2idx(mode);
+		model_matrix_t model_type_idx = _model2idx(mode);
 
 		if (verbose)
-			myprintf("array2modelmatrix: type orthogonal array, model_type_idx %d\n", _model2idx(mode));
+			myprintf("array2modelmatrix: type orthogonal array, model_matrix_t %d\n", _model2idx(mode));
 
-		if (model_type_idx == 3)
+		if (model_type_idx == MODEL_SECONDORDER)
 			throw_runtime_exception("quadratic mode not implemented");
 
 		MatrixFloat model_matrix = array.getModelMatrix(2, 1);
@@ -1531,8 +1531,10 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
 
         EigenMatrixFloat X;
 
-        int n2fi = -1; /// number of 2-factor interactions in contrast matrix
-        int nme = -1;  /// number of main effects in contrast matrix
+		/// number of 2-factor interactions in contrast matrix
+        int n2fi = -1; 
+        /// number of main effects in contrast matrix
+        int nme = -1;  
 
         if (arrayclass.is2level ()) {
 
@@ -1556,14 +1558,14 @@ std::vector< double > Defficiencies (const array_link &al, const arraydata_t &ar
 
         double f1 = matXtX.determinant ();
 
-        int nm = 1 + nme + n2fi;
+        int number_model_columns = 1 + nme + n2fi;
 
-        EigenMatrixFloat tmp (nm, 1 + n2fi);
-        tmp << matXtX.block (0, 0, nm, 1), matXtX.block (0, 1 + nme, nm, n2fi);
-        EigenMatrixFloat mX2i (1 + n2fi, 1 + n2fi); 
-        mX2i << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + nme, 0, n2fi, 1 + n2fi);
+        EigenMatrixFloat tmp (number_model_columns, 1 + n2fi);
+        tmp << matXtX.block (0, 0, number_model_columns, 1), matXtX.block (0, 1 + nme, number_model_columns, n2fi);
+        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi); 
+        mX02 << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + nme, 0, n2fi, 1 + n2fi);
 
-        double f2i = (mX2i).determinant ();
+        double f2i = (mX02).determinant ();
         double t = (matXtX.block (0, 0, 1 + nme, 1 + nme)).determinant ();
 
         double D = 0, Ds = 0, D1 = 0;

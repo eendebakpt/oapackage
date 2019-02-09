@@ -48,7 +48,8 @@ int log_print (const int level, const char *message, ...);
 
 /// return current level of logging
 int getloglevel ();
-/// rset the level of logging
+
+/// reset the level of logging
 void setloglevel (int n);
 
 /// return True if the current logging level is smaller or equal than the specified level
@@ -224,8 +225,8 @@ DataType **malloc2d_irr (const int nrows, const rtype *rowsizes, int &nelements)
 template < class DataType, class numtype >
 /**
  * @brief Allocate a 2-dimensional array of specified size
- * @param nrows
- * @param rowsize
+ * @param nrows Number of rows
+ * @param rowsize Size of each row
  * @return
  */
 DataType **malloc2d (const numtype nrows, const int rowsize) {
