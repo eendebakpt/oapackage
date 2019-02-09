@@ -2347,7 +2347,7 @@ std::vector< int > numberModelParams(const array_link &array, int order)
 		number_parameters[0] = 1;
 		number_parameters[1] = array.n_columns;
 
-		arraydata_t arrayclass = arraylink2arraydata(array, 0, 2);
+		arraydata_t arrayclass = arraylink2arraydata(array, 0, 0);
 		std::vector< int > s = arrayclass.factor_levels();
 		std::vector< int > df = s;
 		std::transform(df.begin(), df.end(), df.begin(), std::bind2nd(std::minus< int >(), 1.0));
