@@ -37,6 +37,7 @@ def only_python3(function):
             return None
     return only_python3_function
 
+
 def autodoctest():
     """ Test the module using autodoc
     Example:
@@ -266,22 +267,22 @@ class TestOAhelper(unittest.TestCase):
         self.test_array = oapackage.exampleArray(1, 0)
 
     def test_helmert_contrasts(self):
-        hc=oapackage.oahelper.helmert_contrasts(2, verbose=0)
-        np.testing.assert_array_almost_equal(hc, np.array([[-1.],[1.]]) )
-        
-        hc=oapackage.oahelper.helmert_contrasts(3, verbose=0)
+        hc = oapackage.oahelper.helmert_contrasts(2, verbose=0)
+        np.testing.assert_array_almost_equal(hc, np.array([[-1.], [1.]]))
+
+        hc = oapackage.oahelper.helmert_contrasts(3, verbose=0)
         np.testing.assert_array_almost_equal(hc, np.array([[-1.22474487, -0.70710678],
-           [ 1.22474487, -0.70710678],
-           [ 0.        ,  1.41421356]]))
-    
-        hc==oapackage.oahelper.helmert_contrasts(10, verbose=0)
+                                                           [1.22474487, -0.70710678],
+                                                           [0.,  1.41421356]]))
+
+        hc = oapackage.oahelper.helmert_contrasts(10, verbose=0)
         np.testing.assert_array_almost_equal(hc[0], np.array([-2.23606798, -1.29099445, -0.91287093, -0.70710678, -0.57735027,
-       -0.48795004, -0.42257713, -0.372678  , -0.33333333]))
-    
-        for num_levels in [4,10,12]:
-            hc==oapackage.oahelper.helmert_contrasts(num_levels, verbose=0)
-            np.testing.assert_array_almost_equal(hc.T.dot(hc), num_levels*np.eye(num_levels-1) )
-        
+                                                              -0.48795004, -0.42257713, -0.372678, -0.33333333]))
+
+        for num_levels in [4, 10, 12]:
+            hc = oapackage.oahelper.helmert_contrasts(num_levels, verbose=0)
+            np.testing.assert_array_almost_equal(hc.T.dot(hc), num_levels * np.eye(num_levels - 1))
+
     def test_array2latex(self):
 
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
@@ -468,13 +469,13 @@ class TestDoptimize(unittest.TestCase):
         arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
         with self.assertWarns(UserWarning):
             scores, dds, sols, _ = oapackage.Doptim.Doptimize(arrayclass, nrestarts=1, verbose=0, maxtime=9, selectpareto=False, nout=None, niter=1000, dverbose=0)
-        
+
     def test_Doptimize_selectDn(self):
         scores, dds, sols, _ = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
                                                           1, 0, 0], verbose=1, maxtime=9, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
 
         result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
-        self.assertTrue(len(result[2])==1)
+        self.assertTrue(len(result[2]) == 1)
 
     def test_optimDeffPython(self):
         al = oapackage.exampleArray(2, 0)
@@ -489,7 +490,7 @@ class TestDoptimize(unittest.TestCase):
         if self.guitest:
             fig = 100
             r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
-                                              ndata=3, nofig=True, fig=fig, scatterarea=80)
+                                                  ndata=3, nofig=True, fig=fig, scatterarea=80)
         else:
             pass
 
