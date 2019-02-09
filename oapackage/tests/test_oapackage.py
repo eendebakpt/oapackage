@@ -265,6 +265,23 @@ class TestOAhelper(unittest.TestCase):
     def setUp(self):
         self.test_array = oapackage.exampleArray(1, 0)
 
+    def test_helmert_contrasts(self):
+        hc=oapackage.oahelper.helmert_contrasts(2, verbose=0)
+        np.testing.assert_array_almost_equal(hc, np.array([[-1.],[1.]]) )
+        
+        hc==oapackage.oahelper.helmert_contrasts(3, verbose=0)
+        np.testing.assert_array_almost_equal(hc, np.array([[-1.22474487, -0.70710678],
+           [ 1.22474487, -0.70710678],
+           [ 0.        ,  1.41421356]]))
+    
+        hc==oapackage.oahelper.helmert_contrasts(10, verbose=0)
+        np.testing.assert_array_almost_equal(hc[0], np.array([-2.23606798, -1.29099445, -0.91287093, -0.70710678, -0.57735027,
+       -0.48795004, -0.42257713, -0.372678  , -0.33333333]))
+    
+        for num_levels in [4,10,12]:
+            hc==oapackage.oahelper.helmert_contrasts(num_levels, verbose=0)
+            np.testing.assert_array_almost_equal(hc.T.dot(hc), num_levels*np.eye(num_levels-1) )
+        
     def test_array2latex(self):
 
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
