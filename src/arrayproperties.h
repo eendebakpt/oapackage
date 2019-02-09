@@ -180,7 +180,7 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
 
 /** Convert orthogonal array or conference design to model matrix
  *
- * The model matrix consists of the intercept, main effects and (optionally) the interaction effects, quadratic effects.
+ * The model matrix consists of the intercept, main effects and (optionally) the interaction effects and quadratic effects.
  * The order in the interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1 for columns c1, c2.
  * The size of the model matrix calculated by this function is given by @ref array2modelmatrix_sizes.
  *
@@ -188,6 +188,9 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
  * \param mode Type of model matrix to calculate. Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
  * \returns Calculated model matrix
+ * 
+ * For conference designs the method @ref conference_design2modelmatrix is used. For orthogonal array the calculated is performed with @ref array2eigenModelMatrixMixed.
+ * 
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 

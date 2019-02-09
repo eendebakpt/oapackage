@@ -2413,7 +2413,7 @@ MatrixFloat array_link::getModelMatrix (int order, int intercept, int verbose) c
                 return mm;
         }
 
-        myprintf ("array_link::getModelMatrix: order > 2 not supported!\n");
+        throw_runtime_exception ("array_link::getModelMatrix: order > 2 not supported!\n");
         return intcpt;
 }
 
@@ -2724,11 +2724,11 @@ double array_link::DsEfficiency (int verbose) const {
         }
 
         const array_link &al = *this;
-        int k = al.n_columns + 1;
+        int k = al.n_columns;
         int n = al.n_rows;
 
-        MatrixFloat X2 = array2eigenX2 (al);
         MatrixFloat X = array2eigenModelMatrix (al);
+        MatrixFloat X2 = X.block(0,1, n, k);
 
         MatrixFloat matXtX = (X.transpose () * X / n);
         double f1 = matXtX.determinant ();

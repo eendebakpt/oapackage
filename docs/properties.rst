@@ -84,7 +84,7 @@ Model matrices
 --------------
 
 
-For orthogonal arrays and conference designs we can calculate model matrices. For 2-level orthogonal arrays the array is
+For orthogonal arrays and conference designs we can calculate model matrices (also called [design matrices](https://en.wikipedia.org/wiki/Design_matrix)). For 2-level orthogonal arrays the array is
 converted to a -1,+1 array and then the model matrix is calculated. For mixel-level orthogonal arrays Helmert contrasts are used.
 For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`.
 
@@ -209,7 +209,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
 .. topic:: Calculation of :math:`D`-, :math:`A`- and :math:`E`-efficiency
   :name: DAE
 
-   Let :math:`{X}` be again the :math:`{N}\times {p}` interaction model matrix consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. The :math:`D`-, :math:`A`- and :math:`E`-efficiency are calculated using the eigenvalues of the singular-value decomposition (SVD) of :math:`{X}`. To calculate the rank of a matrix, the lower-upper (LU) decomposition, as implemented in the Eigen package :cite:`eigenweb`, is used.
+   Let :math:`{X}` be again the :math:`{N}\times {p}` interaction model matrix (see section `Model matrices`_) consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. The :math:`D`-, :math:`A`- and :math:`E`-efficiency are calculated using the eigenvalues of the singular-value decomposition (SVD) of :math:`{X}`. To calculate the rank of a matrix, the lower-upper (LU) decomposition, as implemented in the Eigen package :cite:`eigenweb`, is used.
 
    Let :math:`\lambda_1, \ldots, \lambda_p` be the eigenvalues of the SVD of :math:`{X}`. The OApackage calculates the :math:`D`-, :math:`A`- and :math:`E`-efficiency of a design :math:`D` as follows:
 
