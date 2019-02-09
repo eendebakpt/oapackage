@@ -514,6 +514,29 @@ class TestCppLibrary(unittest.TestCase):
         distance_distrib = oapackage.distance_distribution(al)
         self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
 
+    def test_Defficiencies(self):
+        array = oapackage.exampleArray(0,0)
+        efficiencies=array.Defficiencies()
+        self.assertEqual(efficiencies, (1.0, 1.0, 1.0))
+
+        self.assertAlmostEqual(array.Eefficiency(), 1)
+        self.assertAlmostEqual(array.VIFefficiency(), 1)
+
+        array = oapackage.exampleArray(11,0)
+        efficiencies=array.Defficiencies()
+        self.assertEqual(efficiencies, (0.8879176205539137, 0.8058954593581515, 0.9936928808878267))
+
+        self.assertAlmostEqual(array.Eefficiency(), 0.3602369388406959)
+        self.assertAlmostEqual(array.VIFefficiency(), 1.2648199507220503)
+        
+        for idx in [0,4,11,16]:
+            print(idx)
+            efficiencies=array.Defficiencies()
+            D=array.Defficiency()
+            Ds=array.DsEfficiency()
+            self.assertEqual(efficiencies[0:2], (D, Ds))
+            
+            
     @only_python3
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 0)

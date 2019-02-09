@@ -228,7 +228,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
     
        {D_{s}(D)} = \operatorname{det}(X^{T}X) / \operatorname{det}(X_{02}^{T} X_{02}^{\phantom{T}}), \label{formula:Dsefficiency}
 
-   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the OApackage calculates the :math:`D_{s}`-criterion using the eigen values of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`. Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,eff}(A) = D_{s}(A)^{1/m}`, where :math:`m` is the number of factors. 
+   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the OApackage calculates the :math:`D_{s}`-criterion using the eigen values of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`. Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,\text{eff}}(A) = D_{s}(A)^{1/m}`, where :math:`m` is the number of factors. 
    
 
 Projection Capacities

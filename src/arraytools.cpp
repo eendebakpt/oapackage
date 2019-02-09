@@ -2724,14 +2724,14 @@ double array_link::DsEfficiency (int verbose) const {
         }
 
         const array_link &al = *this;
-        int k1 = al.n_columns + 1;
+        int k = al.n_columns + 1;
         int n = al.n_rows;
 
         MatrixFloat X2 = array2eigenX2 (al);
         MatrixFloat X = array2eigenModelMatrix (al);
 
-        MatrixFloat tmp = (X.transpose () * X / n);
-        double f1 = tmp.determinant ();
+        MatrixFloat matXtX = (X.transpose () * X / n);
+        double f1 = matXtX.determinant ();
         double f2 = (X2.transpose () * X2 / n).determinant ();
         double Ds = 0;
         if (fabs (f1) < 1e-15) {
@@ -2739,7 +2739,7 @@ double array_link::DsEfficiency (int verbose) const {
                         myprintf ("DsEfficiency: f1 < 1e-15, setting Ds to zero\n");
                 }
         } else {
-                Ds = pow ((f1 / f2), 1. / k1);
+                Ds = pow ((f1 / f2), 1. / k);
         }
         if (verbose) {
                 myprintf ("f1 %e, f2 %e, Ds %f\n", f1, f2, Ds);
