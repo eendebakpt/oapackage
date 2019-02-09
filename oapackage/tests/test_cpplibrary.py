@@ -142,6 +142,35 @@ class TestModelmatrix(unittest.TestCase):
 
         self.assertTrue(model_matrix.shape[1] == sizes[3])
 
+    def test_array2eigenModelMatrixMixed(self):
+        array=oapackage.exampleArray(0,0);
+        r=oapackage.array2eigenModelMatrixMixed(array.selectFirstColumns(1), verbose=0)
+        main_effects = r[0]
+        np.testing.assert_array_equal(main_effects, np.array([[-1., -1., -1., -1.,  1.,  1.,  1.,  1.]]).T)
+    
+        array=oapackage.exampleArray(10,0).selectFirstColumns(2);
+        r=oapackage.array2eigenModelMatrixMixed(array, verbose=0)
+        main_effects = r[0]
+        interaction_model = r[1]
+        np.testing.assert_array_almost_equal(main_effects, np.array([[-1.22474487, -0.70710678, -1.22474487, -0.70710678],
+           [-1.22474487, -0.70710678,  1.22474487, -0.70710678],
+           [-1.22474487, -0.70710678,  0.        ,  1.41421356],
+           [ 1.22474487, -0.70710678,  1.22474487, -0.70710678],
+           [ 1.22474487, -0.70710678,  1.22474487, -0.70710678],
+           [ 1.22474487, -0.70710678,  0.        ,  1.41421356],
+           [ 0.        ,  1.41421356, -1.22474487, -0.70710678],
+           [ 0.        ,  1.41421356, -1.22474487, -0.70710678],
+           [ 0.        ,  1.41421356,  0.        ,  1.41421356]]))
+        np.testing.assert_array_almost_equal(interaction_model, np.array([[ 1.5       ,  0.8660254 ,  0.8660254 ,  0.5       ],
+           [-1.5       ,  0.8660254 , -0.8660254 ,  0.5       ],
+           [-0.        , -1.73205081, -0.        , -1.        ],
+           [ 1.5       , -0.8660254 , -0.8660254 ,  0.5       ],
+           [ 1.5       , -0.8660254 , -0.8660254 ,  0.5       ],
+           [ 0.        ,  1.73205081, -0.        , -1.        ],
+           [-0.        , -0.        , -1.73205081, -1.        ],
+           [-0.        , -0.        , -1.73205081, -1.        ],
+           [ 0.        ,  0.        ,  0.        ,  2.        ]]))
+    
     @only_python3
     def test_modelmatrix_verbosity(self):
         conf_design = oapackage.exampleArray(41, 0)
