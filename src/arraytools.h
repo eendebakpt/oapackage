@@ -92,6 +92,10 @@ typedef double eigenFloat;
 */
 void eigenInfo (const MatrixFloat m, const char *str = "eigen", int verbose = 1);
 
+/** Print Eigen matrix to stdout */
+void print_eigen_matrix(const MatrixFloat matrix);
+
+  
 // helper function for Python interface
 void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 

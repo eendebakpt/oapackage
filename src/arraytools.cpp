@@ -1,6 +1,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <sstream>
 
 #include "arraytools.h"
 
@@ -2493,6 +2494,12 @@ void eigenInfoF (const Eigen::MatrixXf m, const char *str, int verbose) {
         }
 }
 
+void print_eigen_matrix(const MatrixFloat matrix) {
+     std::stringstream buffer;
+     buffer << matrix <<  std::endl;
+     myprintf("%s", buffer.str().c_str()); 
+}
+
 MatrixFloat array2eigenMainEffects (const array_link &al, int verbose) {
         std::pair< MatrixFloat, MatrixFloat > mm = array2eigenModelMatrixMixed (al, verbose);
         return mm.first;
@@ -2534,65 +2541,50 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
         MatrixFloat main_effects = MatrixFloat::Zero (N, mesize);
 
         int meoffset = 0;
-        for (int c = 0; c < k; c++) {
-                int md = df[c];
+        for (int column = 0; column < k; column++) {
+                int md = df[column];
                 MatrixFloat Z = MatrixFloat::Zero (N, md + 1); // large tmp buffer
 
                 for (int ii = 0; ii < md + 1; ii++) {
                         for (int r = 0; r < N; r++) {
-                                Z (r, ii) = AA (r, c) > (ii - 1);
+                                Z (r, ii) = AA (r, column) > (ii - 1);
                         }
                 }
 
                 // make Helmert contrasts (these are automatically orthogonal)
                 for (int r = 0; r < N; r++) {
-                        int v = AA (r, c);
+                        int array_value = AA (r, column);
                         Z (r, 0) = 1;
-                        if (v > 0) {
-                                Z (r, v) = v;
+                        if (array_value > 0) {
+                                Z (r, array_value) = array_value;
                         }
-                        for (int q = 1; q < v; q++) {
+                        for (int q = 1; q < array_value; q++) {
                                 Z (r, q) = 0;
                         }
-                        for (int q = v + 1; q < md + 1; q++) {
+                        for (int q = array_value + 1; q < md + 1; q++) {
                                 Z (r, q) = -1;
                         }
                 }
 
-                for (int ii = 0; ii < md; ii++) {
+               if (verbose>=3) {
+                    eigenInfo (Z, "Z (before normalization)\n");
+                    print_eigen_matrix(Z);
+               }
+               for (int ii = 0; ii < md; ii++) {
+                       
+                        MatrixFloat tmp_norm = Z.col (ii + 1).transpose () * Z.col (ii + 1);
+
                         if (verbose >= 3) {
-                                myprintf ("array2eigenME: calculate ii %d\n", ii);
-
-                                eigenInfo (Z.block (0, 0, N, ii + 1), "Zx");
+                             myprintf(" normalize: factor %.2f (%.2f, tmp_norm %.1f tmp_norm sqrt %.1f)\n", sqrt (double(N))/sqrt (double(tmp_norm (0, 0))), sqrt (double(N)), double(tmp_norm(0,0)), sqrt (double(tmp_norm (0, 0)) ) );
                         }
-
-                        MatrixFloat tmp = Z.block (0, 0, N, ii + 1).transpose () * Z.block (0, 0, N, ii + 1);
-                        MatrixFloat tmp2 =
-                            Z.block (0, 0, N, ii + 1).transpose () * Z.block (0, ii + 1, N, 1); // right part
-
-                        MatrixFloat b = tmp.colPivHouseholderQr ().solve (tmp2);
-
-                        b *= 0;
-
-#ifdef FULLPACKAGE
-                        if (verbose >= 3) {
-                                eigenInfo (Z.block (0, 0, N, ii + 1), "Z.block(0,0,N,ii+1) ");
-                                eigenInfo (b, "b");
-                                std::cout << b << std::endl;
-                        }
-#endif
-                        Z.col (ii + 1) -= Z.block (0, 0, N, ii + 1) * b;
-
-                        tmp = Z.col (ii + 1).transpose () * Z.col (ii + 1);
-
                         main_effects.col (meoffset + ii) =
-                            sqrt (double(N)) * Z.col (ii + 1) / sqrt (double(tmp (0, 0)));
+                            sqrt (double(N)) * Z.col (ii + 1) / sqrt (double(tmp_norm (0, 0)));
                 }
 
 #ifdef FULLPACKAGE
                 if (verbose >= 2) {
                         eigenInfo (Z, "Z");
-                        std::cout << Z << std::endl;
+                        print_eigen_matrix(Z);
                 }
 #endif
                 meoffset += md;
