@@ -84,7 +84,8 @@ Model matrices
 --------------
 
 
-For orthogonal arrays and conference designs we can calculate model matrices (also called [design matrices](https://en.wikipedia.org/wiki/Design_matrix)). For 2-level orthogonal arrays the array is
+For orthogonal arrays and conference designs we can calculate model matrices
+(also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_). For 2-level orthogonal arrays the array is
 converted to a -1,+1 array and then the model matrix is calculated. For mixel-level orthogonal arrays Helmert contrasts are used.
 For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`.
 
