@@ -500,7 +500,11 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
       verbose (int): Verbosity level. A higher numer gives more output
       maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
-      nout (int or None): Number of designs to return. If None,  return all designs
+      nout (int or None): Maximum number of designs to return. If None,  return all designs
+      method (coordinate_exchange_method_t): Specifies the method use for updating elements in the coordinate-exchange algorithm.
+      niter (int): Maximum number of iterations of the coordinate-exchange algorithm
+      nabort (int): If no improvements have been found after this number of updates, then abort this run
+      dverbose (int): Verbosity level pass to the C++ Doptimize function
 
     Returns
     -------
@@ -546,7 +550,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
             print('Doptimize: max score %.3f, max D: %.6f' %
                   (np.max(scores), np.max([A.Defficiency() for A in sols])))
     else:
-        # optimfunc is a function
+        # assume optimfunc is a function
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
         sols = []

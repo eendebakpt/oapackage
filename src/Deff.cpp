@@ -33,7 +33,7 @@
 const double NaN = std::numeric_limits< double >::quiet_NaN();
 
 DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestartsmax, std::vector< double > alpha, int verbose,
-                        int method, int niter, double maxtime, int nabort) {
+                        coordinate_exchange_method_t method, int niter, double maxtime, int nabort) {
         if (method == DOPTIM_AUTOMATIC)
                 method = DOPTIM_UPDATE;
 
@@ -115,8 +115,8 @@ DoptimReturn DoptimizeMixed (const arraylist_t &array_list, const arraydata_t &a
         bool abort = false;
         int nimproved = 0;
 
-        int method1 = DOPTIM_SWAP;
-        int method2 = DOPTIM_UPDATE;
+        coordinate_exchange_method_t method1 = DOPTIM_SWAP;
+        coordinate_exchange_method_t method2 = DOPTIM_UPDATE;
         const int niter = 600000;
         if (nabort < 0)
                 nabort = arrayclass.N * arrayclass.ncols * 20 + 500;
@@ -172,7 +172,7 @@ DoptimReturn DoptimizeMixed (const arraylist_t &array_list, const arraydata_t &a
 }
 
 array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const std::vector< double > alpha,
-                      int verbose, int optimmethod, int niter, int nabort) {
+                      int verbose, coordinate_exchange_method_t optimmethod, int niter, int nabort) {
         const int N = arrayclass.N;
         const int k = arrayclass.ncols;
 
@@ -293,6 +293,8 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                                 break;
                         case DOPTIM_NONE:
                                 break;
+                        case DOPTIM_AUTOMATIC:
+							throw_runtime_exception ("coordinate_exchange_method_t needs to be set");
                         }
                 }
 
