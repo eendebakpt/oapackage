@@ -33,7 +33,7 @@
 const double NaN = std::numeric_limits< double >::quiet_NaN();
 
 DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestartsmax, std::vector< double > alpha, int verbose,
-                        int method, int niter, double maxtime, int nabort) {
+                        coordinate_exchange_method_t method, int niter, double maxtime, int nabort) {
         if (method == DOPTIM_AUTOMATIC)
                 method = DOPTIM_UPDATE;
 
@@ -98,16 +98,16 @@ DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestartsmax, std::ve
         return a;
 }
 
-double scoreD (const std::vector< double > efficiencies, const std::vector< double > alpha) {
+double scoreD (const std::vector< double > efficiencies, const std::vector< double > weights) {
         double v = 0;
         for (size_t i = 0; i < efficiencies.size (); i++)
-                v += efficiencies[i] * alpha[i];
+                v += efficiencies[i] * weights[i];
         return v;
 }
 
-DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector< double > alpha,
+DoptimReturn DoptimizeMixed (const arraylist_t &array_list, const arraydata_t &arrayclass, const std::vector< double > alpha,
                              int verbose, int nabort) {
-        const size_t nn = sols.size ();
+        const size_t nn = array_list.size ();
         double t0 = get_time_ms ();
         std::vector< std::vector< double > > dds (nn);
         arraylist_t AA (nn);
@@ -115,8 +115,8 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
         bool abort = false;
         int nimproved = 0;
 
-        int method1 = DOPTIM_SWAP;
-        int method2 = DOPTIM_UPDATE;
+        coordinate_exchange_method_t method1 = DOPTIM_SWAP;
+        coordinate_exchange_method_t method2 = DOPTIM_UPDATE;
         const int niter = 600000;
         if (nabort < 0)
                 nabort = arrayclass.N * arrayclass.ncols * 20 + 500;
@@ -140,10 +140,10 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
                         }
                 }
 
-                const array_link &al = sols[i];
-                double score0 = scoreD (al.Defficiencies (), alpha);
+                const array_link &array = array_list[i];
+                double score0 = scoreD (array.Defficiencies (), alpha);
 
-                array_link alu = optimDeff (al, arrayclass, alpha, verbose >= 3, method1, niter, nabort);
+                array_link alu = optimDeff (array, arrayclass, alpha, verbose >= 3, method1, niter, nabort);
                 double score1 = scoreD (alu.Defficiencies (), alpha);
 
                 array_link alu2 = optimDeff (alu, arrayclass, alpha, verbose >= 3, method2, niter, 0);
@@ -172,7 +172,7 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
 }
 
 array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const std::vector< double > alpha,
-                      int verbose, int optimmethod, int niter, int nabort) {
+                      int verbose, coordinate_exchange_method_t optimmethod, int niter, int nabort) {
         const int N = arrayclass.N;
         const int k = arrayclass.ncols;
 
@@ -293,6 +293,8 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
                                 break;
                         case DOPTIM_NONE:
                                 break;
+                        case DOPTIM_AUTOMATIC:
+							throw_runtime_exception ("coordinate_exchange_method_t needs to be set");
                         }
                 }
 

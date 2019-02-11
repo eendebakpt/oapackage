@@ -192,12 +192,16 @@ class TestModelmatrix(unittest.TestCase):
 
 class TestArrayLink(unittest.TestCase):
 
+    @only_python3
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 0)
         al = al.selectFirstColumns(3)
         assert(al.n_columns == 3)
 
-        al = oapackage.exampleArray(1000, 0)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            al = oapackage.exampleArray(1000, 0)
+            stdout = mock_stdout.getvalue()
+            self.assertIn('no example array with index 1000 exists', stdout)
 
         with self.assertRaises(RuntimeError):
             al = al.selectFirstColumns(1)
@@ -286,17 +290,21 @@ class TestArraydata_t(unittest.TestCase):
 
 class TestJcharacteristics(unittest.TestCase):
 
+    @only_python3
     def test_jstruct_conference(self):
-        al = oapackage.exampleArray(30, 0)
-        js = oapackage.jstructconference_t(al, 4)
+        conf_design = oapackage.exampleArray(30, 0)
+        js = oapackage.jstructconference_t(conf_design, 4)
         self.assertEqual(js.Jvalues(), (4, 0))
 
         with self.assertRaises(RuntimeError):
-            js = oapackage.jstructconference_t(al, 3)
+            js = oapackage.jstructconference_t(conf_design, 3)
 
         array = oapackage.array_link(10, 4, 0)
-        with self.assertRaises(Exception):
-            js = oapackage.jstructconference_t(array, 4)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            with self.assertRaises(Exception):
+                js = oapackage.jstructconference_t(array, 4)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('array is not conference design', std_output)
 
     def test_Jcharacteristics(self):
         al = oapackage.exampleArray(30, 0)
@@ -566,6 +574,12 @@ class TestCppLibrary(unittest.TestCase):
         numpy.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
                                                     0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
+
+    def test_PICsequence_length(self):
+        array = oapackage.exampleArray(8, 0)
+        pic = oapackage.PICsequence(array)
+        self.assertEqual( len(pic), array.n_columns)
+
     def test_arraylink(self):
         al = oapackage.exampleArray(0, 0)
         self.assertEqual(al.at(0, 1), 0)
@@ -609,4 +623,3 @@ class TestCppLibrary(unittest.TestCase):
 if __name__ == '__main__':
     """ Test code """
     unittest.main()
-    # t=TestDoptimize()

@@ -212,17 +212,14 @@ int main (int argc, char *argv[]) {
                    get_time_ms () - Tstart);
         int nr_extensions = 0;
 
-        int csol = 0;
         arraylist_t extensionsdummy;
-        for (int i = 0; i < inputarrays.narrays; i++) {
-                array_link a (inputarrays.nrows, inputarrays.ncols, i);
-                inputarrays.read_array (a);
+        for (int input_array_idx = 0; input_array_idx < inputarrays.narrays; input_array_idx++) {
+                array_link array (inputarrays.nrows, inputarrays.ncols, input_array_idx);
+                inputarrays.read_array (array);
 
                 long nextensions = oaextend.storefile.narraycounter;
-                print_progress (csol, inputarrays.narrays, nextensions, Tstart, current_col);
-                nr_extensions += extend_array (a.array, adcol, current_col, extensionsdummy, oaextend);
-
-                csol++; /* increase current solution */
+                print_progress (input_array_idx, inputarrays.narrays, nextensions, Tstart, current_col);
+                nr_extensions += extend_array (array, adcol, current_col, extensionsdummy, oaextend);
         }
 
         long nextensions = oaextend.storefile.narraycounter;

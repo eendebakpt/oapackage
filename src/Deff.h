@@ -11,17 +11,18 @@
 #include "arrayproperties.h"
 #include "arraytools.h"
 
-/** calculate score from from set of efficiencies
+/** Calculate score from a set of efficiencies
  *
  * The score is the weighted sum of the efficiencies.
  *
  * \param efficiencies Vector with calculated efficiencies
- * \param alpha Weights for the efficiencies
+ * \param weights Weights for the efficiencies
+ * \returns Weighted sum of the efficiencies
  */
-double scoreD (const std::vector< double > efficiencies, const std::vector< double > alpha);
+double scoreD (const std::vector< double > efficiencies, const std::vector< double > weights);
 
 /// Different methods for the optimization. The default method DOPTIM_SWAP is a coordinate-exchange algorithms
-enum DOPTIM_METHODS {
+enum coordinate_exchange_method_t {
 	/// replace a random element with a random value
 	DOPTIM_UPDATE,
 	/// swap two elements at random
@@ -33,31 +34,16 @@ enum DOPTIM_METHODS {
 	/// perform no optimization
 	DOPTIM_NONE } ;
 
-/** Optimize a design according to the optimization function specified.
- *
- * Arguments:
- * \param A0			Array to be optimized
- * \param arrayclass	Structure describing the design class
- * \param alpha			3x1 array with optimization parameters
- * \param verbose		Verbosity level
- * \param optimmethod	Optimization method to use
- * \param niter			Number of iterations
- * \param nabort		Number of iterations after which to abort when no improvements are found
- * \returns		Optimized designs
- */
-array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, std::vector< double > alpha,
-                      int verbose = 1, int optimmethod = DOPTIM_AUTOMATIC, int niter = 100000, int nabort = 0);
-
 /** Structure containing results of the Doptimize function
  */
 struct DoptimReturn {
-        /// calculated efficiencies for the designs
+        /// calculated efficiencies for the generated designs
         std::vector< std::vector< double > > dds;
         /// designs generated
         arraylist_t designs;
         /// number of restarts performed
         int nrestarts;
-        int nimproved;
+        int _nimproved;
 };
 
 /** Generates optimal designs for the specified class of designs
@@ -79,7 +65,7 @@ struct DoptimReturn {
  * \returns A structure with the generated optimal designs
  */
 DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestarts, const std::vector< double > alpha, int verbose,
-                        int method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort = 5000);
+                        coordinate_exchange_method_t method = DOPTIM_AUTOMATIC, int niter = 300000, double maxtime = 100000, int nabort = 5000);
 
 /** Function to generate optimal designs with mixed optimization approach
  *
@@ -89,3 +75,17 @@ DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestarts, const std:
 DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector< double > alpha,
                              int verbose = 1, int nabort = -1);
 
+/** Optimize a design according to the optimization function specified.
+ *
+ * Arguments:
+ * \param array			Array to be optimized
+ * \param arrayclass	Structure describing the design class
+ * \param alpha			3x1 array with optimization parameters
+ * \param verbose		Verbosity level
+ * \param optimmethod	Optimization method to use
+ * \param niter			Number of iterations
+ * \param nabort		Number of iterations after which to abort when no improvements are found
+ * \returns		Optimized designs
+ */
+array_link optimDeff (const array_link &array, const arraydata_t &arrayclass, std::vector< double > alpha,
+                      int verbose = 1, coordinate_exchange_method_t optimmethod = DOPTIM_AUTOMATIC, int niter = 100000, int nabort = 0);

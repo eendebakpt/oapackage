@@ -38,7 +38,7 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-#find_package(MPI)	# Needed for legacy code and OpenMP functionality
+# find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
@@ -226,10 +226,10 @@ include_directories(src/nauty)
 
 set(graphsrc )
 
-set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
+set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
-list(APPEND progs oacheck oastreaming oaunittest oaranktest oatest)
+list(APPEND progs oacheck oastreaming oaranktest oatest)
 
 if(OADEV)
   list(APPEND progs oaclustergather oa_depth_extend) # oaextendA

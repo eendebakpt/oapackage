@@ -33,7 +33,7 @@ double Defficiency (const array_link &orthogonal_array, int verbose = 0);
 /** Calculate efficiencies for an array
  *
  * \param array Array to use in calculation
- * \param arrayclass
+ * \param arrayclass Specification of the array class
  * \param verbose Verbosity level
  * \param addDs0 If True, then add the Ds0-efficiency to the output
  * \returns Vector with the calculate D-efficiency, the main effect robustness (or Ds-optimality) and D1-efficiency for an orthogonal array
@@ -64,15 +64,25 @@ std::vector< double > projDeff (const array_link &array, int number_of_factors, 
 
 /** Calculate the projection estimation capacity sequence for a design
 *
-* The PEC of a design is the fraction of estimable second-order models in x factors.
-* See "Ranking Non-regular Designs", J.L. Loeppky
+* \param array Input array
+* \param verbose Verbosity level
+* \returns Vector with the caculated PEC sequence
+*
+* The PECk of a design is the fraction of estimable second-order models in k factors.
+* The vector (PEC1, PEC2, ..., ) is called the projection estimation capacity sequence.
+* See "Ranking Non-regular Designs", J.L. Loeppky, 2004.
 *
 */
 std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 
 /**Calculate the projection information capacity sequence for a design.
 *
-* The PIC of a design is the average D-efficiency of estimable second-order models in x factors.
+* \param array Input array
+* \param verbose Verbosity level
+* \returns Vector with the caculated PIC sequence
+* 
+* The PICk of a design is the average D-efficiency of estimable second-order models in k factors. The vector
+* (PIC1, PIC2, ..., ) is called the PIC sequence.
 *
 */
 std::vector< double > PICsequence(const array_link &array, int verbose = 0);
@@ -97,14 +107,15 @@ std::vector< int > Jcharacteristics (const array_link &array, int number_of_colu
 /** @brief Calculate GWLP (generalized wordlength pattern)
  *
  * The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
- * fractional factorial desings"
- * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+ * fractional factorial desings". For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu, Technometrics, 2009.
  *
  * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  * \returns Vector with calculated generalized wordlength pattern
+ * 
+ * A more detailed description of the generalized wordlength pattern can also be found in the documentation at https://oapackage.readthedocs.io/.
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
@@ -130,12 +141,11 @@ typedef mvalue_t< double > DOFvalue;
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projections
 std::vector< GWLPvalue > projectionGWLPs (const array_link &al);
 
+/// sort a list of GWLP values and return the sorted list
 std::vector< GWLPvalue > sortGWLP (std::vector< GWLPvalue >);
 
-/// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
-std::vector< double > projectionGWLPdoublevalues (const array_link &al);
 
-/** calculate centered L2-discrepancy of a design
+/** Calculate centered L2-discrepancy of a design
  *
  * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials",
  * Fang and Mukerjee, 2000

@@ -768,27 +768,17 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
 
 typedef std::vector< array_link > extensioncol_list_t;
 
-/**
- * @brief Extend an LMC OA array with an extra column
- *
- * This function is quite long (and complicated) since it performs the entire extension of arrays. The LMC test is
- * performed by a function call
- * to LMC reduce.
- *
- * For calculation efficiency several cache systems are used counting the number of occurences of elements and
- * t-tuples.
- *
- *
- * @param origarray Array to extend
- * @param fullad Array data for the full array
- * @param extensioncol Column to extend
- * @param extensions List to which new extensions are added
- * @param oaextend Structure with options
- * @return Number of candidate extensions generated
- */
-int extend_array (carray_t *origarray, const arraydata_t *fullad, const colindex_t extensioncol,
+
+// This function is quite long (and complicated) since it performs the entire extension of arrays. The LMC test is
+// performed by a function call to LMCreduce.
+//
+// For calculation efficiency several cache systems are used counting the number of occurences of elements and
+// t-tuples.
+//
+int extend_array (const array_link &input_array, const arraydata_t *fullad, const colindex_t extensioncol,
                   arraylist_t &extensions, OAextend const &oaextend) {
 
+        carray_t *origarray = input_array.array;
         const int start_number = extensions.size ();
         const colindex_t ncolsextension = extensioncol + 1;
 
@@ -1070,7 +1060,7 @@ int extend_arraylist (const arraylist_t &alist, arraydata_t &fullad, OAextend co
                                   al->n_columns, extensioncol);
                         continue;
                 }
-                n += extend_array ((carray_t *)(al->array), &fullad, extensioncol, extensions, oaextend);
+                n += extend_array (*al, &fullad, extensioncol, extensions, oaextend);
         }
         fflush (stdout);
         return n;

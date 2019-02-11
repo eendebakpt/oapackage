@@ -83,10 +83,10 @@ The low-level functions for generating candidate extension columns of conference
 are :cpp:func:`generateConferenceExtensions` and :cpp:func:`generateDoubleConferenceExtensions`.
 
 
-Calculation of D-optimal designs
---------------------------------
+Calculation of D-efficient designs
+----------------------------------
 
-D-optimal designs can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
+D-efficient designs (sometimes called D-optimal designs) can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
 This function uses a coordinate-exchange algorithm to generate designs
 with good properties for the :math:`D`-efficiency.
 
@@ -97,6 +97,8 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
    .. testsetup::
    
        import oapackage
+       oapackage.seedfastrand(123)
+       oapackage.set_srand(123)
        
    .. doctest::  
 
@@ -105,8 +107,6 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
      >>> print('We generate optimal designs with: %s' % arrayclass)
      We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s {2,2,2,2,2,2,2}, order 0
      >>> alpha=[1,2,0] 
-     >>> oapackage.seedfastrand(123)
-     >>> oapackage.set_srand(123)
      >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True, verbose=0)
      Doptimize: iteration 0/40
      Doptimize: iteration 39/40
@@ -115,26 +115,10 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
 
 The parameters of the :meth:`~oapackage.Doptim.Doptimize` function are documented in the code.
 
-To calculate properties of designs we can use the following functions.
-We can use the following command:
+To calculate efficiencies of the designs we can use the method :cpp:func:`Defficiencies`, to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
+For details of the efficiencies see the section :ref:`Optimality criteria for D-efficient designs` and :cite:`EendebakSO`.
 
-.. doxygenfunction:: array_link::Defficiencies(int)
-    :no-link:
 
-to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
-For details see :cite:`EendebakSO`.
-
-The OApackage also allows to compute the projection estimation 
-capacity (PEC) sequence for orthogonal arrays :cite:`loeppky2004ranking`.
-This can be calculated with the following commands :meth:`~oalib.PECsequence` and :meth:`oalib.array_link.PECsequence`.
-
-.. comment
-    .. doxygenfunction:: PECsequence(const array_link&, int)
-        :no-link:
-        :outline:
-    .. doxygenfunction:: array_link::PECsequence()
-        :no-link:
-        :outline:
     
 In :cite:`EendebakSO` it is shown that one can optimize a linear combination of the
 :math:`D`-efficiency and :math:`D_s`-efficiency to generate a rich 
@@ -150,8 +134,8 @@ to Pareto optimality can be selected.
    designs are grey. For reference the strength-3 orthogonal array with
    highest D-efficiency is also included in the plot.
 
-Even-odd
---------
+Even-odd arrays
+---------------
 
 The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
 More information on this class of designs will appear later.
