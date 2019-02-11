@@ -465,7 +465,7 @@ struct array_link {
         /// print array to string
 	std::string showarrayString () const;
 
-        /// print array to stdout
+        /// print array to stdout in compact format (no whitespace between elemenents)
         void showarraycompact () const;
 
         /// print array properties to stdout
@@ -559,25 +559,25 @@ struct array_link {
         std::vector< int > FvaluesConference (int number_of_columns) const;
 
         /** Calculate the Jk-characteristics of the matrix (the values are signed)
-		 * 
-		 * \param jj Number of columns to use
-		 * \returns Vector with calculated Jk values
-		 */
+	 * 
+	 * \param jj Number of columns to use
+	 * \returns Vector with calculated Jk values
+	 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
         std::vector< double > PECsequence (int verbose = 0) const;
 
-		/// Calculate the projective information capacity sequence
-		std::vector< double > PICsequence(int verbose = 0) const;
+	/// Calculate the projective information capacity sequence
+	std::vector< double > PICsequence(int verbose = 0) const;
 
         /// calculate rank of array
         int rank () const;
 
         /** Calculate generalized wordlength pattern
-		 *
-		 * @see ::GWLP
-		 */
+	 *
+	 * @see ::GWLP
+	 */
         std::vector< double > GWLP (int truncate = 1, int verbose = 0) const;
 
         /// calculate strength of an array
@@ -593,8 +593,7 @@ struct array_link {
 
         /** Calculate centered L2 discrepancy
          *
-         * The method is from "A connection between uniformity and aberration in regular fractions of two-level
-         * factorials", Fang and Mukerjee, 2000
+         * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000
          */
         double CL2discrepancy () const;
 
@@ -962,19 +961,19 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        /** Calculate aberration value
-		 *
-		 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
-		 */
-		void calculateAberration();
+	/** Calculate aberration value
+	 *
+	 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
+	 */
+	void calculateAberration();
 
         /// Show contents of structure
         void show () const;
         void showdata ();
         std::string showstr ();
 
-        /// return 1 if all J values are zero, otherwise return 0
-		int allzero() const;
+	/// return 1 if all J values are zero, otherwise return 0
+	int allzero() const;
 };
 
 /** Calculate J-characteristics of conference designs
@@ -1277,11 +1276,11 @@ struct arrayfile_t {
 		 */
         arrayfile_t ();
 
-        /** @copydoc arrayfile_t::arrayfile_t()
-		 *
-		 * \param filename File to open for reading
-		 * \param verbose Verbosity level
-		 */
+	/** @copydoc arrayfile_t::arrayfile_t()
+	 *
+	 * \param filename File to open for reading
+	 * \param verbose Verbosity level
+	 */
         arrayfile_t (const std::string filename, int verbose = 1);
 
 		/** @copydoc arrayfile_t::arrayfile_t()
