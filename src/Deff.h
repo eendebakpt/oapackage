@@ -11,12 +11,12 @@
 #include "arrayproperties.h"
 #include "arraytools.h"
 
-/** calculate score from from set of efficiencies
+/** Calculate score from a set of efficiencies
  *
  * The score is the weighted sum of the efficiencies.
  *
  * \param efficiencies Vector with calculated efficiencies
- * \param alpha Weights for the efficiencies
+ * \param weights Weights for the efficiencies
  * \returns Weighted sum of the efficiencies
  */
 double scoreD (const std::vector< double > efficiencies, const std::vector< double > weights);

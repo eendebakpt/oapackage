@@ -81,7 +81,7 @@ enum algorithm_t {
         MODE_LMC_2LEVEL,
 	/// debugging method
         MODE_LMC_DEBUG,
-	/// J5 minimal form
+	/// J5 minimal form for 2-level arrays
         MODE_J5ORDER_2LEVEL
 };
 
@@ -151,7 +151,7 @@ static inline bool operator> (const rowsort_t &a, const rowsort_t &b) {
 }
 
 /// Apply Hadamard transformation to orthogonal array
-void apply_hadamard (array_link &al, colindex_t hcol);
+void apply_hadamard (array_link &al, colindex_t hcolumn);
 
 /**
  * @brief Contains structures used by the LMC reduction or LMC check

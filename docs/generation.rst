@@ -138,8 +138,8 @@ to Pareto optimality can be selected.
    designs are grey. For reference the strength-3 orthogonal array with
    highest D-efficiency is also included in the plot.
 
-Even-odd
---------
+Even-odd arrays
+---------------
 
 The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
 More information on this class of designs will appear later.

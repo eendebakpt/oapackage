@@ -66,9 +66,14 @@ class OAextend {
         algorithm_t algmode; 
 
       public:
+	/** Options for the extension algorithm
+	 * 
+	 * 
+	 */
         OAextend ()
             : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
               init_column_previous (1), extendarraymode (APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT){};
+	/// @copydoc OAextend()
         OAextend (const OAextend &o) : singleExtendTime (o.singleExtendTime) {
                 this->nLMC = o.nLMC;
                 this->checkarrays = o.checkarrays;
@@ -81,10 +86,15 @@ class OAextend {
                 this->algmode = o.algmode;
                 // we do not copy the storefile: this->storefile = o.storefile;
         };
-        OAextend (arraydata_t &ad)
+	/** @copydoc OAextend()
+	 * 
+	 * The algorithm is automatically determined from the specified arrayclass.
+	 * 
+	 */
+        OAextend (arraydata_t &arrayclass)
             : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
               init_column_previous (1), extendarraymode (APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT) {
-                setAlgorithmAuto (&ad);
+                setAlgorithmAuto (&arrayclass);
         };
         /// Set the algorithm to use for LMC checks
         void setAlgorithm (algorithm_t algorithm, arraydata_t *ad = 0);
@@ -159,33 +169,48 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_
 *
 * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
 */
-arraylist_t extend_arraylist (const arraylist_t &alist, const arraydata_t &arrayclass);
+arraylist_t extend_arraylist (const arraylist_t &array_list, const arraydata_t &arrayclass);
 
 /** @copydoc extend_arraylist(const arraylist_t &, arraydata_t &, OAextend const &)
  * 
+ * \param array_list The list of arrays to be extended
+ * \param array_class Class of arrays to generate
+ * \param oaextend_options Parameters for the extension algorithm
+ * \param oaextend_options Parameters for the extension algorithm
+ * \param extensioncol Index of column to be added to the designs
+ * \param extensions Generated extensions are added to this list
+ * \return Number of generated designs
  */
 int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
                       arraylist_t &extensions);
 
 /** Extend a single orthogonal array
  *
- * \param al The array to be extended
+ * \param array The array to be extended
  * \param array_class Class of arrays to generate
  * \param oaextend Parameters for the extension algorithm
+ *
  */
-arraylist_t extend_array (const array_link &al, arraydata_t &array_class, OAextend const &oaextend);
+arraylist_t extend_array (const array_link &array, arraydata_t &array_class, OAextend const &oaextend);
 
 /** Extend a single orthogonal array with the default LMC algorithm
  *
  * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
  */
-arraylist_t extend_array (const array_link &al, arraydata_t &arrayclass);
+arraylist_t extend_array (const array_link &array, arraydata_t &arrayclass);
 
-/** Extend an array with a single column
+/** Extend an orthogonal array with a single column
  *
  * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
+ *
+ * @param input_array Array to extend
+ * @param arrayclass Array data for the full array
+ * @param extension_column Column to extend
+ * @param extensions List to which generated valid extensions are added
+ * @param oaextend Structure with options
+ * @return Number of candidate extensions generated
  */
-int extend_array (carray_t *array, const arraydata_t *, const colindex_t extensioncol, arraylist_t &solutions,
+int extend_array (const array_link &array, const arraydata_t *arrayclass, const colindex_t extension_column, arraylist_t &solutions,
                   OAextend const &oaextend);
 
 /** Run the LMC extension algorithm starting with the root array 

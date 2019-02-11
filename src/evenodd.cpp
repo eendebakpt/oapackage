@@ -281,7 +281,7 @@ void depth_extend_hybrid (const arraylist_t &alist, depth_extend_t &dextend, int
 
                         setloglevel (SYSTEM);
                         arraylist_t alocal;
-                        extend_array (al.array, &adlocal, extcol, alocal, oaextendx);
+                        extend_array (al, &adlocal, extcol, alocal, oaextendx);
 
                         dextend.counter->addNfound (extcol + 1, alocal.size ());
                         dextend.arraywriter->writeArray (alocal);
@@ -332,7 +332,7 @@ void depth_extend_direct (const arraylist_t &alist, depth_extend_t &dextend, int
 
                 setloglevel (SYSTEM);
                 arraylist_t alocal;
-                extend_array (al.array, &adlocal, extcol, alocal, oaextendx);
+                extend_array (al, &adlocal, extcol, alocal, oaextendx);
 
                 dextend.counter->addNfound (extcol + 1, alocal.size ());
                 dextend.arraywriter->writeArray (alocal);
@@ -379,7 +379,7 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 oaextendDirect.extendarraymode = OAextend::APPENDFULL;
                 oaextendDirect.checkarrays = 1;
 
-                extend_array (al.array, &adfull, extensioncol, goodarrays, oaextendDirect);
+                extend_array (al, &adfull, extensioncol, goodarrays, oaextendDirect);
 
         } else {
                 depthalg = DEPTH_EXTENSIONS;
@@ -387,7 +387,7 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
                 /// extend the arrays without using the row symmetry property
                 {
                         // OPTIMIZE: use row_symmtry=1 and then add missing extensions
-                        extend_array (al.array, &adfull, extensioncol, extensions0, oaextendx);
+                        extend_array (al, &adfull, extensioncol, extensions0, oaextendx);
                 }
 
                 dextendsub.resize (extensions0.size ());

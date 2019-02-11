@@ -38,7 +38,7 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-#find_package(MPI)	# Needed for legacy code and OpenMP functionality
+# find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
