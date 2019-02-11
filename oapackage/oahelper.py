@@ -837,37 +837,43 @@ def safemin(data, default=0):
         data (array or list): data to return the maximum
         default (obj): default value
     Returns:
-        m: minimum value
+        object: minimum value in the array or the default value
 
     """
+    if isinstance(data, list):
+        if len(data) == 0:
+            minimum_value = default
+        else:
+            minimum_value = min(data)
+        return minimum_value
     if data.size == 0:
-        m = default
+        minimum_value = default
     else:
-        m = data.min()
-    return m
+        minimum_value = data.min()
+    return minimum_value
 
 
 def safemax(data, default=0):
     """ Return maximum of array with default value for empty array
 
     Args:
-        data (array or list): data to return the maximum
+        data (array or list ): data to return the maximum
         default (obj): default value
     Returns:
-        m: maximum value
+        object: maximum value in the array or the default value
     """
 
     if isinstance(data, list):
         if len(data) == 0:
-            m = default
+            maximum_value = default
         else:
-            m = max(data)
-        return m
+            maximum_value = max(data)
+        return maximum_value
     if data.size == 0:
-        m = default
+        maximum_value = default
     else:
-        m = data.max()
-    return m
+        maximum_value = data.max()
+    return maximum_value
 
 
 def mkdirc(directory_name):
@@ -1193,15 +1199,11 @@ def testHtml(html_code=None):
 def designStandardError(al):
     """ Return standard errors for a design
 
-    Arguments
-    ---------
-    al : array
-            design
+    Args:
+      al (array): design
 
-    Output
-    ------
-    m0, m1, m2 : arrays
-            standard errors
+    Returns:
+        array: array with standard errors 
 
     """
 
@@ -1231,20 +1233,20 @@ def DefficiencyBound(D, k, k2):
         k2 (int): numbers of columns
 
     Returns:
-        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns
+        float: bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1. + k + k * (k - 1) / 2
     m2 = 1. + k2 + k2 * (k2 - 1) / 2
-    D2 = D**(m / m2)
-    return D2
+    Dbound = D**(m / m2)
+    return Dbound
 
 # %% Misc
 
 
 def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
     """ Position the current Matplotlib figure at the specified position
-    Usage: setWindowRectangle(x,y,w,h)
+
     """
     if y is None:
         y = x[1]
@@ -1270,19 +1272,19 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.setGeometry(x, y, w, h)
 
 
-def makearraylink(al):
+def makearraylink(array):
     """ Convert array to array_link object
 
     Args:
-        al (numpy array): array to convert
+        array (numpy array): array to convert
     Returns:
         array_link
     """
-    if isinstance(al, np.ndarray):
+    if isinstance(array, np.ndarray):
         tmp = oalib.array_link()
-        tmp.setarray(al)
-        al = tmp
-    return al
+        tmp.setarray(array)
+        array = tmp
+    return array
 
 
 def formatC(al, wrap=True):

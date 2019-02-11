@@ -442,7 +442,8 @@ def filterPareto(scores, dds, arrays, verbose=0):
 
 def selectDn(scores, dds, sols, nout=1, sortfull=True):
     """ Select best arrays according to given scores
-        The resulting data is sorted
+    
+    The resulting data is sorted
 
     Parameters
     ----------
