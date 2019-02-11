@@ -17,8 +17,9 @@
  *
  * \param efficiencies Vector with calculated efficiencies
  * \param alpha Weights for the efficiencies
+ * \returns Weighted sum of the efficiencies
  */
-double scoreD (const std::vector< double > efficiencies, const std::vector< double > alpha);
+double scoreD (const std::vector< double > efficiencies, const std::vector< double > weights);
 
 /// Different methods for the optimization. The default method DOPTIM_SWAP is a coordinate-exchange algorithms
 enum DOPTIM_METHODS {
@@ -36,7 +37,7 @@ enum DOPTIM_METHODS {
 /** Optimize a design according to the optimization function specified.
  *
  * Arguments:
- * \param A0			Array to be optimized
+ * \param array			Array to be optimized
  * \param arrayclass	Structure describing the design class
  * \param alpha			3x1 array with optimization parameters
  * \param verbose		Verbosity level
@@ -45,7 +46,7 @@ enum DOPTIM_METHODS {
  * \param nabort		Number of iterations after which to abort when no improvements are found
  * \returns		Optimized designs
  */
-array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, std::vector< double > alpha,
+array_link optimDeff (const array_link &array, const arraydata_t &arrayclass, std::vector< double > alpha,
                       int verbose = 1, int optimmethod = DOPTIM_AUTOMATIC, int niter = 100000, int nabort = 0);
 
 /** Structure containing results of the Doptimize function

@@ -98,16 +98,16 @@ DoptimReturn Doptimize (const arraydata_t &arrayclass, int nrestartsmax, std::ve
         return a;
 }
 
-double scoreD (const std::vector< double > efficiencies, const std::vector< double > alpha) {
+double scoreD (const std::vector< double > efficiencies, const std::vector< double > weights) {
         double v = 0;
         for (size_t i = 0; i < efficiencies.size (); i++)
-                v += efficiencies[i] * alpha[i];
+                v += efficiencies[i] * weights[i];
         return v;
 }
 
-DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arrayclass, const std::vector< double > alpha,
+DoptimReturn DoptimizeMixed (const arraylist_t &array_list, const arraydata_t &arrayclass, const std::vector< double > alpha,
                              int verbose, int nabort) {
-        const size_t nn = sols.size ();
+        const size_t nn = array_list.size ();
         double t0 = get_time_ms ();
         std::vector< std::vector< double > > dds (nn);
         arraylist_t AA (nn);
@@ -140,10 +140,10 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
                         }
                 }
 
-                const array_link &al = sols[i];
-                double score0 = scoreD (al.Defficiencies (), alpha);
+                const array_link &array = array_list[i];
+                double score0 = scoreD (array.Defficiencies (), alpha);
 
-                array_link alu = optimDeff (al, arrayclass, alpha, verbose >= 3, method1, niter, nabort);
+                array_link alu = optimDeff (array, arrayclass, alpha, verbose >= 3, method1, niter, nabort);
                 double score1 = scoreD (alu.Defficiencies (), alpha);
 
                 array_link alu2 = optimDeff (alu, arrayclass, alpha, verbose >= 3, method2, niter, 0);

@@ -201,7 +201,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
      >>> print('D-efficiency: %.4f' % al.Defficiency())
      D-efficiency: 0.8879
      >>> print('Ds-efficiency (Eendebak and Schoen, 2017): %.4f' % al.DsEfficiency()) 
-     Ds-efficiency (Eendebak and Schoen, 2017): 0.8227
+     Ds-efficiency (Eendebak and Schoen, 2017): 0.8059
      >>> print('A-efficiency for the interaction model: %.4f' % al.Aefficiency())
      A-efficiency for the interaction model: 0.7906
      >>> print('E-efficiency for the interaction model: %.4f' % al.Eefficiency())  
@@ -220,18 +220,28 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
        {A_{\text{eff}}(D)} = N (\sum_j \lambda_j^{-1})/m \label{formula:VIF}, \\ 
        {E_{\text{eff}}(D)} = \min_j \lambda_j. \label{formula:E-efficiency}
 
-.. topic:: :math:`D_s`-efficiency
+.. topic:: :math:`D_s`-efficiency and :math:`D_1`-efficiency
   :name: DS
    
-   In :cite:`EendebakSO`, the :math:`D_s`-efficiency is used to assess the joint precision of the main effects in the interaction model. Let the interaction model matrix :math:`{X}` be split into :math:`{X_{1}}`, containing the contrast vectors associated with the main effects only, and :math:`{X_{02}}`, containing the intercept column and the contrast vectors associated to the two-factor interactions. The :math:`D_{s}`-criterion of a design :math:`D` is defined as 
+   In :cite:`EendebakSO`, the :math:`D_s`-efficiency is used to assess the joint precision of the main effects in the
+   interaction model. Let the interaction model matrix :math:`{X}` be split into :math:`{X_{1}}`, containing the contrast
+   vectors associated with the main effects only, and :math:`{X_{02}}`, containing the intercept column and the contrast
+   vectors associated to the two-factor interactions. The :math:`D_{s}`-criterion of a design :math:`D` is defined as 
 
    .. math::
     
-       {D_{s}(D)} = \operatorname{det}(X^{T}X) / \operatorname{det}(X_{02}^{T} X_{02}^{\phantom{T}}), \label{formula:Dsefficiency}
+       {D_{s,\text{crit}}(D)} = \operatorname{det}(X^{T}X) / \operatorname{det}(X_{02}^{T} X_{02}^{\phantom{T}}), \label{formula:Dsefficiency}
 
-   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the OApackage calculates the :math:`D_{s}`-criterion using the eigen values of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`. Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,\text{eff}}(A) = D_{s}(A)^{1/m}`, where :math:`m` is the number of factors. 
+   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the
+   OApackage calculates the :math:`D_{s}`-criterion using the eigenvalues of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`.
+   Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,\text{eff}}(A) = D_{s,\text{crit}}(A)^{1/m}`, where :math:`m` is the number of factors. 
    
+   In a similar way the :math:`D_{1}`-efficiency of a design :math:`{A}` with :math:`n` factors and model matrix of intercept and main effects :math:`{X01}`,  is defined as
 
+   .. math::
+    
+       D_{s,\text{eff}}(A) = ( \operatorname{det}((X_{01})^{T}(X_{01}) )^{1/(n+1)}  \label{formula:D1efficiency}
+   
 Projection Capacities
 ---------------------
 
