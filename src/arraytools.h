@@ -407,33 +407,46 @@ struct array_link {
 		*/
 		array_link ();
         /** @copydoc array_link::array_link()
-		 *
-		 * The array is intialized with zeros.
-		 */
+	 *
+	 * The array is intialized with zeros.
+	 * 
+	 * \param nrows Number of rows
+	 * \param ncols Number of columns
+	 * \param index Number to keep track of lists of designs
+	 */
         array_link (rowindex_t nrows, colindex_t ncols, int index);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from a pointer.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from a pointer.
+	*/
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from another array_link object.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from another array_link object.
+	*/
         array_link (const array_link &);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from anEigen matrix.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from an Eigen matrix.
+	*/
         array_link (Eigen::MatrixXd &eigen_matrix);
-		/// @copydoc array_link::array_link()
-		array_link(const array_link &, const std::vector< int > &colperm);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
-		/// @copydoc array_link::array_link()
-		array_link(const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by permuting the columns of another array
+	 * 
+	 * \param array Source to copy from
+	 * \param column_permutation The permuntation to apply
+	 */
+	array_link(const array_link &array, const std::vector< int > &column_permutation);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by copying the values from a vector.
+	 */
+	array_link(const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index = 0);
 
         ~array_link ();
 

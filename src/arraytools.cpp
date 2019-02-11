@@ -827,15 +827,13 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
 
 }
 
-//! Create array link from vector
-array_link::array_link (const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index_)
+array_link::array_link (const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
-        if (v.size () != (size_t)nrows * ncols) {
-                myprintf ("array_link: error size of vector does not match number of rows and columns\n");
-                return;
+        if (values.size () != (size_t)nrows * ncols) {
+                throw_runtime_exception ("array_link: size of vector does not match number of rows and columns\n");
         }
         this->array = create_array (nrows, ncols);
-        std::copy (v.begin (), v.begin () + nrows * ncols, this->array);
+        std::copy (values.begin (), values.begin () + nrows * ncols, this->array);
 }
 
 //! Default constructor
