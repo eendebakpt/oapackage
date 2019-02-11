@@ -290,6 +290,7 @@ class TestArraydata_t(unittest.TestCase):
 
 class TestJcharacteristics(unittest.TestCase):
 
+    @only_python3
     def test_jstruct_conference(self):
         conf_design = oapackage.exampleArray(30, 0)
         js = oapackage.jstructconference_t(conf_design, 4)
