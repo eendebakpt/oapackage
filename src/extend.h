@@ -203,14 +203,14 @@ arraylist_t extend_array (const array_link &array, arraydata_t &arrayclass);
  *
  * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
  *
- * @param input_array Array to extend
+ * @param array Array to extend
  * @param arrayclass Array data for the full array
  * @param extension_column Column to extend
  * @param extensions List to which generated valid extensions are added
  * @param oaextend Structure with options
  * @return Number of candidate extensions generated
  */
-int extend_array (const array_link &array, const arraydata_t *arrayclass, const colindex_t extension_column, arraylist_t &solutions,
+int extend_array (const array_link &array, const arraydata_t *arrayclass, const colindex_t extension_column, arraylist_t &extensions,
                   OAextend const &oaextend);
 
 /** Run the LMC extension algorithm starting with the root array 

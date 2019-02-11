@@ -97,6 +97,8 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
    .. testsetup::
    
        import oapackage
+       oapackage.seedfastrand(123)
+       oapackage.set_srand(123)
        
    .. doctest::  
 
@@ -105,8 +107,6 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
      >>> print('We generate optimal designs with: %s' % arrayclass)
      We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s {2,2,2,2,2,2,2}, order 0
      >>> alpha=[1,2,0] 
-     >>> oapackage.seedfastrand(123)
-     >>> oapackage.set_srand(123)
      >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True, verbose=0)
      Doptimize: iteration 0/40
      Doptimize: iteration 39/40
@@ -115,13 +115,9 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
 
 The parameters of the :meth:`~oapackage.Doptim.Doptimize` function are documented in the code.
 
-To calculate properties of designs we can use the following functions.
-We can use the method :cpp:func:`Defficiencies`, to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
-For details of the efficiencies see the section `Optimality criteria for D-efficient designs`_ and :cite:`EendebakSO`.
+To calculate efficiencies of the designs we can use the method :cpp:func:`Defficiencies`, to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
+For details of the efficiencies see the section :ref:`Optimality criteria for D-efficient designs` and :cite:`EendebakSO`.
 
-The OApackage also allows to compute the projection estimation 
-capacity (PEC) sequence for orthogonal arrays :cite:`loeppky2004ranking`.
-This can be calculated with the following commands :meth:`~oalib.PECsequence` and :meth:`oalib.array_link.PECsequence`.
 
     
 In :cite:`EendebakSO` it is shown that one can optimize a linear combination of the
