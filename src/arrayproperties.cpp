@@ -533,7 +533,7 @@ std::vector< double > PICsequence(const array_link &array, int verbose) {
 
 	int N = array.n_rows;
 	int number_of_factors = array.n_columns;
-	std::vector< double > pec(number_of_factors);
+	std::vector< double > pic(number_of_factors);
 
 	if (number_of_factors >= 20) {
 		throw_runtime_exception("PICsequence: error: not implemented for 20 or more columns\n");
@@ -544,21 +544,21 @@ std::vector< double > PICsequence(const array_link &array, int verbose) {
 #pragma omp parallel for
 #endif
 	for (int i = 0; i < number_of_factors; i++) {
-		int kp = i + 1;
-		int m = 1 + kp + kp * (kp - 1) / 2;
+		int number_projection_factors = i + 1;
+		int m = 1 + number_projection_factors + number_projection_factors * (number_projection_factors - 1) / 2;
 
 		if (m > N) {
 			// if size of model is larger than number of runs the model cannot be estimated
-			pec[i] = 0;
+			pic[i] = 0;
 		}
 		else {
-			std::vector< double > dd = projDeff(array, kp, verbose >= 2);
+			std::vector< double > dd = projDeff(array, number_projection_factors, verbose >= 2);
 
-			pec[i] = average(dd);
+			pic[i] = average(dd);
 		}
 	}
 
-	return pec;
+	return pic;
 }
 
 void round_GWLP_zero_values(std::vector<double> &gma, int N)
@@ -1601,10 +1601,10 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
                 myprintf ("Defficiencies: D %f, Ds %f, D1 %f\n", D, Ds, D1);
         }
 
-        std::vector< double > d (3);
-        d[0] = D;
-        d[1] = Ds;
-        d[2] = D1;
+        std::vector< double > efficiencies (3);
+        efficiencies[0] = D;
+        efficiencies[1] = Ds;
+        efficiencies[2] = D1;
 
         if (addDs0) {
                 double f2 = (matXtX.block (1 + size_main_effects, 1 + size_main_effects, n2fi, n2fi)).determinant ();
@@ -1612,9 +1612,9 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
                 if (fabs (f1) >= 1e-15) {
                         Ds0 = pow ((f1 / f2), 1. / k1);
                 }
-                d.push_back (Ds0);
+                efficiencies.push_back (Ds0);
         }
-        return d;
+        return efficiencies;
 }
 
 typedef MatrixFloat DMatrix;
