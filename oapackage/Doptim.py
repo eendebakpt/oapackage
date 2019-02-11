@@ -350,10 +350,10 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
     # initialize score
     if alpha_is_function:
-        d = alpha(A0)
+        efficiencies = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
-        d = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
+        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
     A = A0.clone()
     lc = 0
     for ii in range(0, niter):
@@ -384,12 +384,12 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             D, Ds, D1 = A.Defficiencies()
             nx = nx + 1
             dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
-        if dn >= d:
-            if dn > d:
+        if dn >= efficiencies:
+            if dn > efficiencies:
                 lc = ii
-                d = dn
+                efficiencies = dn
             if verbose >= 2:
-                print('ii %d: %.6f -> %.6f' % (ii, d, dn))
+                print('ii %d: %.6f -> %.6f' % (ii, efficiencies, dn))
 
         else:
             # restore to original
@@ -405,39 +405,39 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 print('optimDeff: early abort ii %d, lc %d' % (ii, lc))
             break
 
-    Dfinal = A.Defficiency()
 
     if verbose:
+        Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
             print('optimDeff: final Deff improved: %.4f -> %.4f' %
                   (Dinitial, A.Defficiency()))
         else:
             print('optimDeff: final Deff %.4f' % A.Defficiency())
 
-    return d, A
+    return efficiencies, A
 
 
 # %%
-def filterPareto(scores, dds, sols, verbose=0):
+def filterPareto(scores, dds, arrays, verbose=0):
     """ From a list of designs select only the pareto optimal designs
 
     Args:
         scores (array): array of scores
         dds (array): array with D-efficiency values
-        sols (list): list of designs
+        arrays (list): list of designs
     Returns:
-        pscores (list) : list of scores of pareto optimal designs
-        pdds (list): list of D-efficiency values of pareto optimal designs
-        psols (list) : list of selected designs
+        pareto_scores (list) : list of scores of pareto optimal designs
+        pareto_efficiencies (list): list of D-efficiency values of pareto optimal designs
+        pareto_designs (list) : list of selected designs
     """
     pp = oahelper.createPareto(dds, verbose=0)
     paretoidx = np.array(pp.allindices())
 
-    pscores = scores[paretoidx]
-    pdds = dds[paretoidx]
-    psols = [sols[i] for i in paretoidx]
+    pareto_scores = scores[paretoidx]
+    pareto_efficiencies = dds[paretoidx]
+    pareto_designs = [arrays[i] for i in paretoidx]
 
-    return pscores, pdds, psols
+    return pareto_scores, pareto_efficiencies, pareto_designs
 
 
 def selectDn(scores, dds, sols, nout=1, sortfull=True):
