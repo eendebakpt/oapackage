@@ -68,8 +68,9 @@ std::vector< double > projDeff (const array_link &array, int number_of_factors, 
 * \param verbose Verbosity level
 * \returns Vector with the caculated PEC sequence
 *
-* The PEC of a design is the fraction of estimable second-order models in x factors.
-* See "Ranking Non-regular Designs", J.L. Loeppky
+* The PECk of a design is the fraction of estimable second-order models in k factors.
+* The vector (PEC1, PEC2, ..., ) is called the projection estimation capacity sequence.
+* See "Ranking Non-regular Designs", J.L. Loeppky, 2004.
 *
 */
 std::vector< double > PECsequence (const array_link &array, int verbose = 0);
@@ -106,14 +107,15 @@ std::vector< int > Jcharacteristics (const array_link &array, int number_of_colu
 /** @brief Calculate GWLP (generalized wordlength pattern)
  *
  * The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
- * fractional factorial desings"
- * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+ * fractional factorial desings". For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu, Technometrics, 2009.
  *
  * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  * \returns Vector with calculated generalized wordlength pattern
+ * 
+ * A more detailed description of the generalized wordlength pattern can also be found in the documentation at https://oapackage.readthedocs.io/.
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
