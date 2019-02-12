@@ -1760,7 +1760,7 @@ MatrixFloat array2eigenX2 (const array_link &array);
 MatrixFloat array2eigenModelMatrix (const array_link &array);
 
 
-/** Create first and second order model matrix for mixed-level array
+/** Create first and second order model matrix for mixed-level orthogonal array
  *
  * \param array Input array
  * \param verbose Verbosity level
