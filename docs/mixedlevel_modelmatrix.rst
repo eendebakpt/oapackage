@@ -62,6 +62,8 @@ The main effects for a mixel-level array are created by replacing each level in 
      [ 1.     0.     1.414 -1.   ]
      [ 1.     0.     1.414  1.   ]]
          
+Note the Helmert contrasts for the 2-level column are +1 and -1. So the calculation for mixel-level arrays for a 2-level array
+yields the same results as the direct calculation for a 2-level design.
          
 The interaction effects are created by determining for all pair-wise combinations of columns the 
 product between the elements of the contrast vectors.
