@@ -1288,7 +1288,7 @@ struct arrayfile_t {
 		* \param ncols Number of columns
 		* \param narrays Specify a number of arrays, or -1 to add dynamically
 		* \param mode File mode
-		* \param nb Number of bits to use for storage. For 2-level arrays only 1 bit is needed
+		* \param number_of_bits Number of bits to use for storage. For 2-level arrays only 1 bit is needed
 		*/
         arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t mode = ATEXT,
                      int number_of_bits = 8);
