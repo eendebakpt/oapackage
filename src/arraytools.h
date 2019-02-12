@@ -1288,16 +1288,20 @@ struct arrayfile_t {
 		* Open new array file for writing
 		*
 		* \param filename File to open
-		* \param m File mode
-		*/ 
-        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                     int nb = 8);
+		* \param nrows Number of rows
+		* \param ncols Number of columns
+		* \param narrays Specify a number of arrays, or -1 to add dynamically
+		* \param mode File mode
+		* \param nb Number of bits to use for storage. For 2-level arrays only 1 bit is needed
+		*/
+        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t mode = ATEXT,
+                     int number_of_bits = 8);
         /// destructor function, closes all filehandles
         ~arrayfile_t ();
 
-        /// Close current file and open a new file for writing
+        /// Open a new file for writing and (if opened) close the current file 
         void createfile (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                         int nb = 8);
+                         int number_of_bits = 8);
 
         /// close the array file
         void closefile ();

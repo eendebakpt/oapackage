@@ -4227,7 +4227,7 @@ int arrayfile_t::append_arrays (const arraylist_t &arrays, int startidx) {
         return 0;
 }
 
-arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t m, int nb) {
+arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t mode, int number_of_bits) {
         this->verbose = 0;
         this->nfid = 0;
         this->narrays = -1;
@@ -4239,7 +4239,7 @@ arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int nar
         this->gzfid = 0;
 #endif
 
-        createfile (fname, nrows, ncols, narrays_, m, nb);
+        createfile (fname, nrows, ncols, narrays_, m, number_of_bits);
 }
 
 int arrayfile_t::headersize () const { return 8 * sizeof (int32_t); }
