@@ -304,19 +304,29 @@ int maxz (const array_link &al, int column_index = -1);
 /** Return true of the array is smaller in LMC-0 ordering
  *
  */
-bool compareLMC0 (const array_link &alL, const array_link &alR);
+bool compareLMC0 (const array_link &array_left, const array_link &array_right);
 
-/// sort list of conference designs according to LMC-0 ordering
-arraylist_t sortLMC0 (const arraylist_t &lst);
+/// sort list of conference designs according to LMC0 ordering
+arraylist_t sortLMC0 (const arraylist_t &arrays);
 
-/// LMC0 check for double conference matrix
+/* Check if a double conference design is in LM0 form
+*
+* \param array Conference design
+* \param verbose Verbosity level
+* \return The value LMC_LESS of the design is in LMC0 form.
+*/
 lmc_t LMC0checkDC (const array_link &al, int verbose = 0);
 
-/// check if array is in LM0 form
-lmc_t LMC0check (const array_link &al, int verbose = 0);
+/* Check if a conference design is in LM0 form
+ *
+ * \param array Conference design
+ * \param verbose Verbosity level
+ * \return The value LMC_LESS of the design is in LMC0 form.
+ */
+lmc_t LMC0check (const array_link &array, int verbose = 0);
 
 /// return true if the design is a foldover array
-bool isConferenceFoldover (const array_link &al, int verbose = 0);
+bool isConferenceFoldover (const array_link &array, int verbose = 0);
 
 /** For a double conference design return a row permutation to a single conference design
  * 
@@ -328,7 +338,7 @@ bool isConferenceFoldover (const array_link &al, int verbose = 0);
  */
 std::vector<int> double_conference_foldover_permutation(const array_link &double_conference);
 
-/// return minimal position of zero in design
+/// return minimal position of zero in specified column of a design
 int minz (const array_link &al, int column_index);
 
 /// class to filter single or double conference designs

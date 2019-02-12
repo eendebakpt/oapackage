@@ -134,23 +134,24 @@ For conference designs a convenient normal form is the LMC0 ordering (sometimes 
 
  The LMC0 ordering for conference designs is defined in three steps:
   
-  Definition 1: *Order of elements*
+  Definition LMC0 i: *Order of elements*
     The LMC0 order of the factor levels -1, 0 and +1 is 0 < +1 < -1.
 
-  Definition 2: *Order of columns*
-    A column a is smaller than a column b according to L0 ordering, notated as a < b, if either
+  Definition LMC0 ii: *Order of columns*
+    A column a is smaller than a column b according to LMC0 ordering, notated as a < b, if either
     of the following conditions hold:
+    
        1. If we replace the values -1 by +1 in both columns, then the first element where the
           columns differ is smaller in a than in b according to Definition 1.
        2. The zeros in column a are in the same position as the zeros in column b, and the first element where the
-          columns differ is smaller in a than in b according to Definition 1.
+          columns differ is smaller in a than in b according to Definition i.
           
-  Definition 3: *Order of designs*
+  Definition LMC0 iii: *Order of designs*
     Conference design A is smaller than conference design B according to LMC0 ordering, notated
     as A < B, if the first column where the designs differ is smaller in A than in B.
 
-
 The definition implies that the ordering of designs is column-by-column and that the position of zeros in the columns is dominant over the values +1, -1.
+To check whether a design is in LMC0 form we can use :cpp:func:`LMC0check`.
 
 .. admonition:: Conference design in normal form
  
@@ -176,4 +177,7 @@ The definition implies that the ordering of designs is column-by-column and that
       1  -1   1   1
       1  -1  -1  -1
       1  -1  -1  -1
+    >>> oapackage.LMC0check(array) == oapackage.LMC_LESS
+    True
+
   
