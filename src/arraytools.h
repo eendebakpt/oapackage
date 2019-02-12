@@ -1,15 +1,11 @@
 /** \file arraytools.h
 
- \brief Contains the array_link class and related classes.
+\brief Contains the array_link class and related classes.
 
- C++ Interface: arraytools
-
- This file contains definitions are functions to work with (orthogonal) arrays.
- The code is generic (with templates) and partly inlined for speed.
-
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>
-
- Copyright: See LICENSE.txt file that comes with this distribution
+This file contains method and classes to work with (orthogonal) arrays.
+ 
+Author: Pieter Eendebak <pieter.eendebak@gmail.com>
+Copyright: See LICENSE.txt file that comes with this distribution
 */
 
 #pragma once

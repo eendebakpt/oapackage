@@ -53,7 +53,7 @@ The main effects for a mixel-level array are created by replacing each level in 
 
   .. doctest:: 
   
-    >>> X=oapackage.array2modelmatrix(array, 'm', 1)
+    >>> X=oapackage.array2modelmatrix(array, 'main')
     >>> print(X)
     [[ 1.    -1.225 -0.707 -1.   ]
      [ 1.    -1.225 -0.707  1.   ]
@@ -74,7 +74,7 @@ The number of columns in the interaction part is therefore :math:`(3-1)(2-1) = 2
 
   .. doctest::    
 
-    >>> X=oapackage.array2modelmatrix(array, 'i', 1)
+    >>> X=oapackage.array2modelmatrix(array, 'interaction')
     >>> print(X)
     [[ 1.    -1.225 -0.707 -1.     1.225  0.707]
      [ 1.    -1.225 -0.707  1.    -1.225 -0.707]
