@@ -176,10 +176,9 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, const arraydata_t &
  * \param array_list The list of arrays to be extended
  * \param array_class Class of arrays to generate
  * \param oaextend_options Parameters for the extension algorithm
- * \param oaextend_options Parameters for the extension algorithm
  * \param extensioncol Index of column to be added to the designs
- * \param extensions Generated extensions are added to this list
- * \return Number of generated designs
+ * \param extensions List to append generated designs to
+ * \return Number of candidate arrays generated
  */
 int extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options, colindex_t extensioncol,
                       arraylist_t &extensions);

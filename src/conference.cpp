@@ -2402,13 +2402,11 @@ arraylist_t extend_conference_restricted (const arraylist_t &lst, const conferen
                 conference_extend_t ce = extend_conference_matrix (al, ctype, extcol, vb, -1);
 
                 arraylist_t ll = ce.getarrays (al);
-                const int nn = ll.size ();
 
                 outlist.insert (outlist.end (), ll.begin (), ll.end ());
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 200 == 0 || i == lst.size () - 1))) {
-                        printf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (),
-                                nn);
+					printf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (), ll.size());
                         fflush (0);
                 }
         }
@@ -2451,16 +2449,16 @@ std::vector< int > selectUniqueArrayIndices (const arraylist_t &lstr, int verbos
 }
 
 /// reduce a matrix to Nauty normal form
-array_link reduceMatrix (const array_link &al, matrix_isomorphism_t itype, int verbose) {
+array_link reduceMatrixNauty (const array_link &array, matrix_isomorphism_t itype, int verbose) {
         array_link alx;
         switch (itype) {
         case CONFERENCE_ISOMORPHISM: {
-                alx = reduceConference (al, verbose >= 2);
+                alx = reduceConference (array, verbose >= 2);
         } break;
         case CONFERENCE_RESTRICTED_ISOMORPHISM: {
-                arraydata_t arrayclass (3, al.n_rows, 1, al.n_columns);
-                array_transformation_t t = reduceOAnauty (al + 1, verbose >= 2, arrayclass);
-                alx = t.apply (al + 1) + (-1);
+                arraydata_t arrayclass (3, array.n_rows, 1, array.n_columns);
+                array_transformation_t t = reduceOAnauty (array + 1, verbose >= 2, arrayclass);
+                alx = t.apply (array + 1) + (-1);
                 break;
         }
         default:
@@ -2472,7 +2470,7 @@ array_link reduceMatrix (const array_link &al, matrix_isomorphism_t itype, int v
 
 /** Class to select isomorphism classes
  *
- * By performing the isomorphism check incrementally we can save memory
+ * The selecting is performed by reducing to Nauty normal form. By performing the isomorphism check incrementally we can save memory.
  */
 class ConferenceIsomorphismSelector {
       public:
@@ -2507,7 +2505,7 @@ class ConferenceIsomorphismSelector {
                 nadd++;
                 if (select_isomorphism_classes) {
                         for (size_t i = 0; i < lst.size (); i++) {
-                                array_link alr = reduceMatrix (lst[i], itype, verbose);
+                                array_link alr = reduceMatrixNauty (lst[i], itype, verbose);
                                 reductions.push_back (alr);
                         }
 
@@ -2573,7 +2571,6 @@ arraylist_t extend_conference_plain (const arraylist_t &lst, const conference_t 
 arraylist_t extend_conference (const arraylist_t &lst, const conference_t conference_type, int verbose,
                                int select_isomorphism_classes) {
         double t0 = get_time_ms ();
-        arraylist_t outlist;
 
         if (verbose >= 2) {
                 printfd ("extend_conference: start with %d arrays\n", (int)lst.size ());
@@ -2626,7 +2623,7 @@ std::pair< arraylist_t, std::vector< int > > selectConferenceIsomorpismHelper (c
         for (int i = 0; i < (int)lst.size (); i++) {
                 if (verbose >= 1 && (i % 20000 == 0 || i == (int)lst.size () - 1))
                         printf ("selectConferenceIsomorpismClasses: reduce %d/%d\n", i, (int)lst.size ());
-                array_link alx = reduceMatrix (lst[i], itype, 2 * (verbose >= 3));
+                array_link alx = reduceMatrixNauty (lst[i], itype, 2 * (verbose >= 3));
 
                 lstr.push_back (alx);
         }

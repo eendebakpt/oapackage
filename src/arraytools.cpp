@@ -827,15 +827,13 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
 
 }
 
-//! Create array link from vector
-array_link::array_link (const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index_)
+array_link::array_link (const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index_)
     : n_rows (nrows), n_columns (ncols), index (index_) {
-        if (v.size () != (size_t)nrows * ncols) {
-                myprintf ("array_link: error size of vector does not match number of rows and columns\n");
-                return;
+        if (values.size () != (size_t)nrows * ncols) {
+                throw_runtime_exception ("array_link: size of vector does not match number of rows and columns\n");
         }
         this->array = create_array (nrows, ncols);
-        std::copy (v.begin (), v.begin () + nrows * ncols, this->array);
+        std::copy (values.begin (), values.begin () + nrows * ncols, this->array);
 }
 
 //! Default constructor
@@ -1412,7 +1410,7 @@ array_link exampleArray (int idx, int verbose) {
         }
         case 10: {
                 if (verbose) {
-                        myprintf ("exampleArray %d: array in OA(9, 3^2)\n", idx);
+                        myprintf ("exampleArray %d: array in OA(9, 3^3)\n", idx);
                 }
                 array_link al (9, 3, 0);
                 int tmp[] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 1, 2, 1, 1, 2, 0, 0, 2, 2, 0, 2, 0, 2, 1, 0, 1, 1};
@@ -2041,6 +2039,16 @@ array_link exampleArray (int idx, int verbose) {
 			 }
 			 array_link array(12, 4, 0);
 			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,1,-1,-1,-1,1,1,0,1,1,-1,-1 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
+		 case 54: {
+			 dstr = "root array in OA(6,2,3^1 2^1)";
+			 if (verbose) {
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+			 }
+			 array_link array(6, 2, 0);
+			 int array_data_tmp[] = { 0,0,1,1,2,2,0,1,0,1,0,1 };
 			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
@@ -4219,7 +4227,7 @@ int arrayfile_t::append_arrays (const arraylist_t &arrays, int startidx) {
         return 0;
 }
 
-arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t m, int nb) {
+arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int narrays_, arrayfilemode_t mode, int number_of_bits) {
         this->verbose = 0;
         this->nfid = 0;
         this->narrays = -1;
@@ -4231,7 +4239,7 @@ arrayfile_t::arrayfile_t (const std::string fname, int nrows, int ncols, int nar
         this->gzfid = 0;
 #endif
 
-        createfile (fname, nrows, ncols, narrays_, m, nb);
+        createfile (fname, nrows, ncols, narrays_, mode, number_of_bits);
 }
 
 int arrayfile_t::headersize () const { return 8 * sizeof (int32_t); }

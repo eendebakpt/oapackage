@@ -52,9 +52,9 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
    .. doctest::     
                    
     >>> import oapackage
-    >>> ctype=oapackage.conference_t(8, 6, 0) 
-    >>> al = ctype.create_root_three_columns()
-    >>> al.showarray()
+    >>> conference_class=oapackage.conference_t(8, 6, 0) 
+    >>> array = conference_class.create_root_three_columns()
+    >>> array.showarray()
     array:
       0   1   1
       1   0  -1
@@ -64,11 +64,11 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
       1  -1   1
       1  -1   1
       1  -1  -1
-    >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
-    >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
-    >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
-    >>> print('number of non-isomorphic conference designs: %d'  % len(l6) )
-    number of non-isomorphic conference designs: 11
+    >>> l4=oapackage.extend_conference ([array], conference_class, verbose=0)
+    >>> l5=oapackage.extend_conference ( l4, conference_class, verbose=0) 
+    >>> l6=oapackage.extend_conference ( l5, conference_class, verbose=0)
+    >>> print('number of non-isomorphic conference designs with 6 columns: %d'  % len(l6) )
+    number of non-isomorphic conference designs with 6 columns: 11
 
 
 An example notebook with more functionality is
@@ -78,9 +78,10 @@ in the :ref:`Interface for conference designs`.
 
 The main functions to extend conference and double conference designs are
 :cpp:func:`extend_conference` and :cpp:func:`extend_double_conference`.
-
 The low-level functions for generating candidate extension columns of conference and double conference designs
 are :cpp:func:`generateConferenceExtensions` and :cpp:func:`generateDoubleConferenceExtensions`.
+
+The conference designs are generated in :ref:`LMC0 <LMC0>` form.
 
 
 Calculation of D-efficient designs

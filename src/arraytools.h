@@ -1,15 +1,11 @@
 /** \file arraytools.h
 
- \brief Contains the array_link class and related classes.
+\brief Contains the array_link class and related classes.
 
- C++ Interface: arraytools
-
- This file contains definitions are functions to work with (orthogonal) arrays.
- The code is generic (with templates) and partly inlined for speed.
-
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>
-
- Copyright: See LICENSE.txt file that comes with this distribution
+This file contains method and classes to work with (orthogonal) arrays.
+ 
+Author: Pieter Eendebak <pieter.eendebak@gmail.com>
+Copyright: See LICENSE.txt file that comes with this distribution
 */
 
 #pragma once
@@ -407,33 +403,46 @@ struct array_link {
 		*/
 		array_link ();
         /** @copydoc array_link::array_link()
-		 *
-		 * The array is intialized with zeros.
-		 */
+	 *
+	 * The array is intialized with zeros.
+	 * 
+	 * \param nrows Number of rows
+	 * \param ncols Number of columns
+	 * \param index Number to keep track of lists of designs
+	 */
         array_link (rowindex_t nrows, colindex_t ncols, int index);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from a pointer.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from a pointer.
+	*/
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from another array_link object.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from another array_link object.
+	*/
         array_link (const array_link &);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from anEigen matrix.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from an Eigen matrix.
+	*/
         array_link (Eigen::MatrixXd &eigen_matrix);
-		/// @copydoc array_link::array_link()
-		array_link(const array_link &, const std::vector< int > &colperm);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
-		/// @copydoc array_link::array_link()
-		array_link(const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by permuting the columns of another array
+	 * 
+	 * \param array Source to copy from
+	 * \param column_permutation The permuntation to apply
+	 */
+	array_link(const array_link &array, const std::vector< int > &column_permutation);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by copying the values from a vector.
+	 */
+	array_link(const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index = 0);
 
         ~array_link ();
 
@@ -452,7 +461,7 @@ struct array_link {
         /// print array to string
 	std::string showarrayString () const;
 
-        /// print array to stdout
+        /// print array to stdout in compact format (no whitespace between elemenents)
         void showarraycompact () const;
 
         /// print array properties to stdout
@@ -546,25 +555,25 @@ struct array_link {
         std::vector< int > FvaluesConference (int number_of_columns) const;
 
         /** Calculate the Jk-characteristics of the matrix (the values are signed)
-		 * 
-		 * \param jj Number of columns to use
-		 * \returns Vector with calculated Jk values
-		 */
+	 * 
+	 * \param jj Number of columns to use
+	 * \returns Vector with calculated Jk values
+	 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
         std::vector< double > PECsequence (int verbose = 0) const;
 
-		/// Calculate the projective information capacity sequence
-		std::vector< double > PICsequence(int verbose = 0) const;
+	/// Calculate the projective information capacity sequence
+	std::vector< double > PICsequence(int verbose = 0) const;
 
         /// calculate rank of array
         int rank () const;
 
         /** Calculate generalized wordlength pattern
-		 *
-		 * @see ::GWLP
-		 */
+	 *
+	 * @see ::GWLP
+	 */
         std::vector< double > GWLP (int truncate = 1, int verbose = 0) const;
 
         /// calculate strength of an array
@@ -580,8 +589,7 @@ struct array_link {
 
         /** Calculate centered L2 discrepancy
          *
-         * The method is from "A connection between uniformity and aberration in regular fractions of two-level
-         * factorials", Fang and Mukerjee, 2000
+         * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000
          */
         double CL2discrepancy () const;
 
@@ -949,19 +957,20 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        /** Calculate aberration value
-		 *
-		 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
-		 */
-		void calculateAberration();
+	/** Calculate aberration value
+	 *
+	 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
+	 *
+	 **/
+	void calculateAberration();
 
         /// Show contents of structure
         void show () const;
         void showdata ();
         std::string showstr ();
 
-        /// return 1 if all J values are zero, otherwise return 0
-		int allzero() const;
+	/// return 1 if all J values are zero, otherwise return 0
+	int allzero() const;
 };
 
 /** Calculate J-characteristics of conference designs
@@ -1264,11 +1273,11 @@ struct arrayfile_t {
 		 */
         arrayfile_t ();
 
-        /** @copydoc arrayfile_t::arrayfile_t()
-		 *
-		 * \param filename File to open for reading
-		 * \param verbose Verbosity level
-		 */
+	/** @copydoc arrayfile_t::arrayfile_t()
+	 *
+	 * \param filename File to open for reading
+	 * \param verbose Verbosity level
+	 */
         arrayfile_t (const std::string filename, int verbose = 1);
 
 		/** @copydoc arrayfile_t::arrayfile_t()
@@ -1276,16 +1285,20 @@ struct arrayfile_t {
 		* Open new array file for writing
 		*
 		* \param filename File to open
-		* \param m File mode
-		*/ 
-        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                     int nb = 8);
+		* \param nrows Number of rows
+		* \param ncols Number of columns
+		* \param narrays Specify a number of arrays, or -1 to add dynamically
+		* \param mode File mode
+		* \param number_of_bits Number of bits to use for storage. For 2-level arrays only 1 bit is needed
+		*/
+        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t mode = ATEXT,
+                     int number_of_bits = 8);
         /// destructor function, closes all filehandles
         ~arrayfile_t ();
 
-        /// Close current file and open a new file for writing
+        /// Open a new file for writing and (if opened) close the current file 
         void createfile (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                         int nb = 8);
+                         int number_of_bits = 8);
 
         /// close the array file
         void closefile ();
@@ -1748,7 +1761,7 @@ MatrixFloat array2eigenX2 (const array_link &array);
 MatrixFloat array2eigenModelMatrix (const array_link &array);
 
 
-/** Create first and second order model matrix for mixed-level array
+/** Create first and second order model matrix for mixed-level orthogonal array
  *
  * \param array Input array
  * \param verbose Verbosity level

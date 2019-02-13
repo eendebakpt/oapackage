@@ -1155,7 +1155,7 @@ array_link array2xf (const array_link &al) {
 model_matrix_t _model2idx(const std::string mode) {
 	if (mode == "c" || mode == "constant")
 		return MODEL_CONSTANT;
-	else if (mode == "linear" || mode == "main" || mode =="m")
+	else if (mode == "linear" || mode == "main" || mode =="m" || mode=="main_effects")
 		return MODEL_MAIN;
 	else if (mode == "i" || mode == "interaction")
 		return MODEL_INTERACTION;

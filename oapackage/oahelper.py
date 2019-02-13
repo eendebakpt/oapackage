@@ -257,8 +257,9 @@ def enlargelims(factor=1.05):
 
 
 def helmert_contrasts(number_of_levels, verbose=0):
-    """ Calculate Helmert contrasts for a given number of levels for a number_of_levels
+    """ Calculate Helmert contrasts for a given number of levels 
 
+    The Helmert contrasts are orthogonal and normalize such that the square equals to number of levels.
     Args:
         number_of_levels: number of levels in the number_of_levels
     Returns:
@@ -1292,8 +1293,9 @@ def formatC(al, wrap=True):
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:
-        s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (
+        s = '\tarray_link array ( %d,%d, 0 );\n\tint array_data_tmp[] = {' % (
             al.n_rows, al.n_columns) + s + '};'
+        s += '\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n'
     return s
 
 
