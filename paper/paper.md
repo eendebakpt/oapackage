@@ -54,14 +54,13 @@ the package can calculate the generalized wordlength pattern and confounding fre
 on the J-characteristics [@Deng1999],
 and the number of degrees of freedom available for estimating selected factors' effects.
 The package can also calculate the $F_4$ vector of
-conference designs [@Schoen2018dsd] and the D-efficiency of optimal designs [@Goos2011]. 
+conference designs [@Schoen2019] and the D-efficiency of optimal designs [@Goos2011]. 
 
 The OApackage consists of a C++ library with a Python interface generated
 by SWIG. The source code is available at https://github.com/eendebakpt/oapackage. Examples for both 
 generation and analysis of designs are available in the OApackage documentation [@OAdocumentation].
 The Orthogonal Array package website [@EendebakOAwebsite] contains a large collection of orthogonal arrays, 
-optimal designs and conference designs. An alternative collection of orthogonal arrays is available from
-the website of Neil Sloane [@SloaneOAwebsite]. 
+optimal designs and conference designs generated with the package.
 
 # Acknowledgements
 
