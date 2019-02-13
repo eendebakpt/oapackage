@@ -83,11 +83,13 @@ documentation of :cpp:class:`array_link`, which shows the full set of methods av
 Model matrices
 --------------
 
-
 For orthogonal arrays and conference designs we can calculate model matrices
-(also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_). For 2-level orthogonal arrays the array is
-converted from a 0,1-valued array to a -1,+1-valued array array and then the model matrix is calculated by taking inner
-products between the factors of the array.
+(also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
+The model matrix consists of the intercept (a columns of ones), the main effects and optionally secondorder effects
+(the interaction effects and quadratic effects).
+For 2-level orthogonal arrays the array is first
+converted from a 0,1-valued array to a -1,+1-valued array. The the main effects are given by the matrix itself and the
+second order effects are calculated by taking products between pairs of factors of the array.
 For mixel-level orthogonal arrays Helmert contrasts are used.
 For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`
 and :ref:`Model matrices for mixed-level orthogonal arrays`.
