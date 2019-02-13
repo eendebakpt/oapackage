@@ -15,8 +15,6 @@
 #include "oaoptions.h"
 #include "tools.h"
 
-#define stringify(name) #name
-
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
 void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
 
@@ -25,14 +23,22 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix
  * The model is the intercept, main effects and interaction effects
  * The rank, D-efficiency, VIF-efficiency and E-efficiency are appended to the second argument
  *
- * The vector ret is filled with the rank, Defficiency, VIF efficiency and Eefficiency
+ * The return vector is filled with the rank, Defficiency, VIF efficiency and Eefficiency
  */
 int array2rank_Deff_Beff (const array_link &al, std::vector< double > *ret = 0, int verbose = 0);
 
 /// Calculate D-efficiency for a 2-level array using symmetric eigenvalue decomposition
-double Defficiency (const array_link &al, int verbose = 0);
+double Defficiency (const array_link &orthogonal_array, int verbose = 0);
 
-std::vector< double > Defficiencies (const array_link &al, const arraydata_t &arrayclass, int verbose = 0,
+/** Calculate efficiencies for an array
+ *
+ * \param array Array to use in calculation
+ * \param arrayclass Specification of the array class
+ * \param verbose Verbosity level
+ * \param addDs0 If True, then add the Ds0-efficiency to the output
+ * \returns Vector with the calculate D-efficiency, the main effect robustness (or Ds-optimality) and D1-efficiency for an orthogonal array
+ */
+std::vector< double > Defficiencies (const array_link &array, const arraydata_t &arrayclass, int verbose = 0,
                                      int addDs0 = 0);
 
 /// Calculate VIF-efficiency of matrix
@@ -49,24 +55,34 @@ std::vector< double > Aefficiencies (const array_link &orthogonal_array, int ver
 
 /** Calculate D-efficiencies for all projection designs
 *
-* \param al Design to calculate D-efficiencies for
+* \param array Design to calculate D-efficiencies for
 * \param number_of_factors Number of factors into which to project
 * \param verbose Verbosity level
 * \returns Vector with calculated D-efficiencies
 */
-std::vector< double > projDeff (const array_link &al, int number_of_factors, int verbose = 0);
+std::vector< double > projDeff (const array_link &array, int number_of_factors, int verbose = 0);
 
 /** Calculate the projection estimation capacity sequence for a design
 *
-* The PEC of a design is the fraction of estimable second-order models in x factors.
-* See "Ranking Non-regular Designs", J.L. Loeppky
+* \param array Input array
+* \param verbose Verbosity level
+* \returns Vector with the caculated PEC sequence
+*
+* The PECk of a design is the fraction of estimable second-order models in k factors.
+* The vector (PEC1, PEC2, ..., ) is called the projection estimation capacity sequence.
+* See "Ranking Non-regular Designs", J.L. Loeppky, 2004.
 *
 */
 std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 
 /**Calculate the projection information capacity sequence for a design.
 *
-* The PIC of a design is the average D-efficiency of estimable second-order models in x factors.
+* \param array Input array
+* \param verbose Verbosity level
+* \returns Vector with the caculated PIC sequence
+* 
+* The PICk of a design is the average D-efficiency of estimable second-order models in k factors. The vector
+* (PIC1, PIC2, ..., ) is called the PIC sequence.
 *
 */
 std::vector< double > PICsequence(const array_link &array, int verbose = 0);
@@ -91,14 +107,15 @@ std::vector< int > Jcharacteristics (const array_link &array, int number_of_colu
 /** @brief Calculate GWLP (generalized wordlength pattern)
  *
  * The method used for calculation is from Xu and Wu (2001), "Generalized minimum aberration for asymmetrical
- * fractional factorial desings"
- * For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
+ * fractional factorial desings". For non-symmetric arrays see "Algorithmic Construction of Efficient Fractional Factorial Designs With Large Run
  * Sizes", Xu, Technometrics, 2009.
  *
  * \param array Array to calculate the GWLP value for
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  * \returns Vector with calculated generalized wordlength pattern
+ * 
+ * A more detailed description of the generalized wordlength pattern can also be found in the documentation at https://oapackage.readthedocs.io/.
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
 
@@ -118,22 +135,22 @@ std::vector< double > GWLPmixed (const array_link &array, int verbose = 0, int t
 // SWIG has some issues with typedefs, so we use a define
 #define GWLPvalue mvalue_t< double >
 
+/// delete-one-factor projection value
 typedef mvalue_t< double > DOFvalue;
 
 /// calculate delete-one-factor GWLP (generalized wordlength pattern) projections
 std::vector< GWLPvalue > projectionGWLPs (const array_link &al);
 
+/// sort a list of GWLP values and return the sorted list
 std::vector< GWLPvalue > sortGWLP (std::vector< GWLPvalue >);
 
-/// calculate delete-one-factor GWLP (generalized wordlength pattern) projection values
-std::vector< double > projectionGWLPdoublevalues (const array_link &al);
 
-/** calculate centered L2-discrepancy of a design
+/** Calculate centered L2-discrepancy of a design
  *
  * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials",
  * Fang and Mukerjee, 2000
  */
-double CL2discrepancy (const array_link &al);
+double CL2discrepancy (const array_link &array);
 
 /** Calculate second order interaction model for 2-level array
 *
@@ -149,6 +166,19 @@ array_link array2secondorder (const array_link &array);
  */
 array_link array2xf (const array_link &array);
 
+enum model_matrix_t {
+	/// only the intercept
+	MODEL_CONSTANT,
+	/// intercept and main effects
+	MODEL_MAIN,
+	/// intercept, main effects and second order interactions
+	MODEL_INTERACTION,
+	/// intercept, main effects and second order effects(interactions and quadratic effects)
+	MODEL_SECONDORDER,
+	/// invalid model
+	MODEL_INVALID
+};
+
 /** Calculate model matrix for a conference design
  *
  * \param conference_design Conference design
@@ -160,13 +190,17 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
 
 /** Convert orthogonal array or conference design to model matrix
  *
- * Intercept, main effects, interaction effects, quadratics
- * The order in the interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1
+ * The model matrix consists of the intercept, main effects and (optionally) the interaction effects and quadratic effects.
+ * The order in the interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1 for columns c1, c2.
+ * The size of the model matrix calculated by this function is given by @ref array2modelmatrix_sizes.
  *
  * \param array Orthogonal array or conference design
- * \param mode Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
+ * \param mode Type of model matrix to calculate. Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
  * \returns Calculated model matrix
+ * 
+ * For conference designs the method @ref conference_design2modelmatrix is used. For orthogonal array the calculated is performed with @ref array2eigenModelMatrixMixed.
+ * 
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 

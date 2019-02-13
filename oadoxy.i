@@ -203,70 +203,50 @@ A class representing an integer valued array
 
 %feature("docstring") array_link::array_link "
 
-Specifies a class of orthogonal arrays  
+A class representing an integer valued array  
 
-The specification includes the number of rows, number of columns, factor levels
-and strength.  
-
-An orthogonal array of strength t, N runs, k factors (columns) and factor levels
-s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i such that
-for every t columns every t-tuple of elements occurs equally often.  
-
-       The arary is iitialized with zeros.  
+       The array is intialized with zeros.  
 ";
 
 %feature("docstring") array_link::array_link "
 
-Specifies a class of orthogonal arrays  
-
-The specification includes the number of rows, number of columns, factor levels
-and strength.  
-
-An orthogonal array of strength t, N runs, k factors (columns) and factor levels
-s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i such that
-for every t columns every t-tuple of elements occurs equally often.  
+A class representing an integer valued array  
 
 Initialize with data from a pointer.  
 ";
 
 %feature("docstring") array_link::array_link "
 
-Specifies a class of orthogonal arrays  
-
-The specification includes the number of rows, number of columns, factor levels
-and strength.  
-
-An orthogonal array of strength t, N runs, k factors (columns) and factor levels
-s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i such that
-for every t columns every t-tuple of elements occurs equally often.  
+A class representing an integer valued array  
 
 Initialize with data from another array_link object.  
 ";
 
 %feature("docstring") array_link::array_link "
 
-Specifies a class of orthogonal arrays  
-
-The specification includes the number of rows, number of columns, factor levels
-and strength.  
-
-An orthogonal array of strength t, N runs, k factors (columns) and factor levels
-s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i such that
-for every t columns every t-tuple of elements occurs equally often.  
+A class representing an integer valued array  
 
 Initialize with data from anEigen matrix.  
 ";
 
 %feature("docstring") array_link::array_link "
+
+A class representing an integer valued array  
 ";
 
 %feature("docstring") array_link::array_link "
+
+A class representing an integer valued array  
 ";
 
 %feature("docstring") array_link::array_link "
+
+A class representing an integer valued array  
 ";
 
 %feature("docstring") array_link::array_link "
+
+A class representing an integer valued array  
 ";
 
 %feature("docstring") array_link::~array_link "
@@ -414,12 +394,18 @@ This assumes the strength is at least 3. Otherwise use the jstruct_t object
 
 %feature("docstring") array_link::FvaluesConference "
 
-Calculate F-values of a conference design.  
+Calculate F-values of a conference design  
+
+       \\param number_of_columns Number of columns to use
+       \\returns The Fk vector with k the number of columns specified  
 ";
 
 %feature("docstring") array_link::Jcharacteristics "
 
-Calculate J-characteristics of matrix (the values are signed)  
+Calculate the Jk-characteristics of the matrix (the values are signed)  
+
+       \\param jj Number of columns to use
+       \\returns Vector with calculated Jk values  
 ";
 
 %feature("docstring") array_link::PECsequence "
@@ -439,7 +425,7 @@ calculate rank of array
 
 %feature("docstring") array_link::GWLP "
 
-calculate generalized wordlength pattern  
+Calculate generalized wordlength pattern  
 
        @see ::GWLP  
 ";
@@ -462,7 +448,7 @@ return true if the array is a foldover array
 
 %feature("docstring") array_link::CL2discrepancy "
 
-calculate centered L2 discrepancy  
+Calculate centered L2 discrepancy  
 
 The method is from \"A connection between uniformity and aberration in regular
 fractions of two-level
@@ -1034,17 +1020,29 @@ C++ includes: arraytools.h
 
 %feature("docstring") arrayfile::arrayfile_t::arrayfile_t "
 
-default constructor  
+Structure for reading or writing a file with arrays  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::arrayfile_t "
 
-open existing array file  
+Structure for reading or writing a file with arrays  
+
+       \\param filename File to open for reading
+       \\param verbose Verbosity level  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::arrayfile_t "
 
-open new array file for writing  
+Structure for reading or writing a file with arrays  
+
+Open new array file for writing  
+
+Parameters
+----------
+* `filename` :  
+    File to open  
+* `m` :  
+    File mode  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::~arrayfile_t "
@@ -1054,7 +1052,7 @@ destructor function, closes all filehandles
 
 %feature("docstring") arrayfile::arrayfile_t::createfile "
 
-close current file and open a new file for writing  
+Close current file and open a new file for writing.  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::closefile "
@@ -1351,10 +1349,21 @@ C++ includes: conference.h
 
 %feature("docstring") conference_t::conference_t "
 
-create new conference_t object  
+Structure representing the type of conference designs  
 ";
 
 %feature("docstring") conference_t::conference_t "
+
+Structure representing the type of conference designs  
+
+Parameters
+----------
+* `N` :  
+    Number of rows  
+* `k` :  
+    Number of columns  
+* `j1zero` :  
+    If True then require the J1-characteristics to be zero  
 ";
 
 %feature("docstring") conference_t::conference_t "
@@ -1365,22 +1374,22 @@ create new conference_t object
 
 %feature("docstring") conference_t::create_root "
 
-create the unique representative of the 2 column conference design  
+create the unique representative of the 2 column conference design in LMC0 form  
 ";
 
-%feature("docstring") conference_t::create_root_three "
+%feature("docstring") conference_t::create_root_three_columns "
 
-create the unique representative of the 3 column conference design  
+create the unique representative of the 3 column conference design in LMC0 form  
 ";
 
-%feature("docstring") conference_t::createDconferenceRootArrays "
+%feature("docstring") conference_t::createDoubleConferenceRootArrays "
 
 create the root arrays with 1 column for the double conference matrices  
 ";
 
-%feature("docstring") conference_t::addRootArrays "
+%feature("docstring") conference_t::createRootArrays "
 
-add the root arrays to a list  
+return the list of root arrays for the class of conference designs  
 ";
 
 %feature("docstring") conference_t::__repr__ "
@@ -2182,7 +2191,10 @@ calculate histogram of J values for a 2-level array
 
 %feature("docstring") jstruct_t::calculateAberration "
 
-calculate aberration value  
+Calculate aberration value  
+
+       This is equal to the sum of the squares of all Jk values, divided by the
+number of rows squared.  
 ";
 
 %feature("docstring") jstruct_t::show "
@@ -2223,10 +2235,16 @@ calculate possible values in F vector
 
 %feature("docstring") jstructbase_t::calculateF "
 
-calculate histogram of J values  
+Calculate histogram of J values  
+
+       The histogram bins are given by the values of @ref Jvalues
+
+       \\returns Histogram of J values  
 ";
 
 %feature("docstring") jstructbase_t::calc "
+
+Calculate the J-values for a given array.  
 ";
 
 %feature("docstring") jstructbase_t::show "
@@ -2256,9 +2274,27 @@ C++ includes: arraytools.h
 ";
 
 %feature("docstring") jstructconference_t::jstructconference_t "
+
+Create structure to calculate J-characteristics of conference designs  
+
+Parameters
+----------
+* `N` :  
+    Number of rows  
+* `jj` :  
+    Number of columns to use for the Jk-characteristics  
 ";
 
 %feature("docstring") jstructconference_t::jstructconference_t "
+
+Calculate J-characteristics of a conference design  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate the J-characteristics for  
+* `jj` :  
+    Number of columns to use for the Jk-characteristics  
 ";
 
 // File: classlarray.xml
@@ -3060,7 +3096,22 @@ asymmetrical fractional factorial designs\", Wu and Xu, 2001
 
 %feature("docstring") Jcharacteristics "
 
-Calculate J-characteristics of matrix (the values are signed)  
+Calculate Jk-characteristics of a matrix  
+
+The calcualted Jk-values are signed.  
+
+Parameters
+----------
+* `array` :  
+    Array to calculate Jk-characteristics for  
+* `number_of_columns` :  
+    Number of columns  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Vector with calculated Jk-characteristics  
 ";
 
 %feature("docstring") GWLP "
@@ -3071,7 +3122,7 @@ The method used for calculation is from Xu and Wu (2001), \"Generalized minimum
 aberration for asymmetrical
 fractional factorial desings\" For non-symmetric arrays see \"Algorithmic
 Construction of Efficient Fractional Factorial Designs With Large Run
-Sizes\", Xu  
+Sizes\", Xu, Technometrics, 2009.  
 
 Parameters
 ----------
@@ -3081,26 +3132,32 @@ Parameters
     Verbosity level  
 * `truncate` :  
     If True then round values near zero to solve double precision errors  
+
+Returns
+-------
+Vector with calculated generalized wordlength pattern  
 ";
 
 %feature("docstring") GWLPmixed "
 
 Calculate GWLP (generalized wordlength pattern) for mixed-level arrays.  
 
-The method used for calculation is from Xu and Wu (2001), \"Generalized minimum
-aberration for asymmetrical
-fractional factorial desings\" The non-symmetric arrays see \"Algorithmic
-Construction of Efficient Fractional Factorial Designs With Large Run
-Sizes\", Xu  
+The method used for calculation is from \"Algorithmic Construction of Efficient
+Fractional Factorial Designs With Large Run
+Sizes\", Xu, Technometrics, 2009.  
 
 Parameters
 ----------
-* `al` :  
+* `array` :  
     Array to calculate the GWLP value for  
 * `verbose` :  
     Verbosity level  
 * `truncate` :  
     If True then round values near zero to solve double precision errors  
+
+Returns
+-------
+Vector with calculated generalized wordlength pattern  
 ";
 
 %feature("docstring") projectionGWLPs "
@@ -3155,6 +3212,8 @@ Array with intercept, main effects and interaction effects
 
 %feature("docstring") conference_design2modelmatrix "
 
+Calculate model matrix for a conference design  
+
 Parameters
 ----------
 * `conference_design` :  
@@ -3164,6 +3223,10 @@ Parameters
     quadratic effects  
 * `verbose` :  
     Verbosity level  
+
+Returns
+-------
+Calculated model matrix  
 ";
 
 %feature("docstring") array2modelmatrix "
@@ -3182,9 +3245,25 @@ Parameters
     quadratic effects  
 * `verbose` :  
     Verbosity level  
+
+Returns
+-------
+Calculated model matrix  
 ";
 
 %feature("docstring") array2modelmatrix_sizes "
+
+Return the sizes of the model matrices calculated  
+
+Parameters
+----------
+* `array` :  
+    Orthogonal array or conference designs  
+
+Returns
+-------
+List with the sizes of the model matrix for: only intercept; intercept, main;
+intercept, main, and iteraction terms, intercept, main and full second order  
 ";
 
 %feature("docstring") array2xfeigen "
@@ -3279,9 +3358,9 @@ calculate F4 value for 2-level array
 
 %feature("docstring") calculateArrayParetoRankFA "
 
-Add array to list of Pareto optimal arrays  
+Calculate properties of an array and create a Pareto element  
 
-The values to be optimized are:  
+The values calculated are:  
 
 1) Rank (higher is better) 2) A3, A4 (lower is better) 3) F4 (lower is better,
 sum of elements is constant)  
@@ -3295,6 +3374,8 @@ add Jmax criterium to Pareto set
 ";
 
 %feature("docstring") calculateArrayParetoJ5 "
+
+Calculate Pareto element with J5 criterium.  
 ";
 
 %feature("docstring") parseArrayPareto "
@@ -3428,17 +3509,6 @@ Create an array from an arraydata_t structure.
 Clone an array.  
 ";
 
-%feature("docstring") arrayfile::createJ2tableConference "
-
-create J2 table as intermediate result for J-characteristic calculations for
-conference matrices  
-";
-
-%feature("docstring") arrayfile::createJdtable "
-
-create J2 table as intermediate result for J-characteristic calculations  
-";
-
 %feature("docstring") arrayfile::exampleArray "
 
 Return example array  
@@ -3453,7 +3523,20 @@ Parameters
 
 %feature("docstring") arrayfile::Jcharacteristics_conference "
 
-calculate J-characteristics for a conference design  
+Calculate Jk-characteristics for a conference design  
+
+Parameters
+----------
+* `array` :  
+    Conference design  
+* `number_of_columns` :  
+    Specifies the number of columns to use  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+A vector of calculated inner products between all combinations of k columns.  
 ";
 
 %feature("docstring") arrayfile::hstack "
@@ -3541,7 +3624,9 @@ Calculate J-value for a 2-level array
 
 %feature("docstring") arrayfile::jvaluefast "
 
-calculate J-value for a 2-level array  
+Calculate J-value for a column combination of a 2-level array  
+
+We assume the array has values 0 and 1. No boundary checks are performed.  
 ";
 
 %feature("docstring") arrayfile::analyseArrays "
@@ -3599,7 +3684,7 @@ Read all arrays in a file and append then to an array list
 
 Parameters
 ----------
-* `fname` :  
+* `filename` :  
     Filename to read from  
 * `arraylist` :  
     Pointer to list of arrays  
@@ -3618,22 +3703,34 @@ Returns
 
 %feature("docstring") arrayfile::writearrayfile "
 
-write a list of arrays to file on disk  
+Write a list of arrays to file on disk  
+
+Parameters
+----------
+* `filename` :  
+    Filename to use  
+* `arraylist` :  
+    List of arrays to write  
+* `mode` :  
+    Mode for the file with designs  
+* `nrows` :  
+    If the list of arrays is empty, use this number of rows for the design file  
+* `ncols` :  
+    If the list of arrays is empty, use this number of rows for the design file  
+
+Returns
+-------
+Value zero if succesfull  
 ";
 
 %feature("docstring") arrayfile::writearrayfile "
 
-write a list of arrays to file on disk  
-";
-
-%feature("docstring") arrayfile::writearrayfile "
-
-write a single array to file  
+Write a single array to file.  
 ";
 
 %feature("docstring") arrayfile::append_arrayfile "
 
-append a single array to an array file. creates a new file if no file exists  
+Append a single array to an array file. creates a new file if no file exists.  
 ";
 
 %feature("docstring") arrayfile::selectArrays "
@@ -3664,11 +3761,6 @@ Make a selection of arrays, append to list.
 %feature("docstring") arrayfile::selectArrays "
 
 Make a selection of arrays, append to list.  
-";
-
-%feature("docstring") arrayfile::create_arrayfile "
-
-Create file containing arrays  
 ";
 
 %feature("docstring") arrayfile::keepElements "
@@ -3703,7 +3795,7 @@ Write a formatted array
 
 %feature("docstring") arrayfile::write_array_format "
 
-Write a formatted array.  
+Write an array to a file pointer.  
 ";
 
 %feature("docstring") arrayfile::write_array_latex "
@@ -3773,7 +3865,8 @@ The second order interaction model
 
 %feature("docstring") arrayfile::array2eigenModelMatrix "
 
-Convert 2-level array to second order model matrix (intercept, X1, X2)  
+Convert 2-level array to second order interaction model matrix (intercept, X1,
+X2)  
 
 Parameters
 ----------
@@ -3810,7 +3903,7 @@ Pair with main effects and two-factor interaction model
 
 %feature("docstring") arrayfile::numberModelParams "
 
-calculate number of parameters in the model matrix  
+Calculate number of parameters in the model matrix  
 
 A list of integers is returned, with the number of columns in:  
 
@@ -3818,6 +3911,17 @@ A list of integers is returned, with the number of columns in:
 *   The main effects  
 *   The interaction effects (second order interaction terms without quadratics)  
 *   The quadratic effects  
+
+Parameters
+----------
+* `array` :  
+    Orthogonal array or conference design  
+* `order` :  
+    Not used any more  
+
+Returns
+-------
+List of sizes  
 ";
 
 %feature("docstring") arrayfile::arrayInFile "
@@ -3918,6 +4022,25 @@ A transformation that converts the input design to normal form
 %feature("docstring") extend_conference "
 
 Extend a list of conference designs with a single column.  
+
+The list of conference designs is extended by adding each design with the
+candidate extentions generated by CandidateGenerator.  
+
+Parameters
+----------
+* `lst` :  
+    List of conference designs  
+* `conference_type` :  
+    Type specification for the conference designs  
+* `verbose` :  
+    Verbosity level  
+* `select_isomorphism_classes` :  
+    If True then select only a single design for each isomorphism class
+    specified by the conference type.  
+
+Returns
+-------
+List of generated conference designs  
 ";
 
 %feature("docstring") extend_conference_plain "
@@ -3932,6 +4055,24 @@ Extend a list of conference designs with a single column
 ";
 
 %feature("docstring") extend_double_conference "
+
+Extend a list of double conference matrices with an additional column  
+
+The list of designs is extended by adding each design with the candidate
+extentions generated by CandidateGeneratorDouble.  
+
+Parameters
+----------
+* `lst` :  
+    List of double conference designs  
+* `conference_type` :  
+    Type specification for the double conference designs  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+List of generated double conference designs  
 ";
 
 %feature("docstring") selectConferenceIsomorpismClasses "
@@ -4210,11 +4351,6 @@ calculate J-value statistics
 
 %feature("docstring") extend_arraylist "
 
-Extend a list of orthogonal arrays.  
-";
-
-%feature("docstring") extend_arraylist "
-
 Extend a list of orthogonal arrays  
 
 Parameters
@@ -4236,6 +4372,26 @@ See also: extend_array(const array_link &, arraydata_t &, OAextend const &)
 %feature("docstring") extend_arraylist "
 
 Extend a list of arrays with default options  
+
+See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
+";
+
+%feature("docstring") extend_arraylist "
+
+Extend a list of orthogonal arrays  
+
+Parameters
+----------
+* `array_list` :  
+    The list of arrays to be extended  
+* `array_class` :  
+    Class of arrays to generate  
+* `oaextend_options` :  
+    Parameters for the extension algorithm  
+
+Returns
+-------
+List of all generated arrays  
 
 See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
 ";
@@ -4429,7 +4585,42 @@ reduce arrays to canonical form using delete-1-factor ordering
 
 %feature("docstring") reductionDOP "
 
-Caculate the transformation to delete-on-factor normal for from an array.  
+Caculate the transformation reducing an array to delete-on-factor normal  
+
+The normal form is described in \"A canonical form for non-regular arrays based
+on generalized wordlength pattern values of delete-one-factor projections\",
+Eendebak, 2014  
+
+Parameters
+----------
+* `array` :  
+    Orthogonal array  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+The transformation that reduces the array to normal form  
+";
+
+%feature("docstring") reduceDOPform "
+
+Reduce an array to canonical form using delete-1-factor ordering  
+
+The normal form is described in \"A canonical form for non-regular arrays based
+on generalized wordlength pattern values of delete-one-factor projections\",
+Eendebak, 2014  
+
+Parameters
+----------
+* `array` :  
+    Orthogonal array  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+The array transformed to normal form  
 ";
 
 %feature("docstring") selectUniqueArrays "
@@ -4446,11 +4637,6 @@ Calculate projection values for delete-of-factor algorithm
 %feature("docstring") reduceLMCform "
 
 reduce an array to canonical form using LMC ordering  
-";
-
-%feature("docstring") reduceDOPform "
-
-reduce an array to canonical form using delete-1-factor ordering  
 ";
 
 %feature("docstring") LMCcheckLex "
@@ -5193,7 +5379,7 @@ return current level of logging
 
 %feature("docstring") setloglevel "
 
-rset the level of logging  
+reset the level of logging  
 ";
 
 %feature("docstring") checkloglevel "
@@ -5341,7 +5527,9 @@ Allocate a 2-dimensional array of specified size.
 Parameters
 ----------
 * `nrows` :  
+    Number of rows  
 * `rowsize` :  
+    Size of each row  
 
 Returns
 -------  

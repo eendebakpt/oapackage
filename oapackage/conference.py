@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Module to generate D-optimal designs
-
-For more information see: https://doi.org/10.1080/00401706.2016.1142903
-
-Pieter Eendebak <pieter.eendebak@gmail.com>
+""" Module with functions to work with conference designs
 
 """
 

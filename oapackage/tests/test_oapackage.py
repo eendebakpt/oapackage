@@ -37,6 +37,7 @@ def only_python3(function):
             return None
     return only_python3_function
 
+
 def autodoctest():
     """ Test the module using autodoc
     Example:
@@ -212,7 +213,7 @@ class TestOAfiles(unittest.TestCase):
     def test_selectArrays(self):
         array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
         array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 1)])
+        oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
         oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
         oapackage.oahelper.selectArrays(array_filename, array_filename_out,
@@ -265,6 +266,23 @@ class TestOAhelper(unittest.TestCase):
     def setUp(self):
         self.test_array = oapackage.exampleArray(1, 0)
 
+    def test_helmert_contrasts(self):
+        hc = oapackage.oahelper.helmert_contrasts(2, verbose=0)
+        np.testing.assert_array_almost_equal(hc, np.array([[-1.], [1.]]))
+
+        hc = oapackage.oahelper.helmert_contrasts(3, verbose=0)
+        np.testing.assert_array_almost_equal(hc, np.array([[-1.22474487, -0.70710678],
+                                                           [1.22474487, -0.70710678],
+                                                           [0.,  1.41421356]]))
+
+        hc = oapackage.oahelper.helmert_contrasts(10, verbose=0)
+        np.testing.assert_array_almost_equal(hc[0], np.array([-2.23606798, -1.29099445, -0.91287093, -0.70710678, -0.57735027,
+                                                              -0.48795004, -0.42257713, -0.372678, -0.33333333]))
+
+        for num_levels in [4, 10, 12]:
+            hc = oapackage.oahelper.helmert_contrasts(num_levels, verbose=0)
+            np.testing.assert_array_almost_equal(hc.T.dot(hc), num_levels * np.eye(num_levels - 1))
+
     def test_array2latex(self):
 
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array))
@@ -313,7 +331,7 @@ class TestOAhelper(unittest.TestCase):
     def test_formatC(self):
         c_code = oapackage.oahelper.formatC(self.test_array)
         self.assertEqual(
-            c_code, '\tarray_link al ( 16,5, 0 );\n\tint tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};')
+            c_code, '\tarray_link array ( 16,5, 0 );\n\tint array_data_tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n')
 
     def test_runExtend(self):
         N = 24
@@ -422,98 +440,7 @@ class TestOAhelper(unittest.TestCase):
         self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
 
 
-class TestDoptimize(unittest.TestCase):
-
-    def setUp(self):
-
-        self.arrayclass = oapackage.arraydata_t(2, 16, 0, 6)
-        self.dds = np.random.rand(20, 3)
-        self.dds2 = np.array([[1, 1, 1], [1, 2, 1], [1, 2, 3], [2, 0, 1]])
-
-        self.guitest = True
-        try:
-            import matplotlib.pyplot
-        except:
-            self.guitest = False
-
-    def test_custom_optim(self):
-        def optimfunc(x): return x[0] + x[1] + x[2]
-        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=optimfunc, verbose=1,
-                                                          maxtime=18, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
-        self.assertEqual(len(scores), n)
-        self.assertEqual(len(dds), n)
-        self.assertEqual(len(sols), n)
-        scores, dds, sols, n = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=2, optimfunc=None, verbose=1,
-                                                          maxtime=6, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=30, nabort=0, dverbose=0)
-
-    @only_python3
-    def test_Doptimize_nonzero_strength(self):
-        arrayclass = oapackage.arraydata_t(2, 16, 2, 6)
-        with self.assertWarns(UserWarning):
-            scores, dds, sols, _ = oapackage.Doptim.Doptimize(arrayclass, nrestarts=1, verbose=0, maxtime=9, selectpareto=False, nout=None, niter=1000, dverbose=0)
-        
-    def test_Doptimize_selectDn(self):
-        scores, dds, sols, _ = oapackage.Doptim.Doptimize(self.arrayclass, nrestarts=10, optimfunc=[
-                                                          1, 0, 0], verbose=1, maxtime=9, selectpareto=False, nout=None, method=oalib.DOPTIM_UPDATE, niter=1000, nabort=0, dverbose=0)
-
-        result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
-        self.assertTrue(len(result[2])==1)
-
-    def test_optimDeffPython(self):
-        al = oapackage.exampleArray(2, 0)
-        _, al = oapackage.Doptim.optimDeffPython(
-            al, arrayclass=None, niter=1000, nabort=1500, verbose=1, alpha=[1, 0, 0], method=0)
-
-        for method in [oapackage.oalib.DOPTIM_SWAP, oapackage.oalib.DOPTIM_FLIP, oapackage.oalib.DOPTIM_UPDATE]:
-            r, al = oapackage.Doptim.optimDeffPython(
-                al, arrayclass=None, niter=100, nabort=200, verbose=0, alpha=[1, 0, 0], method=method)
-
-    def test_generateDscatter(self):
-        if self.guitest:
-            fig = 100
-            r = oapackage.Doptim.generateDscatter(self.dds, second_index=0, first_index=1, lbls=None, verbose=1,
-                                              ndata=3, nofig=True, fig=fig, scatterarea=80)
-        else:
-            pass
-
-    def test_generateDpage(self):
-        outputdir = tempfile.mkdtemp()
-        allarrays = [oapackage.exampleArray(2, 0), oapackage.exampleArray(2, 0)]
-        dds = np.array([A.Defficiencies() for A in allarrays])
-        arrayclass = oapackage.arraylink2arraydata(allarrays[0])
-        page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
-                                              fig=None, optimfunc=[1, 0, 0], nofig=True)
-        if self.guitest:
-            print('test_generateDpage: run gui test')
-            # page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
-            #                                  fig=100, optimfunc=[1, 0, 0], nofig=True)
-            try:
-                import matplotlib
-                matplotlib.pyplot.close(100)
-            except:
-                pass
-
-    def test_runcommand(self):
-        oapackage.oahelper.runcommand('dir', dryrun=1, verbose=1)
-
-    def test_filterPareto(self):
-        dds = self.dds2
-        scores = np.arange(dds.shape[0])
-        sols = [None] * scores.size
-        s, _, _ = oapackage.Doptim.filterPareto(scores, dds, sols, verbose=0)
-        self.assertEqual(list(s), [2, 3])
-
-    def test_calcScore(self):
-        dds = np.random.rand(10, 3)
-        scores = oapackage.Doptim.calcScore(dds, optimfunc=[1, 2, 3])
-        assert(scores.shape == (dds.shape[0], ))
-
-    def test_array2Dtable(self):
-        sols = [oapackage.exampleArray(9, 0)]
-        _ = oapackage.Doptim.array2Dtable(sols, verbose=1, titlestr=None)
-
 
 if __name__ == '__main__':
     """ Test code """
     unittest.main()
-    # t=TestDoptimize()

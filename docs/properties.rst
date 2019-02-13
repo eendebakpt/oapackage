@@ -80,6 +80,47 @@ the methods :cpp:func:`array_link::rank` and :cpp:func:`array_link::foldover`:
 Other structural properties such as whether an array involves two levels or is symetric can be found in the
 documentation of :cpp:class:`array_link`, which shows the full set of methods available.
 
+Model matrices
+--------------
+
+For orthogonal arrays and conference designs we can calculate model matrices
+(also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
+The model matrix consists of the intercept (a columns of ones), the main effects and optionally secondorder effects
+(the interaction effects and quadratic effects).
+For 2-level orthogonal arrays the array is first
+converted from a 0,1-valued array to a -1,+1-valued array. The the main effects are given by the matrix itself and the
+second order effects are calculated by taking products between pairs of factors of the array.
+For mixel-level orthogonal arrays Helmert contrasts are used.
+For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`
+and :ref:`Model matrices for mixed-level orthogonal arrays`.
+
+.. admonition:: Calculate interaction effects model matrix 
+
+  .. doctest:: 
+
+    >>> array=oapackage.exampleArray(0,1)
+    exampleArray 0: array in OA(8,2, 2^2)
+    >>> array.showarray()
+    array:
+      0   0
+      0   0
+      0   1
+      0   1
+      1   0
+      1   0
+      1   1
+      1   1
+    >>> M=oapackage.array2modelmatrix(array, 'i')
+    >>> print(M)
+    [[ 1. -1. -1.  1.]
+     [ 1. -1. -1.  1.]
+     [ 1. -1.  1. -1.]
+     [ 1. -1.  1. -1.]
+     [ 1.  1. -1. -1.]
+     [ 1.  1. -1. -1.]
+     [ 1.  1.  1.  1.]
+     [ 1.  1.  1.  1.]]    
+
 
 Statistical properties of orthogonal arrays
 -------------------------------------------
@@ -165,7 +206,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
      >>> print('D-efficiency: %.4f' % al.Defficiency())
      D-efficiency: 0.8879
      >>> print('Ds-efficiency (Eendebak and Schoen, 2017): %.4f' % al.DsEfficiency()) 
-     Ds-efficiency (Eendebak and Schoen, 2017): 0.8227
+     Ds-efficiency (Eendebak and Schoen, 2017): 0.8059
      >>> print('A-efficiency for the interaction model: %.4f' % al.Aefficiency())
      A-efficiency for the interaction model: 0.7906
      >>> print('E-efficiency for the interaction model: %.4f' % al.Eefficiency())  
@@ -174,7 +215,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
 .. topic:: Calculation of :math:`D`-, :math:`A`- and :math:`E`-efficiency
   :name: DAE
 
-   Let :math:`{X}` be again the :math:`{N}\times {p}` interaction model matrix consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. The :math:`D`-, :math:`A`- and :math:`E`-efficiency are calculated using the eigenvalues of the singular-value decomposition (SVD) of :math:`{X}`. To calculate the rank of a matrix, the lower-upper (LU) decomposition, as implemented in the Eigen package :cite:`eigenweb`, is used.
+   Let :math:`{X}` be again the :math:`{N}\times {p}` interaction model matrix (see section `Model matrices`_) consisting of a column of ones and the contrast vectors associated to the main and two-factor interactions of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`. The :math:`D`-, :math:`A`- and :math:`E`-efficiency are calculated using the eigenvalues of the singular-value decomposition (SVD) of :math:`{X}`. To calculate the rank of a matrix, the lower-upper (LU) decomposition, as implemented in the Eigen package :cite:`eigenweb`, is used.
 
    Let :math:`\lambda_1, \ldots, \lambda_p` be the eigenvalues of the SVD of :math:`{X}`. The OApackage calculates the :math:`D`-, :math:`A`- and :math:`E`-efficiency of a design :math:`D` as follows:
 
@@ -184,18 +225,28 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
        {A_{\text{eff}}(D)} = N (\sum_j \lambda_j^{-1})/m \label{formula:VIF}, \\ 
        {E_{\text{eff}}(D)} = \min_j \lambda_j. \label{formula:E-efficiency}
 
-.. topic:: :math:`D_s`-efficiency
+.. topic:: :math:`D_s`-efficiency and :math:`D_1`-efficiency
   :name: DS
    
-   In :cite:`EendebakSO`, the :math:`D_s`-efficiency is used to assess the joint precision of the main effects in the interaction model. Let the interaction model matrix :math:`{X}` be split into :math:`{X_{1}}`, containing the contrast vectors associated with the main effects only, and :math:`{X_{02}}`, containing the intercept column and the contrast vectors associated to the two-factor interactions. The :math:`D_{s}`-criterion of a design :math:`D` is defined as 
+   In :cite:`EendebakSO`, the :math:`D_s`-efficiency is used to assess the joint precision of the main effects in the
+   interaction model. Let the interaction model matrix :math:`{X}` be split into :math:`{X_{1}}`, containing the contrast
+   vectors associated with the main effects only, and :math:`{X_{02}}`, containing the intercept column and the contrast
+   vectors associated to the two-factor interactions. The :math:`D_{s}`-criterion of a design :math:`D` is defined as 
 
    .. math::
     
-       {D_{s}(D)} = \operatorname{det}(X^{T}X) / \operatorname{det}(X_{02}^{T} X_{02}^{\phantom{T}}), \label{formula:Dsefficiency}
+       {D_{s,\text{crit}}(D)} = \operatorname{det}(X^{T}X) / \operatorname{det}(X_{02}^{T} X_{02}^{\phantom{T}}), \label{formula:Dsefficiency}
 
-   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the OApackage calculates the :math:`D_{s}`-criterion using the eigen values of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`. Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,eff}(A) = D_{s}(A)^{1/m}`, where :math:`m` is the number of factors. 
+   where :math:`{X_{02}}` is necessarily of full rank. Similar to the calculations of the :math:`D`-efficiency, the
+   OApackage calculates the :math:`D_{s}`-criterion using the eigenvalues of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`.
+   Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,\text{eff}}(A) = D_{s,\text{crit}}(A)^{1/m}`, where :math:`m` is the number of factors. 
    
+   In a similar way the :math:`D_{1}`-efficiency of a design :math:`{A}` with :math:`n` factors and model matrix of intercept and main effects :math:`{X01}`,  is defined as
 
+   .. math::
+    
+       D_{s,\text{eff}}(A) = ( \operatorname{det}((X_{01})^{T}(X_{01}) )^{1/(n+1)}  \label{formula:D1efficiency}
+   
 Projection Capacities
 ---------------------
 
@@ -246,7 +297,6 @@ classifying definitieve screening designs that are generated by folding over a c
     >>> definitive_screening_design = oapackage.conference2DSD(array)
 
 The individual :math:`J_k`-characteristics can be calculated with the method :cpp:func:`Jcharacteristics_conference`.
-
 For conference designs we can calculate the projection statistics using
 :meth:`~oalib.conferenceProjectionStatistics`.
 

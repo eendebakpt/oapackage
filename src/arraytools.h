@@ -1,15 +1,11 @@
 /** \file arraytools.h
 
- \brief Contains the array_link class and related classes.
+\brief Contains the array_link class and related classes.
 
- C++ Interface: arraytools
-
- This file contains definitions are functions to work with (orthogonal) arrays.
- The code is generic (with templates) and partly inlined for speed.
-
- Author: Pieter Eendebak <pieter.eendebak@gmail.com>
-
- Copyright: See LICENSE.txt file that comes with this distribution
+This file contains method and classes to work with (orthogonal) arrays.
+ 
+Author: Pieter Eendebak <pieter.eendebak@gmail.com>
+Copyright: See LICENSE.txt file that comes with this distribution
 */
 
 #pragma once
@@ -92,6 +88,10 @@ typedef double eigenFloat;
 */
 void eigenInfo (const MatrixFloat m, const char *str = "eigen", int verbose = 1);
 
+/** Print Eigen matrix to stdout */
+void print_eigen_matrix(const MatrixFloat matrix);
+
+  
 // helper function for Python interface
 void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
@@ -106,14 +106,6 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 #include "md5.h"
 #endif
 
-#ifdef SWIG
-// only export high level IO functions
-%ignore::array_diff;
-%ignore::write_array;
-%ignore::finish_arrayfile;
-%ignore arrayfile_t::arrayNbits;
-%ignore::writebinheader;
-#endif
 
 extern "C" {}
 
@@ -411,33 +403,46 @@ struct array_link {
 		*/
 		array_link ();
         /** @copydoc array_link::array_link()
-		 *
-		 * The array is intialized with zeros.
-		 */
+	 *
+	 * The array is intialized with zeros.
+	 * 
+	 * \param nrows Number of rows
+	 * \param ncols Number of columns
+	 * \param index Number to keep track of lists of designs
+	 */
         array_link (rowindex_t nrows, colindex_t ncols, int index);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from a pointer.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from a pointer.
+	*/
         array_link (rowindex_t nrows, colindex_t ncols, int index, carray_t *data);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from another array_link object.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from another array_link object.
+	*/
         array_link (const array_link &);
-		/** @copydoc array_link::array_link()
-		*
-		* Initialize with data from anEigen matrix.
-		*/
+	/** @copydoc array_link::array_link()
+	*
+	* Initialize with data from an Eigen matrix.
+	*/
         array_link (Eigen::MatrixXd &eigen_matrix);
-		/// @copydoc array_link::array_link()
-		array_link(const array_link &, const std::vector< int > &colperm);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
-		/// @copydoc array_link::array_link()
-		array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
-		/// @copydoc array_link::array_link()
-		array_link(const std::vector< int > &v, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by permuting the columns of another array
+	 * 
+	 * \param array Source to copy from
+	 * \param column_permutation The permuntation to apply
+	 */
+	array_link(const array_link &array, const std::vector< int > &column_permutation);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncols, int index = 0);
+	/// @copydoc array_link::array_link()
+	array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
+	/** @copydoc array_link::array_link()
+	 * 
+	 * The array is initialized by copying the values from a vector.
+	 */
+	array_link(const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index = 0);
 
         ~array_link ();
 
@@ -456,7 +461,7 @@ struct array_link {
         /// print array to string
 	std::string showarrayString () const;
 
-        /// print array to stdout
+        /// print array to stdout in compact format (no whitespace between elemenents)
         void showarraycompact () const;
 
         /// print array properties to stdout
@@ -550,25 +555,25 @@ struct array_link {
         std::vector< int > FvaluesConference (int number_of_columns) const;
 
         /** Calculate the Jk-characteristics of the matrix (the values are signed)
-		 * 
-		 * \param jj Number of columns to use
-		 * \returns Vector with calculated Jk values
-		 */
+	 * 
+	 * \param jj Number of columns to use
+	 * \returns Vector with calculated Jk values
+	 */
         std::vector< int > Jcharacteristics (int jj = 4) const;
 
         /// Calculate the projective estimation capacity sequence
         std::vector< double > PECsequence (int verbose = 0) const;
 
-		/// Calculate the projective information capacity sequence
-		std::vector< double > PICsequence(int verbose = 0) const;
+	/// Calculate the projective information capacity sequence
+	std::vector< double > PICsequence(int verbose = 0) const;
 
         /// calculate rank of array
         int rank () const;
 
         /** Calculate generalized wordlength pattern
-		 *
-		 * @see ::GWLP
-		 */
+	 *
+	 * @see ::GWLP
+	 */
         std::vector< double > GWLP (int truncate = 1, int verbose = 0) const;
 
         /// calculate strength of an array
@@ -584,8 +589,7 @@ struct array_link {
 
         /** Calculate centered L2 discrepancy
          *
-         * The method is from "A connection between uniformity and aberration in regular fractions of two-level
-         * factorials", Fang and Mukerjee, 2000
+         * The method is from "A connection between uniformity and aberration in regular fractions of two-level factorials", Fang and Mukerjee, 2000
          */
         double CL2discrepancy () const;
 
@@ -596,8 +600,14 @@ struct array_link {
         /// apply a random permutation of rows of an orthogonal array
         array_link randomrowperm () const;
 
-        /** This function calculates Helmert contrasts for the factors of an input design.
-         * Implementation from code written by Eric Schoen, Dept. of Applied Economics, University of Antwerp, Belgium
+        /** Caculate model matrix of an orthogonal array
+	 * 
+	 * \param order For 0 return only the intercept; for 1 return intercept and main effects; for 2 return intercept, main effects and interaction effects.
+	 * \param intercept If 1, then include the intercept in the output.
+	 * \param verbose Verbosity level
+	 * \return Calculated model matrix
+	 * 
+	 * This function uses @ref array2eigenModelMatrixMixed for the calculation.
          */
         MatrixFloat getModelMatrix (int order, int intercept = 1, int verbose = 0) const;
 
@@ -947,19 +957,20 @@ class jstruct_t {
         /// calculate histogram of J values for a 2-level array
         std::vector< int > calculateF (int strength = 3) const;
 
-        /** Calculate aberration value
-		 *
-		 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
-		 */
-		void calculateAberration();
+	/** Calculate aberration value
+	 *
+	 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
+	 *
+	 **/
+	void calculateAberration();
 
         /// Show contents of structure
         void show () const;
         void showdata ();
         std::string showstr ();
 
-        /// return 1 if all J values are zero, otherwise return 0
-		int allzero() const;
+	/// return 1 if all J values are zero, otherwise return 0
+	int allzero() const;
 };
 
 /** Calculate J-characteristics of conference designs
@@ -1258,29 +1269,36 @@ struct arrayfile_t {
         static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
 
       public:
-		  /** Structure for reading or writing a file with arrays
-		  */
+		/** Structure for reading or writing a file with arrays
+		 */
         arrayfile_t ();
 
-        /** @copydoc arraydata_t::arrayfile_t()
-		 *
-		 * \param filename File to open for reading
-		 */
+	/** @copydoc arrayfile_t::arrayfile_t()
+	 *
+	 * \param filename File to open for reading
+	 * \param verbose Verbosity level
+	 */
         arrayfile_t (const std::string filename, int verbose = 1);
-		/** @copydoc arraydata_t::arrayfile_t()
+
+		/** @copydoc arrayfile_t::arrayfile_t()
 		*
 		* Open new array file for writing
 		*
 		* \param filename File to open
-		*/ 
-        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                     int nb = 8);
+		* \param nrows Number of rows
+		* \param ncols Number of columns
+		* \param narrays Specify a number of arrays, or -1 to add dynamically
+		* \param mode File mode
+		* \param number_of_bits Number of bits to use for storage. For 2-level arrays only 1 bit is needed
+		*/
+        arrayfile_t (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t mode = ATEXT,
+                     int number_of_bits = 8);
         /// destructor function, closes all filehandles
         ~arrayfile_t ();
 
-        /// Close current file and open a new file for writing
+        /// Open a new file for writing and (if opened) close the current file 
         void createfile (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
-                         int nb = 8);
+                         int number_of_bits = 8);
 
         /// close the array file
         void closefile ();
@@ -1718,9 +1736,7 @@ void vector2doublebinfile (const std::string fname, std::vector< Type > vals, in
 void vectorvector2binfile(const std::string fname, const std::vector< std::vector< double > > vals,
 	int writeheader, int na);
 
-/* Conversion to Eigen matrices */
-
-/** convert 2-level array to main effects in Eigen format
+/** Convert 2-level array to main effects in Eigen format
  *
  * \param array Array to convert
  * \param intercept If True, then include the intercept
@@ -1737,24 +1753,21 @@ MatrixFloat array2eigenX1 (const array_link &array, int intercept = 1);
  */
 MatrixFloat array2eigenX2 (const array_link &array);
 
-/** Convert 2-level array to second order interaction model matrix (intercept, X1, X2)
+/** Convert 2-level array to second order interaction model matrix (intercept, main effects, interaction effects)
  *
  * \param array Design of which to calculate the model matrix
  * \returns Eigen matrix with the model matrix
  */
 MatrixFloat array2eigenModelMatrix (const array_link &array);
 
-/** Convert array to model matrix in Eigen format
- *
- * @see array2eigenModelMatrixMixed
- */
-MatrixFloat array2eigenMainEffects (const array_link &array, int verbose = 1);
 
-/** Create first and second order model matrix for mixed-level array
+/** Create first and second order model matrix for mixed-level orthogonal array
  *
  * \param array Input array
  * \param verbose Verbosity level
  * \returns Pair with main effects and two-factor interaction model
+ * 
+ * For 2-level arrays a direct calculation is used. For mixel-level arrays Helmert contrasts are used.
  */ 
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 

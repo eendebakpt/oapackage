@@ -240,7 +240,7 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
 
 def enlargelims(factor=1.05):
     """ Enlarge the limits of a plot
-    
+
     Args:
         factor (float): factor by which to make the plot margins wider
     """
@@ -254,6 +254,51 @@ def enlargelims(factor=1.05):
     plt.ylim(yl)
 
 # %%
+
+
+def helmert_contrasts(number_of_levels, verbose=0):
+    """ Calculate Helmert contrasts for a given number of levels 
+
+    The Helmert contrasts are orthogonal and normalize such that the square equals to number of levels.
+    Args:
+        number_of_levels: number of levels in the number_of_levels
+    Returns:
+        array: array with calculated Helmert contrasts
+    """
+    N = number_of_levels
+    meoffset = 0
+    md = number_of_levels - 1
+
+    main_effects = np.zeros((number_of_levels, md))
+    Z = np.zeros((number_of_levels, md + 1))
+
+    for value in range(number_of_levels):
+        for ii in range(0, md + 1):
+            Z[value, ii] = value > ii - 1
+
+        # make Helmert contrasts (these are automatically orthogonal)
+        Z[value, 0] = 1
+        if (value > 0):
+            Z[value, value] = value
+
+        for q in range(1, value):
+            Z[value, q] = 0
+        for q in range(value + 1, md + 1):
+            Z[value, q] = -1
+
+    if verbose:
+        print('helmert_contrasts: %d\n' % (number_of_levels))
+        print('Z (initial creation)')
+        print(Z)
+
+    # normalize the contrasts
+    for ii in range(0, md):
+        normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
+        if verbose:
+            print('helmert_contrasts: normalize number_of_levels tmp: %s ' % (normalization,))
+        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt((N)) * Z[:, (ii + 1):(ii + 2)] / np.sqrt((normalization))
+
+    return main_effects
 
 
 def selectParetoArrays(array_list, pareto_object):
@@ -426,7 +471,7 @@ def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=
     ss = ''
     if comment is not None:
         if isinstance(comment, list):
-            for line in comment:    
+            for line in comment:
                 ss += '%% %s\n' % str(line)
         else:
             ss += '%% %s\n' % str(comment)
@@ -793,37 +838,43 @@ def safemin(data, default=0):
         data (array or list): data to return the maximum
         default (obj): default value
     Returns:
-        m: minimum value
+        object: minimum value in the array or the default value
 
     """
+    if isinstance(data, list):
+        if len(data) == 0:
+            minimum_value = default
+        else:
+            minimum_value = min(data)
+        return minimum_value
     if data.size == 0:
-        m = default
+        minimum_value = default
     else:
-        m = data.min()
-    return m
+        minimum_value = data.min()
+    return minimum_value
 
 
 def safemax(data, default=0):
     """ Return maximum of array with default value for empty array
 
     Args:
-        data (array or list): data to return the maximum
+        data (array or list ): data to return the maximum
         default (obj): default value
     Returns:
-        m: maximum value
+        object: maximum value in the array or the default value
     """
 
     if isinstance(data, list):
         if len(data) == 0:
-            m = default
+            maximum_value = default
         else:
-            m = max(data)
-        return m
+            maximum_value = max(data)
+        return maximum_value
     if data.size == 0:
-        m = default
+        maximum_value = default
     else:
-        m = data.max()
-    return m
+        maximum_value = data.max()
+    return maximum_value
 
 
 def mkdirc(directory_name):
@@ -1002,7 +1053,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
     """
     if verbose:
         print('runExtend: N=%d, k=%d, t=%d' % (N, k, t))
-    if isinstance(l, list):  
+    if isinstance(l, list):
         ll = l
     else:
         ll = [l]
@@ -1038,7 +1089,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
 
 def compressOAfile(afile, decompress=False, verbose=1):
     """ Compress an OA array file 
-    
+
     Args:
         afile (str): array to compress
         decompress (bool): If True then decompress
@@ -1047,10 +1098,10 @@ def compressOAfile(afile, decompress=False, verbose=1):
     af = oalib.arrayfile_t(afile, 0)
     if decompress:
         raise NotImplementedError('decompressing file not implemted')
-        
+
     if verbose >= 2:
         print('file %s: binary %s' % (afile, af.isbinary()))
-    if not (sys.platform == 'linux2' or sys.platform=='linux'):
+    if not (sys.platform == 'linux2' or sys.platform == 'linux'):
         if verbose:
             print('compressOAfile: not compressing file %s (platform not supported)' %
                   afile)
@@ -1149,15 +1200,11 @@ def testHtml(html_code=None):
 def designStandardError(al):
     """ Return standard errors for a design
 
-    Arguments
-    ---------
-    al : array
-            design
+    Args:
+      al (array): design
 
-    Output
-    ------
-    m0, m1, m2 : arrays
-            standard errors
+    Returns:
+        array: array with standard errors 
 
     """
 
@@ -1187,20 +1234,20 @@ def DefficiencyBound(D, k, k2):
         k2 (int): numbers of columns
 
     Returns:
-        D2 (float): bound on the D-efficiency of extensions of a design with k columns to k2 columns
+        float: bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1. + k + k * (k - 1) / 2
     m2 = 1. + k2 + k2 * (k2 - 1) / 2
-    D2 = D**(m / m2)
-    return D2
+    Dbound = D**(m / m2)
+    return Dbound
 
 # %% Misc
 
 
 def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
     """ Position the current Matplotlib figure at the specified position
-    Usage: setWindowRectangle(x,y,w,h)
+
     """
     if y is None:
         y = x[1]
@@ -1226,19 +1273,19 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.setGeometry(x, y, w, h)
 
 
-def makearraylink(al):
+def makearraylink(array):
     """ Convert array to array_link object
 
     Args:
-        al (numpy array): array to convert
+        array (numpy array): array to convert
     Returns:
         array_link
     """
-    if isinstance(al, np.ndarray):
+    if isinstance(array, np.ndarray):
         tmp = oalib.array_link()
-        tmp.setarray(al)
-        al = tmp
-    return al
+        tmp.setarray(array)
+        array = tmp
+    return array
 
 
 def formatC(al, wrap=True):
@@ -1246,8 +1293,9 @@ def formatC(al, wrap=True):
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:
-        s = '\tarray_link al ( %d,%d, 0 );\n\tint tmp[] = {' % (
+        s = '\tarray_link array ( %d,%d, 0 );\n\tint array_data_tmp[] = {' % (
             al.n_rows, al.n_columns) + s + '};'
+        s += '\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n'
     return s
 
 

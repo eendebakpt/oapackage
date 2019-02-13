@@ -15,8 +15,12 @@ import time
 import logging
 import warnings
 
-class MissingMatplotLibException(Exception):
-    pass
+import oalib
+
+import oapackage.markup as markup
+import oapackage.oahelper as oahelper
+from oapackage.markup import oneliner as e
+
 
 try:
     import matplotlib
@@ -25,18 +29,20 @@ try:
 except BaseException:
     matplotlib = None
 
-import oalib
+class MissingMatplotLibException(Exception):
+    pass
 
-import oapackage.markup as markup
-import oapackage.oahelper as oahelper
-
-from oapackage.markup import oneliner as e
 
 # %%
 
 
-def array2Dtable(sols, verbose=1, titlestr=None):
-    """ Generate HTML table with information about for a list of designs """
+def array2Dtable(array_list, verbose=1, titlestr=None):
+    """ Generate HTML table with information about for a list of designs 
+    
+    Args:
+        array_list (list): list of arrays
+        verbose (int): verbosity level
+    """
     page = markup.page()
     page.table(style=' border-collapse: collapse;')
     page.tr(style='font-weight: bold; border-bottom: solid 1px black;')
@@ -45,7 +51,7 @@ def array2Dtable(sols, verbose=1, titlestr=None):
             style='padding-right:14px;')
     page.th(('GWLP'), style='padding-right:14px;')
     page.tr.close()
-    for ii, al in enumerate(sols):
+    for ii, al in enumerate(array_list):
         aidx = ii
         (D, Ds, D1) = al.Defficiencies()
         gwlp = al.GWLP()
@@ -284,13 +290,27 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0
     return outfile
 
 
+def scoreDn(dds, optimfunc):
+    """ Calculate scores from various efficiencies
+
+    Args:
+        dds (array): calculated D-efficiencies
+        optimfunc (list): parameters for optimization function
+    Returns:
+        scores (array)
+    """
+    scores = np.array([oalib.scoreD(dd, optimfunc) for dd in dds])
+    return scores
+
 def calcScore(dds, optimfunc):
-    """ Calculate D-efficiency score using multiple efficiencies and a weight factor """
-    n = dds.shape[0]
-    scores = np.zeros(n, )
-    for ii, d in enumerate(dds):
-        alpha = optimfunc
-        scores[ii] = alpha[0] * d[0] + alpha[1] * d[1] + alpha[2] * d[2]
+    """ Calculate D-efficiency score using multiple efficiencies and a weight factor
+    
+    Args:
+        dds (array): the rows contains the effieciencies for various designs
+        optimfunc (array): aray with the weight factors for the efficiencies
+    """  
+    scores = np.array(dds).dot(np.array(optimfunc))
+        
     return scores
 
 
@@ -330,10 +350,10 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
     # initialize score
     if alpha_is_function:
-        d = alpha(A0)
+        efficiencies = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
-        d = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
+        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
     A = A0.clone()
     lc = 0
     for ii in range(0, niter):
@@ -364,12 +384,12 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             D, Ds, D1 = A.Defficiencies()
             nx = nx + 1
             dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
-        if dn >= d:
-            if dn > d:
+        if dn >= efficiencies:
+            if dn > efficiencies:
                 lc = ii
-                d = dn
+                efficiencies = dn
             if verbose >= 2:
-                print('ii %d: %.6f -> %.6f' % (ii, d, dn))
+                print('ii %d: %.6f -> %.6f' % (ii, efficiencies, dn))
 
         else:
             # restore to original
@@ -385,57 +405,45 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 print('optimDeff: early abort ii %d, lc %d' % (ii, lc))
             break
 
-    Dfinal = A.Defficiency()
 
     if verbose:
+        Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
             print('optimDeff: final Deff improved: %.4f -> %.4f' %
                   (Dinitial, A.Defficiency()))
         else:
             print('optimDeff: final Deff %.4f' % A.Defficiency())
 
-    return d, A
+    return efficiencies, A
 
 
 # %%
-def filterPareto(scores, dds, sols, verbose=0):
+def filterPareto(scores, dds, arrays, verbose=0):
     """ From a list of designs select only the pareto optimal designs
 
     Args:
         scores (array): array of scores
         dds (array): array with D-efficiency values
-        sols (list): list of designs
+        arrays (list): list of designs
     Returns:
-        pscores (list) : list of scores of pareto optimal designs
-        pdds (list): list of D-efficiency values of pareto optimal designs
-        psols (list) : list of selected designs
+        pareto_scores (list) : list of scores of pareto optimal designs
+        pareto_efficiencies (list): list of D-efficiency values of pareto optimal designs
+        pareto_designs (list) : list of selected designs
     """
     pp = oahelper.createPareto(dds, verbose=0)
     paretoidx = np.array(pp.allindices())
 
-    pscores = scores[paretoidx]
-    pdds = dds[paretoidx]
-    psols = [sols[i] for i in paretoidx]
+    pareto_scores = scores[paretoidx]
+    pareto_efficiencies = dds[paretoidx]
+    pareto_designs = [arrays[i] for i in paretoidx]
 
-    return pscores, pdds, psols
-
-
-def scoreDn(dds, optimfunc):
-    """ Calculate scores from various efficiencies
-
-    Args:
-        dds (array): calculated D-efficiencies
-        optimfunc (list): parameters for optimization function
-    Returns:
-        scores (array)
-    """
-    scores = np.array([oalib.scoreD(dd, optimfunc) for dd in dds])
-    return scores
+    return pareto_scores, pareto_efficiencies, pareto_designs
 
 
 def selectDn(scores, dds, sols, nout=1, sortfull=True):
     """ Select best arrays according to given scores
-        The resulting data is sorted
+    
+    The resulting data is sorted
 
     Parameters
     ----------
@@ -478,16 +486,13 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
 
 def Doptimize(arrayclass, nrestarts=10, optimfunc=[
               1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
-    """ Calculate D-optimal designs
+    """ Calculate D-efficient designs
 
-    The method uses a coordinate-exchange algorithm find a D-optimal design in the class specified by the
+    The method uses a coordinate-exchange algorithm find a D-efficient (sometimes called D-optimal) design in the class specified by the
     arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
     multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
     target function. 
 
-    The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
-    (or Ds-optimality) and the D1-efficiency of the design. For more details see the paper "Two-Level Designs to Estimate All Main
-    Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903
 
     Args:
       arrayclass (object): Specifies the type of design to optimize
@@ -496,7 +501,11 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
       verbose (int): Verbosity level. A higher numer gives more output
       maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
-      nout (int or None): Number of designs to return. If None,  return all designs
+      nout (int or None): Maximum number of designs to return. If None,  return all designs
+      method (coordinate_exchange_method_t): Specifies the method use for updating elements in the coordinate-exchange algorithm.
+      niter (int): Maximum number of iterations of the coordinate-exchange algorithm
+      nabort (int): If no improvements have been found after this number of updates, then abort this run
+      dverbose (int): Verbosity level passed to the C++ Doptimize function
 
     Returns
     -------
@@ -510,6 +519,12 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
                 number of restarts used
 
 
+    The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
+    (or Ds-optimality) and the D1-efficiency of the design. A full definition of these efficiencies is available
+    in the documentation at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs. For more details and motivation of these efficiencies,
+    see the paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903. 
+
+
     """
     if arrayclass.strength !=0:
         warnings.warn('Doptimize can only handle designs with strength 0', UserWarning)
@@ -521,7 +536,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
     if optimfunc is None:
         optimfunc = [1, 2, 0]
 
-    if 1 and isinstance(optimfunc, list):
+    if isinstance(optimfunc, list):
         rr = oalib.Doptimize(arrayclass, nrestarts, alpha=optimfunc, verbose=dverbose,
                              method=method, niter=niter, maxtime=maxtime, nabort=nabort)
         dds, sols = rr.dds, rr.designs
@@ -536,7 +551,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
             print('Doptimize: max score %.3f, max D: %.6f' %
                   (np.max(scores), np.max([A.Defficiency() for A in sols])))
     else:
-        # optimfunc is a function
+        # assume optimfunc is a function
         scores = np.zeros((0, 1))
         dds = np.zeros((0, 3))
         sols = []
@@ -590,10 +605,3 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
     return scores, dds, sols, nrestarts
 
-#%% Tests
-
-
-def test_calcScore():
-    dds = np.random.rand(10, 3)
-    scores = calcScore(dds, optimfunc=[1, 2, 3])
-    assert scores.shape == (dds.shape[0], )

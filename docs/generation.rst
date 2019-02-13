@@ -52,9 +52,9 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
    .. doctest::     
                    
     >>> import oapackage
-    >>> ctype=oapackage.conference_t(8, 6, 0) 
-    >>> al = ctype.create_root_three_columns()
-    >>> al.showarray()
+    >>> conference_class=oapackage.conference_t(8, 6, 0) 
+    >>> array = conference_class.create_root_three_columns()
+    >>> array.showarray()
     array:
       0   1   1
       1   0  -1
@@ -64,11 +64,11 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
       1  -1   1
       1  -1   1
       1  -1  -1
-    >>> l4=oapackage.extend_conference ([al], ctype, verbose=0)
-    >>> l5=oapackage.extend_conference ( l4, ctype,verbose=0) 
-    >>> l6=oapackage.extend_conference ( l5, ctype, verbose=0)
-    >>> print('number of non-isomorphic conference designs: %d'  % len(l6) )
-    number of non-isomorphic conference designs: 11
+    >>> l4=oapackage.extend_conference ([array], conference_class, verbose=0)
+    >>> l5=oapackage.extend_conference ( l4, conference_class, verbose=0) 
+    >>> l6=oapackage.extend_conference ( l5, conference_class, verbose=0)
+    >>> print('number of non-isomorphic conference designs with 6 columns: %d'  % len(l6) )
+    number of non-isomorphic conference designs with 6 columns: 11
 
 
 An example notebook with more functionality is
@@ -78,25 +78,36 @@ in the :ref:`Interface for conference designs`.
 
 The main functions to extend conference and double conference designs are
 :cpp:func:`extend_conference` and :cpp:func:`extend_double_conference`.
-
 The low-level functions for generating candidate extension columns of conference and double conference designs
 are :cpp:func:`generateConferenceExtensions` and :cpp:func:`generateDoubleConferenceExtensions`.
 
+The conference designs are generated in :ref:`LMC0 <LMC0>` form.
 
-Calculation of D-optimal designs
---------------------------------
 
-D-optimal designs can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
+Calculation of D-efficient designs
+----------------------------------
+
+D-efficient designs (sometimes called D-optimal designs) can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
 This function uses a coordinate-exchange algorithm to generate designs
 with good properties for the :math:`D`-efficiency.
+With the coordinate-exchange algorithm the following target function :math:`T` is optimized:
 
-A Python script to generate optimal designs with 40 runs and 7 factors is shown below.
+.. math::
+
+       T = \alpha_1 D_{\text{eff}} + \alpha_2 D_{s, \text{eff}} + \alpha_3 D_{1, \text{eff}} 
+       
+Here :math:`\alpha` is a weight vector specified by the user. Details on the :math:`D_{\text{eff}}`, 
+:math:`D_{s, \text{eff}}` and :math:`D_{1, \text{eff}}` can be found in the section :ref:`Optimality criteria for D-efficient designs`.
+
+A Python script to generate D-efficient designs with 40 runs and 7 factors is shown below.
 
 .. admonition:: Example of Doptimize usage
 
    .. testsetup::
    
        import oapackage
+       oapackage.seedfastrand(123)
+       oapackage.set_srand(123)
        
    .. doctest::  
 
@@ -105,8 +116,6 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
      >>> print('We generate optimal designs with: %s' % arrayclass)
      We generate optimal designs with: arrayclass: N 40, k 7, strength 0, s {2,2,2,2,2,2,2}, order 0
      >>> alpha=[1,2,0] 
-     >>> oapackage.seedfastrand(123)
-     >>> oapackage.set_srand(123)
      >>> scores, dds, designs, ngenerated = oapackage.Doptimize(arrayclass, nrestarts=40, optimfunc=alpha, selectpareto=True, verbose=0)
      Doptimize: iteration 0/40
      Doptimize: iteration 39/40
@@ -115,30 +124,14 @@ A Python script to generate optimal designs with 40 runs and 7 factors is shown 
 
 The parameters of the :meth:`~oapackage.Doptim.Doptimize` function are documented in the code.
 
-To calculate properties of designs we can use the following functions.
-We can use the following command:
+To calculate efficiencies of the designs we can use the method :cpp:func:`Defficiencies`, to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
+For details of the efficiencies see the section :ref:`Optimality criteria for D-efficient designs` and :cite:`EendebakSO`.
 
-.. doxygenfunction:: array_link::Defficiencies(int)
-    :no-link:
 
-to calculate the :math:`D`-, :math:`D_s`- and :math:`D_1`-efficiency.
-For details see :cite:`EendebakSO`.
-
-The OApackage also allows to compute the projection estimation 
-capacity (PEC) sequence for orthogonal arrays :cite:`loeppky2004ranking`.
-This can be calculated with the following commands :meth:`~oalib.PECsequence` and :meth:`oalib.array_link.PECsequence`.
-
-.. comment
-    .. doxygenfunction:: PECsequence(const array_link&, int)
-        :no-link:
-        :outline:
-    .. doxygenfunction:: array_link::PECsequence()
-        :no-link:
-        :outline:
     
 In :cite:`EendebakSO` it is shown that one can optimize a linear combination of the
 :math:`D`-efficiency and :math:`D_s`-efficiency to generate a rich 
-set of optimal designs with various efficiency. From the generated designs the optimal ones accoring
+set of optimal designs with various efficiency. From the generated designs the optimal ones according
 to Pareto optimality can be selected.
 
 
@@ -150,8 +143,8 @@ to Pareto optimality can be selected.
    designs are grey. For reference the strength-3 orthogonal array with
    highest D-efficiency is also included in the plot.
 
-Even-odd
---------
+Even-odd arrays
+---------------
 
 The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
 More information on this class of designs will appear later.

@@ -378,7 +378,7 @@ int main (int argc, char *argv[]) {
                                 log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
                                            current_col + 1, (int)solutions.size (), get_time_ms () - Tstart);
                                 nr_extensions = 0;
-                                arraylist_t::iterator cur_extension;
+                                arraylist_t::const_iterator cur_extension;
 
                                 int csol = 0;
                                 for (cur_extension = solutions.begin (); cur_extension != solutions.end ();
@@ -387,17 +387,18 @@ int main (int argc, char *argv[]) {
                                         logstream (NORMAL) << cur_extension[0];
 
                                         if (n_processors == 1) {
-                                                nr_extensions += extend_array (cur_extension->array, adcol,
+                                                nr_extensions += extend_array (*cur_extension, adcol,
                                                                                current_col, extensions, oaextend);
                                         } else {
 #ifdef OAEXTEND_MPI
+                                                throw_runtime_exception("mpi version of oextend is no longer supported");
                                                 double Ttmp = get_time_ms ();
                                                 int slave = collect_solutions_single (extensions, adcol);
                                                 log_print (DEBUG, "   time: %.2f, collect time %.2f\n",
                                                            (get_time_ms () - Tstart), (get_time_ms () - Ttmp));
 
                                                 /* OPTIMIZE: send multiple arrays to slave 1 once step */
-                                                extend_array_mpi (cur_extension, 1, adcol, current_col, slave);
+                                                extend_array_mpi (cur_extension->array, 1, adcol, current_col, slave);
 #endif
                                         }
 
