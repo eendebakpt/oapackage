@@ -81,7 +81,7 @@ The main functions to extend conference and double conference designs are
 The low-level functions for generating candidate extension columns of conference and double conference designs
 are :cpp:func:`generateConferenceExtensions` and :cpp:func:`generateDoubleConferenceExtensions`.
 
-The conference designs are generated in :ref:`LMC0` form.
+The conference designs are generated in :ref:`LMC0 <LMC0>` form.
 
 
 Calculation of D-efficient designs

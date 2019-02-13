@@ -960,7 +960,8 @@ class jstruct_t {
 	/** Calculate aberration value
 	 *
 	 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
-	 */
+	 *
+	 **/
 	void calculateAberration();
 
         /// Show contents of structure

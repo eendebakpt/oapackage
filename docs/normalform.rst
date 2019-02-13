@@ -125,6 +125,8 @@ The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Naut
       1   1
       1   1
 
+.. _LMC0:
+
 Normal forms for conference designs
 -----------------------------------
 
