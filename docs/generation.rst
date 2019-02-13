@@ -90,8 +90,16 @@ Calculation of D-efficient designs
 D-efficient designs (sometimes called D-optimal designs) can be calculated with the function :py:meth:`oapackage.Doptim.Doptimize`.
 This function uses a coordinate-exchange algorithm to generate designs
 with good properties for the :math:`D`-efficiency.
+With the coordinate-exchange algorithm the following target function :math:`T` is optimized:
 
-A Python script to generate optimal designs with 40 runs and 7 factors is shown below.
+.. math::
+
+       T = \alpha_1 D_{\text{eff}} + \alpha_2 D_{s, \text{eff}} + \alpha_3 D_{1, \text{eff}} 
+       
+Here :math:`\alpha` is a weight vector specified by the user. Details on the :math:`D_{\text{eff}}`, 
+:math:`D_{s, \text{eff}}` and :math:`D_{1, \text{eff}}` can be found in the section :ref:`Optimality criteria for D-efficient designs`.
+
+A Python script to generate D-efficient designs with 40 runs and 7 factors is shown below.
 
 .. admonition:: Example of Doptimize usage
 
@@ -123,7 +131,7 @@ For details of the efficiencies see the section :ref:`Optimality criteria for D-
     
 In :cite:`EendebakSO` it is shown that one can optimize a linear combination of the
 :math:`D`-efficiency and :math:`D_s`-efficiency to generate a rich 
-set of optimal designs with various efficiency. From the generated designs the optimal ones accoring
+set of optimal designs with various efficiency. From the generated designs the optimal ones according
 to Pareto optimality can be selected.
 
 

@@ -505,7 +505,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
       method (coordinate_exchange_method_t): Specifies the method use for updating elements in the coordinate-exchange algorithm.
       niter (int): Maximum number of iterations of the coordinate-exchange algorithm
       nabort (int): If no improvements have been found after this number of updates, then abort this run
-      dverbose (int): Verbosity level pass to the C++ Doptimize function
+      dverbose (int): Verbosity level passed to the C++ Doptimize function
 
     Returns
     -------
