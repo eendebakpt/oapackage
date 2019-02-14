@@ -61,7 +61,7 @@ class object_pool {
         typedef typename std::vector< TYPE >::iterator iterator;
         typedef typename std::vector< TYPE >::const_iterator const_iterator;
 
-        /// constructor
+        /// Create a pool of objects that can be re-used
         object_pool () {
                 nn = 0;
                 rr = 0;
@@ -126,6 +126,7 @@ class larray {
         numtype *data_pointer;
         int data_size;
 
+		/// Create unallocated array
         larray () {
                 data_pointer = 0;
                 data_size = -1;
@@ -240,34 +241,58 @@ struct mvalue_t {
         /// vector containing the values
         std::vector< NumericType > values;
         // int direction;
-        enum direction_t { HIGH, LOW };
+        enum direction_t {
+			/// Order from high to low values
+			HIGH,
+			/// Order from low to high values
+			LOW };
         /// value representing the ordering used
         direction_t ordering;
 
+		/** Create multi-valued object
+		 *
+		 * The object consists of a vector of elements.
+		 */
         mvalue_t () : ordering (HIGH){};
         ~mvalue_t (){};
 
-        mvalue_t (NumericType m, direction_t dd = HIGH) {
-                values.push_back (m);
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param element Single element to add to the vector
+		 * \param dd Ordering to use
+		 */
+        mvalue_t (NumericType element, direction_t dd = HIGH) {
+                values.push_back (element);
                 ordering = dd;
         }
-        mvalue_t (std::vector< NumericType > vv, direction_t dd = HIGH) {
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param elements Vector to use for initalization of the object
+		 * \param dd Ordering to use
+		 */
+		mvalue_t (std::vector< NumericType > elements, direction_t dd = HIGH) {
                 ordering = dd;
-                this->values = vv;
+                this->values = elements;
         }
 
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param elements Vector to use for initalization of the object
+		 * \param dd Ordering to use
+		 */
+		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = HIGH) {
+			ordering = dd;
+			values.clear();
+			values.resize(elements.size());
+			for (size_t ii = 0; ii < elements.size(); ii++) {
+				this->values[ii] = elements[ii];
+			}
+		}
+
+		/// Return vector with the raw values in this object
 		std::vector< NumericType > raw_values() const {
 			return this->values;
 		}
-
-        template < class T > mvalue_t (std::vector< T > vv, direction_t dd = HIGH) {
-                ordering = dd;
-                values.clear ();
-                values.resize (vv.size ());
-                for (size_t ii = 0; ii < vv.size (); ii++) {
-                        this->values[ii] = vv[ii];
-                }
-        }
 
         size_t size () const { return this->values.size (); }
 
