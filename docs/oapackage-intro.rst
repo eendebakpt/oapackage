@@ -34,7 +34,7 @@ calculate some of their statistical properties. The following example shows how 
      1   0
      1   1
      1   1
-   >>> D = array.Defficiency() # calculate the D-efficiency for estimating the [main-effects model?]
+   >>> D = array.Defficiency() # calculate the D-efficiency for estimating the interaction effects model
    >>> array_rank = array.rank() # calculate the rank of the design
    >>> print('D-efficiency %f, rank %d' % (D, array_rank) )
    D-efficiency 1.000000, rank 2
@@ -49,9 +49,8 @@ The Orthogonal Array package has interfaces in C++ and Python. These package als
 tools for generating, manipulating and analyzing all the types of designs. In the documentation here you will find references to
 both the Python and the C++ interface.
 
-For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab and R interfaces; see
-the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_
-and `README.R.md <https://github.com/eendebakpt/oapackage/README.R.md>`_.
+For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab interface; see
+the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_.
 
 License 
 -------
@@ -74,8 +73,7 @@ Vazquez-Alcocer and Pieter Thijs Eendebak.
 Installation
 ------------
 
-The program has been tested using Linux and Windows (XP, Windows 7 and
-Windows 8, Windows 10). The Python interface is available from the `Python Package
+The packge is continously tested on Linux and Windows. The Python interface is available from the `Python Package
 Index <https://pypi.python.org/pypi/OApackage/>`_. The package can be
 installed from the command line using pip:
 
@@ -120,7 +118,7 @@ Related sites of orthogonal arrays
 There are several related sites available online which include collections
 of orthogonal arrays. For instance, the website of Neil Sloane :cite:`Sloanewebsite`,
 the website of Hongquan Xu :cite:`HongquanXuOnline`, the SAS website managed
-by Warren Kuhfeld :cite:`WK19`, and the R package _DoE.base_ :cite:`DoEbase` includes lists
+by Warren Kuhfeld :cite:`WK19`, and the R package _DoE.base_ :cite:`DoEbase` include lists
 or surveys of attractive orthogonal arrays gathered from different sources. 
 
 
