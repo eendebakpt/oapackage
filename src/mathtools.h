@@ -447,6 +447,7 @@ std::vector< NumType > cumsum0 (const std::vector< NumType > x) {
         return res;
 }
 
+/// calculate cumulative sum of a vector with added zero
 template < class Type, class InputType > std::vector< Type > cumsum0 (std::vector< InputType > s) {
         std::vector< Type > c (s.size () + 1);
         c[0] = 0;
@@ -471,6 +472,7 @@ std::vector< NumType > array2vector (const NumTypeIn *x, int len) {
         return w;
 }
 
+/// convert array given by pointer to larray
 template < class NumType, class NumTypeIn > larray< NumType > array2larray (const NumTypeIn *x, int len) {
         larray< NumType > w (len);
         std::copy (x, x + len, w.d);
@@ -620,10 +622,10 @@ template < class numtype >
  * @param c Number of columns
  * @return
  */
-int compare_matrix (const numtype *A, const numtype *B, int r, int c) {
-        for (int x = 0; x < r; x++)
-                for (int y = 0; y < c; y++) {
-                        if (A[x + y * r] != B[x + y * r]) {
+int compare_matrix (const numtype *A, const numtype *B, int number_of_rows, int number_of_columns) {
+        for (int x = 0; x < number_of_rows; x++)
+                for (int y = 0; y < number_of_columns; y++) {
+                        if (A[x + y * number_of_rows] != B[x + y * number_of_rows]) {
                                 myprintf ("arrays unequal: %d, %d\n", x, y);
                                 return 0;
                         }
@@ -931,16 +933,6 @@ template < class numtype > numtype next_combination_fold (numtype *comb, int k, 
                 comb[i] = comb[i - 1] + 1;
 
         return fold;
-}
-
-inline void print_combinations (int n, int k) {
-        int *comb = new_comb_init< int > (k);
-        int nc = ncombs (n, k);
-        for (int i = 0; i < nc; i++) {
-                print_comb (comb, k);
-                next_combination< int > (comb, k, n);
-        }
-        delete_comb (comb);
 }
 
 /* code related to permutations */
