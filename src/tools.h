@@ -19,8 +19,6 @@
 
 #include "printfheader.h"
 
-inline std::string base_name (std::string const &path) { return path.substr (path.find_last_of ("/\\") + 1); }
-
 /// function to print debugging messages
 void printfd_handler (const char *file, const char *func, int line, const char *message, ...);
 
@@ -274,18 +272,10 @@ void free2d (DataType **data) {
 template < class DataType >
 /**
  * @brief Release a 2-dimensional non-uniform array
- * @param data
+ * @param data Pointer to allocated array
+ * @param nrows Not used at the moment
  */
-void free2d_irr (DataType **data) {
-        free2d (data);
-}
-template < class DataType >
-/**
- * @brief Release a 2-dimensional non-uniform array
- * @param data
- * @param nrows
- */
-void free2d_irr (DataType **data, const int nrows) {
+void free2d_irr (DataType **data, const int nrows = -1) {
         free2d (data);
 }
 
