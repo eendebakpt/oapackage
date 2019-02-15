@@ -171,7 +171,9 @@ struct LMCreduction_helper_t {
 
         /* used at the root_level_perm stage */
         int LMC_root_rowperms_init;
+		/// number of root row permutations
         int nrootrowperms;
+		/// pointer to row permutations that leave the root unchanged
         rowperm_t *rootrowperms;
 
         int LMC_root_rowperms_init_full;
