@@ -29,6 +29,7 @@ try:
 except BaseException:
     matplotlib = None
 
+
 class MissingMatplotLibException(Exception):
     pass
 
@@ -38,7 +39,7 @@ class MissingMatplotLibException(Exception):
 
 def array2Dtable(array_list, verbose=1, titlestr=None):
     """ Generate HTML table with information about for a list of designs 
-    
+
     Args:
         array_list (list): list of arrays
         verbose (int): verbosity level
@@ -71,7 +72,7 @@ def array2Dtable(array_list, verbose=1, titlestr=None):
 def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
                      scatterarea=80, verbose=0, setWindowRectangle=False):
     """ Generate scatter plot for D and Ds efficiencies
-    
+
     Args:
         dds (array): array with D-efficiencies
     Returns:
@@ -302,15 +303,16 @@ def scoreDn(dds, optimfunc):
     scores = np.array([oalib.scoreD(dd, optimfunc) for dd in dds])
     return scores
 
+
 def calcScore(dds, optimfunc):
     """ Calculate D-efficiency score using multiple efficiencies and a weight factor
-    
+
     Args:
         dds (array): the rows contains the effieciencies for various designs
         optimfunc (array): aray with the weight factors for the efficiencies
-    """  
+    """
     scores = np.array(dds).dot(np.array(optimfunc))
-        
+
     return scores
 
 
@@ -405,7 +407,6 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 print('optimDeff: early abort ii %d, lc %d' % (ii, lc))
             break
 
-
     if verbose:
         Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
@@ -442,7 +443,7 @@ def filterPareto(scores, dds, arrays, verbose=0):
 
 def selectDn(scores, dds, sols, nout=1, sortfull=True):
     """ Select best arrays according to given scores
-    
+
     The resulting data is sorted
 
     Parameters
@@ -526,9 +527,9 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
 
     """
-    if arrayclass.strength !=0:
+    if arrayclass.strength != 0:
         warnings.warn('Doptimize can only handle designs with strength 0', UserWarning)
-        
+
     if verbose:
         print('Doptim: optimization class %s' % arrayclass.idstr())
     t0 = time.time()
@@ -604,4 +605,3 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)
 
     return scores, dds, sols, nrestarts
-
