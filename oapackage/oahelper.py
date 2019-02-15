@@ -65,6 +65,7 @@ def deprecated(func):
 
 # %%
 
+
 try:
     try:
         import qtpy.QtGui
@@ -296,7 +297,8 @@ def helmert_contrasts(number_of_levels, verbose=0):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
             print('helmert_contrasts: normalize number_of_levels tmp: %s ' % (normalization,))
-        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt((N)) * Z[:, (ii + 1):(ii + 2)] / np.sqrt((normalization))
+        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt((N)) * \
+            Z[:, (ii + 1):(ii + 2)] / np.sqrt((normalization))
 
     return main_effects
 
@@ -539,8 +541,8 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
 
     ri = 0
     if header:
-        page.tr(style='font-weight: bold; border-bottom: solid 1px black;' +
-                trstyle[ri], class_=trclass[ri])
+        page.tr(style='font-weight: bold; border-bottom: solid 1px black;'
+                + trstyle[ri], class_=trclass[ri])
         ri = ri + 1
         for ii in range(nc):
             if isinstance(X[offset, ii], tuple):
@@ -760,7 +762,7 @@ def checkFilesOA(lst, cache=1, verbose=0):
             break
     return c
 
-#%%
+# %%
 
 
 def randomizearrayfile(input_filename, output_filename, verbose=1):

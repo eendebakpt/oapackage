@@ -67,47 +67,9 @@ void release_LMCreduction_object (LMCreduction_helper_t *p) {
 
 void clear_LMCreduction_pool () { LMCreduction_pool.reset (); }
 
-// indexed pool of static objects
-// std::vector< LMC_static_struct_t * > globalStaticPool;
-// LMC_static_struct_t *getGlobalStaticIndexed (int n) {
-//         const int verbose = 0;
-// 
-//         if (verbose)
-//                 myprintf ("getGlobalStatic: n %d, pool size %ld\n", n, (long)globalStaticPool.size ());
-//         if (n >= (int(globalStaticPool.size ()))) {
-//                 myprintf ("  allocating new element in globalStaticPool: n %d, pool size %ld\n", n,
-//                           (long)globalStaticPool.size ());
-//                 size_t psize = globalStaticPool.size ();
-//                 for (int jj = psize; jj <= n; jj++) {
-//                         LMC_static_struct_t *p = new LMC_static_struct_t ();
-//                         if (verbose)
-//                                 myprintf ("new element jj %d\n", jj);
-//                         globalStaticPool.push_back (p);
-//                 }
-//         }
-// 
-//         if (verbose) {
-//                 myprintf ("   ");
-//                 globalStaticPool[n]->show ();
-//         }
-//         return globalStaticPool.at (n);
-// }
-// 
-// void cleanGlobalStaticIndexed () {
-//         printfd ("cleanGlobalStaticIndexed: delete %d items\n", globalStaticPool.size ());
-//         for (size_t jj = 0; jj < globalStaticPool.size (); jj++) {
-//                 delete globalStaticPool[jj];
-//         }
-//         globalStaticPool.resize (0);
-// }
-
 LMCreduction_helper_t::~LMCreduction_helper_t () {
         this->freeall ();
 }
-
-#ifdef OADEBUG
-static int LMC_static_count = 0;
-#endif
 
 LMCreduction_helper_t::LMCreduction_helper_t () {
         /* initialize static structure values to zero */

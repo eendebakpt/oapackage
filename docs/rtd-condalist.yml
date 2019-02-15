@@ -14,7 +14,7 @@ dependencies:
 - sphinx=1.7
 
 - pip:
-  - scanf
+#  - scanf
   - sphinxcontrib.bibtex
   - sphinxcontrib.napoleon
   - breathe

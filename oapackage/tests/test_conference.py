@@ -4,14 +4,14 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 
 """
 
-#%%
+# %%
 import numpy as np
 import unittest
 
 import oapackage
 import oapackage.conference
 
-#%%
+# %%
 
 
 def _statistics_equal(statistics, expected):
@@ -29,7 +29,7 @@ class TestJcharacteristics(unittest.TestCase):
         JJ = oapackage.Jcharacteristics_conference(array, 4)
         self.assertEqual(len(JJ), oapackage.choose(array.n_columns, 4))
         hist = np.histogram(np.abs(JJ), bins=np.arange(0, 21, 2))[0]
-        self.assertEqual(list(hist), [9,  0, 52,  0,  8,  0,  1,  0,  0,  0])
+        self.assertEqual(list(hist), [9, 0, 52, 0, 8, 0, 1, 0, 0, 0])
 
 
 class TestConferenceStatistics(unittest.TestCase):
@@ -68,7 +68,7 @@ class TestConferenceStatistics(unittest.TestCase):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[51, -2], [3, 4]])
         C = oapackage.conference._leftDivide(A, B)
-        np.testing.assert_array_almost_equal(C, np.array([[-99.,   8.], [75.,  -5.]]))
+        np.testing.assert_array_almost_equal(C, np.array([[-99., 8.], [75., -5.]]))
 
 
 if __name__ == '__main__':

@@ -24,7 +24,6 @@ else:
 import oalib
 import oapackage
 import oapackage.scanf
-import oapackage.Doptim
 import oapackage.graphtools
 
 
@@ -192,7 +191,7 @@ def miscunittest(verbose=1):
 
     return True
 
-#%%
+# %%
 
 
 class TestOAfiles(unittest.TestCase):
@@ -273,7 +272,7 @@ class TestOAhelper(unittest.TestCase):
         hc = oapackage.oahelper.helmert_contrasts(3, verbose=0)
         np.testing.assert_array_almost_equal(hc, np.array([[-1.22474487, -0.70710678],
                                                            [1.22474487, -0.70710678],
-                                                           [0.,  1.41421356]]))
+                                                           [0., 1.41421356]]))
 
         hc = oapackage.oahelper.helmert_contrasts(10, verbose=0)
         np.testing.assert_array_almost_equal(hc[0], np.array([-2.23606798, -1.29099445, -0.91287093, -0.70710678, -0.57735027,
@@ -438,7 +437,6 @@ class TestOAhelper(unittest.TestCase):
         a = np.array([[1, 1], [-2, 2], [-3, 3], [-4, 4], [5, 5]]).T
         s = oapackage.oahelper.sortcols(a)
         self.assertTrue(np.all(s == [3, 2, 1, 0, 4]))
-
 
 
 if __name__ == '__main__':

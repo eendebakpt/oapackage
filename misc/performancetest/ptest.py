@@ -11,12 +11,10 @@ import sys
 import os
 import numpy as np
 import time
-import glob
 import subprocess
 import time
 import getopt
 import platform
-from imp import reload
 
 import oapackage
 import oapackage.oahelper as oahelper
@@ -133,13 +131,14 @@ def pytest2level(verbose=1):
     #cases.append('runExtend(N=%d, k=%d, t=%d, l=%s)' %(N,k,t, str(l)) )
 
 
-def pytest5(oadir, verbose=1):
+def pytest_analysis(oadir, verbose=1):
     """ Performance of analysis algorithms """
     cmd = 'export OMP_NUM_THREADS=1; oaanalyse --gwp -A %s' % os.path.join(oadir, 'testdata', 'test64.oa')
     if verbose:
-        print('pytest5: running oaanalyse')
+        print('pytest_analysis: running oaanalyse')
     t0 = time.time()
-    os.system(cmd)
+    return_value = os.system(cmd)
+    assert(return_value==0)
     ta = (time.time() - t0)
     return ta
 
@@ -152,7 +151,7 @@ def pytest2(oadir, verbose=1):
 
     for ii, al in enumerate(sols):
         vv = oalib.doubleVector(3)
-        rnk = oalib.array_rank_D_B(al, vv)
+        rnk = oalib.array2rank_Deff_Beff(al, vv)
 
         al2 = oalib.array2xf(al)
         rnk2 = al2.rank()
@@ -231,12 +230,13 @@ def pytest(verbose=1):
     N = 18
     k = 9
     t = 2
-    l = [2, 3]
+    # old test: l=[2,3]
+    l = [3]*8+[2]
     rr = []
     oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
     tt.append(time.time() - t0)
     cases.append('runExtend(N=%d, k=%d, t=%d, l=%s)' % (N, k, t, str(l)))
-    if not rr == [3, 15, 48, 19, 12, 3, 0]:
+    if not rr == [4, 12, 10, 8, 3, 0, 0]:
         print('ERROR: incorrect number of arrays! %s' % rr)
 
     dt2 = time.time() - t0
@@ -268,9 +268,12 @@ def testExtendBinary(verbose=1):
 #%%
 def main(argv=None):
     """ Main testing function """
-    oadir = os.path.join(os.path.expanduser('~'), 'misc/oa/oacode/')
-
-    print('OA performance testing')
+    if platform.system()=='Windows':
+        oadir = os.path.join(os.path.split(oapackage.__file__)[0], '..')
+    else:
+        oadir = os.path.join(os.path.expanduser('~'), 'misc/oa/oacode/')
+    
+    print('OA performance testing: version 2.0')
     ss = oapackage.version()
     print('OAlib: version %s' % ss)
     ss = oalib.compile_information()
@@ -299,7 +302,7 @@ def main(argv=None):
     pytest2(oadir)
     pytest3(verbose=0)
     pytest4(verbose=1)
-    ta1 = pytest5(oadir, verbose=1)
+    ta1 = pytest_analysis(oadir, verbose=1)
     pytest6(verbose=0)
     pytest7(verbose=0)
 

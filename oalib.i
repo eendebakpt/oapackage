@@ -222,6 +222,7 @@ def setarray(self, X, verbose=0):
   self.setarraydata(iv, X.size)
 
 def _slice2range(self, slice, max_value):
+    """ Convert a python slice object to a range """
     if isinstance(slice, int):
         return [slice]
     if slice.start  is None:
@@ -239,6 +240,7 @@ def _slice2range(self, slice, max_value):
     return list(range(start, stop, step))
 
 def _ranges2subarray(self, row_range, col_range):
+      """ From a list of row element and a list of column element construct a submatrix """
       al=array_link(len(row_range), len(col_range), array_link.INDEX_DEFAULT )
       for ii, row in enumerate(row_range):
           for jj, col in enumerate(col_range):
@@ -284,7 +286,8 @@ def __getitem__(self, index):
       else:
         raise IndexError('invalid index')
 
-def __setitem__(self,index, value):
+def __setitem__(self, index, value):
+  """ Set specified value at specified index in the array """
   if type(index)==int:
       if index<0 or index > self.n_rows*self.n_columns:
         raise IndexError('index out of bounds')
@@ -332,7 +335,7 @@ def __setitem__(self,index, value):
 
 namespace std {
    %template(arraylist_t) deque<array_link>; 
-   %template(jstructArray) vector<jstruct_t>; // results list
+   %template(jstructArray) vector<jstruct_t>; 
    %template(uint8Vector) std::vector<unsigned char>;
    %template(charVector) std::vector<signed char>;
    %template(intVector) std::vector<int>;
