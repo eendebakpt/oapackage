@@ -399,6 +399,20 @@ class TestCppLibrary(unittest.TestCase):
         self.assertTrue(oapackage.is_root_form(array, 2))
         self.assertFalse(oapackage.is_root_form(array, 5))
 
+    @only_python3
+    def test_runExtend_increasing_factor_levels(self):
+        """ We test the usage of an increasing factor levels raises are warning, but nevertheless gives the correct results """
+        N = 18
+        k = 9
+        t = 2
+        l = [2,3]
+        rr = []
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            oapackage.oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
+            self.assertIn('warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour', mock_stdout.getvalue() )
+
+        self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
+        
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)

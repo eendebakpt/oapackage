@@ -22,6 +22,9 @@ using namespace std;
 
 static nullStream staticNullStream;
 
+/// return filename part of a full path
+inline std::string base_name(std::string const &path) { return path.substr(path.find_last_of("/\\") + 1); }
+
 /// function to print debugging messages
 void printfd_handler (const char *file, const char *func, int line, const char *message, ...) {
         std::string s = file;

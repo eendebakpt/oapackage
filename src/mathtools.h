@@ -61,7 +61,7 @@ class object_pool {
         typedef typename std::vector< TYPE >::iterator iterator;
         typedef typename std::vector< TYPE >::const_iterator const_iterator;
 
-        /// constructor
+        /// Create a pool of objects that can be re-used
         object_pool () {
                 nn = 0;
                 rr = 0;
@@ -126,6 +126,7 @@ class larray {
         numtype *data_pointer;
         int data_size;
 
+		/// Create unallocated array
         larray () {
                 data_pointer = 0;
                 data_size = -1;
@@ -240,34 +241,58 @@ struct mvalue_t {
         /// vector containing the values
         std::vector< NumericType > values;
         // int direction;
-        enum direction_t { HIGH, LOW };
+        enum direction_t {
+			/// Order from high to low values
+			HIGH,
+			/// Order from low to high values
+			LOW };
         /// value representing the ordering used
         direction_t ordering;
 
+		/** Create multi-valued object
+		 *
+		 * The object consists of a vector of elements.
+		 */
         mvalue_t () : ordering (HIGH){};
         ~mvalue_t (){};
 
-        mvalue_t (NumericType m, direction_t dd = HIGH) {
-                values.push_back (m);
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param element Single element to add to the vector
+		 * \param dd Ordering to use
+		 */
+        mvalue_t (NumericType element, direction_t dd = HIGH) {
+                values.push_back (element);
                 ordering = dd;
         }
-        mvalue_t (std::vector< NumericType > vv, direction_t dd = HIGH) {
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param elements Vector to use for initalization of the object
+		 * \param dd Ordering to use
+		 */
+		mvalue_t (std::vector< NumericType > elements, direction_t dd = HIGH) {
                 ordering = dd;
-                this->values = vv;
+                this->values = elements;
         }
 
+		/** @copydoc mvalue_t::mvalue_t()
+		 *
+		 * \param elements Vector to use for initalization of the object
+		 * \param dd Ordering to use
+		 */
+		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = HIGH) {
+			ordering = dd;
+			values.clear();
+			values.resize(elements.size());
+			for (size_t ii = 0; ii < elements.size(); ii++) {
+				this->values[ii] = elements[ii];
+			}
+		}
+
+		/// Return vector with the raw values in this object
 		std::vector< NumericType > raw_values() const {
 			return this->values;
 		}
-
-        template < class T > mvalue_t (std::vector< T > vv, direction_t dd = HIGH) {
-                ordering = dd;
-                values.clear ();
-                values.resize (vv.size ());
-                for (size_t ii = 0; ii < vv.size (); ii++) {
-                        this->values[ii] = vv[ii];
-                }
-        }
 
         size_t size () const { return this->values.size (); }
 
@@ -422,6 +447,7 @@ std::vector< NumType > cumsum0 (const std::vector< NumType > x) {
         return res;
 }
 
+/// calculate cumulative sum of a vector with added zero
 template < class Type, class InputType > std::vector< Type > cumsum0 (std::vector< InputType > s) {
         std::vector< Type > c (s.size () + 1);
         c[0] = 0;
@@ -446,6 +472,7 @@ std::vector< NumType > array2vector (const NumTypeIn *x, int len) {
         return w;
 }
 
+/// convert array given by pointer to larray
 template < class NumType, class NumTypeIn > larray< NumType > array2larray (const NumTypeIn *x, int len) {
         larray< NumType > w (len);
         std::copy (x, x + len, w.d);
@@ -595,10 +622,10 @@ template < class numtype >
  * @param c Number of columns
  * @return
  */
-int compare_matrix (const numtype *A, const numtype *B, int r, int c) {
-        for (int x = 0; x < r; x++)
-                for (int y = 0; y < c; y++) {
-                        if (A[x + y * r] != B[x + y * r]) {
+int compare_matrix (const numtype *A, const numtype *B, int number_of_rows, int number_of_columns) {
+        for (int x = 0; x < number_of_rows; x++)
+                for (int y = 0; y < number_of_columns; y++) {
+                        if (A[x + y * number_of_rows] != B[x + y * number_of_rows]) {
                                 myprintf ("arrays unequal: %d, %d\n", x, y);
                                 return 0;
                         }
@@ -906,16 +933,6 @@ template < class numtype > numtype next_combination_fold (numtype *comb, int k, 
                 comb[i] = comb[i - 1] + 1;
 
         return fold;
-}
-
-inline void print_combinations (int n, int k) {
-        int *comb = new_comb_init< int > (k);
-        int nc = ncombs (n, k);
-        for (int i = 0; i < nc; i++) {
-                print_comb (comb, k);
-                next_combination< int > (comb, k, n);
-        }
-        delete_comb (comb);
 }
 
 /* code related to permutations */

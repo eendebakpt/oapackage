@@ -24,7 +24,6 @@ else:
 import oalib
 import oapackage
 import oapackage.scanf
-import oapackage.Doptim
 import oapackage.graphtools
 
 
