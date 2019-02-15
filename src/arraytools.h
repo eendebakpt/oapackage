@@ -547,11 +547,12 @@ struct array_link {
          */
         std::vector< int > Fvalues (int number_of_columns) const;
 
-        /** Calculate F-values of a conference design
+		/** Calculate F-values of a conference design
 		 *
 		 * \param number_of_columns Number of columns to use
-		 * \returns The Fk vector with k the number of columns specified
-		 */
+		 * \return The Fk vector with k the number of columns specified
+		 *
+		 **/
         std::vector< int > FvaluesConference (int number_of_columns) const;
 
         /** Calculate the Jk-characteristics of the matrix (the values are signed)
@@ -841,10 +842,11 @@ class jstructbase_t {
 
         /** Calculate histogram of J values
 		 *
-		 * The histogram bins are given by the values of @ref Jvalues
+		 * \return Histogram of J values
 		 *
-		 * \returns Histogram of J values
-		 */
+		 * The histogram bins are given by the values of @ref Jvalues.
+		 *
+		 **/
         std::vector< int > calculateF () const;
 
 		/// Calculate the J-values for a given array

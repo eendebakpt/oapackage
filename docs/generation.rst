@@ -67,7 +67,7 @@ For details see :cite:`Schoen2018dsd`, :cite:`wiki:ConferenceMatrix`.
     >>> l4=oapackage.extend_conference ([array], conference_class, verbose=0)
     >>> l5=oapackage.extend_conference ( l4, conference_class, verbose=0) 
     >>> l6=oapackage.extend_conference ( l5, conference_class, verbose=0)
-    >>> print('number of non-isomorphic conference designs with 6 columns: %d'  % len(l6) )
+    >>> print('number of non-isomorphic conference designs with 6 columns: %d' % len(l6) )
     number of non-isomorphic conference designs with 6 columns: 11
 
 

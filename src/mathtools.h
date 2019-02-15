@@ -618,8 +618,8 @@ template < class numtype >
  * Compare two arrays and return whether equal or not.
  * @param A Pointer to array
  * @param B Pointer to array
- * @param r Number of rows
- * @param c Number of columns
+ * @param number_of_rows Number of rows
+ * @param number_of_columns Number of columns
  * @return
  */
 int compare_matrix (const numtype *A, const numtype *B, int number_of_rows, int number_of_columns) {

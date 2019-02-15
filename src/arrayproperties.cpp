@@ -856,9 +856,9 @@ Eigen::MatrixXi permM (int ks, int k, const Eigen::MatrixXi subperm, int verbose
 
         if (verbose) {
                 myprintf ("ks: %d, k %d, idxsub: ", ks, k);
-                print_perm (idxsub); // printf("\n");
+                print_perm (idxsub); 
                 myprintf ("ks: %d, k %d, idxrem: ", ks, k);
-                print_perm (idxrem); // printf("\n");
+                print_perm (idxrem); 
         }
 
         const int m = 1 + k + k * (k - 1) / 2;
@@ -1482,7 +1482,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
         SelfAdjointEigenSolver< MyMatrixf > es;
         es.compute (mm);
         const MyVectorf evs = es.eigenvalues ();
-        MyVectorf S = evs; // sqrt(S);
+        MyVectorf S = evs; 
 
         if (S[m - 1] < 1e-15) {
                 if (verbose >= 2) {
@@ -1748,7 +1748,6 @@ void calculateParetoEvenOdd (const std::vector< std::string > infiles, const cha
                                   af.narrays);
                 }
                 int narrays = af.narrays;
-//#pragma omp parallel for num_threads(4) schedule(dynamic,1)
 #pragma omp parallel for
                 for (int k = 0; k < narrays; k++) {
                         array_link al;

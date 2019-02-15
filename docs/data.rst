@@ -19,7 +19,7 @@ The OAs are represented by arrays (data in memory is stored in column-major form
 
 A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
 that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
-for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref`Model matrices`).
+for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref:`Model matrices`).
 An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
 
 For :math:`{N}` even, a conference design :math:`C` is 

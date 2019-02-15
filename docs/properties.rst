@@ -29,7 +29,7 @@ Let :math:`{X}` be the :math:`{N}\times {p}` interaction model matrix consisting
 ones and the contrast vectors associated to the main and two-factor interactions
 of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`.
 A D-efficient design :cite:`Donev2007` (:math:`D`) is an :math:`{N}\times {n}` array that maximizes
-the :math:`D`-efficiency, define as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
+the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
 where the model matrix :math:`{X}` is constructed using :math:`D`.
 
 Structural properties of an array
