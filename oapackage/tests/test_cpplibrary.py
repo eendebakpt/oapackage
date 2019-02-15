@@ -122,12 +122,12 @@ class TestModelmatrix(unittest.TestCase):
 
     def test_modelmatrix_main_effects(self):
         # test model matrix main effects are helmert contrasts
-        array=oapackage.array_link( np.array([[0,1,2,3]]).T)
-        
-        M=oapackage.array2modelmatrix(array, 'm')
-        hc=oapackage.oahelper.helmert_contrasts(4)
-        np.testing.assert_array_equal(hc, M[:,1:])
-    
+        array = oapackage.array_link(np.array([[0, 1, 2, 3]]).T)
+
+        M = oapackage.array2modelmatrix(array, 'm')
+        hc = oapackage.oahelper.helmert_contrasts(4)
+        np.testing.assert_array_equal(hc, M[:, 1:])
+
     def test_modelmatrix(self):
         al = oapackage.exampleArray(1, 0)
 
@@ -156,30 +156,30 @@ class TestModelmatrix(unittest.TestCase):
         array = oapackage.exampleArray(0, 0)
         r = oapackage.array2eigenModelMatrixMixed(array.selectFirstColumns(1), verbose=0)
         main_effects = r[0]
-        np.testing.assert_array_equal(main_effects, np.array([[-1., -1., -1., -1.,  1.,  1.,  1.,  1.]]).T)
+        np.testing.assert_array_equal(main_effects, np.array([[-1., -1., -1., -1., 1., 1., 1., 1.]]).T)
 
         array = oapackage.exampleArray(10, 0).selectFirstColumns(2)
         r = oapackage.array2eigenModelMatrixMixed(array, verbose=0)
         main_effects = r[0]
         interaction_model = r[1]
         np.testing.assert_array_almost_equal(main_effects, np.array([[-1.22474487, -0.70710678, -1.22474487, -0.70710678],
-                                                                     [-1.22474487, -0.70710678,  1.22474487, -0.70710678],
-                                                                     [-1.22474487, -0.70710678,  0.,  1.41421356],
-                                                                     [1.22474487, -0.70710678,  1.22474487, -0.70710678],
-                                                                     [1.22474487, -0.70710678,  1.22474487, -0.70710678],
-                                                                     [1.22474487, -0.70710678,  0.,  1.41421356],
-                                                                     [0.,  1.41421356, -1.22474487, -0.70710678],
-                                                                     [0.,  1.41421356, -1.22474487, -0.70710678],
-                                                                     [0.,  1.41421356,  0.,  1.41421356]]))
-        np.testing.assert_array_almost_equal(interaction_model, np.array([[1.5,  0.8660254,  0.8660254,  0.5],
-                                                                          [-1.5,  0.8660254, -0.8660254,  0.5],
+                                                                     [-1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                                                                     [-1.22474487, -0.70710678, 0., 1.41421356],
+                                                                     [1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                                                                     [1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                                                                     [1.22474487, -0.70710678, 0., 1.41421356],
+                                                                     [0., 1.41421356, -1.22474487, -0.70710678],
+                                                                     [0., 1.41421356, -1.22474487, -0.70710678],
+                                                                     [0., 1.41421356, 0., 1.41421356]]))
+        np.testing.assert_array_almost_equal(interaction_model, np.array([[1.5, 0.8660254, 0.8660254, 0.5],
+                                                                          [-1.5, 0.8660254, -0.8660254, 0.5],
                                                                           [-0., -1.73205081, -0., -1.],
-                                                                          [1.5, -0.8660254, -0.8660254,  0.5],
-                                                                          [1.5, -0.8660254, -0.8660254,  0.5],
-                                                                          [0.,  1.73205081, -0., -1.],
+                                                                          [1.5, -0.8660254, -0.8660254, 0.5],
+                                                                          [1.5, -0.8660254, -0.8660254, 0.5],
+                                                                          [0., 1.73205081, -0., -1.],
                                                                           [-0., -0., -1.73205081, -1.],
                                                                           [-0., -0., -1.73205081, -1.],
-                                                                          [0.,  0.,  0.,  2.]]))
+                                                                          [0., 0., 0., 2.]]))
 
     @only_python3
     def test_modelmatrix_verbosity(self):
@@ -405,14 +405,15 @@ class TestCppLibrary(unittest.TestCase):
         N = 18
         k = 9
         t = 2
-        l = [2,3]
+        l = [2, 3]
         rr = []
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             oapackage.oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
-            self.assertIn('warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour', mock_stdout.getvalue() )
+            self.assertIn(
+                'warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour', mock_stdout.getvalue())
 
         self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
-        
+
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
@@ -466,7 +467,8 @@ class TestCppLibrary(unittest.TestCase):
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             _ = at.show()
             std_output = mock_stdout.getvalue()
-            self.assertEqual(std_output, 'array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n')
+            self.assertEqual(
+                std_output, 'array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n')
         self.assertEqual(at.colperm(), (1, 0))
 
     def test_arraylink2arraydata(self):
@@ -588,11 +590,10 @@ class TestCppLibrary(unittest.TestCase):
         numpy.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
                                                     0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
-
     def test_PICsequence_length(self):
         array = oapackage.exampleArray(8, 0)
         pic = oapackage.PICsequence(array)
-        self.assertEqual( len(pic), array.n_columns)
+        self.assertEqual(len(pic), array.n_columns)
 
     def test_arraylink(self):
         al = oapackage.exampleArray(0, 0)
