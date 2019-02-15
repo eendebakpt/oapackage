@@ -856,9 +856,9 @@ Eigen::MatrixXi permM (int ks, int k, const Eigen::MatrixXi subperm, int verbose
 
         if (verbose) {
                 myprintf ("ks: %d, k %d, idxsub: ", ks, k);
-                print_perm (idxsub); // printf("\n");
+                print_perm (idxsub); 
                 myprintf ("ks: %d, k %d, idxrem: ", ks, k);
-                print_perm (idxrem); // printf("\n");
+                print_perm (idxrem); 
         }
 
         const int m = 1 + k + k * (k - 1) / 2;
