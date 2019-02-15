@@ -74,6 +74,7 @@ class TestDoptimize(unittest.TestCase):
         result = oapackage.Doptim.selectDn(scores, dds, sols, nout=1, sortfull=True)
         self.assertTrue(len(result[2])==1)
 
+    @only_python3
     def test_optimDeffPython(self):
         al = oapackage.exampleArray(2, 0)
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
