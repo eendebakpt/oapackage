@@ -109,11 +109,13 @@ class OAextend {
 		/// update the options structuer with the specified class of designs
         void updateArraydata (arraydata_t *arrayclass = 0) const;
 
-        /** return preferred extension algorithm
+        /** Return preferred extension algorithm
 		 *
 		 * \param arrayclass Class of designs to extend
 		 * \param verbose Verbosity level
-		 */
+		 * \return Algorithm selected to be used for this class
+		 *
+		 **/
         static algorithm_t getPreferredAlgorithm (const arraydata_t &arrayclass, int verbose = 0) {
                 if (verbose)
                         myprintf ("getPreferredAlgorithm: ad.ncolgroups %d, ad.s[0] %d\n", arrayclass.ncolgroups, arrayclass.s[0]);
@@ -173,9 +175,6 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, const arraydata_t &
 
 /** @copydoc extend_arraylist(const arraylist_t &, arraydata_t &, OAextend const &)
  * 
- * \param array_list The list of arrays to be extended
- * \param array_class Class of arrays to generate
- * \param oaextend_options Parameters for the extension algorithm
  * \param extensioncol Index of column to be added to the designs
  * \param extensions List to append generated designs to
  * \return Number of candidate arrays generated

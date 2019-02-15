@@ -205,7 +205,16 @@ A class representing an integer valued array
 
 A class representing an integer valued array  
 
-       The array is intialized with zeros.  
+The array is intialized with zeros.  
+
+Parameters
+----------
+* `nrows` :  
+    Number of rows  
+* `ncols` :  
+    Number of columns  
+* `index` :  
+    Number to keep track of lists of designs  
 ";
 
 %feature("docstring") array_link::array_link "
@@ -226,7 +235,21 @@ Initialize with data from another array_link object.
 
 A class representing an integer valued array  
 
-Initialize with data from anEigen matrix.  
+Initialize with data from an Eigen matrix.  
+";
+
+%feature("docstring") array_link::array_link "
+
+A class representing an integer valued array  
+
+The array is initialized by permuting the columns of another array  
+
+Parameters
+----------
+* `array` :  
+    Source to copy from  
+* `column_permutation` :  
+    The permuntation to apply  
 ";
 
 %feature("docstring") array_link::array_link "
@@ -242,11 +265,8 @@ A class representing an integer valued array
 %feature("docstring") array_link::array_link "
 
 A class representing an integer valued array  
-";
 
-%feature("docstring") array_link::array_link "
-
-A class representing an integer valued array  
+The array is initialized by copying the values from a vector.  
 ";
 
 %feature("docstring") array_link::~array_link "
@@ -267,7 +287,7 @@ print array to string
 
 %feature("docstring") array_link::showarraycompact "
 
-print array to stdout  
+print array to stdout in compact format (no whitespace between elemenents)  
 ";
 
 %feature("docstring") array_link::showproperties "
@@ -397,15 +417,22 @@ This assumes the strength is at least 3. Otherwise use the jstruct_t object
 Calculate F-values of a conference design  
 
        \\param number_of_columns Number of columns to use
-       \\returns The Fk vector with k the number of columns specified  
+       \\return The Fk vector with k the number of columns specified
+  
 ";
 
 %feature("docstring") array_link::Jcharacteristics "
 
 Calculate the Jk-characteristics of the matrix (the values are signed)  
 
-       \\param jj Number of columns to use
-       \\returns Vector with calculated Jk values  
+Parameters
+----------
+* `jj` :  
+    Number of columns to use  
+
+Returns
+-------
+Vector with calculated Jk values  
 ";
 
 %feature("docstring") array_link::PECsequence "
@@ -427,7 +454,7 @@ calculate rank of array
 
 Calculate generalized wordlength pattern  
 
-       @see ::GWLP  
+See also: GWLP  
 ";
 
 %feature("docstring") array_link::strength "
@@ -451,8 +478,7 @@ return true if the array is a foldover array
 Calculate centered L2 discrepancy  
 
 The method is from \"A connection between uniformity and aberration in regular
-fractions of two-level
-factorials\", Fang and Mukerjee, 2000  
+fractions of two-level factorials\", Fang and Mukerjee, 2000  
 ";
 
 %feature("docstring") array_link::randomperm "
@@ -472,9 +498,23 @@ apply a random permutation of rows of an orthogonal array
 
 %feature("docstring") array_link::getModelMatrix "
 
-This function calculates Helmert contrasts for the factors of an input design.
-Implementation from code written by Eric Schoen, Dept. of Applied Economics,
-University of Antwerp, Belgium  
+Caculate model matrix of an orthogonal array  
+
+Parameters
+----------
+* `order` :  
+    For 0 return only the intercept; for 1 return intercept and main effects;
+    for 2 return intercept, main effects and interaction effects.  
+* `intercept` :  
+    If 1, then include the intercept in the output.  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Calculated model matrix  
+
+This function uses array2eigenModelMatrixMixed for the calculation.  
 ";
 
 %feature("docstring") array_link::deepcopy "
@@ -1027,8 +1067,12 @@ Structure for reading or writing a file with arrays
 
 Structure for reading or writing a file with arrays  
 
-       \\param filename File to open for reading
-       \\param verbose Verbosity level  
+Parameters
+----------
+* `filename` :  
+    File to open for reading  
+* `verbose` :  
+    Verbosity level  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::arrayfile_t "
@@ -1041,8 +1085,16 @@ Parameters
 ----------
 * `filename` :  
     File to open  
-* `m` :  
+* `nrows` :  
+    Number of rows  
+* `ncols` :  
+    Number of columns  
+* `narrays` :  
+    Specify a number of arrays, or -1 to add dynamically  
+* `mode` :  
     File mode  
+* `number_of_bits` :  
+    Number of bits to use for storage. For 2-level arrays only 1 bit is needed  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::~arrayfile_t "
@@ -1052,7 +1104,7 @@ destructor function, closes all filehandles
 
 %feature("docstring") arrayfile::arrayfile_t::createfile "
 
-Close current file and open a new file for writing.  
+Open a new file for writing and (if opened) close the current file.  
 ";
 
 %feature("docstring") arrayfile::arrayfile_t::closefile "
@@ -2193,8 +2245,8 @@ calculate histogram of J values for a 2-level array
 
 Calculate aberration value  
 
-       This is equal to the sum of the squares of all Jk values, divided by the
-number of rows squared.  
+This is equal to the sum of the squares of all Jk values, divided by the number
+of rows squared.  
 ";
 
 %feature("docstring") jstruct_t::show "
@@ -2239,7 +2291,8 @@ Calculate histogram of J values
 
        The histogram bins are given by the values of @ref Jvalues
 
-       \\returns Histogram of J values  
+       \\returns Histogram of J values
+  
 ";
 
 %feature("docstring") jstructbase_t::calc "
@@ -2308,6 +2361,8 @@ C++ includes: mathtools.h
 ";
 
 %feature("docstring") larray::larray "
+
+Create unallocated array.  
 ";
 
 %feature("docstring") larray::larray "
@@ -2484,21 +2539,60 @@ C++ includes: mathtools.h
 ";
 
 %feature("docstring") mvalue_t::mvalue_t "
+
+Create multi-valued object  
+
+The object consists of a vector of elements.  
 ";
 
 %feature("docstring") mvalue_t::mvalue_t "
+
+Create multi-valued object  
+
+The object consists of a vector of elements.  
+
+Parameters
+----------
+* `element` :  
+    Single element to add to the vector  
+* `dd` :  
+    Ordering to use  
 ";
 
 %feature("docstring") mvalue_t::mvalue_t "
+
+Create multi-valued object  
+
+The object consists of a vector of elements.  
+
+Parameters
+----------
+* `elements` :  
+    Vector to use for initalization of the object  
+* `dd` :  
+    Ordering to use  
 ";
 
 %feature("docstring") mvalue_t::mvalue_t "
+
+Create multi-valued object  
+
+The object consists of a vector of elements.  
+
+Parameters
+----------
+* `elements` :  
+    Vector to use for initalization of the object  
+* `dd` :  
+    Ordering to use  
 ";
 
 %feature("docstring") mvalue_t::~mvalue_t "
 ";
 
 %feature("docstring") mvalue_t::raw_values "
+
+Return vector with the raw values in this object.  
 ";
 
 %feature("docstring") mvalue_t::size "
@@ -2527,12 +2621,20 @@ C++ includes: extend.h
 ";
 
 %feature("docstring") OAextend::OAextend "
+
+Options for the extension algorithm  
 ";
 
 %feature("docstring") OAextend::OAextend "
+
+Options for the extension algorithm  
 ";
 
 %feature("docstring") OAextend::OAextend "
+
+Options for the extension algorithm  
+
+The algorithm is automatically determined from the specified arrayclass.  
 ";
 
 %feature("docstring") OAextend::setAlgorithm "
@@ -2573,7 +2675,8 @@ print configuration to stdout
 return preferred extension algorithm  
 
        \\param arrayclass Class of designs to extend
-       \\param verbose Verbosity level  
+       \\param verbose Verbosity level
+  
 ";
 
 // File: classobject__pool.xml
@@ -2588,7 +2691,7 @@ C++ includes: mathtools.h
 
 %feature("docstring") object_pool::object_pool "
 
-constructor  
+Create a pool of objects that can be re-used.  
 ";
 
 %feature("docstring") object_pool::reset "
@@ -3019,7 +3122,7 @@ The model is the intercept, main effects and interaction effects The rank,
 D-efficiency, VIF-efficiency and E-efficiency are appended to the second
 argument  
 
-The vector ret is filled with the rank, Defficiency, VIF efficiency and
+The return vector is filled with the rank, Defficiency, VIF efficiency and
 Eefficiency  
 ";
 
@@ -3030,6 +3133,24 @@ decomposition.
 ";
 
 %feature("docstring") Defficiencies "
+
+Calculate efficiencies for an array  
+
+Parameters
+----------
+* `array` :  
+    Array to use in calculation  
+* `arrayclass` :  
+    Specification of the array class  
+* `verbose` :  
+    Verbosity level  
+* `addDs0` :  
+    If True, then add the Ds0-efficiency to the output  
+
+Returns
+-------
+Vector with the calculate D-efficiency, the main effect robustness (or Ds-
+optimality) and D1-efficiency for an orthogonal array  
 ";
 
 %feature("docstring") VIFefficiency "
@@ -3058,7 +3179,7 @@ Calculate D-efficiencies for all projection designs
 
 Parameters
 ----------
-* `al` :  
+* `array` :  
     Design to calculate D-efficiencies for  
 * `number_of_factors` :  
     Number of factors into which to project  
@@ -3074,16 +3195,39 @@ Vector with calculated D-efficiencies
 
 Calculate the projection estimation capacity sequence for a design  
 
-The PEC of a design is the fraction of estimable second-order models in x
-factors. See \"Ranking Non-regular Designs\", J.L. Loeppky  
+Parameters
+----------
+* `array` :  
+    Input array  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Vector with the caculated PEC sequence  
+
+The PECk of a design is the fraction of estimable second-order models in k
+factors. The vector (PEC1, PEC2, ..., ) is called the projection estimation
+capacity sequence. See \"Ranking Non-regular Designs\", J.L. Loeppky, 2004.  
 ";
 
 %feature("docstring") PICsequence "
 
 Calculate the projection information capacity sequence for a design.  
 
-The PIC of a design is the average D-efficiency of estimable second-order models
-in x factors.  
+Parameters
+----------
+* `array` :  
+    Input array  
+* `verbose` :  
+    Verbosity level  
+
+Returns
+-------
+Vector with the caculated PIC sequence  
+
+The PICk of a design is the average D-efficiency of estimable second-order
+models in k factors. The vector (PIC1, PIC2, ..., ) is called the PIC sequence.  
 ";
 
 %feature("docstring") distance_distribution "
@@ -3120,7 +3264,7 @@ Calculate GWLP (generalized wordlength pattern)
 
 The method used for calculation is from Xu and Wu (2001), \"Generalized minimum
 aberration for asymmetrical
-fractional factorial desings\" For non-symmetric arrays see \"Algorithmic
+fractional factorial desings\". For non-symmetric arrays see \"Algorithmic
 Construction of Efficient Fractional Factorial Designs With Large Run
 Sizes\", Xu, Technometrics, 2009.  
 
@@ -3136,6 +3280,9 @@ Parameters
 Returns
 -------
 Vector with calculated generalized wordlength pattern  
+
+A more detailed description of the generalized wordlength pattern can also be
+found in the documentation at https://oapackage.readthedocs.io/.  
 ";
 
 %feature("docstring") GWLPmixed "
@@ -3166,17 +3313,13 @@ calculate delete-one-factor GWLP (generalized wordlength pattern) projections
 ";
 
 %feature("docstring") sortGWLP "
-";
 
-%feature("docstring") projectionGWLPdoublevalues "
-
-calculate delete-one-factor GWLP (generalized wordlength pattern) projection
-values  
+sort a list of GWLP values and return the sorted list  
 ";
 
 %feature("docstring") CL2discrepancy "
 
-calculate centered L2-discrepancy of a design  
+Calculate centered L2-discrepancy of a design  
 
 The method is from \"A connection between uniformity and aberration in regular
 fractions of two-level factorials\", Fang and Mukerjee, 2000  
@@ -3233,22 +3376,28 @@ Calculated model matrix
 
 Convert orthogonal array or conference design to model matrix  
 
-Intercept, main effects, interaction effects, quadratics The order in the
-interaction effects is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1  
+The model matrix consists of the intercept, main effects and (optionally) the
+interaction effects and quadratic effects. The order in the interaction effects
+is (c1, c2)=(0,0), (1,0), (2,0), (2,1), ... with c2<c1 for columns c1, c2. The
+size of the model matrix calculated by this function is given by
+array2modelmatrix_sizes.  
 
 Parameters
 ----------
 * `array` :  
     Orthogonal array or conference design  
 * `mode` :  
-    Can be 'm' for main effects, 'i' for interaction effects or 'q' for
-    quadratic effects  
+    Type of model matrix to calculate. Can be 'm' for main effects, 'i' for
+    interaction effects or 'q' for quadratic effects  
 * `verbose` :  
     Verbosity level  
 
 Returns
 -------
 Calculated model matrix  
+
+For conference designs the method conference_design2modelmatrix is used. For
+orthogonal array the calculated is performed with array2eigenModelMatrixMixed.  
 ";
 
 %feature("docstring") array2modelmatrix_sizes "
@@ -3415,6 +3564,11 @@ Parameters
     String to prepend in output  
 * `verbose` :  
     Verbosity level  
+";
+
+%feature("docstring") arrayfile::print_eigen_matrix "
+
+Print Eigen matrix to stdout  
 ";
 
 %feature("docstring") arrayfile::eigen2numpyHelper "
@@ -3833,7 +3987,7 @@ Write a vector of vector elements to binary file.
 
 %feature("docstring") arrayfile::array2eigenX1 "
 
-convert 2-level array to main effects in Eigen format  
+Convert 2-level array to main effects in Eigen format  
 
 Parameters
 ----------
@@ -3865,8 +4019,8 @@ The second order interaction model
 
 %feature("docstring") arrayfile::array2eigenModelMatrix "
 
-Convert 2-level array to second order interaction model matrix (intercept, X1,
-X2)  
+Convert 2-level array to second order interaction model matrix (intercept, main
+effects, interaction effects)  
 
 Parameters
 ----------
@@ -3878,16 +4032,9 @@ Returns
 Eigen matrix with the model matrix  
 ";
 
-%feature("docstring") arrayfile::array2eigenMainEffects "
-
-Convert array to model matrix in Eigen format  
-
-See also: array2eigenModelMatrixMixed  
-";
-
 %feature("docstring") arrayfile::array2eigenModelMatrixMixed "
 
-Create first and second order model matrix for mixed-level array  
+Create first and second order model matrix for mixed-level orthogonal array  
 
 Parameters
 ----------
@@ -3899,6 +4046,9 @@ Parameters
 Returns
 -------
 Pair with main effects and two-factor interaction model  
+
+For 2-level arrays a direct calculation is used. For mixel-level arrays Helmert
+contrasts are used.  
 ";
 
 %feature("docstring") arrayfile::numberModelParams "
@@ -3990,6 +4140,10 @@ Parameters
     Array with the conference design  
 * `add_zeros` :  
     If True, then append a row of zeros  
+
+Returns
+-------
+The DSD generated from the conference design  
 ";
 
 %feature("docstring") reduceConference "
@@ -4023,7 +4177,7 @@ A transformation that converts the input design to normal form
 
 Extend a list of conference designs with a single column.  
 
-The list of conference designs is extended by adding each design with the
+The list of conference designs is extended by adding to each design the
 candidate extentions generated by CandidateGenerator.  
 
 Parameters
@@ -4041,17 +4195,24 @@ Parameters
 Returns
 -------
 List of generated conference designs  
+
+The extension algorithm tried to generate designs in LMC0 normal form and prune
+any designs that are not in LMC0 form.  
 ";
 
 %feature("docstring") extend_conference_plain "
 
 Extend a list of conference designs with a single column, plain version without
-caching.  
+caching  
+
+Research function.  
 ";
 
 %feature("docstring") extend_conference_restricted "
 
 Extend a list of conference designs with a single column  
+
+Research function.  
 ";
 
 %feature("docstring") extend_double_conference "
@@ -4089,12 +4250,38 @@ arrays, return indices of classes
 
 %feature("docstring") selectLMC0doubleconference "
 
-select double conference arrays in LMC0 form  
+Select double conference designs in LMC0 form  
+
+Parameters
+----------
+* `list` :  
+    List of double conference designs  
+* `verbose` :  
+    Verbosity level  
+* `ctype` :  
+    Specifiation of the class of designs  
+
+Returns
+-------
+List with only the designs in the input list that are in LMC0 normal form.  
 ";
 
 %feature("docstring") selectLMC0 "
 
-select conference arrays in LMC0 form  
+Select conference designs in LMC0 form  
+
+Parameters
+----------
+* `list` :  
+    List of conference designs  
+* `verbose` :  
+    Verbosity level  
+* `ctype` :  
+    Specifiation of the class of designs  
+
+Returns
+-------
+List with only the designs in the input list that are in LMC0 normal form.  
 ";
 
 %feature("docstring") generateConferenceExtensions "
@@ -4146,22 +4333,19 @@ searched.
 
 %feature("docstring") compareLMC0 "
 
-Return true of the array is smaller in LMC-0 ordering  
+Return true if the first array is smaller in LMC-0 ordering than the second
+array  
 ";
 
 %feature("docstring") sortLMC0 "
 
-sort list of conference designs according to LMC-0 ordering  
+sort list of conference designs according to LMC0 ordering  
 ";
 
 %feature("docstring") LMC0checkDC "
-
-LMC0 check for double conference matrix.  
 ";
 
 %feature("docstring") LMC0check "
-
-check if array is in LM0 form  
 ";
 
 %feature("docstring") isConferenceFoldover "
@@ -4189,14 +4373,14 @@ Permutation
 
 %feature("docstring") minz "
 
-return minimal position of zero in design  
+return minimal position of zero in specified column of a design  
 ";
 
 // File: Deff_8h.xml
 
 %feature("docstring") scoreD "
 
-calculate score from from set of efficiencies  
+Calculate score from a set of efficiencies  
 
 The score is the weighted sum of the efficiencies.  
 
@@ -4204,36 +4388,12 @@ Parameters
 ----------
 * `efficiencies` :  
     Vector with calculated efficiencies  
-* `alpha` :  
+* `weights` :  
     Weights for the efficiencies  
-";
-
-%feature("docstring") optimDeff "
-
-Optimize a design according to the optimization function specified.  
-
-Arguments:  
-
-Parameters
-----------
-* `A0` :  
-    Array to be optimized  
-* `arrayclass` :  
-    Structure describing the design class  
-* `alpha` :  
-    3x1 array with optimization parameters  
-* `verbose` :  
-    Verbosity level  
-* `optimmethod` :  
-    Optimization method to use  
-* `niter` :  
-    Number of iterations  
-* `nabort` :  
-    Number of iterations after which to abort when no improvements are found  
 
 Returns
 -------
-Optimized designs  
+Weighted sum of the efficiencies  
 ";
 
 %feature("docstring") Doptimize "
@@ -4278,6 +4438,34 @@ A structure with the generated optimal designs
 Function to generate optimal designs with mixed optimization approach  
 
 This function is beta code. See Doptimize for detauls of the parameters.  
+";
+
+%feature("docstring") optimDeff "
+
+Optimize a design according to the optimization function specified.  
+
+Arguments:  
+
+Parameters
+----------
+* `array` :  
+    Array to be optimized  
+* `arrayclass` :  
+    Structure describing the design class  
+* `alpha` :  
+    3x1 array with optimization parameters  
+* `verbose` :  
+    Verbosity level  
+* `optimmethod` :  
+    Optimization method to use  
+* `niter` :  
+    Number of iterations  
+* `nabort` :  
+    Number of iterations after which to abort when no improvements are found  
+
+Returns
+-------
+Optimized designs  
 ";
 
 // File: evenodd_8h.xml
@@ -4394,6 +4582,17 @@ Returns
 List of all generated arrays  
 
 See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
+
+Parameters
+----------
+* `extensioncol` :  
+    Index of column to be added to the designs  
+* `extensions` :  
+    List to append generated designs to  
+
+Returns
+-------
+Number of candidate arrays generated  
 ";
 
 %feature("docstring") extend_array "
@@ -4402,7 +4601,7 @@ Extend a single orthogonal array
 
 Parameters
 ----------
-* `al` :  
+* `array` :  
     The array to be extended  
 * `array_class` :  
     Class of arrays to generate  
@@ -4419,9 +4618,26 @@ See also: extend_array(const array_link &, arraydata_t &, OAextend const &)
 
 %feature("docstring") extend_array "
 
-Extend an array with a single column  
+Extend an orthogonal array with a single column  
 
 See also: extend_array(const array_link &, arraydata_t &, OAextend const &)  
+
+Parameters
+----------
+* `array` :  
+    Array to extend  
+* `arrayclass` :  
+    Array data for the full array  
+* `extension_column` :  
+    Column to extend  
+* `extensions` :  
+    List to which generated valid extensions are added  
+* `oaextend` :  
+    Structure with options  
+
+Returns
+-------
+Number of candidate extensions generated  
 ";
 
 %feature("docstring") runExtendRoot "
@@ -4697,6 +4913,8 @@ calculate cumulative sum of a vector with added zero
 ";
 
 %feature("docstring") cumsum0 "
+
+calculate cumulative sum of a vector with added zero  
 ";
 
 %feature("docstring") permutation "
@@ -4710,6 +4928,8 @@ convert array given by pointer to std::vector
 ";
 
 %feature("docstring") array2larray "
+
+convert array given by pointer to larray  
 ";
 
 %feature("docstring") print_perm "
@@ -4763,9 +4983,9 @@ Parameters
     Pointer to array  
 * `B` :  
     Pointer to array  
-* `r` :  
+* `number_of_rows` :  
     Number of rows  
-* `c` :  
+* `number_of_columns` :  
     Number of columns  
 
 Returns
@@ -4907,9 +5127,6 @@ Parameters
 ";
 
 %feature("docstring") next_combination_fold "
-";
-
-%feature("docstring") print_combinations "
 ";
 
 %feature("docstring") perm_is_ordered "
@@ -5361,9 +5578,6 @@ array
 
 // File: tools_8h.xml
 
-%feature("docstring") base_name "
-";
-
 %feature("docstring") printfd_handler "
 
 function to print debugging messages  
@@ -5561,16 +5775,9 @@ Release a 2-dimensional non-uniform array.
 Parameters
 ----------
 * `data` :  
-";
-
-%feature("docstring") free2d_irr "
-
-Release a 2-dimensional non-uniform array.  
-
-Parameters
-----------
-* `data` :  
+    Pointer to allocated array  
 * `nrows` :  
+    Not used at the moment  
 ";
 
 %feature("docstring") print_array "
