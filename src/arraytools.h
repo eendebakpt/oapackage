@@ -953,6 +953,9 @@ class jstruct_t {
         /// calculate maximum J value
         int maxJ () const;
 
+		/// Calculate the number of possible J values can can occur for the given strength
+		int number_J_values(int strength) const;
+
         /// calculate possible values in F vector
         std::vector< int > Fval (int strength = 3) const;
 
