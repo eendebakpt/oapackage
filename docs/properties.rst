@@ -82,7 +82,9 @@ documentation of :cpp:class:`array_link`, which shows the full set of methods av
 Model matrices
 --------------
 
-For orthogonal arrays and conference designs, we can calculate model matrices. The model matrix consists of the intercept (a columns of ones) and the contrast vectors associated to the main effects and optionally secondorder effects
+For orthogonal arrays and conference designs, we can calculate
+model matrices (also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
+The model matrix consists of the intercept (a columns of ones) and the contrast vectors associated to the main effects and optionally secondorder effects
 (interaction effects and quadratic effects).
 For 2-level orthogonal arrays, the levels of the array are first coded according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. The coded matrix is referred to as the design matrix.
 The main effect contrast vectors are given by the design matrix. The contrast vectors associated to the second order effects are calculated by taking products between two columns in the design matrix.

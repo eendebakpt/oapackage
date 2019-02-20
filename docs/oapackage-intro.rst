@@ -47,9 +47,8 @@ The statistical properties of the arrays and designs are introduced in :ref:`Sta
 Interfaces
 ----------
 
-The Orthogonal Array package has interfaces in C++ and Python, which include command line 
-tools for generating, manipulating and analyzing all the types of arrays and designs. In this documentation, you will find references to
-both the Python and the C++ interface.
+The Orthogonal Array package has interfaces in C++ and Python for generating, manipulating and analyzing all the types of arrays and designs. In this documentation, you will find references to
+both the Python and the C++ interface. The package also includes several command line tools.
 
 For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab interface; see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_.
