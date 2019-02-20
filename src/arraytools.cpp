@@ -2920,7 +2920,6 @@ int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, 
         return 0;
 }
 
-/// create new arraydata_t object
 arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
         s = new array_t[nc];
@@ -2936,7 +2935,7 @@ arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_,
                 nc = factor_levels.size ();
                 std::fill (s, s + ncols, factor_levels[factor_levels.size () - 1]);
         }
-        std::copy (factor_levels.begin (), factor_levels.end (), s);
+		std::copy(factor_levels.begin(), factor_levels.begin() + ncols, s);
         complete_arraydata ();
 }
 
