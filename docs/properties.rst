@@ -25,12 +25,11 @@ an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`. A :math:`{N}\times {N}` conference design :math:`E` such that :math:`E{E}^{T} = (n-1) I_{n}` is called a conference matrix; see :cite:`Elster1995`, :cite:`Colbourn2006` and :cite:`Xiao2012`. 
 
-Let :math:`{X}` be the :math:`{N}\times {p}` interaction model matrix consisting of a column of
-ones and the contrast vectors associated to the main and two-factor interactions
-of :math:`{n}` factors, where :math:`{p = 1 + n + (n)(n-1)/2}`.
-A D-efficient design :cite:`Donev2007` (:math:`D`) is an :math:`{N}\times {n}` array that maximizes
+Let :math:`{X}` be a :math:`{N}\times {p}` model matrix consisting of a column of
+ones and the contrast vectors associated to the main effects and optionally second-order effects (interaction effects and quadratic effects) of :math:`{n}` factors, where :math:`{p}` is the number of parameters including the intercept.
+A D-efficient design :cite:`Donev2007` :math:`D` is an :math:`{N}\times {n}` array that maximizes
 the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
-where the model matrix :math:`{X}` is constructed using :math:`D`.
+where the model matrix :math:`{X}` is constructed using :math:`D`. In contrast with D-optimal designs, D-efficient designs do not have any guarantee that they achieve the maximum possible :math:`D`-efficiency.
 
 Structural properties of an array
 ----------------------------------
@@ -39,7 +38,7 @@ The OApackage can calculate the rank of an array, defined as the maximum number 
 or row vectors in the array. The rank of an array is useful for several other functions in the package.
 For two-level arrays, the OApackage can also check if the arrays are foldover arrays.
 A two-level array is called a foldover array if half of its runs are mirror images of the other half,
-in the sense that the factor levels are swapped. 
+in the sense that the factor levels are changed from 0 to 1 and from 1 to 0. 
 
 For example, to calculate the rank of a two-level orthogonal array and determine whether
 the array is a foldover array, one can use
@@ -83,13 +82,12 @@ documentation of :cpp:class:`array_link`, which shows the full set of methods av
 Model matrices
 --------------
 
-For orthogonal arrays and conference designs we can calculate model matrices
-(also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
-The model matrix consists of the intercept (a columns of ones), the main effects and optionally secondorder effects
-(the interaction effects and quadratic effects).
-For 2-level orthogonal arrays the array is first
-converted from a 0,1-valued array to a -1,+1-valued array. The the main effects are given by the matrix itself and the
-second order effects are calculated by taking products between pairs of factors of the array.
+For orthogonal arrays and conference designs, we can calculate
+model matrices (also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
+The model matrix consists of the intercept (a columns of ones) and the contrast vectors associated to the main effects and optionally secondorder effects
+(interaction effects and quadratic effects).
+For 2-level orthogonal arrays, the levels of the array are first coded according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. The coded matrix is referred to as the design matrix.
+The main effect contrast vectors are given by the design matrix. The contrast vectors associated to the second order effects are calculated by taking products between two columns in the design matrix.
 For mixel-level orthogonal arrays Helmert contrasts are used.
 For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`
 and :ref:`Model matrices for mixed-level orthogonal arrays`.
