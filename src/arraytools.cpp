@@ -2928,7 +2928,8 @@ arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colind
 }
 arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[ncols];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[ncols];
         myassert (factor_levels.size () > 0, "array class should have at least 1 factor");
         if ((int)factor_levels.size () < nc) {
                 myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
