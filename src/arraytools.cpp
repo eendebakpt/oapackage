@@ -2922,7 +2922,8 @@ int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, 
 
 arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[nc];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[nc];
         memcpy ((void *)s, (const void *)s_, sizeof (array_t) * nc);
         complete_arraydata ();
 }
@@ -2949,7 +2950,8 @@ template void array_link::setarraydata (const std::vector< long > tmp, int n);
 
 arraydata_t::arraydata_t (array_t s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        if (s_ < 1 || s_ > 100) {
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		if (s_ < 1 || s_ > 100) {
                 myprintf ("arraydata_t: level factors should be > 0 and < 100\n");
         }
         s = new array_t[nc];
