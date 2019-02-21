@@ -5,7 +5,7 @@ Data representation
 ===================
 
 All designs handled by the OApackage are integer valued. The designs (whether these are orthogonal arrays, optimal designs or conferences designs)
-are stored in an :meth:`array_link` object.
+are stored in an :meth:`array_link` object. The formal definitions of orthogonal arrays, optimal designs and conference designs are included in the section :ref:`Definitions of arrays and designs`.
 
 
 Data structures
