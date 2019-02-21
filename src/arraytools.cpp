@@ -2920,23 +2920,24 @@ int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, 
         return 0;
 }
 
-/// create new arraydata_t object
 arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[nc];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[nc];
         memcpy ((void *)s, (const void *)s_, sizeof (array_t) * nc);
         complete_arraydata ();
 }
 arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[ncols];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[ncols];
         myassert (factor_levels.size () > 0, "array class should have at least 1 factor");
         if ((int)factor_levels.size () < nc) {
                 myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
                 nc = factor_levels.size ();
                 std::fill (s, s + ncols, factor_levels[factor_levels.size () - 1]);
         }
-        std::copy (factor_levels.begin (), factor_levels.end (), s);
+		std::copy(factor_levels.begin(), factor_levels.begin() + ncols, s);
         complete_arraydata ();
 }
 
@@ -2949,7 +2950,8 @@ template void array_link::setarraydata (const std::vector< long > tmp, int n);
 
 arraydata_t::arraydata_t (array_t s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        if (s_ < 1 || s_ > 100) {
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		if (s_ < 1 || s_ > 100) {
                 myprintf ("arraydata_t: level factors should be > 0 and < 100\n");
         }
         s = new array_t[nc];

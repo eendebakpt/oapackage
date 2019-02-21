@@ -42,14 +42,23 @@ calculate some of their statistical properties. The following example shows how 
    >>> print('Generalized wordlength pattern: %s' % (gwlp,) )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
+<<<<<<< HEAD
 The statistical properties of the arrays and designs are introduced in [Pieter: LINK TO STATISTICAL PROPERTIES].
+=======
+The statistical properties of the arrays and designs are introduced in :ref:`Statistical properties of orthogonal arrays`.
+>>>>>>> dev
 
 Interfaces
 ----------
 
+<<<<<<< HEAD
 The Orthogonal Array package has interfaces in C++ and Python, which include command line 
 tools for generating, manipulating and analyzing all the types of arrays and designs. In this documentation, you will find references to
 both the Python and the C++ interface.
+=======
+The Orthogonal Array package has interfaces in C++ and Python for generating, manipulating and analyzing all the types of arrays and designs. In this documentation, you will find references to
+both the Python and the C++ interface. The package also includes several command line tools.
+>>>>>>> dev
 
 For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab interface; see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_.
