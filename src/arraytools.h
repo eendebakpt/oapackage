@@ -933,19 +933,11 @@ class jstruct_t {
         jstruct_t ();
         /// Create an object to calculate J-characteristics
         jstruct_t (const array_link &al, int jj = 4);
+		/// @copydoc jstruct_t:jstruct_t()
         jstruct_t (const int N, const int K, const int jj = 4);
-        jstruct_t (const jstruct_t &js);
+		/// @copydoc jstruct_t:jstruct_t()
+		jstruct_t (const jstruct_t &js);
         ~jstruct_t ();
-
-      private:
-        /// init data structures
-        void init (int N, int k, int jj);
-        /// calculate J-characteristics of a 2-level array
-        void calc (const array_link &al);
-        /// calculate J-characteristics of a 2-level array, special function for jj=4
-        void calcj4 (const array_link &al);
-        /// calculate J-characteristics of a 2-level array, special function for jj=5
-        void calcj5 (const array_link &al);
 
       public:
         jstruct_t &operator= (const jstruct_t &rhs); 
@@ -953,7 +945,14 @@ class jstruct_t {
         /// calculate maximum J value
         int maxJ () const;
 
-        /// calculate possible values in F vector
+		/// Calculate the number of possible J values that can occur for the given strength
+		int number_J_values(int strength) const;
+
+        /** calculate possible values in F vector
+		 *
+		 * \param strength Strength to use
+		 * \return Vector with possible Jk values (ordered from high to low)
+		 */
         std::vector< int > Fval (int strength = 3) const;
 
         /// calculate histogram of J values for a 2-level array
@@ -973,6 +972,17 @@ class jstruct_t {
 
 	/// return 1 if all J values are zero, otherwise return 0
 	int allzero() const;
+
+private:
+	/// init data structures
+	void init(int N, int k, int jj);
+	/// calculate J-characteristics of a 2-level array
+	void calc(const array_link &al);
+	/// calculate J-characteristics of a 2-level array, special function for jj=4
+	void calcj4(const array_link &al);
+	/// calculate J-characteristics of a 2-level array, special function for jj=5
+	void calcj5(const array_link &al);
+
 };
 
 /** Calculate J-characteristics of conference designs

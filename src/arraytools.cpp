@@ -3491,12 +3491,19 @@ int jstruct_t::maxJ () const {
         return vmax;
 }
 
+int jstruct_t::number_J_values(int strength) const {
+	assert(strength >= 1);
+	int Jstep = pow((double)2, strength + 1);
+	int nn = floor((double)N / Jstep) + 1;
+	return nn;
+}
+
 std::vector< int > jstruct_t::Fval (int strength) const {
-        int x = pow ((double)2, strength + 1); 
-        int nn = floor ((double)N / x) + 1;
-        std::vector< int > Fv (nn);
+		int Jstep = pow((double)2, strength + 1);
+		int nn = this->number_J_values(strength);
+		std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
-                Fv[i] = N - x * i;
+                Fv[i] = N - Jstep * i;
         }
         return Fv;
 }
@@ -3504,12 +3511,12 @@ std::vector< int > jstruct_t::Fval (int strength) const {
 std::vector< int > jstruct_t::calculateF (int strength) const {
         int Nmax = N;
 
-        int x = pow (double(2), strength + 1); 
-        int nn = floor ((double)N / x) + 1;
-        std::vector< int > F (nn);
+		int nn = this->number_J_values(strength);
+		int Jstep = pow((double)2, strength + 1);
+		std::vector< int > F (nn);
 
         for (int i = 0; i < nc; i++) {
-                int fi = (N - abs (values[i])) / x;
+                int fi = (N - abs (values[i])) / Jstep;
                 F[fi]++;
         }
         return F;
