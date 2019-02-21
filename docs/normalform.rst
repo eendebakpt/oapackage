@@ -3,9 +3,11 @@ Normal form of arrays
 
 
 The Orthogonal Array package contains functions to reduce
-designs to canonical form with respect to some ordering. The
-default ordering for arrays is the lexicographic ordering in
-columns :cite:`Eendebak2009`. Alternative orderings include the
+arrays and designs to canonical form with respect to some ordering. The
+default ordering for orthogonal arrays is the lexicographic ordering in
+columns :cite:`Eendebak2009`. The default ordering for conference designs
+is the LMC0 ordering :cite:`Schoen2018dsd`.
+Alternative orderings include the
 delete-one-factor projection ordering introduced
 in :cite:`EendebakDOF` or the even-odd ordering.
 For a given ordering of a set of arrays, the minimal element of all arrays in an
@@ -21,9 +23,10 @@ and so, they cannot be tailored to create normal forms of a specific form.
 Reduction to LMC normal form
 ----------------------------
 
-The OApackage implements theory and methods from the article `Complete enumeration of pure-level and mixed-level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ to
+The Orthogonal Array package implements theory and methods from the article `Complete enumeration of pure-level and mixed-level orthogonal arrays, Schoen et al. <https://onlinelibrary.wiley.com/doi/abs/10.1002/jcd.20236>`_ to
 reduce orthogonal arrays to their LMC normal form. The C++ function to perform
-the reduction is :cpp:func:`reduceLMCform`:
+the reduction is :cpp:func:`reduceLMCform`. An example on how to use 
+this function is shown below.
 
 .. doctest::
 
@@ -81,7 +84,7 @@ in the example notebooks section.
 Reduction using graph isomorphisms
 ----------------------------------
 
-The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Nauty canonical form. To reduce general graphs to Nauty canonical form, the OApackage includes the function :py:meth:`~oalib.reduceGraphNauty`.
+The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Nauty canonical form. To reduce general graphs to Nauty canonical form, the Orthogonal Array package includes the function :py:meth:`~oalib.reduceGraphNauty`.
 
 
 .. admonition:: Reduce a design to normal form using Nauty
@@ -130,7 +133,7 @@ The function :py:meth:`~oalib.reduceOAnauty` reduces an orthogonal array to Naut
 Normal forms for conference designs
 -----------------------------------
 
-For conference designs a convenient normal form is the LMC0 ordering (sometimes also called L0 ordering) :cite:`Schoen2018dsd`.
+For conference designs, a convenient normal form is the LMC0 ordering (sometimes also called L0 ordering) :cite:`Schoen2018dsd`.
 
 .. admonition:: LMC0 ordering
 
@@ -153,7 +156,7 @@ For conference designs a convenient normal form is the LMC0 ordering (sometimes 
     as A < B, if the first column where the designs differ is smaller in A than in B.
 
 The definition implies that the ordering of designs is column-by-column and that the position of zeros in the columns is dominant over the values +1, -1.
-To check whether a design is in LMC0 form we can use :cpp:func:`LMC0check`.
+To check whether a design is in LMC0 form, we can use :cpp:func:`LMC0check`:
 
 .. admonition:: Conference design in normal form
  
