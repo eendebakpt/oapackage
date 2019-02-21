@@ -84,12 +84,50 @@ documentation of :cpp:class:`array_link`, which shows the full set of methods av
 Model matrices
 --------------
 
-For orthogonal arrays and conference designs, we can calculate model matrices. The model matrix consists of the intercept (a columns of ones) and the contrast vectors associated to the main effects and optionally secondorder effects (interaction effects and quadratic effects).
-For 2-level orthogonal arrays, the levels of the array are first coded according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. The coded matrix is referred to as the design matrix.
-The main effect contrast vectors are given by the design matrix. The contrast vectors associated to the second order effects are calculated by taking products between two columns in the design matrix.
-For mixel-level orthogonal arrays Helmert contrasts are used.
-For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`
-and :ref:`Model matrices for mixed-level orthogonal arrays`.
+For orthogonal arrays and conference designs, the OApackage can 
+calculate different model matrices. The model matrices available depend
+on the type of array and design.
+
+.. topic:: Model matrices for two-level orthogonal arrays
+  :name: modelmattwoleveloa
+
+   For two-level orthogonal arrays, the levels of the array are first coded 
+   according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. 
+   The coded matrix is referred to as the design matrix.
+   The main effect contrast vectors are given by the columns in the design 
+   matrix. The contrast vectors associated to the two-factor interactions 
+   are calculated by taking products between two different columns in the 
+   design matrix. The model matrix consists of the intercept column 
+   (i.e. a columns of ones) and the contrast vectors associated to 
+   the main effects and, optionally, the two-factor interactions. 
+
+.. topic:: Model matrices for conference designs
+  :name: modelmatconference
+
+   The model matrix for a conference design consists 
+   of the intercept column (i.e. a columns of ones) and the contrast 
+   vectors associated to the main effects and, optionally, the 
+   second-order effects (two-factor interactions and quadratic effects). 
+   The main effect contrast vectors are given by the columns in the
+   conference design. The contrast vectors associated to the second-order 
+   effects are calculated by taking products between two columns in the 
+   conference design. 
+
+.. topic:: Model matrices for mixed-level orthogonal arrays
+  :name: modelmatmixedleveloa
+
+   For mixed-level orthogonal arrays, the main effect contrast vectors
+   are defined by the Helmert contrasts. The contrast vectors associated 
+   to the two-factor interactions 
+   are calculated by taking products between two different columns in the 
+   matrix containing the Helmert contrasts of the array; see 
+   :ref:`Model matrices for mixed-level orthogonal arrays` for details. 
+   The model matrix consists of the intercept column 
+   (i.e. a columns of ones) and the contrast vectors associated to 
+   the main effects and, optionally, the two-factor interactions.    
+
+An example on how to generate an interaction model matrix for a 
+two-level orthogonal array is shown below.
 
 .. admonition:: Calculate interaction effects model matrix 
 
