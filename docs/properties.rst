@@ -7,6 +7,9 @@ the Orthogonal Array package. The properties of the arrays and designs are
 calculated using the :cpp:class:`array_link` 
 object or functions from the package.
 
+Definitions of arrays and designs
+---------------------------------
+
 Before introducing the structural and statistical properties,
 we define orthogonal arrays, conference designs and D-efficient designs:
 
@@ -24,6 +27,11 @@ For :math:`{N}` even, a conference design :cite:`Schoen2018dsd` :math:`C` is
 an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`. A :math:`{N}\times {N}` conference design :math:`E` such that :math:`E{E}^{T} = (n-1) I_{n}` is called a conference matrix; see :cite:`Elster1995`, :cite:`Colbourn2006` and :cite:`Xiao2012`. 
+
+A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
+that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
+for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref:`Model matrices`).
+An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
 
 Let :math:`{X}` be a :math:`{N}\times {p}` model matrix consisting of a column of
 ones and the contrast vectors associated to the main effects and optionally second-order effects (interaction effects and quadratic effects) of :math:`{n}` factors, where :math:`{p}` is the number of parameters including the intercept.
