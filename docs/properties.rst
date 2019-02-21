@@ -7,6 +7,9 @@ the Orthogonal Array package. The properties of the arrays and designs are
 calculated using the :cpp:class:`array_link` 
 object or functions from the package.
 
+Definitions of arrays and designs
+---------------------------------
+
 Before introducing the structural and statistical properties,
 we define orthogonal arrays, conference designs and D-efficient designs:
 
@@ -25,11 +28,11 @@ an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
 with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`. A :math:`{N}\times {N}` conference design :math:`E` such that :math:`E{E}^{T} = (n-1) I_{n}` is called a conference matrix; see :cite:`Elster1995`, :cite:`Colbourn2006` and :cite:`Xiao2012`. 
 
-Let :math:`{X}` be a :math:`{N}\times {p}` model matrix consisting of a column of
-ones and the contrast vectors associated to the main effects and optionally second-order effects (interaction effects and quadratic effects) of :math:`{n}` factors, where :math:`{p}` is the number of parameters including the intercept.
-A D-efficient design :cite:`Donev2007` :math:`D` is an :math:`{N}\times {n}` array that maximizes
-the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
-where the model matrix :math:`{X}` is constructed using :math:`D`. In contrast with D-optimal designs, D-efficient designs do not have any guarantee that they achieve the maximum possible :math:`D`-efficiency.
+A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
+which maximizes the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
+for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref:`Model matrices`).
+The Orthogonal Array package uses a coordinate-exchange algorithm to generate designs that optimize the :math:`D`-efficiency. Since there is no guarantee that the resulting designs have the largest possible :math:`D`-efficiency, we refer to them as D-efficient designs
+in this documentation. An orthogonal array is called D-optimal orthogonal array if it provides the largest :math:`D`-efficiency among all comparable orthogonal arrays.
 
 Structural properties of an array
 ----------------------------------
@@ -82,15 +85,50 @@ documentation of :cpp:class:`array_link`, which shows the full set of methods av
 Model matrices
 --------------
 
-For orthogonal arrays and conference designs, we can calculate
-model matrices (also called `design matrices <https://en.wikipedia.org/wiki/Design_matrix>`_).
-The model matrix consists of the intercept (a columns of ones) and the contrast vectors associated to the main effects and optionally secondorder effects
-(interaction effects and quadratic effects).
-For 2-level orthogonal arrays, the levels of the array are first coded according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. The coded matrix is referred to as the design matrix.
-The main effect contrast vectors are given by the design matrix. The contrast vectors associated to the second order effects are calculated by taking products between two columns in the design matrix.
-For mixel-level orthogonal arrays Helmert contrasts are used.
-For more details on the calculation of the model matrices see :cpp:func:`array2modelmatrix`
-and :ref:`Model matrices for mixed-level orthogonal arrays`.
+For orthogonal arrays and conference designs, the OApackage can 
+calculate different model matrices. The model matrices available depend
+on the type of array and design.
+
+.. topic:: Model matrices for two-level orthogonal arrays
+  :name: modelmattwoleveloa
+
+   For two-level orthogonal arrays, the levels of the array are first coded 
+   according to the map :math:`{0 \rightarrow -1}` and :math:`{1 \rightarrow +1}`. 
+   The coded matrix is referred to as the design matrix.
+   The main effect contrast vectors are given by the columns in the design 
+   matrix. The contrast vectors associated to the two-factor interactions 
+   are calculated by taking products between two different columns in the 
+   design matrix. The model matrix consists of the intercept column 
+   (i.e. a columns of ones) and the contrast vectors associated to 
+   the main effects and, optionally, the two-factor interactions. 
+
+.. topic:: Model matrices for conference designs
+  :name: modelmatconference
+
+   The model matrix for a conference design consists 
+   of the intercept column (i.e. a columns of ones) and the contrast 
+   vectors associated to the main effects and, optionally, the 
+   second-order effects (two-factor interactions and quadratic effects). 
+   The main effect contrast vectors are given by the columns in the
+   conference design. The contrast vectors associated to the second-order 
+   effects are calculated by taking products between two columns in the 
+   conference design. 
+
+.. topic:: Model matrices for mixed-level orthogonal arrays
+  :name: modelmatmixedleveloa
+
+   For mixed-level orthogonal arrays, the main effect contrast vectors
+   are defined by the Helmert contrasts. The contrast vectors associated 
+   to the two-factor interactions 
+   are calculated by taking products between two different columns in the 
+   matrix containing the Helmert contrasts of the array; see 
+   :ref:`Model matrices for mixed-level orthogonal arrays` for details. 
+   The model matrix consists of the intercept column 
+   (i.e. a columns of ones) and the contrast vectors associated to 
+   the main effects and, optionally, the two-factor interactions.    
+
+An example on how to generate an interaction model matrix for a 
+two-level orthogonal array is shown below.
 
 .. admonition:: Calculate interaction effects model matrix 
 
@@ -239,13 +277,13 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
    OApackage calculates the :math:`D_{s}`-criterion using the eigenvalues of the SVD of the matrices :math:`{X}` and :math:`{X_{01}}`.
    Finally, the package calculates the :math:`D_{s}`-efficiency of :math:`D` as :math:`D_{s,\text{eff}}(A) = D_{s,\text{crit}}(A)^{1/m}`, where :math:`m` is the number of factors. 
    
-   In a similar way the :math:`D_{1}`-efficiency of a design :math:`{A}` with :math:`n` factors and model matrix of intercept and main effects :math:`{X01}`,  is defined as
+   In a similar way the :math:`D_{1}`-efficiency of a design :math:`{A}` with :math:`n` factors and model matrix of intercept and main effects :math:`{X_{01}}`,  is defined as
 
    .. math::
     
        D_{s,\text{eff}}(A) = ( \operatorname{det}((X_{01})^{T}(X_{01}) )^{1/(n+1)}  \label{formula:D1efficiency}
    
-Projection Capacities
+Projection capacities
 ---------------------
 
 Other relevant statistical criteria to evaluate a two-level design with :math:`N` runs and :math:`k` factors
@@ -258,7 +296,7 @@ the interaction model in :math:`l` factors, that is, the model including the
 intercept, all :math:`l` main effects and all :math:`l(l-1)/2` two-factor
 interactions. The PEC sequence is the vector :math:`(PEC_{1}, PEC_{2}, \ldots, PEC_{k})`. Now, let :math:`PIC_{l}` denote the average :math:`D`-efficiency for the interaction model in :math:`l` factors accross all :math:`N`-run :math:`l`-factor subdesigns. The PIC sequence is the vector :math:`(PIC_{1}, PIC_{2}, \ldots, PIC_{k})`.
 The OApackage can calculate the PEC and PIC sequences of two-level designs with
-:cpp:func:`PECsequence` and :cpp:func:`PICsequence`.
+:cpp:func:`PECsequence` and :cpp:func:`PICsequence`, respectively.
     
 
 The following example shows how to compute the PEC and PIC sequences of a two-level orthogonal array using the OApackage.
@@ -279,8 +317,16 @@ The following example shows how to compute the PEC and PIC sequences of a two-le
 Properties of conference designs
 --------------------------------
 
-In :cite:`Schoen2018dsd` it is shown that the :math:`F_4` vector is usefull in
-classifying definitieve screening designs that are generated by folding over a conference design.
+In :cite:`Schoen2018dsd`, it is shown that the :math:`F_4` vector is useful for
+classifying definitive screening designs :cite:`Xiao2012` that are generated by folding over a conference design. To calculate the :math:`F_4` vector, we first need to compute the :math:`J_4`-characteristics of the defnitive screening design. The calculations for 
+the :math:`J_k`-characteristics of conference designs are similar as 
+for orthogonal arrays; see :ref:`Statistical properties of orthogonal arrays`. 
+Consider a definitive screening design with :math:`N` runs and 
+more than four factors. The :math:`F_4` vector of this design collects 
+the frequencies of the :math:`J_4`-characteristics of 
+:math:`{2N − 8\lambda}` for :math:`{\lambda = 1,\ldots,N/4}` 
+when :math:`N` is a multiple of 4, or :math:`{\lambda = 1, \ldots, (N − 2)/4}`
+when :math:`N` is an odd multiple of 2.
 
 .. admonition:: Calculate the F4 vector for a conference design
 
@@ -295,8 +341,8 @@ classifying definitieve screening designs that are generated by folding over a c
     >>> definitive_screening_design = oapackage.conference2DSD(array)
 
 The individual :math:`J_k`-characteristics can be calculated with the method :cpp:func:`Jcharacteristics_conference`.
-For conference designs we can calculate the projection statistics using
-:meth:`~oalib.conferenceProjectionStatistics`.
+For conference designs, we can calculate the projection statistics using
+:meth:`~oalib.conference.conferenceProjectionStatistics`.
 
 .. admonition:: Calculate projection statistics for conference designs
 
