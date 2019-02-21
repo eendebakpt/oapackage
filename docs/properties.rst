@@ -29,15 +29,10 @@ with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for
 :math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`. A :math:`{N}\times {N}` conference design :math:`E` such that :math:`E{E}^{T} = (n-1) I_{n}` is called a conference matrix; see :cite:`Elster1995`, :cite:`Colbourn2006` and :cite:`Xiao2012`. 
 
 A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
-that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
+which maximizes the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
 for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref:`Model matrices`).
-An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
-
-Let :math:`{X}` be a :math:`{N}\times {p}` model matrix consisting of a column of
-ones and the contrast vectors associated to the main effects and optionally second-order effects (interaction effects and quadratic effects) of :math:`{n}` factors, where :math:`{p}` is the number of parameters including the intercept.
-A D-efficient design :cite:`Donev2007` :math:`D` is an :math:`{N}\times {n}` array that maximizes
-the :math:`D`-efficiency, defined as :math:`{(\operatorname{det}({X}^{T}{X})^{1/p})/N}`,
-where the model matrix :math:`{X}` is constructed using :math:`D`. In contrast with D-optimal designs, D-efficient designs do not have any guarantee that they achieve the maximum possible :math:`D`-efficiency.
+The Orthogonal Array package uses a coordinate-exchange algorithm to generate designs that optimize the :math:`D`-efficiency. Since there is no guarantee that the resulting designs have the largest possible :math:`D`-efficiency, we refer to them as D-efficient designs
+in this documentation. An orthogonal array is called D-optimal orthogonal array if it provides the largest :math:`D`-efficiency among all comparable orthogonal arrays.
 
 Structural properties of an array
 ----------------------------------
@@ -288,7 +283,7 @@ The following example shows how to calculate the :math:`D`-, :math:`{D}_{s}`-, :
     
        D_{s,\text{eff}}(A) = ( \operatorname{det}((X_{01})^{T}(X_{01}) )^{1/(n+1)}  \label{formula:D1efficiency}
    
-Projection Capacities
+Projection capacities
 ---------------------
 
 Other relevant statistical criteria to evaluate a two-level design with :math:`N` runs and :math:`k` factors
@@ -347,7 +342,7 @@ when :math:`N` is an odd multiple of 2.
 
 The individual :math:`J_k`-characteristics can be calculated with the method :cpp:func:`Jcharacteristics_conference`.
 For conference designs, we can calculate the projection statistics using
-:meth:`~oalib.conferenceProjectionStatistics`.
+:meth:`~oalib.conference.conferenceProjectionStatistics`.
 
 .. admonition:: Calculate projection statistics for conference designs
 
