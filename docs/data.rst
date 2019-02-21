@@ -7,32 +7,11 @@ Data representation
 All designs handled by the Orthogonal Array package are integer valued. The designs (whether these are orthogonal arrays, optimal designs or conferences designs)
 are stored in an :meth:`array_link` object. The formal definitions of orthogonal arrays, optimal designs and conference designs are included in the section :ref:`Definitions of arrays and designs`.
 
-An orthogonal array (OA) of strength :math:`{t}`, :math:`{N}` runs and
-:math:`{n}` factors at :math:`{s}` levels is an :math:`{N}\times {n}`
-array of symbols :math:`0,
-\ldots,({s}-1)`, such that for every subset of :math:`{t}` columns,
-every :math:`{t}`-tuple occurs equally
-often :cite:`Rao1947`. The set of all strength-:math:`{t}` OAs with 
-:math:`{N}` runs and :math:`{n}` factors at :math:`{s}` levels 
-is denoted by :math:`{\operatorname{OA}({N}; {t}; {s}^{n})}`. 
-The OAs are represented by arrays (data in memory is stored in column-major form).
-
-A D-optimal design :cite:`Donev2007` (:math:`X`) is an :math:`{N}\times {n}` array 
-that maximizes the :math:`{(\operatorname{det}({X}^{T}_{M}{X}^{\phantom{T}}_{M})^{1/p})/N}`,
-for a given :math:`{N}\times {p}` model matrix :math:`{X}_{M}` (for details see :ref:`Model matrices`).
-An orthogonal array is called D-optimal if it provides the largest determinant among all comparable orthogonal arrays.
-
-For :math:`{N}` even, a conference design :math:`C` is 
-an :math:`{N}\times {n}` array which satisfies :math:`{C}^{T}C = (n-1) I_{n}`,
-with :math:`{C}_{ii} = 0` and :math:`{C}_{ij} \in \{-1,1\}`, for 
-:math:`{i} \neq {j}` and :math:`{i}, {j} = 1, \ldots, n`.
-See :cite:`Xiao2012`, :cite:`Wu2009`.
-
 
 Data structures
 ---------------
 
-The package contains several data structures. Here we describe the main
+The package contains several data structures. Here, we describe the main
 structures and their use.
 
   :meth:`~oalib.array_link`
@@ -41,7 +20,7 @@ structures and their use.
     :meth:`~oalib.arraylist_t` object, which is implemented as a :code:`std::deque` container.
 
   :meth:`~oalib.arrayfile_t`
-    This is an object that allows for reading and writing of arrays to
+    This object allows for reading and writing of arrays to
     disk.
 
   :meth:`~oalib.arraydata_t`
@@ -52,12 +31,12 @@ structures and their use.
     The structure describing a certain class of conference designs.
 
   :meth:`~oalib.array_transformation_t`
-    This describes a transformation of an orthogonal array, which 
+    The structure describing a transformation of an orthogonal array, which 
     includes row and column permutations, as well as permutations 
     to the symbols in one or more columns.
 
   :meth:`~oalib.conference_transformation_t`
-    This describes a transformation of conference design or double conference design, which includes 
+    The structure describing a transformation of conference design or double conference design, which includes 
     row and column permutations, as well as sign switches to the elements
     in one or more rows and columns.
 
@@ -66,7 +45,7 @@ Representing arrays
 
 The structure containing an orthogonal array is called the
 :cpp:class:`array_link` structure. It consists of a specified number of rows and
-columns, the data (integer valued) and an index. In the Python interface the :meth:`array_link` object can be indexed just as
+columns, the data (integer valued) and an index. In the Python interface, the :meth:`array_link` object can be indexed just as
 normal arrays. 
 
 It is also possible to convert to a Numpy array. The
@@ -116,8 +95,7 @@ Classes of arrays
 -----------------
 
 The :cpp:class:`arraydata_t` object represents data about a class of orthogonal
-arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`.
-The :cpp:class:`conference_t` object represents data about a class of conference designs.
+arrays, e.g. the class :math:`{\operatorname{OA}(N; t; s^k)}`; see :ref:`Definitions of arrays and designs`. The :cpp:class:`conference_t` object represents data about a class of conference designs.
 
 
 Array transformations
@@ -127,17 +105,17 @@ Transformations of (orthogonal) arrays consist of row, column and
 level permutations. A transformation is represented by 
 the :cpp:class:`array_transformation_t` object.
 
-For a given transformation the column permutations are applied first,
+For a given transformation, the column permutations are applied first,
 then the level permutations and finally the row permutations. The level
 and column permutations are not commutative.
 
-The conference transformations also allow for row sign switches and are
+The conference design transformations also allow for row sign switches and are
 described by the class :cpp:class:`conference_transformation_t`.
 
 Reading and writing arrays
 --------------------------
 
-Reading and writing arrays to disk can be done with the :cpp:class`arrayfile_t`
+Reading and writing arrays to disk can be done with the :cpp:class:`arrayfile_t`
 class. 
 
 .. admonition:: Write an array or a list of arrays to disk
@@ -157,9 +135,10 @@ class.
    >>> af.closefile()
 
 The arrays can be written in text or binary format. For more details on
-the file format, see Section :ref:`File formats`.
+the file format, see the section :ref:`File formats`.
 
-The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface is  :cpp:class`arrayfile_t`.
+The Python interface is :meth:`oalib.arrayfile_t` and the C++ interface 
+is  :cpp:class:`arrayfile_t`.
 
 File formats
 ------------
@@ -174,7 +153,7 @@ Plain text array files
 Arrays are stored in plain text files with extension ``.oa``. The first line
 contains the number of columns, the number of rows and the number of
 arrays (or -1 if the number of arrays is not specified). Then, for each
-array, a single line with the index of the array, followed by N lines
+array, a single line with the index of the array, followed by :math:`{N}` lines
 containing the array.
 
 A typical example of a text file is the following:
@@ -212,8 +191,8 @@ Every binary file starts with a header, which has the following format:
   [INT32] Reserved integer
 
 The format of the remainder of the binary file depends on the binary format specified.
-For the normal binary format the format is as follows. For each array (the
-number is specified in the header):
+For the normal binary format, the format is as follows. For each array, the
+number is specified in the header:
 
 .. code-block:: c
 
@@ -248,7 +227,7 @@ After the header there follow ``nc*nr`` ``[FLOAT64]`` values.
 MD5 sums
 ~~~~~~~~
 
-To check data integrity on disk the packages includes functions to
+To check data integrity on disk, the packages includes functions to
 generate MD5 sums of designs. 
 
 .. admonition:: Calculate md5 sum of a design
@@ -259,7 +238,7 @@ generate MD5 sums of designs.
      >>> al.md5()
      '6454c492239a8e01e3c01a864583abf2'
 
-The C++ functions :cpp:func:`array_link::md5` and :cpp:func:`md5`.
+The C++ functions are :cpp:func:`array_link::md5` and :cpp:func:`md5`.
 
 Command line interface
 ----------------------
