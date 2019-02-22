@@ -45,7 +45,7 @@ A conference design is an :math:`N\times k` matrix
 with entries 0, -1, +1 such that i) in each column the symbol 0 occurs
 exactly one time and ii) all columns are orthogonal to each other.
 For details on conference designs, see the section 
-:ref:`Statistical properties of orthogonal arrays` and :cite:`Schoen2018dsd`. An example of a session to generate conference designs is the following:
+:ref:`Properties of conference designs` and :cite:`Schoen2018dsd`. An example of a session to generate conference designs is the following:
 
 .. admonition:: Generate conference designs with 8 rows
 
@@ -145,5 +145,5 @@ to Pareto optimality can be selected.
 Even-odd arrays
 ---------------
 
-The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J`-characteristics unequal to zero.
+The even-odd arrays are a special class of orthognal arrays with at least one of the odd :math:`J_k`-characteristics unequal to zero.
 More information on this class of designs will appear later.
