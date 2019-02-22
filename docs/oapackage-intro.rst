@@ -42,7 +42,7 @@ calculate some of their statistical properties. The following example shows how 
    >>> print('Generalized wordlength pattern: %s' % (gwlp,) )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
-The statistical properties of the arrays and designs are introduced in :ref:`Statistical properties of orthogonal arrays`.
+The statistical properties of the arrays and designs are introduced in :ref:`Properties of designs`.
 
 Interfaces
 ----------

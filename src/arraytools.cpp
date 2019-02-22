@@ -2807,6 +2807,7 @@ std::vector< int > array_link::Fvalues (int jj) const {
 std::vector< int > array_link::FvaluesConference (int jj) const {
         if (! this->is_conference ())
              throw_runtime_exception("array is not a conference design");
+		myassert(this->n_rows % 2 == 0, "number of rows should be even");
 
         const int N = this->n_rows;
         jstructconference_t js (*this, jj);
@@ -3550,6 +3551,9 @@ void jstructconference_t::calcJvalues(int N, int jj) {
 	}
 	if (jj != 4) {
 		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for J=4");
+	}
+	if (N % 2) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for even number of runs");
 	}
 	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
 	this->jvalues = std::vector< int >(nn);
