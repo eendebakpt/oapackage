@@ -933,9 +933,9 @@ class jstruct_t {
         jstruct_t ();
         /// Create an object to calculate J-characteristics
         jstruct_t (const array_link &al, int jj = 4);
-		/// @copydoc jstruct_t:jstruct_t()
+		/// @copydoc jstruct_t::jstruct_t()
         jstruct_t (const int N, const int K, const int jj = 4);
-		/// @copydoc jstruct_t:jstruct_t()
+		/// @copydoc jstruct_t::jstruct_t()
 		jstruct_t (const jstruct_t &js);
         ~jstruct_t ();
 
