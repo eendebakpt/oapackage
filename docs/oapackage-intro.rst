@@ -6,7 +6,7 @@ experiments :cite:`Elster1995` :cite:`Hedayat1999` :cite:`Wu2009`. The Orthogona
 package contains functionality to generate and analyse these types of designs.
 To generate the arrays and designs, the package uses the exhaustive enumeration algorithm of :cite:`Eendebak2009` and
 the optimization algorithm of :cite:`EendebakSO`.
-To analyze the arrays and designs, the package includes a set of relevant statistical and combinatorial
+To analyze the arrays and designs, the package includes a wide variety of relevant statistical and combinatorial
 criteria.
 A large collection of orthogonal arrays, optimal designs and conference designs generated with the package are available in the Orthogonal Array package website :cite:`EendebakOApackageResults`.
 
@@ -14,7 +14,7 @@ A large collection of orthogonal arrays, optimal designs and conference designs 
 Example usage
 -------------
 
-The Orthogonal Array package can be used to generate and manipulate designs. Additionally, it can
+The Orthogonal Array package can be used to generate and manipulate arrays and designs. Additionally, it can
 calculate some of their statistical properties. The following example shows how to generate an orthogonal array with
 8 runs and 2 factors, and calculate three relevant statistical properties:
 
@@ -42,12 +42,13 @@ calculate some of their statistical properties. The following example shows how 
    >>> print('Generalized wordlength pattern: %s' % (gwlp,) )
    Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
+The statistical properties of the arrays and designs are introduced in :ref:`Properties of designs`.
+
 Interfaces
 ----------
 
-The Orthogonal Array package has interfaces in C++ and Python. These package also includes command line 
-tools for generating, manipulating and analyzing all the types of designs. In the documentation here you will find references to
-both the Python and the C++ interface.
+The Orthogonal Array package has interfaces in C++ and Python for generating, manipulating and analyzing all the types of arrays and designs. In this documentation, you will find references to
+both the Python and the C++ interface. The package also includes several command line tools.
 
 For the generation of optimal designs :cite:`EendebakSO`, the Orthogonal Array package has also a Matlab interface; see
 the documentation `README.Matlab.md <https://github.com/eendebakpt/oapackage/README.Matlab.md>`_.
@@ -68,7 +69,7 @@ Acknowledgements
 
 The code and ideas for this package have been contributed by Eric
 Schoen, Ruben Snepvangers, Vincent Brouerius van Nidek, Alan
-Vazquez-Alcocer and Pieter Thijs Eendebak.
+Roberto Vazquez and Pieter Thijs Eendebak.
 
 Installation
 ------------
@@ -82,8 +83,8 @@ installed from the command line using pip:
   $ pip install OApackage
 
 The source code for the package is available on https://github.com/eendebakpt/oapackage.
-The command line tools use a cmake build system. From the command line
-type:
+The command line tools use a cmake build system. From the command line,
+type the following:
 
 .. code-block:: console
 
@@ -119,6 +120,6 @@ There are several related sites available online which include collections
 of orthogonal arrays. For instance, the website of Neil Sloane :cite:`Sloanewebsite`,
 the website of Hongquan Xu :cite:`HongquanXuOnline`, the SAS website managed
 by Warren Kuhfeld :cite:`WK19`, and the R package _DoE.base_ :cite:`DoEbase` include lists
-or surveys of attractive orthogonal arrays gathered from different sources. 
+and surveys of attractive orthogonal arrays gathered from different sources. 
 
 

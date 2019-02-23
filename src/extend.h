@@ -109,7 +109,7 @@ class OAextend {
 		/// update the options structuer with the specified class of designs
         void updateArraydata (arraydata_t *arrayclass = 0) const;
 
-        /** Return preferred extension algorithm
+		/** Return preferred extension algorithm
 		 *
 		 * \param arrayclass Class of designs to extend
 		 * \param verbose Verbosity level

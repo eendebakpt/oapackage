@@ -28,6 +28,8 @@ import oapackage.graphtools
 
 
 def only_python3(function):
+    """ Decorator to only execute a test function in Python 3 """
+    python3 = sys.version_info >= (3, 4)
     if python3:
         def only_python3_function(*args, **kwargs):
             return function(*args, **kwargs)

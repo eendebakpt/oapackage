@@ -71,8 +71,8 @@ void intvector2file (std::string fname, std::vector< Type > vals) {
 
 /**
  * @brief Filter arrays in a file and write filtered arrays to output file
- * @param argc
- * @param argv[]
+ * @param argc Number of command line arguments
+ * @param argv Command line arguments
  * @return
  */
 int main (int argc, char *argv[]) {

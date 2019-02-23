@@ -17,8 +17,8 @@
 
 /**
  * @brief Display information about a file with arrays 
- * @param argc
- * @param argv[]
+ * @param argc Number of command line arguments
+ * @param argv Command line arguments
  * @return
  */
 int main (int argc, char *argv[]) {

@@ -2807,6 +2807,7 @@ std::vector< int > array_link::Fvalues (int jj) const {
 std::vector< int > array_link::FvaluesConference (int jj) const {
         if (! this->is_conference ())
              throw_runtime_exception("array is not a conference design");
+		myassert(this->n_rows % 2 == 0, "number of rows should be even");
 
         const int N = this->n_rows;
         jstructconference_t js (*this, jj);
@@ -2920,23 +2921,24 @@ int array_diff (carray_p A, carray_p B, const rowindex_t r, const colindex_t c, 
         return 0;
 }
 
-/// create new arraydata_t object
 arraydata_t::arraydata_t (const array_t *s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[nc];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[nc];
         memcpy ((void *)s, (const void *)s_, sizeof (array_t) * nc);
         complete_arraydata ();
 }
 arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        s = new array_t[ncols];
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		s = new array_t[ncols];
         myassert (factor_levels.size () > 0, "array class should have at least 1 factor");
         if ((int)factor_levels.size () < nc) {
                 myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
                 nc = factor_levels.size ();
                 std::fill (s, s + ncols, factor_levels[factor_levels.size () - 1]);
         }
-        std::copy (factor_levels.begin (), factor_levels.end (), s);
+		std::copy(factor_levels.begin(), factor_levels.begin() + ncols, s);
         complete_arraydata ();
 }
 
@@ -2949,7 +2951,8 @@ template void array_link::setarraydata (const std::vector< long > tmp, int n);
 
 arraydata_t::arraydata_t (array_t s_, rowindex_t N_, colindex_t t, colindex_t nc)
     : N (N_), ncols (nc), strength (t), order (ORDER_LEX), colgroupindex (0), colgroupsize (0) {
-        if (s_ < 1 || s_ > 100) {
+		myassert(ncols > 0, "number of columns in class should be at least 1");
+		if (s_ < 1 || s_ > 100) {
                 myprintf ("arraydata_t: level factors should be > 0 and < 100\n");
         }
         s = new array_t[nc];
@@ -3489,12 +3492,19 @@ int jstruct_t::maxJ () const {
         return vmax;
 }
 
+int jstruct_t::number_J_values(int strength) const {
+	assert(strength >= 1);
+	int Jstep = pow((double)2, strength + 1);
+	int nn = floor((double)N / Jstep) + 1;
+	return nn;
+}
+
 std::vector< int > jstruct_t::Fval (int strength) const {
-        int x = pow ((double)2, strength + 1); 
-        int nn = floor ((double)N / x) + 1;
-        std::vector< int > Fv (nn);
+		int Jstep = pow((double)2, strength + 1);
+		int nn = this->number_J_values(strength);
+		std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
-                Fv[i] = N - x * i;
+                Fv[i] = N - Jstep * i;
         }
         return Fv;
 }
@@ -3502,12 +3512,12 @@ std::vector< int > jstruct_t::Fval (int strength) const {
 std::vector< int > jstruct_t::calculateF (int strength) const {
         int Nmax = N;
 
-        int x = pow (double(2), strength + 1); 
-        int nn = floor ((double)N / x) + 1;
-        std::vector< int > F (nn);
+		int nn = this->number_J_values(strength);
+		int Jstep = pow((double)2, strength + 1);
+		std::vector< int > F (nn);
 
         for (int i = 0; i < nc; i++) {
-                int fi = (N - abs (values[i])) / x;
+                int fi = (N - abs (values[i])) / Jstep;
                 F[fi]++;
         }
         return F;
@@ -3541,6 +3551,9 @@ void jstructconference_t::calcJvalues(int N, int jj) {
 	}
 	if (jj != 4) {
 		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for J=4");
+	}
+	if (N % 2) {
+		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for even number of runs");
 	}
 	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
 	this->jvalues = std::vector< int >(nn);

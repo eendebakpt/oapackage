@@ -80,7 +80,8 @@ class conference_t {
 		 * \param j1zero If True then require the J1-characteristics to be zero
 		 */
         conference_t (int N, int k, int j1zero);
-        conference_t (const conference_t &rhs);
+		/// @copydoc conference_t::conference_t()
+		conference_t (const conference_t &rhs);
 
         // return short string describing the class
         std::string idstr () const;
@@ -354,7 +355,7 @@ bool isConferenceFoldover (const array_link &array, int verbose = 0);
  * If the design is not a foldover design then the first element of the returned permutation is -1.
  * 
  * \param double_conference A double conference design
- * \returns Permutation
+ * \returns Permutation such that the top block of the resulting design forms a single conference design
  * 
  */
 std::vector<int> double_conference_foldover_permutation(const array_link &double_conference);
