@@ -948,10 +948,11 @@ class jstruct_t {
 		/// Calculate the number of possible J values that can occur for the given strength
 		int number_J_values(int strength) const;
 
-        /** calculate possible values in F vector
+		/** Calculate possible values in F vector
 		 *
 		 * \param strength Strength to use
 		 * \return Vector with possible Jk values (ordered from high to low)
+		 *
 		 */
         std::vector< int > Fval (int strength = 3) const;
 
@@ -962,6 +963,7 @@ class jstruct_t {
 	 *
 	 * This is equal to the sum of the squares of all Jk values, divided by the number of rows squared.
 	 *
+	 * The calculated abberation is stored in the variable abberation.
 	 **/
 	void calculateAberration();
 
@@ -1625,7 +1627,7 @@ struct arraywriter_t {
         /** Pointers to different data files.
          *
          * Since depth_extend is a depth first approach we need to store arrays with a different number of columns
-         */
+         **/
         std::vector< arrayfile_t * > afiles;
 
         /// only write arrays if this variable is true

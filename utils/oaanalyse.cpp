@@ -375,7 +375,6 @@ int main (int argc, char *argv[]) {
                                 if (verbose >= 2) {
                                         printf (" writing data for array %d\n", i);
                                 }
-                                // int *vv = results[i].vals[j];
                                 for (int j = 0; j < results[i].nc; j++) {
                                         if (j == results[i].nc - 1)
                                                 fprintf (fid, "%d", results[i].values[j]);
