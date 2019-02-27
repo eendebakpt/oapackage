@@ -132,20 +132,24 @@ template < class ValueType, class IndexType >
  */
 class Pareto {
       public:
+		/// type for values of Pareto elements
         typedef std::vector< ValueType > pValue;
+
+		/// a pareto element consists of a pair (value, index)
         typedef pareto_element< ValueType, IndexType > pElement;
 
+		/// Verbosity level
         int verbose;
         /// contains a list of all Pareto optimal elements
         std::deque< pareto_element< ValueType, IndexType > > elements;
 
-        /// constructor
+        /// Create an empty Pareto class
         Pareto () : verbose (1){};
         ~Pareto (){};
 
         /// return the total number of Pareto optimal values
         int number () const { return elements.size (); }
-        /// return the toal number Pareto optimal objects
+        /// return the total number Pareto optimal objects
         int numberindices () const {
                 int t = 0;
                 for (size_t i = 0; i < elements.size (); i++) {
@@ -160,7 +164,8 @@ class Pareto {
                 return ss;
         }
 
-        static void showvalue (const pValue p) { detail::display_vector (p, "; "); }
+		/// show a Pareto element 
+		static void showvalue (const pValue p) { detail::display_vector (p, "; "); }
         /// show the current set of Pareto optimal elements
         void show (int verbose = 1) {
                 if (verbose == 0) {
@@ -200,7 +205,7 @@ class Pareto {
                 return lst;
         }
 
-        /// return all Paretop optimal elements
+        /// return the values of all Pareto optimal elements
         std::vector< pValue > allvalues () const {
                 std::vector< pValue > lst;
                 for (size_t i = 0; i < this->elements.size (); i++) {
@@ -210,14 +215,14 @@ class Pareto {
         }
 
         /// add a new element
-        bool addvalue (const pValue val, const IndexType idx) {
+        bool addvalue (const pValue value, const IndexType idx) {
                 size_t ii = 0;
                 while (ii < elements.size ()) {
                         if (verbose >= 4) {
                                 myprintf ("Pareto::addvalue: compare new element to element %d\n", (int)ii);
                         }
-                        if (elements[ii].dominates (val)) {
-                                if (elements[ii].equal (val)) {
+                        if (elements[ii].dominates (value)) {
+                                if (elements[ii].equal (value)) {
                                         elements[ii].indices.push_back (idx);
                                         if (verbose >= 3) {
                                                 myprintf ("Pareto::addvalue: new pareto item (same value)\n");
@@ -228,7 +233,7 @@ class Pareto {
                                         if (verbose >= 3) {
                                                 myprintf ("Pareto::addvalue: not pareto\n");
                                                 myprintf (" new elememnt : ");
-                                                this->showvalue (val);
+                                                this->showvalue (value);
                                                 myprintf ("\n");
                                                 myprintf ("  dominated by: ");
                                                 this->showvalue (elements[ii].value);
@@ -237,13 +242,13 @@ class Pareto {
                                         return false;
                                 }
                         }
-                        if (elements[ii].isdominated (val)) {
+                        if (elements[ii].isdominated (value)) {
                                 // element ii is dominated by the new element, we remove element ii
                                 if (verbose >= 2) {
                                         printf ("Pareto::addvalue: removing element\n");
                                         if (verbose >= 3) {
                                                 myprintf ("  new element : ");
-                                                this->showvalue (val);
+                                                this->showvalue (value);
                                                 myprintf ("\n");
                                                 myprintf ("removing %3d : ", (int)ii);
                                                 this->showvalue (elements[ii].value);
@@ -260,10 +265,10 @@ class Pareto {
                 }
 
                 // we have a new pareto element: add it to the current set
-                pElement p;
-                p.value = val;
-                p.indices.push_back (idx);
-                this->elements.push_back (p);
+                pElement pareto_element;
+                pareto_element.value = value;
+                pareto_element.indices.push_back (idx);
+                this->elements.push_back (pareto_element);
                 if (verbose >= 2) {
                         myprintf ("Pareto: addvalue: new pareto item (new value), total is %ld\n",
                                   (long)this->elements.size ());
