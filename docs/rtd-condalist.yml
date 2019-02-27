@@ -12,9 +12,9 @@ dependencies:
 - ipython
 - jupyter
 - sphinx=1.7
+- gxx_linux-64
 
 - pip:
-#  - scanf
   - sphinxcontrib.bibtex
   - sphinxcontrib.napoleon
   - breathe
