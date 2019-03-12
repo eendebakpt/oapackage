@@ -196,7 +196,7 @@ class TestArrayLink(unittest.TestCase):
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 0)
         al = al.selectFirstColumns(3)
-        assert(al.n_columns == 3)
+        self.assertEqual(al.n_columns, 3)
 
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(1000, 0)
@@ -580,7 +580,7 @@ class TestCppLibrary(unittest.TestCase):
             D = al.selectFirstColumns(3).Defficiency()
             std_output = mock_stdout.getvalue()
             self.assertIn('projDeff: k 8, kp 3: start with 56 combinations', std_output)
-        assert(D == d[0])
+        self.assertEqual(D , d[0])
         numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
 
         pec_seq = oapackage.PECsequence(al)
@@ -609,9 +609,9 @@ class TestCppLibrary(unittest.TestCase):
         numpy_array = np.arange(0, 6 * 10).reshape((6, 10))
 
         al = oapackage.makearraylink(numpy_array)
-        assert(al[0] == numpy_array.flatten()[0])
-        assert(al[0, 1] == numpy_array[0, 1])
-        assert(al[4, 2] == numpy_array[4, 2])
+        self.assertTrue(al[0] == numpy_array.flatten()[0])
+        self.assertTrue(al[0, 1] == numpy_array[0, 1])
+        self.assertTrue(al[4, 2] == numpy_array[4, 2])
         np.testing.assert_equal(al[0:4, 1:5], np.array(al)[0:4, 1:5])
         np.testing.assert_equal(al[0:1, 0:10:2], np.array(al)[0:1, 0:10:2])
         np.testing.assert_equal(al[3, 3::], np.array(al)[3:4, 3::])
