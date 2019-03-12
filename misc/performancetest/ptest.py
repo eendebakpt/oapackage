@@ -12,7 +12,6 @@ import os
 import numpy as np
 import time
 import subprocess
-import time
 import getopt
 import platform
 
@@ -58,7 +57,7 @@ def pytest6(verbose=1):
     if verbose:
         print('pytest6: run different algorithms on the same case')
     algs = [oalib.MODE_ORIGINAL, oalib.MODE_J4]
-    for ii, alg in enumerate(algs):
+    for _, alg in enumerate(algs):
         algname = oalib.algnames(alg)
         if verbose >= 2:
             print('pytest6: running %s, alg %s' % (adata.fullidstr(), algname))

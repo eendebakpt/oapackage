@@ -43,7 +43,6 @@ def checkZlib(verbose=0):
     """
     ret_val = True
     try:
-        import os
         import distutils.ccompiler
         import distutils.sysconfig
         import tempfile
@@ -166,8 +165,9 @@ except:
 
 #%% Test suite
 
-""" Run a limited set of tests for the package """
 class OATest(TestCommand):
+    """ Run a limited set of tests for the package """
+    
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
     def initialize_options(self):
