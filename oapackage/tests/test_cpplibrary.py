@@ -343,7 +343,6 @@ class TestConferenceDesigns(unittest.TestCase):
         self.assertFalse(oapackage.isConferenceFoldover(al))
 
     def test_double_conference_foldover_permutation(self):
-        import oapackage
         al = oapackage.exampleArray(37, 0)
         expected = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11, 16, 19, 17, 18, 15, 14, 13, 12]
         permutation = oapackage.double_conference_foldover_permutation(al)
