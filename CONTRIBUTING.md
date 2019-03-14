@@ -24,7 +24,7 @@ Continuous integration and testing for the C++ library is performed on [Travis](
 To perform tests run [`pytest`](https://docs.pytest.org/en/latest/). To obtain a [coverage](https://coverage.readthedocs.io) report, run
 ```
 $ coverage run --source='./oapackage' -m pytest
-$ coverage report --omit oapackage/markup.py,oapackage/tests/*.py,oapackage/deprecated.py
+$ coverage report --omit oapackage/markup.py,oapackage/_scanf.py
 ```
 
 ### Contact
