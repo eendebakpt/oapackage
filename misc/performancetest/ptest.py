@@ -323,7 +323,6 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
-    # sys.exit(main())
 
 
 def timeconfig(configfile='oaconfig.txt', timebin='/usr/bin/time', pdir='/home/eendebakpt/misc/oa/oacode/performancetest'):
@@ -331,9 +330,5 @@ def timeconfig(configfile='oaconfig.txt', timebin='/usr/bin/time', pdir='/home/e
     res = subprocess.check_output([('cd %s;ls;' % pdir) + timebin, '--format="%%E %%S %%U"', './oaextendsingle', '-c %s -l 1' % (configfile)])
     return res
 
-    try:
-        res = os.system('./oaextendsingle -c %s -l 0 > /dev/null' % (configfile))
-    except:
-        print('error!')
 
 

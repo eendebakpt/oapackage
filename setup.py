@@ -162,7 +162,6 @@ try:
 except BaseException:
     import setuptools
     print('old version of setuptools: %s' % setuptools.__version__)
-    pass
 
 
 # %% Test suite
