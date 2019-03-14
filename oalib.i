@@ -56,6 +56,7 @@ import_array();
 #include "graphtools.h"
 #include "evenodd.h"
 #include "conference.h"
+#include "unittests.h"
 #ifdef OADEV
 #include "oadevelop.h"
 #endif
@@ -407,6 +408,7 @@ import numpy
 %include "graphtools.h"
 %include "evenodd.h"
 %include "conference.h"
+%include "unittests.h"
 #ifdef OADEV
 %include "oadevelop.h"
 #endif
