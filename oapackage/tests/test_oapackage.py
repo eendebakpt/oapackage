@@ -200,7 +200,7 @@ class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
 
     def test_misc_file_operations(self):
-        array_filename = tempfile.mkstemp(suffix='.oa')
+        _, array_filename = tempfile.mkstemp(suffix='.oa')
         lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         assert(oapackage.oahelper.oaIsBinary(array_filename) is False)
@@ -212,8 +212,8 @@ class TestOAfiles(unittest.TestCase):
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
     def test_selectArrays(self):
-        array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
-        array_filename_out = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename_out = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
         oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
@@ -221,13 +221,13 @@ class TestOAfiles(unittest.TestCase):
                                         [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_nArrayFile(self):
-        array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0)])
         self.assertEqual(oapackage.oahelper.nArrayFile(array_filename), 1)
         self.assertEqual(oapackage.oahelper.nArrayFile('notavalidfile.oa'), -1)
 
     def test_findfiles(self):
-        array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
@@ -237,7 +237,7 @@ class TestOAfiles(unittest.TestCase):
         _ = oapackage.oahelper.findfilesR(tempfile.tempdir, '.*oa')
 
     def test_checkArrayFile(self):
-        a = tempfile.mkstemp(suffix='.oa')
+        a = tempfile.mktemp(suffix='.oa')
         self.assertFalse(oapackage.oahelper.checkArrayFile(a))
         self.assertTrue(oapackage.oahelper.checkArrayFile(a, -1))
 
@@ -300,7 +300,7 @@ class TestOAhelper(unittest.TestCase):
         self.assertEqual(oapackage.oahelper.gwlp2str([1, 0, .1]), '1.00,0.00,0.10')
 
     def test_parseProcessingTime(self):
-        filename = tempfile.mkstemp(suffix='.txt')
+        filename = tempfile.mktemp(suffix='.txt')
         with open(filename, 'wt') as fid:
             fid.write('# my logfile\n')
             fid.write('#time start: 2012-01-19 17:21:00\n')
