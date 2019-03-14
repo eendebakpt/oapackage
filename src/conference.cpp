@@ -729,21 +729,6 @@ int check_symm_zero (const conference_column &c, const std::vector< int > &check
         return true;
 }
 
-/// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm (const conference_column &c, const std::vector< int > &check_indices, int rowstart, int rowend) {
-
-        for (int i = rowstart + 1; i < rowend; i++) {
-                if (check_indices[i]) {
-                        if (((unsigned char)c[i - 1]) > ((unsigned char)c[i])) {
-                                // discard
-                                return false;
-                        }
-                }
-        }
-        // accept
-        return true;
-}
-
 /// filter list of columns, only return columns with zero at specified position
 inline std::vector< conference_column > filterZeroPosition (const std::vector< conference_column > &lst, int zero_position) {
         std::vector< conference_column > out;
@@ -755,17 +740,32 @@ inline std::vector< conference_column > filterZeroPosition (const std::vector< c
         return out;
 }
 
-/// helper function, return true if a candidate extensions satisfies the symmetry test
-int satisfy_symm (const conference_column &c, const std::vector< int > &check_indices, int rowstart = 2) {
-        for (size_t i = rowstart; i < c.size () - 1; i++) {
-                if (check_indices[i + 1]) {
-                        if (((unsigned char)c[i]) > ((unsigned char)c[i + 1])) {
-                                // discard
-                                return false;
-                        }
-                }
-        }
-        return true;
+/** Return true if a candidate extensions satisfies the symmetry test
+ *
+ * The method checks the candidate at positions given by check_indices and compares the element to the next position
+ *
+ */
+int satisfy_lmc0_symmetry(const conference_column &c, const std::vector< int > &check_indices, int rowstart, int rowend) {
+
+	for (int i = rowstart + 1; i < rowend; i++) {
+		if (check_indices[i]) {
+			if (((unsigned char)c[i - 1]) > ((unsigned char)c[i])) {
+				// discard
+				return false;
+			}
+		}
+	}
+	// accept
+	return true;
+}
+
+/** Return true if a candidate extensions satisfies the symmetry test
+ *
+ * The method checks the candidate at positions given by check_indices and compares the element to the next position
+ *
+ */
+int satisfy_lmc0_symmetry (const conference_column &column, const std::vector< int > &check_indices, int rowstart = 2) {
+	return satisfy_lmc0_symmetry(column, check_indices, rowstart, column.size() - 1);
 }
 
 /** helper function, return true if a candidate extensions satisfies the symmetry test
@@ -774,40 +774,26 @@ int satisfy_symm (const conference_column &c, const std::vector< int > &check_in
  * design.
  *
  */
-int satisfy_symm (const conference_column &c, const symmdata &sd, int rowstart = 2) {
+int satisfy_lmc0_symmetry (const conference_column &c, const symmdata &sd, int rowstart = 2) {
         const int verbose = 0;
 
-        if (verbose >= 2) {
-                printf ("satisfy_symm: sd: ");
-                sd.show ();
-        }
-        int k = sd.rowvalue.n_columns - 1;
-
         if (verbose) {
-                printf ("satisfy_symm: ");
+                printf ("satisfy_lmc0_symmetry: ");
                 display_vector (c);
                 printf ("\n");
-        }
-        for (size_t i = rowstart; i < c.size () - 1; i++) {
-                if (sd.rowvalue.atfast (i, k) == sd.rowvalue.atfast (i + 1, k)) {
-                        if (((unsigned char)c[i]) > ((unsigned char)c[i + 1])) {
-                                // discard
+				if (verbose >= 2) {
+					printf("satisfy_lmc0_symmetry: sd: ");
+					sd.show();
+				}
+		}
 
-                                if (verbose) {
-                                        printf ("satisfy_symm: perm: ");
-                                        display_vector (c);
-                                        printf ("\n");
-                                        printf ("  discard i %d, k %d, current_column[i]=%d:   %d %d\n", (int)i, k, c[i],
-                                                sd.rowvalue.atfast (i, k), sd.rowvalue.atfast (i + 1, k));
-                                }
-                                return false;
-                        }
-                }
-        }
+		const std::vector< int > check_indices = sd.checkIdx();
+
+		bool return_value = satisfy_lmc0_symmetry(c, check_indices, rowstart);
         if (verbose >= 2) {
-                printf ("satisfy_symm: return true\n");
+                printf ("satisfy_lmc0_symmetry: return %d\n", return_value);
         }
-        return true;
+        return return_value;
 }
 
 /// return column of an array in conference_column format
@@ -1102,26 +1088,26 @@ std::vector< conference_column > DconferenceFilter::filterListZero(const std::ve
 }
 
 /// return True of the extension satisfies all checks
-bool DconferenceFilter::filter (const conference_column &c) const {
+bool DconferenceFilter::filter (const conference_column &candidate) const {
         if (filterfirst) {
-                if (c[0] < 0) {
+                if (candidate[0] < 0) {
                         return false;
                 }
         }
         if (filtersymm) {
-                if (!satisfy_symm (c, check_indices, 0)) {
+                if (!satisfy_lmc0_symmetry (candidate, check_indices, 0)) {
                         return false;
                 }
         }
         if (filterj2) {
                 // perform inner product check for all columns
-                if (!ipcheck (c, als, 0)) {
+                if (!ipcheck (candidate, als, 0)) {
                         return false;
                 }
         }
         if (filterj3) {
                 // perform inner product check for all columns
-                if (!this->filterJ3 (c)) {
+                if (!this->filterJ3 (candidate)) {
                         return false;
                 }
         }
@@ -1167,7 +1153,7 @@ bool DconferenceFilter::filterJlast(const conference_column &c, int j2start) con
 }
 
 /// return True of the candidate satisfies the symmetry check
-bool DconferenceFilter::filterSymmetry (const conference_column &c) const { return satisfy_symm (c, check_indices, 0); }
+bool DconferenceFilter::filterSymmetry (const conference_column &c) const { return satisfy_lmc0_symmetry (c, check_indices, 0); }
 
 bool DconferenceFilter::filterJ2 (const conference_column &c) const { return ipcheck (c, als, 0); }
 bool DconferenceFilter::filterJ2last (const conference_column &c) const { return ipcheck (c, als, als.n_columns - 1); }
@@ -1189,7 +1175,7 @@ bool DconferenceFilter::filterReason (const conference_column &c) const {
                 }
         }
         if (filtersymm) {
-                if (!satisfy_symm (c, sd, 0)) {
+                if (!satisfy_lmc0_symmetry (c, sd, 0)) {
                         myprintf ("symmetry\n");
                         return false;
                 }
@@ -1270,7 +1256,7 @@ std::vector< conference_column > filterCandidates (const std::vector< conference
                         }
                 }
                 if (filtersymm) {
-                        if (!satisfy_symm (extensions[i], checkidx)) {
+                        if (!satisfy_lmc0_symmetry (extensions[i], checkidx)) {
                                 if (verbose >= 2) {
                                         printf ("filterCandidates: reject due to row symm: ");
                                         display_vector (extensions[i]);
@@ -1589,7 +1575,7 @@ void inflateCandidateExtensionHelper (std::vector< conference_column > &list, co
                 do {
                         iter++;
 
-                        if (satisfy_symm (candidate, check_indices, gstart, gend)) {
+                        if (satisfy_lmc0_symmetry (candidate, check_indices, gstart, gend)) {
                                 nbc++;
                                 inflateCandidateExtensionHelper (list, basecandidate, candidate, block + 1, al, alsg,
                                                                  check_indices, ct, verbose, filter, ntotal);
@@ -1973,14 +1959,9 @@ std::vector< conference_column > generateDoubleConferenceExtensions2 (const arra
                 } while (std::next_permutation (c.begin (), c.end ()));
         }
 
-        // printfd ( "generateDoubleConferenceExtensions: before filter generated %d/%ld perms (len %ld)\n", n,
-        // factorial<long> ( c.size() ), ( long ) c.size() );
-        // cc= filterDconferenceCandidates ( cc, al, filtersymm,  filterip, verbose );
         if (verbose) {
                 printfd ("generateDoubleConferenceExtensions: generated %ld/%ld/%ld perms (len %ld)\n",
                          (long)cc.size (), n, factorial< long > (c.size ()), (long)c.size ());
-                // al.show();
-                // al.transposed().showarray(); showCandidates ( cc );
         }
         return cc;
 }
