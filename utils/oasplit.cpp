@@ -131,14 +131,13 @@ int main (int argc, char *argv[]) {
         }
 
         array_link al (rows, cols, 0);
-        int target;
         for (int i = 0; i < narrays; i++) {
                 if (i % 5000 == 0 && verbose)
                         printf ("  scanning array %d/%d\n", i, narrays);
 
                 afile->read_array (al);
 
-                target = (i % nsplit);
+				int target = (i % nsplit);
                 if (target >= nmax)
                         continue;
                 nsp[target]++;
