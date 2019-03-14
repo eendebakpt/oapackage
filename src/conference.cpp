@@ -1335,23 +1335,33 @@ bool DconferenceFilter::filterJ3inline(const conference_column &c) const {
 	return true;
 }
 
-std::vector< conference_column > generateConferenceExtensions (const array_link &al, const conference_t &conference_type,
-                                                   int zero_index, int verbose, int filtersymm, int filterip) {
-        if (conference_type.ctype == conference_t::DCONFERENCE) {
-                return generateDoubleConferenceExtensions (al, conference_type, verbose, filtersymm, filterip);
-        }
+std::vector< conference_column > generateConferenceExtensions(const array_link &al, const conference_t &conference_type,
+	int zero_index, int verbose, int filtersymm, int filterj2) {
+	if (conference_type.ctype == conference_t::DCONFERENCE) {
+		return generateDoubleConferenceExtensions(al, conference_type, verbose, filtersymm, filterj2);
+	}
 
-        if (conference_type.itype == CONFERENCE_RESTRICTED_ISOMORPHISM) {
-                return generateConferenceRestrictedExtensions (al, conference_type, zero_index, verbose, filtersymm,
-                                                               filterip);
-        }
+	if (conference_type.ctype == conference_t::CONFERENCE_NORMAL || conference_type.ctype == conference_t::CONFERENCE_DIAGONAL) {
 
-        int filterj2 = 1;
-        int filterj3 = 0;
-        int filtersymminline = 1;
-        std::vector< conference_column > ee = generateSingleConferenceExtensions (
-            al, conference_type, zero_index, verbose, filtersymm, filterj2, filterj3, filtersymminline);
-        return ee;
+		if (conference_type.itype == CONFERENCE_RESTRICTED_ISOMORPHISM) {
+			return generateConferenceRestrictedExtensions(al, conference_type, zero_index, verbose, filtersymm,
+				filterj2);
+		}
+		if (conference_type.itype == CONFERENCE_ISOMORPHISM) {
+			myassert(filterj2 == 1, "for single conference designs J2 should be zero");
+			int filterj3 = 0;
+			int filtersymminline = 1;
+			std::vector< conference_column > ee = generateSingleConferenceExtensions(
+				al, conference_type, zero_index, verbose, filtersymm, filterj2, filterj3, filtersymminline);
+			return ee;
+		}
+		else {
+			throw_runtime_exception( printfstring("invalid isomorphism type for ctype %d", int(conference_type.ctype)) );
+		}
+	}
+	else {
+		throw_runtime_exception(printfstring("invalid type of conference class %d", conference_type.ctype) );
+	}
 }
 
 /// return number of +1 values in the first column of an array
@@ -1704,7 +1714,7 @@ inline bool checkZeroPosition(const conference_column &column, int zero_position
 		return false;
 }
 
-std::vector< conference_column > generateSingleConferenceExtensions (const array_link &al, const conference_t &ct, int kz,
+std::vector< conference_column > generateSingleConferenceExtensions (const array_link &al, const conference_t &ct, int zero_index,
                                                          int verbose, int filtersymm, int filterj2, int filterj3,
                                                          int filtersymminline) {
         double t0 = get_time_ms ();
@@ -1712,7 +1722,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
                 myprintf ("%s: filters: symmetry %d, symmetry inline %d, j2 %d, j3 %d\n", __FUNCTION__, filtersymm,
                           filtersymminline, filterj2, filterj3);
         }
-        assert (al.n_columns > 1);
+        myassert (al.n_columns > 1, "need at least 2 columns");
 
         if (filtersymminline) {
                 if (!filtersymm) {
@@ -1769,8 +1779,8 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
                         }
 
                         if (dfilter.filter (c)) {
-                                if (kz > 0) {
-                                        if (!checkZeroPosition (c, kz)) {
+                                if (zero_index > 0) {
+                                        if (!checkZeroPosition (c, zero_index)) {
 
                                                 continue;
                                         }
@@ -2190,11 +2200,11 @@ conference_extend_t extend_conference_matrix (const array_link &al, const confer
 
         for (int ii = zstart; ii < maxzpos + 1; ii++) {
                 if (verbose >= 2)
-                        printf ("array: kz %d: generate\n", ii);
+                        printf ("array: zero_index %d: generate\n", ii);
                 std::vector< conference_column > extensionsX = generateConferenceExtensions (al, ct, ii, verbose, 1, 1);
 
                 if (verbose >= 2)
-                        printf ("array: kz %d: %d extensions\n", ii, (int)extensionsX.size ());
+                        printf ("array: zero_index %d: %d extensions\n", ii, (int)extensionsX.size ());
                 ce.extensions.insert (ce.extensions.end (), extensionsX.begin (), extensionsX.end ());
         }
 
@@ -2247,7 +2257,7 @@ conference_extend_t extend_conference_matrix_generator (const array_link &al, co
                 }
 
                 if (verbose >= 2) {
-                        printf ("array: kz %d: %d extensions\n", ii, (int)extensionsX.size ());
+                        printf ("array: zero_index %d: %d extensions\n", ii, (int)extensionsX.size ());
                 }
 
                 ce.extensions.insert (ce.extensions.end (), extensionsX.begin (), extensionsX.end ());

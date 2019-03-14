@@ -57,26 +57,26 @@ class TestMisc(unittest.TestCase):
         G = np.zeros((5, 5), dtype=int)
         G[1, 0] = G[0, 1] = 1
         v = oapackage.reduceGraphNauty(G)
-        assert(len(v) == G.shape[0])
+        self.assertTrue(len(v) == G.shape[0])
 
     def test_exampleArray(self):
         # test a selection of the example arrays
         al = oapackage.exampleArray(5, 0)
-        assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
+        self.assertTrue(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
         al = oapackage.exampleArray(20, 0)
-        assert(np.array(al).shape == (24, 3))
+        self.assertTrue(np.array(al).shape == (24, 3))
         al = oapackage.exampleArray(40, 0)
-        assert(np.array(al).shape == (14, 5))
+        self.assertTrue(np.array(al).shape == (14, 5))
 
     def test_scanf(self):
         r = oapackage.scanf.sscanf('1', '%d')
-        assert(r[0] == 1)
+        self.assertTrue(r[0] == 1)
 
     def test_oa2graph(self):
         al = oapackage.exampleArray(2, 0)
         adata = oapackage.arraylink2arraydata(al)
         g = oapackage.graphtools.oa2graph(al, adata)
-        assert(g[0].shape == (34, 34))
+        self.assertTrue(g[0].shape == (34, 34))
 
 
 def test_numpy_interface(verbose=0):
