@@ -182,16 +182,8 @@ arraylist_t conference_t::createRootArrays () const {
                         root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
                 case CONFERENCE_ISOMORPHISM: {
-                        if (this->j1zero) {
-                                printfd (
-                                    "ERROR: condition j1zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
-                        }
-                        if (this->j3zero) {
-                                printfd (
-                                    "ERROR: condition j3zero does not make sense for CONFERENCE_ISOMORPHISM type\n");
-                        }
-                        myassert (this->j1zero == 0, "j1zero should be zero");
-						myassert(this->j3zero == 0, "j3zero should be zero");
+                        myassert (this->j1zero == 0, "j1zero should be zero for CONFERENCE_ISOMORPHISM type");
+						myassert(this->j3zero == 0, "j3zero should be zero for CONFERENCE_ISOMORPHISM type");
                         arraylist_t tmp = this->createDoubleConferenceRootArrays ();
                         root_arrays.insert (root_arrays.end (), tmp.begin (), tmp.end ());
                 } break;
@@ -1347,7 +1339,7 @@ std::vector< conference_column > generateConferenceExtensions(const array_link &
 				filterj2);
 		}
 		if (conference_type.itype == CONFERENCE_ISOMORPHISM) {
-			myassert(filterj2 == 1, "for single conference designs J2 should be zero");
+			myassert(filterj2 == 1, "for single conference designs J2 should be one");
 			int filterj3 = 0;
 			int filtersymminline = 1;
 			std::vector< conference_column > ee = generateSingleConferenceExtensions(
@@ -1724,7 +1716,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
                           filter_symmetry_inline, filterj2, filterj3);
         }
         myassert (al.n_columns > 1, "need at least 2 columns");
-		myassert(ct.j1zero, "for single conference designs j1zero needs to be zero");
+		myassert(ct.j1zero==0, "for single conference designs j1zero needs to be zero");
 
         if (filter_symmetry_inline) {
                 if (!filter_symmetry) {
