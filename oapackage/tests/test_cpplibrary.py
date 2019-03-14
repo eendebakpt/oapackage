@@ -380,7 +380,7 @@ class TestArrayFiles(unittest.TestCase):
         import tempfile
         import oapackage
         lst = [oapackage.exampleArray(2, 0)]
-        filename = tempfile.mktemp(suffix='.tex')
+        filename = tempfile.mkstemp(suffix='.tex')
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
         with open(filename, 'rt') as fid:
             latex = fid.read()
