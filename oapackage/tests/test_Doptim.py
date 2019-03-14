@@ -116,7 +116,7 @@ class TestDoptimize(unittest.TestCase):
             try:
                 import matplotlib
                 matplotlib.pyplot.close(100)
-            except Exception as ex:
+            except Exception:
                 pass
 
     def test_filterPareto(self):
