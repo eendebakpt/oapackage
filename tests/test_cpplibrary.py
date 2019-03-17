@@ -126,7 +126,7 @@ class TestModelmatrix(unittest.TestCase):
 
         M = oapackage.array2modelmatrix(array, 'm')
         hc = oapackage.oahelper.helmert_contrasts(4)
-        np.testing.assert_array_equal(hc, M[:, 1:])
+        np.testing.assert_array_almost_equal(hc, M[:, 1:])
 
     def test_modelmatrix(self):
         al = oapackage.exampleArray(1, 0)
