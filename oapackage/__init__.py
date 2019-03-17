@@ -18,10 +18,9 @@ oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
 __version__ = oapackage.oalib.version()
 
 from . oahelper import *
-from . Doptim import *
+from . Doptim import * # type: ignore
 from . import scanf
 
 
 __description__ = "Orthogonal Array package"
 __uri__ = "http://www.pietereendebak.nl/oapackage/index.html"
-#__doc__ = __description__ + " <" + __uri__ + ">"
