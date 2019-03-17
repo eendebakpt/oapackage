@@ -8,6 +8,10 @@ buildx
 OAlib.egg-info
 .vscode
 OApackage.egg-info
+.mypy_cache
+_oalib.*pyd
+_build
+.cache
 
 # IDE
 .idea/
@@ -32,8 +36,6 @@ hopper
 testing
 vsc
 oatest2.cpp
-oalib_wrapR.o
-scripts/scanf.py.bak
 scripts/style.css
 scripts/test.oa
 testsuite/
@@ -90,14 +92,11 @@ md5.o
 mathtools.o
 oaoptions.o
 strength.o
-_build
 anyoption.o
-.cache
 untitled*.py
 modules.rst
 oapackage.rst
 oapackage.*.rst
 setup.rst
 oalib.rst
-untitled0.rst
 get_artifacts.py
