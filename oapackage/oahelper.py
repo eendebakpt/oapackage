@@ -681,7 +681,8 @@ def checkArrayFile(afile, cache=1):
 
 
 try:
-    basestring  # attempt to evaluate basestring
+    # attempt to evaluate basestring
+    basestring   # type: ignore
 
     def isstr(s):
         return isinstance(s, basestring)
@@ -799,7 +800,7 @@ def nArrayFile(filename, verbose=1):
     return n
 
 
-def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
+def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
     """ Select arrays in a file by indices
 
     Args:
@@ -823,6 +824,7 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         if verbose >= 2:
             print('output file %s already exists' % outfile)
 
+selectArrays = deprecated(selectArraysInFile)
 
 def floatformat(number, mind=2, maxd=4):
     """ Format a floating point number into a string """

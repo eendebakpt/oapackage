@@ -215,9 +215,9 @@ class TestOAfiles(unittest.TestCase):
         _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         _, array_filename_out = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
-        oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
+        oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
-        oapackage.oahelper.selectArrays(array_filename, array_filename_out,
+        oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out,
                                         [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_nArrayFile(self):

@@ -143,7 +143,7 @@ void test_conference_candidate_generators(int verbose = 1) {
 	ct.ctype = conference_t::DCONFERENCE;
 	ct.j3zero = 1;
 
-	array_link al = exampleArray(35, 1);
+	array_link al = exampleArray(35, verbose);
 
 	CandidateGeneratorDouble cgenerator(array_link(), ct);
 	cgenerator.verbose = 0;
@@ -162,7 +162,7 @@ void test_conference_candidate_generators(int verbose = 1) {
 	// generator for conference matrices
 	{
 		const int example_idx = 39;
-		array_link al = exampleArray(example_idx, 1);
+		array_link al = exampleArray(example_idx, verbose);
 		conference_t ct(al.n_rows, al.n_columns + 4, 0);
 
 		if (verbose >= 2) {
@@ -178,7 +178,6 @@ void test_conference_candidate_generators(int verbose = 1) {
 		std::vector< conference_column > ccX = generateSingleConferenceExtensions(al, ct, -1, averbose, 1, filterj2,
 			ct.j3zero, filtersymminline);
 		if (verbose >= 2) {
-
 			showCandidates(ccX);
 			printf("\n-----------\n");
 		}
@@ -188,7 +187,8 @@ void test_conference_candidate_generators(int verbose = 1) {
 			int kz = maxz(al) + 1;
 			cgenerator.verbose = verbose;
 			std::vector< conference_column > ee = cgenerator.generateCandidatesZero(al, kz);
-			printf("ee.size() %d\n", (int)ee.size());
+			if (verbose)
+				printf("ee.size() %d\n", (int)ee.size());
 			myassert(ee.size() == 1, "number of candidnates generated");
 			if (verbose >= 2) {
 				cgenerator.showCandidates(2);

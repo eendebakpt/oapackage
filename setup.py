@@ -187,14 +187,15 @@ class OATest(TestCommand):
     def run_tests(self):
         print('## oapackage test: load package')
         # import here, cause outside the eggs aren't loaded
-        import oapackage.tests
+        import oapackage
         import oapackage.oahelper
         import oapackage.scanf
-        import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.test_oapackage.miscunittest(verbose=1)
+        oapackage.oalib.test_array_manipulation(verbose=0)
+        oapackage.oalib.test_conference_candidate_generators(verbose=0)
+       
         errno = 0
         sys.exit(errno)
 
@@ -202,9 +203,8 @@ class OATest(TestCommand):
 # %% Define sources of the package
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
-        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp']
-srcs = srcs + ['Deff.cpp', 'evenodd.cpp']
-srcs = srcs + ['conference.cpp']
+        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp',
+        'conference.cpp', 'unittests.cpp','Deff.cpp', 'evenodd.cpp']
 
 
 srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
