@@ -48,7 +48,6 @@ output will be written (the file will be clobbered).
 from xml.dom import minidom
 import re
 import textwrap
-import sys
 import os.path
 import optparse
 
@@ -62,6 +61,7 @@ def my_open_read(source):
         except TypeError:
             return open(source)
 
+
 def my_open_write(dest):
     if hasattr(dest, "write"):
         return dest
@@ -72,18 +72,20 @@ def my_open_write(dest):
             return open(dest, 'w')
 
 # MARK: Text handling:
-def shift(txt, indent = '    ', prepend = ''):
+
+
+def shift(txt, indent='    ', prepend=''):
     """Return a list corresponding to the lines of text in the `txt` list
     indented by `indent`. Prepend instead the string given in `prepend` to the
     beginning of the first line. Note that if len(prepend) > len(indent), then
-    `prepend` will be truncated (doing better is tricky!). This preserves a 
+    `prepend` will be truncated (doing better is tricky!). This preserves a
     special '' entry at the end of `txt` (see `do_para` for the meaning).
     """
-    if type(indent) is int:
+    if isinstance(indent, int):
         indent = indent * ' '
     special_end = txt[-1:] == ['']
     lines = ''.join(txt).splitlines(True)
-    for i in range(1,len(lines)):
+    for i in range(1, len(lines)):
         if lines[i].strip() or indent.strip():
             lines[i] = indent + lines[i]
     if not lines:
@@ -96,6 +98,7 @@ def shift(txt, indent = '    ', prepend = ''):
         ret.append('')
     return ret
 
+
 class Doxy2SWIG:
     """Converts Doxygen generated XML files into a file containing
     docstrings that can be used by SWIG-1.3.x that have support for
@@ -105,13 +108,13 @@ class Doxy2SWIG:
     """
 
     def __init__(self, src,
-                 with_function_signature = False,
-                 with_type_info = False,
-                 with_constructor_list = False,
-                 with_attribute_list = False,
-                 with_overloaded_functions = False,
-                 textwidth = 80,
-                 quiet = False):
+                 with_function_signature=False,
+                 with_type_info=False,
+                 with_constructor_list=False,
+                 with_attribute_list=False,
+                 with_overloaded_functions=False,
+                 textwidth=80,
+                 quiet=False):
         """Initialize the instance given a source object.  `src` can
         be a file or filename.  If you do not want to include function
         definitions from doxygen then set
@@ -229,7 +232,7 @@ class Doxy2SWIG:
             old_pieces, self.pieces = self.pieces, pieces
         else:
             old_pieces = []
-        if type(indent) is int:
+        if isinstance(indent, int):
             indent = indent * ' '
         if len(indent) > 0:
             pieces = ''.join(self.pieces)
@@ -258,7 +261,7 @@ class Doxy2SWIG:
         self.add_text(pre_char)
         self.subnode_parse(node)
         self.add_text(post_char)
-    
+
 # MARK: Helper functions
     def get_specific_subnodes(self, node, name, recursive=0):
         """Given a node and a name, return a list of child `ELEMENT_NODEs`, that
@@ -269,7 +272,7 @@ class Doxy2SWIG:
         ret = [x for x in children if x.tagName == name]
         if recursive > 0:
             for x in children:
-                ret.extend(self.get_specific_subnodes(x, name, recursive-1))
+                ret.extend(self.get_specific_subnodes(x, name, recursive - 1))
         return ret
 
     def get_specific_nodes(self, node, names):
@@ -294,13 +297,13 @@ class Doxy2SWIG:
         """Make sure to create an empty line. This is overridden, if the previous
         text ends with the special marker ''. In that case, nothing is done.
         """
-        if self.pieces[-1:] == ['']: # respect special marker
+        if self.pieces[-1:] == ['']:  # respect special marker
             return
-        elif self.pieces == []: # first paragraph, add '\n', override with ''
+        elif self.pieces == []:  # first paragraph, add '\n', override with ''
             self.pieces = ['\n']
-        elif self.pieces[-1][-1:] != '\n': # previous line not ended
-            self.pieces.extend(['  \n' ,'\n'])
-        else: #default
+        elif self.pieces[-1][-1:] != '\n':  # previous line not ended
+            self.pieces.extend(['  \n', '\n'])
+        else:  # default
             self.pieces.append('\n')
 
     def add_line_with_subsequent_indent(self, line, indent=4):
@@ -310,7 +313,7 @@ class Doxy2SWIG:
         if isinstance(line, (list, tuple)):
             line = ''.join(line)
         line = line.strip()
-        width = self.textwidth-self.indent-indent
+        width = self.textwidth - self.indent - indent
         wrapped_lines = textwrap.wrap(line[indent:], width=width)
         for i in range(len(wrapped_lines)):
             if wrapped_lines[i] != '':
@@ -367,7 +370,7 @@ class Doxy2SWIG:
         for n in constructor_nodes:
             self.add_text('\n')
             self.add_line_with_subsequent_indent('* ' + self.get_function_signature(n))
-            self.subnode_parse(n, pieces = [], indent=4, ignore=['definition', 'name'])
+            self.subnode_parse(n, pieces=[], indent=4, ignore=['definition', 'name'])
 
     def make_attribute_list(self, node):
         """Produces the "Attributes" section in class docstrings for public
@@ -392,7 +395,7 @@ class Doxy2SWIG:
     def get_memberdef_nodes_and_signatures(self, node, kind):
         """Collects the memberdef nodes and corresponding signatures that
         correspond to public function entries that are at most depth 2 deeper
-        than the current (compounddef) node. Returns a dictionary with 
+        than the current (compounddef) node. Returns a dictionary with
         function signatures (what swig expects after the %feature directive)
         as keys, and a list of corresponding memberdef nodes as values."""
         sig_dict = {}
@@ -425,7 +428,7 @@ class Doxy2SWIG:
             else:
                 sig_dict[sig] = [n]
         return sig_dict
-    
+
     def handle_typical_memberdefs_no_overload(self, signature, memberdef_nodes):
         """Produce standard documentation for memberdef_nodes."""
         for n in memberdef_nodes:
@@ -457,12 +460,14 @@ class Doxy2SWIG:
             self.add_line_with_subsequent_indent('* ' + self.get_function_signature(n))
             self.subnode_parse(n, pieces=[], indent=4, ignore=['definition', 'name'])
         self.add_text(['";', '\n'])
-    
+
 
 # MARK: Tag handlers
+
+
     def do_linebreak(self, node):
         self.add_text('  ')
-    
+
     def do_ndash(self, node):
         self.add_text('--')
 
@@ -474,7 +479,7 @@ class Doxy2SWIG:
 
     def do_bold(self, node):
         self.surround_parse(node, '**', '**')
-    
+
     def do_computeroutput(self, node):
         self.surround_parse(node, '`', '`')
 
@@ -493,19 +498,19 @@ class Doxy2SWIG:
         # make following text have no gap to the heading:
         pieces.extend([''.join(self.pieces) + '  \n', ''])
         self.pieces = pieces
-    
+
     def do_verbatim(self, node):
         self.start_new_paragraph()
         self.subnode_parse(node, pieces=[''], indent=4)
-    
+
     def do_blockquote(self, node):
         self.start_new_paragraph()
         self.subnode_parse(node, pieces=[''], indent='> ')
-    
+
     def do_hruler(self, node):
         self.start_new_paragraph()
         self.add_text('* * * * *  \n')
-    
+
     def do_includes(self, node):
         self.add_text('\nC++ includes: ')
         self.subnode_parse(node)
@@ -579,7 +584,7 @@ class Doxy2SWIG:
         try:
             self.listitem = int(self.listitem) + 1
             item = str(self.listitem) + '. '
-        except:
+        except BaseException:
             item = str(self.listitem) + ' '
         self.subnode_parse(node, item, indent=4)
 
@@ -610,7 +615,7 @@ class Doxy2SWIG:
     def do_parameternamelist(self, node):
         self.subnode_parse(node)
         self.add_text([' :', '  \n'])
-    
+
     def do_parametername(self, node):
         if self.pieces != [] and self.pieces != ['* ', '']:
             self.add_text(', ')
@@ -627,9 +632,9 @@ class Doxy2SWIG:
             return
         self.start_new_paragraph()
         if kind == 'warning':
-            self.subnode_parse(node, pieces=['**Warning**: ',''], indent=4)
+            self.subnode_parse(node, pieces=['**Warning**: ', ''], indent=4)
         elif kind == 'see':
-            self.subnode_parse(node, pieces=['See also: ',''], indent=4)
+            self.subnode_parse(node, pieces=['See also: ', ''], indent=4)
         elif kind == 'return':
             if self.indent == 0:
                 pieces = ['Returns', '\n', len('Returns') * '-', '\n', '']
@@ -637,12 +642,12 @@ class Doxy2SWIG:
                 pieces = ['Returns:', '\n', '']
             self.subnode_parse(node, pieces=pieces)
         else:
-            self.subnode_parse(node, pieces=[kind + ': ',''], indent=4)
+            self.subnode_parse(node, pieces=[kind + ': ', ''], indent=4)
 
 # MARK: %feature("docstring") producing tag handlers
     def do_compounddef(self, node):
         """This produces %feature("docstring") entries for classes, and handles
-        class, namespace and file memberdef entries specially to allow for 
+        class, namespace and file memberdef entries specially to allow for
         overloaded functions. For other cases, passes parsing on to standard
         handlers (which may produce unexpected results).
         """
@@ -660,14 +665,15 @@ class Doxy2SWIG:
                 constructor_nodes = []
                 for n in self.get_specific_subnodes(node, 'memberdef', recursive=2):
                     if n.attributes['prot'].value == 'public':
-                        if self.extract_text(self.get_specific_subnodes(n, 'definition')) == classdefn + '::' + classname:
+                        if self.extract_text(self.get_specific_subnodes(n, 'definition')
+                                             ) == classdefn + '::' + classname:
                             constructor_nodes.append(n)
                 for n in constructor_nodes:
                     self.add_line_with_subsequent_indent(self.get_function_signature(n))
 
-            names = ('briefdescription','detaileddescription')
+            names = ('briefdescription', 'detaileddescription')
             sub_dict = self.get_specific_nodes(node, names)
-            for n in ('briefdescription','detaileddescription'):
+            for n in ('briefdescription', 'detaileddescription'):
                 if n in sub_dict:
                     self.parse(sub_dict[n])
             if self.with_constructor_list:
@@ -680,8 +686,8 @@ class Doxy2SWIG:
                 self.parse(sub_list[0])
             self.add_text(['";', '\n'])
 
-            names = ['compoundname', 'briefdescription','detaileddescription', 'includes']
-            self.subnode_parse(node, ignore = names)
+            names = ['compoundname', 'briefdescription', 'detaileddescription', 'includes']
+            self.subnode_parse(node, ignore=names)
 
         elif kind in ('file', 'namespace'):
             nodes = node.getElementsByTagName('sectiondef')
@@ -689,11 +695,11 @@ class Doxy2SWIG:
                 self.parse(n)
 
         # now explicitely handle possibly overloaded member functions.
-        if kind in ['class', 'struct','file', 'namespace']:
+        if kind in ['class', 'struct', 'file', 'namespace']:
             md_nodes = self.get_memberdef_nodes_and_signatures(node, kind)
             for sig in md_nodes:
                 self.handle_typical_memberdefs(sig, md_nodes[sig])
-    
+
     def do_memberdef(self, node):
         """Handle cases outside of class, struct, file or namespace. These are
         now dealt with by `handle_overloaded_memberfunction`.
@@ -720,13 +726,13 @@ class Doxy2SWIG:
         data = self.extract_text(first['definition'])
         self.add_text('\n')
         self.add_text(['/* where did this entry come from??? */', '\n'])
-        self.add_text('%feature("docstring") %s "\n%s' % (data, data))
+        self.add_text('%%feature("docstring") %s "\n%s' % (data, data))
 
         for n in node.childNodes:
             if n not in first.values():
                 self.parse(n)
         self.add_text(['";', '\n'])
-    
+
 # MARK: Entry tag handlers (dont print anything meaningful)
     def do_sectiondef(self, node):
         kind = node.attributes['kind'].value
@@ -765,21 +771,23 @@ class Doxy2SWIG:
             refid = c.attributes['refid'].value
             fname = refid + '.xml'
             if not os.path.exists(fname):
-                fname = os.path.join(self.my_dir,  fname)
+                fname = os.path.join(self.my_dir, fname)
             if not self.quiet:
                 print("parsing file: %s" % fname)
             p = Doxy2SWIG(fname,
-                          with_function_signature = self.with_function_signature,
-                          with_type_info = self.with_type_info,
-                          with_constructor_list = self.with_constructor_list,
-                          with_attribute_list = self.with_attribute_list,
-                          with_overloaded_functions = self.with_overloaded_functions,
-                          textwidth = self.textwidth,
-                          quiet = self.quiet)
+                          with_function_signature=self.with_function_signature,
+                          with_type_info=self.with_type_info,
+                          with_constructor_list=self.with_constructor_list,
+                          with_attribute_list=self.with_attribute_list,
+                          with_overloaded_functions=self.with_overloaded_functions,
+                          textwidth=self.textwidth,
+                          quiet=self.quiet)
             p.generate()
             self.pieces.extend(p.pieces)
 
 # MARK: main
+
+
 def main():
     usage = __doc__
     parser = optparse.OptionParser(usage)
@@ -818,21 +826,22 @@ def main():
                       default=False,
                       dest='q',
                       help='be quiet and minimize output')
-    
+
     options, args = parser.parse_args()
     if len(args) != 2:
         parser.error("no input and output specified")
-    
+
     p = Doxy2SWIG(args[0],
-                  with_function_signature = options.f,
-                  with_type_info = options.t,
-                  with_constructor_list = options.c,
-                  with_attribute_list = options.a,
-                  with_overloaded_functions = options.o,
-                  textwidth = options.w,
-                  quiet = options.q)
+                  with_function_signature=options.f,
+                  with_type_info=options.t,
+                  with_constructor_list=options.c,
+                  with_attribute_list=options.a,
+                  with_overloaded_functions=options.o,
+                  textwidth=options.w,
+                  quiet=options.q)
     p.generate()
     p.write(args[1])
+
 
 if __name__ == '__main__':
     main()

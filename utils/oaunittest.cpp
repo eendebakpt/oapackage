@@ -465,7 +465,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         aa[kk + 1] = extend_arraylist (aa[kk], adata, oaextendx);
                         aa2[kk + 1] = extend_arraylist (aa2[kk], adata2, oaextendx2);
                         printf ("  extend: column %d->%d: %ld->%ld arrays, 2-level method %ld->%ld arrays\n", kk,
-                                kk + 1, aa[kk].size (), aa[kk + 1].size (), aa2[kk].size (), aa2[kk + 1].size ());
+                                kk + 1, (long) aa[kk].size (), (long)aa[kk + 1].size (), aa2[kk].size (), aa2[kk + 1].size ());
 
                         if (aa[kk + 1] != aa2[kk + 1]) {
                                 printf ("oaunittest: error: 2-level algorithm unequal to original algorithm\n");
@@ -501,7 +501,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
         }
         {
                 cprintf (verbose, "%s: test dtable creation\n", bstr);
-                double t0x = get_time_ms ();
 
                 for (int i = 0; i < 4; i++) {
                         array_link al = exampleArray (5);

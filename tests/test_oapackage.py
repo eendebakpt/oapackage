@@ -57,26 +57,26 @@ class TestMisc(unittest.TestCase):
         G = np.zeros((5, 5), dtype=int)
         G[1, 0] = G[0, 1] = 1
         v = oapackage.reduceGraphNauty(G)
-        assert(len(v) == G.shape[0])
+        self.assertTrue(len(v) == G.shape[0])
 
     def test_exampleArray(self):
         # test a selection of the example arrays
         al = oapackage.exampleArray(5, 0)
-        assert(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
+        self.assertTrue(al.md5() == '3885c883d3bee0c7546511255bb5c3ae')
         al = oapackage.exampleArray(20, 0)
-        assert(np.array(al).shape == (24, 3))
+        self.assertTrue(np.array(al).shape == (24, 3))
         al = oapackage.exampleArray(40, 0)
-        assert(np.array(al).shape == (14, 5))
+        self.assertTrue(np.array(al).shape == (14, 5))
 
     def test_scanf(self):
         r = oapackage.scanf.sscanf('1', '%d')
-        assert(r[0] == 1)
+        self.assertTrue(r[0] == 1)
 
     def test_oa2graph(self):
         al = oapackage.exampleArray(2, 0)
         adata = oapackage.arraylink2arraydata(al)
         g = oapackage.graphtools.oa2graph(al, adata)
-        assert(g[0].shape == (34, 34))
+        self.assertTrue(g[0].shape == (34, 34))
 
 
 def test_numpy_interface(verbose=0):
@@ -200,7 +200,7 @@ class TestOAfiles(unittest.TestCase):
     """ Test functionality related to orthogonal array files """
 
     def test_misc_file_operations(self):
-        array_filename = tempfile.mktemp(suffix='.oa')
+        _, array_filename = tempfile.mkstemp(suffix='.oa')
         lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         assert(oapackage.oahelper.oaIsBinary(array_filename) is False)
@@ -212,22 +212,22 @@ class TestOAfiles(unittest.TestCase):
         _ = oapackage.oahelper.compressOAfile(array_filename)
 
     def test_selectArrays(self):
-        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
-        array_filename_out = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename_out = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
-        oapackage.oahelper.selectArrays(array_filename, array_filename_out, [
+        oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out, [
                                         1], afmode=oalib.ABINARY, verbose=1, cache=0)
-        oapackage.oahelper.selectArrays(array_filename, array_filename_out,
+        oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out,
                                         [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_nArrayFile(self):
-        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0)])
         self.assertEqual(oapackage.oahelper.nArrayFile(array_filename), 1)
         self.assertEqual(oapackage.oahelper.nArrayFile('notavalidfile.oa'), -1)
 
     def test_findfiles(self):
-        array_filename = tempfile.mktemp(suffix='.oa', dir=tempfile.tempdir)
+        _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         lst = [oapackage.exampleArray(4, 0)]
         oapackage.writearrayfile(array_filename, lst)
         lst = oapackage.oahelper.findfiles(tempfile.tempdir, '.*oa')
@@ -318,7 +318,7 @@ class TestOAhelper(unittest.TestCase):
     def test_plot2Dline(self):
         if importlib.util.find_spec('matplotlib') is not None:
             with mock.patch('matplotlib.pyplot.plot') as MockPlt:
-                _ = oapackage.oahelper.plot2Dline([1, 0, 0])
+                oapackage.oahelper.plot2Dline([1, 0, 0])
                 self.assertTrue(MockPlt.called)
 
     @only_python3

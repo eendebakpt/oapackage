@@ -12,7 +12,6 @@ import os
 import numpy as np
 import time
 import subprocess
-import time
 import getopt
 import platform
 
@@ -58,7 +57,7 @@ def pytest6(verbose=1):
     if verbose:
         print('pytest6: run different algorithms on the same case')
     algs = [oalib.MODE_ORIGINAL, oalib.MODE_J4]
-    for ii, alg in enumerate(algs):
+    for _, alg in enumerate(algs):
         algname = oalib.algnames(alg)
         if verbose >= 2:
             print('pytest6: running %s, alg %s' % (adata.fullidstr(), algname))
@@ -324,7 +323,6 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
-    # sys.exit(main())
 
 
 def timeconfig(configfile='oaconfig.txt', timebin='/usr/bin/time', pdir='/home/eendebakpt/misc/oa/oacode/performancetest'):
@@ -332,9 +330,5 @@ def timeconfig(configfile='oaconfig.txt', timebin='/usr/bin/time', pdir='/home/e
     res = subprocess.check_output([('cd %s;ls;' % pdir) + timebin, '--format="%%E %%S %%U"', './oaextendsingle', '-c %s -l 1' % (configfile)])
     return res
 
-    try:
-        res = os.system('./oaextendsingle -c %s -l 0 > /dev/null' % (configfile))
-    except:
-        print('error!')
 
 

@@ -116,7 +116,7 @@ class TestDoptimize(unittest.TestCase):
             try:
                 import matplotlib
                 matplotlib.pyplot.close(100)
-            except:
+            except Exception:
                 pass
 
     def test_filterPareto(self):
@@ -129,7 +129,7 @@ class TestDoptimize(unittest.TestCase):
     def test_calcScore(self):
         dds = np.random.rand(10, 3)
         scores = oapackage.Doptim.calcScore(dds, optimfunc=[1, 2, 3])
-        assert(scores.shape == (dds.shape[0], ))
+        self.assertEqual(scores.shape , (dds.shape[0], ) )
 
     def test_array2Dtable(self):
         sols = [oapackage.exampleArray(9, 0)]

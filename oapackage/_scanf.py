@@ -29,7 +29,7 @@ import sys
 try:
     from functools import lru_cache
 except ImportError:
-    from backports.functools_lru_cache import lru_cache
+    from backports.functools_lru_cache import lru_cache # type: ignore
 
 __version__ = '1.5.2'
 

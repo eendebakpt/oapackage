@@ -10,7 +10,7 @@ from setuptools import Extension
 from setuptools.command.test import test as TestCommand
 from distutils.command.build import build as distutils_build
 from setuptools.command.install import install as setuptools_install
-import setuptools.command.build_ext 
+import setuptools.command.build_ext
 
 from codecs import open  # To use a consistent encoding
 from os import path
@@ -37,13 +37,12 @@ is_python3 = sys.version_info >= (3, 4)
 
 
 def checkZlib(verbose=0):
-    """ Check whether zlib is available 
+    """ Check whether zlib is available
 
-    Code adapted from http://stackoverflow.com/questions/28843765/setup-py-check-if-non-python-library-dependency-exists    
+    Code adapted from http://stackoverflow.com/questions/28843765/setup-py-check-if-non-python-library-dependency-exists
     """
     ret_val = True
     try:
-        import os
         import distutils.ccompiler
         import distutils.sysconfig
         import tempfile
@@ -53,7 +52,7 @@ def checkZlib(verbose=0):
         c_code = """
             #include <zlib.h>
             #include <stdio.h>
-        
+
             int main(int argc, char* argv[]) {
                 printf("Hello zlib test...\\n");
                 return 0;
@@ -97,7 +96,7 @@ def checkZlib(verbose=0):
     return ret_val
 
 
-#%%
+# %%
 
 def get_version_info(verbose=0):
     """ Extract version information from source code """
@@ -116,6 +115,7 @@ def get_version_info(verbose=0):
     if verbose:
         print('get_version_info: %s' % FULLVERSION)
     return FULLVERSION, GIT_REVISION
+
 
 try:
     from distutils.version import LooseVersion
@@ -141,15 +141,16 @@ try:
             print("Found SWIG: %s (version %s)" % (swig_executable, swig_version))
         return swig_executable, swig_version, swig_valid
     swig_executable, swig_version, swig_valid = get_swig_executable()
-    print('swig_version %s, swig_executable %s' % (swig_version, swig_executable) )
-except:
+    print('swig_version %s, swig_executable %s' % (swig_version, swig_executable))
+except BaseException:
     def get_swig_executable():
         return None, None, False
     swig_valid = False
 
-#%% Trick to remove option for c++ code compilation
+# %% Trick to remove option for c++ code compilation
 try:
-    # see http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
+    # see
+    # http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
     from setuptools.py31compat import get_config_vars
 
     (opt,) = get_config_vars('OPT')
@@ -158,16 +159,16 @@ try:
         opt = " ".join(flag for flag in opt.split()
                        if flag != '-Wstrict-prototypes')
         os.environ['OPT'] = opt
-except:
+except BaseException:
     import setuptools
     print('old version of setuptools: %s' % setuptools.__version__)
-    pass
 
 
-#%% Test suite
+# %% Test suite
 
-""" Run a limited set of tests for the package """
 class OATest(TestCommand):
+    """ Run a limited set of tests for the package """
+
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
     def initialize_options(self):
@@ -186,24 +187,24 @@ class OATest(TestCommand):
     def run_tests(self):
         print('## oapackage test: load package')
         # import here, cause outside the eggs aren't loaded
-        import oapackage.tests
+        import oapackage
         import oapackage.oahelper
         import oapackage.scanf
-        import oapackage.tests.test_oapackage
         print('## oapackage test: oalib version %s' % oapackage.version())
         print('## oapackage test: package compile options\n%s\n' % oapackage.oalib.compile_information())
 
-        oapackage.tests.test_oapackage.miscunittest(verbose=1)
+        oapackage.oalib.test_array_manipulation(verbose=0)
+        oapackage.oalib.test_conference_candidate_generators(verbose=0)
+       
         errno = 0
         sys.exit(errno)
 
 
-#%% Define sources of the package
+# %% Define sources of the package
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
-        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp']
-srcs = srcs + ['Deff.cpp', 'evenodd.cpp']
-srcs = srcs + ['conference.cpp']
+        'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp',
+        'conference.cpp', 'unittests.cpp','Deff.cpp', 'evenodd.cpp']
 
 
 srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
@@ -215,14 +216,27 @@ if os.path.exists('dev/oadevelop.cpp'):
 
 
 sources = srcs + ['src/bitarray/bit_array.cpp']
-oaheaders = [ cppfile.replace('.cpp', '.h') for cppfile in srcs ] +[os.path.join('src', 'version.h')]
+oaheaders = [cppfile.replace('.cpp', '.h') for cppfile in srcs] + [os.path.join('src', 'version.h')]
 
 
 for nauty_file in 'nauty.c nautinv.c nautil.c naurng.c naugraph.c schreier.c naugroup.c'.split(' '):
-    sources += [os.path.join('src', 'nauty',nauty_file)]
+    sources += [os.path.join('src', 'nauty', nauty_file)]
 
-nautyheaders = [os.path.join('src', 'nauty', headerfile) for headerfile in ['gtools.h', 'naugroup.h','nautinv.h',  'naurng.h', 'naugraph.h', 'nausparse.h','nautil.h',  'nauty.h', 'schreier.h']]
-sources=sources
+nautyheaders = [
+    os.path.join(
+        'src',
+        'nauty',
+        headerfile) for headerfile in [
+            'gtools.h',
+            'naugroup.h',
+            'nautinv.h',
+            'naurng.h',
+            'naugraph.h',
+            'nausparse.h',
+            'nautil.h',
+            'nauty.h',
+        'schreier.h']]
+sources = sources
 
 swig_opts = []
 compile_options = []
@@ -307,7 +321,7 @@ packages = find_packages()
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
 if rtd and 0:
-    ext_modules = [] # do not build on RTD, this generates a time-out error  
+    ext_modules = []  # do not build on RTD, this generates a time-out error
     swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
     print('RTD: run swig command: %s' % (swigcmd,))
     output = subprocess.check_output(swigcmd.split(' '))
@@ -320,6 +334,8 @@ else:
     ext_modules = [oalib_module]
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
+
+
 class CustomBuild(distutils_build):
 
     def run(self):
@@ -338,7 +354,8 @@ class BuildExtSwig3(setuptools.command.build_ext.build_ext):
     def find_swig(self):
         swig_executable, _, _ = get_swig_executable()
         return swig_executable
-    
+
+
 def readme():
     with open('README.md') as f:
         return f.read()
@@ -353,7 +370,7 @@ if is_python3:
     python27_requirements = []
 else:
     python27_requirements = ['mock; python_version <"3.0"', 'backports.functools_lru_cache;python_version<"2.9"']
-    
+
 setup(name='OApackage',
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
       version=version,
@@ -370,11 +387,11 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock' , 'python-dateutil']+python27_requirements,
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil'] + python27_requirements,
       zip_safe=False,
       install_requires=['numpy>=1.13', 'python-dateutil'] + python27_requirements,
       extras_require={
-          'GUI':  ["qtpy", 'matplotlib'],
+          'GUI': ["qtpy", 'matplotlib'],
           'documentation': ['sphinx']
       },
       requires=['numpy', 'matplotlib'],

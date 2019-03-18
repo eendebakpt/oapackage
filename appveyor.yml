@@ -120,6 +120,9 @@ install:
   - "%CMD_IN_ENV36% jupyter --version"
   - "%CMD_IN_ENV36% jupyter kernelspec list"
 
+  # for running the mypy check
+  - "%CMD_IN_ENV36% pip install mypy"
+
   # for running the jupyter notebooks
   - "%CMD_IN_ENV27% pip install jupyter matplotlib"
   
@@ -153,7 +156,8 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   
+   - "%CMD_IN_ENV36% mypy oapackage"
+
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "

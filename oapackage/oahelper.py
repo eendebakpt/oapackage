@@ -258,7 +258,7 @@ def enlargelims(factor=1.05):
 
 
 def helmert_contrasts(number_of_levels, verbose=0):
-    """ Calculate Helmert contrasts for a given number of levels 
+    """ Calculate Helmert contrasts for a given number of levels
 
     The Helmert contrasts are orthogonal and normalize such that the square equals to number of levels.
     Args:
@@ -541,8 +541,8 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
 
     ri = 0
     if header:
-        page.tr(style='font-weight: bold; border-bottom: solid 1px black;'
-                + trstyle[ri], class_=trclass[ri])
+        page.tr(style='font-weight: bold; border-bottom: solid 1px black;' +
+                trstyle[ri], class_=trclass[ri])
         ri = ri + 1
         for ii in range(nc):
             if isinstance(X[offset, ii], tuple):
@@ -554,7 +554,7 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
         offset = offset + 1
 
     nr = X.shape[0] - offset
-    for r in range(nr):
+    for _ in range(nr):
         page.tr(style=trstyle[ri], _class=trclass[ri])
         for ii in range(nc):
             if isinstance(X[offset, ii], tuple):
@@ -681,7 +681,8 @@ def checkArrayFile(afile, cache=1):
 
 
 try:
-    basestring  # attempt to evaluate basestring
+    # attempt to evaluate basestring
+    basestring   # type: ignore
 
     def isstr(s):
         return isinstance(s, basestring)
@@ -799,7 +800,7 @@ def nArrayFile(filename, verbose=1):
     return n
 
 
-def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
+def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
     """ Select arrays in a file by indices
 
     Args:
@@ -823,6 +824,7 @@ def selectArrays(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cache=1):
         if verbose >= 2:
             print('output file %s already exists' % outfile)
 
+selectArrays = deprecated(selectArraysInFile)
 
 def floatformat(number, mind=2, maxd=4):
     """ Format a floating point number into a string """
@@ -1090,7 +1092,7 @@ def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None)
 
 
 def compressOAfile(afile, decompress=False, verbose=1):
-    """ Compress an OA array file 
+    """ Compress an OA array file
 
     Args:
         afile (str): array to compress
@@ -1206,7 +1208,7 @@ def designStandardError(al):
       al (array): design
 
     Returns:
-        array: array with standard errors 
+        array: array with standard errors
 
     """
 

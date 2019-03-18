@@ -38,7 +38,7 @@ class MissingMatplotLibException(Exception):
 
 
 def array2Dtable(array_list, verbose=1, titlestr=None):
-    """ Generate HTML table with information about for a list of designs 
+    """ Generate HTML table with information about for a list of designs
 
     Args:
         array_list (list): list of arrays
@@ -492,7 +492,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
     The method uses a coordinate-exchange algorithm find a D-efficient (sometimes called D-optimal) design in the class specified by the
     arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
     multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
-    target function. 
+    target function.
 
 
     Args:
@@ -513,7 +513,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
             scores : list
                 list of scores
             dds: array
-                array with calculated efficiencies            
+                array with calculated efficiencies
             designs: list
                 list of generated designs
             nrestarts: int
@@ -523,7 +523,7 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
     The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
     (or Ds-optimality) and the D1-efficiency of the design. A full definition of these efficiencies is available
     in the documentation at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs. For more details and motivation of these efficiencies,
-    see the paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903. 
+    see the paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903.
 
 
     """

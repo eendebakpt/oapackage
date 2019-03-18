@@ -2052,6 +2052,16 @@ array_link exampleArray (int idx, int verbose) {
 			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
+		 case 55: {
+			 dstr = "unique conference design in C(12, 12)";
+			 if (verbose) {
+				 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+			 }
+			 array_link array(12, 12, 0);
+			 int array_data_tmp[] = { 0,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,-1,-1,-1,-1,-1,1,-1,0,1,1,-1,-1,1,1,1,-1,-1,1,-1,-1,0,-1,1,1,1,1,-1,1,-1,1,-1,-1,1,0,1,-1,-1,-1,1,1,1,1,-1,1,-1,-1,0,1,1,-1,1,-1,1,1,-1,1,-1,1,-1,0,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,0,-1,1,1,-1,1,1,-1,-1,1,1,-1,1,0,-1,-1,1,1,1,-1,1,-1,-1,1,-1,1,0,-1,1,1,1,1,-1,-1,1,-1,-1,1,1,0,-1,1,1,1,1,-1,-1,-1,1,-1,-1,1,0 };
+			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+			 return array;
+		 }
 
         } // end of switch
 

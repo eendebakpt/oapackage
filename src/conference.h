@@ -292,30 +292,30 @@ arraylist_t selectLMC0 (const arraylist_t &list, int verbose, const conference_t
  *
  * \param array Design to be extended
  * \param conference_type Class of conference designs
- * \param zero_index index of zero in candidate column
+ * \param zero_index Index of zero in candidate column
  * \param verbose Verbosity level
- * \param filtersymm If True, filter based on symmetry
+ * \param filter_symmetry If True, filter based on symmetry
  * \param filterj2 If True, filter based on J2 values
  * \return List of generated extensions
  */
 std::vector< conference_column > generateConferenceExtensions (const array_link &array, const conference_t &conference_type,
-                                                   int zero_index, int verbose = 1, int filtersymm = 1,
+                                                   int zero_index, int verbose = 1, int filter_symmetry = 1,
                                                    int filterj2 = 1);
 
 /** Generate candidate extensions for restricted isomorphism classes */
 std::vector< conference_column > generateConferenceRestrictedExtensions (const array_link &array, const conference_t &conference_type,
-                                                             int zero_index, int verbose = 1, int filtersymm = 1,
+                                                             int zero_index, int verbose = 1, int filter_symmetry = 1,
                                                              int filterip = 1);
 
 /// generate extensions for double conference matrices in LMC0 form
 std::vector< conference_column > generateDoubleConferenceExtensions (const array_link &array, const conference_t &conference_type,
-                                                         int verbose = 1, int filtersymm = 1, int filterip = 1,
-                                                         int filterJ3 = 0, int filtersymminline = 1);
+                                                         int verbose = 1, int filter_symmetry = 1, int filterip = 1,
+                                                         int filterJ3 = 0, int filter_symmetry_inline = 1);
 
 /// generate extensions for conference matrices in LMC0 form
 std::vector< conference_column > generateSingleConferenceExtensions (const array_link &array, const conference_t &conference_type,
-                                                         int zero_index, int verbose, int filtersymm, int filterj2,
-                                                         int filterj3, int filtersymminline = 0);
+                                                         int zero_index, int verbose, int filter_symmetry, int filterj2,
+                                                         int filterj3, int filter_symmetry_inline = 0);
 
 /** return max position of zero in array, returns -1 if no zero is found
  *
@@ -393,11 +393,12 @@ class DconferenceFilter {
         int minzvalue;
 
       public:
+		/// row at which infile filtering is performed
         int inline_row;
         symmdata sd;
 
       public:
-        DconferenceFilter(const array_link &_als, int filtersymm_, int filterj2_, int filterj3_ = 1);
+        DconferenceFilter(const array_link &_als, int filter_symmetry, int filterj2_, int filterj3_ = 1);
 
         /// print object to stdout
 		void show() const;

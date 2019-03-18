@@ -60,9 +60,8 @@ The code is available under a BSD style license; see the file `LICENSE <https://
 for details. If you use this code or any of the results, please cite
 this program as follows:
 
-*Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays*,
-P.T. Eendebak, E.D. Schoen, M.V.M. Nguyen, Volume 18, Issue 2, pages
-123-140, 2010.
+* `OApackage: A Python package for generation and analysis of orthogonal arrays, optimal designs and conference designs <https://doi.org/10.21105/joss.01097>`_, P.T. Eendebak, A.R. Vazquez, Journal of Open Source Software, 2019
+* *Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays*, E.D. Schoen, P.T. Eendebak, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010.
 
 Acknowledgements
 ----------------

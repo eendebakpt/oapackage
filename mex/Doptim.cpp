@@ -132,10 +132,6 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 	int nabort=3000;
 	int method=1; 
 
-	double t0 = get_time_ms();
-	bool abort = false;
-
-
 	DoptimReturn rr = Doptimize(arrayclass, nrestarts, alpha, verbose, method, niter, maxtime, nabort );
 	std::vector<std::vector<double> > dds = rr.dds; 	arraylist_t AA = rr.designs;
 	
@@ -188,9 +184,6 @@ void mexFunction ( int n_out, mxArray *plhs[], int n_in, const mxArray *prhs[] )
 
 
 
-//	mexPrintf("go!\n");
 	return;
 }
 
-//#include "mexstandalone.h"
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
