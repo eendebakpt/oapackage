@@ -1106,8 +1106,7 @@ array_link exampleArray (int idx, int verbose) {
 
         switch (idx) {
         default:
-                myprintf ("exampleArray: no example array with index %d exists\n", idx);
-                return array_link ();
+                throw_runtime_exception(printfstring("exampleArray: no example array with index %d exists\n", idx));
                 break;
         case 39: {
                 dstr = "first LMC0 conference design in C(8,6)";
@@ -2065,7 +2064,7 @@ array_link exampleArray (int idx, int verbose) {
 
         } // end of switch
 
-        return array_link (1, 1, -1);
+        return array_link ();
 }
 
 array_link array_link::reduceDOP () const {
