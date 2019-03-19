@@ -20,7 +20,8 @@ else:
     io = None
     mock = None
     patch = None
-    
+
+
 def only_python3(function):
     """ Decorator to only execute a test function in Python 3 """
     python3 = sys.version_info >= (3, 4)
@@ -38,21 +39,22 @@ def only_python3(function):
 def _statistics_equal(statistics, expected):
     np.testing.assert_array_almost_equal(np.array(statistics), np.array(expected))
 
+
 class TestFvalues(unittest.TestCase):
-    
+
     def test_FvaluesConference(self):
-        array=oapackage.exampleArray(47, 0)
-        js=oapackage.jstructconference_t(array)
+        array = oapackage.exampleArray(47, 0)
+        js = oapackage.jstructconference_t(array)
         self.assertEqual(js.Jvalues(), (16, 12, 8, 4, 0))
         self.assertEqual(js.calculateF(), (0, 2, 4, 51, 13))
 
     def test_FvaluesConference_odd_runs(self):
-        array=oapackage.exampleArray(47, 0)
+        array = oapackage.exampleArray(47, 0)
         definitive_screening_design = oapackage.conference2DSD(array)
         with self.assertRaises(RuntimeError):
-            _=oapackage.jstructconference_t(definitive_screening_design)
-     
-    
+            _ = oapackage.jstructconference_t(definitive_screening_design)
+
+
 class TestJcharacteristics(unittest.TestCase):
 
     def test_Jcharacteristics(self):

@@ -580,7 +580,7 @@ class TestCppLibrary(unittest.TestCase):
             D = al.selectFirstColumns(3).Defficiency()
             std_output = mock_stdout.getvalue()
             self.assertIn('projDeff: k 8, kp 3: start with 56 combinations', std_output)
-        self.assertEqual(D , d[0])
+        self.assertEqual(D, d[0])
         numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
 
         pec_seq = oapackage.PECsequence(al)

@@ -826,6 +826,7 @@ def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cach
 
 selectArrays = deprecated(selectArraysInFile)
 
+
 def floatformat(number, mind=2, maxd=4):
     """ Format a floating point number into a string """
     rounded = int(number * (10**mind)) / float(10**mind)
