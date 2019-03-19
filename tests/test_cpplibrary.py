@@ -198,11 +198,7 @@ class TestArrayLink(unittest.TestCase):
         al = al.selectFirstColumns(3)
         self.assertEqual(al.n_columns, 3)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            al = oapackage.exampleArray(1000, 0)
-            stdout = mock_stdout.getvalue()
-            self.assertIn('no example array with index 1000 exists', stdout)
-
+        al = oapackage.array_link()
         with self.assertRaises(RuntimeError):
             al = al.selectFirstColumns(1)
 
@@ -434,11 +430,13 @@ class TestCppLibrary(unittest.TestCase):
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(-1, 1)
             lines = mock_stdout.getvalue().strip().split('\n')
-            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines) - 1)]))
-            self.assertTrue(lines[-1].startswith('exampleArray: no example array with index'))
+            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines))]))
 
         al = oapackage.exampleArray(51, 0)
         self.assertEqual(al.md5(), '662c1d9c51475b42539620385fa22338')
+
+        with self.assertRaises(Exception):
+            al = oapackage.exampleArray(1000, 0)
 
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
