@@ -18,7 +18,7 @@ oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
 __version__ = oapackage.oalib.version()
 
 from . oahelper import *
-from . Doptim import * # type: ignore
+from . Doptim import *  # type: ignore
 from . import scanf
 
 

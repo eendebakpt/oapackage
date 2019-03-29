@@ -29,7 +29,7 @@ import sys
 try:
     from functools import lru_cache
 except ImportError:
-    from backports.functools_lru_cache import lru_cache # type: ignore
+    from backports.functools_lru_cache import lru_cache  # type: ignore
 
 __version__ = '1.5.2'
 
@@ -99,7 +99,7 @@ def scanf_compile(format, collapseWhitespace=True):
         for token, pattern, cast in scanf_translate:
             found = token.match(format, i)
             if found:
-                if cast: # cast != None
+                if cast:  # cast != None
                     cast_list.append(cast)
                 groups = found.groupdict() or found.groups()
                 if groups:

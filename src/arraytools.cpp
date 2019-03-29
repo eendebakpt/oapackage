@@ -1089,25 +1089,25 @@ array_link array_link::randomrowperm () const {
 /** Return example array
  *
  * \param idx Index of example array
- * \param verbose If postive then print description of the array to stdout
- *
+ * \param verbose If positive then print description of the array to stdout
+ * \return Selected example array
  */
 array_link exampleArray (int idx, int verbose) {
         if (idx == -1) {
                 for (int i = 0; i < 1000; i++) {
-                        array_link al = exampleArray (i, verbose);
-                        if (al.n_columns == 0)
-                                break;
+					try { array_link al = exampleArray(i, verbose); }
+					catch (const std::exception&) {
+						break;
+					}
                 }
-                return exampleArray (0);
+                return array_link();
         }
 
         std::string dstr = "";
 
         switch (idx) {
         default:
-                myprintf ("exampleArray: no example array with index %d exists\n", idx);
-                return array_link ();
+                throw_runtime_exception(printfstring("exampleArray: no example array with index %d exists\n", idx));
                 break;
         case 39: {
                 dstr = "first LMC0 conference design in C(8,6)";
@@ -2065,7 +2065,7 @@ array_link exampleArray (int idx, int verbose) {
 
         } // end of switch
 
-        return array_link (1, 1, -1);
+        return array_link ();
 }
 
 array_link array_link::reduceDOP () const {

@@ -511,7 +511,7 @@ int main (int argc, char *argv[]) {
 
                                 int nn = nArrays (psourcefile.c_str ());
                                 if (verbose >= 2)
-                                        printf ("   ### file %s: %d arrays\n", base_name (afile).c_str (), nn);
+                                        printf ("   ### file %s: %d arrays\n",  (afile).c_str (), nn);
 
                                 if (nn >= 0)
                                         if (paretofile && b) {
