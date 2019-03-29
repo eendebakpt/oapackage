@@ -103,7 +103,8 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    try:
+    
+    with np.testing.assert_raises():
         # not possible right now...
         if verbose:
             print('direct float')
@@ -111,8 +112,6 @@ def test_numpy_interface(verbose=0):
         al = oapackage.array_link(A)
         if verbose:
             al.showarray()
-    except:
-        pass
 
 
 def test_nauty(verbose=0):

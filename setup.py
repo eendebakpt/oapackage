@@ -12,7 +12,6 @@ from distutils.command.build import build as distutils_build
 from setuptools.command.install import install as setuptools_install
 import setuptools.command.build_ext
 
-from codecs import open  # To use a consistent encoding
 from os import path
 import os
 import sys

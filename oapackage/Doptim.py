@@ -165,7 +165,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
     return hh
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=[1, 0, 0],
+def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=(1, 0, 0),
                   nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
     """ Helper function to generate web page with D-optimal design results """
     if verbose:

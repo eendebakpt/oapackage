@@ -75,12 +75,12 @@ int main (int argc, char *argv[]) {
                         }
                 } else {
                         // try to read as binary data file
-                        int number_rows;
-                        int number_columns;
-                        bool valid_binary_data = false;
                         FILE *fid = fopen (fname, "rb");
                         if (fid != 0) {
-                                valid_binary_data = readbinheader (fid, number_rows, number_columns);
+								int number_rows;
+								int number_columns;
+								bool valid_binary_data = false;
+								valid_binary_data = readbinheader (fid, number_rows, number_columns);
                                 if (valid_binary_data) {
                                         if (verbose) {
                                                 printf ("data file %s: %d %d\n", fname, number_rows, number_columns);

@@ -102,8 +102,10 @@ int main (int argc, char *argv[]) {
 
                 if (verbose >= 3) {
                         B.show ();
-                        int r3 = arrayrankFullPivLU (B);
-                        int r2 = arrayrankSVD (B);
+                        int rank_lu = arrayrankFullPivLU (B);
+                        int rank_svd = arrayrankSVD (B);
+						myprintf("arrayrankFullPivLU: %d, arrayrankSVD %d", rank_lu, rank_svd);
+
                 }
         }
         const array_link al0 = ll[0];

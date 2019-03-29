@@ -468,7 +468,7 @@ def choose(n, k):
     return ntok
 
 
-def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
+def array2latex(X, header=1, hlines=(), floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
     """ Convert numpy array to Latex tabular """
     ss = ''
     if comment is not None:
