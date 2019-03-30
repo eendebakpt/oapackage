@@ -1,7 +1,6 @@
 Orthogonal Array Package
 ========================
 
-
 The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
@@ -34,7 +33,6 @@ Generalized wordlength pattern: (1.0, 0.0, 0.0)
 
 For more examples see the Jupyter notebooks in the
 [docs/examples](docs/examples/). 
-
 
 Acknowledgements
 ----------------
@@ -85,4 +83,3 @@ Contributing, unit testing and support
 --------------------------------------
 
 See the file [CONTRIBUTING.md](https://github.com/eendebakpt/oapackage/blob/master/CONTRIBUTING.md) on GitHub.
-             
