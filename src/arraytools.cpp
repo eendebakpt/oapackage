@@ -2064,7 +2064,7 @@ array_link exampleArray (int idx, int verbose) {
 		 }
 
         } // end of switch
-
+ 
         return array_link ();
 }
 

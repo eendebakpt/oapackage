@@ -103,8 +103,7 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    
-    with np.testing.assert_raises():
+    with np.testing.assert_raises(TypeError):
         # not possible right now...
         if verbose:
             print('direct float')
