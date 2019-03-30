@@ -113,7 +113,7 @@ class TestDoptimize(unittest.TestCase):
             print('test_generateDpage: run gui test')
             page = oapackage.Doptim.generateDpage(outputdir, arrayclass, dds, allarrays,
                                                   fig=100, optimfunc=[1, 0, 0], nofig=True)
-            
+
             self.assertIsInstance(page, oapackage.markup.page)
             try:
                 import matplotlib
