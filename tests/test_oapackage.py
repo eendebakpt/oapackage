@@ -440,5 +440,4 @@ class TestOAhelper(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    """ Test code """
     unittest.main()

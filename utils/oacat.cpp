@@ -79,8 +79,7 @@ int main (int argc, char *argv[]) {
                         if (fid != 0) {
 								int number_rows;
 								int number_columns;
-								bool valid_binary_data = false;
-								valid_binary_data = readbinheader (fid, number_rows, number_columns);
+								bool valid_binary_data = readbinheader (fid, number_rows, number_columns);
                                 if (valid_binary_data) {
                                         if (verbose) {
                                                 printf ("data file %s: %d %d\n", fname, number_rows, number_columns);
