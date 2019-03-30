@@ -368,7 +368,7 @@ std::string md5 (void *data, int number_of_bytes) {
         return s;
 }
 
-std::string md5 (const std::string filename) {
+std::string md5 (const std::string &filename) {
         MD5 m;
         char *str = m.digestFile (filename.c_str ());
         std::string s = str;
