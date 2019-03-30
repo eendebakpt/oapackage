@@ -954,7 +954,7 @@ def series2htmlstr(ad, html=1, case=0):
         if bb[-1] > 1:
             bb[-1] = 'a'
     hstr = 'OA(%d; %d; ' % (ad.N, ad.strength)
-    for ii, level in enumerate(levels):
+    for ii, _ in enumerate(levels):
         if html:
             hstr += '%d<sup>%s</sup>' % (levels[ii], str(bb[ii]))
         else:
