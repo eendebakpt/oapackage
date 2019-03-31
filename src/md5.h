@@ -7,4 +7,4 @@
 /// calculate md5 sum of a data block in memory
 std::string md5 (void *data, int number_of_bytes);
 /// calculate md5 sum of a file on disk
-std::string md5 (const std::string filename);
+std::string md5 (const std::string &filename);

@@ -103,7 +103,7 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    try:
+    with np.testing.assert_raises(TypeError):
         # not possible right now...
         if verbose:
             print('direct float')
@@ -111,8 +111,6 @@ def test_numpy_interface(verbose=0):
         al = oapackage.array_link(A)
         if verbose:
             al.showarray()
-    except:
-        pass
 
 
 def test_nauty(verbose=0):
@@ -442,5 +440,4 @@ class TestOAhelper(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    """ Test code """
     unittest.main()

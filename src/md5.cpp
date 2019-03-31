@@ -327,11 +327,11 @@ class MD5 {
                 FILE *file;
 
                 int len;
-                unsigned char buffer[1024];
 
                 if ((file = fopen (filename, "rb")) == NULL)
                         printf ("%s can't be opened\n", filename);
                 else {
+		                unsigned char buffer[1024];
                         while ((len = fread (buffer, 1, 1024, file)))
                                 Update (buffer, len);
                         Final ();
@@ -368,7 +368,7 @@ std::string md5 (void *data, int number_of_bytes) {
         return s;
 }
 
-std::string md5 (const std::string filename) {
+std::string md5 (const std::string &filename) {
         MD5 m;
         char *str = m.digestFile (filename.c_str ());
         std::string s = str;

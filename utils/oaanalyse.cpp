@@ -197,7 +197,7 @@ int main (int argc, char *argv[]) {
         if (doj) {
                 for (unsigned int ii = 0; ii < arraylist->size (); ii++) {
                         if (ii % 5000 == 0 || verbose >= 3)
-                                printf ("  calculation (j-filter) for array %d/%d\n", ii, (int)arraylist->size ());
+                                printf ("  calculation (j-filter) for array %d/%d\n", (int)ii, (int)arraylist->size ());
 
                         bool ret = testarray (results[ii], maxj);
                         if (ret) {

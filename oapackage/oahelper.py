@@ -468,7 +468,7 @@ def choose(n, k):
     return ntok
 
 
-def array2latex(X, header=1, hlines=[], floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
+def array2latex(X, header=1, hlines=(), floatfmt='%g', comment=None, hlinespace=None, mode='tabular', tabchar='c'):
     """ Convert numpy array to Latex tabular """
     ss = ''
     if comment is not None:
@@ -940,12 +940,12 @@ def series2htmlstr(ad, html=1, case=0):
     s = list(ad.factor_levels())
     p = -1
     n = 0
-    aa = []
+    levels = []
     bb = []
     while n < len(s):
         if s[n] != p:
             p = s[n]
-            aa.append(p)
+            levels.append(p)
             bb.append(1)
         else:
             bb[-1] += 1
@@ -954,11 +954,11 @@ def series2htmlstr(ad, html=1, case=0):
         if bb[-1] > 1:
             bb[-1] = 'a'
     hstr = 'OA(%d; %d; ' % (ad.N, ad.strength)
-    for ii in range(0, len(aa)):
+    for ii, _ in enumerate(levels):
         if html:
-            hstr += '%d<sup>%s</sup>' % (aa[ii], str(bb[ii]))
+            hstr += '%d<sup>%s</sup>' % (levels[ii], str(bb[ii]))
         else:
-            hstr += '%d^%s' % (aa[ii], str(bb[ii]))
+            hstr += '%d^%s' % (levels[ii], str(bb[ii]))
     hstr += ')'
     return hstr
 
