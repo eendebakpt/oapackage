@@ -25,7 +25,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ####################################################################################
   
   
-Citation notice: if you use this work or any results of this work, please cite the work (see the file README.md for details).
+Citation notice: if you use this work or any results of this work, please cite the work
+as (see the file README.md for details):
+
+"OApackage: A Python package for generation and analysis of orthogonal arrays, optimal designs and conference designs", https://doi.org/10.21105/joss.01097
+
+
 For more information contact (pieter.eendebak@gmail.com or eric.schoen@tno.nl).
 
 
