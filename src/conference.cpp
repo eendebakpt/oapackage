@@ -381,9 +381,29 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
         return t;
 }
 
-std::pair<array_link, std::vector<int> > conference_design2colored_graph(const array_link &al, int verbose) {
-	const int nr = al.n_rows;
-	const int nc = al.n_columns;
+/** Convert a conference design to a colored graph representation
+ *
+ * The conversion is such that conferrence design isomorphisms correspond to isomorphisms of the colored graph 
+ * (e.g. permutations of the nodes respecting the edges and colors).
+ *
+ * The colored graph consists of N=(2*number_of_rows + 2*number_of_columns). The first section of size 2*number_of_rows encodes +1, -1 value
+ * in the rows (the zeros are implicitly encoded) and the second section of size 2*number_of_columns corresponds to the columns.
+ *
+ *	Add edges as follows:
+ *	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
+ *	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
+ *	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
+ *	Zeros in A don't cause any edges.
+ * 
+ * The first 2*number_of_rows are colored with 0, the remaining nodes with color 1.
+ *
+ * \param al Conference design
+ * \param Verbose Vebosity level
+ * \returns Pair of the graph in edge adjacency  matrix representation and the colors
+ */
+std::pair<array_link, std::vector<int> > conference_design2colored_graph(const array_link &conference_design, int verbose) {
+	const int nr = conference_design.n_rows;
+	const int nc = conference_design.n_columns;
 	const int number_vertices = 2 * (nr + nc);
 	/// create graph
 	array_link G(number_vertices, number_vertices, array_link::INDEX_DEFAULT);
@@ -398,14 +418,6 @@ std::pair<array_link, std::vector<int> > conference_design2colored_graph(const a
 	const int roffset1 = nr;
 	const int coffset0 = 2 * nr;
 	const int coffset1 = 2 * nr + nc;
-
-	/*
-	Add edges as follows:
-	(1)  r[i]--r'[i] for i=0..nr-1;  c[j]--c'[j] for j=0..nc-1.
-	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
-	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
-	Zeros in A don't cause any edges.
-	*/
 
 	// set colors
 	for (int i = 0; i < coffset0; i++)
@@ -422,12 +434,12 @@ std::pair<array_link, std::vector<int> > conference_design2colored_graph(const a
 	// (2), (3)
 	for (int c = 0; c < nc; c++) {
 		for (int r = 0; r < nr; r++) {
-			if (al.atfast(r, c) == 1) {
+			if (conference_design.atfast(r, c) == 1) {
 				G.atfast(roffset0 + r, coffset0 + c) = 1;
 				G.atfast(roffset1 + r, coffset1 + c) = 1;
 			}
 			else {
-				if (al.atfast(r, c) == -1) {
+				if (conference_design.atfast(r, c) == -1) {
 					G.atfast(roffset0 + r, coffset1 + c) = 1;
 					G.atfast(roffset1 + r, coffset0 + c) = 1;
 				}
