@@ -22,9 +22,7 @@ optimal designs and conference designs.
    properties
    cpplib
    references   
-..   cppdocs/conference.rst
-   cppdocs/Doptim.rst
-   cppdocs/lmc.rst
+
    
    
 Indices and tables
@@ -39,9 +37,4 @@ License
 
 .. include:: ../LICENSE
 
-.. comments
-    Testing
-    =======
-    
-    .. automodule:: oapackage
-       :members:
+
