@@ -156,6 +156,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
+   - cat oalib.py
    - "%CMD_IN_ENV36% mypy --version"
    - "%CMD_IN_ENV36% mypy oapackage"
 
