@@ -467,6 +467,7 @@ else()
 endif(OADEVPACK)
 
 # cmake package type: CygwinBinary, DEB, TGZ, ZIP, etc.
+if (0)
 if(WIN32)
   SET(CPACK_GENERATOR "ZIP")
 else()
@@ -474,6 +475,7 @@ else()
   SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") #required
 endif()
 INCLUDE(CPack)
+endif()
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
