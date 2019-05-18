@@ -150,7 +150,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - "%CMD_IN_ENV36% mypy --version"
-   - "%CMD_IN_ENV36% mypy -m oapackage"
+   #- "%CMD_IN_ENV36% mypy -m oapackage"
 
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
