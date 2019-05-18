@@ -17,7 +17,7 @@ before_script:
 
 script:
   - make  
-  - make package
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then make package          ; fi 
   - ./oaunittest
   - ./pareto_example
   - ./oaranktest -I ../docs/examples/OAN56K28.oa
