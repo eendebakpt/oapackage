@@ -3,10 +3,10 @@
 
 import sys
 import os
-import numpy as np
-import numpy
 import logging
 import unittest
+import tempfile
+import numpy as np
 
 if sys.version_info >= (3, 4):
     import unittest.mock as mock
@@ -198,11 +198,7 @@ class TestArrayLink(unittest.TestCase):
         al = al.selectFirstColumns(3)
         self.assertEqual(al.n_columns, 3)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            al = oapackage.exampleArray(1000, 0)
-            stdout = mock_stdout.getvalue()
-            self.assertIn('no example array with index 1000 exists', stdout)
-
+        al = oapackage.array_link()
         with self.assertRaises(RuntimeError):
             al = al.selectFirstColumns(1)
 
@@ -377,8 +373,6 @@ class TestConferenceDesigns(unittest.TestCase):
 class TestArrayFiles(unittest.TestCase):
 
     def test_write_latex_format(self):
-        import tempfile
-        import oapackage
         lst = [oapackage.exampleArray(2, 0)]
         filename = tempfile.mktemp(suffix='.tex')
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
@@ -434,11 +428,13 @@ class TestCppLibrary(unittest.TestCase):
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(-1, 1)
             lines = mock_stdout.getvalue().strip().split('\n')
-            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines) - 1)]))
-            self.assertTrue(lines[-1].startswith('exampleArray: no example array with index'))
+            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines))]))
 
         al = oapackage.exampleArray(51, 0)
         self.assertEqual(al.md5(), '662c1d9c51475b42539620385fa22338')
+
+        with self.assertRaises(Exception):
+            al = oapackage.exampleArray(1000, 0)
 
     def test_mvalue_t(self):
         input_vector = [1., 2., 2.]
@@ -580,13 +576,13 @@ class TestCppLibrary(unittest.TestCase):
             D = al.selectFirstColumns(3).Defficiency()
             std_output = mock_stdout.getvalue()
             self.assertIn('projDeff: k 8, kp 3: start with 56 combinations', std_output)
-        self.assertEqual(D , d[0])
-        numpy.testing.assert_almost_equal(numpy.mean(d), 0.99064112542249538329031111061340197921)
+        self.assertEqual(D, d[0])
+        np.testing.assert_almost_equal(np.mean(d), 0.99064112542249538329031111061340197921)
 
         pec_seq = oapackage.PECsequence(al)
-        numpy.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
+        np.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
         pic_seq = oapackage.PICsequence(al)
-        numpy.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
+        np.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
                                                     0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
     def test_PICsequence_length(self):
@@ -619,7 +615,7 @@ class TestCppLibrary(unittest.TestCase):
         np.testing.assert_equal(al[2:3, :8:2], np.array(al)[2:3, :8:2])
 
         with self.assertRaises(IndexError):
-            al[-1, 1]
+            _ = al[-1, 1]
 
     def test_conference_generation(self):
 

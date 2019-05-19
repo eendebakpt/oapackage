@@ -137,7 +137,7 @@ def pytest_analysis(oadir, verbose=1):
         print('pytest_analysis: running oaanalyse')
     t0 = time.time()
     return_value = os.system(cmd)
-    assert(return_value==0)
+    assert(return_value == 0)
     ta = (time.time() - t0)
     return ta
 
@@ -230,7 +230,7 @@ def pytest(verbose=1):
     k = 9
     t = 2
     # old test: l=[2,3]
-    l = [3]*8+[2]
+    l = [3] * 8 + [2]
     rr = []
     oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
     tt.append(time.time() - t0)
@@ -267,11 +267,11 @@ def testExtendBinary(verbose=1):
 #%%
 def main(argv=None):
     """ Main testing function """
-    if platform.system()=='Windows':
+    if platform.system() == 'Windows':
         oadir = os.path.join(os.path.split(oapackage.__file__)[0], '..')
     else:
         oadir = os.path.join(os.path.expanduser('~'), 'misc/oa/oacode/')
-    
+
     print('OA performance testing: version 2.0')
     ss = oapackage.version()
     print('OAlib: version %s' % ss)
@@ -329,6 +329,3 @@ def timeconfig(configfile='oaconfig.txt', timebin='/usr/bin/time', pdir='/home/e
     os.chdir(pdir)
     res = subprocess.check_output([('cd %s;ls;' % pdir) + timebin, '--format="%%E %%S %%U"', './oaextendsingle', '-c %s -l 1' % (configfile)])
     return res
-
-
-

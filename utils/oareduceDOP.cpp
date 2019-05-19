@@ -83,7 +83,6 @@ int main (int argc, char *argv[]) {
                 outputprefix = opt.getValue ('o');
 
         int verbose = opt.getIntValue ('v', 2);
-        int kfinal = opt.getIntValue ('k', 7);
         int strength = opt.getIntValue ('s', 2);
         int dolmc = opt.getIntValue ('d', 1);
 

@@ -16,10 +16,10 @@
 void slave_print(const int level, const char *message, ...)
 {
 	const int STRBUFSIZE = 4096;
-	static int 	loglevel;
 	static FILE **fid = 0;
 
 	if (SLAVE_PRINT) {
+		static int 	loglevel;
 		const int MAXSLAVES = 140;
 		va_list		va;
 
@@ -296,12 +296,12 @@ void collect_solutions_slave(arraylist_t &extensions, const arraydata_t *ad, con
     log_print(QUIET, "M  : Collecting %d solution(s) from slave %i\n", nsols, slave);
 #endif
 
-    array_link	*tmp_solution;
 
     colindex_t nc = ad->ncols;
 
     for (int j=0; j<nsols; j++) {
-        tmp_solution = new array_link(ad->N,nc, 0);
+		array_link	*tmp_solution;
+		tmp_solution = new array_link(ad->N,nc, 0);
 
         log_print(DEBUG, "M  : receiving solution %d\n", j);
         mpi_receive_solution(tmp_solution->array, ad->N, nc, slave);

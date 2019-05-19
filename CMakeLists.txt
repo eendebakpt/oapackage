@@ -229,10 +229,10 @@ set(graphsrc )
 set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oafilter oareduceDOP pareto_example oaconference oaconfcheck)
 set(progsextend )
 
-list(APPEND progs oacheck oastreaming oaranktest oatest)
+list(APPEND progs oacheck oastreaming oaranktest oatest oaclustergather)
 
 if(OADEV)
-  list(APPEND progs oaclustergather oa_depth_extend) # oaextendA
+  list(APPEND progs oa_depth_extend) # oaextendA
 endif()
    
 if (WIN32)
@@ -468,11 +468,11 @@ endif(OADEVPACK)
 
 # cmake package type: CygwinBinary, DEB, TGZ, ZIP, etc.
 if(WIN32)
-  SET(CPACK_GENERATOR "ZIP")
+	SET(CPACK_GENERATOR "ZIP")
 else()
-  SET(CPACK_GENERATOR "DEB")
-  SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") #required
+	SET(CPACK_GENERATOR "TGZ")
 endif()
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") 
 INCLUDE(CPack)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)

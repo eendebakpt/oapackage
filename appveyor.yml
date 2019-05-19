@@ -106,8 +106,6 @@ install:
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
 
-  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
-
   # part of the testing requirements
   - "%CMD_IN_ENV% pip install python-dateutil"
   - "%CMD_IN_ENV27% pip install backports.functools_lru_cache"
@@ -115,17 +113,12 @@ install:
   - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
-  - "%CMD_IN_ENV36% pip install jupyter"
-  - "%CMD_IN_ENV36% pip install matplotlib"
+  - "%CMD_IN_ENV36% pip install jupyter matplotlib"
   - "%CMD_IN_ENV36% jupyter --version"
-  - "%CMD_IN_ENV36% jupyter kernelspec list"
 
   # for running the mypy check
   - "%CMD_IN_ENV36% pip install mypy"
 
-  # for running the jupyter notebooks
-  - "%CMD_IN_ENV27% pip install jupyter matplotlib"
-  
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
@@ -156,21 +149,22 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - "%CMD_IN_ENV36% mypy oapackage"
+   - "%CMD_IN_ENV36% mypy --version"
+   #- "%CMD_IN_ENV36% mypy -m oapackage"
 
    # only run nbconvert for python3.6
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
+   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
 
     
 after_test:

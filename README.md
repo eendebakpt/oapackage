@@ -1,7 +1,6 @@
 Orthogonal Array Package
 ========================
 
-
 The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
 Features include generation of complete series of orthogonal arrays, 
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
@@ -35,7 +34,6 @@ Generalized wordlength pattern: (1.0, 0.0, 0.0)
 For more examples see the Jupyter notebooks in the
 [docs/examples](docs/examples/). 
 
-
 Acknowledgements
 ----------------
 
@@ -44,6 +42,7 @@ If you use this code or any of the results, please cite this program as follows:
 * [OApackage: A Python package for generation and analysis of orthogonal arrays, optimal designs and conference designs](https://doi.org/10.21105/joss.01097), P.T. Eendebak, A.R. Vazquez, Journal of Open Source Software, 2019
 * [Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays](https://doi.org/10.1002/jcd.20236), E.D. Schoen, P.T. Eendebak, M.V.M. Nguyen, Volume 18, Issue 2, pages 123-140, 2010
 * [Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions](https://doi.org/10.1080/00401706.2016.1142903), Pieter T. Eendebak, Eric D. Schoen, Technometrics Vol. 59 , Iss. 1, 2017
+* [A classification criterion for definitive screening designs](https://projecteuclid.org/euclid.aos/1547197252), E.D. Schoen, P.T. Eendebak, P. Goos, Ann. Statist. 47, no. 2, 2019.
 
 The code was written by:
 
@@ -85,4 +84,3 @@ Contributing, unit testing and support
 --------------------------------------
 
 See the file [CONTRIBUTING.md](https://github.com/eendebakpt/oapackage/blob/master/CONTRIBUTING.md) on GitHub.
-             

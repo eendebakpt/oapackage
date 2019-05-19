@@ -108,7 +108,9 @@ std::vector< int > getLevels (AnyOption &opt) {
         int split2 = opt.getIntValue ("split2", -1);
         int split3 = opt.getIntValue ("split3", -1);
         int split4 = opt.getIntValue ("split4", -1);
-
+	if (split4>=0)
+	    throw std::runtime_error ("split level 4 not supported");
+	    
         std::vector< int > lvls;
         if (split0 >= 0) {
                 lvls.push_back (split0);
@@ -511,7 +513,7 @@ int main (int argc, char *argv[]) {
 
                                 int nn = nArrays (psourcefile.c_str ());
                                 if (verbose >= 2)
-                                        printf ("   ### file %s: %d arrays\n", base_name (afile).c_str (), nn);
+                                        printf ("   ### file %s: %d arrays\n",  (afile).c_str (), nn);
 
                                 if (nn >= 0)
                                         if (paretofile && b) {

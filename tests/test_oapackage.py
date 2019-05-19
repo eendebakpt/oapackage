@@ -103,7 +103,7 @@ def test_numpy_interface(verbose=0):
         print(A)
         print(Ax)
 
-    try:
+    with np.testing.assert_raises(TypeError):
         # not possible right now...
         if verbose:
             print('direct float')
@@ -111,8 +111,6 @@ def test_numpy_interface(verbose=0):
         al = oapackage.array_link(A)
         if verbose:
             al.showarray()
-    except:
-        pass
 
 
 def test_nauty(verbose=0):
@@ -216,9 +214,9 @@ class TestOAfiles(unittest.TestCase):
         _, array_filename_out = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0), oapackage.exampleArray(4, 0)])
         oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out, [
-                                        1], afmode=oalib.ABINARY, verbose=1, cache=0)
+            1], afmode=oalib.ABINARY, verbose=1, cache=0)
         oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out,
-                                        [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
+                                              [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_nArrayFile(self):
         _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
@@ -442,5 +440,4 @@ class TestOAhelper(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    """ Test code """
     unittest.main()
