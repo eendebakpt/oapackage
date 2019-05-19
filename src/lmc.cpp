@@ -20,7 +20,7 @@
 
 bool operator!= (symmdataPointer const &ptr, int x) {
         // A friendly reminder to not test pointers against any values except 0 (NULL)
-        myassert (!x);
+        myassert (!x, "invalid pointer in comparison");
         return ptr;
 }
 
