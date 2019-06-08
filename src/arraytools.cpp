@@ -5334,8 +5334,6 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
 
                         fwrite (bitarr->words, num_of_words, sizeof (word_t), this->nfid);
 
-                        // printf ( "1-bit write: %ld bytes for array with %d elements\n", num_of_words*sizeof ( word_t
-                        // ), nrows*ncols );
                         bit_array_free (bitarr);
                 }
 
@@ -5361,8 +5359,6 @@ bool readbinheader(FILE *fid, int &nr, int &nc) {
 	nr = (int)h[2];
 	nc = (int)h[3];
 
-	// myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],
-	// h[0]==30397995, h[1]==12224883);
 	bool valid = false;
 
 	// check 2 numbers of the magic header
