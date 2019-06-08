@@ -324,8 +324,8 @@ void strength_check_t::create_reverse_colcombs_fixed() { r_index = ::create_reve
 
 /// perform strength check on an array
 bool strength_check (const array_link &al, int strength, int verbose) {
-        if (strength == 0)
-                return true;
+		if (strength == 0)
+				return true;
 
 		// first a plain test of divisibility
 		arraydata_t ad0 = arraylink2arraydata(al, 0, 0);

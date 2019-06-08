@@ -872,8 +872,8 @@ array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_, carray_t
 }
 
 bool array_link::columnEqual (int column_index, const array_link &rhs, int column_index_rhs) const {
-        if (this->n_rows != rhs.n_rows)
-                return false;
+		if (this->n_rows != rhs.n_rows)
+				return false;
 		if (column_index < 0 || column_index >= rhs.n_columns)
 			throw std::out_of_range("index out of bound");
 		if (column_index_rhs < 0 || column_index_rhs>= rhs.n_columns)
@@ -4022,14 +4022,13 @@ int append_arrays (FILE *fid, arraylist_t &arrays, int startidx = 0) {
 
 template < class TypeIn, class TypeOut >
 /// Write array to binary blob of selected datatype
-void writeblob (const TypeIn *src, int n, FILE *fid) {
+void writeblob (const TypeIn *src, size_t n, FILE *fid) {
         TypeOut *dst = new TypeOut[n];
 
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
                 dst[i] = src[i];
         }
         fwrite ((const void *)dst, sizeof (TypeOut), n, fid);
-
         delete[] dst;
 }
 
@@ -5335,8 +5334,6 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
 
                         fwrite (bitarr->words, num_of_words, sizeof (word_t), this->nfid);
 
-                        // printf ( "1-bit write: %ld bytes for array with %d elements\n", num_of_words*sizeof ( word_t
-                        // ), nrows*ncols );
                         bit_array_free (bitarr);
                 }
 
@@ -5362,8 +5359,6 @@ bool readbinheader(FILE *fid, int &nr, int &nc) {
 	nr = (int)h[2];
 	nc = (int)h[3];
 
-	// myprintf("readbinheader: nn %d magic %f %f %f %f check %d %d\number_of_arrays", nn, h[0], h[1], h[2], h[3],
-	// h[0]==30397995, h[1]==12224883);
 	bool valid = false;
 
 	// check 2 numbers of the magic header
