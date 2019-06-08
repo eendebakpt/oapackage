@@ -872,8 +872,8 @@ array_link::array_link (rowindex_t nrows, colindex_t ncols, int index_, carray_t
 }
 
 bool array_link::columnEqual (int column_index, const array_link &rhs, int column_index_rhs) const {
-        if (this->n_rows != rhs.n_rows)
-                return false;
+		if (this->n_rows != rhs.n_rows)
+				return false;
 		if (column_index < 0 || column_index >= rhs.n_columns)
 			throw std::out_of_range("index out of bound");
 		if (column_index_rhs < 0 || column_index_rhs>= rhs.n_columns)
@@ -4022,14 +4022,13 @@ int append_arrays (FILE *fid, arraylist_t &arrays, int startidx = 0) {
 
 template < class TypeIn, class TypeOut >
 /// Write array to binary blob of selected datatype
-void writeblob (const TypeIn *src, int n, FILE *fid) {
+void writeblob (const TypeIn *src, size_t n, FILE *fid) {
         TypeOut *dst = new TypeOut[n];
 
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
                 dst[i] = src[i];
         }
         fwrite ((const void *)dst, sizeof (TypeOut), n, fid);
-
         delete[] dst;
 }
 
