@@ -472,7 +472,7 @@ class Jcounter {
         /// time needed for calculation
         double dt; 
 
-        Jcounter () : N (-1), jj (-1) {}
+        Jcounter () : N (-1), jj (-1), dt (0) { }
 
         Jcounter (int N, int jj = 5, int k = -1) { this->init (N, jj, k); }
 
