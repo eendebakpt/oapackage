@@ -72,3 +72,5 @@ inline int oadevelop () { return 1; }
 inline int oadevelop () { return 0; }
 #endif
 
+/// Return true if zlib is available and compressed files can be read
+int has_zlib();

@@ -4885,6 +4885,9 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
                 if (verbose && warngz) {
                         myprintf ("  file %s does not exist, but gzipped file does\n", fname.c_str ());
                 }
+                if (! has_zlib()) {
+                     throw_runtime_exception("trying to read gzipped file, but zlib is not available");
+                }
                 this->filename = gzname;
                 fname = gzname;
         }
