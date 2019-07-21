@@ -396,7 +396,7 @@ class TestOAhelper(unittest.TestCase):
     def test_create_pareto_element_invalid_type(self):
         with self.assertRaises(Exception):
             oapackage.oahelper.create_pareto_element([1.], 1.)
-            
+
     def test_designStandardError(self):
         al = oapackage.exampleArray(14, 0)
         v = oapackage.oahelper.designStandardError(al)
