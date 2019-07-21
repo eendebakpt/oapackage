@@ -426,8 +426,8 @@ def __getattr__(self, attr):
       a = dict()
       a['version']=3
       a['shape']=(self.size(), )
-      sizeofdata=_oalib.sizeof_array_t()
-      a['typestr']='<f%d' % sizeof(double)
+      sizeofdata=_oalib.sizeof_double()
+      a['typestr']='<f%d' % sizeofdata
       a['data']=np.array(self.v)
       return a
     else:
