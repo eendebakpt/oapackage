@@ -425,11 +425,10 @@ def __getattr__(self, attr):
     if attr=='__array_interface__':
       a = dict()
       a['version']=3
-      a['shape']=(x.size(), )
+      a['shape']=(self.size(), )
       sizeofdata=_oalib.sizeof_array_t()
       a['typestr']='<f%d' % sizeof(double)
       a['data']=np.array(self.v)
-      #a['strides']=??
       return a
     else:
       raise AttributeError("%r object has no attribute %r" %

@@ -1342,5 +1342,5 @@ def create_pareto_element(values, pareto=None):
         vector_pareto = values
     else:
         raise Exception('creating Pareto element for Pareto object of type %s and input of type %s not supported' % (
-            type(pareto), type(v)))
+            type(pareto), type(values)))
     return vector_pareto
