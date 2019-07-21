@@ -428,7 +428,7 @@ def __getattr__(self, attr):
       a['shape']=(self.size(), )
       sizeofdata=_oalib.sizeof_double()
       a['typestr']='<f%d' % sizeofdata
-      a['data']=np.array(self.v)
+      a['data']=(np.array(self.values), True)
       return a
     else:
       raise AttributeError("%r object has no attribute %r" %
