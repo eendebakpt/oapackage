@@ -24,6 +24,7 @@
 using namespace std;
 
 int sizeof_array_t () { return sizeof (array_t); }
+int sizeof_double () { return sizeof (double); }
 
 #ifdef WIN32
 #else
