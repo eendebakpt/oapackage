@@ -2948,8 +2948,10 @@ arraydata_t::arraydata_t (const std::vector< int > factor_levels, rowindex_t N_,
                 myprintf ("arraydata_t: warning: in constructor: size of factor levels %d < number of columns %d, padding with factor %d\n", (int)factor_levels.size(), nc, factor_levels[factor_levels.size () - 1]);
                 nc = factor_levels.size ();
                 std::fill (s, s + ncols, factor_levels[factor_levels.size () - 1]);
+                std::copy(factor_levels.begin(), factor_levels.end(), s);
+        } else {
+          std::copy(factor_levels.begin(), factor_levels.begin() + ncols, s);
         }
-		std::copy(factor_levels.begin(), factor_levels.begin() + ncols, s);
         complete_arraydata ();
 }
 
