@@ -1086,6 +1086,10 @@ array_link array_link::randomrowperm () const {
         return trans.apply (*this);
 }
 
+bool compareLMC(const array_link &lhs, const array_link &rhs) {
+	return lhs < rhs;
+}
+
 /** Return example array
  *
  * \param idx Index of example array

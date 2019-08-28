@@ -993,4 +993,31 @@ void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbo
         fclose (fid);
 }
 
+
+
+bool compareJ54(const array_link &lhs, const array_link &rhs) {
+	assert(lhs.n_rows == rhs.n_rows);
+	assert(lhs.n_columns == rhs.n_columns);
+
+	if (lhs.n_rows <= 4)
+		return compareLMC(lhs, rhs);
+
+	array_link lhs5 = lhs.selectFirstColumns(5);
+	array_link rhs5 = rhs.selectFirstColumns(5);
+
+	if (lhs.Jcharacteristics(5)[0] > rhs.Jcharacteristics(5)[0])
+		return true;
+	
+	std::vector<int> lhs4 = lhs.Jcharacteristics(4);
+	std::vector<int> rhs4 = rhs.Jcharacteristics(4);
+
+	for (int deleted_column = 4; deleted_column >= 0; deleted_column--) {
+		if (lhs4[deleted_column] > rhs4[deleted_column])
+			return true;
+	}
+
+	return compareLMC(lhs, rhs);
+
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

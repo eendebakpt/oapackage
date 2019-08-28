@@ -754,6 +754,9 @@ private:
 
 };
 
+/** Return true if the first array is smaller in LMC ordering than the second array **/
+bool compareLMC(const array_link &lhs, const array_link &rhs);
+
 /** Return example array
 *
 * \param idx Index of example array to return
