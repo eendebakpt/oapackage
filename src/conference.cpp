@@ -1351,6 +1351,8 @@ std::vector< conference_column > generateConferenceExtensions(const array_link &
 	else {
 		throw_runtime_exception(printfstring("invalid type of conference class %d", conference_type.ctype) );
 	}
+	std::vector< conference_column > empty_list;
+	return empty_list;
 }
 
 /// return number of +1 values in the first column of an array
@@ -2401,7 +2403,7 @@ arraylist_t extend_conference_restricted (const arraylist_t &lst, const conferen
                 outlist.insert (outlist.end (), ll.begin (), ll.end ());
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 200 == 0 || i == lst.size () - 1))) {
-					printf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (), ll.size());
+					printf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (), (int)ll.size());
                         fflush (0);
                 }
         }

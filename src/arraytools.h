@@ -139,6 +139,9 @@ typedef int vindex_t; /* value index type */
 /// return size in bytes of array_t type
 int sizeof_array_t ();
 
+/// return size in bytes of double type
+int sizeof_double ();
+
 /// possible values for J-values of 2-level design
 inline std::vector< int > possible_F_values (int N, int strength) {
         int x = pow ((double)2, strength + 1); 

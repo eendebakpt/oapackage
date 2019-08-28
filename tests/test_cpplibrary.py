@@ -441,6 +441,11 @@ class TestCppLibrary(unittest.TestCase):
         m = oapackage.mvalue_t_double(input_vector)
         self.assertEqual(m.size(), len(input_vector))
         self.assertEqual(list(m.values), input_vector)
+        self.assertIsInstance(m.__array_interface__, dict)
+
+        input_vector=[1,2,-1]
+        mvalue_long = oapackage.mvalue_t_long(input_vector)
+        self.assertEqual(list(mvalue_long.values), input_vector)
 
     def test_splits(self):
         self.assertEqual(oapackage.splitTag([10, 12]), '10.12')
