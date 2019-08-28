@@ -1087,8 +1087,12 @@ array_link array_link::randomrowperm () const {
         return trans.apply (*this);
 }
 
-bool compareLMC(const array_link &lhs, const array_link &rhs) {
-	return lhs < rhs;
+int compareLMC(const array_link &lhs, const array_link &rhs) {
+	if (lhs < rhs)
+		return -1;
+	if (lhs > rhs)
+		return 1;
+	return 0;
 }
 
 /** Return example array

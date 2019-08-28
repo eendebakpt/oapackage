@@ -757,8 +757,8 @@ private:
 
 };
 
-/** Return true if the first array is smaller in LMC ordering than the second array **/
-bool compareLMC(const array_link &lhs, const array_link &rhs);
+/** Return -1 if the first array is smaller in LMC ordering than the second array, 0 if equal and 1 otherwise **/
+int compareLMC(const array_link &lhs, const array_link &rhs);
 
 /** Return example array
 *

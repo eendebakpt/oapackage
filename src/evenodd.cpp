@@ -995,7 +995,7 @@ void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbo
 
 
 
-bool compareJ54(const array_link &lhs, const array_link &rhs) {
+int compareJ54(const array_link &lhs, const array_link &rhs) {
 	myassert(lhs.n_rows == rhs.n_rows, "arrays should have equal size");
 	myassert(lhs.n_columns == rhs.n_columns, "arrays should have equal size");
 
@@ -1008,10 +1008,10 @@ bool compareJ54(const array_link &lhs, const array_link &rhs) {
 	int j5l = abs(lhs5.Jcharacteristics(5)[0]);
 	int j5r = abs(rhs5.Jcharacteristics(5)[0]);
 	if (j5l > j5r) {
-		return true;
+		return -1;
 	}
 	else if(j5l < j5r ) {
-		return false;
+		return 1;
 	}
 	
 	std::vector<int> lj4 = lhs5.Jcharacteristics(4);
@@ -1019,10 +1019,10 @@ bool compareJ54(const array_link &lhs, const array_link &rhs) {
 
 	for (int deleted_column = 4; deleted_column >= 0; deleted_column--) {
 		if (abs(lj4[deleted_column]) > abs(rj4[deleted_column])) {
-			return true;
+			return -1;
 		}
 		else if (abs(lj4[deleted_column]) < abs(rj4[deleted_column])) {
-			return false;
+			return 1;
 		}
 	}
 
