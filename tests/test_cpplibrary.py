@@ -39,7 +39,26 @@ def only_python3(function):
 
 import oapackage
 
+class TestCompareMethods(unittest.TestCase):
+    
+    def test_compareLMC(self):
+        al1 = oapackage.exampleArray(24, 0)
+        al2 = oapackage.exampleArray(25, 0)
+    
+        self.assertFalse(oapackage.compareLMC(al1,al2))
+        self.assertTrue(oapackage.compareLMC(al2,al1))
 
+    def test_compareJ54(self):
+        al1 = oapackage.exampleArray(24, 0)
+        al2 = oapackage.exampleArray(25, 0)
+        al3 = oapackage.exampleArray(26, 0)
+    
+        self.assertTrue(oapackage.compareJ54(al1,al2))
+        self.assertFalse(oapackage.compareJ54(al2,al1))
+
+        self.assertTrue(oapackage.compareJ54(al1,al3))
+        self.assertTrue(oapackage.compareJ54(al2,al3))
+        
 class TestMinimalFormCheck(unittest.TestCase):
 
     def test_LMCcheck(self):

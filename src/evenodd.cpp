@@ -996,24 +996,34 @@ void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbo
 
 
 bool compareJ54(const array_link &lhs, const array_link &rhs) {
-	assert(lhs.n_rows == rhs.n_rows);
-	assert(lhs.n_columns == rhs.n_columns);
+	myassert(lhs.n_rows == rhs.n_rows, "arrays should have equal size");
+	myassert(lhs.n_columns == rhs.n_columns, "arrays should have equal size");
 
-	if (lhs.n_rows <= 4)
+	if (lhs.n_columns <= 4)
 		return compareLMC(lhs, rhs);
 
 	array_link lhs5 = lhs.selectFirstColumns(5);
 	array_link rhs5 = rhs.selectFirstColumns(5);
 
-	if (lhs.Jcharacteristics(5)[0] > rhs.Jcharacteristics(5)[0])
+	int j5l = abs(lhs5.Jcharacteristics(5)[0]);
+	int j5r = abs(rhs5.Jcharacteristics(5)[0]);
+	if (j5l > j5r) {
 		return true;
+	}
+	else if(j5l < j5r ) {
+		return false;
+	}
 	
-	std::vector<int> lhs4 = lhs.Jcharacteristics(4);
-	std::vector<int> rhs4 = rhs.Jcharacteristics(4);
+	std::vector<int> lj4 = lhs5.Jcharacteristics(4);
+	std::vector<int> rj4 = rhs5.Jcharacteristics(4);
 
 	for (int deleted_column = 4; deleted_column >= 0; deleted_column--) {
-		if (lhs4[deleted_column] > rhs4[deleted_column])
+		if (abs(lj4[deleted_column]) > abs(rj4[deleted_column])) {
 			return true;
+		}
+		else if (abs(lj4[deleted_column]) < abs(rj4[deleted_column])) {
+			return false;
+		}
 	}
 
 	return compareLMC(lhs, rhs);
