@@ -1432,7 +1432,7 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
         return splits;
 }
 
-void _calculate_j4_values(std::vector<int> &j4_values, carray_t *array, const colperm_t comb)
+void _calculate_j4_values(std::vector<int> &j4_values, carray_t *array, const int N, const colperm_t comb)
 {
 	colindex_t lc[4];
 	init_perm(lc, 4);
@@ -1463,7 +1463,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         std::vector< int > j4_values (5);
 
         /* calculate the J4 values */
-		_calculate_j4_values(j4_values, array, comb);
+		_calculate_j4_values(j4_values, array, N, comb);
 
         indexsort s (5);
         s.sort (j4_values);
