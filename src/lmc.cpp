@@ -1432,10 +1432,10 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
         return splits;
 }
 
-/// Perform check or reduction using ordering based on delete-one-factor J4 values
+/// Perform check or reduction using ordering based on J5 and delete-one-factor J4 values
 int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, const arraydata_t &ad,
                const OAextend &oaextend, LMCreduction_helper_t &tmpStatic, LMCreduction_t &reduction, int verbose = 0) {
-        assert (jj == 5);
+        myassert (jj == 5, "jj should be equal to 5");
         lmc_t ret;
 
         const int maxjj = 40;
@@ -1445,7 +1445,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
                 myprintf ("-- jj45split --\n");
 
         // allocate buffer to hold the values
-        std::vector< int > ww (5);
+        std::vector< int > j4_values (5);
 
         if (verbose >= 2) {
                 myprintf ("jj45split: init comb ");
@@ -1460,25 +1460,25 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         for (size_t i = 0; i < 5; i++) {
                 perform_inv_perm (comb, lc2, 4, lc);
 
-                ww[i] = abs (jvaluefast (array, N, 4, lc2));
+                j4_values[i] = abs (jvaluefast (array, N, 4, lc2));
                 if (verbose >= 3) {
-                        myprintf ("  comb %d full: val %d: ", (int)i, (int)ww[i]);
+                        myprintf ("  comb %d full: val %d: ", (int)i, (int)j4_values[i]);
                         print_perm (lc2, 4);
                 }
                 next_comb (lc, 4, 5);
         }
 
         // we reverse the values (to keep ordering matched to the original orderings)
-        std::reverse (ww.begin (), ww.end ());
+        std::reverse (j4_values.begin (), j4_values.end ());
         if (verbose >= 2) {
                 myprintf ("## jj45split: values (first value is column one removed): ");
-                display_vector (ww);
+                display_vector (j4_values);
                 myprintf ("\n");
         }
 
         indexsort s (5);
-        s.sort (ww);
-        std::vector< int > wws = s.sorted (ww);
+        s.sort (j4_values);
+        std::vector< int > wws = s.sorted (j4_values);
 
         // calculate symmetry group of column permutations in the first jj columns
         symmetry_group sg (wws, true, verbose >= 3);
@@ -1592,9 +1592,15 @@ inline int fastJupdateValue(rowindex_t N, carray_t *tmpval) {
 	return (jval);
 }
 
-/// return value of subarray based on J4-J5 ordering
-jj45_t jj45val (carray_t *array, rowindex_t N, int jj, const colperm_t comb, int j5val = -1, int dosort = 1) {
-
+/** return value of subarray based on J4-J5 ordering
+ *
+ * \param array Pointer to array
+ * \param N Number of rows
+ * \param comb Combination of 5 columns to use in calculation
+ * \param dosort If True, then sort the tuple of J4 values before calculation of the value
+ */
+jj45_t jj45val (carray_t *array, rowindex_t N, const colperm_t comb, int dosort = 1) {
+	const int jj = 5;
         double ww[6];
 
         array_t tmpval[MAXROWS];
@@ -1624,18 +1630,16 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         LMCreduction_helper_t &tmpStatic = reduction.getReferenceReductionHelper ();
 
         const int jj = 5;
-#ifdef OACHECK
         const int maxjj = 10;
-        assert (jj < maxjj);
-#endif
-        // perform basic integrity checks
+        myassert (jj <= maxjj, "jj is larger than maximum allowed value");
 
-        assert (adin.s[0] == 2);
-        assert (jj >= adin.strength);
+        // perform basic integrity checks
+        myassert (adin.s[0] == 2, "array should be 2-level array");
+        myassert (jj >= adin.strength, "jj should be at least equal to the strength");
         myassert (adin.strength >= 3, "LMCcheckj5: strength should be >=3!");
 
         if (reduction.mode >= OA_REDUCE) {
-                printfd ("error: reduction mode not implemented for J5 ordering!!!\n");
+                throw_runtime_exception ("error: reduction mode not implemented for J5 ordering!!!\n");
         }
 
         if (reduction.init_state == COPY) {
@@ -1685,7 +1689,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
         /* loop over all possible column combinations for the first jj columns */
         int jbase = abs (jvaluefast (array, ad.N, jj, firstcolcomb));
-        jj45_t wbase = jj45val (array, ad.N, jj, firstcolcomb, -1, 0);
+        jj45_t j54_base = jj45val (array, ad.N, firstcolcomb, 0);
 
         /* initialize variables outside of loop */
         colperm_t perm = new_perm< colindex_t > (ad.ncols);
@@ -1698,7 +1702,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
         if (dverbose) {
                 myprintf ("LMCcheckj5: selected ncolsfirst %d, nc %d, jbase %d, wbase %f\n", ncolsfirst, nc, jbase,
-                          wbase);
+                          j54_base);
         }
 
         // loop over all possible combinations for the first jj columns
@@ -1733,22 +1737,18 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
                 const int dverbose = 0;
                 // check order based on J4-J5 value
-                if (1) {
-
-                        jj45_t w = jj45val (array, ad.N, jj, firstcolcomb, j5val);
-                        if (w ORDER_J45_SMALLER wbase) {
-                                ret = LMC_LESS;
-                                if (dverbose)
-                                        printfd ("LMCcheckj5: ret %d: w %ld, wbase %ld\n", (int)ret, (long)w,
-                                                 (long)wbase);
-                                reduction.updateLastCol (4);
-                                //		if reduction.doBreak(ret)
-                                break;
-                        } else if (w ORDER_J45_GREATER wbase) {
-                                // this combination can only lead to LMC more
-                                next_combination (firstcolcomb, jj, ad.ncols); // increase combination
-                                continue;
-                        }
+                jj45_t j54 = jj45val (array, ad.N, firstcolcomb);
+                if (j54 ORDER_J45_SMALLER j54_base) {
+                        ret = LMC_LESS;
+                        if (dverbose)
+                                printfd ("LMCcheckj5: ret %d: w %ld, wbase %ld\n", (int)ret, (long)j54,
+                                            (long)j54_base);
+                        reduction.updateLastCol (4);
+                        break;
+                } else if (j54 ORDER_J45_GREATER j54_base) {
+                        // this combination can only lead to LMC more
+                        next_combination (firstcolcomb, jj, ad.ncols); // increase combination
+                        continue;
                 }
 
                 if (dverbose >= 2) {

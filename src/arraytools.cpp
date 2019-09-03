@@ -3678,10 +3678,10 @@ jstruct_t::jstruct_t (const array_link &al, int jj) {
         const int N = al.n_rows;
 
         this->init (N, k, jj);
-        if (jj == 4 && 1) {
+        if (jj == 4) {
                 this->calcj4 (al);
         } else {
-                if (jj == 5 && 1) {
+                if (jj == 5) {
                         this->calcj5 (al);
                 } else {
                         this->calc (al);

@@ -21,16 +21,6 @@
 #define myprintf printf
 #endif
 
-#ifdef MAINMEX
-#define MATLABUPDATE
-#else
-#ifdef MATLAB_MEX
-#define MATLABUPDATE mexEvalString ("drawnow");
-#else
-#define MATLABUPDATE
-#endif
-#endif
-
 counter_t::counter_t (int n) { nfound.resize (n + 1); }
 
 void counter_t::addNfound (int col, int num) {
