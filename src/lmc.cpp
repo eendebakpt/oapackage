@@ -1432,6 +1432,21 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
         return splits;
 }
 
+void _calculate_j4_values(std::vector<int> &j4_values, carray_t *array, const colperm_t comb)
+{
+	colindex_t lc[4];
+	init_perm(lc, 4);
+	colindex_t lc2[4];
+	init_perm(lc2, 4);
+	for (size_t i = 0; i < 5; i++) {
+		perform_inv_perm(comb, lc2, 4, lc);
+
+		j4_values[i] = abs(jvaluefast(array, N, 4, lc2));
+		next_comb(lc, 4, 5);
+	}
+	// we reverse the values (to keep ordering matched to the original orderings)
+	std::reverse(j4_values.begin(), j4_values.end());
+}
 /// Perform check or reduction using ordering based on J5 and delete-one-factor J4 values
 int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, const arraydata_t &ad,
                const OAextend &oaextend, LMCreduction_helper_t &tmpStatic, LMCreduction_t &reduction, int verbose = 0) {
@@ -1447,44 +1462,18 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         // allocate buffer to hold the values
         std::vector< int > j4_values (5);
 
-        if (verbose >= 2) {
-                myprintf ("jj45split: init comb ");
-                print_perm (comb, 5);
-        }
-
         /* calculate the J4 values */
-        colindex_t lc[4];
-        init_perm (lc, 4);
-        colindex_t lc2[4];
-        init_perm (lc2, 4);
-        for (size_t i = 0; i < 5; i++) {
-                perform_inv_perm (comb, lc2, 4, lc);
-
-                j4_values[i] = abs (jvaluefast (array, N, 4, lc2));
-                if (verbose >= 3) {
-                        myprintf ("  comb %d full: val %d: ", (int)i, (int)j4_values[i]);
-                        print_perm (lc2, 4);
-                }
-                next_comb (lc, 4, 5);
-        }
-
-        // we reverse the values (to keep ordering matched to the original orderings)
-        std::reverse (j4_values.begin (), j4_values.end ());
-        if (verbose >= 2) {
-                myprintf ("## jj45split: values (first value is column one removed): ");
-                display_vector (j4_values);
-                myprintf ("\n");
-        }
+		_calculate_j4_values(j4_values, array, comb);
 
         indexsort s (5);
         s.sort (j4_values);
-        std::vector< int > wws = s.sorted (j4_values);
+        std::vector< int > ordered_j4_values = s.sorted (j4_values);
 
         // calculate symmetry group of column permutations in the first jj columns
-        symmetry_group sg (wws, true, verbose >= 3);
+        symmetry_group sg (ordered_j4_values, true, verbose >= 3);
         if (verbose >= 2) {
                 myprintf ("jj45split: values sorted ");
-                display_vector (wws);
+                display_vector (ordered_j4_values);
                 myprintf ("\n  ");
                 sg.show ();
         }
@@ -1541,6 +1530,10 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         return val;
 }
 
+/** Convert J5 and tuple of J4 values to a single number
+ *
+ * \param ww Vector with first element J5 and then the J4 values with the combination (2,3,4,5) first and (1,2,3,4) last.
+ */
 inline double jj452double (const double *ww) {
         // the maximum value of the J4 characteristics is N. we create a unique value out of the pair by multiplication
         double val = 0;
