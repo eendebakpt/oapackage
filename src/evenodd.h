@@ -472,7 +472,7 @@ class Jcounter {
         /// time needed for calculation
         double dt; 
 
-        Jcounter () : N (-1), jj (-1) {}
+        Jcounter () : N (-1), jj (-1), dt (0) { }
 
         Jcounter (int N, int jj = 5, int k = -1) { this->init (N, jj, k); }
 
@@ -520,3 +520,6 @@ void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbo
 
 /// calculate J-value statistics
 Jcounter calculateJstatistics (const char *afile, int jj = 5, int verbose = 1);
+
+/** Return -1 if the first array is smaller in J54 ordering than the second array, 0 if equal and 1 otherwise **/
+int compareJ54(const array_link &lhs, const array_link &rhs);

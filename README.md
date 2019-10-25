@@ -15,16 +15,15 @@ The package can be used from Python:
 ``` python
 >>> import oapackage
 >>> al=oapackage.exampleArray(0)
->>> al.showarray()
-array: 
-  0   0
-  0   0
-  0   1
-  0   1
-  1   0
-  1   0
-  1   1
-  1   1
+>>> al.showarraycompact()
+00
+00
+01
+01
+10
+10
+11
+11
 >>> print('D-efficiency %f, rank %d' % (al.Defficiency(), al.rank()) )
 D-efficiency 1.000000, rank 2
 >>> print('Generalized wordlength pattern: %s' % str(al.GWLP()))

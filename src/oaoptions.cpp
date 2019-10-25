@@ -176,6 +176,14 @@ void print_options () {
 #endif
 }
 
+int has_zlib(){
+#ifdef USEZLIB
+	return true;
+#else
+	return false;
+#endif
+}
+
 /**
  * Print the compile-time options to output stream.
  * @param out
