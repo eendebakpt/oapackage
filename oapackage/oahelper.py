@@ -390,7 +390,7 @@ def findfilesR(directory, pattern):
         directory (str): directory to search
         patt (str): pattern
     Returns:
-        list: list of matched filess
+        list: list of matched files
     """
     lst = []
     for root, _, files in os.walk(directory, topdown=False):
