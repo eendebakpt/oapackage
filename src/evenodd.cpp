@@ -983,4 +983,41 @@ void writeStatisticsFile (const char *numbersfile, const Jcounter &jc, int verbo
         fclose (fid);
 }
 
+
+
+int compareJ54(const array_link &lhs, const array_link &rhs) {
+	myassert(lhs.n_rows == rhs.n_rows, "arrays should have equal size");
+	myassert(lhs.n_columns == rhs.n_columns, "arrays should have equal size");
+
+	if (lhs.n_columns <= 4)
+		return compareLMC(lhs, rhs);
+
+	array_link lhs5 = lhs.selectFirstColumns(5);
+	array_link rhs5 = rhs.selectFirstColumns(5);
+
+	int j5l = abs(lhs5.Jcharacteristics(5)[0]);
+	int j5r = abs(rhs5.Jcharacteristics(5)[0]);
+	if (j5l > j5r) {
+		return -1;
+	}
+	else if(j5l < j5r ) {
+		return 1;
+	}
+	
+	std::vector<int> lj4 = lhs5.Jcharacteristics(4);
+	std::vector<int> rj4 = rhs5.Jcharacteristics(4);
+
+	for (int deleted_column = 4; deleted_column >= 0; deleted_column--) {
+		if (abs(lj4[deleted_column]) > abs(rj4[deleted_column])) {
+			return -1;
+		}
+		else if (abs(lj4[deleted_column]) < abs(rj4[deleted_column])) {
+			return 1;
+		}
+	}
+
+	return compareLMC(lhs, rhs);
+
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;
