@@ -90,7 +90,7 @@ install:
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
-  - "python -c \"import struct; print('size of pointer: ' + struct.calcsize('P') * 8)\""
+  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""
   - "%CMD_IN_ENV% python --version"
   
   
