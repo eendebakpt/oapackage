@@ -40,6 +40,33 @@ def only_python3(function):
 import oapackage
 
 
+class TestCompareMethods(unittest.TestCase):
+
+    def test_compareLMC(self):
+        al1 = oapackage.exampleArray(24, 0)
+        al2 = oapackage.exampleArray(25, 0)
+        al3 = oapackage.exampleArray(26, 0)
+
+        self.assertEqual(oapackage.compareLMC(al1, al2), -1)
+        self.assertEqual(oapackage.compareLMC(al2, al1), 1)
+        self.assertEqual(oapackage.compareLMC(al1, al3), 1)
+
+        al1 = oapackage.exampleArray(2, 0).selectFirstColumns(5)
+        al2 = oapackage.exampleArray(2, 0).selectLastColumns(5)
+        self.assertEqual(oapackage.compareLMC(al1, al2), -1)
+
+    def test_compareJ54(self):
+        al1 = oapackage.exampleArray(24, 0)
+        al2 = oapackage.exampleArray(25, 0)
+        al3 = oapackage.exampleArray(26, 0)
+
+        self.assertEqual(oapackage.compareJ54(al1, al2), -1)
+        self.assertEqual(oapackage.compareJ54(al2, al1), 1)
+
+        self.assertEqual(oapackage.compareJ54(al1, al3), 1)
+        self.assertEqual(oapackage.compareJ54(al2, al3), 1)
+
+
 class TestMinimalFormCheck(unittest.TestCase):
 
     def test_LMCcheck(self):
@@ -87,7 +114,7 @@ class TestReductions(unittest.TestCase):
         alr = oapackage.reduceLMCform(al)
         self.assertTrue(alr == al)
 
-        array0 = oapackage.exampleArray(1, 1).selectFirstColumns(3)
+        array0 = oapackage.exampleArray(1, 0).selectFirstColumns(3)
         array = array0.randomperm()
         reduced_array = oapackage.reduceLMCform(array)
         self.assertEqual(array0, reduced_array)
@@ -220,7 +247,6 @@ class TestArrayLink(unittest.TestCase):
         self.assertFalse(al2a.equalsize(al3))
         self.assertTrue(al2a < al2b)
         self.assertFalse(al2b < al2a)
-        #self.assertTrue(al2b <= al2b)
 
     def test_array_link_dimensions(self):
         for example_idx in [0, 2, 6, 10]:
@@ -407,12 +433,15 @@ class TestCppLibrary(unittest.TestCase):
 
         self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
 
+    @only_python3
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
         dof_values = oapackage.projectionDOFvalues(array)
         sg = oapackage.symmetry_group(dof_values, False)
-        sg.show(1)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            sg.show(1)
+        self.assertIn('symmetry group: 5 elements, 5 subgroups: 1 1 1 1 1', mock_stdout.getvalue())
 
         for column in range(array.n_columns):
             dof_element = list(dof_values[column].raw_values())
@@ -443,7 +472,7 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(list(m.values), input_vector)
         self.assertIsInstance(m.__array_interface__, dict)
 
-        input_vector=[1,2,-1]
+        input_vector = [1, 2, -1]
         mvalue_long = oapackage.mvalue_t_long(input_vector)
         self.assertEqual(list(mvalue_long.values), input_vector)
 
@@ -588,7 +617,7 @@ class TestCppLibrary(unittest.TestCase):
         np.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
         pic_seq = oapackage.PICsequence(al)
         np.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
-                                                    0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
+                                                 0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
 
     def test_PICsequence_length(self):
         array = oapackage.exampleArray(8, 0)
