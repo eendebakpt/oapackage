@@ -29,9 +29,8 @@
 :: The CALL lines at the end of this file look redundant, but if you move them
 :: outside of the IF clauses, they do not run properly in the SET_SDK_64==Y
 :: case, I don't know why.
-::@ECHO OFF
-
-echo %PYTHON_VERSION%
+@ECHO OFF
+::echo "run_with_env: Python version %PYTHON_VERSION%"
 
 SET COMMAND_TO_RUN=%*
 SET WIN_SDK_ROOT=C:\Program Files\Microsoft SDKs\Windows
