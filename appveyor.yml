@@ -13,12 +13,12 @@ environment:
 
   matrix:
    
-    - PYTHON: "C:\\Python38-x64"
-      #PYTHON_VERSION: "3.8.x"
-      #PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python36-x64"
       PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python38-x64"
+      #PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python27-x64"
@@ -87,7 +87,9 @@ install:
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "python -c \"import struct; print('size of pointer: ' + struct.calcsize('P') * 8)\""
+  - "%CMD_IN_ENV% python --version"
+  
   
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
