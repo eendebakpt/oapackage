@@ -43,6 +43,7 @@ def array2Dtable(array_list, verbose=1, titlestr=None):
     Args:
         array_list (list): list of arrays
         verbose (int): verbosity level
+        titlestr (str): Not used
     """
     page = markup.page()
     page.table(style=' border-collapse: collapse;')
