@@ -106,7 +106,11 @@ enum initcolumn_t {
   INITCOLUMN_J5 };
 
 /// variations of the J45 structures
-enum j5structure_t { J5_ORIGINAL, J5_45 };
+enum j5structure_t {
+	/// Ordering based in J5 in succesive columns
+	J5_ORIGINAL,
+	/// Ordering based on J5 and the 5-tuple of J4 values
+	J5_45 };
 
 /// return name of the algorithm
 std::string algnames (algorithm_t m);
@@ -553,6 +557,7 @@ struct dyndata_t {
 bool is_root_form(const array_link &array, int strength);
 
 
+/// Value representing the ordered combination of J5 and the 5 J4-values in the J54 ordering
 typedef double jj45_t;
 
 /** helper function for LMC reduction */
@@ -619,7 +624,7 @@ array_link reduceLMCform (const array_link &array);
 /** Apply LMC check (original mode) to a list of arrays */
 std::vector< int > LMCcheckLex (arraylist_t const &list, arraydata_t const &ad, int verbose = 0);
 
-/// Perform  minimal form check with LMC orderin
+/// Perform  minimal form check with LMC ordering
 lmc_t LMCcheckLex(array_link const &array, arraydata_t const &arrayclass);
 
 /// Perform minimal form check with J4 ordering

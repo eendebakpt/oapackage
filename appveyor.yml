@@ -10,9 +10,13 @@ environment:
     CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
-
+   
   matrix:
    
+    - PYTHON: "C:\\Python38-x64"
+      PYTHON_VERSION: "3.8.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python36-x64"
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
@@ -63,8 +67,8 @@ cache:
   - C:\tmp -> \appveyor\install_numpy.ps1
   
 install:
-  - ECHO "Filesystem root:"
-  - ps: "ls \"C:/\""
+  #- ECHO "Filesystem root:"
+  #- ps: "ls \"C:/\""
 
   - ECHO "Installed SDKs:"
   - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
@@ -83,7 +87,7 @@ install:
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""  
   
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
@@ -93,7 +97,7 @@ install:
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
-  - "%CMD_IN_ENV% pip install wheel==0.31.1"
+  - "%CMD_IN_ENV% pip install wheel"
   
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
@@ -123,10 +127,6 @@ install:
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
 
-  # for running doctest
-  #- "%CMD_IN_ENV36% pip install sphinx"
-  #- cinst -y make
-
   # fix issues with incompatible package versions
   - "%CMD_IN_ENV35PLUS% pip install --upgrade prompt_toolkit"
   - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
@@ -150,7 +150,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - "%CMD_IN_ENV36% mypy --version"
-   #- "%CMD_IN_ENV36% mypy -m oapackage"
+   - "%CMD_IN_ENV36% mypy oapackage --ignore-missing-imports --follow-imports skip"
 
    # only run nbconvert for python3.6
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "

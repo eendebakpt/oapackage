@@ -390,7 +390,7 @@ def findfilesR(directory, pattern):
         directory (str): directory to search
         patt (str): pattern
     Returns:
-        list: list of matched filess
+        list: list of matched files
     """
     lst = []
     for root, _, files in os.walk(directory, topdown=False):
@@ -624,7 +624,6 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
     else:
         pass
 
-    # all good
     return r
 
 
@@ -1266,7 +1265,6 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
         mngr.canvas.manager.window.SetPosition((x, y))
         mngr.canvas.manager.window.SetSize((w, h))
     elif be == 'agg':
-            # mngr.canvas.manager.window.setGeometry(x,y,w,h)
         mngr.canvas.manager.window.SetPosition((x, y))
         mngr.canvas.manager.window.resize(w, h)
     elif be == 'module://IPython.kernel.zmq.pylab.backend_inline':

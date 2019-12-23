@@ -30,6 +30,7 @@
 :: outside of the IF clauses, they do not run properly in the SET_SDK_64==Y
 :: case, I don't know why.
 @ECHO OFF
+::echo "run_with_env: Python version %PYTHON_VERSION%"
 
 SET COMMAND_TO_RUN=%*
 SET WIN_SDK_ROOT=C:\Program Files\Microsoft SDKs\Windows
