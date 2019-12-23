@@ -10,10 +10,7 @@ environment:
     CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
-
-    build_cloud: woelmuis
-    image: linux
-    
+   
   matrix:
    
     - PYTHON: "C:\\Python38-x64"
@@ -90,9 +87,7 @@ install:
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
-  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""
-  - "%CMD_IN_ENV% python --version"
-  
+  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""  
   
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
