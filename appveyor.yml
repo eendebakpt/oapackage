@@ -11,6 +11,9 @@ environment:
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
 
+    build_cloud: woelmuis
+    image: linux
+    
   matrix:
    
     - PYTHON: "C:\\Python36-x64"
