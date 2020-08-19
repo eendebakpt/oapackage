@@ -171,7 +171,7 @@ void testTranspose ( const array_link &al )
 
 template <class Type>
 /// count number of occurences of an element in a std::vector
-int countOccurences ( const std::vector<Type> v, Type val )
+int countOccurences ( const std::vector<Type> &v, Type val )
 {
 	int n=0;
 	for ( size_t i=0; i<v.size(); i++ ) {
@@ -186,7 +186,6 @@ int countOccurences ( const std::vector<Type> v, Type val )
 int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAextend &oaextend, arraylist_t &earraysout, std::vector<std::vector<double> > &edata, dextend_t &dextend, int kfinal, double Dfinal, int rs, int verbose )
 {
 	OAextend oaextendx= oaextend;
-	arraydata_t fullad2= adx;
 	arraylist_t extensions;
 
 	const int nprint = 4000;
@@ -224,9 +223,9 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	array_link tmparray ( input_array.n_rows, input_array.n_columns+1,-1 );
 	std::copy ( input_array.array, input_array.array+input_array.n_columns*input_array.n_rows, tmparray.array );
 
-	int nlmc=0;
 	#pragma omp critical
 	{
+		int nlmc = 0;
 		if ( directcheck ) {
 			cprintf ( verbose>=2, "extend_array_dynamic: directcheck done (nr. extensions %d)", nex );
 
@@ -275,7 +274,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	/* calculate D-efficiency values */
 	for ( unsigned int ii=0; ii< ( size_t ) nn; ii++ ) {
 		if ( ( ( ii%nprint==0 ) && verbose>=3 )  || ( ( ii%nprint2==0 ) && verbose==2 ) ) {
-			printf ( "  D-efficiency calculation for array %d/%d \n", ii, nn );
+			printf ( "  D-efficiency calculation for array %d/%d \n", (int)ii, nn );
 			flush_stdout();
 		}
 		tmparray.setcolumn ( lastcol, earrays[ii] );
@@ -321,7 +320,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	dextend.DefficiencyFilter ( Dfinal, k, kfinal, Lmax, verbose );
 
 
-	int ngood =std::accumulate ( dextend.filter.begin(),dextend.filter.end(),0 ); //#include <numeric>
+	//int ngood =std::accumulate ( dextend.filter.begin(),dextend.filter.end(),0 ); 
 	int ngoodlmc = countOccurences ( dextend.lmctype, LMC_MORE );
 
 	std::vector<int> ctype = dextend.filterArrays ( input_array, earrays, earraysout, edata,verbose );
