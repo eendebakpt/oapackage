@@ -131,7 +131,7 @@ install:
   - "%CMD_IN_ENV35PLUS% pip install --upgrade prompt_toolkit"
   - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
 
-  - cinst -y swig
+  - cinst -y swig --version 4.0.1
 
 build: off
 
