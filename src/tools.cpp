@@ -309,13 +309,13 @@ int log_print (const int level, const char *message, ...) {
                 {
                         int mlevel = -level;
                         _loglevel = mlevel;
-						myprintf(buf);
+						myprintf ("%s", buf);
                 }
         } else {
                 if (level <= _loglevel) { // if printing level is high enough, the message is shown
 #pragma omp critical(logprint)
                         {
-								myprintf(buf);
+							myprintf ("%s", buf);
                         }
                 }
         }
