@@ -1,3 +1,6 @@
+from . import scanf
+from . Doptim import *  # type: ignore
+from . oahelper import *
 """ Orthogonal Array package
 
 The Orthogonal Array package is a package to generate and analyse orthogonal
@@ -16,10 +19,6 @@ from oalib import arraydata_t, array_link, exampleArray, ParetoDoubleLong, reduc
 oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
 oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
 __version__ = oapackage.oalib.version()
-
-from . oahelper import *
-from . Doptim import *  # type: ignore
-from . import scanf
 
 
 __description__ = "Orthogonal Array package"

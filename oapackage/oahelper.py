@@ -614,7 +614,7 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
                 print('end of loop...')
         r = process.poll()
         if (not r == 0):
-            print('runcommand: cmd returned error! r=%d' % str(r))
+            print('runcommand: cmd returned error! r=%s' % str(r))
             print(cmd)
             return r
     else:
