@@ -65,8 +65,8 @@ set(headersextend ${headersextend} src/InfInt.h)
 set(srcsextend ${srcsextend} src/InfInt.cpp)
 
 
-set(headersextend ${headersextend} dev/oadevelop.h)
-set(srcsextend ${srcsextend} dev/oadevelop.cpp)
+set(headersextend ${headersextend} src/depth_extend.h)
+set(srcsextend ${srcsextend} src/depth_extend.cpp)
 include_directories(dev)
 
 set(OUTPUTDIR ${CMAKE_SOURCE_DIR})
