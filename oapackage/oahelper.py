@@ -583,14 +583,16 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
-    r = 0
+    r : Optional[int] = 0
     if not dryrun:
 
         process = subprocess.Popen(
             cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
             r = process.poll()
-            line = process.stdout.readline()
+            assert process.stdout is not None
+            line_bytes = process.stdout.readline()
+            line = line_bytes.decode(encoding='UTF-8')
             if verbose >= 2:
                 print('runcommand: jj %d' % jj)
             if verbose >= 3:
@@ -606,7 +608,6 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
             if jj > 20000000:
                 print('error: early abort of runcommand')
                 break
-            line = line.decode(encoding='UTF-8')
             sys.stdout.write(str(line))
             if jj % 2 == 0:
                 sys.stdout.flush()
