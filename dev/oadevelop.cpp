@@ -33,44 +33,6 @@
 
 using namespace std;
 
-/// convert A value to A value at different number of columns
-inline double Dvalue2Dvalue ( double A, int k, int knew )
-{
-	double m=1+k+k* ( k-1 ) /2;
-	double mnew = 1 + knew + knew* ( knew-1 ) /2;
-	double An= pow ( A, m/mnew );
-
-	return An;
-}
-
-/*
-double dtsymm = 0;
-double dtlmc=0;
-
-void setdtlmc ( double t )
-{
-	dtlmc=t;
-}
-double getdtlmc()
-{
-	return dtlmc;
-}
-void adddtlmc ( double dt )
-{
-	dtlmc += dt;
-}
-
-void setdtsymm ( double t )
-{
-	dtsymm=t;
-}
-
-double getdtsymm()
-{
-	return dtsymm;
-}
-*/
-
 // extend arrays with dynamic selection
 int extend_array_dynamic ( const arraylist_t &alist, arraydata_t &adx, OAextend &oaextend, arraylist_t &earrays, std::vector<std::vector<double> > &edata, int kfinal, double Dfinal, int directcheck, int verbose )
 {
