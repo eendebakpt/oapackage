@@ -187,12 +187,10 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 
 	#pragma omp critical
 	{
-		int nlmc = 0;
 		if ( directcheck ) {
-			cprintf ( verbose>=2, "extend_array_dynamic: directcheck done (nr. extensions %d)", nex );
-
-			nlmc = earrays.size();
+			cprintf ( verbose>=2, "extend_array_dynamic: directcheck done (nr. extensions %d, earrays %d)", nex, (int)earrays.size() );
 		} else {
+            int nlmc = 0;
 			if ( verbose>=2 )
 				printf ( "   LMC check %d values, extensioncol %d\n", nn, extensioncol );
 
@@ -270,7 +268,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	double Dcurrent = rtmp[1];
 	double Ccurrent = Dvalue2Cvalue ( Dcurrent, k );
 
-	cprintf ( verbose>=3, "   current C value %f (%d columns)\n", Ccurrent, k );
+	cprintf ( verbose>=3, "   current C value %f (%d columns), rank %d\n", Ccurrent, k, r );
 	flush_stdout();
 	std::vector<double> L = Dvalues2lossfactor ( dextend, Ccurrent, kn );
 
