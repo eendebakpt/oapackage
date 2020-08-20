@@ -24,6 +24,7 @@ import webbrowser
 import tempfile
 import subprocess
 import dateutil.parser
+from typing import Optional
 
 try:
     import matplotlib
@@ -569,8 +570,11 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     return page
 
 
-def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
+def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment
+
+    Args:
+        cmd: Command to execute
 
     Returns:
         r (int): return value of the shell command
@@ -615,7 +619,7 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
             return r
     else:
         if verbose >= 2 or (verbose and logfile is None):
-            print('### dryrun\n%s\n###\n' % cmd)
+            print(f'### dryrun of {idstr}\n{cmd}\n###\n')
     if logfile is not None:
         fid = open(logfile, 'a')
         fid.write('\n###\n')
@@ -822,6 +826,7 @@ def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cach
     else:
         if verbose >= 2:
             print('output file %s already exists' % outfile)
+
 
 selectArrays = deprecated(selectArraysInFile)
 
