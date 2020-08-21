@@ -9,15 +9,15 @@ os:
 
 #before_install:
 #  - sudo apt-get install cmake
-before_script:  
+before_script:
     - mkdir -p build
     - cd build
     - cmake --version
     - cmake -DNOCOMPILERWARNINGS=1 ..
 
 script:
-  - make  
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then make package          ; fi 
+  - make
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then make package          ; fi
   - ./oaunittest
   - ./pareto_example
   - ./oaranktest -I ../docs/examples/OAN56K28.oa
@@ -31,7 +31,7 @@ script:
   - ./oaconvert result-20.2-2-2.oa -f B dummy-binary.oa
 #
   - ./oaextendsingle -m 3 -l 1 -c ../oaconfig3.txt --maxk 5 # J4 algorithm
-  - ./oa_depth_extend -r result-32.2-2-2-2-2.oa -c oaconfig3.txt 
+  - ./oa_depth_extend -r result-32.2-2-2-2-2.oa -c ../oaconfig3.txt
 
   - ./oaconference -N 12 -k 6 -v 0
   - ./oapareto result-20.2-2-2.oa -f B -o dummy.oa
