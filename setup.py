@@ -194,7 +194,7 @@ class OATest(TestCommand):
 
         oapackage.oalib.test_array_manipulation(verbose=0)
         oapackage.oalib.test_conference_candidate_generators(verbose=0)
-       
+
         errno = 0
         sys.exit(errno)
 
@@ -395,10 +395,7 @@ setup(name='OApackage',
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
-                   'Programming Language :: Python :: 2',
-                   'Programming Language :: Python :: 2.7',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
                    'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
