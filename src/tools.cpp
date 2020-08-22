@@ -37,7 +37,6 @@ void printfd_handler (const char *file, const char *func, int line, const char *
 
         va_list va;
         va_start (va, message);
-        // vprintf ( message, va );
         vsprintf (buf, message, va);
         va_end (va);
         myprintf ("%s", buf);
@@ -298,24 +297,25 @@ int log_print (const int level, const char *message, ...) {
         static int _loglevel = (int)QUIET;
 #endif
 
+		char buf[64 * 1024];
+
+		va_list va;
+		va_start(va, message);
+		vsprintf(buf, message, va);
+		va_end(va);
+
         if (level < 0) { // level < 0 means set level, any message appended is printed as well
 #pragma omp critical(logprint)
                 {
-                        va_list va;
-                        va_start (va, message);
                         int mlevel = -level;
                         _loglevel = mlevel;
-                        vprintf (message, va);
-                        va_end (va);
+						myprintf ("%s", buf);
                 }
         } else {
                 if (level <= _loglevel) { // if printing level is high enough, the message is shown
 #pragma omp critical(logprint)
                         {
-                                va_list va;
-                                va_start (va, message);
-                                vprintf (message, va);
-                                va_end (va);
+							myprintf ("%s", buf);
                         }
                 }
         }

@@ -118,7 +118,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         ax = plt.subplot(111)
 
         ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
-                   c=(.5, .5, .5), linewidths=0, alpha=alpha, label='Non-pareto design')
+                   c=[(.5, .5, .5)], linewidths=0, alpha=alpha, label='Non-pareto design')
 
         for jj, ii in enumerate(idx):
             gidx = (colors == ii).nonzero()[0]

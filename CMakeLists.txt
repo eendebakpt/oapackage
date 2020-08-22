@@ -49,15 +49,8 @@ include_directories(src)
 include_directories(nauty)
 link_directories(${CMAKE_SOURCE_DIR})
 
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/dev/oadevelop.h") 
-  set(OADEV 0 CACHE BOOL "Enable development code")
-else()
-  set(OADEV 1 CACHE BOOL "Enable development code")
-endif()
-
-
-message(STATUS "OA development code: ${OADEV}")
-message(STATUS "OA extend code: ${OAEXTEND}")
+set(OADEV 0)
+message(STATUS "OA development mode: ${OADEV}")
 
 set(headers src/pareto.h src/unittests.h src/anyoption.h src/arrayproperties.h src/arraytools.h  src/graphtools.h src/mathtools.h src/oaoptions.h src/tools.h src/md5.h src/Deff.h src/evenodd.h src/version.h)
 set(srcs src/pareto.cpp src/unittests.cpp src/anyoption.cpp src/md5.cpp src/strength.cpp src/arrayproperties.cpp src/graphtools.cpp src/arraytools.cpp src/mathtools.cpp src/tools.cpp src/oaoptions.cpp src/bitarray/bit_array.cpp src/Deff.cpp src/evenodd.cpp)
@@ -72,13 +65,12 @@ set(headersextend ${headersextend} src/InfInt.h)
 set(srcsextend ${srcsextend} src/InfInt.cpp)
 
 
-if(OADEV)
-  set(headersextend ${headersextend} dev/oadevelop.h)
-  set(srcsextend ${srcsextend} dev/oadevelop.cpp)
-  include_directories(dev)
-endif()
+set(headersextend ${headersextend} src/depth_extend.h)
+set(srcsextend ${srcsextend} src/depth_extend.cpp)
+include_directories(dev)
 
 set(OUTPUTDIR ${CMAKE_SOURCE_DIR})
+
 
 if(OADEV)
   # if development code, try to use openmp
@@ -162,16 +154,9 @@ if("$ENV{OADEBUG}" STREQUAL "1")
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
 endif()
 
-if(OADEV)
-  if(WIN32)
-  else()
-    set(LINKOPTS "${LINKOPTS}")
-  endif()
+if(WIN32)
 else()
-  if(WIN32)
-  else()
-    set(LINKOPTS "${LINKOPTS} -s")
-  endif()
+    set(LINKOPTS "${LINKOPTS}") # or use -s option  
 endif()
 
 if(WIN32)
@@ -203,9 +188,7 @@ if(Boost_FOUND)
   set(COPTS "${COPTS} -DHAVE_BOOST")
 endif()  
 
-if(OADEV)
-  set(COPTS "${COPTS} -DOADEV")
-endif()
+set(COPTS "${COPTS} -DOADEV")
 
 macro(add_compile_flags _target)
   # Provide user feedback
@@ -230,10 +213,7 @@ set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oa
 set(progsextend )
 
 list(APPEND progs oacheck oastreaming oaranktest oatest oaclustergather)
-
-if(OADEV)
-  list(APPEND progs oa_depth_extend) # oaextendA
-endif()
+list(APPEND progs oa_depth_extend) 
    
 if (WIN32)
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
@@ -285,11 +265,9 @@ endif()
 		endif()
     set_target_properties(oaextendmpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
   endif()
-  #set_target_properties(oaextendmpi PROPERTIES COMPILE_FLAGS -I${MPIPATH})
-  #TARGET_LINK_LIBRARIES(oaextendmpi /usr/lib/mpich2/lib/libmpichcxx)
+
   set_target_properties(oaextendmpi PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_MULTICORE;NEWINTERFACE" )
 
-#  list(APPEND extendprogs oaextendmpi) 
    if (WIN32)
     if(ZLIB_FOUND)
       TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
@@ -444,7 +422,6 @@ set(CPACK_SOURCE_GENERATOR TGZ)
 
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-source")
 
-set(OADEVPACK 0)
 set(CPACK_SOURCE_IGNORE_FILES "tests.txt$;/vsc/;/old/;/Eigen3.2/;/Eigen-devel/;/Eigen3.1/;/buildvs/;a.out$;/TestingCommands;/testing/;tags$;_oalib.so$;Makefile$;setup.py~$;ChangeLog~$;CMakeFiles$;TODO$;oaconfig-speedtest.txt$;CMakeCache.txt;cmake_install.cmake;.pyc$;/oacode.kdev4;/OA.kde;.cpp~$;/CMakeLists-develop.txt;/build/;/matlabtools/;/xml/;/pythonscripts/;/miscx/;/performancetest/;/oldx/;/buildwin/;/html/;/testsuite/;/.svn/;${CPACK_SOURCE_IGNORE_FILES}")
 set(CPACK_SOURCE_IGNORE_FILES "example.so;PrecompiledHeader.cmake;/Eigen3.2.1/" ${CPACK_SOURCE_IGNORE_FILES})
 set(CPACK_SOURCE_IGNORE_FILES "mex/Doptim.mex;/.git/;/appveyor/;/tmp/;/dist/;/build2/;/hopper/;/OAlib.egg-info/;/buildx/;/OApackage.egg-info/;x2.txt;appveyor.yml;oalib_wrap_dev.cxx;oalib_wrap.cpp;oalib_wrap.cxx;sandbox;" ${CPACK_SOURCE_IGNORE_FILES})
@@ -456,15 +433,10 @@ if (VERBOSE)
 endif()
 
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-extend-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-source")
-message(STATUS "Building package with extend options")
-if(OADEVPACK)
-  set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-develop-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-source")
-	message(STATUS "Building development package!")
-else()
-  set(CPACK_SOURCE_IGNORE_FILES "/testdata/;/pythondevelop/;${CPACK_SOURCE_IGNORE_FILES}")
-  set(CPACK_SOURCE_IGNORE_FILES "oaextendA.cpp$;oatest.cpp$;oa_depth_extend.cpp$;/dev/oadevelop.h$;/dev/oadevelop.cpp;${CPACK_SOURCE_IGNORE_FILES}")
-  #message(STATUS "CPACK_SOURCE_IGNORE_FILES  ${CPACK_SOURCE_IGNORE_FILES}")
-endif(OADEVPACK)
+set(CPACK_SOURCE_IGNORE_FILES "/testdata/;/pythondevelop/;${CPACK_SOURCE_IGNORE_FILES}")
+set(CPACK_SOURCE_IGNORE_FILES "oaextendA.cpp$;oatest.cpp$;oa_depth_extend.cpp$;{CPACK_SOURCE_IGNORE_FILES}")
+#message(STATUS "CPACK_SOURCE_IGNORE_FILES  ${CPACK_SOURCE_IGNORE_FILES}")
+
 
 # cmake package type: CygwinBinary, DEB, TGZ, ZIP, etc.
 if(WIN32)
