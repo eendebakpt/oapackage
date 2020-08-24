@@ -24,6 +24,7 @@ import webbrowser
 import tempfile
 import subprocess
 import dateutil.parser
+from typing import Optional
 
 try:
     import matplotlib
@@ -569,8 +570,11 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     return page
 
 
-def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
+def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment
+
+    Args:
+        cmd: Command to execute
 
     Returns:
         r (int): return value of the shell command
@@ -579,14 +583,16 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
-    r = 0
+    r : Optional[int] = 0
     if not dryrun:
 
         process = subprocess.Popen(
             cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
             r = process.poll()
-            line = process.stdout.readline()
+            assert process.stdout is not None
+            line_bytes = process.stdout.readline()
+            line = line_bytes.decode(encoding='UTF-8')
             if verbose >= 2:
                 print('runcommand: jj %d' % jj)
             if verbose >= 3:
@@ -602,7 +608,6 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
             if jj > 20000000:
                 print('error: early abort of runcommand')
                 break
-            line = line.decode(encoding='UTF-8')
             sys.stdout.write(str(line))
             if jj % 2 == 0:
                 sys.stdout.flush()
@@ -610,12 +615,12 @@ def runcommand(cmd, dryrun=0, idstr=None, verbose=1, logfile=None, shell=True):
                 print('end of loop...')
         r = process.poll()
         if (not r == 0):
-            print('runcommand: cmd returned error! r=%d' % str(r))
+            print('runcommand: cmd returned error! r=%s' % str(r))
             print(cmd)
             return r
     else:
         if verbose >= 2 or (verbose and logfile is None):
-            print('### dryrun\n%s\n###\n' % cmd)
+            print(f'### dryrun of {idstr}\n{cmd}\n###\n')
     if logfile is not None:
         fid = open(logfile, 'a')
         fid.write('\n###\n')
@@ -822,6 +827,7 @@ def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cach
     else:
         if verbose >= 2:
             print('output file %s already exists' % outfile)
+
 
 selectArrays = deprecated(selectArraysInFile)
 

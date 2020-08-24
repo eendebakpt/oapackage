@@ -10,9 +10,9 @@ environment:
     CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
     CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
-   
+
   matrix:
-   
+
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
@@ -21,42 +21,18 @@ environment:
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "64"
 
-    - PYTHON: "C:\\Python27-x64"
-      PYTHON_VERSION: "2.7.x"
-      PYTHON_ARCH: "64"
-      WINDOWS_SDK_VERSION: "v7.0"
-
-    - PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4.x"
-      PYTHON_ARCH: "64"
-      WINDOWS_SDK_VERSION: "v7.1"
-         
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "64"
-    
-    - PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4.x"
-      PYTHON_ARCH: "32"
-
-    - PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5.x"
-      PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6.x"
       PYTHON_ARCH: "32"
-      
-    - PYTHON: "C:\\Python27"
-      PYTHON_VERSION: "2.7.x"
+
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "32"
 
-    # For details see http://tjelvarolsson.com/blog/how-to-continuously-test-your-python-code-on-windows-using-appveyor/
-        
 matrix:
       fast_finish: true
 
@@ -65,7 +41,7 @@ init:
 
 cache:
   - C:\tmp -> \appveyor\install_numpy.ps1
-  
+
 install:
   #- ECHO "Filesystem root:"
   #- ps: "ls \"C:/\""
@@ -79,7 +55,7 @@ install:
 
   # install proxy, see https://www.appveyor.com/docs/how-to/http-proxy/
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-http-proxy.ps1'))
-  
+
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
   # the parent CMD process).
@@ -87,22 +63,22 @@ install:
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
-  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""  
-  
+  - "python -c \"import struct; print('size of pointer: ' + str(struct.calcsize('P') * 8) )\""
+
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
   #- "python -m pip install --disable-pip-version-check --user --upgrade pip"
-  
+
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install wheel"
-  
+
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
   - "powershell ./appveyor/install_numpy.ps1"
-    
+
   # This is where I install numpy from the pre-built wheel I compiled either
   # earlier in this session, or in a previous session.
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
@@ -131,7 +107,7 @@ install:
   - "%CMD_IN_ENV35PLUS% pip install --upgrade prompt_toolkit"
   - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
 
-  - cinst -y swig
+  - cinst -y swig --version 4.0.1
 
 build: off
 
@@ -143,7 +119,7 @@ build_script:
 
 test_script:
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
-   - "%CMD_IN_ENV% pytest" 
+   - "%CMD_IN_ENV% pytest"
 
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
@@ -166,7 +142,7 @@ test_script:
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
    - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
-    
+
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel bdist_wininst"
   - "%CMD_IN_ENV36% %PYTHON%/python setup.py sdist"
@@ -175,7 +151,7 @@ after_test:
 artifacts:
   - path: dist\*
     name: binaries
-  
+
 #on_success:
 #  - TODO: automatically upload the content of dist/*.whl to pypi
 

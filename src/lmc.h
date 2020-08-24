@@ -87,6 +87,7 @@ enum algorithm_t {
 
 const algorithm_t MODE_ORIGINAL = MODE_LMC;
 
+/// Return string representation of available algorithm modes 
 inline std::string algorithm_t_list () {
         std::string ss =
             printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (j5 order dominant), %d "

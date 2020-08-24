@@ -1,3 +1,5 @@
+import sys
+import re
 """ https://github.com/joshburnett/scanf
 
 This file is extracted from https://github.com/joshburnett/scanf. The code is protected by an MIT license.
@@ -24,8 +26,6 @@ Original code from:
 Modified original to make the %f more robust, as well as added %* modifier to
 skip fields.
 """
-import re
-import sys
 try:
     from functools import lru_cache
 except ImportError:
