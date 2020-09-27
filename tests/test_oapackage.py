@@ -210,11 +210,12 @@ class TestOAfiles(unittest.TestCase):
                                               [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_write_arrayfile_with_comment(self):
-
         designs=[oapackage.exampleArray(3)]
         filename=tempfile.mktemp(suffix='.oa')
         write_text_arrayfile(filename, designs, comment='Test comment')
-        oapackage.readarrayfile(filename, 2)
+        arrays = oapackage.readarrayfile(filename, 0)
+        self.assertEqual(len(designs), len(arrays))
+        self.assertEqual(designs[0], arrays[0] )
         
     def test_nArrayFile(self):
         _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)

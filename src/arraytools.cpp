@@ -4532,17 +4532,24 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
 
         switch (this->mode) {
         case arrayfile::ATEXT: {
-               char lineBuffer[1024*10];
-                readLine(nfid, lineBuffer, 1024*10);
-                if (strlen(lineBuffer)>0) {
-                         if (lineBuffer[0]=='#') {
-                              if (this->verbose>=2) {
-                                   myprintf("comment in array file: %s\n", lineBuffer);
+                const int BUFFER_SIZE=10*1024;
+                char lineBuffer[BUFFER_SIZE];
+                readLine(nfid, lineBuffer, BUFFER_SIZE);
+                
+                while(true) {
+                    if (strlen(lineBuffer)>0) {
+                              if (lineBuffer[0]=='#') {
+                                   if (this->verbose>=2) {
+                                        myprintf("comment in array file: %s\n", lineBuffer);
+                                   }
+                                   readLine(nfid, lineBuffer, BUFFER_SIZE);
+                              } else {
+                                   break;
                               }
-                              readLine(nfid, lineBuffer, 1024*10);
-                         }
+                    } else {
+                         break;
+                    }
                 }
-                     
                 int r = sscanf (lineBuffer, "%d\n", &index);
                 
                 //int r = fscanf (nfid, "%d\n", &index);
