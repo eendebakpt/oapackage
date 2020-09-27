@@ -5,26 +5,17 @@ import sys
 import os
 import numpy as np
 import tempfile
-import logging
 import importlib
 import unittest
-if sys.version_info >= (3, 4):
-    import unittest.mock as mock
-    from unittest.mock import patch
-    python3 = True
-else:
-    try:
-        import mock
-        from mock import patch
-    except ImportError as ex:
-        logging.exception(ex)
-        raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
-    python3 = False
+import unittest.mock as mock
+from unittest.mock import patch
+python3 = True
 
 import oalib
 import oapackage
 import oapackage.scanf
 import oapackage.graphtools
+from oapackage.oahelper import write_text_arrayfile
 
 
 def only_python3(function):
@@ -218,6 +209,13 @@ class TestOAfiles(unittest.TestCase):
         oapackage.oahelper.selectArraysInFile(array_filename, array_filename_out,
                                               [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
+    def test_write_arrayfile_with_comment(self):
+
+        designs=[oapackage.exampleArray(3)]
+        filename=tempfile.mktemp(suffix='.oa')
+        write_text_arrayfile(filename, designs, comment='Test comment')
+        oapackage.readarrayfile(filename, 2)
+        
     def test_nArrayFile(self):
         _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0)])

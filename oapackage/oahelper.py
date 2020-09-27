@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import sys
 import os
+from typing import List, Any
 import logging
 import numpy as np
 import functools
@@ -569,7 +570,17 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     page.table.close()
     return page
 
-
+def write_text_arrayfile(filename : str, designs : List[Any], comment : str=None):
+    """ Write designs to disk in text format """
+    nrows=designs[0].n_rows
+    ncols=designs[0].n_columns
+    afile = oapackage.arrayfile_t(filename, nrows, ncols, len(designs), oapackage.ATEXT, 8)
+    if comment is not None:
+        for c in comment.split('\n' ):
+            afile.add_comment(c)
+    afile.append_arrays(designs)
+    afile.closefile()
+    
 def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment
 
