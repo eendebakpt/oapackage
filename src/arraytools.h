@@ -1347,7 +1347,10 @@ struct arrayfile_t {
         /// append a single array to the file
         void append_array (const array_link &a, int specialindex = -1);
 
-	/// return True if code is wrapper by SWIG
+        /// Add a comment to an array file (only available in text mode)
+        void add_comment(const std::string &comment);
+        
+	/// return True if code is wrapped by SWIG
         int swigcheck () const;
 
 	/// return string describing the object

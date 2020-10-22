@@ -4240,6 +4240,16 @@ void arrayfile_t::append_array (const array_link &a, int specialindex) {
         narraycounter++;
 }
 
+void arrayfile_t::add_comment(const std::string &comment) {
+     if ( this->isbinary()) {
+          throw_runtime_exception("cannot add comments to binary file");
+     }
+     if ( ! this->isopen() ) {
+          throw_runtime_exception("cannot add comment to closed file");          
+     }
+     fprintf (this->nfid, "# %s\n", comment.c_str());
+}
+
 /// return true if file is open
 int arrayfile_t::isopen () const {
 #ifdef USEZLIB
@@ -4487,6 +4497,30 @@ int arrayfile_t::read_array (array_link &a) {
         return index;
 }
 
+void readLine(FILE *file, char* lineBuffer, int maximumLineLength) {
+    if (file == 0) {
+        printf("Error: file pointer is null.");
+        exit(1);
+    }
+
+    char ch = getc(file);
+    int count = 0;
+
+    while ((ch != '\n') && (ch != EOF)) {
+        if (count == maximumLineLength) {
+               printf("readLine: line length exceeds %d", maximumLineLength);
+               exit(1);
+            
+        }
+        lineBuffer[count] = ch;
+        count++;
+
+        ch = getc(file);
+    }
+
+    lineBuffer[count] = '\0';
+}
+
 int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
         int index = -10;
         if (nrows != this->nrows) {
@@ -4498,7 +4532,27 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
 
         switch (this->mode) {
         case arrayfile::ATEXT: {
-                int r = fscanf (nfid, "%d\n", &index);
+                const int BUFFER_SIZE=10*1024;
+                char lineBuffer[BUFFER_SIZE];
+                readLine(nfid, lineBuffer, BUFFER_SIZE);
+                
+                while(true) {
+                    if (strlen(lineBuffer)>0) {
+                              if (lineBuffer[0]=='#') {
+                                   if (this->verbose>=2) {
+                                        myprintf("comment in array file: %s\n", lineBuffer);
+                                   }
+                                   readLine(nfid, lineBuffer, BUFFER_SIZE);
+                              } else {
+                                   break;
+                              }
+                    } else {
+                         break;
+                    }
+                }
+                int r = sscanf (lineBuffer, "%d\n", &index);
+                
+                //int r = fscanf (nfid, "%d\n", &index);
                 ::read_array (nfid, array, nrows, ncols);
                 break;
         }

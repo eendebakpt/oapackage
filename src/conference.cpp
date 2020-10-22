@@ -247,33 +247,6 @@ array_link conference_t::create_root () const {
         return al;
 }
 
-/** Helper structure containing extensions of conference designs
-*/
-struct conference_extend_t {
-	std::vector< conference_column > first;      /// list of first block candidate extensions
-	std::vector< conference_column > second;     /// list of first block candidate extensions
-	std::vector< conference_column > extensions; /// list of candidate extensions
-
-public:
-	// combine first and second section into a single column
-	conference_column combine(int i, int j) const {
-		conference_column c = vstack(this->first[i], this->second[j]);
-		return c;
-	}
-
-	size_t nExtensions() const { return this->extensions.size(); }
-
-	/// return the set of extension arrays
-	arraylist_t getarrays(const array_link al) const {
-		arraylist_t ll;
-
-		for (size_t i = 0; i < this->extensions.size(); i++) {
-			array_link alx = hstack(al, extensions[i]);
-			ll.push_back(alx);
-		}
-		return ll;
-	}
-};
 
 std::vector<int> double_conference_foldover_permutation(const array_link &double_conference) {
         int N = double_conference.n_rows/2;
@@ -2096,7 +2069,7 @@ std::vector< conference_column > generateConferenceRestrictedExtensions (const a
 
 /** select maximum possible position for a zero in the column of a design assuming the design is in LMC0 format
  *
- * \param maxzpos Maximum position of zero an specified design
+ * \param maxzpos Maximum position of zero in specified design
  * \param ctype Type of conference matrix
  * \param al Array containing the design
  * \param extcol Extension column
@@ -2164,10 +2137,6 @@ conference_extend_t extend_double_conference_matrix (const array_link &al, const
         ce.extensions = cc;
         return ce;
 }
-
-/** Extend a single conference design with candidate columns */
-conference_extend_t extend_conference_matrix(const array_link &al, const conference_t &ct, int extcol,
-	int verbose = 1, int maxzpos = -1);
 
 conference_extend_t extend_conference_matrix (const array_link &al, const conference_t &ct, int extcol, int verbose,
                                               int maxzpos) {
