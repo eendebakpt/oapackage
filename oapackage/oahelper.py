@@ -574,7 +574,7 @@ def write_text_arrayfile(filename : str, designs : List[Any], comment : str=None
     """ Write designs to disk in text format """
     nrows=designs[0].n_rows
     ncols=designs[0].n_columns
-    afile = oapackage.arrayfile_t(filename, nrows, ncols, len(designs), oapackage.ATEXT, 8)
+    afile = oapackage.oalib.arrayfile_t(filename, nrows, ncols, len(designs), oapackage.oalib.ATEXT, 8)
     if comment is not None:
         for c in comment.split('\n' ):
             afile.add_comment(c)
