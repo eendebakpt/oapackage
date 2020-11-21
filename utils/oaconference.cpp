@@ -181,6 +181,8 @@ int main (int argc, char *argv[]) {
                           .c_str ());
         opt.processCommandArgs (argc, argv);
 
+        double t0 = get_time_ms();
+        
         print_copyright ();
         setloglevel (NORMAL);
 
@@ -262,8 +264,6 @@ int main (int argc, char *argv[]) {
                 printf ("--- initial set of arrays ---\n");
                 showArrayList (inputarrays);
         }
-
-        double t0 = get_time_ms ();
 
         for (int extcol = kstart; extcol < kmax; extcol++) {
                 printf ("\n### oaconference: extend column %d (max number of columns %d, time %.1f [s])\n", extcol,
@@ -365,7 +365,7 @@ int main (int argc, char *argv[]) {
 
                 inputarrays = outlist;
         }
-        printf ("done...\n");
+        printf ("done... %.1f [s]\n", get_time_ms()-t0);
 
         return 0;
 }
