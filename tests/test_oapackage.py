@@ -257,7 +257,16 @@ class TestParetoFunctionality:
         selected = oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
         self.assertEqual(selected, arrays[4, 5])
 
+class TestOAhinterface(unittest.TestCase):
+    """ Test functionality in C++ to Python interface """
 
+    def test_update_array_link(self):
+        al = oapackage.exampleArray(1)
+        oapackage.update_array_link(al, np.array([[1,2,3],[4,5,6]]) )
+        print(al)
+        self.assertEqual(al.shape, (2,3))
+        self.assertEqual(list(al), [1,4,2,5,3,6])
+        
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 
