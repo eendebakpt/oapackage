@@ -384,7 +384,6 @@ inline array_t *clone_array (const array_t *const array, const rowindex_t nrows,
         return clone;
 }
 
-
 /*** \brief Class representing an array
  */
 struct array_link {
@@ -450,6 +449,7 @@ struct array_link {
         ~array_link ();
 
 #ifdef SWIGCODE
+        /// Create array_link from a raw memory buffer
         array_link (long *pymatinput, int nrows, int ncols);
 #endif
         array_link clone () const;
@@ -717,8 +717,24 @@ struct array_link {
                                   this->n_rows, this->n_columns);
                 std::copy (tmp, tmp + n, this->array);
         }
+        /// internal function
+        template < class numtype > void setarraydata_transposed (const numtype *input_data, int n) {
+                if (n != this->n_rows * this->n_columns)
+                        myprintf ("array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n,
+                                  this->n_rows, this->n_columns);
+                     int i = 0;
+        for (int row = 0; row < this->n_rows; row++) {
+                for (int col = 0; col < this->n_columns; col++) {
+                        this->array[row + col * this->n_rows] = input_data[i];
+                        i++;
+                }
+        }
+
+        }
+
         /// special method for SWIG interface
         void setarraydata (std::vector< int > tmp, int n) { std::copy (tmp.begin (), tmp.begin () + n, this->array); }
+       
         /// internal function
         template < class numtype > void setarraydata (std::vector< numtype > tmp, int n) {
                 std::copy (tmp.begin (), tmp.begin () + n, this->array);
@@ -756,6 +772,15 @@ private:
     bool _valid_index (int index) const;
 
 };
+
+#ifdef SWIGCODE
+/// Create array_link from numpy array
+array_link create_array_link(long* pymatinput, int number_of_rows, int number_of_columns);
+
+/// Update the data of an array_link with the specified data
+void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int number_of_columns);
+
+#endif
 
 /** Return -1 if the first array is smaller in LMC ordering than the second array, 0 if equal and 1 otherwise **/
 int compareLMC(const array_link &lhs, const array_link &rhs);

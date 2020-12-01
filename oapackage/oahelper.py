@@ -1297,14 +1297,12 @@ def makearraylink(array):
     """ Convert array to array_link object
 
     Args:
-        array (numpy array): array to convert
+        array (numpy array or array_link): array to convert
     Returns:
         array_link
     """
     if isinstance(array, np.ndarray):
-        tmp = oalib.array_link()
-        tmp.setarray(array)
-        array = tmp
+        array = oapackage.create_array_link(array)
     return array
 
 

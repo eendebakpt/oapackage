@@ -4634,6 +4634,39 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
         memcpy (this->array, array, nrows * ncolsorig * sizeof (array_t)); // FIX: replace by copy_array
 }
 
+array_link create_array_linkx(long* pymatinput, int number_of_rows, int number_of_columns) {
+     myprintf("call array_link with number_of_rows %d, number_of_columns %d data %ld\n", number_of_rows, number_of_columns, (long)pymatinput);
+     
+     fflush(0);
+     array_link array = array_link(number_of_rows, number_of_columns, array_link::INDEX_DEFAULT);   
+     array.setarraydata(pymatinput, number_of_rows*number_of_columns);
+     /*
+     int i = 0;
+        for (int row = 0; row < number_of_rows; row++) {
+                for (int col = 0; col < number_of_columns; col++) {
+                        array.array[row + col * number_of_rows] = pymatinput[i];
+                        i++;
+                }
+        }
+*/
+     return array;
+}
+
+#ifdef SWIGCODE
+array_link create_array_link(long* pymatinput, int number_of_rows, int number_of_columns) {
+     array_link array = array_link(number_of_rows, number_of_columns, array_link::INDEX_DEFAULT);   
+     array.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);
+     return array;
+}
+
+void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int number_of_columns) {
+     al.init(number_of_rows, number_of_columns);
+     al.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);   
+     return;
+}
+#endif
+
+
 std::string printfstring(const char *message, ...) {
 	char buf[32 * 1024];
 

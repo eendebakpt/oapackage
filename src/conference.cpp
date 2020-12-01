@@ -1714,7 +1714,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
 
 
         // push initial branches
-        branch_t b1 = {0, 1, {1, N / 2 - 1, N / 2 - 1}}; // branches starting with a 1
+        branch_t b1 = {0, 1, {1, N / 2 - 1, N / 2 - 1}}; // all branches starting with a 1
         branches.push (b1);
 
         std::vector< long > branch_count (N + 1);

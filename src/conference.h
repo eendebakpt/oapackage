@@ -18,10 +18,6 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "arraytools.h"
 #include "graphtools.h"
 
-#ifdef SWIG
-%ignore CandidateGeneratorBase;
-#endif
-
 
 /// print a candidate extension
 void print_column(const conference_column &column, const char *msg = 0);
@@ -353,7 +349,20 @@ std::vector< conference_column > generateDoubleConferenceExtensions (const array
                                                          int verbose = 1, int filter_symmetry = 1, int filterip = 1,
                                                          int filterJ3 = 0, int filter_symmetry_inline = 1);
 
-/// generate extensions for conference matrices in LMC0 form
+/** generate extensions for conference matrices in LMC0 form
+ * 
+ * The the method assumes that the input array is in LMC0 format. In particular, the element at row 0 and column 0 of the design should be a zero.
+ * 
+ * \param array Design to generate extensions for
+ * \param conference_type Specification of the type of designs
+ * \param zero_index Passed to checkZeroPosition to determine whether a zero in the extension column is in a valid position
+ * \param verbose Verbosity level
+ * \param filter_symmetry If True than reject extensions which are not minimal according to the row symmetry group of the specified design
+ * \param filter_j2 If True than reject extensions which do not satisfy the J2 criterea
+ * \param filterj3 If True than reject extensions which do not satisfy the J3 criterea
+ * \param filter_symmetry_inline Quick rejection of extensions which do not satisfy the symmetry criterion.
+ * \return List of extensions of the design
+ */
 std::vector< conference_column > generateSingleConferenceExtensions (const array_link &array, const conference_t &conference_type,
                                                          int zero_index, int verbose, int filter_symmetry, int filterj2,
                                                          int filterj3, int filter_symmetry_inline = 0);
