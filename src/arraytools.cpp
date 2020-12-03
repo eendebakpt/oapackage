@@ -4634,6 +4634,21 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
         memcpy (this->array, array, nrows * ncolsorig * sizeof (array_t)); // FIX: replace by copy_array
 }
 
+#ifdef SWIGCODE
+array_link create_array_link(long* pymatinput, int number_of_rows, int number_of_columns) {
+     array_link array = array_link(number_of_rows, number_of_columns, array_link::INDEX_DEFAULT);   
+     array.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);
+     return array;
+}
+
+void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int number_of_columns) {
+     al.init(number_of_rows, number_of_columns);
+     al.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);   
+     return;
+}
+#endif
+
+
 std::string printfstring(const char *message, ...) {
 	char buf[32 * 1024];
 
