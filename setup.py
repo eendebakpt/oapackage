@@ -242,7 +242,7 @@ compile_options = []
 
 sources = ['oalib.i'] + sorted(sources)
 if oadev:
-    swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
+    swig_opts += ['-c++', '-w503,401,362,509,389',
                   '-Isrc/', '-Idev/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
