@@ -195,15 +195,18 @@ std::string printfstring (const char *message, ...) {
 
   */
 double get_time_ms () {
-        struct timeb tb;
-        ftime (&tb);
-        return (double)tb.time + ((double)tb.millitm / 1000.0f);
+	return get_time_ms(0);
 }
 
+#include <time.h>
+#include <stdio.h>
+
 double get_time_ms (double t0) {
-        struct timeb tb;
-        ftime (&tb);
-        return (double)tb.time + ((double)tb.millitm / 1000.0f) - t0;
+	const time_t epoch = 0;
+	time_t now;
+    time(&now);
+	double seconds = difftime(now, epoch) - t0;
+	return seconds;
 }
 const std::string whiteSpaces (" \f\n\r\t\v");
 
