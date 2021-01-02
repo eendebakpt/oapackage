@@ -6020,7 +6020,7 @@ int arrayInList (const array_link &al, const arraylist_t &ll, int verbose) {
                 const array_link &alx = ll[jj];
                 if (alx == al.selectFirstColumns (alx.n_columns)) {
                         if (verbose) {
-                                myprintf ("arrayInList: found array at position %ld\n", jj);
+                                myprintf ("arrayInList: found array at position %zu\n", jj);
                         }
                         return jj;
                 }
