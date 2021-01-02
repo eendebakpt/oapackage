@@ -1,8 +1,8 @@
 /*****************************************************************************
 *                                                                            *
-*  Graph-specific auxiliary source file for version 2.5 of nauty.            *
+*  Graph-specific auxiliary source file for version 2.7 of nauty.            *
 *                                                                            *
-*   Copyright (1984-2013) Brendan McKay.  All rights reserved.               *
+*   Copyright (1984-2019) Brendan McKay.  All rights reserved.               *
 *   Subject to waivers and disclaimers in nauty.h.                           *
 *                                                                            *
 *   CHANGE HISTORY                                                           *
@@ -16,6 +16,8 @@
 *       10-Nov-09 : remove shortish and permutation types                    *
 *       23-May-10 : add densenauty()                                         *
 *       15-Jan-12 : add TLS_ATTR attributes                                  *
+*       23-Jan-13 : add some parens to make icc happy                        *
+*       15-Oct-19 : fix default size of dnwork[] to match densenauty()       *
 *                                                                            *
 *****************************************************************************/
 
@@ -52,7 +54,7 @@ DYNALLSTAT(set,dnwork,dnwork_sz);
 static TLS_ATTR set workset[MAXM];   /* used for scratch work */
 static TLS_ATTR int workperm[MAXN];
 static TLS_ATTR int bucket[MAXN+2];
-static TLS_ATTR set dnwork[40*MAXM];
+static TLS_ATTR set dnwork[2*60*MAXM];
 #endif
 
 /*****************************************************************************
@@ -263,7 +265,7 @@ refine(graph *g, int *lab, int *ptn, int level, int *numcells,
                 set2 = GRAPHROW(g,lab[i],m);
                 cnt = 0;
                 for (c1 = m; --c1 >= 0;)
-                    if ((x = (*set1++) & (*set2++)) != 0)
+                    if ((x = ((*set1++) & (*set2++))) != 0)
                         cnt += POPCOUNT(x);
 
                 count[i] = bmin = bmax = cnt;
@@ -274,7 +276,7 @@ refine(graph *g, int *lab, int *ptn, int level, int *numcells,
                     set2 = GRAPHROW(g,lab[i],m);
                     cnt = 0;
                     for (c1 = m; --c1 >= 0;)
-                        if ((x = (*set1++) & (*set2++)) != 0)
+                        if ((x = ((*set1++) & (*set2++))) != 0)
                             cnt += POPCOUNT(x);
 
                     while (bmin > cnt) bucket[--bmin] = 0;
@@ -634,7 +636,7 @@ targetcell(graph *g, int *lab, int *ptn, int level, int tc_level,
 *                                                                            *
 *  densenauty(g,lab,ptn,orbits,&options,&stats,m,n,h)                        *
 *  is a slightly simplified interface to nauty().  It allocates enough       *
-*  workspace for 20 automorphisms and checks that the densegraph dispatch     *
+*  workspace for 60 automorphisms and checks that the densegraph dispatch     *
 *  vector is in use.                                                         *
 *                                                                            *
 *****************************************************************************/
@@ -650,6 +652,8 @@ densenauty(graph *g, int *lab, int *ptn, int *orbits,
     }
 
 #if !MAXN
+    /* Don't increase 2*60*m in the next line unless you also increase
+       the default declaration of dnwork[] earlier. */
     DYNALLOC1(set,dnwork,dnwork_sz,2*60*m,"densenauty malloc");
 #endif
 
