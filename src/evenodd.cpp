@@ -669,7 +669,7 @@ void addArraysToPareto (Pareto< mvalue_t< long >, array_link > &pset, pareto_cb_
 #pragma omp parallel for schedule(dynamic, 1)
         for (int i = 0; i < (int)arraylist.size (); i++) {
                 if (verbose >= 3 || ((i % 15000 == 0) && verbose >= 2)) {
-                        myprintf ("addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size ());
+                        myprintf ("addArraysToPareto: file %d, array %d/%zu\n", jj, i, arraylist.size ());
                         myprintf ("  ");
                         pset.show (1);
                 }
