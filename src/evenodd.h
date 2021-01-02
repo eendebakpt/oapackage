@@ -129,7 +129,7 @@ struct depth_extend_sub_t {
                         }
                 }
                 if (verbose >= 2)
-                        myprintf ("updateExtensionPointers: extcol %d, kept %ld/%ld pointers\n", extcol,
+                        myprintf ("updateExtensionPointers: extcol %d, kept %zu/%zu pointers\n", extcol,
                                   pointers.size (), lmctype.size ());
                 return pointers;
         }
@@ -140,12 +140,12 @@ struct depth_extend_sub_t {
         /// select the arrays with are LMC and hence need to be written to disk
         inline arraylist_t selectArraysZ (const arraylist_t &alist) const {
                 if (verbose >= 2)
-                        myprintf ("depth_extend_sub_t: selectArrays: alist.size() %ld, lmctype %ld\n", alist.size (),
+                        myprintf ("depth_extend_sub_t: selectArrays: alist.size() %zu, lmctype %zu\n", alist.size (),
                                   lmctype.size ());
                 arraylist_t ga;
                 for (size_t i = 0; i < lmctype.size (); i++) {
                         if (verbose >= 3)
-                                myprintf ("  depth_extend_sub_t.selectArraysZ: array %ld: lmctype %d\n", i,
+                                myprintf ("  depth_extend_sub_t.selectArraysZ: array %zu: lmctype %d\n", i,
                                           lmctype[i]);
                         if (lmctype[i] >= LMC_EQUAL) {
                                 array_link ee = alist[i];
@@ -159,9 +159,6 @@ struct depth_extend_sub_t {
         }
 
 	inline arraylist_t selectArraysXX (const array_link &al, const arraylist_t &elist) const {
-                if (verbose >= 2)
-                        myprintf ("depth_extend_sub_t: selectArraysXX: alist.size() %ld, lmctype %ld\n", elist.size (),
-                                  lmctype.size ());
                 arraylist_t ga;
                 for (size_t i = 0; i < n (); i++) {
                         if (verbose >= 3) {
@@ -185,8 +182,8 @@ struct depth_extend_sub_t {
                         number_lmc += (lmctype[t] > +LMC_EQUAL);
                 }
                 if (verbose) {
-                        myprintf ("lmc %ld/%d\n", number_lmc, (int)lmctype.size ());
-                        myprintf ("valididx size %ld\n", valididx.size ());
+                        myprintf ("lmc %ld/%ld\n", number_lmc, (long)lmctype.size ());
+                        myprintf ("valididx size %ld\n", (long)valididx.size ());
                 }
         }
 };
