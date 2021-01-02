@@ -182,7 +182,7 @@ struct depth_extend_sub_t {
                         number_lmc += (lmctype[t] > +LMC_EQUAL);
                 }
                 if (verbose) {
-                        myprintf ("lmc %ld/%zu\n", number_lmc, lmctype.size ());
+                        myprintf ("lmc %zu/%zu\n", number_lmc, lmctype.size ());
                         myprintf ("valididx size %zu\n", valididx.size ());
                 }
         }
