@@ -2805,7 +2805,7 @@ std::vector< conference_column > generateDoubleConferenceExtensionsInflate (cons
                 cci = extensionInflate (ccX, als, alx, filter, ct, verbose);
 
                 if (verbose) {
-                        printf ("## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %ld "
+                        printf ("## generateDoubleConferenceExtensionsInflate: at %d columns: total inflated: %zu "
                                 "candidates for column %d\n",
                                 kx + 1, cci.size (), kx + 1);
                         printf ("   dt %.1f [ms]\n", 1e3 * (get_time_ms () - t00));
@@ -2918,7 +2918,7 @@ const std::vector< conference_column > &CandidateGeneratorConference::generateCa
 
 
                 if (verbose >= 2) {
-                        myprintf ("## %s: at %d columns: total inflated: %ld\n", tag, kx + 1, cci.size ());
+                        myprintf ("## %s: at %d columns: total inflated: %zu\n", tag, kx + 1, cci.size ());
                         myprintf ("   dt %.1f [ms]\n", 1e3 * (get_time_ms () - t00));
                 }
 
@@ -2992,7 +2992,7 @@ const std::vector< conference_column > &CandidateGeneratorDouble::generateCandid
                 cci = filter.filterListZero (cci);
 
                 if (verbose >= 2) {
-                        printf ("## %s: at %d columns: total inflated: %ld\n", tag, kx + 1, cci.size ());
+                        printf ("## %s: at %d columns: total inflated: %zu\n", tag, kx + 1, cci.size ());
                         printf ("   dt %.1f [ms]\n", 1e3 * (get_time_ms () - t00));
                 }
                 ccX = cci;

@@ -181,7 +181,7 @@ void symmetry_group_walker::show (int verbose) const {
                 myprintf ("\n");
         for (size_t i = 0; i < (size_t)perms.size (); i++) {
                 if (verbose >= 2) {
-                        myprintf ("  block %ld: ", i);
+                        myprintf ("  block %zu: ", i);
                         print_perm (perms[i]);
                 } else {
                         print_perm (perms[i], 100, false);

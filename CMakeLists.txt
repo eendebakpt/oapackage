@@ -128,15 +128,12 @@ if (INTEL_CC)
 endif (INTEL_CC) 
 
 set(LINKOPTS "")
-#message(STATUS "ENV{USERNAME} $ENV{USERNAME}, USER $ENV{USER}")
 if( "$ENV{USER}" STREQUAL "vsc20149")
   set(LINKOPTS "-s")	# strip executables for file size
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-  #message(STATUS "CMAKE_COMPILER_IS_GNUCXX ${CMAKE_COMPILER_IS_GNUCXX}")
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type -Wno-alloc-size-larger-than -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS "${COPTS}  -O3 ") # -fpermissive
   set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
@@ -165,7 +162,6 @@ endif()
 if (MSVC)
   message(STATUS "MSCV compiler")
   set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /D_SCL_SECURE_NO_WARNINGS")
-  #ADD_DEFINITIONS(-DNODEFAULTLIB:library)
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 endif()
 
@@ -192,7 +188,6 @@ set(COPTS "${COPTS} -DOADEV")
 
 macro(add_compile_flags _target)
   # Provide user feedback
-#  message(STATUS "  Adding compile flags to: ${_target}")
   set_target_properties(${_target} PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_SINGLECORE;NEWINTERFACE " )
   set_target_properties(${_target} PROPERTIES COMPILE_FLAGS "${COPTS}" )
   set_target_properties(${_target} PROPERTIES LINK_FLAGS "${LINKOPTS}")
@@ -376,7 +371,6 @@ if(MATLAB_FOUND)
 	    SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX "")
 	  else()
 
-	    #message(STATUS "${item} TYPE ${itemtype}: mex suffix")
 	    if(WIN32)
 	      SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexw${BITNESS}")
 	    else()
