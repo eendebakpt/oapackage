@@ -9,12 +9,11 @@ environment:
     CMD_IN_ENV_ARCH64: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env_arch64.cmd"
     CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
     CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
-    CMD_IN_ENV35PLUS: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env35plus.cmd"
 
   matrix:
 
     - PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.x"
+      PYTHON_VERSION: "3.9.1"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python38-x64"
@@ -106,10 +105,6 @@ install:
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
-
-  # fix issues with incompatible package versions
-  - "%CMD_IN_ENV35PLUS% pip install --upgrade prompt_toolkit"
-  - "%CMD_IN_ENV35PLUS% %PYTHON%/python -c \"import prompt_toolkit; print(prompt_toolkit.__version__)\""
 
   - cinst -y swig --version 4.0.1
 
