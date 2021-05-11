@@ -381,7 +381,7 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil'] + python27_requirements,
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil'],
       zip_safe=False,
       install_requires=['numpy>=1.18', 'python-dateutil'],
       extras_require={
