@@ -7,8 +7,7 @@ environment:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
     CMD_IN_ENV_ARCH64: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env_arch64.cmd"
-    CMD_IN_ENV27: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env27.cmd"
-    CMD_IN_ENV36: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env36.cmd"
+    CMD_IN_ENV38: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env38.cmd"
 
   matrix:
 
@@ -87,20 +86,19 @@ install:
   - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
-  - ps: $env:ispython36 = $env:PYTHON.Contains("Python36")
+  - ps: $env:ispython38 = $env:PYTHON.Contains("Python38")
 
   # part of the testing requirements
   - "%CMD_IN_ENV% pip install python-dateutil"
-  - "%CMD_IN_ENV27% pip install backports.functools_lru_cache"
   - "%CMD_IN_ENV% python -c \"import dateutil; print(dateutil)\""
   - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
-  - "%CMD_IN_ENV36% pip install jupyter matplotlib"
-  - "%CMD_IN_ENV36% jupyter --version"
+  - "%CMD_IN_ENV38% pip install jupyter matplotlib"
+  - "%CMD_IN_ENV38% jupyter --version"
 
   # for running the mypy check
-  - "%CMD_IN_ENV36% pip install mypy"
+  - "%CMD_IN_ENV38% pip install mypy"
 
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
@@ -124,27 +122,27 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - "%CMD_IN_ENV36% mypy --version"
-   - "%CMD_IN_ENV36% mypy oapackage --ignore-missing-imports --follow-imports skip"
+   - "%CMD_IN_ENV38% mypy --version"
+   - "%CMD_IN_ENV38% mypy oapackage --ignore-missing-imports --follow-imports skip"
 
-   # only run nbconvert for python3.6
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
-   - "%CMD_IN_ENV36% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
+   # only run nbconvert for python3.8
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
+   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel"
-  - "%CMD_IN_ENV36% %PYTHON%/python setup.py sdist"
+  - "%CMD_IN_ENV38% %PYTHON%/python setup.py sdist"
   - ps: "ls dist"
 
 artifacts:
