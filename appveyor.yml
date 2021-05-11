@@ -13,6 +13,10 @@ environment:
 
   matrix:
 
+    - PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
@@ -154,4 +158,3 @@ artifacts:
 
 #on_success:
 #  - TODO: automatically upload the content of dist/*.whl to pypi
-
