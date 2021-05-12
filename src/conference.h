@@ -302,9 +302,9 @@ arraylist_t extend_double_conference (const arraylist_t &lst, const conference_t
 /** Select representatives for the isomorphism classes of a list of conference arrays
 *
 * The method uses Nauty for reduction to normal form and selection of isomorphism classes.
-* \param lst List of designs
-* \param conference_type Specification of the type of designs
+* \param list List of designs
 * \param verbose Verbosity level
+* \param itype Specification of the type of isomorphism to use
 * \returns Selected isomorphism classes
 **/
 arraylist_t selectConferenceIsomorpismClasses (const arraylist_t &list, int verbose,
@@ -365,7 +365,7 @@ std::vector< conference_column > generateDoubleConferenceExtensions (const array
  * \param zero_index Passed to checkZeroPosition to determine whether a zero in the extension column is in a valid position
  * \param verbose Verbosity level
  * \param filter_symmetry If True than reject extensions which are not minimal according to the row symmetry group of the specified design
- * \param filter_j2 If True than reject extensions which do not satisfy the J2 criterea
+ * \param filterj2 If True than reject extensions which do not satisfy the J2 criterea
  * \param filterj3 If True than reject extensions which do not satisfy the J3 criterea
  * \param filter_symmetry_inline Quick rejection of extensions which do not satisfy the symmetry criterion.
  * \return List of extensions of the design

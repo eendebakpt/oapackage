@@ -3,7 +3,7 @@
 \brief Contains the array_link class and related classes.
 
 This file contains method and classes to work with (orthogonal) arrays.
- 
+
 Author: Pieter Eendebak <pieter.eendebak@gmail.com>
 Copyright: See LICENSE.txt file that comes with this distribution
 */
@@ -91,7 +91,7 @@ void eigenInfo (const MatrixFloat m, const char *str = "eigen", int verbose = 1)
 /** Print Eigen matrix to stdout */
 void print_eigen_matrix(const MatrixFloat matrix);
 
-  
+
 // helper function for Python interface
 void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 
@@ -110,9 +110,9 @@ void eigen2numpyHelper (double *pymat1, int n, const MatrixFloat &m);
 extern "C" {}
 
 /// data type for elements of orthogonal arrays
-typedef short int array_t; 
-/// constant version of array_t 
-typedef const short int carray_t;                                         
+typedef short int array_t;
+/// constant version of array_t
+typedef const short int carray_t;
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_SHORT
@@ -122,10 +122,10 @@ typedef short int rowindex_t;       /** type used for row indexing */
 typedef int colindex_t;             /** type used for column indexing */
 typedef const int const_colindex_t; /** constant version of type used for column indexing */
 
-/// pointer to array 
-typedef array_t *array_p;   
-/// pointer to constant array 
-typedef carray_t *carray_p; 
+/// pointer to array
+typedef array_t *array_p;
+/// pointer to constant array
+typedef carray_t *carray_p;
 
 typedef rowindex_t *rowperm_t; /** type of row permutation */
 typedef colindex_t *colperm_t; /** type of column permutation */
@@ -144,7 +144,7 @@ int sizeof_double ();
 
 /// possible values for J-values of 2-level design
 inline std::vector< int > possible_F_values (int N, int strength) {
-        int x = pow ((double)2, strength + 1); 
+        int x = pow ((double)2, strength + 1);
         int nn = floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
@@ -175,19 +175,19 @@ struct array_link;
 
 /** @brief Specifies a class of arrays
  *
- * The specification includes the number of rows, number of columns, factor levels and strength. 
+ * The specification includes the number of rows, number of columns, factor levels and strength.
  */
 struct arraydata_t {
-        /// number of runs 
+        /// number of runs
         rowindex_t N;
-        /// total number of columns (factors) in the design 
+        /// total number of columns (factors) in the design
         colindex_t ncols;
-        /// strength of the design 
+        /// strength of the design
         colindex_t strength;
-        /// pointer to factor levels of the array 
+        /// pointer to factor levels of the array
         array_t *s;
 
-        /// Ordering used for arrays 
+        /// Ordering used for arrays
         ordering_t order;
 
         /* derived data */
@@ -204,7 +204,7 @@ struct arraydata_t {
 		/** Specifies a class of orthogonal arrays
 		 *
 		 * The specification includes the number of rows, number of columns, factor levels and strength.
-		 * 
+		 *
 		 * An orthogonal array of strength t, N runs, k factors (columns) and factor levels s[i] is an N times k array with
 		 * symbols 0, 1, ..., s[i]-1 in column i such that for every t columns every t-tuple of elements occurs equally often.
 		 */
@@ -311,7 +311,7 @@ struct arraydata_t {
 
         /// return factor levels
         std::vector< int > factor_levels () const;
-        
+
         /**
          * @brief Reset strength of arraydata
          * @param strength The strength to reset the structure to
@@ -407,7 +407,7 @@ struct array_link {
         /** @copydoc array_link::array_link()
 	 *
 	 * The array is intialized with zeros.
-	 * 
+	 *
 	 * \param nrows Number of rows
 	 * \param ncols Number of columns
 	 * \param index Number to keep track of lists of designs
@@ -429,9 +429,9 @@ struct array_link {
 	*/
         array_link (Eigen::MatrixXd &eigen_matrix);
 	/** @copydoc array_link::array_link()
-	 * 
+	 *
 	 * The array is initialized by permuting the columns of another array
-	 * 
+	 *
 	 * \param array Source to copy from
 	 * \param column_permutation The permuntation to apply
 	 */
@@ -441,7 +441,7 @@ struct array_link {
 	/// @copydoc array_link::array_link()
 	array_link(const array_t *array, rowindex_t nrows, colindex_t ncolsorig, colindex_t ncols, int index);
 	/** @copydoc array_link::array_link()
-	 * 
+	 *
 	 * The array is initialized by copying the values from a vector.
 	 */
 	array_link(const std::vector< int > &values, rowindex_t nrows, colindex_t ncols, int index = 0);
@@ -559,7 +559,7 @@ struct array_link {
         std::vector< int > FvaluesConference (int number_of_columns) const;
 
         /** Calculate the Jk-characteristics of the matrix (the values are signed)
-	 * 
+	 *
 	 * \param jj Number of columns to use
 	 * \returns Vector with calculated Jk values
 	 */
@@ -605,12 +605,12 @@ struct array_link {
         array_link randomrowperm () const;
 
         /** Caculate model matrix of an orthogonal array
-	 * 
+	 *
 	 * \param order For 0 return only the intercept; for 1 return intercept and main effects; for 2 return intercept, main effects and interaction effects.
 	 * \param intercept If 1, then include the intercept in the output.
 	 * \param verbose Verbosity level
 	 * \return Calculated model matrix
-	 * 
+	 *
 	 * This function uses @ref array2eigenModelMatrixMixed for the calculation.
          */
         MatrixFloat getModelMatrix (int order, int intercept = 1, int verbose = 0) const;
@@ -619,7 +619,7 @@ struct array_link {
         array_link &deepcopy (const array_link &rhs);
         array_link &shallowcopy (const array_link &rhs);
         /** @brief Return True if both arrays are equal
-         * 
+         *
          * \param rhs Array to compare to
          * \returns 1 if arrays are equal. 0 otherwise. Returns 0 if arrays have different sizes
          */
@@ -679,7 +679,7 @@ struct array_link {
         void negateRow (rowindex_t row);
         /// print information about array
         void show () const;
-	
+
 	/// return string describing the array
         std::string showstr () const;
 
@@ -734,7 +734,7 @@ struct array_link {
 
         /// special method for SWIG interface
         void setarraydata (std::vector< int > tmp, int n) { std::copy (tmp.begin (), tmp.begin () + n, this->array); }
-       
+
         /// internal function
         template < class numtype > void setarraydata (std::vector< numtype > tmp, int n) {
                 std::copy (tmp.begin (), tmp.begin () + n, this->array);
@@ -759,7 +759,7 @@ struct array_link {
 
         /// return true of specified column is smaller than column in another array
         int columnGreater (int c1, const array_link &rhs, int rhs_column) const;
-	
+
         void debug () const;
 #ifdef SWIGCODE
         void *data (); /// return pointer to data, needed for swig interface
@@ -767,7 +767,7 @@ struct array_link {
 private:
     /// return true if both arrays have the same size
     bool equal_size(const array_link &array) const;
-    
+
     bool _valid_index (const rowindex_t r, const colindex_t c) const;
     bool _valid_index (int index) const;
 
@@ -795,7 +795,7 @@ array_link exampleArray(int idx = 0, int verbose = 0);
 /** Calculate Jk-characteristics for a conference design
  *
  * \param array Conference design
- * \param number_of_columns Specifies the number of columns to use 
+ * \param number_of_columns Specifies the number of columns to use
  * \param verbose Verbosity level
  * \return A vector of calculated inner products between all combinations of k columns.
  */
@@ -811,7 +811,7 @@ typedef std::vector< conference_column > conference_column_list;
 /// concatenate 2 arrays in vertical direction
 array_link hstack (const array_link &array1, const array_link &array2);
 
-/// concatenate array and conference_column 
+/// concatenate array and conference_column
 array_link hstack (const array_link &array, const conference_column &column);
 
 /// concatenate 2 arrays in horizontal direction
@@ -830,7 +830,7 @@ void perform_column_permutation (const array_link source, array_link &target, co
 void perform_row_permutation (const array_link source, array_link &target, const std::vector< int > perm);
 
 /** create arraydata_t structure from array
- * 
+ *
  * \param array Array to use as input specifiction for array class
  * \param extracols Number of extra columns to add to the number of columns of the array
  * \param strength Strength to set in the array class. If -1, then use the strength of the array
@@ -855,11 +855,11 @@ std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose
 class jstructbase_t {
       public:
 		/// calculated J-characteristics
-        std::vector< int > values;         
+        std::vector< int > values;
 		// possible values for Jk-characteristics
-		std::vector< int > jvalues;       
+		std::vector< int > jvalues;
 		/// map from Jk-value to index in the jvalues variable
-        std::map< int, int > jvalue2index; 
+        std::map< int, int > jvalue2index;
 
 		/// number of columns
         int jj;
@@ -971,7 +971,7 @@ class jstruct_t {
         ~jstruct_t ();
 
       public:
-        jstruct_t &operator= (const jstruct_t &rhs); 
+        jstruct_t &operator= (const jstruct_t &rhs);
 
         /// calculate maximum J value
         int maxJ () const;
@@ -1036,7 +1036,7 @@ class jstructconference_t : public jstructbase_t {
 		*
 		* \param array Array to calculate the J-characteristics for
 		* \param jj Number of columns to use for the Jk-characteristics
-		**/ 
+		**/
 		jstructconference_t (const array_link &array, int jj = 4) {
                 this->jj = jj;
                 const int N = array.n_rows;
@@ -1093,23 +1093,23 @@ std::vector< jstruct_t > analyseArrays (const arraylist_t &arraylist, const int 
 class array_transformation_t {
       public:
 	/// row permutation
-	rowperm_t rperm;       
+	rowperm_t rperm;
 	/// column permutation
-	colperm_t cperm;       
+	colperm_t cperm;
 	/// level permutations
-	levelperm_t *lperms;   
+	levelperm_t *lperms;
 	/// type of array
-	const arraydata_t *ad; 
+	const arraydata_t *ad;
 
       public:
         array_transformation_t (const arraydata_t *arrayclass);
         array_transformation_t (const arraydata_t &arrayclass);
-        array_transformation_t ();                                           
+        array_transformation_t ();
 	/// copy constructor
-        array_transformation_t (const array_transformation_t &transformation);            
+        array_transformation_t (const array_transformation_t &transformation);
 	/// assignment operator
-	array_transformation_t &operator= (const array_transformation_t &at); 
-        ~array_transformation_t ();                                          
+	array_transformation_t &operator= (const array_transformation_t &at);
+        ~array_transformation_t ();
 
         /// show the array transformation
         void show () const;
@@ -1152,11 +1152,11 @@ class array_transformation_t {
         void show (std::ostream &out) const;
 
 		/// return the row permutation of the transformation
-        std::vector< int > rowperm () const;      
+        std::vector< int > rowperm () const;
 		/// return the column permutation of the transformation
-        std::vector< int > colperm () const;      
+        std::vector< int > colperm () const;
 		/// return the level permutations of the transformation
-        std::vector< int > lvlperm (int c) const; 
+        std::vector< int > lvlperm (int c) const;
 
 		/// set the row permutation of the transformation
         void setrowperm (std::vector< int > row_permutation);
@@ -1167,9 +1167,9 @@ class array_transformation_t {
 
       private:
 		/// initialize permutation structures
-        void allocate_data_structures (); 
+        void allocate_data_structures ();
 		/// free permutation structures and arraydata_t structure
-        void free_data_structures ();         
+        void free_data_structures ();
 };
 
 /** \brief Contains a transformation of a conference matrix
@@ -1243,7 +1243,7 @@ class conference_transformation_t {
         void setcolperm (std::vector< int > cp) { cperm = cp; };
 
       private:
-        void init (int nr, int nc); /// initialize permutation structures
+        void init (int nr, int nc); //< initialize permutation structures
 };
 
 /* functions for working with array files*/
@@ -1290,9 +1290,9 @@ struct arrayfile_t {
         std::string filename;
 		/// True of the file is compressed with gzip
 		int iscompressed;
-		/// number of rows of the arrays 
+		/// number of rows of the arrays
         int nrows;
-		/// number of columns of the arrays 
+		/// number of columns of the arrays
 		int ncols;
 
         /// number of bits used when storing an array
@@ -1303,7 +1303,7 @@ struct arrayfile_t {
         /// file opened for reading or writing
         afilerw_t rwmode;
 
-        // we cannot define SWIG variables as int32_t, we get errors in the Python module 
+        // we cannot define SWIG variables as int32_t, we get errors in the Python module
 
         /// number of arrays in the file
         int narrays;
@@ -1311,7 +1311,7 @@ struct arrayfile_t {
         int narraycounter;
 
 		/// maximum number of arrays in structure
-        static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000; 
+        static const int NARRAYS_MAX = 2 * 1000 * 1000 * 1000;
 
       public:
 		/** Structure for reading or writing a file with arrays
@@ -1341,7 +1341,7 @@ struct arrayfile_t {
         /// destructor function, closes all filehandles
         ~arrayfile_t ();
 
-        /// Open a new file for writing and (if opened) close the current file 
+        /// Open a new file for writing and (if opened) close the current file
         void createfile (const std::string filename, int nrows, int ncols, int narrays = -1, arrayfilemode_t m = ATEXT,
                          int number_of_bits = 8);
 
@@ -1374,7 +1374,7 @@ struct arrayfile_t {
 
         /// Add a comment to an array file (only available in text mode)
         void add_comment(const std::string &comment);
-        
+
 	/// return True if code is wrapped by SWIG
         int swigcheck () const;
 
@@ -1387,7 +1387,7 @@ struct arrayfile_t {
         bool hasrandomaccess () const { return (this->mode == ABINARY); }
 
       private:
-      public: 
+      public:
         FILE *nfid;
 #ifdef USEZLIB
 		/// pointer to compressed file
@@ -1429,14 +1429,14 @@ struct arrayfile_t {
       private:
         int read_array_binary_zero (array_link &a);
         void write_array_binary (carray_t *array, const int nrows, const int ncols);
-        void write_array_binary (const array_link &A);      
+        void write_array_binary (const array_link &A);
 		/** Write an array in binary diff mode to a file
 		*
 		* We only write the section of columns of the array that differs from the previous array.
 		*/
-        void write_array_binary_diff (const array_link &A);    
+        void write_array_binary_diff (const array_link &A);
 		/** Write an array in binary diffzero mode */
-        void write_array_binary_diffzero (const array_link &A); 
+        void write_array_binary_diffzero (const array_link &A);
 
       public:
         int getnbits ();
@@ -1574,8 +1574,8 @@ template < class Container, class IntType > void removeElements (Container &al, 
         }
 }
 
-template < class MType >
 /// Make a selection of arrays from a list, append to list
+template < class MType >
 void selectArraysMask (const arraylist_t &al, std::vector< MType > &mask, arraylist_t &rl) {
         myassert (al.size () == mask.size ());
         for (int idx = 0; idx < al.size (); idx++) {
@@ -1585,8 +1585,8 @@ void selectArraysMask (const arraylist_t &al, std::vector< MType > &mask, arrayl
         }
 }
 
-template < class IndexType >
 /// Append selection of arrays to existing list
+template < class IndexType >
 void appendArrays (const arraylist_t &al, const typename std::vector< IndexType > &idx, arraylist_t &lst) {
         for (typename std::vector< IndexType >::const_iterator it = idx.begin (); it < idx.end (); ++it) {
                 lst.push_back (al.at (*it));
@@ -1629,8 +1629,8 @@ template < class atype > void write_array_format (FILE *fid, const atype *array,
         }
 }
 
-template < class atype >
 /// write an array in latex style
+template < class atype >
 void write_array_latex (std::ostream &ss, const atype *array, const int nrows, const int ncols) {
         int count;
 
@@ -1762,8 +1762,8 @@ bool readbinheader(FILE *fid, int &nr, int &nc);
 /// Write header for binary data file
 void writebinheader(FILE *fid, int number_rows, int number_columns);
 
-template < class Type >
 /// Write a vector of numeric elements to binary file as double values
+template < class Type >
 void vector2doublebinfile (const std::string fname, std::vector< Type > vals, int writeheader = 1) {
         FILE *fid = fopen (fname.c_str (), "wb");
         if (fid == 0) {
@@ -1814,9 +1814,9 @@ MatrixFloat array2eigenModelMatrix (const array_link &array);
  * \param array Input array
  * \param verbose Verbosity level
  * \returns Pair with main effects and two-factor interaction model
- * 
+ *
  * For 2-level arrays a direct calculation is used. For mixel-level arrays Helmert contrasts are used.
- */ 
+ */
 std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_link &array, int verbose = 1);
 
 /** Calculate number of parameters in the model matrix
@@ -1827,7 +1827,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 * - The main effects
 * - The interaction effects (second order interaction terms without quadratics)
 * - The quadratic effects
-* 
+*
 * \param array Orthogonal array or conference design
 * \param order Not used any more
 * \returns List of sizes
@@ -1851,5 +1851,3 @@ int arrayInFile (const array_link &array, const char *array_file, int verbose = 
  * \returns Position of array in list
  */
 int arrayInList (const array_link &array, const arraylist_t &arrays, int verbose = 1);
-
-

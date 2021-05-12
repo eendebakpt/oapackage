@@ -42,15 +42,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 
 namespace detail {
-template < class atype >
 /// generic function to print a std::vector
+template < class atype >
 void display_vector (const std::vector< atype > &v, const char *sep = " ") {
         std::stringstream buffer;
         std::copy (v.begin (), v.end (), std::ostream_iterator< atype > (buffer, sep));
         myprintf ("%s", buffer.str ().c_str ());
 }
-template <>
 /// specialized function to print a std::vector
+template <>
 inline void display_vector (const std::vector< int > &v, const char *sep) {
         for (size_t i = 0; i < v.size (); i++) {
                 myprintf ("%d", v[i]);
@@ -59,10 +59,9 @@ inline void display_vector (const std::vector< int > &v, const char *sep) {
                 }
         }
 }
-template <>
 /// specialized function to print a std::vector
+template <>
 inline void display_vector (const std::vector< long > &v, const char *sep) {
-        // myprintf("long case");
         for (size_t i = 0; i < v.size (); i++) {
                 myprintf ("%ld", v[i]);
                 if (i < v.size () - 1) {
@@ -71,10 +70,9 @@ inline void display_vector (const std::vector< long > &v, const char *sep) {
         }
 }
 
-template <>
 /// specialized function to print a std::vector
+template <>
 inline void display_vector (const std::vector< double > &v, const char *sep) {
-        // myprintf("int case");
         for (size_t i = 0; i < v.size (); i++) {
                 myprintf ("%f", v[i]);
                 if (i < v.size () - 1) {
@@ -84,8 +82,8 @@ inline void display_vector (const std::vector< double > &v, const char *sep) {
 }
 } // end of namespace
 
-template < class ValueType, class IndexType >
 /// helper class for the Pareto class to hold elements
+template < class ValueType, class IndexType >
 struct pareto_element {
 
         typedef std::vector< ValueType > pValue;
@@ -122,7 +120,6 @@ struct pareto_element {
         }
 };
 
-template < class ValueType, class IndexType >
 /** @brief Class to the calculate Pareto optimal elements.
  *
  * The class is templated by the type of values to be compared and an index type. The index type is used to index the
@@ -130,6 +127,7 @@ template < class ValueType, class IndexType >
  *
  * For elements added to the Pareto structure larger is better.
  */
+template < class ValueType, class IndexType >
 class Pareto {
       public:
 		/// type for values of Pareto elements
@@ -164,7 +162,7 @@ class Pareto {
                 return ss;
         }
 
-		/// show a Pareto element 
+		/// show a Pareto element
 		static void showvalue (const pValue p) { detail::display_vector (p, "; "); }
         /// show the current set of Pareto optimal elements
         void show (int verbose = 1) {
@@ -276,4 +274,3 @@ class Pareto {
                 return true;
         }
 };
-
