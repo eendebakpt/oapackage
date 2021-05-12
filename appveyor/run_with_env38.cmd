@@ -69,8 +69,11 @@ IF %MAJOR_PYTHON_VERSION% == 2 (
     )
 )
 
+set branch=%APPVEYOR_REPO_BRANCH%
+echo "current branch is:%branch%"
+
 IF %MAJOR_PYTHON_VERSION% == 3 (
-IF %MINOR_PYTHON_VERSION% GEQ  5 (
+IF %MINOR_PYTHON_VERSION% == 8 (
 
 IF %PYTHON_ARCH% == 64 (
     IF %SET_SDK_64% == Y (
