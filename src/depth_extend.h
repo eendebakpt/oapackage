@@ -1,4 +1,4 @@
-/** \file oadevelop.h
+/** \file depth_extend.h
 
  This file contains development code.
 
@@ -61,4 +61,3 @@ int extend_array_dynamic ( const array_link &al, arraydata_t &adx, OAextend &oae
 
 
 #endif
-

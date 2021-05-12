@@ -241,12 +241,12 @@ compile_options = []
 
 sources = ['oalib.i'] + sorted(sources)
 if oadev:
-    swig_opts += ['-c++', '-w503,401,362,509,389',
+    swig_opts += ['-c++', '-doxygen', '-w503,401,362,509,389',
                   '-Isrc/', '-Idev/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
 else:
-    swig_opts += ['-modern', '-c++',
+    swig_opts += ['-c++',  # '-doxygen',
                   '-w503,401,362,302,389,446,509,305', '-Isrc/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE']
@@ -318,18 +318,10 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd and 0:
-    ext_modules = []  # do not build on RTD, this generates a time-out error
-    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
-    print('RTD: run swig command: %s' % (swigcmd,))
-    output = subprocess.check_output(swigcmd.split(' '))
-    print('swig output:')
-    print(output)
-else:
-    if not swig_valid:
-        raise Exception('could not find a recent version if SWIG')
+if not swig_valid:
+    raise Exception('could not find a recent version if SWIG')
 
-    ext_modules = [oalib_module]
+ext_modules = [oalib_module]
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
@@ -386,12 +378,11 @@ setup(name='OApackage',
       install_requires=['numpy>=1.18', 'python-dateutil'],
       extras_require={
           'GUI': ["qtpy", 'matplotlib'],
-          'documentation': ['sphinx']
+          'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
                    "Programming Language :: Python :: 3.8",
                    "Programming Language :: Python :: 3.9",
