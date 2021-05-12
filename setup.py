@@ -202,10 +202,8 @@ class OATest(TestCommand):
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
         'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp',
-        'conference.cpp', 'unittests.cpp', 'Deff.cpp', 'evenodd.cpp']
+        'conference.cpp', 'unittests.cpp', 'Deff.cpp', 'evenodd.cpp', 'lmc.cpp', 'extend.cpp']
 
-
-srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
 srcs = ['src/' + ff for ff in srcs]
 if os.path.exists('dev/oadevelop.cpp'):
     oadev = 1
@@ -375,7 +373,7 @@ setup(name='OApackage',
       scripts=scripts,
       tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil'],
       zip_safe=False,
-      install_requires=['numpy>=1.18', 'python-dateutil'],
+      install_requires=['numpy>=1.19', 'python-dateutil'],
       extras_require={
           'GUI': ["qtpy", 'matplotlib'],
           'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']

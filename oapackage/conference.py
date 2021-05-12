@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """ Module with functions to work with conference designs
 
 """
 
 
-import numpy as np
 import itertools
 
+import numpy as np
 
 import oapackage
 

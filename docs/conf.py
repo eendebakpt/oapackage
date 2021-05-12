@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # oapackage documentation build configuration file, created by
 # sphinx-quickstart on Tue Jun 26 20:08:57 2018.
@@ -22,10 +21,10 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 
-#%% The oapackage cannot be build on rtd. We mock the module
+# %% The oapackage cannot be build on rtd. We mock the module
 import os
-import subprocess
 import platform
+import subprocess
 
 rtd = os.environ.get('READTHEDOCS', False)
 mock_oalib = False
@@ -47,7 +46,7 @@ if rtd:
     print('##############################')
     print('current directory: %s' % os.getcwd())
     print(sorted(os.listdir()))
-    print('##############################')   
+    print('##############################')
     sys.path.append('.')
     print('##############################')
 
@@ -55,13 +54,13 @@ if rtd:
     subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i', shell=True)
 else:
     print('executing doxygen')
-    if platform.system()=='Windows':
-        r=subprocess.call('cd ../ && doxygen Doxyfile', shell=True)
+    if platform.system() == 'Windows':
+        r = subprocess.call('cd ../ && doxygen Doxyfile', shell=True)
     else:
-        r=subprocess.call('cd ../; doxygen Doxyfile', shell=True)
+        r = subprocess.call('cd ../; doxygen Doxyfile', shell=True)
     print('executing doxygen done')
-    
-#%%
+
+# %%
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -83,14 +82,14 @@ extensions += ['IPython.sphinxext.ipython_console_highlighting']
 extensions += ['sphinx.ext.autosummary']
 extensions += ['sphinx.ext.doctest']
 
-
+bibtex_bibfiles = ['references.bib']
 
 extensions += ['breathe']
-breathe_projects = { "oapackage": "./xml" }
+breathe_projects = {"oapackage": "./xml"}
 
 breathe_default_project = "oapackage"
 
- 
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -130,7 +129,8 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['setup.py', '_build', 'Thumbs.db', '.DS_Store', '../oapackage/tests.py', '../oapackage/markup.py', 'examples/.ipynb_checkpoints/*']
+exclude_patterns = ['setup.py', '_build', 'Thumbs.db', '.DS_Store',
+                    '../oapackage/tests.py', '../oapackage/markup.py', 'examples/.ipynb_checkpoints/*']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -215,7 +215,7 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-#%%
+# %%
 
 
 def run_apidoc(_):
@@ -228,7 +228,6 @@ def run_apidoc(_):
         'untitled*.py', 'doxy2swig.py', 'setup.py'
     ]
     ignore_paths = [os.path.join('..', file) for file in ignore_paths]
-    
 
     argv = [
         "-f",
@@ -244,7 +243,6 @@ def run_apidoc(_):
     if rtd:
         print(sphinxcmd)
 
-    
     if 1:
         try:
             # Sphinx 1.7+
@@ -256,8 +254,9 @@ def run_apidoc(_):
             argv.insert(0, apidoc.__file__)
             apidoc.main(argv)
     else:
-        subprocess.call('dir' , shell=True)
+        subprocess.call('dir', shell=True)
         subprocess.call(sphinxcmd, shell=True)
+
 
 def setup(app):
     print('conf.py: setup')

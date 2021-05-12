@@ -164,6 +164,7 @@ class Pareto {
 
 		/// show a Pareto element
 		static void showvalue (const pValue p) { detail::display_vector (p, "; "); }
+
         /// show the current set of Pareto optimal elements
         void show (int verbose = 1) {
                 if (verbose == 0) {

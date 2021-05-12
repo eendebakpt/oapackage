@@ -283,7 +283,7 @@ void print_array (const char *str, const array_t *array, const int nrows, const 
 void print_array (const array_t *array, const rowindex_t nrows, const colindex_t ncols);
 
 #ifdef FULLPACKAGE
-/// print vector using generic std::cout print functionality
+/// Print vector using generic std::cout print functionality
 template < class atype >
 void display_vector (const std::vector< atype > &v) {
         const char *sep = " ";
