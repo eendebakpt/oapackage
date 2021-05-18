@@ -36,4 +36,4 @@ repos:
   hooks:
     - id: nbqa-black
       additional_dependencies: [black==20.8b1]
-      args: [--nbqa-mutate]
+      args: [--nbqa-mutate, --line-length=120]
