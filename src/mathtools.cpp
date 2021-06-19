@@ -43,7 +43,7 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         }
         // calc group
         int nsg = 0;
-        Type prev; 
+        Type prev;
 
         prev = std::numeric_limits< Type >::quiet_NaN ();
         /* count number of symmetry groups */
@@ -275,3 +275,6 @@ long Combinations::number_combinations (int n, int k) {
         return Combinations::ncombsdata[n][k];
 }
 
+#define IntegerType long
+template < int > IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0);
+//template < IntegerType > IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0);

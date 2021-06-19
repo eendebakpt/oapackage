@@ -1687,7 +1687,7 @@ inline long power_minus_one (long n) { return (n % 2 == 0) ? 1 : -1; }
 
 /// calculate value of Krawtchouk polynomial
 template < class IntegerType >
-inline IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
+IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {

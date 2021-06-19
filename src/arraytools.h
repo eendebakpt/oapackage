@@ -287,6 +287,9 @@ struct arraydata_t {
         /// set column group equal to that of a symmetry group
         void set_colgroups (const symmetry_group &sg);
 
+        /// return sizes of the column groups
+        std::vector<int> get_column_groups_sizes() const;
+
         /// show column groups in the array class
         void show_colgroups () const;
 

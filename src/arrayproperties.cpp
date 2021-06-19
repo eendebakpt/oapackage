@@ -409,7 +409,7 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
 
         for (int j = 0; j < Bout.n; j++) {
                 Bout.linear2idx (j, iout);
-                Bout.setlinear (j, 0); // [j]=0;
+                Bout.setlinear (j, 0);
 
                 for (int i = 0; i < B.n; i++) {
                         B.linear2idx (i, bi);
@@ -420,12 +420,15 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
                                 long ii = bi[f];
                                 long ni = B.dims[f] - 1;
                                 long si = sx[f];
-                                fac *= krawtchouk (ji, ii, ni, si);
+                                long krw = krawtchouk(ji, ii, ni, si);
+                                fac *= krw;
                                 if (verbose >= 4)
-                                        myprintf ("  Bout[%d] += %.1f * %ld (%d %d %d)\n", j, (double)B.data[i], fac,
-                                                  (int)ji, (int)ii, (int)ni);
+                                        myprintf ("  (j,i,f)=(%d, %d, %d): fac*= krw(%ld %ld %ld %ld)=%ld -> fac %ld\n", j, i, f,
+                                                  ji, ii, ni, si, krw, fac);
                         }
                         Bout.data[j] += B.data[i] * fac;
+                        if (verbose >= 4)
+                            myprintf("  Bout[%d] += B[%d] * fac = %.1f * %ld \n", j, i, (double)B.data[i], fac);
                 }
                 Bout.data[j] /= N;
                 if (verbose >= 2)
@@ -584,7 +587,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         distance_distribution_mixed (al, B, verbose);
         if (verbose >= 3) {
-                myprintf ("GWLPmixed: distance distrubution\n");
+                myprintf ("GWLPmixed: distance distribution\n");
                 B.show ();
         }
 
@@ -856,9 +859,9 @@ Eigen::MatrixXi permM (int ks, int k, const Eigen::MatrixXi subperm, int verbose
 
         if (verbose) {
                 myprintf ("ks: %d, k %d, idxsub: ", ks, k);
-                print_perm (idxsub); 
+                print_perm (idxsub);
                 myprintf ("ks: %d, k %d, idxrem: ", ks, k);
-                print_perm (idxrem); 
+                print_perm (idxrem);
         }
 
         const int m = 1 + k + k * (k - 1) / 2;
@@ -1482,7 +1485,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
         SelfAdjointEigenSolver< MyMatrixf > es;
         es.compute (mm);
         const MyVectorf evs = es.eigenvalues ();
-        MyVectorf S = evs; 
+        MyVectorf S = evs;
 
         if (S[m - 1] < 1e-15) {
                 if (verbose >= 2) {
@@ -1532,9 +1535,9 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
         EigenMatrixFloat X;
 
 		/// number of 2-factor interactions in contrast matrix
-        int n2fi = -1; 
+        int n2fi = -1;
         /// number of main effects in contrast matrix
-        int size_main_effects = -1;  
+        int size_main_effects = -1;
 
         if (arrayclass.is2level ()) {
 
@@ -1562,7 +1565,7 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
 
         EigenMatrixFloat tmp (number_model_columns, 1 + n2fi);
         tmp << matXtX.block (0, 0, number_model_columns, 1), matXtX.block (0, 1 + size_main_effects, number_model_columns, n2fi);
-        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi); 
+        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi);
         mX02 << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + size_main_effects, 0, n2fi, 1 + n2fi);
 
         double f2i = (mX02).determinant ();
@@ -1637,7 +1640,7 @@ double Defficiency (const array_link &al, int verbose) {
         SelfAdjointEigenSolver< DMatrix > es;
         es.compute (mm);
         const DVector evs = es.eigenvalues ();
-        DVector S = evs; 
+        DVector S = evs;
 
         if (S[m - 1] < 1e-15 || rank < m) {
                 if (verbose >= 2) {
