@@ -1,21 +1,24 @@
 """ Orthogonal Array package test functions
 """
 
-import sys
-import os
 import logging
-import unittest
+import os
+import sys
 import tempfile
+import unittest
+
 import numpy as np
 
+import oapackage
+
 if sys.version_info >= (3, 4):
-    import unittest.mock as mock
     import io
+    import unittest.mock as mock
     from unittest.mock import patch
     python3 = True
 else:
     try:
-        import mock
+        from unittest import mock
     except ImportError as ex:
         logging.exception(ex)
         raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
@@ -35,9 +38,6 @@ def only_python3(function):
         def only_python3_function(*args, **kwargs):
             return None
     return only_python3_function
-
-
-import oapackage
 
 
 class TestCompareMethods(unittest.TestCase):
@@ -396,13 +396,21 @@ class TestConferenceDesigns(unittest.TestCase):
             permutation = oapackage.double_conference_foldover_permutation(al)
 
 
+class TestMathTools(unittest.TestCase):
+    def test_krawtchouk(self):
+        self.assertEqual(oapackage.krawtchouk(6, 3, 2, 2), 8)
+        self.assertEqual(oapackage.krawtchouk(6, 5, 2, 2), 416)
+        self.assertEqual(oapackage.krawtchouk(6, 0, 2, 2), 0)
+        self.assertEqual(oapackage.krawtchouk(6, 5, 2, 3), 8478)
+
+
 class TestArrayFiles(unittest.TestCase):
 
     def test_write_latex_format(self):
         lst = [oapackage.exampleArray(2, 0)]
         filename = tempfile.mktemp(suffix='.tex')
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
-        with open(filename, 'rt') as fid:
+        with open(filename) as fid:
             latex = fid.read()
         self.assertIsInstance(latex, str)
 

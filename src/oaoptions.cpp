@@ -169,11 +169,8 @@ std::string print_options_string () {
 }
 
 void print_options () {
-#ifdef RPACKAGE
-#else
         std::string s = print_options_string ();
         myprintf ("%s", s.c_str ());
-#endif
 }
 
 int has_zlib(){

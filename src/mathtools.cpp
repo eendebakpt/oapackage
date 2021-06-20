@@ -274,7 +274,3 @@ long Combinations::number_combinations (int n, int k) {
 #endif
         return Combinations::ncombsdata[n][k];
 }
-
-#define IntegerType long
-template < int > IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0);
-//template < IntegerType > IntegerType krawtchouk(IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0);

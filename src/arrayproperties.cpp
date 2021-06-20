@@ -399,25 +399,25 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
 
         int jprod = B.n;
 
-        int *bi = new int[sg.ngroups];
-        int *iout = new int[sg.ngroups];
+        int *index_in = new int[sg.ngroups];
+        int *index_out = new int[sg.ngroups];
 
         for (int i = 0; i < sg.ngroups; i++)
-                bi[i] = 0;
+                index_in[i] = 0;
         for (int i = 0; i < sg.ngroups; i++)
-                iout[i] = 0;
+                index_out[i] = 0;
 
         for (int j = 0; j < Bout.n; j++) {
-                Bout.linear2idx (j, iout);
+                Bout.linear2idx (j, index_out);
                 Bout.setlinear (j, 0);
 
                 for (int i = 0; i < B.n; i++) {
-                        B.linear2idx (i, bi);
+                        B.linear2idx (i, index_in);
 
                         long fac = 1;
                         for (int f = 0; f < B.k; f++) {
-                                long ji = iout[f];
-                                long ii = bi[f];
+                                long ji = index_out[f];
+                                long ii = index_in[f];
                                 long ni = B.dims[f] - 1;
                                 long si = sx[f];
                                 long krw = krawtchouk(ji, ii, ni, si);
@@ -445,17 +445,17 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
         std::vector< double > A (sg.n + 1, 0);
 
         for (int i = 0; i < jprod; i++) {
-                Bout.linear2idx (i, bi);
+                Bout.linear2idx (i, index_in);
                 int jsum = 0;
                 for (int j = 0; j < Bout.k; j++)
-                        jsum += bi[j];
+                        jsum += index_in[j];
                 if (verbose >= 2)
                         myprintf ("   jsum %d/%d, i %d\n", jsum, (int)A.size (), i);
                 A[jsum] += Bout.data[i];
         }
 
-        delete[] iout;
-        delete[] bi;
+        delete[] index_out;
+        delete[] index_in;
 
         return A;
 }
@@ -595,11 +595,11 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
         // calculate GWLP
         std::vector< int > ss = adata.factor_levels ();
 
-        std::vector< int > sx;
+        std::vector< int > factor_levels_for_groups;
         for (int i = 0; i < sg.ngroups; i++)
-                sx.push_back (ss[sg.gstart[i]]);
+                factor_levels_for_groups.push_back (ss[sg.gstart[i]]);
 
-        std::vector< double > gma = macwilliams_transform_mixed (B, sg, sx, N, Bout, verbose);
+        std::vector< double > gma = macwilliams_transform_mixed (B, sg, factor_levels_for_groups, N, Bout, verbose);
 
         if (truncate)
 			round_GWLP_zero_values(gma, N);

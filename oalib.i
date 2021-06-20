@@ -451,21 +451,21 @@ def __getattr__(self, attr):
 %template(vector_mvalue_t_int) std::vector<mvalue_t<int> >;
 %template(vector_mvalue_t_long) std::vector<mvalue_t<long> >;
 %template(DequeParetoElementLong) std::deque<pareto_element<mvalue_t<long>,long> >;
+%template(conference_columnVector) std::vector< conference_column >;
+%template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
+%template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
+%template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
+%template(vector_vector_double) std::vector< std::vector<double> >;
+%template(krawtchouk) krawtchouk<long>;
+%template(ndarray_double) ndarray<double>;
 
 
 %pythoncode %{
 # for legacy reasons and for name consistency
 GWLPvalueVector = vector_mvalue_t_double
 mvalueVector = vector_mvalue_t_long
-#%template(mvalueVector) std::vector<mvalue_t<long> >;
 %}
 
-
-%template(conference_columnVector) std::vector< conference_column >;
-%template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
-%template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
-%template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
-%template(vector_vector_double) std::vector< std::vector<double> >;
 
 /* representation functions */
 

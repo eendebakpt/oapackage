@@ -289,17 +289,26 @@ void display_vector (const std::vector< atype > &v) {
         const char *sep = " ";
         std::copy (v.begin (), v.end (), std::ostream_iterator< atype > (std::cout, sep));
 }
+template <> inline void display_vector<int>(const std::vector< int >& v) {
+    const char* sep = " ";
+    for (int i = 0; i < v.size(); i++) {
+        myprintf("%d", v[i]);
+        if (i < v.size() - 1)
+            myprintf("%s", sep);
+    }
+}
 #else
 template < class atype > void display_vector (const std::vector< atype > &v) {
         // dummy implementation
         myprintf ("vector(...)");
 }
-template < int atype > void display_vector (const std::vector< atype > &v) {
-        for (int i = 0; i < v.size (); i++) {
-                myprintf ("%d", v[i]);
-                if (i < v.size () - 1)
-                        myprintf ("%s", sep);
-        }
+template < int atype > void display_vector(const std::vector< atype >& v) {
+    const char* sep = " ";
+    for (int i = 0; i < v.size(); i++) {
+        myprintf("%d", v[i]);
+        if (i < v.size() - 1)
+            myprintf("%s", sep);
+    }
 }
 #endif
 
