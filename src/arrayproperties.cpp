@@ -133,8 +133,7 @@ std::vector< double > distance_distributionT (const array_link &al, int norm = 1
         return dd;
 }
 
-/// calculate distance distribution for mixed array
-void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose = 1) {
+void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose) {
         int N = al.n_rows;
         int n = al.n_columns;
 
@@ -148,8 +147,12 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
         int *dh = new int[sg.ngroups];
 
         std::vector< int > dims (ad.ncolgroups);
-        for (size_t i = 0; i < dims.size (); i++)
-                dims[i] = ad.colgroupsize[i];
+        for (size_t i = 0; i < dims.size(); i++) {
+            dims[i] = ad.colgroupsize[i];
+            if (B.dims[i]!=dims[i]+1)
+                throw_runtime_exception(printfstring("distance_distribution_mixed: output array specified has incorrect dimensions, B.dims[%d]=%d!=%d", i, B.dims[i], dims[i]+1 ));
+
+        }
         if (verbose >= 3) {
                 myprintf ("distance_distribution_mixed before: \n");
                 B.show ();
@@ -320,7 +323,7 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
                 Bout.show ();
         }
 
-        // use formula from page 555 in Xu and Wu  (Theorem 4.i)
+        // use formula from page 555 in Xu and Wu (Theorem 4.i)
         std::vector< double > A (sg.n + 1, 0);
 
         for (int i = 0; i < jprod; i++) {
