@@ -458,6 +458,7 @@ def __getattr__(self, attr):
 %template(vector_vector_double) std::vector< std::vector<double> >;
 %template(krawtchouk) krawtchouk<long>;
 %template(ndarray_double) ndarray<double>;
+%template(choose_long) choose<long>;
 
 
 %pythoncode %{
