@@ -402,6 +402,7 @@ class TestMathTools(unittest.TestCase):
         self.assertEqual(oapackage.krawtchouk(6, 5, 2, 2), 416)
         self.assertEqual(oapackage.krawtchouk(6, 0, 2, 2), 0)
         self.assertEqual(oapackage.krawtchouk(6, 5, 2, 3), 8478)
+        self.assertEqual(oapackage.krawtchouk(14, 0, 15, 2), 15)
 
 
 class TestArrayFiles(unittest.TestCase):

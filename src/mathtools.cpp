@@ -255,7 +255,7 @@ void Combinations::initialize_number_combinations (int N) {
 
                 for (int i = 0; i < nrows; i++) {
                         for (int j = 0; j < rowsize; j++) {
-                                ncombsdata[i][j] = ncombs (i, j);
+                                ncombsdata[i][j] = choose (i, j);
                         }
                         ncombscachemax = N;
                 }
