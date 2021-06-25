@@ -398,10 +398,11 @@ class TestConferenceDesigns(unittest.TestCase):
 
 class TestMathTools(unittest.TestCase):
     def test_krawtchouk(self):
-        self.assertEqual(oapackage.krawtchouk(6, 3, 2, 2), 8)
-        self.assertEqual(oapackage.krawtchouk(6, 5, 2, 2), 416)
+        self.assertEqual(oapackage.krawtchouk(6, 3, 2, 2), 0)
+        self.assertEqual(oapackage.krawtchouk(4, 0, 5, 3), 80)
         self.assertEqual(oapackage.krawtchouk(6, 0, 2, 2), 0)
-        self.assertEqual(oapackage.krawtchouk(6, 5, 2, 3), 8478)
+        self.assertEqual(oapackage.krawtchouk(6, 5, 2, 3), 0)
+        self.assertEqual(oapackage.krawtchouk(1, 1, 1, 1), -1)
         self.assertEqual(oapackage.krawtchouk(14, 0, 15, 2), 15)
 
 
