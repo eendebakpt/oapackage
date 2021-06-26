@@ -690,8 +690,11 @@ static inline return_type factorial_return_argument (const argtype number) {
         return sol;
 }
 
-/*!
-  The number of combinations is calculated using the an addapted formula
+/*! Calculate binomial
+
+  Calculates n!/(k! * (n-k)!)
+
+  The number of combinations is calculated using the an adapted formula
   \brief Calculates number of combinations
   \param n Total number of entries to choose from
   \param k Number of entries in a certain combination
@@ -703,6 +706,26 @@ template < class Type > inline Type ncombs (const Type n, const Type k) {
                 sol *= i;
         return sol / factorial<> (k);
 }
+
+/*! Calculate binomial
+
+  Calculates n!/(k! * (n-k)!)
+
+  A recursive formala is used to prevent overflows.
+
+  The number of combinations is calculated using the an addapted formula
+  \brief Calculates number of combinations
+  \param n Total number of entries to choose from
+  \param k Number of entries in a certain combination
+  \return Binomal n, k
+  */
+template < class Type > Type choose(const Type n, const Type k) {
+    if ( (n < k) || (k<0))
+        return 0;
+    if (k == 0 || n == k) return 1;
+    return choose(n - 1, k - 1)*n/k;
+}
+
 
 class Combinations {
 
@@ -1687,20 +1710,19 @@ inline long power_minus_one (long n) { return (n % 2 == 0) ? 1 : -1; }
 
 /// calculate value of Krawtchouk polynomial
 template < class IntegerType >
-inline IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
+IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {
-                val += power_minus_one (i) * ipow (s - 1, j - i) * ncombs (x, i) * ncombs (n - x, j - i);
+                val += power_minus_one (i) * ipow (s - 1, j - i) * choose (x, i) * choose (n - x, j - i);
                 if (verbose) {
-                        IntegerType tt = std::pow (double(-1), (double)i) *
-                                         std::pow ((double)(s - 1), (double)(j - i)) * ncombs (x, i) *
-                                         ncombs (n - x, j - i);
+                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+
                         myprintf ("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n,
                                   (int)s, (int)i, (int)tt, (int)std::pow ((double)-1, (double)i),
-                                  (int)std::pow ((double)s - 1, (double)(j - i)), (int)ncombs (x, i),
-                                  (int)ncombs (n - x, j - i));
-                        myprintf ("   ncombs(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)ncombs (n - x, j - i));
+                                  (int)std::pow ((double)s - 1, (double)(j - i)), (int)choose (x, i),
+                                  (int)choose (n - x, j - i));
+                        myprintf ("   choose(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)choose (n - x, j - i));
                 }
         }
         return val;

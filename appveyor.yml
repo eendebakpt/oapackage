@@ -94,7 +94,7 @@ install:
   - "%CMD_IN_ENV38% jupyter --version"
 
   # for running the mypy check
-  - "%CMD_IN_ENV38% pip install mypy"
+  - "%CMD_IN_ENV38% pip install mypy types-python-dateutil"
 
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
