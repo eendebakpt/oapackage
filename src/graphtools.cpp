@@ -27,7 +27,9 @@ std::vector< Type > subtract_minimum (std::vector< Type > &v) {
 
 namespace nauty {
 #include "nauty.h"
-/* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
+#include "nautinv.h"
+
+    /* MAXN=0 is defined by nauty.h, which implies dynamic allocation */
 
 template < class Type >
 /// return vector with unique elements
@@ -70,35 +72,37 @@ void setcolors (std::vector< int > colors, int *lab, int *ptn) {
         }
 }
 
-std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, int verbose) {
-        if (!G.isSymmetric ()) {
-                printfd ("reduceNauty: array is not symmetric, operation not well defined\n");
-        }
+std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, int verbose) {
+    if (verbose) {
+        myprintf("reduceNauty: %d vertices\n", G.n_rows);
+        myprintf("  colors: ");
+        print_perm(colors);
+        myprintf("\n");
+    }
+    if ((int)colors.size() != G.n_rows || G.n_rows != G.n_columns) {
+        myprintf("reduceNauty: input sizes not valid");
+        return std::vector< int >();
+    }
 
-        if (verbose) {
-                myprintf ("reduceNauty: %d vertices\n", G.n_rows);
-                myprintf ("  colors: ");
-                print_perm (colors);
-                myprintf ("\n");
-        }
-        if ((int)colors.size () != G.n_rows || G.n_rows != G.n_columns) {
-                myprintf ("reduceNauty: input sizes not valid");
-                return std::vector< int > ();
-        }
+    int nvertices = G.n_rows;
 
-        int nvertices = G.n_rows;
+    /* DYNALLSTAT declares a pointer variable (to hold an array when it
+       is allocated) and a size variable to remember how big the array is.
+       Nothing is allocated yet.  */
 
-        /* DYNALLSTAT declares a pointer variable (to hold an array when it
-           is allocated) and a size variable to remember how big the array is.
-           Nothing is allocated yet.  */
+    DYNALLSTAT(graph, g, g_sz);
+    DYNALLSTAT(graph, canong, canong_sz);
+    DYNALLSTAT(int, lab, lab_sz);
+    DYNALLSTAT(int, ptn, ptn_sz);
+    DYNALLSTAT(int, orbits, orbits_sz);
 
-        DYNALLSTAT (graph, g, g_sz);
-        DYNALLSTAT (graph, canong, canong_sz);
-        DYNALLSTAT (int, lab, lab_sz);
-        DYNALLSTAT (int, ptn, ptn_sz);
-        DYNALLSTAT (int, orbits, orbits_sz);
-        static DEFAULTOPTIONS_GRAPH (options);
-        statsblk stats;
+    static DEFAULTOPTIONS_GRAPH(options);
+    if (!G.isSymmetric()) {
+        static DEFAULTOPTIONS_DIGRAPH(options2);
+
+        options = options2;
+    }
+    statsblk stats;
 
         int m;
 
@@ -106,7 +110,6 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
            Here we change those options that we want to be different from the
            defaults.  writeautoms=TRUE causes automorphisms to be written. */
 
-        options.writeautoms = TRUE;
         options.writeautoms = FALSE;
 
         options.getcanon = true;

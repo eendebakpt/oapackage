@@ -598,13 +598,13 @@ static void print_perm (const larray< permutationType > s, const int maxlen = 25
 /// print permutation to std::cout
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
-        print_perm (std::cout, s, maxlen, ret);
+        print_perm_int (s, maxlen, ret);
 }
 
 /// print permutation to std::cout
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+template < class permutationType, typename std::enable_if<std::is_arithmetic<permutationType>::value>::type* = nullptr > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
-        print_perm (std::cout, s, len, maxlen);
+        print_perm_int (s, len, maxlen);
 }
 
 #else
