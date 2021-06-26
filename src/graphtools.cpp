@@ -6,10 +6,6 @@
 
 #include "graphtools.h"
 
-#ifdef RPACKAGE
-#define printf notallowed
-#endif
-
 template < class Type >
 /// substract minimum from list of values
 std::vector< Type > subtract_minimum (std::vector< Type > &v) {
@@ -105,7 +101,6 @@ std::vector< int > reduceNauty (const array_link &G, std::vector< int > colors, 
         statsblk stats;
 
         int m;
-        // set *gv;
 
         /* Default options are set by the DEFAULTOPTIONS_GRAPH macro above.
            Here we change those options that we want to be different from the
@@ -281,7 +276,7 @@ std::pair< array_link, std::vector< int > > array2graph (const array_link &al, i
         int nrows = al.n_rows;
         int ncols = al.n_columns;
         const std::vector< int > s = arrayclass.factor_levels ();
-		
+
         int nRowVertices = nrows;
         int nColVertices = ncols;
         int nColumnLevelVertices = std::accumulate (s.begin (), s.end (), 0);

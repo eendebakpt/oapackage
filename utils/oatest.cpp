@@ -121,6 +121,24 @@ int main (int argc, char *argv[]) {
         if (input == 0)
                 input = "test.oa";
 
+        printf("test! %ld\n", choose(6,4));
+        for (int i = 4; i < 12; i++)
+            printf("choose(%d, %d): %ld\n", i, i-2, choose(i, i - 2) - ncombs(i, i - 2));
+        fflush(0);
+
+        t0 = get_time_ms();
+        for(int x=0; x<100000; x++)
+            choose(15, 11);
+        dt = get_time_ms() - t0;
+        printf("dt: %f\n", dt);
+
+        t0 = get_time_ms();
+        for (int x = 0; x < 100000; x++)
+            ncombs(15, 11);
+        dt = get_time_ms() - t0;
+        printf("dt: %f\n", dt);
+        return 0;
+
         srand (randvalseed);
         if (randvalseed == -1) {
                 randvalseed = time (NULL);

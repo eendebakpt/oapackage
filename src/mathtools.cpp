@@ -43,7 +43,7 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         }
         // calc group
         int nsg = 0;
-        Type prev; 
+        Type prev;
 
         prev = std::numeric_limits< Type >::quiet_NaN ();
         /* count number of symmetry groups */
@@ -181,7 +181,7 @@ void symmetry_group_walker::show (int verbose) const {
                 myprintf ("\n");
         for (size_t i = 0; i < (size_t)perms.size (); i++) {
                 if (verbose >= 2) {
-                        myprintf ("  block %ld: ", i);
+                        myprintf ("  block %zu: ", i);
                         print_perm (perms[i]);
                 } else {
                         print_perm (perms[i], 100, false);
@@ -255,7 +255,7 @@ void Combinations::initialize_number_combinations (int N) {
 
                 for (int i = 0; i < nrows; i++) {
                         for (int j = 0; j < rowsize; j++) {
-                                ncombsdata[i][j] = ncombs (i, j);
+                                ncombsdata[i][j] = choose (i, j);
                         }
                         ncombscachemax = N;
                 }
@@ -274,4 +274,3 @@ long Combinations::number_combinations (int n, int k) {
 #endif
         return Combinations::ncombsdata[n][k];
 }
-

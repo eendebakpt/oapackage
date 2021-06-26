@@ -96,11 +96,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # used for HPC at Antwerpen
-#option(INTEL_CC "Use the Intel compiler." OFF) 
+#option(INTEL_CC "Use the Intel compiler." OFF)
 
 site_name(HOSTNAME)
 string(FIND ${HOSTNAME} hopper VSC)
-if(VSC GREATER 0) 
+if(VSC GREATER 0)
   set(VSC TRUE)
 else()
   set(VSC FALSE)
@@ -108,39 +108,36 @@ endif()
 message(STATUS "Hostname ${HOSTNAME}, VSC ${VSC}")
 
 if (VSC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
-if (INTEL_CC) 
-  find_program(CMAKE_C_COMPILER NAMES icc) 
-  find_program(CMAKE_CXX_COMPILER NAMES icpc) 
-  find_program(CMAKE_AR NAMES xiar) 
-  find_program(CMAKE_LINKER NAMES xild) 
+if (INTEL_CC)
+  find_program(CMAKE_C_COMPILER NAMES icc)
+  find_program(CMAKE_CXX_COMPILER NAMES icpc)
+  find_program(CMAKE_AR NAMES xiar)
+  find_program(CMAKE_LINKER NAMES xild)
 
-  if (CMAKE_C_COMPILER MATCHES CMAKE_C_COMPILER-NOTFOUND OR 
-      CMAKE_CXX_COMPILER MATCHES CMAKE_CXX_COMPILER-NOTFOUND OR 
-      CMAKE_AR MATCHES CMAKE_AR-NOTFOUND OR 
-      CMAKE_LINKER MATCHES CMAKE_LINKER-NOTFOUND) 
-    message(FATAL_ERROR "Cannot find Intel compiler.  You may need to run `.  /opt/intel/bin/compilervars.sh intel64'") 
-  endif () 
+  if (CMAKE_C_COMPILER MATCHES CMAKE_C_COMPILER-NOTFOUND OR
+      CMAKE_CXX_COMPILER MATCHES CMAKE_CXX_COMPILER-NOTFOUND OR
+      CMAKE_AR MATCHES CMAKE_AR-NOTFOUND OR
+      CMAKE_LINKER MATCHES CMAKE_LINKER-NOTFOUND)
+    message(FATAL_ERROR "Cannot find Intel compiler.  You may need to run `.  /opt/intel/bin/compilervars.sh intel64'")
+  endif ()
 
   message(STATUS "At HPC cluster")
-endif (INTEL_CC) 
+endif (INTEL_CC)
 
 set(LINKOPTS "")
-#message(STATUS "ENV{USERNAME} $ENV{USERNAME}, USER $ENV{USER}")
 if( "$ENV{USER}" STREQUAL "vsc20149")
   set(LINKOPTS "-s")	# strip executables for file size
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-  #message(STATUS "CMAKE_COMPILER_IS_GNUCXX ${CMAKE_COMPILER_IS_GNUCXX}")
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wreturn-type -Wno-unused-but-set-variable -Wno-unused-result -fPIC -g -fpermissive")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type  -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  # 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type -Wno-alloc-size-larger-than -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  #
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
   set(COPTS "${COPTS}  -O3 ") # -fpermissive
   set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
-  
+
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
 
   if(NOCOMPILERWARNINGS)
@@ -151,21 +148,20 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 
 if("$ENV{OADEBUG}" STREQUAL "1")
-  set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++") 
+  set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++")
 endif()
 
 if(WIN32)
 else()
-    set(LINKOPTS "${LINKOPTS}") # or use -s option  
+    set(LINKOPTS "${LINKOPTS}") # or use -s option
 endif()
 
 if(WIN32)
-  set(COPTS "/MT /wd4018 /wd4996")  
+  set(COPTS "/MT /wd4018 /wd4996")
 endif()
 if (MSVC)
   message(STATUS "MSCV compiler")
-  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /D_SCL_SECURE_NO_WARNINGS")
-  #ADD_DEFINITIONS(-DNODEFAULTLIB:library)
+  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /W0 /wd4996 /wd4244 /wd26451 /D_SCL_SECURE_NO_WARNINGS")
   set ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 endif()
 
@@ -186,13 +182,12 @@ endif()
 if(Boost_FOUND)
   INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
   set(COPTS "${COPTS} -DHAVE_BOOST")
-endif()  
+endif()
 
 set(COPTS "${COPTS} -DOADEV")
 
 macro(add_compile_flags _target)
   # Provide user feedback
-#  message(STATUS "  Adding compile flags to: ${_target}")
   set_target_properties(${_target} PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_SINGLECORE;NEWINTERFACE " )
   set_target_properties(${_target} PROPERTIES COMPILE_FLAGS "${COPTS}" )
   set_target_properties(${_target} PROPERTIES LINK_FLAGS "${LINKOPTS}")
@@ -201,7 +196,7 @@ endmacro()
 
 
 ############### Programs ################################
-  
+
 include_directories(.)
 
 set(nautysrc src/nauty/nauty.c src/nauty/nautinv.c src/nauty/nautil.c src/nauty/naurng.c src/nauty/naugraph.c src/nauty/schreier.c src/nauty/naugroup.c) #  nauty/gtools.c
@@ -213,8 +208,8 @@ set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oa
 set(progsextend )
 
 list(APPEND progs oacheck oastreaming oaranktest oatest oaclustergather)
-list(APPEND progs oa_depth_extend) 
-   
+list(APPEND progs oa_depth_extend)
+
 if (WIN32)
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
   add_compile_flags(oalib)
@@ -275,7 +270,7 @@ endif()
    else()
       TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
    endif()
-  
+
   endif(MPI_FOUND AND NOT WIN32 AND 1)
 
 message(STATUS "Extend progs: ${extendprogs}")
@@ -289,7 +284,7 @@ foreach(item ${progs})
   add_compile_flags(${item})
   TARGET_LINK_LIBRARIES(${item} oalib)
 
-  if (WIN32) 
+  if (WIN32)
     if(ZLIB_FOUND)
       TARGET_LINK_LIBRARIES(${item} ${ZLIB_LIBRARIES})
     endif()
@@ -302,7 +297,7 @@ foreach(item ${progs})
 endforeach()
 
 foreach(item ${extendprogs})
-  if (WIN32) 
+  if (WIN32)
   else()
     set_target_properties(${item} PROPERTIES COMPILE_FLAGS "${COPTS}" )
 	TARGET_LINK_LIBRARIES(${item} m)
@@ -342,7 +337,7 @@ if(MATLAB_FOUND)
   ADD_EXECUTABLE(Doptimbin EXCLUDE_FROM_ALL mex/Doptim.cpp) #  ${srcs} ${srcsextend})
 	      set_target_properties(${item} PROPERTIES COMPILE_FLAGS "-DMATLAB_MEX_FILE ${COPTS} -DMAINMEX")
   list(APPEND Ditems Doptimbin)
-	
+
     message(STATUS "libs ${MATLAB_LIBRARIES}")
 
     foreach(item  ${Ditems})
@@ -371,12 +366,11 @@ if(MATLAB_FOUND)
 	    else(WIN32)
 		     # set_target_properties(${item} PROPERTIES LINK_FLAGS "-s")	# strip
 	    endif(WIN32)
-	    
+
 	    if (${itemtype} MATCHES "EXECUTABLE")
 	    SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX "")
 	  else()
 
-	    #message(STATUS "${item} TYPE ${itemtype}: mex suffix")
 	    if(WIN32)
 	      SET_TARGET_PROPERTIES(${item} PROPERTIES SUFFIX ".mexw${BITNESS}")
 	    else()
@@ -444,7 +438,7 @@ if(WIN32)
 else()
 	SET(CPACK_GENERATOR "TGZ")
 endif()
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak") 
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pieter Eendebak")
 INCLUDE(CPack)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
@@ -452,7 +446,7 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
 ### for VCS
 #module load SWIG/2.0.4-ictce-4.0.1-Python-2.7.3
-#module load zlib/1.2.5-ictce-4.0.1 
+#module load zlib/1.2.5-ictce-4.0.1
 #module load CMake/2.8.0-ictce-3.2.1.015.u1   # negeer de ERROR die je krijgt
 #export CC=icc
 #export CXX=icpc

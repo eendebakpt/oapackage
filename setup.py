@@ -4,21 +4,20 @@
 setup.py file for OApackage
 """
 
-# %% Load packages
-from setuptools import setup, find_packages
-from setuptools import Extension
-from setuptools.command.test import test as TestCommand
-from distutils.command.build import build as distutils_build
-from setuptools.command.install import install as setuptools_install
-import setuptools.command.build_ext
-
-from os import path
-import os
-import sys
 import logging
+import os
 import platform
-import subprocess
 import re
+import subprocess
+import sys
+from distutils.command.build import build as distutils_build
+from os import path
+
+import setuptools.command.build_ext
+# %% Load packages
+from setuptools import Extension, find_packages, setup
+from setuptools.command.install import install as setuptools_install
+from setuptools.command.test import test as TestCommand
 
 try:
     import numpy as np
@@ -117,10 +116,10 @@ def get_version_info(verbose=0):
 
 
 try:
-    from distutils.version import LooseVersion
     from distutils.spawn import find_executable
+    from distutils.version import LooseVersion
 
-    def get_swig_executable(swig_minimum_version='3.0', verbose=0):
+    def get_swig_executable(swig_minimum_version='3.2', verbose=0):
         """ Get SWIG executable """
         # stolen from https://github.com/FEniCS/ffc/blob/master/setup.py
 
@@ -203,10 +202,8 @@ class OATest(TestCommand):
 oadev = 0
 srcs = ['arraytools.cpp', 'arrayproperties.cpp', 'pareto.cpp', 'nonroot.cpp',
         'mathtools.cpp', 'oaoptions.cpp', 'tools.cpp', 'md5.cpp', 'strength.cpp', 'graphtools.cpp',
-        'conference.cpp', 'unittests.cpp','Deff.cpp', 'evenodd.cpp']
+        'conference.cpp', 'unittests.cpp', 'Deff.cpp', 'evenodd.cpp', 'lmc.cpp', 'extend.cpp']
 
-
-srcs = srcs + ['lmc.cpp', 'extend.cpp']  # code used for extension
 srcs = ['src/' + ff for ff in srcs]
 if os.path.exists('dev/oadevelop.cpp'):
     oadev = 1
@@ -242,12 +239,12 @@ compile_options = []
 
 sources = ['oalib.i'] + sorted(sources)
 if oadev:
-    swig_opts += ['-modern', '-c++', '-w503,401,362,509,389',
+    swig_opts += ['-c++', '-doxygen', '-w503,401,362,509,389',
                   '-Isrc/', '-Idev/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV', '-Idev/']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE', '-DOADEV']
 else:
-    swig_opts += ['-modern', '-c++',
+    swig_opts += ['-c++',  '-doxygen',
                   '-w503,401,362,302,389,446,509,305', '-Isrc/']
     compile_options += ['-DSWIGCODE', '-DFULLPACKAGE']
     swig_opts += ['-DSWIGCODE', '-DFULLPACKAGE']
@@ -319,18 +316,10 @@ packages = find_packages()
 # fix from:
 # http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
-if rtd and 0:
-    ext_modules = []  # do not build on RTD, this generates a time-out error
-    swigcmd = '%s -python -modern -c++ -w503,401,362,302,389,446,509,305 -Isrc/ -DSWIGCODE -DFULLPACKAGE -Isrc/nauty/ -DWIN32 -D_WIN32 -DNOOMP -DNOZLIB -o oalib_wrap.cpp oalib.i' % swig_executable
-    print('RTD: run swig command: %s' % (swigcmd,))
-    output = subprocess.check_output(swigcmd.split(' '))
-    print('swig output:')
-    print(output)
-else:
-    if not swig_valid:
-        raise Exception('could not find a recent version if SWIG')
+if not swig_valid:
+    raise Exception('could not find a recent version if SWIG')
 
-    ext_modules = [oalib_module]
+ext_modules = [oalib_module]
 
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
@@ -365,10 +354,6 @@ long_description = readme()
 version = get_version_info()[0]
 print('OApackage: version %s' % version)
 
-if is_python3:
-    python27_requirements = []
-else:
-    python27_requirements = ['mock; python_version <"3.0"', 'backports.functools_lru_cache;python_version<"2.9"']
 
 setup(name='OApackage',
       cmdclass={'test': OATest, 'install': CustomInstall, 'build': CustomBuild, 'build_ext': BuildExtSwig3},
@@ -386,19 +371,19 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil'] + python27_requirements,
+      tests_require=['numpy', 'nose>=1.3', 'coverage>=4.0', 'mock', 'python-dateutil', 'types-python-dateutil'],
       zip_safe=False,
-      install_requires=['numpy>=1.13', 'python-dateutil'] + python27_requirements,
+      install_requires=['numpy>=1.17', 'python-dateutil'],
       extras_require={
           'GUI': ["qtpy", 'matplotlib'],
-          'documentation': ['sphinx']
+          'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']
       },
       requires=['numpy', 'matplotlib'],
       classifiers=['Development Status :: 4 - Beta', 'Intended Audience :: Science/Research',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
                    "Programming Language :: Python :: 3.8",
+                   "Programming Language :: Python :: 3.9",
                    'License :: OSI Approved :: BSD License'
                    ]
       )

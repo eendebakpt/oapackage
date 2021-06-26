@@ -15,6 +15,138 @@
 #include "oaoptions.h"
 #include "tools.h"
 
+/** Class representing an n-dimensional array
+ *
+ * The data is stored in a flat array. The dimensions are stored in a vector \c dims.
+ *
+ **/
+template < class Type >
+class ndarray {
+
+public:
+    Type* data;
+    std::vector< int > dims; /// dimensions of the array
+    int k;                   // dimension of the array
+    int n;                   // total number of elements in the array
+    std::vector< int > cumdims;
+    std::vector< int > cumprod;
+
+public:
+    ndarray(std::vector< int > dimsx) {
+        k = dimsx.size();
+        dims = dimsx;
+        cumdims.resize(k + 1);
+        cumprod.resize(k + 1);
+        n = 1;
+        for (int i = 0; i < k; i++)
+            n *= dims[i];
+        cumdims[0] = 0;
+        for (int i = 0; i < k; i++)
+            cumdims[i + 1] = cumdims[i] + dims[i];
+        cumprod[0] = 1;
+        for (int i = 0; i < k; i++)
+            cumprod[i + 1] = cumprod[i] * dims[i];
+
+        data = new Type[n];
+        initialize(0);
+    }
+
+    /// Initialize array with specified value
+    void initialize(const Type value) {
+        std::fill(data, data + n, value);
+    }
+
+    void info() const {
+        myprintf("ndarray: dimension %d, total number of items %d\n", k, n);
+        myprintf("  dimensions: ");
+        printf_vector(dims, "%d ");
+        myprintf("  cumprod: ");
+        printf_vector(cumprod, "%d ");
+        myprintf("\n");
+    }
+
+    /// Convert linear index to string representing the index
+    std::string idxstring(int linear_idx) const {
+        std::string s = "";
+        std::vector< int > tmpidx(this->k);
+        linear2idx(linear_idx, tmpidx);
+
+        for (int i = 0; i < k; i++) {
+            s += printfstring("[%d]", tmpidx[i]);
+        }
+        return s;
+    }
+
+    /// size of the array (product of all dimensions)
+    long totalsize() const { return n; }
+
+    /// print the array to stdout
+    void show() const {
+        for (int i = 0; i < n; i++) {
+            std::string idxstrx = idxstring(i);
+            myprintf("B[%d] = B%s = %f\n", i, idxstrx.c_str(), (double)data[i]);
+        }
+    }
+
+    /// convert a linear index to normal indices
+    inline void linear2idx(int ndx, int* nidx = 0) const {
+
+        if (nidx == 0)
+            return;
+
+        for (int i = k - 1; i >= 0; i--) {
+            div_t xx = div(ndx, cumprod[i]);
+            int vi = xx.rem;
+            int vj = xx.quot;
+            nidx[i] = vj;
+            ndx = vi;
+        }
+    }
+    /// convert a linear index to normal indices
+    inline void linear2idx(int ndx, std::vector< int >& nidx) const {
+
+        assert((int)nidx.size() == this->k);
+        for (int i = k - 1; i >= 0; i--) {
+            div_t xx = div(ndx, cumprod[i]);
+            int vi = xx.rem;
+            int vj = xx.quot;
+            nidx[i] = vj;
+            ndx = vi;
+        }
+    }
+
+    /// From an n-dimensional index return the linear index in the data
+    inline int getlinearidx(int* idx) const {
+        int lidx = 0;
+        for (int i = 0; i < k; i++) {
+            lidx += idx[i] * cumprod[i];
+        }
+        return lidx;
+    }
+
+    /// set all values of the array to specified value
+    void setconstant(Type val) { std::fill(this->data, this->data + this->n, val); }
+
+    /// set value at position
+    void set(int* idx, Type val) {
+        int lidx = getlinearidx(idx);
+        data[lidx] = val;
+    }
+
+    /// set value using linear index
+    void setlinear(int idx, Type val) { data[idx] = val; }
+    /// get value using linear index
+    Type getlinear(int idx) const { return data[idx]; }
+
+    /// get value using n-dimensional index
+    Type get(int* idx) const {
+        int lidx = getlinearidx(idx);
+        return data[lidx];
+    }
+
+    ~ndarray() { delete[] data; }
+};
+
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
 void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose);
 
@@ -80,7 +212,7 @@ std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 * \param array Input array
 * \param verbose Verbosity level
 * \returns Vector with the caculated PIC sequence
-* 
+*
 * The PICk of a design is the average D-efficiency of estimable second-order models in k factors. The vector
 * (PIC1, PIC2, ..., ) is called the PIC sequence.
 *
@@ -93,10 +225,18 @@ std::vector< double > PICsequence(const array_link &array, int verbose = 0);
  */
 std::vector< double > distance_distribution (const array_link &array);
 
+/** Return the distance distribution of a mixed-level design
+ *
+ * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001.
+ * For mixed-level designs more details can be found in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014.
+ */
+void distance_distribution_mixed(const array_link& al, ndarray< double >& B, int verbose = 1);
+
+
 /** Calculate Jk-characteristics of a matrix
  *
  * The calcualted Jk-values are signed.
- * 
+ *
  * \param array Array to calculate Jk-characteristics for
  * \param number_of_columns Number of columns
  * \param verbose Verbosity level
@@ -114,7 +254,7 @@ std::vector< int > Jcharacteristics (const array_link &array, int number_of_colu
  * \param verbose Verbosity level
  * \param truncate If True then round values near zero to solve double precision errors
  * \returns Vector with calculated generalized wordlength pattern
- * 
+ *
  * A more detailed description of the generalized wordlength pattern can also be found in the documentation at https://oapackage.readthedocs.io/.
  */
 std::vector< double > GWLP (const array_link &array, int verbose = 0, int truncate = 1);
@@ -198,15 +338,15 @@ array_link conference_design2modelmatrix(const array_link & conference_design, c
  * \param mode Type of model matrix to calculate. Can be 'm' for main effects, 'i' for interaction effects or 'q' for quadratic effects
  * \param verbose Verbosity level
  * \returns Calculated model matrix
- * 
+ *
  * For conference designs the method @ref conference_design2modelmatrix is used. For orthogonal array the calculated is performed with @ref array2eigenModelMatrixMixed.
- * 
+ *
  */
 Eigen::MatrixXd array2modelmatrix(const array_link &array, const char *mode, int verbose = 0);
 
 
 /** Return the sizes of the model matrices calculated
- * 
+ *
  * \param array Orthogonal array or conference designs
  * \returns List with the sizes of the model matrix for: only intercept; intercept, main; intercept, main, and iteraction terms, intercept, main and full second order
  */
@@ -354,7 +494,6 @@ inline mvalue_t< long > F4 (const array_link &al, int verbose = 1) {
         return v;
 }
 
-template < class IndexType >
 /** Calculate properties of an array and create a Pareto element
  *
  * The values calculated are:
@@ -366,6 +505,7 @@ template < class IndexType >
  * Valid for 2-level arrays of strength at least 3
  *
  * */
+template < class IndexType >
 typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoRankFA (const array_link &array,
                                                                                           int verbose) {
         int N = array.n_rows;
@@ -409,8 +549,8 @@ void addJmax (const array_link &al, typename Pareto< mvalue_t< long >, IndexType
         p.push_back (v2);
 }
 
-template < class IndexType >
 /// Calculate Pareto element with J5 criterium
+template < class IndexType >
 typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoJ5 (const array_link &al, int verbose) {
         typename Pareto< mvalue_t< long >, IndexType >::pValue p =
             calculateArrayParetoRankFA< IndexType > (al, verbose);
@@ -419,7 +559,6 @@ typename Pareto< mvalue_t< long >, IndexType >::pValue calculateArrayParetoJ5 (c
         return p;
 }
 
-template < class IndexType >
 /** Add array to list of Pareto optimal arrays
  *
  * The values to be optimized are:
@@ -429,6 +568,7 @@ template < class IndexType >
  * 3) F4 (lower is better, sum of elements is constant)
  *
  * */
+template < class IndexType >
 inline void parseArrayPareto (const array_link &array, IndexType i, Pareto< mvalue_t< long >, IndexType > &pset,
                               int verbose) {
         typename Pareto< mvalue_t< long >, IndexType >::pValue p =
@@ -455,6 +595,3 @@ inline double Dvalue2Cvalue (double Defficiency, int number_of_columns) {
 
         return Cvalue;
 }
-
-
-

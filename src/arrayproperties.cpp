@@ -44,127 +44,6 @@ mvalue_t< long > A3A4 (const array_link &al) {
         return wm;
 }
 
-template < class Type >
-/** helper class: n-dimensional array
- *
- * The data is stored in a flat array. The dimensions are stored in a vector \c dims.
- *
- **/
-class ndarray {
-
-      public:
-        Type *data;
-        std::vector< int > dims; /// dimensions of the array
-        int k;                   // dimension of the array
-        int n;                   // total number of elements in the array
-        std::vector< int > cumdims;
-        std::vector< int > cumprod;
-
-      public:
-        ndarray (std::vector< int > dimsx, int verbose = 0) {
-                k = dimsx.size ();
-                dims = dimsx;
-                cumdims.resize (k + 1);
-                cumprod.resize (k + 1);
-                n = 1;
-                for (int i = 0; i < k; i++)
-                        n *= dims[i];
-                cumdims[0] = 0;
-                for (int i = 0; i < k; i++)
-                        cumdims[i + 1] = cumdims[i] + dims[i];
-                cumprod[0] = 1;
-                for (int i = 0; i < k; i++)
-                        cumprod[i + 1] = cumprod[i] * dims[i];
-
-                if (verbose) {
-                        myprintf ("ndarray: dimension %d, total %d\n", k, n);
-                        myprintf ("  cumprod: ");
-                        printf_vector (cumprod, "%d ");
-                        myprintf ("\n");
-                }
-                data = new Type[n];
-                std::fill (data, data + n, 0);
-        }
-
-        std::string idxstring (int i) const {
-                std::string s = "";
-                std::vector< int > tmpidx (this->k);
-                linear2idx (i, tmpidx);
-
-                for (int i = 0; i < k; i++) {
-                        s += printfstring ("[%d]", tmpidx[i]);
-                }
-                return s;
-        }
-
-        /// size of the array (product of all dimensions)
-        long totalsize () const { return n; }
-
-        /// print the array to stdout
-        void show () const {
-                for (int i = 0; i < n; i++) {
-                        std::string idxstrx = idxstring (i);
-                        myprintf ("B[%d] = B%s = %f\n", i, idxstrx.c_str (), (double)data[i]);
-                }
-        }
-
-        /// convert a linear index to normal indices
-        inline void linear2idx (int ndx, int *nidx = 0) const {
-
-                if (nidx == 0)
-                        return;
-
-                for (int i = k - 1; i >= 0; i--) {
-                        div_t xx = div (ndx, cumprod[i]);
-                        int vi = xx.rem;
-                        int vj = xx.quot;
-                        nidx[i] = vj;
-                        ndx = vi;
-                }
-        }
-        /// convert a linear index to normal indices
-        inline void linear2idx (int ndx, std::vector< int > &nidx) const {
-
-                assert ((int)nidx.size () == this->k);
-                for (int i = k - 1; i >= 0; i--) {
-                        div_t xx = div (ndx, cumprod[i]);
-                        int vi = xx.rem;
-                        int vj = xx.quot;
-                        nidx[i] = vj;
-                        ndx = vi;
-                }
-        }
-
-        inline int getlinearidx (int *idx) const {
-                int lidx = 0;
-                for (int i = 0; i < k; i++) {
-                        lidx += idx[i] * cumprod[i];
-                }
-                return lidx;
-        }
-
-        /// set all values of the array to specified value
-        void setconstant (Type val) { std::fill (this->data, this->data + this->n, val); }
-
-        /// set value at position
-        void set (int *idx, Type val) {
-                int lidx = getlinearidx (idx);
-                data[lidx] = val;
-        }
-
-        /// set value using linear index
-        inline void setlinear (int idx, Type val) { data[idx] = val; }
-        /// get value using linear index
-        inline void getlinear (int idx, Type val) const { return data[idx]; }
-
-        /// get value using n-dimensional index
-        Type get (int *idx) const {
-                int lidx = getlinearidx (idx);
-                return data[lidx];
-        }
-
-        ~ndarray () { delete[] data; }
-};
 
 /// calculate Hamming distance between two rows of an array
 inline int dH (const int N, int k, const array_link &al, int r1, int r2) {
@@ -254,8 +133,7 @@ std::vector< double > distance_distributionT (const array_link &al, int norm = 1
         return dd;
 }
 
-/// calculate distance distribution for mixed array
-void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose = 1) {
+void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose) {
         int N = al.n_rows;
         int n = al.n_columns;
 
@@ -269,8 +147,12 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
         int *dh = new int[sg.ngroups];
 
         std::vector< int > dims (ad.ncolgroups);
-        for (size_t i = 0; i < dims.size (); i++)
-                dims[i] = ad.colgroupsize[i];
+        for (size_t i = 0; i < dims.size(); i++) {
+            dims[i] = ad.colgroupsize[i];
+            if (B.dims[i]!=dims[i]+1)
+                throw_runtime_exception(printfstring("distance_distribution_mixed: output array specified has incorrect dimensions, B.dims[%d]=%d!=%d", i, B.dims[i], dims[i]+1 ));
+
+        }
         if (verbose >= 3) {
                 myprintf ("distance_distribution_mixed before: \n");
                 B.show ();
@@ -399,33 +281,36 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
 
         int jprod = B.n;
 
-        int *bi = new int[sg.ngroups];
-        int *iout = new int[sg.ngroups];
+        int *index_in = new int[sg.ngroups];
+        int *index_out = new int[sg.ngroups];
 
         for (int i = 0; i < sg.ngroups; i++)
-                bi[i] = 0;
+                index_in[i] = 0;
         for (int i = 0; i < sg.ngroups; i++)
-                iout[i] = 0;
+                index_out[i] = 0;
 
         for (int j = 0; j < Bout.n; j++) {
-                Bout.linear2idx (j, iout);
-                Bout.setlinear (j, 0); // [j]=0;
+                Bout.linear2idx (j, index_out);
+                Bout.setlinear (j, 0);
 
                 for (int i = 0; i < B.n; i++) {
-                        B.linear2idx (i, bi);
+                        B.linear2idx (i, index_in);
 
                         long fac = 1;
                         for (int f = 0; f < B.k; f++) {
-                                long ji = iout[f];
-                                long ii = bi[f];
+                                long ji = index_out[f];
+                                long ii = index_in[f];
                                 long ni = B.dims[f] - 1;
                                 long si = sx[f];
-                                fac *= krawtchouk (ji, ii, ni, si);
+                                long krw = krawtchouk(ji, ii, ni, si);
+                                fac *= krw;
                                 if (verbose >= 4)
-                                        myprintf ("  Bout[%d] += %.1f * %ld (%d %d %d)\n", j, (double)B.data[i], fac,
-                                                  (int)ji, (int)ii, (int)ni);
+                                        myprintf ("  (j,i,f)=(%d, %d, %d): fac*= krw(%ld %ld %ld %ld)=%ld -> fac %ld\n", j, i, f,
+                                                  ji, ii, ni, si, krw, fac);
                         }
                         Bout.data[j] += B.data[i] * fac;
+                        if (verbose >= 4)
+                            myprintf("  Bout[%d] += B[%d] * fac = %.1f * %ld \n", j, i, (double)B.data[i], fac);
                 }
                 Bout.data[j] /= N;
                 if (verbose >= 2)
@@ -438,21 +323,21 @@ std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, c
                 Bout.show ();
         }
 
-        // use formula from page 555 in Xu and Wu  (Theorem 4.i)
+        // use formula from page 555 in Xu and Wu (Theorem 4.i)
         std::vector< double > A (sg.n + 1, 0);
 
         for (int i = 0; i < jprod; i++) {
-                Bout.linear2idx (i, bi);
+                Bout.linear2idx (i, index_in);
                 int jsum = 0;
                 for (int j = 0; j < Bout.k; j++)
-                        jsum += bi[j];
+                        jsum += index_in[j];
                 if (verbose >= 2)
                         myprintf ("   jsum %d/%d, i %d\n", jsum, (int)A.size (), i);
                 A[jsum] += Bout.data[i];
         }
 
-        delete[] iout;
-        delete[] bi;
+        delete[] index_out;
+        delete[] index_in;
 
         return A;
 }
@@ -584,7 +469,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         distance_distribution_mixed (al, B, verbose);
         if (verbose >= 3) {
-                myprintf ("GWLPmixed: distance distrubution\n");
+                myprintf ("GWLPmixed: distance distribution\n");
                 B.show ();
         }
 
@@ -592,11 +477,11 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
         // calculate GWLP
         std::vector< int > ss = adata.factor_levels ();
 
-        std::vector< int > sx;
+        std::vector< int > factor_levels_for_groups;
         for (int i = 0; i < sg.ngroups; i++)
-                sx.push_back (ss[sg.gstart[i]]);
+                factor_levels_for_groups.push_back (ss[sg.gstart[i]]);
 
-        std::vector< double > gma = macwilliams_transform_mixed (B, sg, sx, N, Bout, verbose);
+        std::vector< double > gma = macwilliams_transform_mixed (B, sg, factor_levels_for_groups, N, Bout, verbose);
 
         if (truncate)
 			round_GWLP_zero_values(gma, N);
@@ -856,9 +741,9 @@ Eigen::MatrixXi permM (int ks, int k, const Eigen::MatrixXi subperm, int verbose
 
         if (verbose) {
                 myprintf ("ks: %d, k %d, idxsub: ", ks, k);
-                print_perm (idxsub); 
+                print_perm (idxsub);
                 myprintf ("ks: %d, k %d, idxrem: ", ks, k);
-                print_perm (idxrem); 
+                print_perm (idxrem);
         }
 
         const int m = 1 + k + k * (k - 1) / 2;
@@ -1482,7 +1367,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
         SelfAdjointEigenSolver< MyMatrixf > es;
         es.compute (mm);
         const MyVectorf evs = es.eigenvalues ();
-        MyVectorf S = evs; 
+        MyVectorf S = evs;
 
         if (S[m - 1] < 1e-15) {
                 if (verbose >= 2) {
@@ -1532,9 +1417,9 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
         EigenMatrixFloat X;
 
 		/// number of 2-factor interactions in contrast matrix
-        int n2fi = -1; 
+        int n2fi = -1;
         /// number of main effects in contrast matrix
-        int size_main_effects = -1;  
+        int size_main_effects = -1;
 
         if (arrayclass.is2level ()) {
 
@@ -1562,7 +1447,7 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
 
         EigenMatrixFloat tmp (number_model_columns, 1 + n2fi);
         tmp << matXtX.block (0, 0, number_model_columns, 1), matXtX.block (0, 1 + size_main_effects, number_model_columns, n2fi);
-        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi); 
+        EigenMatrixFloat mX02 (1 + n2fi, 1 + n2fi);
         mX02 << tmp.block (0, 0, 1, 1 + n2fi), tmp.block (1 + size_main_effects, 0, n2fi, 1 + n2fi);
 
         double f2i = (mX02).determinant ();
@@ -1637,7 +1522,7 @@ double Defficiency (const array_link &al, int verbose) {
         SelfAdjointEigenSolver< DMatrix > es;
         es.compute (mm);
         const DVector evs = es.eigenvalues ();
-        DVector S = evs; 
+        DVector S = evs;
 
         if (S[m - 1] < 1e-15 || rank < m) {
                 if (verbose >= 2) {

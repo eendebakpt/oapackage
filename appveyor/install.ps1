@@ -61,6 +61,8 @@ function ParsePythonVersion ($python_version) {
 
 
 function DownloadPython ($python_version, $platform_suffix) {
+    Write-Host "DownloadPython " $python_version "for" $architecture "bit architecture"
+
     $major, $minor, $micro, $prerelease = ParsePythonVersion $python_version
 
     if (($major -le 2 -and $micro -eq 0) `

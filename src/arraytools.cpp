@@ -140,10 +140,10 @@ void array_transformation_t::setlevelperm (int colindex, std::vector< int > lvlp
  * @param out
  */
 void array_transformation_t::show (std::ostream &out) const {
-     
+
         if(this->ad==0) {
            out << "array transformation: no class defined" << std::endl;
-           return;    
+           return;
         }
         out << "array transformation: N " << ad->N;
         if (this->isIdentity ()) {
@@ -250,10 +250,10 @@ void array_transformation_t::free_data_structures () {
 array_transformation_t &array_transformation_t::operator= (const array_transformation_t &tt) {
        if (tt.ad==0) {
         free_data_structures ();
-        
+
         return *this;
        }
-        
+
         free_data_structures ();
 
         ad = new arraydata_t (*(tt.ad));
@@ -520,7 +520,7 @@ arraydata_t arraylink2arraydata (const array_link &al, int extracols, int streng
         int verbose = 0;
 
         if(al.min() < 0) {
-         throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");    
+         throw_runtime_exception("array should have positive integer values to convert to arraydata_t structure");
         }
         // create arraydatya
         int ncols0 = al.n_columns;
@@ -775,7 +775,7 @@ std::string array_link::showstr () const {
           std::string rs = s.str ();
           return rs;
 }
-        
+
 bool array_link::_valid_index (int index) const {
         if ((index < 0) || (index >= this->n_rows*this->n_columns)) {
                 return false;
@@ -1955,7 +1955,7 @@ array_link exampleArray (int idx, int verbose) {
                         if (verbose) {
                                 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
                         }
-                         array_link array (40, 7, 0); 
+                         array_link array (40, 7, 0);
                          int array_data_tmp[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,0,0,0,1,1,0,0,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,0,0,1,0,0,1,0,1,1,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,1,1,1,0,0,0,0,1,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,0,0,1,1,0,0,1,1,1,0,1,0,0,0,1,0,1,0,1,0,0,1,1};
                          array.setarraydata (array_data_tmp, array.n_rows * array.n_columns);
                          return array;
@@ -2073,7 +2073,7 @@ array_link exampleArray (int idx, int verbose) {
 		 }
 
         } // end of switch
- 
+
         return array_link ();
 }
 
@@ -2107,7 +2107,7 @@ int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) co
           return std::lexicographical_compare (rhs.array + rhs_column * n_rows, rhs.array + rhs_column * n_rows + n_rows,
                                              array + c1 * n_rows, array + c1 * n_rows + n_rows);
 }
-        
+
 array_link array_link::reduceLMC () const {
         int strength = this->strength ();
         arraydata_t ad = arraylink2arraydata (*this, 0, strength);
@@ -2160,7 +2160,7 @@ void array_link::setcolumn (int target_column, const array_link &source_array, i
           std::copy (source_array.array + source_column * this->n_rows, source_array.array + (source_column + 1) * this->n_rows,
                     this->array + this->n_rows * target_column);
 }
-        
+
 bool array_link::is_conference (int number_of_zeros) const {
         if (!this->is_conference ()) {
                 return false;
@@ -2190,7 +2190,7 @@ bool array_link::is_mixed_level() const {
 	array_t max_value = this->max();
 	const int N = this->n_rows;
 	int s = max_value + 1;
-	
+
 	int k;
 	for (k = 0; k < this->n_columns; k++) {
 		array_t *max_column_value = std::max_element(this->array + N * k, this->array + (N * (k + 1)));
@@ -2524,7 +2524,7 @@ void eigenInfoF (const Eigen::MatrixXf m, const char *str, int verbose) {
 void print_eigen_matrix(const MatrixFloat matrix) {
      std::stringstream buffer;
      buffer << matrix <<  std::endl;
-     myprintf("%s", buffer.str().c_str()); 
+     myprintf("%s", buffer.str().c_str());
 }
 
 MatrixFloat array2eigenMainEffects (const array_link &al, int verbose) {
@@ -2598,7 +2598,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                     print_eigen_matrix(Z);
                }
                for (int ii = 0; ii < md; ii++) {
-                       
+
                         MatrixFloat tmp_norm = Z.col (ii + 1).transpose () * Z.col (ii + 1);
 
                         if (verbose >= 3) {
@@ -2759,7 +2759,7 @@ double array_link::DsEfficiency (int verbose) const {
         MatrixFloat X2 = X.block(0,1+k, n, n2fi);
         MatrixFloat X02 (n, 1 + n2fi);
         X02 << X.block (0, 0, n, 1), X2;
-        
+
         MatrixFloat matXtX = (X.transpose () * X / n);
         double f1 = matXtX.determinant ();
         double f2i = (X02.transpose () * X02 / n).determinant ();
@@ -2841,7 +2841,7 @@ std::vector< double > array_link::PICsequence(int verbose) const { return ::PICs
 /** Calculate J-characteristics of matrix (the values are signed)
  *
  * The actual calculation depends on the type of array (2-level or conference)
- * 
+ *
  * \param jj Number of columns
  * \returns Vector with calculated Jk-characteristics
  */
@@ -2883,7 +2883,7 @@ std::vector< int > Jcharacteristics_conference (const array_link &al, int jj, in
         int *column_indices = new_perm_init< int > (jj);
 
         for (int x = 0; x < nc; x++) {
-                int jv = jvalue_conference (al, jj, column_indices); 
+                int jv = jvalue_conference (al, jj, column_indices);
                 vals[x] = jv;
                 next_comb_s (column_indices, jj, k);
         }
@@ -3166,7 +3166,7 @@ std::string arraydata_t::idstrseriesfull () const {
 /// return full identifier string
 std::string arraydata_t::fullidstr (int series) const {
         if (series) {
-                return this->idstrseriesfull (); 
+                return this->idstrseriesfull ();
         } else {
                 return this->idstr () + "-t" + printfstring ("%d", this->strength);
         }
@@ -3195,11 +3195,11 @@ std::string arraydata_t::idstr () const {
 void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
-		if (!this->is_factor_levels_sorted() ) {			
+		if (!this->is_factor_levels_sorted() ) {
 			myprintf("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
 			this->show();
 		}
-		
+
 		if (!check_divisibility(this)) {
 			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
 		}
@@ -3290,7 +3290,7 @@ std::vector< int > arraydata_t::factor_levels () const {
           }
           return s;
 }
-        
+
 array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         if (n_columns == -1)
                 n_columns = this->strength;
@@ -3384,6 +3384,12 @@ void arraydata_t::set_colgroups (const std::vector< int > splits) {
         this->colgroupsize[ncolgroups - 1] = this->ncols - this->colgroupindex[ncolgroups - 1];
 }
 
+std::vector<int> arraydata_t::get_column_groups_sizes() const {
+    std::vector<int> cgs(this->colgroupsize, this->colgroupsize + this->ncolgroups);
+
+    return cgs;
+}
+
 void arraydata_t::set_colgroups (const symmetry_group &sg) {
         delete[] colgroupsize;
         delete[] colgroupindex;
@@ -3397,10 +3403,13 @@ void arraydata_t::set_colgroups (const symmetry_group &sg) {
 }
 
 void arraydata_t::show_colgroups () const {
-          myprintf ("arraydata_t: colgroups: ");
-          print_perm (this->colgroupindex, this->ncolgroups);
-          myprintf ("                  size: ");
-          print_perm (this->colgroupsize, this->ncolgroups);
+    std::vector<colindex_t> cgi(this->colgroupindex, this->colgroupindex + this->ncolgroups);
+    std::vector<colindex_t> cgs(this->colgroupsize, this->colgroupsize + this->ncolgroups);
+
+    myprintf ("arraydata_t: colgroups: ");
+    print_perm_int(cgi);
+    myprintf ("                  size: ");
+    print_perm_int(cgs);
 }
 
 void arraydata_t::calculate_oa_index (colindex_t strength) {
@@ -3420,7 +3429,7 @@ void arraydata_t::calculate_oa_index (colindex_t strength) {
                this->oaindex = this->N / combs;
           }
 }
-        
+
 /**
  * @brief Complete arraydata but treat last column as single column group
  */
@@ -3904,7 +3913,7 @@ int fastjX (const array_t *array, rowindex_t N, const int J, const colindex_t *p
         for (rowindex_t r = 0; r < N; r++) {
                 array_t tmp = 0;
                 for (int i = 0; i < J; i++) {
-                        tmp += cp[i][r]; 
+                        tmp += cp[i][r];
                 }
                 tmp %= 2;
                 jval += tmp;
@@ -4192,7 +4201,7 @@ std::string arrayfile_t::showstr () const {
                return s;
           }
 }
-        
+
 void arrayfile_t::append_array (const array_link &a, int specialindex) {
         int r;
         if (!this->isopen ()) {
@@ -4245,7 +4254,7 @@ void arrayfile_t::add_comment(const std::string &comment) {
           throw_runtime_exception("cannot add comments to binary file");
      }
      if ( ! this->isopen() ) {
-          throw_runtime_exception("cannot add comment to closed file");          
+          throw_runtime_exception("cannot add comment to closed file");
      }
      fprintf (this->nfid, "# %s\n", comment.c_str());
 }
@@ -4315,7 +4324,7 @@ size_t arrayfile_t::afwrite (void *ptr, size_t t, size_t n) {
           }
           return fwrite (ptr, t, n, nfid);
 }
-        
+
 size_t arrayfile_t::afread (void *ptr, size_t sz, size_t cnt) {
 #ifdef USEZLIB
         size_t r;
@@ -4510,7 +4519,7 @@ void readLine(FILE *file, char* lineBuffer, int maximumLineLength) {
         if (count == maximumLineLength) {
                printf("readLine: line length exceeds %d", maximumLineLength);
                exit(1);
-            
+
         }
         lineBuffer[count] = ch;
         count++;
@@ -4535,7 +4544,7 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
                 const int BUFFER_SIZE=10*1024;
                 char lineBuffer[BUFFER_SIZE];
                 readLine(nfid, lineBuffer, BUFFER_SIZE);
-                
+
                 while(true) {
                     if (strlen(lineBuffer)>0) {
                               if (lineBuffer[0]=='#') {
@@ -4551,7 +4560,7 @@ int arrayfile_t::read_array (array_t *array, const int nrows, const int ncols) {
                     }
                 }
                 int r = sscanf (lineBuffer, "%d\n", &index);
-                
+
                 //int r = fscanf (nfid, "%d\n", &index);
                 ::read_array (nfid, array, nrows, ncols);
                 break;
@@ -4636,14 +4645,14 @@ array_link::array_link (const array_t *array, rowindex_t nrows, colindex_t ncols
 
 #ifdef SWIGCODE
 array_link create_array_link(long* pymatinput, int number_of_rows, int number_of_columns) {
-     array_link array = array_link(number_of_rows, number_of_columns, array_link::INDEX_DEFAULT);   
+     array_link array = array_link(number_of_rows, number_of_columns, array_link::INDEX_DEFAULT);
      array.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);
      return array;
 }
 
 void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int number_of_columns) {
      al.init(number_of_rows, number_of_columns);
-     al.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);   
+     al.setarraydata_transposed(pymatinput, number_of_rows*number_of_columns);
      return;
 }
 #endif
@@ -4880,7 +4889,7 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
                 return 0;
         }
 
-        int i = afile->append_arrays (*arraylist, 1); 
+        int i = afile->append_arrays (*arraylist, 1);
         afile->finisharrayfile ();
         delete afile;
 
@@ -5368,8 +5377,8 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
 }
 
 /// Write an array in binary mode to a file
-void arrayfile_t::write_array_binary (const array_link &A) { 
-     write_array_binary (A.array, A.n_rows, A.n_columns);     
+void arrayfile_t::write_array_binary (const array_link &A) {
+     write_array_binary (A.array, A.n_rows, A.n_columns);
 }
 
 /**
@@ -5542,7 +5551,7 @@ int append_arrayfile (const char *fname, const array_link al) {
                 return 0;
         }
 
-        int i = afile->append_arrays (arraylist, 1); 
+        int i = afile->append_arrays (arraylist, 1);
         afile->narrays = -1;
         afile->rwmode = READWRITE;
 
@@ -5775,7 +5784,7 @@ array_link array_link::operator-= (array_t val) {
           }
           return *this;
 }
-        
+
 /// stack two arrays together
 array_link vstack (const array_link &al, const array_link &b) {
         assert (al.n_columns == b.n_columns);
@@ -6020,7 +6029,7 @@ int arrayInList (const array_link &al, const arraylist_t &ll, int verbose) {
                 const array_link &alx = ll[jj];
                 if (alx == al.selectFirstColumns (alx.n_columns)) {
                         if (verbose) {
-                                myprintf ("arrayInList: found array at position %ld\n", jj);
+                                myprintf ("arrayInList: found array at position %zu\n", jj);
                         }
                         return jj;
                 }

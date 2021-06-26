@@ -41,9 +41,12 @@ inline double round (double x) { return floor (x + 0.5); }
 
 #include <queue>
 
-// from: http://codereview.stackexchange.com/questions/13979/simple-object-pool-template-container-in-c
+
+/** Class to make a pool of objects that can be re-used
+ *
+ * From: http://codereview.stackexchange.com/questions/13979/simple-object-pool-template-container-in-c
+ **/
 template < class TYPE >
-/// Class to make a pool of objects that can be re-used
 class object_pool {
         std::vector< TYPE * > pool;
         /// maximum size of the pool
@@ -119,8 +122,8 @@ class object_pool {
         }
 };
 
-template < class numtype >
 /// lightweight array class
+template < class numtype >
 class larray {
       public:
         numtype *data_pointer;
@@ -204,7 +207,7 @@ class larray {
         }
 
         bool operator!= (const larray &rhs) const { return !(*this == rhs); }
-        
+
         /// add constant value to the elements of the array
         larray addelement (numtype v) const {
                 larray l (this->data_size + 1);
@@ -231,11 +234,11 @@ class larray {
         }
 };
 
-template < class NumericType >
 /** @brief Multi-value type
  *
  * This object represents a multi-valued object. The objects are ordered using lexicographic ordering.
  */
+template < class NumericType >
 struct mvalue_t {
       public:
         /// vector containing the values
@@ -406,8 +409,8 @@ template < class NumericType > std::ostream &operator<< (std::ostream &stream, c
         return stream;
 }
 
-template < class Type >
 /// Return maximum element of a std::vector
+template < class Type >
 Type vectormax (const std::vector< Type > &v, Type defaultvalue) {
         if (v.size () == 0)
                 return defaultvalue;
@@ -417,8 +420,8 @@ Type vectormax (const std::vector< Type > &v, Type defaultvalue) {
         }
 }
 
-template < class Type >
 /// Return minimum element of a std::vector
+template < class Type >
 Type vectormin (const std::vector< Type > &v, Type defaultvalue) {
         if (v.size () == 0)
                 return defaultvalue;
@@ -428,8 +431,8 @@ Type vectormin (const std::vector< Type > &v, Type defaultvalue) {
         }
 }
 
-template < class NumType >
 /// calculate cumulative sum of a vector
+template < class NumType >
 std::vector< NumType > cumsum (const std::vector< NumType > x) {
         // initialize the result vector
         std::vector< NumType > res (x.size ());
@@ -437,8 +440,8 @@ std::vector< NumType > cumsum (const std::vector< NumType > x) {
         return res;
 }
 
-template < class NumType >
 /// calculate cumulative sum of a vector with added zero
+template < class NumType >
 std::vector< NumType > cumsum0 (const std::vector< NumType > x) {
         // initialize the result vector
         std::vector< NumType > res (x.size () + 1);
@@ -455,8 +458,8 @@ template < class Type, class InputType > std::vector< Type > cumsum0 (std::vecto
                 c[i + 1] = c[i] + s[i];
 }
 
-template < class NumType >
 /// create permutation of specified length
+template < class NumType >
 std::vector< NumType > permutation (int n) {
         std::vector< NumType > p (n);
         for (int i = 0; i < n; i++)
@@ -464,8 +467,8 @@ std::vector< NumType > permutation (int n) {
         return p;
 }
 
-template < class NumType, class NumTypeIn >
 /// convert array given by pointer to std::vector
+template < class NumType, class NumTypeIn >
 std::vector< NumType > array2vector (const NumTypeIn *x, int len) {
         std::vector< NumType > w;
         w.assign (x, x + len);
@@ -525,6 +528,7 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
                 out << "\n";
         }
 }
+/// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (std::ostream &out, const std::vector< permutationType > s, const int maxlen = 256,
                         const bool ret = true) {
@@ -550,6 +554,7 @@ static void print_perm (std::ostream &out, const std::vector< permutationType > 
         }
 }
 
+/// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
         int len = s.size ();
@@ -576,24 +581,27 @@ static void print_perm_int (const std::vector< permutationType > s, const int ma
 
 #ifdef FULLPACKAGE
 
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 /// print permutation with string in front
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const char *msg, const std::vector< permutationType > s, const int maxlen = 256,
                         const bool ret = true) {
         myprintf ("%s: ", msg);
         print_perm (std::cout, s, maxlen, ret);
 }
 
+/// print permutation to std::cout
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const larray< permutationType > s, const int maxlen = 256, const bool ret = true) {
         print_perm (std::cout, s, maxlen, ret);
 }
 
+/// print permutation to std::cout
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
         print_perm (std::cout, s, maxlen, ret);
 }
 
+/// print permutation to std::cout
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
         print_perm (std::cout, s, len, maxlen);
@@ -613,7 +621,6 @@ static void print_perm (const permutationType *s, const int len, const int maxle
 
 #define print_comb print_perm
 
-template < class numtype >
 /**
  * Compare two arrays and return whether equal or not.
  * @param A Pointer to array
@@ -622,6 +629,7 @@ template < class numtype >
  * @param number_of_columns Number of columns
  * @return
  */
+template < class numtype >
 int compare_matrix (const numtype *A, const numtype *B, int number_of_rows, int number_of_columns) {
         for (int x = 0; x < number_of_rows; x++)
                 for (int y = 0; y < number_of_columns; y++) {
@@ -637,7 +645,7 @@ int compare_matrix (const numtype *A, const numtype *B, int number_of_rows, int 
 /*! \brief Calculates factorial
  *	A small function that calculates the factorial of a number.
  *   Returns one if the argument is smaller or equal to 1
- *     
+ *
  *	\param number Number to calculate the factorial of
  *  \returns Factorial of specified number
  */
@@ -682,8 +690,11 @@ static inline return_type factorial_return_argument (const argtype number) {
         return sol;
 }
 
-/*!
-  The number of combinations is calculated using the an addapted formula
+/*! Calculate binomial
+
+  Calculates n!/(k! * (n-k)!)
+
+  The number of combinations is calculated using the an adapted formula
   \brief Calculates number of combinations
   \param n Total number of entries to choose from
   \param k Number of entries in a certain combination
@@ -696,8 +707,28 @@ template < class Type > inline Type ncombs (const Type n, const Type k) {
         return sol / factorial<> (k);
 }
 
+/*! Calculate binomial
+
+  Calculates n!/(k! * (n-k)!)
+
+  A recursive formala is used to prevent overflows.
+
+  The number of combinations is calculated using the an addapted formula
+  \brief Calculates number of combinations
+  \param n Total number of entries to choose from
+  \param k Number of entries in a certain combination
+  \return Binomal n, k
+  */
+template < class Type > Type choose(const Type n, const Type k) {
+    if ( (n < k) || (k<0))
+        return 0;
+    if (k == 0 || n == k) return 1;
+    return choose(n - 1, k - 1)*n/k;
+}
+
+
 class Combinations {
-	
+
       public:
 
  		~Combinations();
@@ -719,9 +750,9 @@ class Combinations {
         static int ncombscachemax;
 };
 
+/// Calculate number of combinations using multiplicative formula
+/// See http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
 template < class Type >
-/// calculate using multiplicative formula, see
-/// http://en.wikipedia.org/wiki/Binomial_coefficient#Computing_the_value_of_binomial_coefficients
 inline Type ncombsm (const Type &n, const Type &k) {
         Type result = 1;
         for (Type i = 1; i <= k; i++) {
@@ -769,7 +800,7 @@ bool next_perm (std::vector< permutationType > &s) {
 
 // return random integer
 int fastrand ();
-// seed the fast random number generator 
+// seed the fast random number generator
 void seedfastrand (int s);
 
 // return random integer in range 0 to k-1
@@ -824,7 +855,6 @@ void next_perm (permutationType *s, const int len) {
         }
 }
 
-template < class objecttype, class numtype >
 /** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
  *
  * The permutation is peformed inplace.
@@ -832,6 +862,7 @@ template < class objecttype, class numtype >
  * \param array Array of objects
  * \param length Length of array
  */
+template < class objecttype, class numtype >
 void random_perm (objecttype *array, numtype length) {
         for (numtype i = 0; i < length - 1; i++) {
                 numtype j = i + myrand () % (length - i);
@@ -839,9 +870,9 @@ void random_perm (objecttype *array, numtype length) {
         }
 }
 
-template < class objecttype >
 /** Create random permutation using Fisher-Yates shuffle, or Knuth shuffle
  */
+template < class objecttype >
 void random_perm (std::vector< objecttype > &s) {
         int len = s.size ();
         for (int i = 0; i < len - 1; i++) {
@@ -850,8 +881,8 @@ void random_perm (std::vector< objecttype > &s) {
         }
 }
 
-template < class numtype >
 //! @brief Create a new combination and initialize
+template < class numtype >
 inline numtype *new_comb_init (int len) {
         numtype *comb = new numtype[len];
         for (int i = 0; i < len; i++)
@@ -859,13 +890,12 @@ inline numtype *new_comb_init (int len) {
         return comb;
 }
 
-template < class numtype >
 //! @brief Delete combination
+template < class numtype >
 inline void delete_comb (numtype *comb) {
         delete[] comb;
 }
 
-template < class numtype >
 /**
  * Initialize a combination
  *
@@ -874,6 +904,7 @@ template < class numtype >
  * @param n Numbers to choose from
  * @return Number of combinations possible
  */
+template < class numtype >
 inline int init_comb (numtype *comb, int k, int n) {
         for (int i = 0; i < k; i++)
                 comb[i] = i;
@@ -935,14 +966,13 @@ template < class numtype > numtype next_combination_fold (numtype *comb, int k, 
         return fold;
 }
 
-/* code related to permutations */
-template < class numtype >
 /**
  * @brief Check whether a permutation is ordered or not
  * @param perm
  * @param len
  * @return Return 1 of an ordered permutation, 0 otherwise
  */
+template < class numtype >
 int perm_is_ordered (numtype *perm, int len) {
         for (int i = 0; i < len - 1; i++) {
                 if (perm[i] > perm[i + 1])
@@ -951,32 +981,32 @@ int perm_is_ordered (numtype *perm, int len) {
         return 1;
 }
 
-template < class numtype >
 //! @brief Create a new permutation
+template < class numtype >
 numtype *new_perm (int len) {
         return (numtype *)malloc (sizeof (numtype) * len);
 }
 
-template < class numtype >
 //! @brief Create a new permutation
+template < class numtype >
 numtype *clone_perm (numtype *source, int len) {
         numtype *perm = new_perm< numtype > (len);
         copy_perm (source, perm, len);
         return perm;
 }
 
-template < class numtype >
 //! @brief Delete a permutation
+template < class numtype >
 inline void delete_perm (numtype *perm) {
         free (perm);
 }
 
-template < class numtype >
 /**
  * @brief Invert a permutation
  * @param perm Permutation as integer type std::vector
  * @return New permutation that is the inverse of the argument
  */
+template < class numtype >
 std::vector< numtype > invert_permutation (const std::vector< numtype > perm) {
         std::vector< numtype > iperm (perm.size ());
         for (size_t x = 0; x < perm.size (); x++)
@@ -984,37 +1014,37 @@ std::vector< numtype > invert_permutation (const std::vector< numtype > perm) {
         return iperm;
 }
 
-template < class numtype >
 /**
  * @brief Invert a permutation
  * @param perm Permutation as integer type std::vector
  * @param iperm Output permutation
  */
+template < class numtype >
 void invert_permutation (const std::vector< numtype > perm, std::vector< numtype > &iperm) {
         iperm.resize (perm.size ());
         for (size_t x = 0; x < perm.size (); x++)
                 iperm[perm[x]] = x;
 }
 
-template < class numtype >
 /**
  * @brief Invert a permutation
  * @param perm Pointer to permutation
  * @param len
  * @param iperm Pointer to new permutation that is the inverse of the argument
  */
+template < class numtype >
 void invert_permutation (numtype *perm, int len, numtype *iperm) {
         for (int x = 0; x < len; x++)
                 iperm[perm[x]] = x;
 }
 
-template < class numtype >
 /**
  * @brief Invert a permutation
  * @param perm Pointer to permutation
  * @param len
  * @return Pointer to new permutation that is the inverse of the argument
  */
+template < class numtype >
 numtype *invert_permutation (numtype *perm, int len) {
         numtype *iperm = new_perm< numtype > (len);
 
@@ -1024,8 +1054,8 @@ numtype *invert_permutation (numtype *perm, int len) {
 }
 
 #ifdef SAFELPERM
-template < class numtype >
 //! Perform level permutation with bounds check
+template < class numtype >
 inline numtype safe_lperm (numtype val, const numtype *lperm, int n) {
         if (val < 0 || val >= n) {
                 return val;
@@ -1033,16 +1063,16 @@ inline numtype safe_lperm (numtype val, const numtype *lperm, int n) {
         return lperm[val];
 }
 
-template < class numtype >
 //! Perform level permutation with bounds check
+template < class numtype >
 inline void safe_perform_level_perm (numtype *src, int n, const numtype *perm, const int pmax) {
         for (int i = 0; i < n; i++) {
                 src[i] = safe_lperm< numtype > (src[i], perm, pmax);
         }
 }
 
-template < class numtype >
 //! Perform level permutation with bounds check
+template < class numtype >
 inline void safe_perform_level_perm (const numtype *src, numtype *dst, int n, const numtype *perm, const int pmax) {
         for (int i = 0; i < n; i++) {
                 dst[i] = safe_lperm< numtype > (src[i], perm, pmax);
@@ -1050,20 +1080,19 @@ inline void safe_perform_level_perm (const numtype *src, numtype *dst, int n, co
 }
 #endif
 
-template < class numtype >
 /**
  * Perform level permutation on an array
  * @param src Pointer to array
  * @param n Length of array
  * @param perm Permutation to perform
  */
+template < class numtype >
 inline void perform_level_perm (numtype *src, int n, const numtype *perm) {
         for (int i = 0; i < n; i++) {
                 src[i] = perm[src[i]];
         }
 }
 
-template < class numtype >
 /**
  * @brief Calculate composition of 2 permutations
  *
@@ -1073,13 +1102,13 @@ template < class numtype >
  * @param n Length of permutations
  * @param C
  */
+template < class numtype >
 inline void composition_perm (const numtype *A, const numtype *B, int n, numtype *C) {
         for (int i = 0; i < n; i++) {
                 C[i] = B[A[i]];
         }
 }
 
-template < class numtype >
 /**
  * @brief Calculate composition of 2 permutations
  *
@@ -1088,6 +1117,7 @@ template < class numtype >
  * @param B
  * @param C
  */
+template < class numtype >
 inline void composition_perm (const std::vector< numtype > &A, const std::vector< numtype > &B,
                               std::vector< numtype > &C) {
         for (size_t i = 0; i < A.size (); i++) {
@@ -1095,7 +1125,6 @@ inline void composition_perm (const std::vector< numtype > &A, const std::vector
         }
 }
 
-template < class object, class numtype >
 /**
  * @brief Perform a permutation on a set of objects
  * @param src
@@ -1103,6 +1132,7 @@ template < class object, class numtype >
  * @param n
  * @param perm
  */
+template < class object, class numtype >
 inline void perform_perm (const object *const src, object *const target, const int n, const numtype *perm) {
         for (int i = 0; i < n; i++) {
                 target[perm[i]] = src[i];
@@ -1145,7 +1175,6 @@ inline void perform_inv_perm (const object *const src, object *const target, con
         }
 }
 
-template < class numtype >
 /**
  * @brief Perform a permutation on a set of data elements
  * @param src
@@ -1153,58 +1182,58 @@ template < class numtype >
  * @param n
  * @param perm
  */
+template < class numtype >
 inline void perform_level_perm (const numtype *const src, numtype *const target, const int n, const numtype *perm) {
         for (int i = 0; i < n; i++) {
                 target[i] = perm[src[i]];
         }
 }
 
-template < class numtype >
 /**
  * Initialize a permutation
  * @param perm
  */
+template < class numtype >
 void init_perm (std::vector< numtype > &perm) {
         for (size_t i = 0; i < perm.size (); i++)
                 perm[i] = i;
 }
 
-template < class numtype >
 /**
  * Initialiaze a permutation
  * @param perm
  * @param len
  */
+template < class numtype >
 void init_perm (numtype *perm, int len) {
         for (int i = 0; i < len; i++)
                 perm[i] = i;
 }
 
-// Initialize sign permutation
-template < class numtype >
 /**
  * Initialiaze a sign permutation with all +1s
  * @param signperm Permutation
  */
+template < class numtype >
 void init_signperm (std::vector< numtype > &signperm) {
         for (size_t i = 0; i < signperm.size (); i++)
                 signperm[i] = 1;
 }
 
-template < class numtype >
 /// return true if two permutations are equal
+template < class numtype >
 bool compare_perm (const numtype *permA, const numtype *permB, int len) {
         return std::equal (permA, permA + len, permB);
 }
 
+/// copy a permutation
 template < class numtype >
-/// copy a permuntation
 inline void copy_perm (const numtype *source, numtype *target, int len) {
         memcpy (target, source, sizeof (numtype) * len);
 }
 
-template < class numtype, class outtype >
 /// initialize a permutation and return the number of permutations
+template < class numtype, class outtype >
 inline outtype init_perm_n (numtype *perm, int len) {
         for (int i = 0; i < len; i++)
                 perm[i] = i;
@@ -1219,6 +1248,7 @@ template < class numtype > numtype *new_perm_init (int len) {
         return perm;
 }
 
+/// Return True if the specified iterator is sorted
 template < typename _ForwardIterator > inline bool issorted (_ForwardIterator first, const _ForwardIterator last) {
         if (first == last)
                 return true;
@@ -1241,15 +1271,6 @@ returntype *new_valueindex (const basetype *bases, const numtype n) {
         return valueindex;
 }
 
-//template < class numtype >
-//numtype *init_valueindex_forward (numtype *valueindex, const numtype *bases, const numtype n) {
-//        valueindex[0] = 1;
-//
-//        for (int i = 0; i < (n - 1); i++)
-//                valueindex[i + 1] = valueindex[i] * bases[i];
-//
-//        return valueindex;
-//}
 
 template < class numtype > numtype *init_valueindex (numtype *valueindex, const numtype *bases, const numtype n) {
         valueindex[n - 1] = 1;
@@ -1260,8 +1281,8 @@ template < class numtype > numtype *init_valueindex (numtype *valueindex, const 
         return valueindex;
 }
 
+/// Helper class for sorting indices
 template < class Type >
-/// Helper class
 class sort_indices {
       private:
         Type *mparr;
@@ -1271,8 +1292,8 @@ class sort_indices {
         bool operator() (int i, int j) { return mparr[i] < mparr[j]; }
 };
 
+/// Helper class for sorting indices
 template < class ContainerType >
-/// Helper class
 class sort_indices_container {
       private:
         const ContainerType *mparr;
@@ -1289,8 +1310,8 @@ class sort_indices_container {
         }
 };
 
+/// Helper class for sorting indices
 template < class Type >
-/// Helper class
 class sort_indices_deque {
       private:
         const std::deque< Type > *mparr;
@@ -1307,8 +1328,8 @@ class sort_indices_deque {
         }
 };
 
+/// Helper class for sorting indices
 template < class Type >
-/// Helper class
 class sort_indices_vector {
       private:
         const std::vector< Type > *mparr;
@@ -1344,20 +1365,20 @@ class indexsort {
                         indices[i] = i;
         }
 
-        template < class Type >
         /// Constructor for deque class
+        template < class Type >
         indexsort (const std::deque< Type > &vals) {
                 init (vals);
         }
 
-        template < class Type >
         /// Constructor for vector class
+        template < class Type >
         indexsort (const std::vector< Type > &vals) {
                 init (vals);
         }
 
-        template < class Type >
         /// initialize sorting structure with specified values
+        template < class Type >
         void init (const std::deque< Type > &vals) {
                 n = vals.size ();
                 indices.resize (n);
@@ -1365,8 +1386,8 @@ class indexsort {
                         indices[i] = i;
                 this->sort (vals);
         }
-        template < class Type >
         /// initialize sorting structure with specified values
+        template < class Type >
         void init (const std::vector< Type > &vals) {
                 n = vals.size ();
                 indices.resize (n);
@@ -1375,24 +1396,24 @@ class indexsort {
                 this->sort (vals);
         }
 
-        template < class Type >
         /// sort values and store the indices
+        template < class Type >
         void sort (const Type *vals) {
                 std::stable_sort (indices.begin (), indices.end (), sort_indices< Type > (vals));
         }
-        template < class Type >
         /// sort values and store the indices
+        template < class Type >
         void sort (const std::vector< Type > &vals) {
                 std::stable_sort (indices.begin (), indices.end (), sort_indices_vector< Type > (&vals));
         }
-        template < class Type >
         /// sort values and store the indices
+        template < class Type >
         void sort (const std::deque< Type > &vals) {
                 std::stable_sort (indices.begin (), indices.end (), sort_indices_deque< Type > (&vals));
         }
 
-        template < class Type >
         /// sort values and store the indices
+        template < class Type >
         void sortdescending (const std::vector< Type > &vals) {
                 std::stable_sort (indices.begin (), indices.end (), sort_indices_vector< Type > (&vals, false));
         }
@@ -1401,16 +1422,16 @@ class indexsort {
                         myprintf ("%d ", indices[i]);
         }
 
-        template < class Type >
         /// return array sorted using the order from the indexsort structure
+        template < class Type >
         std::vector< Type > sorted (const std::vector< Type > &vals) const {
                 std::vector< Type > s (n);
                 for (int i = 0; i < n; i++)
                         s[i] = vals[indices[i]];
                 return s;
         }
-        template < class ContainerType >
         /// return array sorted using the order from the indexsort structure
+        template < class ContainerType >
         ContainerType sorted (const ContainerType &vals) const {
                 ContainerType s (n);
                 for (int i = 0; i < n; i++)
@@ -1587,8 +1608,8 @@ class symmetry_group_walker {
         bool nextsub (int g);
 };
 
-template < class Type, class IndexType >
 /// Permute a std::vector
+template < class Type, class IndexType >
 std::vector< Type > permute (const std::vector< Type > x, const std::vector< IndexType > indices) {
         std::vector< Type > y (x.size ());
         for (size_t i = 0; i < x.size (); i++) {
@@ -1597,8 +1618,8 @@ std::vector< Type > permute (const std::vector< Type > x, const std::vector< Ind
         return y;
 }
 
-template < class Type, class IndexType >
 /// Permute a std::vector with inverse permutation
+template < class Type, class IndexType >
 std::vector< Type > permuteback (const std::vector< Type > x, const std::vector< IndexType > indices) {
         std::vector< Type > y (x.size ());
         for (int i = 0; i < x.size (); i++)
@@ -1606,7 +1627,6 @@ std::vector< Type > permuteback (const std::vector< Type > x, const std::vector<
         return y;
 }
 
-template < class numtype, class itype >
 /**
  * @brief Calculate symmetry groups of a list of integers under permutations
  * @param vec
@@ -1616,6 +1636,7 @@ template < class numtype, class itype >
  * @param gsize
  * @return Number of groups found
  */
+template < class numtype, class itype >
 int symm_group_index_plain (const numtype *vec, const int n, itype *&idx, itype *&gstart, itype *&gsize) {
         int i;
         int nsg = 0;
@@ -1687,29 +1708,28 @@ inline int power_minus_one (int n) { return (n % 2 == 0) ? 1 : -1; }
 /// -1 to the power n (integer)
 inline long power_minus_one (long n) { return (n % 2 == 0) ? 1 : -1; }
 
-template < class IntegerType >
 /// calculate value of Krawtchouk polynomial
-inline IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
+template < class IntegerType >
+IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType s, int verbose = 0) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {
-                val += power_minus_one (i) * ipow (s - 1, j - i) * ncombs (x, i) * ncombs (n - x, j - i);
+                val += power_minus_one (i) * ipow (s - 1, j - i) * choose (x, i) * choose (n - x, j - i);
                 if (verbose) {
-                        IntegerType tt = std::pow (double(-1), (double)i) *
-                                         std::pow ((double)(s - 1), (double)(j - i)) * ncombs (x, i) *
-                                         ncombs (n - x, j - i);
+                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+
                         myprintf ("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n,
                                   (int)s, (int)i, (int)tt, (int)std::pow ((double)-1, (double)i),
-                                  (int)std::pow ((double)s - 1, (double)(j - i)), (int)ncombs (x, i),
-                                  (int)ncombs (n - x, j - i));
-                        myprintf ("   ncombs(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)ncombs (n - x, j - i));
+                                  (int)std::pow ((double)s - 1, (double)(j - i)), (int)choose (x, i),
+                                  (int)choose (n - x, j - i));
+                        myprintf ("   choose(%d, %d) = %d \n", (int)(n - x), (int)(j - i), (int)choose (n - x, j - i));
                 }
         }
         return val;
 }
 
-template < class IntegerType >
 /// calculate value of Krawtchouk polynomial
+template < class IntegerType >
 inline IntegerType krawtchouksCache (IntegerType j, IntegerType x, IntegerType n) {
         IntegerType val = 0;
 
@@ -1720,11 +1740,11 @@ inline IntegerType krawtchouksCache (IntegerType j, IntegerType x, IntegerType n
         return val;
 }
 
-template < class IntegerType >
 /** calculate value of Krawtchouk polynomial
  *
  * @see https://en.wikipedia.org/wiki/Kravchuk_polynomials
  */
+template < class IntegerType >
 inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
         IntegerType val = 0;
 
@@ -1737,22 +1757,22 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
 #include <Eigen/Core>
 #include <Eigen/SVD>
 
-template < class Type >
 /// return the condition number of a matrix
+template < class Type >
 double conditionNumber (const Eigen::Matrix< Type, -1, -1 > A) {
         Eigen::JacobiSVD< Eigen::Matrix< Type, -1, -1 > > svd (A);
         double cond = svd.singularValues () (0) / svd.singularValues () (svd.singularValues ().size () - 1);
         return cond;
 }
 
-template < class NumericType >
 /// calculate the average value of a vector of numbers
+template < class NumericType >
 double average(std::vector < NumericType> data) {
 	return  double(std::accumulate(data.begin(), data.end(), 0.0) ) / data.size();
 }
 
-template < class NumericType >
 /// calculate the fraction of non-zero elemenets of a vector
+template < class NumericType >
 double fraction_nonzero(std::vector < NumericType> data) {
 	double nonzero = 0;
 	for (unsigned long j = 0; j < data.size(); j++)
@@ -1760,4 +1780,3 @@ double fraction_nonzero(std::vector < NumericType> data) {
 
 	return nonzero / data.size();
 }
-

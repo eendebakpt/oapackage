@@ -79,7 +79,7 @@ void mycheck_handler (const char *file, const char *func, int line, int conditio
 void myassert (int condition, const char *error_message );
 
 /** Throw a runtime_error exception with specified error message
- * 
+ *
  * This exception is caught in the SWIG interface.
  */
 void throw_runtime_exception (const std::string exception_message);
@@ -101,28 +101,27 @@ inline void flush_stdout () {
         fflush (stdout);
 }
 
-template < class A >
 /**
  * Delete object given by a pointer and set to zero.
  */
+template < class A >
 inline void safedelete (A *pointer) {
         if (pointer != 0)
                 delete pointer;
         pointer = 0;
 }
 
-template < class A >
 /**
  * Delete array and set pointer to zero
- * @param pointer Pointer to allocated array 
+ * @param pointer Pointer to allocated array
  */
+template < class A >
 inline void safedeletearray (A *pointer) {
         if (pointer != 0)
                 delete[] pointer;
         pointer = 0;
 }
 
-template < class Type >
 /*!
   Gives next combination for k elements out of n based on an algorithm from wikipedia.
   The generate is sorted.
@@ -131,6 +130,7 @@ template < class Type >
   \param k Number of the current combination
   \param n Number of elements in combination
   */
+template < class Type >
 int next_comb (std::vector< Type > &comb, int k, int n) {
         int i; // = k - 1;
         const int offset = n - k + 1;
@@ -157,13 +157,13 @@ int next_comb (int *comb, int k, int n);
 /** Go to next combination in sequence */
 int next_comb_s (int *comb, int k, int n);
 
-template < class Object >
 /**
  * @brief Template to swap two objects of arbitrary datatype
  * Please use std::swap instead
  * @param a
  * @param b
  */
+template < class Object >
 void swap_object (Object &a, Object &b) {
         Object tmp;
         tmp = a;
@@ -171,8 +171,8 @@ void swap_object (Object &a, Object &b) {
         b = tmp;
 }
 
-template < class rtype >
 /** Calculate the number of elements in a 2D table with rows with different sizes */
+template < class rtype >
 inline int malloc2d_nelements (const int nrows, const rtype *rowsizes) {
         int nelements = 0;
         for (int i = 0; i < nrows; i++)
@@ -180,13 +180,13 @@ inline int malloc2d_nelements (const int nrows, const rtype *rowsizes) {
         return nelements;
 }
 
-template < class DataType, class rtype >
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows
  * @param nrows Number of rows in the table
  * @param rowsizes Size of each row
  * @return
  */
+template < class DataType, class rtype >
 DataType **malloc2d_irr (const int nrows, const rtype *rowsizes) {
         // Create a 2D array, but with unequal rows (hence irregular -> irr)
         register int i;
@@ -207,7 +207,6 @@ DataType **malloc2d_irr (const int nrows, const rtype *rowsizes) {
         return data;
 }
 
-template < class DataType, class rtype >
 /**
  * @brief Allocate a 2-dimensional array with non-uniform rows, return size of allocated space
  * @param nrows Number of rows in the table
@@ -215,18 +214,19 @@ template < class DataType, class rtype >
  * @param nelements This parameter is initialized with the size of the array allocated
  * @return
  */
+template < class DataType, class rtype >
 DataType **malloc2d_irr (const int nrows, const rtype *rowsizes, int &nelements) {
         nelements = malloc2d_nelements (nrows, rowsizes);
         return malloc2d_irr< DataType > (nrows, rowsizes);
 }
 
-template < class DataType, class numtype >
 /**
  * @brief Allocate a 2-dimensional array of specified size
  * @param nrows Number of rows
  * @param rowsize Size of each row
  * @return
  */
+template < class DataType, class numtype >
 DataType **malloc2d (const numtype nrows, const int rowsize) {
         DataType **data;
 
@@ -246,35 +246,35 @@ DataType **malloc2d (const numtype nrows, const int rowsize) {
         return data;
 }
 
-template < class DataType >
 /**
  * @brief Release a 2-dimensional array
  * @param data
  * @param nrows
  */
+template < class DataType >
 void free2d (DataType **data, const int nrows) {
         delete[] data[0];
         delete[] data;
         data = 0;
 }
 
-template < class DataType >
 /**
  * @brief Release a 2-dimensional array
  * @param data
  */
+template < class DataType >
 void free2d (DataType **data) {
         delete[] data[0];
         delete[] data;
         data = 0;
 }
 
-template < class DataType >
 /**
  * @brief Release a 2-dimensional non-uniform array
  * @param data Pointer to allocated array
  * @param nrows Not used at the moment
  */
+template < class DataType >
 void free2d_irr (DataType **data, const int nrows = -1) {
         free2d (data);
 }
@@ -283,33 +283,42 @@ void print_array (const char *str, const array_t *array, const int nrows, const 
 void print_array (const array_t *array, const rowindex_t nrows, const colindex_t ncols);
 
 #ifdef FULLPACKAGE
+/// Print vector using generic std::cout print functionality
 template < class atype >
-/// print vector using generic std::cout print functionality
 void display_vector (const std::vector< atype > &v) {
         const char *sep = " ";
         std::copy (v.begin (), v.end (), std::ostream_iterator< atype > (std::cout, sep));
+}
+template <> inline void display_vector<int>(const std::vector< int >& v) {
+    const char* sep = " ";
+    for (int i = 0; i < v.size(); i++) {
+        myprintf("%d", v[i]);
+        if (i < v.size() - 1)
+            myprintf("%s", sep);
+    }
 }
 #else
 template < class atype > void display_vector (const std::vector< atype > &v) {
         // dummy implementation
         myprintf ("vector(...)");
 }
-template < int atype > void display_vector (const std::vector< atype > &v) {
-        for (int i = 0; i < v.size (); i++) {
-                myprintf ("%d", v[i]);
-                if (i < v.size () - 1)
-                        myprintf ("%s", sep);
-        }
+template < int atype > void display_vector(const std::vector< atype >& v) {
+    const char* sep = " ";
+    for (int i = 0; i < v.size(); i++) {
+        myprintf("%d", v[i]);
+        if (i < v.size() - 1)
+            myprintf("%s", sep);
+    }
 }
 #endif
 
-template < class atype >
 /** print vector using printf function
  *
  * \param vector Vector to be displayed
  * \param format Format to use in printf
  * \param separator Separator symbol to use
  */
+template < class atype >
 void printf_vector (const std::vector< atype > &vector, const char *format, const char *separator = "") {
         for (unsigned int i = 0; i < vector.size (); i++) {
                 myprintf (format, vector[i]);
@@ -333,12 +342,12 @@ std::string currenttime ();
 /// return string describing array
 std::string oafilestring (const arraydata_t *arrayclass);
 
-template < class numtype >
 /** @brief Convert integer to C++ string
  *
  * @param integer_value Integer
  * @return String representation of the integer
  */
+template < class numtype >
 inline std::string itos (numtype integer_value) {
         std::stringstream s;
         s << integer_value;
@@ -348,12 +357,12 @@ inline std::string itos (numtype integer_value) {
 /// printf-style function that returns std::string
 std::string printfstring (const char *message, ...);
 
-template < class Object >
 /**
  * @brief Template for insertionSort
  * @param array Data to be sorted
  * @param length Length of array
  */
+template < class Object >
 inline void insertionSort (Object array[], int length) {
         Object key;
         int i;
@@ -368,8 +377,8 @@ inline void insertionSort (Object array[], int length) {
         }
 }
 
-template < class itemType, class indexType >
 /// sort arrays using bubbleSort
+template < class itemType, class indexType >
 inline void bubbleSort (itemType array[], indexType left, indexType right) {
         indexType i, j;
 
@@ -379,11 +388,11 @@ inline void bubbleSort (itemType array[], indexType left, indexType right) {
                                 std::swap (array[j], array[j + 1]);
 }
 
-template < class itemType, class indexType >
 /** Sorting similar to bubblesort but fast for sorted arrays
  *
  * The indices left and right are inclusive.
  */
+template < class itemType, class indexType >
 inline void flipSort (itemType array[], indexType left, indexType right) {
         indexType i, j;
 
@@ -400,12 +409,12 @@ inline void flipSort (itemType array[], indexType left, indexType right) {
         }
 }
 
-template < class Object, class indexType >
 /**
  * @brief Template for bubble sort
  * @param array Array to be sorted
  * @param array_size Size of the array
  */
+template < class Object, class indexType >
 inline void bubbleSort2 (Object array[], indexType array_size) {
         Object temp;
 
@@ -420,8 +429,8 @@ inline void bubbleSort2 (Object array[], indexType array_size) {
         }
 }
 
-template < class T >
 /// sort list using quickSort
+template < class T >
 void quickSort (T array[], const int &leftarg, const int &rightarg) {
         if (leftarg < rightarg) {
 
@@ -450,10 +459,10 @@ void quickSort (T array[], const int &leftarg, const int &rightarg) {
         }
 }
 
-template < class itemType, class indexType >
 /*** sort list using shellSort
  * The indices left and right are inclusive.
  */
+template < class itemType, class indexType >
 void shellSort (itemType array[], indexType left, indexType right) {
         static indexType i, j, h;
         static itemType v;
@@ -490,5 +499,3 @@ std::string splitFile (std::vector< int > tag_indices);
 
 /// calculate tag for job splitted into parts
 std::string splitTag (std::vector< int > tag_indices);
-
-

@@ -254,7 +254,7 @@ int main (int argc, char *argv[]) {
                 for (size_t ai = 0; ai < arraylist->size (); ai++) {
                         const array_link &al = arraylist->at (ai);
                         if (verbose >= 3 || (verbose >= 2 && ai % 40 == 0))
-                                printf ("oa_depth_extend process: array %ld/%ld (%d %d): time %.1f [s]\n", ai,
+                                printf ("oa_depth_extend process: array %ld/%zu (%d %d): time %.1f [s]\n", ai,
                                         arraylist->size (), al.n_rows, al.n_columns, get_time_ms () - t0);
                         flush_stdout ();
                         int extensioncol = al.n_columns + 1;

@@ -202,7 +202,7 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
 
                 if (verbose >= 3) {
                         myprintf (
-                            "depth_extend_array: calling depth_extend! %ld arrays, %ld/%ld extensions, extcol %d\n",
+                            "depth_extend_array: calling depth_extend! %zu arrays, %zu/%zu extensions, extcol %d\n",
                             goodarrays.size (), dextendsub.valididx.size (), dextend.extension_column_list.size (),
                             extensioncol);
                         flush_stdout ();
@@ -218,7 +218,7 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
         case DEPTH_DIRECT: {
                 if (verbose >= 1) {
                         myprintf (
-                            "processDepth: calling depth_extend_direct! %ld  arrays, %ld extensions, extcol %d\n",
+                            "processDepth: calling depth_extend_direct! %zu  arrays, %zu extensions, extcol %d\n",
                             goodarrays.size (), dextend.extension_column_list.size (), extensioncol);
                         flush_stdout ();
                 }
@@ -492,7 +492,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                 // check possible extensions
                 for (size_t j = 0; j < nn; j++) {
                         if (dlocal.verbose >= 2) {
-                                myprintf ("%sdepth_extend: col %d: j %ld: %d %ld\n", sp.c_str (), extcol, j,
+                                myprintf ("%sdepth_extend: col %d: j %ld: %d %zu\n", sp.c_str (), extcol, j,
                                           dextendsub.valididx[j], dextend.extension_column_list.size ());
                         }
 
@@ -552,7 +552,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
                 arraylist_t alocal = dlocal.selectArraysXX (al, dextend.extension_column_list);
                 if (verbose >= 2) {
-                        myprintf ("%sdepth_extend column %d->%d: adding %ld/%ld arrays\n", sp.c_str (), extcol,
+                        myprintf ("%sdepth_extend column %d->%d: adding %zu/%zu arrays\n", sp.c_str (), extcol,
                                   extcol + 1, alocal.size (), dextendsub.valididx.size ());
                 }
 
@@ -567,11 +567,6 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                 dextend.maxArrayCheck ();
 
                 if (extcol < dextend.ad->ncols - 1 && alocal.size () > 0) {
-                        if (verbose >= 3) {
-                                myprintf (
-                                    "%sdepth_extend column %d->%d: calling depth extend with %ld array extensions\n",
-                                    sp.c_str (), extcol, extcol + 1, localvalididx.size ());
-                        }
 
                         cprintf (dv >= 1, "  # depth_extend column : array %d/%d: nn %d, calling depth extend with "
                                           "%ld array extensions\n",
@@ -592,7 +587,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                                 const size_t alocalsize = alocal.size ();
                                 cprintf (
                                     dv >= 1,
-                                    "depth_extend_omp: extcol %d, i %ld/%ld, running parallel omp on %ld arrays!\n ",
+                                    "depth_extend_omp: extcol %d, i %zu/%zu, running parallel omp on %ld arrays!\n ",
                                     extcol, i, alist.size (), alocal.size ());
 
 //				omp_set_num_threads(4);
@@ -635,7 +630,7 @@ void addArraysToPareto (Pareto< mvalue_t< long >, array_link > &pset, pareto_cb 
 #pragma omp parallel for schedule(dynamic, 1)
         for (int i = 0; i < (int)arraylist.size (); i++) {
                 if (verbose >= 3 || ((i % 15000 == 0) && verbose >= 2)) {
-                        myprintf ("addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size ());
+                        myprintf ("addArraysToPareto: file %d, array %d/%zu\n", jj, i, arraylist.size ());
                         myprintf ("  ");
                         pset.show (1);
                 }
@@ -674,7 +669,7 @@ void addArraysToPareto (Pareto< mvalue_t< long >, array_link > &pset, pareto_cb_
 #pragma omp parallel for schedule(dynamic, 1)
         for (int i = 0; i < (int)arraylist.size (); i++) {
                 if (verbose >= 3 || ((i % 15000 == 0) && verbose >= 2)) {
-                        myprintf ("addArraysToPareto: file %d, array %d/%ld\n", jj, i, arraylist.size ());
+                        myprintf ("addArraysToPareto: file %d, array %d/%zu\n", jj, i, arraylist.size ());
                         myprintf ("  ");
                         pset.show (1);
                 }

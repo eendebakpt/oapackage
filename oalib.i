@@ -1,5 +1,5 @@
 /* File: oalib.i
- * 
+ *
  * Defines the Python interface to the OApackage
  *
  */
@@ -75,7 +75,7 @@ import_array();
   cols = PyArray_DIM(pp,1);
 
   PyArrayObject* temp;
-  PyArg_ParseTuple($input, "O", &temp);  
+  PyArg_ParseTuple($input, "O", &temp);
 
   inputEigen.resize(rows,cols);
   inputEigen.fill(0);
@@ -85,13 +85,13 @@ import_array();
       for(long int j = 0; j != cols; ++j){
           inputEigen(i,j) = values[i*rows+j];
       }
-  }  
+  }
 
 }
 
 // see http://sourceforge.net/p/swig/mailman/message/32490448/
 //http://mail.scipy.org/pipermail/numpy-discussion/2013-February/065637.html
-%typemap(out) Eigen::VectorXd 
+%typemap(out) Eigen::VectorXd
 {
     npy_intp dims[1] = {$1.size()};
     PyObject* array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
@@ -101,7 +101,7 @@ import_array();
     }
     $result = array;
 }
-%typemap(out) Eigen::MatrixXd 
+%typemap(out) Eigen::MatrixXd
 {
   /* note that Eigen is column-major by default and numpy is row major by default */
 
@@ -111,7 +111,7 @@ import_array();
     eigenInfo($1);
     }
     Eigen::MatrixXd mt = $1.transpose();
-    
+
     npy_intp dims[2] = {$1.rows(), $1.cols() };
     PyObject* array = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
     double* data = ((double *) (PyArray_DATA( (PyArrayObject*) array ) ) );
@@ -128,7 +128,7 @@ import copy
 
 def reduceGraphNauty(G, colors=None, verbose=1):
   """ Return vertex transformation reducing array to normal form
-  
+
   The reduction is calculated using `Nauty <http://users.cecs.anu.edu.au/~bdm/nauty/>`_
 
   Args:
@@ -146,27 +146,27 @@ def reduceGraphNauty(G, colors=None, verbose=1):
     colors = [0] * G.shape[0]
   v = _oalib.reduceNauty ( al, colors, verbose )
   return v
-  
+
 def transformGraphMatrix(G, tr, verbose=1):
-    """ Apply a vertex permutation to a graph 
-    
+    """ Apply a vertex permutation to a graph
+
     Arguments
     ---------
       G : Numpy array
 	the graph in incidence matrix form
-      tr : list 
+      tr : list
 	the vertex transformation as a list
-	
+
     Returns
     -------
       The transformed graph
-      
+
     """
     al=array_link()
     al.setarray(G)
-    alt = _oalib.transformGraph(al, tr, verbose)  
+    alt = _oalib.transformGraph(al, tr, verbose)
     return np.array(alt)
-  
+
 %}
 
 
@@ -200,7 +200,7 @@ def shape(self):
 @property
 def size(self):
     return self.n_rows*self.n_columns
-                             
+
 def showarray(self):
   """ Show array """
   # overridden to fix problems with ipython
@@ -268,21 +268,21 @@ def __getitem__(self, index):
               raise IndexError('index out of bounds')
             if index1<0 or index1 >= self.n_columns:
               raise IndexError('index out of bounds')
-            return self.at(index0, index1)	  
+            return self.at(index0, index1)
           elif isinstance(index0, int) and isinstance(index1, slice):
               row_range=[index0]
               col_range=self._slice2range(index1, self.n_columns)
-              
+
               return self._ranges2subarray(row_range, col_range)
           elif isinstance(index0, slice) and isinstance(index1, int):
               row_range=self._slice2range(index0, self.n_rows)
               col_range=[index1]
-              
+
               return self._ranges2subarray(row_range, col_range)
           elif isinstance(index0, slice) and isinstance(index1, slice):
               row_range=self._slice2range(index0, self.n_rows)
               col_range=self._slice2range(index1, self.n_columns)
-              
+
               return self._ranges2subarray(row_range, col_range)
           else:
               raise NotImplementedError('slice indexing not supported')
@@ -294,7 +294,7 @@ def __setitem__(self, index, value):
   if type(index)==int:
       if index<0 or index > self.n_rows*self.n_columns:
         raise IndexError('index out of bounds')
-      self.setvalue(index, 0, value) 
+      self.setvalue(index, 0, value)
   else:
       if len(index)==2:
         a=index[0]
@@ -313,11 +313,11 @@ def __setitem__(self, index, value):
 //%feature("autodoc", "docstring")
 
 
-%feature("autodoc", "1");
 // to generate the oadoxy.i:
 // doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i
 // see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
-
+// replaced by the -doxygen option of swig
+%feature("autodoc", "1");
 %include "oadoxy.i"
 
 
@@ -328,7 +328,7 @@ def __setitem__(self, index, value):
 
 
 // ignore variable argument length functions
-%ignore printfstring;   
+%ignore printfstring;
 
 // rename problem names
 %rename(__lt__) ::operator<;
@@ -337,8 +337,8 @@ def __setitem__(self, index, value):
 #pragma SWIG nowarn=454
 
 namespace std {
-   %template(arraylist_t) deque<array_link>; 
-   %template(jstructArray) vector<jstruct_t>; 
+   %template(arraylist_t) deque<array_link>;
+   %template(jstructArray) vector<jstruct_t>;
    %template(uint8Vector) std::vector<unsigned char>;
    %template(charVector) std::vector<signed char>;
    %template(intVector) std::vector<int>;
@@ -346,9 +346,9 @@ namespace std {
    %template(longDeque) deque<long>;
    %template(doubleVector) std::vector<double>;
    %template(stringVector) std::vector<std::string>;
-   
+
    %template(map_int_long) std::map<int, long>;
-   
+
 };
 
 %exception array_link::selectFirstColumns {
@@ -376,7 +376,7 @@ namespace std {
 %exception {
   try {
     $action
-  } 
+  }
   SWIG_CATCH_STDEXCEPT // catch std::exception
   catch (...) {
      SWIG_exception_fail(SWIG_UnknownError, "Unknown exception");
@@ -385,7 +385,7 @@ namespace std {
 
 // prevent memory leaks
 %newobject readarrayfile;
-arraylist_t readarrayfile(const char *fname, int verbose=0, int *setcols = 0); 
+arraylist_t readarrayfile(const char *fname, int verbose=0, int *setcols = 0);
 
 
 // do this before the real arraylink is included...
@@ -435,7 +435,7 @@ def __getattr__(self, attr):
     else:
       raise AttributeError("%r object has no attribute %r" %
                          (self.__class__, attr))
-                         
+
 %}
 }
 
@@ -451,21 +451,24 @@ def __getattr__(self, attr):
 %template(vector_mvalue_t_int) std::vector<mvalue_t<int> >;
 %template(vector_mvalue_t_long) std::vector<mvalue_t<long> >;
 %template(DequeParetoElementLong) std::deque<pareto_element<mvalue_t<long>,long> >;
+%template(conference_columnVector) std::vector< conference_column >;
+%template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
+%template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
+%template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
+%template(vector_vector_double) std::vector< std::vector<double> >;
+%template(krawtchouk) krawtchouk<long>;
+%template(ndarray) ndarray<double>;
+%template(ndarray_double) ndarray<double>;
+%template(ndarray_long) ndarray<long>;
+%template(choose_long) choose<long>;
 
 
 %pythoncode %{
 # for legacy reasons and for name consistency
 GWLPvalueVector = vector_mvalue_t_double
 mvalueVector = vector_mvalue_t_long
-#%template(mvalueVector) std::vector<mvalue_t<long> >;
 %}
 
-
-%template(conference_columnVector) std::vector< conference_column >;
-%template(calculateArrayParetoJ5) calculateArrayParetoJ5<array_link>;
-%template(calculateArrayParetoJ5int) calculateArrayParetoJ5<int>;
-%template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
-%template(vector_vector_double) std::vector< std::vector<double> >;
 
 /* representation functions */
 
@@ -474,7 +477,7 @@ public:
     std::string __repr__() {
       return $self->showstr();
     }
-} 
+}
 
 %extend array_transformation_t {
 public:
@@ -482,28 +485,28 @@ public:
       if($self->ad!=0)
 	return printfstring("array_transformation_t: transformation for array of size %d x %d", $self->ad->N, $self->ad->ncols);
       else
-	return printfstring("array_transformation_t: no class defined");      
+	return printfstring("array_transformation_t: no class defined");
     }
-} 
+}
 
 %extend array_link {
 public:
     std::string __repr__() {
       return $self->showstr();
     }
-} 
+}
 
 %extend arrayfile::arrayfile_t {
 public:
     std::string __repr__() {
       return $self->showstr();
     }
-} 
+}
 
 %extend std::deque<array_link> {
 public:
     std::string __repr__() {
-      return printfstring("list of array_link objects with %d elements", $self->size() ); 
+      return printfstring("list of array_link objects with %d elements", $self->size() );
     }
 }
 
@@ -512,16 +515,35 @@ public:
     std::string __repr__() {
       return $self->showstr();
     }
-} 
+}
 
 #ifdef SWIGPYTHON
 // Add module docstring
-%pythoncode  
+%pythoncode
 %{
 __doc__ = """
-Python Orthogonal Array Interface 
+Python Orthogonal Array Interface
 """
 %}
 #endif
 
+%extend ndarray_double {
+%insert("python") %{
 
+def __getattr__(self, attr):
+    if attr=='__array_interface__':
+      a = dict()
+      a['version']=3
+      a['shape']=tuple(self.dims())
+      sizeofdata=_oalib.sizeof_double()
+      a['typestr']='<f%d' % sizeofdata
+      a['data']=(self.data, True)
+      # convert from the OAP column-major style to Numpy row-major style?
+      #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
+      return a
+    else:
+      raise AttributeError("%r object has no attribute %r" %
+                         (self.__class__, attr))
+
+%}
+}

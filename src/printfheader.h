@@ -1,10 +1,5 @@
 #pragma once
 
-#ifdef RPACKAGE
-// do not include stdio or iostream for an R package
-#include "R_ext/Print.h"
-#define myprintf Rprintf
-#else
 #ifdef SWIGCODE
 
 #include <Python.h>
@@ -33,6 +28,5 @@ inline void pyprintf (const char *message, ...) {
 #include <stdio.h>
 #define myprintf printf
 #endif // SWIGCODE
-#endif // RPACKAGE
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;
