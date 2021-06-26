@@ -457,7 +457,9 @@ def __getattr__(self, attr):
 %template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
 %template(vector_vector_double) std::vector< std::vector<double> >;
 %template(krawtchouk) krawtchouk<long>;
+%template(ndarray) ndarray<double>;
 %template(ndarray_double) ndarray<double>;
+%template(ndarray_long) ndarray<long>;
 %template(choose_long) choose<long>;
 
 
