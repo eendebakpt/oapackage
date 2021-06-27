@@ -23,7 +23,7 @@ using namespace std;
 static nullStream staticNullStream;
 
 /// return filename part of a full path
-inline std::string base_name(std::string const &path) { return path.substr(path.find_last_of("/\\") + 1); }
+std::string base_name(std::string const &path) { return path.substr(path.find_last_of("/\\") + 1); }
 
 /// function to print debugging messages
 void printfd_handler (const char *file, const char *func, int line, const char *message, ...) {
@@ -289,7 +289,7 @@ ostream &logstream (int level) {
 int log_print (const int level, const char *message, ...) {
         int result = 0;
 
-#ifdef FULLPACKAGE
+
 #ifdef SWIGPYTHON
         static int _loglevel = (int)SYSTEM;
 #else
@@ -319,7 +319,6 @@ int log_print (const int level, const char *message, ...) {
                 }
         }
         result = (level <= _loglevel);
-#endif // FULLPACKAGE
 
         return result;
 }

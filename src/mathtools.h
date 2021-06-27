@@ -594,10 +594,7 @@ static void print_perm (const std::vector< permutationType > s, const int maxlen
 /// print permutation to stanard output
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
-    if constexpr (std::is_integral_v<permutationType>)
-            print_perm_int<permutationType>(s, len, maxlen);
-    else
-        print_perm<permutationType>(std:cout, s, len, maxlen);
+    print_perm_int<permutationType>(s, len, maxlen);
 }
 
 #else
