@@ -3089,9 +3089,8 @@ void arraydata_t::show (int verbose) const {
 std::string arraydata_t::showstr () const {
         std::stringstream ss;
         ss << printfstring ("arrayclass: N %d, k %d, strength %d, s ", this->N, this->ncols, this->strength);
-        print_perm (ss, this->s, this->ncols);
+        print_perm (ss, this->s, this->ncols, 256, false);
         std::string s = ss.str ();
-        s = s.substr (0, s.size () - 1);
         s += printfstring (", order %d", this->order);
         return s;
 }

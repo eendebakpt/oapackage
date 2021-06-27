@@ -487,6 +487,7 @@ template < class NumType, class NumTypeIn > larray< NumType > array2larray (cons
   \param s Pointer to start of array
   \param len Length of array to be printed
   \param maxlen (optional) Maximum length to print
+  \param ret If True, then append a newline
   \brief Print permutation
   */
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
@@ -498,12 +499,12 @@ static void print_perm (std::ostream &out, const permutationType *s, const int l
                 out << s[i] << ",";
 
         if (len == 0) {
-                out << "}\n";
+                out << "}";
         } else {
                 if (plen < len)
-                        out << s[plen - 1] << ",...}\n";
+                        out << s[plen - 1] << ",...}";
                 else
-                        out << s[plen - 1] << "}\n";
+                        out << s[plen - 1] << "}";
         }
         if (ret) {
             out << "\n";
