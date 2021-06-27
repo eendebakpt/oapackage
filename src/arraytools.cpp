@@ -4119,7 +4119,6 @@ bool file_exists (const char *filename) {
 #endif
 }
 
-#ifdef FULLPACKAGE
 
 bool arrayfile_t::isbinary () const {
         return (this->mode == ABINARY || this->mode == ABINARY_DIFF || this->mode == ABINARY_DIFFZERO);
@@ -5644,8 +5643,6 @@ array_link selectArrays (const std::string filename, int ii) {
         return al;
 }
 
-#endif // FULLPACKAGE, related to arrayfile_t
-
 void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list) {
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); it++) {
                 output_list.push_back (input_list.at (*it));
@@ -5785,6 +5782,7 @@ array_link hstack (const array_link &array, const conference_column &column) {
         return v;
 }
 
+/// stack two arrays together
 array_link hstack (const array_link &array_left, const array_link &array_right) {
         assert (array_left.n_rows == array_right.n_rows);
         array_link output_array (array_left.n_rows, array_left.n_columns + array_right.n_columns, array_link::INDEX_NONE);

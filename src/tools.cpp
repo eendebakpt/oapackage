@@ -32,7 +32,6 @@ void printfd_handler (const char *file, const char *func, int line, const char *
 
         const char *fileshort = s.c_str ();
         myprintf ("file %s: function %s: line %d: ", fileshort, func, line);
-#ifdef FULLPACKAGE
         char buf[64 * 1024];
 
         va_list va;
@@ -40,9 +39,6 @@ void printfd_handler (const char *file, const char *func, int line, const char *
         vsprintf (buf, message, va);
         va_end (va);
         myprintf ("%s", buf);
-#else
-        myprintf ("printfd_handler not implemented");
-#endif
 }
 
 /** @brief Return string describing the system
@@ -257,7 +253,7 @@ int getloglevel () { return stream_logging_level; }
 void setloglevel (int n) {
 #pragma omp critical
         { stream_logging_level = n; }
-        log_print (-n, ""); 
+        log_print (-n, "");
 }
 
 #ifdef FULLPACKAGE
