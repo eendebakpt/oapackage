@@ -5572,12 +5572,6 @@ void selectArrays (const std::string filename, std::vector< int > &idx, arraylis
                                 }
                                 for (int j = 0; j < (nsk); j++) {
                                         af.read_array (al);
-                                        if (verbose >= 3) {
-                                                std::vector< double > tmp = al.GWLP ();
-                                                myprintf ("  gwlp: ");
-                                                display_vector (tmp);
-                                                myprintf ("\n");
-                                        }
                                         cpos++;
                                 }
                                 af.read_array (al);
