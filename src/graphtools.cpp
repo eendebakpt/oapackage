@@ -346,7 +346,6 @@ array_link transformGraph (const array_link &G, const std::vector< int > tr, int
                         int ix = tr[i];
                         int jx = tr[j];
                         H.at (ix, jx) = G._at (i, j);
-                        ;
                 }
         }
         return H;

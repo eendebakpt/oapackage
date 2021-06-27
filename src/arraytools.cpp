@@ -12,11 +12,9 @@
 #include <errno.h>
 
 
-#ifdef FULLPACKAGE
 #include "bitarray/bit_array.h"
 #include "lmc.h"
 #include <iostream>
-#endif
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -578,13 +576,6 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
         int cb = 0;
         int nc = ncombs (al.n_columns, jj);
         for (int x = 0; x < nc; x++) {
-#ifdef FULLPACKAGE
-                if (verbose >= 4) {
-                        myprintf ("x %d: ", x);
-                        std::cout << printfstring ("comb: ");
-                        print_perm (pp, jj);
-                }
-#endif
                 // update invalid columns
                 for (int ii = cb; ii < jj; ii++) {
                         for (int r = 0; r < N; r++) {
@@ -2234,11 +2225,9 @@ void array_link::showproperties () const {
         }
         myprintf ("  D-efficiency %.3f\n", this->Defficiency ());
         std::vector< double > gwlp = this->GWLP ();
-#ifdef FULLPACKAGE
         myprintf ("  GWLP ");
         printf_vector (gwlp, "%d", " ");
         myprintf ("\n");
-#endif
         return;
 }
 
@@ -2608,12 +2597,6 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                             sqrt (double(N)) * Z.col (ii + 1) / sqrt (double(tmp_norm (0, 0)));
                 }
 
-#ifdef FULLPACKAGE
-                if (verbose >= 2) {
-                        eigenInfo (Z, "Z");
-                        print_eigen_matrix(Z);
-                }
-#endif
                 meoffset += md;
         }
 
@@ -3792,18 +3775,14 @@ std::string jstructbase_t::showstr () {
         return s;
 }
 void jstructbase_t::show () {
-#ifdef FULLPACKAGE
         std::cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
         for (size_t x = 0; x < this->values.size (); x++) {
                 std::cout << printfstring (" %d", values[x]);
         }
         std::cout << std::endl;
-#endif
 }
 
 void jstructbase_t::showdata (int verbose) {
-#ifdef FULLPACKAGE
-
         for (size_t x = 0; x < this->values.size (); x++) {
                 std::cout << printfstring (" %d", values[x]);
         }
@@ -3816,7 +3795,6 @@ void jstructbase_t::showdata (int verbose) {
                         myprintf ("this->jvalue2index[%d]=%d\n", iterator->first, iterator->second);
                 }
         }
-#endif
 }
 
 /** Calculate J-value for an array

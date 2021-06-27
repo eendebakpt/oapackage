@@ -490,7 +490,7 @@ template < class NumType, class NumTypeIn > larray< NumType > array2larray (cons
   \brief Print permutation
   */
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (std::ostream &out, const permutationType *s, const int len, const int maxlen = 256) {
+static void print_perm (std::ostream &out, const permutationType *s, const int len, const int maxlen = 256, const bool ret = true) {
         out << "{";
 
         int plen = std::min (len, maxlen);
@@ -505,6 +505,15 @@ static void print_perm (std::ostream &out, const permutationType *s, const int l
                 else
                         out << s[plen - 1] << "}\n";
         }
+        if (ret) {
+            out << "\n";
+        }
+}
+/// Print permutation to output stream
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+static void print_perm(std::ostream& out, const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
+    int len = s.size();
+    print_perm(out, s.data(), len, maxlen);
 }
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (std::ostream &out, const larray< permutationType > s, const int maxlen = 256,
@@ -528,57 +537,38 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
                 out << "\n";
         }
 }
-/// Print permutation to output stream
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (std::ostream &out, const std::vector< permutationType > s, const int maxlen = 256,
-                        const bool ret = true) {
-        int len = s.size ();
 
-        out << "{";
-
-        int plen = std::min (len, maxlen);
-        for (int i = 0; i < plen - 1; i++)
-                out << s[i] << ",";
-
-        if (len == 0) {
-                // corner case
-                out << "}";
-        } else {
-                if (plen < len)
-                        out << s[plen - 1] << ",...}";
-                else
-                        out << s[plen - 1] << "}";
-        }
-        if (ret) {
-                out << "\n";
-        }
-}
 
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
         int len = s.size ();
-        int plen = std::min (len, maxlen);
-
-        myprintf ("{");
-
-        for (int i = 0; i < plen - 1; i++)
-                myprintf ("%d,", s[i]);
-
-        if (len == 0) {
-                // corner case
-                myprintf ("}");
-        } else {
-                if (plen < len)
-                        myprintf ("%d,...", s[plen - 1]);
-                else
-                        myprintf ("%d}", s[plen - 1]);
-        }
-        if (ret) {
-                myprintf ("\n");
-        }
+        print_perm_int(s.data(), len, maxlen, ret);
 }
+/// Print permutation to output stream
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+static void print_perm_int(const permutationType*s, const int len, const int maxlen = 256, const bool ret = true) {
+    int plen = std::min(len, maxlen);
 
+    myprintf("{");
+
+    for (int i = 0; i < plen - 1; i++)
+        myprintf("%d,", s[i]);
+
+    if (len == 0) {
+        // corner case
+        myprintf("}");
+    }
+    else {
+        if (plen < len)
+            myprintf("%d,...", s[plen - 1]);
+        else
+            myprintf("%d}", s[plen - 1]);
+    }
+    if (ret) {
+        myprintf("\n");
+    }
+}
 #ifdef FULLPACKAGE
 
 /// print permutation with string in front
@@ -601,10 +591,13 @@ static void print_perm (const std::vector< permutationType > s, const int maxlen
         print_perm_int (s, maxlen, ret);
 }
 
-/// print permutation to std::cout
-template < class permutationType, typename std::enable_if<std::is_arithmetic<permutationType>::value>::type* = nullptr > /* permtype should be a numeric type, i.e. int or long */
+/// print permutation to stanard output
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
-        print_perm_int (s, len, maxlen);
+    if constexpr (std::is_integral_v<permutationType>)
+            print_perm_int<permutationType>(s, len, maxlen);
+    else
+        print_perm<permutationType>(std:cout, s, len, maxlen);
 }
 
 #else
