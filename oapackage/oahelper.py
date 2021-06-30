@@ -1,31 +1,29 @@
-# -*- coding: utf-8 -*-
 """ Collection of helper functions for OA package
 
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
 
 # %% Load packages
-from __future__ import print_function
 
-import sys
-import os
-from typing import List, Any
-import logging
-import numpy as np
-import functools
-import operator
-import inspect
 import fileinput
-import traceback
+import functools
+import inspect
+import logging
+import operator
+import os
 import re
-from time import gmtime, strftime
+import subprocess
+import sys
+import tempfile
 import time
+import traceback
 import warnings
 import webbrowser
-import tempfile
-import subprocess
+from time import gmtime, strftime
+from typing import Any, List, Optional
+
 import dateutil.parser
-from typing import Optional
+import numpy as np
 
 try:
     import matplotlib
@@ -34,10 +32,8 @@ except BaseException:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
 
-import oapackage
 import oalib
-
-
+import oapackage
 from oapackage import markup
 
 
@@ -57,7 +53,7 @@ def deprecated(func):
         except BaseException:
             lineno = -1
         warnings.warn_explicit(
-            "Call to deprecated function {}.".format(func.__name__),
+            f"Call to deprecated function {func.__name__}.",
             category=UserWarning,
             filename=filename,
             lineno=lineno,
@@ -299,8 +295,8 @@ def helmert_contrasts(number_of_levels, verbose=0):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
             print('helmert_contrasts: normalize number_of_levels tmp: %s ' % (normalization,))
-        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt((N)) * \
-            Z[:, (ii + 1):(ii + 2)] / np.sqrt((normalization))
+        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt(N) * \
+            Z[:, (ii + 1):(ii + 2)] / np.sqrt(normalization)
 
     return main_effects
 
@@ -570,17 +566,19 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     page.table.close()
     return page
 
-def write_text_arrayfile(filename : str, designs : List[Any], comment : str=None):
+
+def write_text_arrayfile(filename: str, designs: List[Any], comment: str = None):
     """ Write designs to disk in text format """
-    nrows=designs[0].n_rows
-    ncols=designs[0].n_columns
+    nrows = designs[0].n_rows
+    ncols = designs[0].n_columns
     afile = oapackage.oalib.arrayfile_t(filename, nrows, ncols, len(designs), oapackage.oalib.ATEXT, 8)
     if comment is not None:
-        for c in comment.split('\n' ):
+        for c in comment.split('\n'):
             afile.add_comment(c)
     afile.append_arrays(designs)
     afile.closefile()
-    
+
+
 def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment
 
@@ -594,7 +592,7 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
-    r : Optional[int] = 0
+    r: Optional[int] = 0
     if not dryrun:
 
         process = subprocess.Popen(
@@ -1306,8 +1304,15 @@ def makearraylink(array):
     return array
 
 
-def formatC(al, wrap=True):
-    """ Format array for inclusion in C code """
+def formatC(al, wrap: bool = True) -> str:
+    """ Format array for inclusion in C code
+
+    Args:
+        array: Array to be converted to C code representation
+        wrap: If True, then add code to create a variable
+    Returns:
+        Formatted string
+    """
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:

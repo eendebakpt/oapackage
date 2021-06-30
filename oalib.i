@@ -534,7 +534,7 @@ def __getattr__(self, attr):
       a = dict()
       a['version']=3
       a['shape']=tuple(self.dims())
-      sizeofdata=_oalib.sizeof_long)
+      sizeofdata=_oalib.sizeof_long()
       a['typestr']='<f%d' % sizeofdata
       a['data']=(self.data, True)
       # convert from the OAP column-major style to Numpy row-major style?
