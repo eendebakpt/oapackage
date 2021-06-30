@@ -462,7 +462,6 @@ def __getattr__(self, attr):
 %template(ndarray_long) ndarray<long>;
 %template(choose_long) choose<long>;
 
-
 %pythoncode %{
 # for legacy reasons and for name consistency
 GWLPvalueVector = vector_mvalue_t_double
@@ -527,7 +526,29 @@ Python Orthogonal Array Interface
 %}
 #endif
 
-%extend ndarray_double {
+%extend ndarray<long> {
+%insert("python") %{
+
+def __getattr__(self, attr):
+    if attr=='__array_interface__':
+      a = dict()
+      a['version']=3
+      a['shape']=tuple(self.dims())
+      sizeofdata=_oalib.sizeof_long)
+      a['typestr']='<f%d' % sizeofdata
+      a['data']=(self.data, True)
+      # convert from the OAP column-major style to Numpy row-major style?
+      #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
+      return a
+    else:
+      raise AttributeError("%r object has no attribute %r" %
+                         (self.__class__, attr))
+
+%}
+}
+
+
+%extend ndarray<double> {
 %insert("python") %{
 
 def __getattr__(self, attr):

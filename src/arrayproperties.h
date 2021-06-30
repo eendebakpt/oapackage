@@ -32,6 +32,7 @@ public:
     std::vector< int > cumprod;
 
 public:
+
     ndarray(std::vector< int > dimsx) {
         k = dimsx.size();
         dims = dimsx;
@@ -219,19 +220,49 @@ std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 */
 std::vector< double > PICsequence(const array_link &array, int verbose = 0);
 
+/** @brief Calculate MacWilliams transform
+ * @param B Input array
+ * @param N
+ * @param verbose Verbosity level
+ * @return MacWilliams transform of the input array
+*/
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose = 0);
+
 /** Return the distance distribution of a design
  *
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001
+ *
+ * @param al Array for which to calculate the distribution
+ * @return Distance distribution
  */
 std::vector< double > distance_distribution (const array_link &array);
+
+
+/** Return shape of distance distribution for mixed level design
+ * @param arrayclass Specification of the array class
+ * @return Shape of the distance distribution
+*/
+std::vector<int> distance_distribution_shape(const arraydata_t arrayclass);
 
 /** Return the distance distribution of a mixed-level design
  *
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001.
  * For mixed-level designs more details can be found in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014.
- */
-void distance_distribution_mixed(const array_link& al, ndarray< double >& B, int verbose = 1);
+ *
+ * @param al Array for which to calculate the distribution
+ * @param verbose Verbosity level
+ * @return Distance distribution
+*/
+ndarray<double> distance_distribution_mixed(const array_link& array, int verbose);
 
+/** @brief Calculate MacWilliams transform for mixed level data
+ *
+ * @param B
+ * @param N
+ * @param verbose
+ * @return
+*/
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose);
 
 /** Calculate Jk-characteristics of a matrix
  *
