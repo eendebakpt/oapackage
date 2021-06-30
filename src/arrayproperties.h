@@ -49,6 +49,15 @@ public:
         std::fill(data, data + n, value);
     }
 
+    /// Return size of ndarray template type
+    int sizeof_type() const {
+        return sizeof(Type);
+    }
+
+    bool type_is_floating_point() const {
+        return std::is_floating_point<Type>::value;
+    }
+
     void info() const {
         myprintf("ndarray: dimension %d, total number of items %d\n", k, n);
         myprintf("  dimensions: ");

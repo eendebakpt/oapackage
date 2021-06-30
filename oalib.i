@@ -532,7 +532,7 @@ def __getattr__(self, attr):
     if attr=='__array_interface__':
       a = dict()
       a['version']=3
-      a['shape']=tuple(self.dims())
+      a['shape']=tuple(self.dims)
       sizeofdata=_oalib.sizeof_double()
       a['typestr']='<f%d' % sizeofdata
       a['data']=(self.data, True)

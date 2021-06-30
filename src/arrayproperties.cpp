@@ -208,9 +208,7 @@ void distance_distribution_mixed_inplace (const array_link &al, ndarray< double 
 ndarray<double> distance_distribution_mixed(const array_link& al, int verbose) {
     std::vector<int> d = distance_distribution_shape(arraylink2arraydata(al));
     ndarray<double> B(d);
-    myprintf("distance_distribution_mixed: constructed B\n");
     distance_distribution_mixed_inplace(al, B, verbose);
-    myprintf("distance_distribution_mixed: return B\n");
     return B;
 }
 
