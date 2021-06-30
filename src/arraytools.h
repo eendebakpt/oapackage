@@ -255,8 +255,11 @@ struct arraydata_t {
          */
         void writeConfigFile (const char *filename) const;
 
+        ///  return string with class representation
         std::string idstr () const;
+        ///  return string with class representation. series of level is expended
         std::string idstrseriesfull () const;
+        ///  return string with class representation
         std::string fullidstr (int series = 0) const;
         /// return latex string describing the class
         std::string latexstr (int cmd = 0, int series = 0) const;
@@ -266,6 +269,8 @@ struct arraydata_t {
                 arraydata_t adata (this, k);
                 return adata;
         }
+
+        ///  Return string used for displaying the class
         std::string showstr () const;
         void show (int verbose = 1) const;
 

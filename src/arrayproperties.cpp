@@ -1173,9 +1173,8 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix
                 vif = 0;
                 Eeff = 0;
 
-#ifdef FULLPACKAGE
-                int rankold = rank2;
                 if (verbose >= 3) {
+                        int rankold = rank2;
                         Eigen::MatrixXd Smat (S);
                         Eigen::ArrayXd Sa = Smat.array ();
                         double Deff = exp (2 * Sa.log ().sum () / m) / N;
@@ -1186,7 +1185,6 @@ void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix
                 }
                 if (verbose >= 4)
                         std::cout << "Its singular values are:" << std::endl << S << std::endl;
-#endif
                 return;
         }
 
