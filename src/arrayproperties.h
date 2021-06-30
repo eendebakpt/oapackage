@@ -33,24 +33,16 @@ public:
 
 public:
 
-    ndarray(std::vector< int > dimsx) {
-        k = dimsx.size();
-        dims = dimsx;
-        cumdims.resize(k + 1);
-        cumprod.resize(k + 1);
-        n = 1;
-        for (int i = 0; i < k; i++)
-            n *= dims[i];
-        cumdims[0] = 0;
-        for (int i = 0; i < k; i++)
-            cumdims[i + 1] = cumdims[i] + dims[i];
-        cumprod[0] = 1;
-        for (int i = 0; i < k; i++)
-            cumprod[i + 1] = cumprod[i] * dims[i];
-
-        data = new Type[n];
+    ndarray(const std::vector< int > dims) {
+        initialize_internal_structures(dims);
         initialize(0);
     }
+    ndarray(const ndarray<Type>& rhs) {
+        initialize_internal_structures(rhs.dims);
+        std::copy(data, data + n, rhs.data);
+    }
+
+    ~ndarray() { delete[] data; }
 
     /// Initialize array with specified value
     void initialize(const Type value) {
@@ -145,7 +137,32 @@ public:
         return data[lidx];
     }
 
-    ~ndarray() { delete[] data; }
+private:
+
+    /** Initialize internal structures
+     *
+     * Data pointer is created, but not set with data
+     * @param dimsx Dimensions of the array
+    */
+    void initialize_internal_structures(const std::vector<int> dimsx) {
+        this->dims = dimsx;
+
+        k = dims.size();
+        cumdims.resize(k + 1);
+        cumprod.resize(k + 1);
+        n = 1;
+        for (int i = 0; i < k; i++)
+            n *= dims[i];
+        cumdims[0] = 0;
+        for (int i = 0; i < k; i++)
+            cumdims[i + 1] = cumdims[i] + dims[i];
+        cumprod[0] = 1;
+        for (int i = 0; i < k; i++)
+            cumprod[i + 1] = cumprod[i] * dims[i];
+
+        data = new Type[n];
+
+    }
 };
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD

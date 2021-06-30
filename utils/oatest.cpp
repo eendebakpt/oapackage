@@ -126,6 +126,10 @@ int main (int argc, char *argv[]) {
             printf("choose(%d, %d): %ld\n", i, i-2, choose(i, i - 2) - ncombs(i, i - 2));
         fflush(0);
 
+        array_link A = exampleArray(56, 1);
+        ndarray<double> D = distance_distribution_mixed(A, 2);
+        D.show();
+
         t0 = get_time_ms();
         for(int x=0; x<100000; x++)
             choose(15, 11);

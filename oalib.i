@@ -457,9 +457,7 @@ def __getattr__(self, attr):
 %template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
 %template(vector_vector_double) std::vector< std::vector<double> >;
 %template(krawtchouk) krawtchouk<long>;
-%template(ndarray) ndarray<double>;
-%template(ndarray_double) ndarray<double>;
-%template(ndarray_long) ndarray<long>;
+#%template(ndarray) ndarray<double>;
 %template(choose_long) choose<long>;
 
 %pythoncode %{
@@ -526,29 +524,8 @@ Python Orthogonal Array Interface
 %}
 #endif
 
-%extend ndarray<long> {
-%insert("python") %{
 
-def __getattr__(self, attr):
-    if attr=='__array_interface__':
-      a = dict()
-      a['version']=3
-      a['shape']=tuple(self.dims())
-      sizeofdata=_oalib.sizeof_long()
-      a['typestr']='<f%d' % sizeofdata
-      a['data']=(self.data, True)
-      # convert from the OAP column-major style to Numpy row-major style?
-      #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
-      return a
-    else:
-      raise AttributeError("%r object has no attribute %r" %
-                         (self.__class__, attr))
-
-%}
-}
-
-
-%extend ndarray<double> {
+%extend ndarray {
 %insert("python") %{
 
 def __getattr__(self, attr):
@@ -568,3 +545,6 @@ def __getattr__(self, attr):
 
 %}
 }
+
+%template(ndarray_double) ndarray<double>;
+%template(ndarray_long) ndarray<long>;
