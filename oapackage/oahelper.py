@@ -20,7 +20,7 @@ import traceback
 import warnings
 import webbrowser
 from time import gmtime, strftime
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 import dateutil.parser
 import numpy as np
@@ -237,7 +237,7 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
     plt.show()
 
 
-def enlargelims(factor=1.05):
+def enlargelims(factor: float = 1.05):
     """ Enlarge the limits of a plot
 
     Args:
@@ -367,13 +367,13 @@ def tprint(string, dt=1, output=False):
             return
 
 
-def timeString(tt=None):
+def timeString(tt=None) -> str:
     """ Return a string with the current time or specified time
 
     Args:
         tt (struct_time or None): time to convert
     Returns:
-        str: formatted time
+        Formatted time
     """
     if tt is None:
         tt = gmtime()
@@ -436,7 +436,7 @@ def oainfo(filename, verbose=1):
     af.closefile()
 
 
-def oaIsBinary(filename):
+def oaIsBinary(filename: str) -> bool:
     """ Return true if array file is in binary format """
     af = oapackage.arrayfile_t(filename)
     ret = af.isbinary()
@@ -641,7 +641,7 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
     return r
 
 
-def getArrayFile(afile):
+def getArrayFile(afile: str) -> str:
     """ Return pointer to array file
     Automatically check for compressed array files
     """
@@ -693,16 +693,8 @@ def checkArrayFile(afile, cache=1):
             return False
 
 
-try:
-    # attempt to evaluate basestring
-    basestring   # type: ignore
-
-    def isstr(s):
-        return isinstance(s, basestring)
-except NameError:
-    # probably Python 3.x
-    def isstr(s):
-        return isinstance(s, str)
+def isstr(s: Any) -> bool:
+    return isinstance(s, str)
 
 
 def checkFiles(lst, cache=1, verbose=0):
@@ -1216,7 +1208,7 @@ def testHtml(html_code=None):
         webbrowser.open(fname.name)
 
 
-def designStandardError(al):
+def designStandardError(al) -> Tuple[float, float, float]:
     """ Return standard errors for a design
 
     Args:

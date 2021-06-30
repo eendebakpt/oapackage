@@ -253,7 +253,9 @@ std::vector<int> distance_distribution_shape(const arraydata_t arrayclass);
  * @param verbose Verbosity level
  * @return Distance distribution
 */
-ndarray<double> distance_distribution_mixed(const array_link& array, int verbose);
+ndarray<double> distance_distribution_mixed(const array_link& array, int verbose = 0);
+
+void distance_distribution_mixed_inplace(const array_link& al, ndarray< double >& B, int verbose=0);
 
 /** @brief Calculate MacWilliams transform for mixed level data
  *
@@ -266,7 +268,7 @@ ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N
 
 /** Calculate Jk-characteristics of a matrix
  *
- * The calcualted Jk-values are signed.
+ * The calculated Jk-values are signed.
  *
  * \param array Array to calculate Jk-characteristics for
  * \param number_of_columns Number of columns
@@ -486,7 +488,6 @@ class rankStructure {
 /// Return the condition number of a matrix
 double conditionNumber (const array_link &matrix);
 
-#ifdef FULLPACKAGE
 
 #include "pareto.h"
 
@@ -609,7 +610,6 @@ inline void parseArrayPareto (const array_link &array, IndexType i, Pareto< mval
         pset.addvalue (p, i);
 }
 
-#endif // FULLPACKAGE
 
 /// convert C value to D-efficiency value
 inline double Cvalue2Dvalue (double Cvalue, int number_of_columns) {
