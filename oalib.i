@@ -533,8 +533,14 @@ def __getattr__(self, attr):
       a = dict()
       a['version']=3
       a['shape']=tuple(self.dims)
-      sizeofdata=_oalib.sizeof_double()
-      a['typestr']='<f%d' % sizeofdata
+      sizeofdata=self.sizeof_type()
+      is_floating_point = self.type_is_floating_point()
+
+      if is_floating_point:
+          a['typestr']='<f%d' % sizeofdata
+      else:
+          # assume signed integer type
+          a['typestr']='<i%d' % sizeofdata
       a['data']=(self.data, True)
       # convert from the OAP column-major style to Numpy row-major style?
       #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
