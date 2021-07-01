@@ -44,8 +44,6 @@ public:
     /// Copy constructor
     /// Copies the internal data
     ndarray(const ndarray<Type>& rhs) {
-        myprintf("ndarray: copy constructor: dims "); print_perm(rhs.dims);
-
         initialize_internal_structures(rhs.dims);
         std::copy(rhs.data, rhs.data + n, data);
     }

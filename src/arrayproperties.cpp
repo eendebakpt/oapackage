@@ -480,10 +480,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
 
         std::vector< int > factor_levels = adata.factor_levels ();
 
-        std::vector< int > factor_levels_for_groups;
-        symmetry_group sg(factor_levels, false);
-        for (int i = 0; i < sg.ngroups; i++)
-                factor_levels_for_groups.push_back (factor_levels[sg.gstart[i]]);
+        std::vector< int > factor_levels_for_groups = adata.factor_levels_column_groups();
 
         std::vector< double > gma = gwpl_macwilliams_transform_mixed (B, N, factor_levels_for_groups, verbose);
 

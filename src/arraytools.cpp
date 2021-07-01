@@ -3283,6 +3283,16 @@ std::vector< int > arraydata_t::factor_levels () const {
           return s;
 }
 
+std::vector< int > arraydata_t::factor_levels_column_groups() const {
+    std::vector< int > factor_levels = this->factor_levels();
+
+    std::vector< int > factor_levels_for_groups;
+    symmetry_group sg(factor_levels, false);
+    for (int i = 0; i < sg.ngroups; i++)
+        factor_levels_for_groups.push_back(factor_levels[sg.gstart[i]]);
+    return factor_levels_for_groups;
+}
+
 array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         if (n_columns == -1)
                 n_columns = this->strength;

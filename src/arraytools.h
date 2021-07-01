@@ -320,6 +320,9 @@ struct arraydata_t {
         /// return factor levels
         std::vector< int > factor_levels () const;
 
+        /// return factor levels for the column groups
+        std::vector< int > factor_levels_column_groups() const;
+
         /**
          * @brief Reset strength of arraydata
          * @param strength The strength to reset the structure to
