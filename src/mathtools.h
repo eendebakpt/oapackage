@@ -570,7 +570,7 @@ static void print_perm_int(const permutationType*s, const int len, const int max
         myprintf("\n");
     }
 }
-#ifdef FULLPACKAGE
+
 
 /// print permutation with string in front
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
@@ -592,23 +592,13 @@ static void print_perm (const std::vector< permutationType > s, const int maxlen
         print_perm_int (s, maxlen, ret);
 }
 
-/// print permutation to stanard output
+/// print permutation to standard output
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
     print_perm_int<permutationType>(s, len, maxlen);
 }
 
-#else
-// dummy values
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const larray< permutationType > s, const int maxlen = 256, const bool ret = true) {}
 
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {}
-
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {}
-#endif
 
 #define print_comb print_perm
 

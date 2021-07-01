@@ -33,13 +33,19 @@ public:
 
 public:
 
+    /** @brief Class represensing an n-dimensional array
+     * @param dims Dimension of the array
+    */
     ndarray(const std::vector< int > dims) {
         initialize_internal_structures(dims);
         initialize(0);
     }
+
+    /// Copy constructor
+    /// Copies the internal data
     ndarray(const ndarray<Type>& rhs) {
         initialize_internal_structures(rhs.dims);
-        std::copy(data, data + n, rhs.data);
+        std::copy(rhs.data, rhs.data + n, data);
     }
 
     ~ndarray() { delete[] data; }
@@ -54,6 +60,7 @@ public:
         return sizeof(Type);
     }
 
+    /// Return True is the data type is of floating point type
     bool type_is_floating_point() const {
         return std::is_floating_point<Type>::value;
     }
@@ -105,7 +112,7 @@ public:
         }
     }
     /// convert a linear index to normal indices
-    inline void linear2idx(int ndx, std::vector< int >& nidx) const {
+    void linear2idx(int ndx, std::vector< int >& nidx) const {
 
         assert((int)nidx.size() == this->k);
         for (int i = k - 1; i >= 0; i--) {
@@ -118,12 +125,17 @@ public:
     }
 
     /// From an n-dimensional index return the linear index in the data
-    inline int getlinearidx(int* idx) const {
+    int getlinearidx(int* idx) const {
         int lidx = 0;
         for (int i = 0; i < k; i++) {
             lidx += idx[i] * cumprod[i];
         }
         return lidx;
+    }
+
+    /// Return pointer to data
+    void* data_pointer() const {
+        return (void*) this->data;
     }
 
     /// set all values of the array to specified value
@@ -291,6 +303,49 @@ void distance_distribution_mixed_inplace(const array_link& al, ndarray< double >
  * @return
 */
 ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose);
+
+/// Calculate MacWilliams transform
+template < class Type >
+std::vector< double > macwilliams_transform(std::vector< Type > B, int N, int s) {
+    int n = B.size() - 1;
+    std::vector< double > Bp(n + 1);
+
+    if (s == 2) {
+        if (n <= Combinations::number_combinations_max_n()) {
+            // use cached version of krawtchouks
+            for (int j = 0; j <= n; j++) {
+                Bp[j] = 0;
+                for (int i = 0; i <= n; i++) {
+                    Bp[j] += B[i] * krawtchouksCache< long >(
+                        j, i, n); //  calculate krawtchouk with dynamic programming
+                }
+                Bp[j] /= N;
+            }
+        }
+        else {
+
+            for (int j = 0; j <= n; j++) {
+                Bp[j] = 0;
+                for (int i = 0; i <= n; i++) {
+                    Bp[j] += B[i] * krawtchouks< long >(j, i, n);
+                }
+                Bp[j] /= N;
+            }
+        }
+
+    }
+    else {
+        for (int j = 0; j <= n; j++) {
+            Bp[j] = 0;
+            for (int i = 0; i <= n; i++) {
+                Bp[j] += B[i] * krawtchouk< long >(j, i, n, s);
+            }
+            Bp[j] /= N;
+        }
+    }
+
+    return Bp;
+}
 
 /** Calculate Jk-characteristics of a matrix
  *

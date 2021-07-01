@@ -163,7 +163,7 @@ void distance_distribution_mixed_inplace (const array_link &al, ndarray< double 
                         dHmixed (N, n, al, r1, r2, dh, sg.ngroups, sg.gidx);
 
                         if (verbose >= 4) {
-                                myprintf ("distance_distribution_mixed: rows %d %d: ", r1, r2);
+                                myprintf ("distance_distribution_mixed: rows %d %d: index ", r1, r2);
                                 print_perm (dh, sg.ngroups);
                         }
                         int v = B.get (dh);
@@ -172,7 +172,7 @@ void distance_distribution_mixed_inplace (const array_link &al, ndarray< double 
                         if (verbose >= 3) {
                                 int w = B.getlinearidx (dh);
                                 if (w == 0) {
-                                        myprintf (" r1 %d, r2 %d\n", r1, r2);
+                                        myprintf ("distance_distribution_mixed: row1 %d, row2 %d\n", r1, r2);
                                 }
                         }
                 }
@@ -210,47 +210,6 @@ ndarray<double> distance_distribution_mixed(const array_link& al, int verbose) {
     ndarray<double> B(d);
     distance_distribution_mixed_inplace(al, B, verbose);
     return B;
-}
-
-template < class Type >
-/// calculate MacWilliams transform
-std::vector< double > macwilliams_transform (std::vector< Type > B, int N, int s) {
-        int n = B.size () - 1;
-        std::vector< double > Bp (n + 1);
-
-        if (s == 2) {
-                if (n <= Combinations::number_combinations_max_n ()) {
-                        // use cached version of krawtchouks
-                        for (int j = 0; j <= n; j++) {
-                                Bp[j] = 0;
-                                for (int i = 0; i <= n; i++) {
-                                        Bp[j] += B[i] * krawtchouksCache< long > (
-                                                            j, i, n); //  calculate krawtchouk with dynamic programming
-                                }
-                                Bp[j] /= N;
-                        }
-                } else {
-
-                        for (int j = 0; j <= n; j++) {
-                                Bp[j] = 0;
-                                for (int i = 0; i <= n; i++) {
-                                        Bp[j] += B[i] * krawtchouks< long > (j, i, n);
-                                }
-                                Bp[j] /= N;
-                        }
-                }
-
-        } else {
-                for (int j = 0; j <= n; j++) {
-                        Bp[j] = 0;
-                        for (int i = 0; i <= n; i++) {
-                                Bp[j] += B[i] * krawtchouk< long > (j, i, n, s);
-                        }
-                        Bp[j] /= N;
-                }
-        }
-
-        return Bp;
 }
 
 std::vector< double > distance_distribution (const array_link &al) {

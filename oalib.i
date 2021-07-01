@@ -459,6 +459,7 @@ def __getattr__(self, attr):
 %template(krawtchouk) krawtchouk<long>;
 #%template(ndarray) ndarray<double>;
 %template(choose_long) choose<long>;
+%template(macwilliams_transform) macwilliams_transform<double>;
 
 %pythoncode %{
 # for legacy reasons and for name consistency
@@ -541,7 +542,7 @@ def __getattr__(self, attr):
       else:
           # assume signed integer type
           a['typestr']='<i%d' % sizeofdata
-      a['data']=(self.data, True)
+      a['data']=(self.data_pointer(), True)
       # convert from the OAP column-major style to Numpy row-major style?
       #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
       return a

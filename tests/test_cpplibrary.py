@@ -7,25 +7,15 @@ import os
 import sys
 import tempfile
 import unittest
+import unittest.mock as mock
 from contextlib import redirect_stdout
+from unittest.mock import patch
 
 import numpy as np
 
 import oapackage
 
-if sys.version_info >= (3, 4):
-    import io
-    import unittest.mock as mock
-    from unittest.mock import patch
-    python3 = True
-else:
-    try:
-        from unittest import mock
-    except ImportError as ex:
-        logging.exception(ex)
-        raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
-    python3 = False
-    patch = None
+python3 = True
 
 
 def is_sorted(l):
@@ -562,6 +552,14 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(rank, 20)
         self.assertEqual(rank2, 20)
 
+    def test_distance_distribution_sum(self):
+        array = oapackage.exampleArray(1, 1)
+        array = array.selectFirstColumns(3)
+
+        D = oapackage.distance_distribution_mixed(array, 0)
+        np.testing.assert_array_equal(D, [2.5, 4.5, 7.5, 1.5])
+        self.assertEqual(np.sum(D), 16.)
+
     def distance_distribution(self):
         al = oapackage.array_link(2, 2, 0)
         distance_distrib = oapackage.distance_distribution(al)
@@ -575,6 +573,27 @@ class TestCppLibrary(unittest.TestCase):
 
         distance_distrib = oapackage.distance_distribution(al)
         self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
+
+    def test_distance_distribution_shape(self):
+        array = oapackage.exampleArray(1, 0)
+        dims = oapackage.distance_distribution_shape(oapackage.arraylink2arraydata(array))
+        self.assertEqual(dims, (6,))
+
+    def test_distance_distribution_mixed(self):
+        array = oapackage.exampleArray(1, 0).selectFirstColumns(3)
+        dims = oapackage.distance_distribution_shape(oapackage.arraylink2arraydata(array))
+
+        B0 = oapackage.distance_distribution_mixed(array)
+        dd0 = np.array(B0)
+
+        B = oapackage.ndarray_double(dims)
+        oapackage.distance_distribution_mixed_inplace(array, B, verbose=0)
+        dd_mixed = np.array(B)
+
+        dd = oapackage.distance_distribution(array)
+
+        np.testing.assert_array_equal(dd0, dd)
+        np.testing.assert_array_equal(dd0, dd_mixed)
 
     def test_Defficiencies(self):
         array = oapackage.exampleArray(0, 0)
