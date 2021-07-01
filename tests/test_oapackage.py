@@ -105,10 +105,14 @@ def test_nauty(verbose=0):
     if verbose:
         print('test_nauty: test reduction to normal form')
     al = oapackage.exampleArray(0, verbose)
-    alr = al.randomperm()
-    tr = oapackage.reduceOAnauty(alr)
-    alx = tr.apply(alr)
-    assert(alx == al)
+    tr = oapackage.reduceOAnauty(al)
+    al_reduced = tr.apply(al)
+
+    alrandom = al.randomperm()
+    tr = oapackage.reduceOAnauty(alrandom)
+    al_reduced2 = tr.apply(alrandom)
+
+    assert(al_reduced == al_reduced2)
 
 
 def miscunittest(verbose=1):

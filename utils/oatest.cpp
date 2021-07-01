@@ -82,44 +82,63 @@ int arrayInPareto (const Pareto< mvalue_t< long >, array_link > &pset, const arr
 }
 
 
-int main (int argc, char *argv[]) {
-        AnyOption opt;
-        /* parse command line options */
-        opt.setFlag ("help", 'h'); /* a flag (takes no argument), supporting long and short form */
-        opt.setOption ("output", 'o');
-        opt.setOption ("input", 'I');
-        opt.setOption ("rand", 'r');
-        opt.setOption ("verbose", 'v');
-        opt.setOption ("ii", 'i');
-        opt.setOption ("jj");
-        opt.setOption ("xx", 'x');
-        opt.setOption ("dverbose", 'd');
-        opt.setOption ("rows");
-        opt.setOption ("cols");
-        opt.setOption ("nrestarts");
-        opt.setOption ("niter");
-        opt.setOption ("mdebug", 'm');
-        opt.setOption ("oaconfig", 'c'); /* file that specifies the design */
+int main(int argc, char* argv[]) {
+    AnyOption opt;
+    /* parse command line options */
+    opt.setFlag("help", 'h'); /* a flag (takes no argument), supporting long and short form */
+    opt.setOption("output", 'o');
+    opt.setOption("input", 'I');
+    opt.setOption("rand", 'r');
+    opt.setOption("verbose", 'v');
+    opt.setOption("ii", 'i');
+    opt.setOption("jj");
+    opt.setOption("xx", 'x');
+    opt.setOption("dverbose", 'd');
+    opt.setOption("rows");
+    opt.setOption("cols");
+    opt.setOption("nrestarts");
+    opt.setOption("niter");
+    opt.setOption("mdebug", 'm');
+    opt.setOption("oaconfig", 'c'); /* file that specifies the design */
 
-        opt.addUsage ("Orthonal Array: oatest: testing platform");
-        opt.addUsage ("Usage: oatest [OPTIONS] [FILE]");
-        opt.addUsage ("");
-        opt.addUsage (" -h --help  			Prints this help ");
-        opt.processCommandArgs (argc, argv);
+    opt.addUsage("Orthonal Array: oatest: testing platform");
+    opt.addUsage("Usage: oatest [OPTIONS] [FILE]");
+    opt.addUsage("");
+    opt.addUsage(" -h --help  			Prints this help ");
+    opt.processCommandArgs(argc, argv);
 
-        double t0 = get_time_ms (), dt = 0;
-        int randvalseed = opt.getIntValue ('r', 1);
-        int ix = opt.getIntValue ('i', 1);
-        int r = opt.getIntValue ('r', 1);
-        int jj = opt.getIntValue ("jj", 5);
+    double t0 = get_time_ms(), dt = 0;
+    int randvalseed = opt.getIntValue('r', 1);
+    int ix = opt.getIntValue('i', 1);
+    int r = opt.getIntValue('r', 1);
+    int jj = opt.getIntValue("jj", 5);
 
-        int xx = opt.getIntValue ('x', 0);
-        int niter = opt.getIntValue ("niter", 10);
-        int verbose = opt.getIntValue ("verbose", 1);
+    int xx = opt.getIntValue('x', 0);
+    int niter = opt.getIntValue("niter", 10);
+    int verbose = opt.getIntValue("verbose", 1);
 
-        const char *input = opt.getValue ('I');
-        if (input == 0)
-                input = "test.oa";
+    const char* input = opt.getValue('I');
+    if (input == 0)
+        input = "test.oa";
+
+    array_link G(4, 4, 0);
+    G.at(0, 0) = 1;
+    G.at(1, 0) = 1;
+    G.at(1, 2) = 1;
+    G.at(1, 3) = 1;
+    G.at(2, 2) = 1;
+    G.at(3, 1) = 1;
+
+    if (xx) {
+    G.at(0, 1) = 1; G.at(2, 1) = G.at(3, 1) = G.at(1, 3) = 1; // symmetric
+}
+        G.showarraycompact();
+
+        std::vector<int> colors(4);
+
+        std::vector<int> perm = nauty::reduceNauty(G, colors, 4);
+        myprintf("perm: ");  print_perm(perm);
+        return 0;
 
         printf("test! %ld\n", choose(6,4));
         for (int i = 4; i < 12; i++)
