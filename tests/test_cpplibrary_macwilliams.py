@@ -1,15 +1,4 @@
-""" Orthogonal Array package test functions
-"""
-
-import io
-import logging
-import os
-import sys
-import tempfile
 import unittest
-import unittest.mock as mock
-from contextlib import redirect_stdout
-from unittest.mock import patch
 
 import numpy as np
 

@@ -17,20 +17,6 @@ import oapackage.graphtools
 import oapackage.scanf
 from oapackage.oahelper import write_text_arrayfile
 
-python3 = True
-
-
-def only_python3(function):
-    """ Decorator to only execute a test function in Python 3 """
-    python3 = sys.version_info >= (3, 4)
-    if python3:
-        def only_python3_function(*args, **kwargs):
-            return function(*args, **kwargs)
-    else:
-        def only_python3_function(*args, **kwargs):
-            return None
-    return only_python3_function
-
 
 def autodoctest():
     """ Test the module using autodoc
@@ -312,7 +298,6 @@ class TestOAhelper(unittest.TestCase):
         latex_str = oapackage.oahelper.array2latex(np.array(self.test_array), mode='pmatrix')
         self.assertEqual(latex_str[0:15], r'\begin{pmatrix}')
 
-    @only_python3
     def test_gwlp2str(self):
         with self.assertWarns(UserWarning):
             self.assertEqual(oapackage.oahelper.gwlp2str([1, 2, 3]), '')
@@ -333,14 +318,12 @@ class TestOAhelper(unittest.TestCase):
         idx = oapackage.oahelper.argsort([2, 2, 1])
         assert(idx == [2, 0, 1])
 
-    @only_python3
     def test_plot2Dline(self):
         if importlib.util.find_spec('matplotlib') is not None:
             with mock.patch('matplotlib.pyplot.plot') as MockPlt:
                 oapackage.oahelper.plot2Dline([1, 0, 0])
                 self.assertTrue(MockPlt.called)
 
-    @only_python3
     def test_deprecated(self):
         def func():
             return 'hi'
