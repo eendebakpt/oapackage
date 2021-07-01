@@ -44,6 +44,8 @@ public:
     /// Copy constructor
     /// Copies the internal data
     ndarray(const ndarray<Type>& rhs) {
+        myprintf("ndarray: copy constructor: dims "); print_perm(rhs.dims);
+
         initialize_internal_structures(rhs.dims);
         std::copy(rhs.data, rhs.data + n, data);
     }
@@ -262,9 +264,10 @@ std::vector< double > PICsequence(const array_link &array, int verbose = 0);
  * @param B Input array
  * @param N
  * @param verbose Verbosity level
+ * @param factor_levels_for_groups Factor levels for the groups
  * @return MacWilliams transform of the input array
 */
-ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose = 0);
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int>& factor_levels_for_groups, int verbose = 0);
 
 /** Return the distance distribution of a design
  *
@@ -297,12 +300,13 @@ void distance_distribution_mixed_inplace(const array_link& al, ndarray< double >
 
 /** @brief Calculate MacWilliams transform for mixed level data
  *
- * @param B
- * @param N
- * @param verbose
- * @return
+ * @param B Input array
+ * @param N Number of runs
+ * @param factor_levels_for_groups Factor levels
+ * @param verbose Verbosity level
+ * @return Transform if the input array
 */
-ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose);
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int>& factor_levels_for_groups, int verbose);
 
 /// Calculate MacWilliams transform
 template < class Type >
@@ -316,8 +320,7 @@ std::vector< double > macwilliams_transform(std::vector< Type > B, int N, int s)
             for (int j = 0; j <= n; j++) {
                 Bp[j] = 0;
                 for (int i = 0; i <= n; i++) {
-                    Bp[j] += B[i] * krawtchouksCache< long >(
-                        j, i, n); //  calculate krawtchouk with dynamic programming
+                    Bp[j] += B[i] * krawtchouksCache< long >(j, i, n);
                 }
                 Bp[j] /= N;
             }

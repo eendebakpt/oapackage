@@ -1,21 +1,23 @@
 """ Orthogonal Array package test functions
 """
 
-import sys
-import os
-import numpy as np
-import tempfile
 import importlib
+import os
+import sys
+import tempfile
 import unittest
 import unittest.mock as mock
 from unittest.mock import patch
-python3 = True
+
+import numpy as np
 
 import oalib
 import oapackage
-import oapackage.scanf
 import oapackage.graphtools
+import oapackage.scanf
 from oapackage.oahelper import write_text_arrayfile
+
+python3 = True
 
 
 def only_python3(function):
@@ -68,6 +70,15 @@ class TestMisc(unittest.TestCase):
         adata = oapackage.arraylink2arraydata(al)
         g = oapackage.graphtools.oa2graph(al, adata)
         self.assertTrue(g[0].shape == (34, 34))
+
+
+def test_extendSingleArray():
+    A = oapackage.exampleArray(4, 1)
+    adata = oapackage.arraylink2arraydata(A, extracols=2)
+    B = A.selectFirstColumns(5)
+    ee = oapackage.oahelper.extendSingleArray(B, adata, t=2, verbose=1)
+    assert(ee[0].n_columns == B.n_columns + 1)
+    assert(ee[1] == A.selectFirstColumns(6))
 
 
 def test_numpy_interface(verbose=0):
@@ -210,13 +221,13 @@ class TestOAfiles(unittest.TestCase):
                                               [-1], afmode=oalib.ABINARY, verbose=1, cache=0)
 
     def test_write_arrayfile_with_comment(self):
-        designs=[oapackage.exampleArray(3)]
-        filename=tempfile.mktemp(suffix='.oa')
+        designs = [oapackage.exampleArray(3)]
+        filename = tempfile.mktemp(suffix='.oa')
         write_text_arrayfile(filename, designs, comment='Test comment')
         arrays = oapackage.readarrayfile(filename, 0)
         self.assertEqual(len(designs), len(arrays))
-        self.assertEqual(designs[0], arrays[0] )
-        
+        self.assertEqual(designs[0], arrays[0])
+
     def test_nArrayFile(self):
         _, array_filename = tempfile.mkstemp(suffix='.oa', dir=tempfile.tempdir)
         oapackage.writearrayfile(array_filename, [oapackage.exampleArray(4, 0)])
@@ -257,16 +268,18 @@ class TestParetoFunctionality:
         selected = oapackage.oahelper.selectParetoArrays(arrays, pareto_object)
         self.assertEqual(selected, arrays[4, 5])
 
+
 class TestOAhinterface(unittest.TestCase):
     """ Test functionality in C++ to Python interface """
 
     def test_update_array_link(self):
         al = oapackage.exampleArray(1)
-        oapackage.update_array_link(al, np.array([[1,2,3],[4,5,6]]) )
+        oapackage.update_array_link(al, np.array([[1, 2, 3], [4, 5, 6]]))
         print(al)
-        self.assertEqual(al.shape, (2,3))
-        self.assertEqual(list(al), [1,4,2,5,3,6])
-        
+        self.assertEqual(al.shape, (2, 3))
+        self.assertEqual(list(al), [1, 4, 2, 5, 3, 6])
+
+
 class TestOAhelper(unittest.TestCase):
     """ Test functionality contained in oahelper module """
 

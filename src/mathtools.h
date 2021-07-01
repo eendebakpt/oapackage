@@ -1697,7 +1697,7 @@ IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType
         for (IntegerType i = 0; i <= j; i++) {
                 val += power_minus_one (i) * ipow (s - 1, j - i) * choose (x, i) * choose (n - x, j - i);
                 if (verbose) {
-                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * choose(x, i) * choose(n - x, j - i);
 
                         myprintf ("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n,
                                   (int)s, (int)i, (int)tt, (int)std::pow ((double)-1, (double)i),
@@ -1730,7 +1730,7 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {
-                val += power_minus_one (i) * ncombs (x, i) * ncombs (n - x, j - i);
+                val += power_minus_one (i) * choose (x, i) * choose (n - x, j - i);
         }
         return val;
 }

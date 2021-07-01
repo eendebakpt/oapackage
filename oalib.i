@@ -467,7 +467,6 @@ GWLPvalueVector = vector_mvalue_t_double
 mvalueVector = vector_mvalue_t_long
 %}
 
-
 /* representation functions */
 
 %extend arraydata_t {
@@ -524,7 +523,6 @@ Python Orthogonal Array Interface
 """
 %}
 #endif
-
 
 %extend ndarray {
 %insert("python") %{

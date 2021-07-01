@@ -235,9 +235,7 @@ std::vector< double > distance_distribution (const array_link &al) {
         return dd;
 }
 
-ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, int verbose) {
-    std::vector<int> factor_levels_for_groups(B.k);
-    for (int i = 0; i < factor_levels_for_groups.size(); i++) factor_levels_for_groups[i] = B.dims[i] - 1;
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int> &factor_levels_for_groups, int verbose) {
 
     ndarray<double> Bout = ndarray<double>(B.dims);
 
@@ -295,27 +293,25 @@ ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N
 
 /** @brief Calculate the GWLP of a mixed level design using the MacWilliams transform
  *
- * See Xu and Wu, Theorem 4.i.
+ * See "GENERALIZED MINIMUM ABERRATION FOR ASYMMETRICAL FRACTIONAL FACTORIAL DESIGNS", Xu and Wu, 2001.
  *
- * @param B
- * @param sg
- * @param sx
+ * @param B Input array
  * @param N
- * @param Bout
- * @param verbose
- * @return
+ * @param factor_levels_for_groups Factor levels for the groups
+ * @param verbose Verbosity level
+ * @return MacWilliams transform
 */
-std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > &B, const symmetry_group &sg,
-                                                   std::vector< int > factor_levels_for_groups, int N,
-                                                   int verbose = 0) {
+std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > &B, int N,
+                                                   const std::vector< int > &factor_levels_for_groups,
+                                                   int verbose) {
         if (verbose) {
                 myprintf ("macwilliams_transform_mixed:\n");
-                myprintf ("sx: ");
+                myprintf ("factor_levels_for_groups: ");
                 display_vector (factor_levels_for_groups);
                 myprintf ("\n");
         }
 
-        ndarray<double> Bout = macwilliams_transform_mixed(B, N, verbose);
+        const ndarray<double> Bout = macwilliams_transform_mixed(B, N, factor_levels_for_groups, verbose);
 
         const int ngroups = B.k;
         const int total_number_of_elements = B.n;
@@ -324,7 +320,8 @@ std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > 
         int* index_out = new int[ngroups];
 
         // use formula from page 555 in Xu and Wu (Theorem 4.i)
-        std::vector< double > A (sg.n + 1, 0);
+        int jmax = B.cumdims[B.k] - B.k;
+        std::vector< double > A (jmax+1, 0);
 
         for (int i = 0; i < total_number_of_elements; i++) {
                 Bout.linear2idx (i, index_in);
@@ -472,7 +469,7 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
         arraydata_t adata = arraylink2arraydata (al);
 
 
-        ndarray<double> B = distance_distribution_mixed (al, verbose);
+        const ndarray<double> B = distance_distribution_mixed (al, verbose);
 
         if (verbose >= 3) {
                 myprintf ("GWLPmixed: distance distribution\n");
@@ -488,19 +485,26 @@ std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate
         for (int i = 0; i < sg.ngroups; i++)
                 factor_levels_for_groups.push_back (factor_levels[sg.gstart[i]]);
 
-        std::vector< double > gma = gwpl_macwilliams_transform_mixed (B, sg, factor_levels_for_groups, N, verbose);
+        std::vector< double > gma = gwpl_macwilliams_transform_mixed (B, N, factor_levels_for_groups, verbose);
 
         if (truncate)
 			round_GWLP_zero_values(gma, N);
         return gma;
 }
 
-std::vector< double > GWLP2level(const array_link &al, int verbose, int truncate) {
-	int N = al.n_rows;
+/** Calculate GWLP for 2-level design
+ *
+ * @param array Input array
+ * @param verbose Verbosity level
+ * @param truncate If true, then round floating point values to zero
+ * @return GWLP
+*/
+std::vector< double > GWLP_two_level_design(const array_link &array, int verbose, int truncate) {
+	int N = array.n_rows;
 	int s = 2;
 
 	// calculate distance distribution
-	std::vector< double > B = distance_distributionT(al);
+	std::vector< double > B = distance_distributionT(array);
 	if (verbose) {
 		myprintf("distance_distributionT: ");
 		display_vector(B);
@@ -528,7 +532,7 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
                 std::vector< double > gma = GWLPmixed (al, verbose, truncate);
                 return gma;
         } else {
-				std::vector< double > gma = GWLP2level(al, verbose, truncate);
+				std::vector< double > gma = GWLP_two_level_design(al, verbose, truncate);
                 return gma;
         }
 }

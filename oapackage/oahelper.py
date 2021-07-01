@@ -458,7 +458,7 @@ def fac(n):
         return n * fac(n - 1)
 
 
-def choose(n, k):
+def choose(n: int, k: int) -> int:
     """ Return n choose k """
     ntok = 1
     for t in range(min(k, n - k)):
@@ -888,7 +888,7 @@ def safemax(data, default=0):
     return maximum_value
 
 
-def mkdirc(directory_name):
+def mkdirc(directory_name: str) -> str:
     """ Create directory """
     if not os.path.exists(directory_name):
         os.mkdir(directory_name)
@@ -897,8 +897,6 @@ def mkdirc(directory_name):
 
 def parseProcessingTime(logfile, verbose=0):
     """ Parse a log file to calculate the processing time """
-
-    import dateutil.parser
 
     fileinput.close()
     tstart = None
@@ -1034,15 +1032,6 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     assert(n >= len(solsx))
     sys.stdout.flush()
     return solsx
-
-
-def test_extendSingleArray():
-    A = oapackage.exampleArray(4, 1)
-    adata = oapackage.arraylink2arraydata(A, extracols=2)
-    B = A.selectFirstColumns(5)
-    ee = extendSingleArray(B, adata, t=2, verbose=1)
-    assert(ee[0].n_columns == B.n_columns + 1)
-    assert(ee[1] == A.selectFirstColumns(6))
 
 
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
