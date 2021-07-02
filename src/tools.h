@@ -291,9 +291,9 @@ void display_vector (const std::vector< atype > &v) {
 }
 template <> inline void display_vector<int>(const std::vector< int >& v) {
     const char* sep = " ";
-    for (int i = 0; i < v.size(); i++) {
+    for (int i = 0; i < (int)v.size(); i++) {
         myprintf("%d", v[i]);
-        if (i < v.size() - 1)
+        if (i < (int)v.size() - 1)
             myprintf("%s", sep);
     }
 }
