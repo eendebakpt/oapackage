@@ -542,12 +542,6 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
 
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm_int (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
-        int len = s.size ();
-        print_perm_int(s.data(), len, maxlen, ret);
-}
-/// Print permutation to output stream
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int(const permutationType*s, const int len, const int maxlen = 256, const bool ret = true) {
     int plen = std::min(len, maxlen);
 
@@ -557,7 +551,6 @@ static void print_perm_int(const permutationType*s, const int len, const int max
         myprintf("%d,", s[i]);
 
     if (len == 0) {
-        // corner case
         myprintf("}");
     }
     else {
@@ -571,6 +564,12 @@ static void print_perm_int(const permutationType*s, const int len, const int max
     }
 }
 
+/// Print permutation to output stream
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+static void print_perm_int (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
+        int len = s.size ();
+        print_perm_int(s.data(), len, maxlen, ret);
+}
 
 /// print permutation with string in front
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
