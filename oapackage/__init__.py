@@ -14,7 +14,7 @@ http://github.com/eendebakpt/oapackage
 import oalib
 import oapackage.Doptim
 from oalib import *
-from oalib import (ParetoDoubleLong, array_link, arraydata_t,
+from oalib import (ParetoDoubleLong, array_link, arraydata_t, arrayfile_t,
                    arraylink2arraydata, exampleArray, reduceGraphNauty,
                    reduceOAnauty, transformGraphMatrix)
 

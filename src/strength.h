@@ -12,9 +12,7 @@
 #include "printfheader.h"
 #include "tools.h"
 
-#ifdef FULLPACKAGE
 #include "extend.h"
-#endif
 
 struct rev_index;
 
@@ -53,7 +51,7 @@ struct strength_check_t {
         ~strength_check_t ();
 
 		void set_colcombs(const arraydata_t &ad);
-		
+
         void info () const {
                 myprintf ("strength_check_t: %d column combintations: \n", ncolcombs);
                 for (int i = 0; i < ncolcombs; i++) {
@@ -63,7 +61,7 @@ struct strength_check_t {
         }
 
 		void create_reverse_colcombs_fixed();
-		
+
         void print_frequencies () const {
                 register int i, j;
 
@@ -183,4 +181,3 @@ bool valid_element (const extend_data_t *es, const extendpos *position, carray_t
 
 /** Determine whether an element passes the strength test, specialized for 2-level array */
 bool valid_element_2level (const extend_data_t *es, const extendpos *p);
-

@@ -12,11 +12,9 @@
 #include <errno.h>
 
 
-#ifdef FULLPACKAGE
 #include "bitarray/bit_array.h"
 #include "lmc.h"
 #include <iostream>
-#endif
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -578,13 +576,6 @@ void foldtest (jstruct_t &js, const array_link &al, int jj, int verbose) {
         int cb = 0;
         int nc = ncombs (al.n_columns, jj);
         for (int x = 0; x < nc; x++) {
-#ifdef FULLPACKAGE
-                if (verbose >= 4) {
-                        myprintf ("x %d: ", x);
-                        std::cout << printfstring ("comb: ");
-                        print_perm (pp, jj);
-                }
-#endif
                 // update invalid columns
                 for (int ii = cb; ii < jj; ii++) {
                         for (int r = 0; r < N; r++) {
@@ -2071,6 +2062,16 @@ array_link exampleArray (int idx, int verbose) {
 			 array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
 			 return array;
 		 }
+         case 56: {
+             dstr = "design in OA(32, 42^{18})";
+             if (verbose) {
+                 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+             }
+             array_link array(32, 19, 0);
+             int array_data_tmp[] = { 0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,1,0,1,0,0,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0 };
+             array.setarraydata(array_data_tmp, array.n_rows* array.n_columns);
+             return array;
+         }
 
         } // end of switch
 
@@ -2234,11 +2235,9 @@ void array_link::showproperties () const {
         }
         myprintf ("  D-efficiency %.3f\n", this->Defficiency ());
         std::vector< double > gwlp = this->GWLP ();
-#ifdef FULLPACKAGE
         myprintf ("  GWLP ");
         printf_vector (gwlp, "%d", " ");
         myprintf ("\n");
-#endif
         return;
 }
 
@@ -2608,12 +2607,6 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
                             sqrt (double(N)) * Z.col (ii + 1) / sqrt (double(tmp_norm (0, 0)));
                 }
 
-#ifdef FULLPACKAGE
-                if (verbose >= 2) {
-                        eigenInfo (Z, "Z");
-                        print_eigen_matrix(Z);
-                }
-#endif
                 meoffset += md;
         }
 
@@ -3106,9 +3099,8 @@ void arraydata_t::show (int verbose) const {
 std::string arraydata_t::showstr () const {
         std::stringstream ss;
         ss << printfstring ("arrayclass: N %d, k %d, strength %d, s ", this->N, this->ncols, this->strength);
-        print_perm (ss, this->s, this->ncols);
+        print_perm (ss, this->s, this->ncols, 256, false);
         std::string s = ss.str ();
-        s = s.substr (0, s.size () - 1);
         s += printfstring (", order %d", this->order);
         return s;
 }
@@ -3289,6 +3281,16 @@ std::vector< int > arraydata_t::factor_levels () const {
                s[i] = this->s[i];
           }
           return s;
+}
+
+std::vector< int > arraydata_t::factor_levels_column_groups() const {
+    std::vector< int > factor_levels = this->factor_levels();
+
+    std::vector< int > factor_levels_for_groups;
+    symmetry_group sg(factor_levels, false);
+    for (int i = 0; i < sg.ngroups; i++)
+        factor_levels_for_groups.push_back(factor_levels[sg.gstart[i]]);
+    return factor_levels_for_groups;
 }
 
 array_link arraydata_t::create_root (int n_columns, int fill_value) const {
@@ -3792,18 +3794,14 @@ std::string jstructbase_t::showstr () {
         return s;
 }
 void jstructbase_t::show () {
-#ifdef FULLPACKAGE
         std::cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
         for (size_t x = 0; x < this->values.size (); x++) {
                 std::cout << printfstring (" %d", values[x]);
         }
         std::cout << std::endl;
-#endif
 }
 
 void jstructbase_t::showdata (int verbose) {
-#ifdef FULLPACKAGE
-
         for (size_t x = 0; x < this->values.size (); x++) {
                 std::cout << printfstring (" %d", values[x]);
         }
@@ -3816,7 +3814,6 @@ void jstructbase_t::showdata (int verbose) {
                         myprintf ("this->jvalue2index[%d]=%d\n", iterator->first, iterator->second);
                 }
         }
-#endif
 }
 
 /** Calculate J-value for an array
@@ -4141,7 +4138,6 @@ bool file_exists (const char *filename) {
 #endif
 }
 
-#ifdef FULLPACKAGE
 
 bool arrayfile_t::isbinary () const {
         return (this->mode == ABINARY || this->mode == ABINARY_DIFF || this->mode == ABINARY_DIFFZERO);
@@ -5596,12 +5592,6 @@ void selectArrays (const std::string filename, std::vector< int > &idx, arraylis
                                 }
                                 for (int j = 0; j < (nsk); j++) {
                                         af.read_array (al);
-                                        if (verbose >= 3) {
-                                                std::vector< double > tmp = al.GWLP ();
-                                                myprintf ("  gwlp: ");
-                                                display_vector (tmp);
-                                                myprintf ("\n");
-                                        }
                                         cpos++;
                                 }
                                 af.read_array (al);
@@ -5665,8 +5655,6 @@ array_link selectArrays (const std::string filename, int ii) {
         }
         return al;
 }
-
-#endif // FULLPACKAGE, related to arrayfile_t
 
 void selectArrays (const arraylist_t &input_list, std::vector< int > &idx, arraylist_t &output_list) {
         for (std::vector< int >::iterator it = idx.begin (); it < idx.end (); it++) {
@@ -5807,6 +5795,7 @@ array_link hstack (const array_link &array, const conference_column &column) {
         return v;
 }
 
+/// stack two arrays together
 array_link hstack (const array_link &array_left, const array_link &array_right) {
         assert (array_left.n_rows == array_right.n_rows);
         array_link output_array (array_left.n_rows, array_left.n_columns + array_right.n_columns, array_link::INDEX_NONE);

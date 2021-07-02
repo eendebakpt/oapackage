@@ -487,10 +487,11 @@ template < class NumType, class NumTypeIn > larray< NumType > array2larray (cons
   \param s Pointer to start of array
   \param len Length of array to be printed
   \param maxlen (optional) Maximum length to print
+  \param ret If True, then append a newline
   \brief Print permutation
   */
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (std::ostream &out, const permutationType *s, const int len, const int maxlen = 256) {
+static void print_perm (std::ostream &out, const permutationType *s, const int len, const int maxlen = 256, const bool ret = true) {
         out << "{";
 
         int plen = std::min (len, maxlen);
@@ -498,13 +499,22 @@ static void print_perm (std::ostream &out, const permutationType *s, const int l
                 out << s[i] << ",";
 
         if (len == 0) {
-                out << "}\n";
+                out << "}";
         } else {
                 if (plen < len)
-                        out << s[plen - 1] << ",...}\n";
+                        out << s[plen - 1] << ",...}";
                 else
-                        out << s[plen - 1] << "}\n";
+                        out << s[plen - 1] << "}";
         }
+        if (ret) {
+            out << "\n";
+        }
+}
+/// Print permutation to output stream
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+static void print_perm(std::ostream& out, const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
+    int len = s.size();
+    print_perm(out, s.data(), len, maxlen);
 }
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (std::ostream &out, const larray< permutationType > s, const int maxlen = 256,
@@ -528,58 +538,38 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
                 out << "\n";
         }
 }
+
+
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (std::ostream &out, const std::vector< permutationType > s, const int maxlen = 256,
-                        const bool ret = true) {
-        int len = s.size ();
+static void print_perm_int(const permutationType*s, const int len, const int maxlen = 256, const bool ret = true) {
+    int plen = std::min(len, maxlen);
 
-        out << "{";
+    myprintf("{");
 
-        int plen = std::min (len, maxlen);
-        for (int i = 0; i < plen - 1; i++)
-                out << s[i] << ",";
+    for (int i = 0; i < plen - 1; i++)
+        myprintf("%d,", s[i]);
 
-        if (len == 0) {
-                // corner case
-                out << "}";
-        } else {
-                if (plen < len)
-                        out << s[plen - 1] << ",...}";
-                else
-                        out << s[plen - 1] << "}";
-        }
-        if (ret) {
-                out << "\n";
-        }
+    if (len == 0) {
+        myprintf("}");
+    }
+    else {
+        if (plen < len)
+            myprintf("%d,...", s[plen - 1]);
+        else
+            myprintf("%d}", s[plen - 1]);
+    }
+    if (ret) {
+        myprintf("\n");
+    }
 }
 
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
         int len = s.size ();
-        int plen = std::min (len, maxlen);
-
-        myprintf ("{");
-
-        for (int i = 0; i < plen - 1; i++)
-                myprintf ("%d,", s[i]);
-
-        if (len == 0) {
-                // corner case
-                myprintf ("}");
-        } else {
-                if (plen < len)
-                        myprintf ("%d,...", s[plen - 1]);
-                else
-                        myprintf ("%d}", s[plen - 1]);
-        }
-        if (ret) {
-                myprintf ("\n");
-        }
+        print_perm_int(s.data(), len, maxlen, ret);
 }
-
-#ifdef FULLPACKAGE
 
 /// print permutation with string in front
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
@@ -598,26 +588,16 @@ static void print_perm (const larray< permutationType > s, const int maxlen = 25
 /// print permutation to std::cout
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {
-        print_perm (std::cout, s, maxlen, ret);
+        print_perm_int (s, maxlen, ret);
 }
 
-/// print permutation to std::cout
+/// print permutation to standard output
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
-        print_perm (std::cout, s, len, maxlen);
+    print_perm_int<permutationType>(s, len, maxlen);
 }
 
-#else
-// dummy values
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const larray< permutationType > s, const int maxlen = 256, const bool ret = true) {}
 
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {}
-
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {}
-#endif
 
 #define print_comb print_perm
 
@@ -1716,7 +1696,7 @@ IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType
         for (IntegerType i = 0; i <= j; i++) {
                 val += power_minus_one (i) * ipow (s - 1, j - i) * choose (x, i) * choose (n - x, j - i);
                 if (verbose) {
-                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * choose(x, i) * choose(n - x, j - i);
 
                         myprintf ("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n,
                                   (int)s, (int)i, (int)tt, (int)std::pow ((double)-1, (double)i),
@@ -1749,7 +1729,7 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {
-                val += power_minus_one (i) * ncombs (x, i) * ncombs (n - x, j - i);
+                val += power_minus_one (i) * choose (x, i) * choose (n - x, j - i);
         }
         return val;
 }

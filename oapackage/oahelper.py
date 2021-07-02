@@ -1,31 +1,29 @@
-# -*- coding: utf-8 -*-
 """ Collection of helper functions for OA package
 
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
 
 # %% Load packages
-from __future__ import print_function
 
-import sys
-import os
-from typing import List, Any
-import logging
-import numpy as np
-import functools
-import operator
-import inspect
 import fileinput
-import traceback
+import functools
+import inspect
+import logging
+import operator
+import os
 import re
-from time import gmtime, strftime
+import subprocess
+import sys
+import tempfile
 import time
+import traceback
 import warnings
 import webbrowser
-import tempfile
-import subprocess
+from time import gmtime, strftime
+from typing import Any, List, Optional, Tuple
+
 import dateutil.parser
-from typing import Optional
+import numpy as np
 
 try:
     import matplotlib
@@ -34,10 +32,8 @@ except BaseException:
     warnings.warn(
         'oahelper: matplotlib cannot be found, not all functionality is available')
 
-import oapackage
 import oalib
-
-
+import oapackage
 from oapackage import markup
 
 
@@ -57,7 +53,7 @@ def deprecated(func):
         except BaseException:
             lineno = -1
         warnings.warn_explicit(
-            "Call to deprecated function {}.".format(func.__name__),
+            f"Call to deprecated function {func.__name__}.",
             category=UserWarning,
             filename=filename,
             lineno=lineno,
@@ -241,7 +237,7 @@ def niceplot(ax, fig=None, despine=True, verbose=0, figurebg=True,
     plt.show()
 
 
-def enlargelims(factor=1.05):
+def enlargelims(factor: float = 1.05):
     """ Enlarge the limits of a plot
 
     Args:
@@ -299,8 +295,8 @@ def helmert_contrasts(number_of_levels, verbose=0):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
             print('helmert_contrasts: normalize number_of_levels tmp: %s ' % (normalization,))
-        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt((N)) * \
-            Z[:, (ii + 1):(ii + 2)] / np.sqrt((normalization))
+        main_effects[:, meoffset + ii:(meoffset + ii + 1)] = np.sqrt(N) * \
+            Z[:, (ii + 1):(ii + 2)] / np.sqrt(normalization)
 
     return main_effects
 
@@ -371,13 +367,13 @@ def tprint(string, dt=1, output=False):
             return
 
 
-def timeString(tt=None):
+def timeString(tt=None) -> str:
     """ Return a string with the current time or specified time
 
     Args:
         tt (struct_time or None): time to convert
     Returns:
-        str: formatted time
+        Formatted time
     """
     if tt is None:
         tt = gmtime()
@@ -440,7 +436,7 @@ def oainfo(filename, verbose=1):
     af.closefile()
 
 
-def oaIsBinary(filename):
+def oaIsBinary(filename: str) -> bool:
     """ Return true if array file is in binary format """
     af = oapackage.arrayfile_t(filename)
     ret = af.isbinary()
@@ -462,7 +458,7 @@ def fac(n):
         return n * fac(n - 1)
 
 
-def choose(n, k):
+def choose(n: int, k: int) -> int:
     """ Return n choose k """
     ntok = 1
     for t in range(min(k, n - k)):
@@ -570,17 +566,19 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     page.table.close()
     return page
 
-def write_text_arrayfile(filename : str, designs : List[Any], comment : str=None):
+
+def write_text_arrayfile(filename: str, designs: List[Any], comment: str = None):
     """ Write designs to disk in text format """
-    nrows=designs[0].n_rows
-    ncols=designs[0].n_columns
+    nrows = designs[0].n_rows
+    ncols = designs[0].n_columns
     afile = oapackage.oalib.arrayfile_t(filename, nrows, ncols, len(designs), oapackage.oalib.ATEXT, 8)
     if comment is not None:
-        for c in comment.split('\n' ):
+        for c in comment.split('\n'):
             afile.add_comment(c)
     afile.append_arrays(designs)
     afile.closefile()
-    
+
+
 def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment
 
@@ -594,7 +592,7 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
         cmd = 'echo "idstr: %s";\n' % idstr + cmd
     if verbose >= 2:
         print('cmd: %s' % cmd)
-    r : Optional[int] = 0
+    r: Optional[int] = 0
     if not dryrun:
 
         process = subprocess.Popen(
@@ -643,7 +641,7 @@ def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 
     return r
 
 
-def getArrayFile(afile):
+def getArrayFile(afile: str) -> str:
     """ Return pointer to array file
     Automatically check for compressed array files
     """
@@ -695,16 +693,8 @@ def checkArrayFile(afile, cache=1):
             return False
 
 
-try:
-    # attempt to evaluate basestring
-    basestring   # type: ignore
-
-    def isstr(s):
-        return isinstance(s, basestring)
-except NameError:
-    # probably Python 3.x
-    def isstr(s):
-        return isinstance(s, str)
+def isstr(s: Any) -> bool:
+    return isinstance(s, str)
 
 
 def checkFiles(lst, cache=1, verbose=0):
@@ -898,7 +888,7 @@ def safemax(data, default=0):
     return maximum_value
 
 
-def mkdirc(directory_name):
+def mkdirc(directory_name: str) -> str:
     """ Create directory """
     if not os.path.exists(directory_name):
         os.mkdir(directory_name)
@@ -907,8 +897,6 @@ def mkdirc(directory_name):
 
 def parseProcessingTime(logfile, verbose=0):
     """ Parse a log file to calculate the processing time """
-
-    import dateutil.parser
 
     fileinput.close()
     tstart = None
@@ -1044,15 +1032,6 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     assert(n >= len(solsx))
     sys.stdout.flush()
     return solsx
-
-
-def test_extendSingleArray():
-    A = oapackage.exampleArray(4, 1)
-    adata = oapackage.arraylink2arraydata(A, extracols=2)
-    B = A.selectFirstColumns(5)
-    ee = extendSingleArray(B, adata, t=2, verbose=1)
-    assert(ee[0].n_columns == B.n_columns + 1)
-    assert(ee[1] == A.selectFirstColumns(6))
 
 
 def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
@@ -1218,7 +1197,7 @@ def testHtml(html_code=None):
         webbrowser.open(fname.name)
 
 
-def designStandardError(al):
+def designStandardError(al) -> Tuple[float, float, float]:
     """ Return standard errors for a design
 
     Args:
@@ -1306,8 +1285,15 @@ def makearraylink(array):
     return array
 
 
-def formatC(al, wrap=True):
-    """ Format array for inclusion in C code """
+def formatC(al, wrap: bool = True) -> str:
+    """ Format array for inclusion in C code
+
+    Args:
+        array: Array to be converted to C code representation
+        wrap: If True, then add code to create a variable
+    Returns:
+        Formatted string
+    """
     l = np.array(al).T.flatten().tolist()
     s = ','.join(['%d' % x for x in l])
     if wrap:

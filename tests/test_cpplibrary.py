@@ -1,43 +1,25 @@
 """ Orthogonal Array package test functions
 """
 
+import io
 import logging
 import os
 import sys
 import tempfile
 import unittest
+import unittest.mock as mock
+from contextlib import redirect_stdout
+from unittest.mock import patch
 
 import numpy as np
 
 import oapackage
 
-if sys.version_info >= (3, 4):
-    import io
-    import unittest.mock as mock
-    from unittest.mock import patch
-    python3 = True
-else:
-    try:
-        from unittest import mock
-    except ImportError as ex:
-        logging.exception(ex)
-        raise Exception('to perform tests with python2 install the mock package (see https://pypi.org/project/mock/)')
-    python3 = False
-    patch = None
+python3 = True
 
 
 def is_sorted(l):
     return all(a <= b for a, b in zip(l, l[1:]))
-
-
-def only_python3(function):
-    if python3:
-        def only_python3_function(*args, **kwargs):
-            return function(*args, **kwargs)
-    else:
-        def only_python3_function(*args, **kwargs):
-            return None
-    return only_python3_function
 
 
 class TestCompareMethods(unittest.TestCase):
@@ -119,7 +101,6 @@ class TestReductions(unittest.TestCase):
         reduced_array = oapackage.reduceLMCform(array)
         self.assertEqual(array0, reduced_array)
 
-    @only_python3
     def test_DOP(self):
         al = oapackage.exampleArray(1, 0)
         transformation = oapackage.reductionDOP(al)
@@ -208,7 +189,6 @@ class TestModelmatrix(unittest.TestCase):
                                                                           [-0., -0., -1.73205081, -1.],
                                                                           [0., 0., 0., 2.]]))
 
-    @only_python3
     def test_modelmatrix_verbosity(self):
         conf_design = oapackage.exampleArray(41, 0)
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
@@ -219,7 +199,6 @@ class TestModelmatrix(unittest.TestCase):
 
 class TestArrayLink(unittest.TestCase):
 
-    @only_python3
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 0)
         al = al.selectFirstColumns(3)
@@ -287,7 +266,6 @@ class TestArraydata_t(unittest.TestCase):
         factor_levels = arrayclass.factor_levels()
         self.assertEqual(factor_levels, (4, 3, 2, 2, 2))
 
-    @only_python3
     def test_arraydata_t_oaindex(self):
         for ii in range(1, 4):
             arrayclass = oapackage.arraydata_t([2, 2, 2], 4 * ii, 2, 3)
@@ -312,7 +290,6 @@ class TestArraydata_t(unittest.TestCase):
 
 class TestJcharacteristics(unittest.TestCase):
 
-    @only_python3
     def test_jstruct_conference(self):
         conf_design = oapackage.exampleArray(30, 0)
         js = oapackage.jstructconference_t(conf_design, 4)
@@ -428,7 +405,6 @@ class TestCppLibrary(unittest.TestCase):
         self.assertTrue(oapackage.is_root_form(array, 2))
         self.assertFalse(oapackage.is_root_form(array, 5))
 
-    @only_python3
     def test_runExtend_increasing_factor_levels(self):
         """ We test the usage of an increasing factor levels raises are warning, but nevertheless gives the correct results """
         N = 18
@@ -443,7 +419,11 @@ class TestCppLibrary(unittest.TestCase):
 
         self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
 
-    @only_python3
+    def test_print_column(self):
+        with redirect_stdout(io.StringIO()) as f:
+            oapackage.print_column([1, 2, 3])
+        self.assertEqual(f.getvalue(), '  1  2  3\n')
+
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
@@ -457,7 +437,6 @@ class TestCppLibrary(unittest.TestCase):
             dof_element = list(dof_values[column].raw_values())
             self.assertEqual(dof_element[0], -arrayclass.factor_levels()[column])
 
-    @only_python3
     def test_exampleArray(self):
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(5, 1)
@@ -491,7 +470,6 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(oapackage.splitFile([]), '')
         self.assertEqual(oapackage.splitDir([1, 2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
 
-    @only_python3
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
@@ -551,7 +529,6 @@ class TestCppLibrary(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             oapackage.mycheck_handler('a', 'b', 1, 0, 'mycheck_handler raise')
 
-    @only_python3
     def test_arrayrankInfo(self):
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
             rank = oapackage.arrayrankInfo(oapackage.exampleArray(21))
@@ -575,6 +552,14 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(rank, 20)
         self.assertEqual(rank2, 20)
 
+    def test_distance_distribution_sum(self):
+        array = oapackage.exampleArray(1, 1)
+        array = array.selectFirstColumns(3)
+
+        D = oapackage.distance_distribution_mixed(array, 0)
+        np.testing.assert_array_equal(D, [2.5, 4.5, 7.5, 1.5])
+        self.assertEqual(np.sum(D), 16.)
+
     def distance_distribution(self):
         al = oapackage.array_link(2, 2, 0)
         distance_distrib = oapackage.distance_distribution(al)
@@ -588,6 +573,27 @@ class TestCppLibrary(unittest.TestCase):
 
         distance_distrib = oapackage.distance_distribution(al)
         self.assertEqual(distance_distrib, (1.25, 0.75, 1.5, 6.5, 5.25, 0.75, 0.0))
+
+    def test_distance_distribution_shape(self):
+        array = oapackage.exampleArray(1, 0)
+        dims = oapackage.distance_distribution_shape(oapackage.arraylink2arraydata(array))
+        self.assertEqual(dims, (6,))
+
+    def test_distance_distribution_mixed(self):
+        array = oapackage.exampleArray(1, 0).selectFirstColumns(3)
+        dims = oapackage.distance_distribution_shape(oapackage.arraylink2arraydata(array))
+
+        B0 = oapackage.distance_distribution_mixed(array)
+        dd0 = np.array(B0)
+
+        B = oapackage.ndarray_double(dims)
+        oapackage.distance_distribution_mixed_inplace(array, B, verbose=0)
+        dd_mixed = np.array(B)
+
+        dd = oapackage.distance_distribution(array)
+
+        np.testing.assert_array_equal(dd0, dd)
+        np.testing.assert_array_equal(dd0, dd_mixed)
 
     def test_Defficiencies(self):
         array = oapackage.exampleArray(0, 0)
@@ -612,7 +618,6 @@ class TestCppLibrary(unittest.TestCase):
             self.assertAlmostEqual(efficiencies[0], D)
             self.assertAlmostEqual(efficiencies[1], Ds)
 
-    @only_python3
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 0)
         with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:

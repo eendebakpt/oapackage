@@ -2,7 +2,7 @@ Orthogonal Array Package
 ========================
 
 The Orthogonal Array package contains functionality to generate and analyse orthogonal arrays, optimal designs and conference designs.
-Features include generation of complete series of orthogonal arrays, 
+Features include generation of complete series of orthogonal arrays,
 reduction of arrays to normal form and calculation of properties such as the strength or D-efficiency of an array.
 For more information about the package see the
 documentation at [oapackage.readthedocs.io](https://oapackage.readthedocs.io/en/latest/). A large collection of results generated
@@ -31,7 +31,7 @@ Generalized wordlength pattern: (1.0, 0.0, 0.0)
 ```
 
 For more examples see the Jupyter notebooks in the
-[docs/examples](docs/examples/). 
+[docs/examples](docs/examples/).
 
 Acknowledgements
 ----------------
@@ -62,11 +62,12 @@ Installation
 [![PyPI version](https://badge.fury.io/py/OApackage.svg)](https://badge.fury.io/py/OApackage)
 [![Build status](https://ci.appveyor.com/api/projects/status/f6ia9br95soimf9u/branch/master?svg=true)](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8)
 [![Build Status](https://travis-ci.org/eendebakpt/oapackage.svg?branch=master)](https://travis-ci.org/eendebakpt/oapackage)
+[![Documentation Status](https://readthedocs.org/projects/oapackage/badge/?version=latest)](https://oapackage.readthedocs.io/en/latest/?badge=latest)
 
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
 Installation can be done using the following command:
 ``` console
-$ pip install OApackage 
+$ pip install OApackage
 ```
 (or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy and Swig 3.x.
 
