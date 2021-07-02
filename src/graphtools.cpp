@@ -73,8 +73,9 @@ void setcolors (std::vector< int > colors, int *lab, int *ptn) {
 }
 
 std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, int verbose) {
+    bool is_directed_graph = ! G.isSymmetric();
     if (verbose) {
-        myprintf("reduceNauty: %d vertices\n", G.n_rows);
+        myprintf("reduceNauty: %d vertices, is_directed_graph %d\n", G.n_rows, is_directed_graph);
         myprintf("  colors: ");
         print_perm(colors);
         myprintf("\n");
@@ -97,7 +98,7 @@ std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, i
     DYNALLSTAT(int, orbits, orbits_sz);
 
     static DEFAULTOPTIONS_GRAPH(options);
-    if (!G.isSymmetric()) {
+    if (is_directed_graph) {
         static DEFAULTOPTIONS_DIGRAPH(options2);
 
         options = options2;
@@ -145,9 +146,14 @@ std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, i
                 for (int iy = 0; iy < nvertices; iy++) {
                         if (G.atfast (ix, iy) > 0) {
                                 if (verbose >= 3) {
-                                        myprintf ("adding edge: %d->%d: %d\n", ix, iy, m);
+                                        myprintf ("reduceNauty: adding edge: %d->%d: %d\n", ix, iy, m);
                                 }
-                                ADDONEEDGE (g, ix, iy, m);
+                                if (is_directed_graph) {
+                                    ADDONEARC(g, ix, iy, m);
+                                }
+                                else {
+                                    ADDONEEDGE(g, ix, iy, m);
+                                }
                         }
                 }
         }
@@ -157,9 +163,9 @@ std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, i
 
         if (verbose >= 2) {
                 myprintf ("options.defaultptn: %d\n", options.defaultptn);
-                myprintf (" lab: \n ");
+                myprintf (" lab: ");
                 print_perm (lab, n);
-                myprintf (" ptn: \n ");
+                myprintf (" ptn: ");
                 print_perm (ptn, n);
         }
 
@@ -202,8 +208,8 @@ std::vector< int > reduceNauty(const array_link& G, std::vector< int > colors, i
 } // end of nauty namespace
 
 array_transformation_t reduceOAnauty (const array_link &al, int verbose) {
-        arraydata_t ad = arraylink2arraydata (al);
-        return reduceOAnauty (al, verbose, ad);
+        arraydata_t arrayclass = arraylink2arraydata (al);
+        return reduceOAnauty (al, verbose, arrayclass);
 }
 
 array_transformation_t reduceOAnauty (const array_link &al, int verbose, const arraydata_t &arrayclass) {

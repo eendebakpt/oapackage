@@ -133,7 +133,7 @@ std::vector< double > distance_distributionT (const array_link &al, int norm = 1
         return dd;
 }
 
-void distance_distribution_mixed (const array_link &al, ndarray< double > &B, int verbose) {
+void distance_distribution_mixed_inplace (const array_link &al, ndarray< double > &B, int verbose) {
         int N = al.n_rows;
         int n = al.n_columns;
 
@@ -163,7 +163,7 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
                         dHmixed (N, n, al, r1, r2, dh, sg.ngroups, sg.gidx);
 
                         if (verbose >= 4) {
-                                myprintf ("distance_distribution_mixed: rows %d %d: ", r1, r2);
+                                myprintf ("distance_distribution_mixed: rows %d %d: index ", r1, r2);
                                 print_perm (dh, sg.ngroups);
                         }
                         int v = B.get (dh);
@@ -172,7 +172,7 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
                         if (verbose >= 3) {
                                 int w = B.getlinearidx (dh);
                                 if (w == 0) {
-                                        myprintf (" r1 %d, r2 %d\n", r1, r2);
+                                        myprintf ("distance_distribution_mixed: row1 %d, row2 %d\n", r1, r2);
                                 }
                         }
                 }
@@ -205,45 +205,11 @@ void distance_distribution_mixed (const array_link &al, ndarray< double > &B, in
         delete[] dh;
 }
 
-template < class Type >
-/// calculate MacWilliams transform
-std::vector< double > macwilliams_transform (std::vector< Type > B, int N, int s) {
-        int n = B.size () - 1;
-        std::vector< double > Bp (n + 1);
-
-        if (s == 2) {
-                if (n <= Combinations::number_combinations_max_n ()) {
-                        // use cached version of krawtchouks
-                        for (int j = 0; j <= n; j++) {
-                                Bp[j] = 0;
-                                for (int i = 0; i <= n; i++) {
-                                        Bp[j] += B[i] * krawtchouksCache< long > (
-                                                            j, i, n); //  calculate krawtchouk with dynamic programming
-                                }
-                                Bp[j] /= N;
-                        }
-                } else {
-
-                        for (int j = 0; j <= n; j++) {
-                                Bp[j] = 0;
-                                for (int i = 0; i <= n; i++) {
-                                        Bp[j] += B[i] * krawtchouks< long > (j, i, n);
-                                }
-                                Bp[j] /= N;
-                        }
-                }
-
-        } else {
-                for (int j = 0; j <= n; j++) {
-                        Bp[j] = 0;
-                        for (int i = 0; i <= n; i++) {
-                                Bp[j] += B[i] * krawtchouk< long > (j, i, n, s);
-                        }
-                        Bp[j] /= N;
-                }
-        }
-
-        return Bp;
+ndarray<double> distance_distribution_mixed(const array_link& al, int verbose) {
+    std::vector<int> d = distance_distribution_shape(arraylink2arraydata(al));
+    ndarray<double> B(d);
+    distance_distribution_mixed_inplace(al, B, verbose);
+    return B;
 }
 
 std::vector< double > distance_distribution (const array_link &al) {
@@ -269,64 +235,95 @@ std::vector< double > distance_distribution (const array_link &al) {
         return dd;
 }
 
-std::vector< double > macwilliams_transform_mixed (const ndarray< double > &B, const symmetry_group &sg,
-                                                   std::vector< int > sx, int N, ndarray< double > &Bout,
-                                                   int verbose = 0) {
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int> &factor_levels_for_groups, int verbose) {
+
+    ndarray<double> Bout = ndarray<double>(B.dims);
+
+    const int ngroups = B.k;
+    const int total_number_of_elements = B.n;
+
+    int* index_in = new int[ngroups];
+    int* index_out = new int[ngroups];
+
+    for (int i = 0; i < ngroups; i++)
+        index_in[i] = 0;
+    for (int i = 0; i < ngroups; i++)
+        index_out[i] = 0;
+
+    for (int j = 0; j < Bout.n; j++) {
+        Bout.linear2idx(j, index_out);
+        Bout.setlinear(j, 0);
+
+        for (int i = 0; i < B.n; i++) {
+            B.linear2idx(i, index_in);
+
+            long fac = 1;
+            for (int f = 0; f < B.k; f++) {
+                long ji = index_out[f];
+                long ii = index_in[f];
+                long ni = B.dims[f] - 1;
+                long si = factor_levels_for_groups[f];
+                long krw = krawtchouk(ji, ii, ni, si);
+                fac *= krw;
+                if (verbose >= 4)
+                    myprintf("  (j,i,f)=(%d, %d, %d): fac*= krw(%ld %ld %ld %ld)=%ld -> fac %ld\n", j, i, f,
+                        ji, ii, ni, si, krw, fac);
+            }
+            Bout.data[j] += B.data[i] * fac;
+            if (verbose >= 4)
+                myprintf("  Bout[%d] += B[%d] * fac = %.1f * %ld \n", j, i, (double)B.data[i], fac);
+        }
+        Bout.data[j] /= N;
+        if (verbose >= 2)
+            myprintf("macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.idxstring(j).c_str(),
+                Bout.data[j]);
+    }
+
+    if (verbose >= 1) {
+        myprintf("Bout: \n");
+        Bout.show();
+    }
+
+
+    delete[] index_out;
+    delete[] index_in;
+
+    return Bout;
+}
+
+/** @brief Calculate the GWLP of a mixed level design using the MacWilliams transform
+ *
+ * See "GENERALIZED MINIMUM ABERRATION FOR ASYMMETRICAL FRACTIONAL FACTORIAL DESIGNS", Xu and Wu, 2001.
+ *
+ * @param B Input array
+ * @param N
+ * @param factor_levels_for_groups Factor levels for the groups
+ * @param verbose Verbosity level
+ * @return MacWilliams transform
+*/
+std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > &B, int N,
+                                                   const std::vector< int > &factor_levels_for_groups,
+                                                   int verbose) {
         if (verbose) {
                 myprintf ("macwilliams_transform_mixed:\n");
-                myprintf ("sx: ");
-                display_vector (sx);
+                myprintf ("factor_levels_for_groups: ");
+                display_vector (factor_levels_for_groups);
                 myprintf ("\n");
         }
 
-        int jprod = B.n;
+        const ndarray<double> Bout = macwilliams_transform_mixed(B, N, factor_levels_for_groups, verbose);
 
-        int *index_in = new int[sg.ngroups];
-        int *index_out = new int[sg.ngroups];
+        const int ngroups = B.k;
+        const int total_number_of_elements = B.n;
 
-        for (int i = 0; i < sg.ngroups; i++)
-                index_in[i] = 0;
-        for (int i = 0; i < sg.ngroups; i++)
-                index_out[i] = 0;
-
-        for (int j = 0; j < Bout.n; j++) {
-                Bout.linear2idx (j, index_out);
-                Bout.setlinear (j, 0);
-
-                for (int i = 0; i < B.n; i++) {
-                        B.linear2idx (i, index_in);
-
-                        long fac = 1;
-                        for (int f = 0; f < B.k; f++) {
-                                long ji = index_out[f];
-                                long ii = index_in[f];
-                                long ni = B.dims[f] - 1;
-                                long si = sx[f];
-                                long krw = krawtchouk(ji, ii, ni, si);
-                                fac *= krw;
-                                if (verbose >= 4)
-                                        myprintf ("  (j,i,f)=(%d, %d, %d): fac*= krw(%ld %ld %ld %ld)=%ld -> fac %ld\n", j, i, f,
-                                                  ji, ii, ni, si, krw, fac);
-                        }
-                        Bout.data[j] += B.data[i] * fac;
-                        if (verbose >= 4)
-                            myprintf("  Bout[%d] += B[%d] * fac = %.1f * %ld \n", j, i, (double)B.data[i], fac);
-                }
-                Bout.data[j] /= N;
-                if (verbose >= 2)
-                        myprintf ("macwilliams_transform_mixed: Bout[%d]=Bout%s= %f\n", j, Bout.idxstring (j).c_str (),
-                                  Bout.data[j]);
-        }
-
-        if (verbose >= 1) {
-                myprintf ("Bout: \n");
-                Bout.show ();
-        }
+        int* index_in = new int[ngroups];
+        int* index_out = new int[ngroups];
 
         // use formula from page 555 in Xu and Wu (Theorem 4.i)
-        std::vector< double > A (sg.n + 1, 0);
+        int jmax = B.cumdims[B.k] - B.k;
+        std::vector< double > A (jmax+1, 0);
 
-        for (int i = 0; i < jprod; i++) {
+        for (int i = 0; i < total_number_of_elements; i++) {
                 Bout.linear2idx (i, index_in);
                 int jsum = 0;
                 for (int j = 0; j < Bout.k; j++)
@@ -456,44 +453,55 @@ void round_GWLP_zero_values(std::vector<double> &gma, int N)
 
 }
 
+/**
+ * @brief Return shape for distance distribution of the specified array class
+ * @param adata Specification of the array class
+ * @return Vector with dimension of the shape of the distance distribution
+*/
+std::vector<int> distance_distribution_shape(const arraydata_t adata) {
+    std::vector< int > dims(adata.ncolgroups);
+    for (unsigned int i = 0; i < dims.size(); i++)
+        dims[i] = adata.colgroupsize[i] + 1;
+    return dims;
+}
+
 std::vector< double > GWLPmixed (const array_link &al, int verbose, int truncate) {
         arraydata_t adata = arraylink2arraydata (al);
-        symmetry_group sg (adata.factor_levels (), false);
 
-        std::vector< int > dims (adata.ncolgroups);
-        for (unsigned int i = 0; i < dims.size (); i++)
-                dims[i] = adata.colgroupsize[i] + 1;
 
-        ndarray< double > B (dims);
-        ndarray< double > Bout (dims);
+        const ndarray<double> B = distance_distribution_mixed (al, verbose);
 
-        distance_distribution_mixed (al, B, verbose);
         if (verbose >= 3) {
                 myprintf ("GWLPmixed: distance distribution\n");
                 B.show ();
         }
 
         int N = adata.N;
-        // calculate GWLP
-        std::vector< int > ss = adata.factor_levels ();
 
-        std::vector< int > factor_levels_for_groups;
-        for (int i = 0; i < sg.ngroups; i++)
-                factor_levels_for_groups.push_back (ss[sg.gstart[i]]);
+        std::vector< int > factor_levels = adata.factor_levels ();
 
-        std::vector< double > gma = macwilliams_transform_mixed (B, sg, factor_levels_for_groups, N, Bout, verbose);
+        std::vector< int > factor_levels_for_groups = adata.factor_levels_column_groups();
+
+        std::vector< double > gma = gwpl_macwilliams_transform_mixed (B, N, factor_levels_for_groups, verbose);
 
         if (truncate)
 			round_GWLP_zero_values(gma, N);
         return gma;
 }
 
-std::vector< double > GWLP2level(const array_link &al, int verbose, int truncate) {
-	int N = al.n_rows;
+/** Calculate GWLP for 2-level design
+ *
+ * @param array Input array
+ * @param verbose Verbosity level
+ * @param truncate If true, then round floating point values to zero
+ * @return GWLP
+*/
+std::vector< double > GWLP_two_level_design(const array_link &array, int verbose, int truncate) {
+	int N = array.n_rows;
 	int s = 2;
 
 	// calculate distance distribution
-	std::vector< double > B = distance_distributionT(al);
+	std::vector< double > B = distance_distributionT(array);
 	if (verbose) {
 		myprintf("distance_distributionT: ");
 		display_vector(B);
@@ -521,7 +529,7 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
                 std::vector< double > gma = GWLPmixed (al, verbose, truncate);
                 return gma;
         } else {
-				std::vector< double > gma = GWLP2level(al, verbose, truncate);
+				std::vector< double > gma = GWLP_two_level_design(al, verbose, truncate);
                 return gma;
         }
 }
@@ -1601,7 +1609,6 @@ double CL2discrepancy (const array_link &al) {
         return w;
 }
 
-#ifdef FULLPACKAGE
 
 typedef Pareto< mvalue_t< long >, array_link >::pValue (*pareto_cb) (const array_link &, int);
 
@@ -1735,7 +1742,3 @@ template Pareto< mvalue_t< long >, array_link >::pValue calculateArrayParetoJ5< 
                                                                                               int verbose);
 template Pareto< mvalue_t< long >, int >::pValue calculateArrayParetoJ5< int > (const array_link &al, int verbose);
 template Pareto< mvalue_t< long >, long >::pValue calculateArrayParetoJ5< long > (const array_link &al, int verbose);
-
-#endif
-
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

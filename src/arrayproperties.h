@@ -32,28 +32,37 @@ public:
     std::vector< int > cumprod;
 
 public:
-    ndarray(std::vector< int > dimsx) {
-        k = dimsx.size();
-        dims = dimsx;
-        cumdims.resize(k + 1);
-        cumprod.resize(k + 1);
-        n = 1;
-        for (int i = 0; i < k; i++)
-            n *= dims[i];
-        cumdims[0] = 0;
-        for (int i = 0; i < k; i++)
-            cumdims[i + 1] = cumdims[i] + dims[i];
-        cumprod[0] = 1;
-        for (int i = 0; i < k; i++)
-            cumprod[i + 1] = cumprod[i] * dims[i];
 
-        data = new Type[n];
+    /** @brief Class represensing an n-dimensional array
+     * @param dims Dimension of the array
+    */
+    ndarray(const std::vector< int > dims) {
+        initialize_internal_structures(dims);
         initialize(0);
     }
+
+    /// Copy constructor
+    /// Copies the internal data
+    ndarray(const ndarray<Type>& rhs) {
+        initialize_internal_structures(rhs.dims);
+        std::copy(rhs.data, rhs.data + n, data);
+    }
+
+    ~ndarray() { delete[] data; }
 
     /// Initialize array with specified value
     void initialize(const Type value) {
         std::fill(data, data + n, value);
+    }
+
+    /// Return size of ndarray template type
+    int sizeof_type() const {
+        return sizeof(Type);
+    }
+
+    /// Return True is the data type is of floating point type
+    bool type_is_floating_point() const {
+        return std::is_floating_point<Type>::value;
     }
 
     void info() const {
@@ -103,7 +112,7 @@ public:
         }
     }
     /// convert a linear index to normal indices
-    inline void linear2idx(int ndx, std::vector< int >& nidx) const {
+    void linear2idx(int ndx, std::vector< int >& nidx) const {
 
         assert((int)nidx.size() == this->k);
         for (int i = k - 1; i >= 0; i--) {
@@ -116,12 +125,17 @@ public:
     }
 
     /// From an n-dimensional index return the linear index in the data
-    inline int getlinearidx(int* idx) const {
+    int getlinearidx(int* idx) const {
         int lidx = 0;
         for (int i = 0; i < k; i++) {
             lidx += idx[i] * cumprod[i];
         }
         return lidx;
+    }
+
+    /// Return pointer to data
+    void* data_pointer() const {
+        return (void*) this->data;
     }
 
     /// set all values of the array to specified value
@@ -144,7 +158,32 @@ public:
         return data[lidx];
     }
 
-    ~ndarray() { delete[] data; }
+private:
+
+    /** Initialize internal structures
+     *
+     * Data pointer is created, but not set with data
+     * @param dimsx Dimensions of the array
+    */
+    void initialize_internal_structures(const std::vector<int> dimsx) {
+        this->dims = dimsx;
+
+        k = dims.size();
+        cumdims.resize(k + 1);
+        cumprod.resize(k + 1);
+        n = 1;
+        for (int i = 0; i < k; i++)
+            n *= dims[i];
+        cumdims[0] = 0;
+        for (int i = 0; i < k; i++)
+            cumdims[i + 1] = cumdims[i] + dims[i];
+        cumprod[0] = 1;
+        for (int i = 0; i < k; i++)
+            cumprod[i + 1] = cumprod[i] * dims[i];
+
+        data = new Type[n];
+
+    }
 };
 
 /// Calculate D-efficiency and VIF-efficiency and E-efficiency values using SVD
@@ -219,23 +258,99 @@ std::vector< double > PECsequence (const array_link &array, int verbose = 0);
 */
 std::vector< double > PICsequence(const array_link &array, int verbose = 0);
 
+/** @brief Calculate MacWilliams transform
+ * @param B Input array
+ * @param N
+ * @param verbose Verbosity level
+ * @param factor_levels_for_groups Factor levels for the groups
+ * @return MacWilliams transform of the input array
+*/
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int>& factor_levels_for_groups, int verbose = 0);
+
 /** Return the distance distribution of a design
  *
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001
+ *
+ * @param al Array for which to calculate the distribution
+ * @return Distance distribution
  */
 std::vector< double > distance_distribution (const array_link &array);
+
+
+/** Return shape of distance distribution for mixed level design
+ * @param arrayclass Specification of the array class
+ * @return Shape of the distance distribution
+*/
+std::vector<int> distance_distribution_shape(const arraydata_t arrayclass);
 
 /** Return the distance distribution of a mixed-level design
  *
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001.
  * For mixed-level designs more details can be found in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014.
- */
-void distance_distribution_mixed(const array_link& al, ndarray< double >& B, int verbose = 1);
+ *
+ * @param al Array for which to calculate the distribution
+ * @param verbose Verbosity level
+ * @return Distance distribution
+*/
+ndarray<double> distance_distribution_mixed(const array_link& array, int verbose = 0);
 
+void distance_distribution_mixed_inplace(const array_link& al, ndarray< double >& B, int verbose=0);
+
+/** @brief Calculate MacWilliams transform for mixed level data
+ *
+ * @param B Input array
+ * @param N Number of runs
+ * @param factor_levels_for_groups Factor levels
+ * @param verbose Verbosity level
+ * @return Transform if the input array
+*/
+ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int>& factor_levels_for_groups, int verbose);
+
+/// Calculate MacWilliams transform
+template < class Type >
+std::vector< double > macwilliams_transform(std::vector< Type > B, int N, int s) {
+    int n = B.size() - 1;
+    std::vector< double > Bp(n + 1);
+
+    if (s == 2) {
+        if (n <= Combinations::number_combinations_max_n()) {
+            // use cached version of krawtchouks
+            for (int j = 0; j <= n; j++) {
+                Bp[j] = 0;
+                for (int i = 0; i <= n; i++) {
+                    Bp[j] += B[i] * krawtchouksCache< long >(j, i, n);
+                }
+                Bp[j] /= N;
+            }
+        }
+        else {
+
+            for (int j = 0; j <= n; j++) {
+                Bp[j] = 0;
+                for (int i = 0; i <= n; i++) {
+                    Bp[j] += B[i] * krawtchouks< long >(j, i, n);
+                }
+                Bp[j] /= N;
+            }
+        }
+
+    }
+    else {
+        for (int j = 0; j <= n; j++) {
+            Bp[j] = 0;
+            for (int i = 0; i <= n; i++) {
+                Bp[j] += B[i] * krawtchouk< long >(j, i, n, s);
+            }
+            Bp[j] /= N;
+        }
+    }
+
+    return Bp;
+}
 
 /** Calculate Jk-characteristics of a matrix
  *
- * The calcualted Jk-values are signed.
+ * The calculated Jk-values are signed.
  *
  * \param array Array to calculate Jk-characteristics for
  * \param number_of_columns Number of columns
@@ -455,7 +570,6 @@ class rankStructure {
 /// Return the condition number of a matrix
 double conditionNumber (const array_link &matrix);
 
-#ifdef FULLPACKAGE
 
 #include "pareto.h"
 
@@ -578,7 +692,6 @@ inline void parseArrayPareto (const array_link &array, IndexType i, Pareto< mval
         pset.addvalue (p, i);
 }
 
-#endif // FULLPACKAGE
 
 /// convert C value to D-efficiency value
 inline double Cvalue2Dvalue (double Cvalue, int number_of_columns) {

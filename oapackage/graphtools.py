@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Module to work with designs and graphs
 
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
@@ -6,6 +5,7 @@
 
 # %% Load packages
 import numpy as np
+
 import oapackage
 
 # %%
@@ -112,11 +112,3 @@ def selectIsomorphismClasses(sols, verbose=1):
               (len(sols), np.unique(indices).size))
 
     return indices, mm
-
-
-def test_select_isomorphism():
-    ll = [oapackage.exampleArray(0), oapackage.exampleArray(0)]
-    indices, mm = selectIsomorphismClasses(ll, verbose=3)
-    assert(indices[0] == indices[1])
-    assert(len(mm) == 2)
-    assert(np.all(mm[0] == mm[1]))

@@ -570,7 +570,7 @@ static void print_perm_int(const permutationType*s, const int len, const int max
         myprintf("\n");
     }
 }
-#ifdef FULLPACKAGE
+
 
 /// print permutation with string in front
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
@@ -592,23 +592,13 @@ static void print_perm (const std::vector< permutationType > s, const int maxlen
         print_perm_int (s, maxlen, ret);
 }
 
-/// print permutation to stanard output
+/// print permutation to standard output
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {
     print_perm_int<permutationType>(s, len, maxlen);
 }
 
-#else
-// dummy values
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const larray< permutationType > s, const int maxlen = 256, const bool ret = true) {}
 
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const std::vector< permutationType > s, const int maxlen = 256, const bool ret = true) {}
-
-template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
-static void print_perm (const permutationType *s, const int len, const int maxlen = 256) {}
-#endif
 
 #define print_comb print_perm
 
@@ -1707,7 +1697,7 @@ IntegerType krawtchouk (IntegerType j, IntegerType x, IntegerType n, IntegerType
         for (IntegerType i = 0; i <= j; i++) {
                 val += power_minus_one (i) * ipow (s - 1, j - i) * choose (x, i) * choose (n - x, j - i);
                 if (verbose) {
-                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * ncombs(x, i) * ncombs(n - x, j - i);
+                        IntegerType tt = power_minus_one(i) * ipow(s - 1, j - i) * choose(x, i) * choose(n - x, j - i);
 
                         myprintf ("    krawtchouk(%d, %d, %d, %d) term %d: %d=%d*%d*%d*%d\n", (int)j, (int)x, (int)n,
                                   (int)s, (int)i, (int)tt, (int)std::pow ((double)-1, (double)i),
@@ -1740,7 +1730,7 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
         IntegerType val = 0;
 
         for (IntegerType i = 0; i <= j; i++) {
-                val += power_minus_one (i) * ncombs (x, i) * ncombs (n - x, j - i);
+                val += power_minus_one (i) * choose (x, i) * choose (n - x, j - i);
         }
         return val;
 }

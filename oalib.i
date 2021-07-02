@@ -125,17 +125,19 @@ import_array();
 import sys
 import numpy as np
 import copy
+from typing import Optional, List
 
-def reduceGraphNauty(G, colors=None, verbose=1):
+def reduceGraphNauty(G, colors : Optional[List] = None, verbose : int = 1) -> List:
   """ Return vertex transformation reducing array to normal form
 
   The reduction is calculated using `Nauty <http://users.cecs.anu.edu.au/~bdm/nauty/>`_
 
   Args:
       G (numpy array or array_link) :	the graph in incidence matrix form
-      colors (list or None): an optional vertex coloring
+      colors: an optional vertex coloring
+      verbose: Verbosity level
   Returns:
-      v: relabelling of the vertices
+      Relabelling of the vertices
   """
   if isinstance(G, np.ndarray):
       al=array_link()
@@ -144,8 +146,8 @@ def reduceGraphNauty(G, colors=None, verbose=1):
       al = copy.copy(G)
   if colors is None:
     colors = [0] * G.shape[0]
-  v = _oalib.reduceNauty ( al, colors, verbose )
-  return v
+  vertex_permutation = _oalib.reduceNauty ( al, colors, verbose )
+  return vertex_permutation
 
 def transformGraphMatrix(G, tr, verbose=1):
     """ Apply a vertex permutation to a graph
@@ -457,18 +459,15 @@ def __getattr__(self, attr):
 %template(calculateArrayParetoJ5long) calculateArrayParetoJ5<long>;
 %template(vector_vector_double) std::vector< std::vector<double> >;
 %template(krawtchouk) krawtchouk<long>;
-%template(ndarray) ndarray<double>;
-%template(ndarray_double) ndarray<double>;
-%template(ndarray_long) ndarray<long>;
+#%template(ndarray) ndarray<double>;
 %template(choose_long) choose<long>;
-
+%template(macwilliams_transform) macwilliams_transform<double>;
 
 %pythoncode %{
 # for legacy reasons and for name consistency
 GWLPvalueVector = vector_mvalue_t_double
 mvalueVector = vector_mvalue_t_long
 %}
-
 
 /* representation functions */
 
@@ -527,17 +526,23 @@ Python Orthogonal Array Interface
 %}
 #endif
 
-%extend ndarray_double {
+%extend ndarray {
 %insert("python") %{
 
 def __getattr__(self, attr):
     if attr=='__array_interface__':
       a = dict()
       a['version']=3
-      a['shape']=tuple(self.dims())
-      sizeofdata=_oalib.sizeof_double()
-      a['typestr']='<f%d' % sizeofdata
-      a['data']=(self.data, True)
+      a['shape']=tuple(self.dims)
+      sizeofdata=self.sizeof_type()
+      is_floating_point = self.type_is_floating_point()
+
+      if is_floating_point:
+          a['typestr']='<f%d' % sizeofdata
+      else:
+          # assume signed integer type
+          a['typestr']='<i%d' % sizeofdata
+      a['data']=(self.data_pointer(), True)
       # convert from the OAP column-major style to Numpy row-major style?
       #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
       return a
@@ -547,3 +552,6 @@ def __getattr__(self, attr):
 
 %}
 }
+
+%template(ndarray_double) ndarray<double>;
+%template(ndarray_long) ndarray<long>;

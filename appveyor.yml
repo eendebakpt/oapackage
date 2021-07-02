@@ -38,7 +38,7 @@ init:
   - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
 
 cache:
-  - C:\tmp -> \appveyor\install_numpy.ps1
+  - C:\tmp2 -> \appveyor\install_numpy.ps1
 
 install:
   #- ECHO "Filesystem root:"
