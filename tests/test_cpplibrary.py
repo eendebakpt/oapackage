@@ -602,7 +602,7 @@ class TestCppLibrary(unittest.TestCase):
         dd=np.array(d)
 
         gt = np.array([[[ 40.,   0.,   0.,   8.],        [ 16.,  16.,  16.,  48.]],       [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
-        self.assertEqual(dd.shape, list(d.dims) )
+        self.assertEqual(dd.shape, tuple(d.dims) )
         np.testing.assert_array_equal(N*dd, gt)
 
     def test_Defficiencies(self):
