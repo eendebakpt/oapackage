@@ -11,13 +11,14 @@ class TestMacWilliams(unittest.TestCase):
 
         array = oapackage.exampleArray(1, 0)
         array = array.selectFirstColumns(3)
+        arrayclass = oapackage.arraylink2arraydata(array)
 
         Dm = oapackage.distance_distribution_mixed(array, 0)
         D = np.array(Dm)
 
         N = array.n_rows
         s = 2
-        factor_levels_for_groups = [2]
+        factor_levels_for_groups = arrayclass.factor_levels_column_groups()
 
         Bp = oapackage.macwilliams_transform(D, N, s)
         Bpm = oapackage.macwilliams_transform_mixed(Dm, N, factor_levels_for_groups, verbose=0)
