@@ -21,11 +21,11 @@ repos:
     -   id: fix-encoding-pragma
         args: [--remove]
 
-# -   repo: https://github.com/pre-commit/mirrors-autopep8
-#     rev: 'v1.5.7'
-#     hooks:
-#     -   id: autopep8
-#         args: [--max-line-length=120]
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: 'v1.5.7'
+    hooks:
+    -   id: autopep8
+        args: [--max-line-length=120]
 
 -   repo: https://github.com/PyCQA/isort/
     rev: 5.9.1
