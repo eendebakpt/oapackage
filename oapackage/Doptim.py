@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Module to generate D-optimal designs
 
 For more information see: https://doi.org/10.1080/00401706.2016.1142903
@@ -7,25 +6,23 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 
 """
 
-from __future__ import print_function
-
-import os
-import numpy as np
-import time
 import logging
+import os
+import time
 import warnings
+from typing import List
+
+import numpy as np
 
 import oalib
-
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 from oapackage.markup import oneliner as e
 
-
 try:
     import matplotlib
-    import matplotlib.pyplot as plt
     import matplotlib.cm
+    import matplotlib.pyplot as plt
 except BaseException:
     matplotlib = None
 
@@ -37,7 +34,7 @@ class MissingMatplotLibException(Exception):
 # %%
 
 
-def array2Dtable(array_list, verbose=1, titlestr=None):
+def array2Dtable(array_list : List, verbose : int =1, titlestr : str =None):
     """ Generate HTML table with information about for a list of designs
 
     Args:
