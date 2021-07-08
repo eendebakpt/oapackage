@@ -595,6 +595,16 @@ class TestCppLibrary(unittest.TestCase):
         np.testing.assert_array_equal(dd0, dd)
         np.testing.assert_array_equal(dd0, dd_mixed)
 
+    def test_distance_distribution_mixed_2(self):
+        A=oapackage.exampleArray(5,1)
+        N=A.n_rows
+        d=oapackage.distance_distribution_mixed(A, verbose=1)
+        dd=np.array(d)
+
+        gt = np.array([[[ 40.,   0.,   0.,   8.],        [ 16.,  16.,  16.,  48.]],       [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
+        self.assertEqual(dd.shape, tuple(d.dims) )
+        np.testing.assert_array_equal(N*dd, gt)
+
     def test_Defficiencies(self):
         array = oapackage.exampleArray(0, 0)
         efficiencies = array.Defficiencies()
