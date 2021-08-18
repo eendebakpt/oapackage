@@ -43,7 +43,7 @@ class OAextend {
         int init_column_previous;
 
         /// Specification of how to use the generated extensions
-        enum extendarray_mode_t {
+        enum class extendarray_mode_t {
 			/// append extension column to extension list
 			APPENDEXTENSION,
 			/// append full array to extension list
@@ -56,23 +56,23 @@ class OAextend {
         /// determines how the extension arrays are stored
 		extendarray_mode_t extendarraymode;
 
-        arrayfile_t storefile; 
+        arrayfile_t storefile;
 
         // special cases
         j5structure_t j5structure;
 
       private:
         /// Algorithm mode
-        algorithm_t algmode; 
+        algorithm_t algmode;
 
       public:
 	/** Options for the extension algorithm
-	 * 
-	 * 
+	 *
+	 *
 	 */
         OAextend ()
             : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
-              init_column_previous (1), extendarraymode (APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT){};
+              init_column_previous (1), extendarraymode (extendarray_mode_t::APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT){};
 	/// @copydoc OAextend()
         OAextend (const OAextend &o) : singleExtendTime (o.singleExtendTime) {
                 this->nLMC = o.nLMC;
@@ -87,13 +87,13 @@ class OAextend {
                 // we do not copy the storefile: this->storefile = o.storefile;
         };
 	/** @copydoc OAextend()
-	 * 
+	 *
 	 * The algorithm is automatically determined from the specified arrayclass.
-	 * 
+	 *
 	 */
         OAextend (arraydata_t &arrayclass)
             : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
-              init_column_previous (1), extendarraymode (APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT) {
+              init_column_previous (1), extendarraymode (extendarray_mode_t::APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT) {
                 setAlgorithmAuto (&arrayclass);
         };
         /// Set the algorithm to use for LMC checks
@@ -162,7 +162,7 @@ struct extendpos {
 * \param array_class Class of arrays to generate
 * \param oaextend_options Parameters for the extension algorithm
 * \return List of all generated arrays
-* 
+*
 * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
 */
 arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_class, OAextend const &oaextend_options);
@@ -174,7 +174,7 @@ arraylist_t extend_arraylist (const arraylist_t &array_list, arraydata_t &array_
 arraylist_t extend_arraylist (const arraylist_t &array_list, const arraydata_t &arrayclass);
 
 /** @copydoc extend_arraylist(const arraylist_t &, arraydata_t &, OAextend const &)
- * 
+ *
  * \param extensioncol Index of column to be added to the designs
  * \param extensions List to append generated designs to
  * \return Number of candidate arrays generated
@@ -211,14 +211,14 @@ arraylist_t extend_array (const array_link &array, arraydata_t &arrayclass);
 int extend_array (const array_link &array, const arraydata_t *arrayclass, const colindex_t extension_column, arraylist_t &extensions,
                   OAextend const &oaextend);
 
-/** Run the LMC extension algorithm starting with the root array 
+/** Run the LMC extension algorithm starting with the root array
  *
  * @see extend_array(const array_link &, arraydata_t &, OAextend const &)
  */
 arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
-enum dfilter_t {
+enum class dfilter_t {
   /// no filtering on D-efficiency
   DFILTER_NONE,
   /// filtering on D-efficiency
@@ -226,7 +226,7 @@ enum dfilter_t {
   /// filtering on D-efficiency with multi column prediction
   DFILTER_MULTI };
 
-enum dcalc_mode { 
+enum class dcalc_mode {
   /// always calculate efficiency
   DCALC_ALWAYS,
   /// only calculate efficiency for LMC_LESS
@@ -257,7 +257,7 @@ struct dextend_t {
         /// perform immediate LMC check in extension
         int directcheck;
 
-        dextend_t () : filtermode (DFILTER_MULTI), Dcheck (DCALC_COND), directcheck (1){};
+        dextend_t () : filtermode (dfilter_t::DFILTER_MULTI), Dcheck (dcalc_mode::DCALC_COND), directcheck (1){};
 
         void resize (int nn) {
                 this->lmctype.resize (nn);

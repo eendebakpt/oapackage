@@ -90,13 +90,13 @@ void dextend_t::DefficiencyFilter (double Dfinal, int k, int kfinal, double Lmax
 
                 int chk = 1;
                 switch (dextend.filtermode) {
-                case DFILTER_NONE:
+                case dfilter_t::DFILTER_NONE:
                         chk = 1;
                         break;
-                case DFILTER_BASIC:
+                case dfilter_t::DFILTER_BASIC:
                         chk = Ci >= Cfinal;
                         break;
-                case DFILTER_MULTI:
+                case dfilter_t::DFILTER_MULTI:
                         // chk= Ci >= Cfinalmulti;
                         chk = Lmaxmulti * Ci >= Cfinal;
                         break;
@@ -393,7 +393,7 @@ int check_branch (extend_data_t *es, carray_t *array, extendpos *p, split *stack
 #else
                 if (1) {
 #endif
-                        p->value = i; 
+                        p->value = i;
                         /* strength t check */
                         if (valid_element (es, p, array)) {
                                 stack->valid[stack->count][npos] = p->value;
@@ -457,7 +457,7 @@ int check_branch_2level (extend_data_t *es, carray_t *array_colstart, extendpos 
 #else
                 if (1) {
 #endif
-                        p->value = i; 
+                        p->value = i;
                         /* strength t check */
                         if (valid_element_2level (es, p)) {
                                 stack->valid[stack->count][npos] = p->value;
@@ -746,7 +746,7 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
         static long _nloops[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         int tid = omp_get_thread_num ();
         _nloops[tid % 16]++;
-        long nloops = _nloops[tid % 16]; 
+        long nloops = _nloops[tid % 16];
 #else
         static long nloops = 0;
         nloops++;
@@ -966,15 +966,15 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                                 }
                                 /* the extension found is LMC */
                                 switch (oaextend.extendarraymode) {
-                                case OAextend::APPENDFULL: {
+                                case OAextend::extendarray_mode_t::APPENDFULL: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
                                         extensions.push_back (tmp_extension);
                                 } break;
-                                case OAextend::APPENDEXTENSION: {
+                                case OAextend::extendarray_mode_t::APPENDEXTENSION: {
                                         array_link tmp_extension (array + p->col * N, N, 1, nlmcarrays);
                                         extensions.push_back (tmp_extension);
                                 } break;
-                                case OAextend::STOREARRAY: {
+                                case OAextend::extendarray_mode_t::STOREARRAY: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
                                         arrayfile_t *storefile =
                                             (arrayfile_t *)&oaextend.storefile; // trick to prevent const warnings
@@ -986,7 +986,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                                                                                 */
                                         storefile->append_array (tmp_extension);
                                 } break;
-                                case OAextend::NONE: {
+                                case OAextend::extendarray_mode_t::NONE: {
 
                                         // do nothing
                                 } break;

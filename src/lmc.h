@@ -110,7 +110,7 @@ enum initcolumn_t {
 enum j5structure_t {
 	/// Ordering based in J5 in succesive columns
 	J5_ORIGINAL,
-	/// Ordering based on J5 and the 5-tuple of J4 values
+	/// Ordering based on J5 and the 5-tuple of J4 values. Also called the L5 ordering
 	J5_45 };
 
 /// return name of the algorithm
@@ -624,7 +624,7 @@ lmc_t LMCcheckLex(array_link const &array, arraydata_t const &arrayclass);
 lmc_t LMCcheckj4 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
-/// Perform minimal form check for J5 ordering
+/// Perform minimal form check for J5 ordering (in the paper this is called the L5 ordering)
 lmc_t LMCcheckj5 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend);
 
 

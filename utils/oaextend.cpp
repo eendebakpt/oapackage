@@ -57,7 +57,7 @@ the number of runs and the number of arrays in the file.
 \param resultprefix Prefix string for filename
 \param mode Mode for output file
 */
-int save_arrays(arraylist_t &solutions, const arraydata_t *ad, 
+int save_arrays(arraylist_t &solutions, const arraydata_t *ad,
 	const char *resultprefix, arrayfile::arrayfilemode_t mode) {
 
 	string fname = resultprefix;
@@ -241,7 +241,7 @@ int main (int argc, char *argv[]) {
                 if (streaming) {
                         logstream (SYSTEM) << "operating in streaming mode, sorting of arrays will not work "
                                            << std::endl;
-                        oaextend.extendarraymode = OAextend::STOREARRAY;
+                        oaextend.extendarraymode = OAextend::extendarray_mode_t::STOREARRAY;
                 }
 
                 // J5_45
@@ -340,7 +340,7 @@ int main (int argc, char *argv[]) {
 
                         } else {
                                 // starting with root
-                                if (check_divisibility (ad) == false) { 
+                                if (check_divisibility (ad) == false) {
                                         log_print (SYSTEM, "ERROR: Failed divisibility test!\n");
 
 #ifdef OAEXTEND_MPI
