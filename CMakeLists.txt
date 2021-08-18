@@ -8,9 +8,7 @@ PROJECT(OApackage)
 # ----------------------------------------------------------------------------
 
 if(WIN32)
-	#message(STATUS "Set build type...")
 	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
-	#set(CMAKE_BUILD_TYPE Release STRING)
 endif()
 
 if (NOT WIN32)
@@ -27,8 +25,6 @@ if(ZLIB_FOUND)
 endif()
 message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_FOUND)
-	#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
-	#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
 	include_directories(${ZLIB_INCLUDE_DIRS})
 endif()
 
@@ -43,6 +39,8 @@ endif()
 # ----------------------------------------------------------------------------
 #   Code
 # ----------------------------------------------------------------------------
+
+set (CMAKE_CXX_STANDARD 11)
 
 include_directories(.)
 include_directories(src)
@@ -151,10 +149,6 @@ if("$ENV{OADEBUG}" STREQUAL "1")
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++")
 endif()
 
-if(WIN32)
-else()
-    set(LINKOPTS "${LINKOPTS}") # or use -s option
-endif()
 
 if(WIN32)
   set(COPTS "/MT /wd4018 /wd4996")
@@ -167,7 +161,7 @@ endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
 
-if(ZLIB_FOUND AND 1)
+if(ZLIB_FOUND)
   set(COPTS "${COPTS} -DUSEZLIB")
   include_directories(ZLIB_INCLUDE_DIRS)
 else()

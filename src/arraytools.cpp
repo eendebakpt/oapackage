@@ -633,19 +633,8 @@ std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose
                 int jl = 5;
                 while (jl <= al.n_columns) {
                         jstruct_t js (al.n_rows, al.n_columns, jl);
-                        if (0) {
-                                arraylist_t *all = new arraylist_t ();
-                                all->push_back (al);
-                                std::vector< jstruct_t > xx = analyseArrays (*all, verbose, jl);
-                                js = jstruct_t (xx[0]);
-                                if (verbose >= 2) {
-                                        myprintf (" old: ");
-                                        xx[0].show ();
-                                }
-                                delete all;
-                        } else {
-                                foldtest (js, al, jl, verbose);
-                        }
+
+                        foldtest (js, al, jl, verbose);
                         if (!js.allzero ()) {
                                 if (verbose >= 3) {
                                         myprintf (" new: ");
