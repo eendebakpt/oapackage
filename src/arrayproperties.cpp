@@ -40,7 +40,7 @@ mvalue_t< long > A3A4 (const array_link &al) {
         w.push_back (w3);
         w.push_back (w4);
 
-        mvalue_t< long > wm (w, mvalue_t< long >::LOW);
+        mvalue_t< long > wm (w, mvalue_t< long >::direction_t::LOW);
         return wm;
 }
 

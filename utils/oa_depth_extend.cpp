@@ -178,7 +178,7 @@ int main (int argc, char *argv[]) {
 
         oaextendx.checkarrays = 0;
         oaextendx.use_row_symmetry = 0;
-        oaextendx.extendarraymode = OAextend::APPENDFULL;
+        oaextendx.extendarraymode = OAextend::extendarray_mode_t::APPENDFULL;
         oaextendx.init_column_previous = INITCOLUMN_J5;
         oaextendx.nLMC = 500000;
         oaextendx.info ();
@@ -284,7 +284,7 @@ int main (int argc, char *argv[]) {
         delete arraylist;
 
         clear_LMCreduction_pool ();
-        
+
         logstream (SYSTEM) << "#time end: " << currenttime () << std::endl;
         if (verbose)
                 std::cout << "#time total: " << printfstring ("%.1f", get_time_ms () - time0) << " [s]" << std::endl;

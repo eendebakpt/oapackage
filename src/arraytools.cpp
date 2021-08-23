@@ -633,19 +633,8 @@ std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose
                 int jl = 5;
                 while (jl <= al.n_columns) {
                         jstruct_t js (al.n_rows, al.n_columns, jl);
-                        if (0) {
-                                arraylist_t *all = new arraylist_t ();
-                                all->push_back (al);
-                                std::vector< jstruct_t > xx = analyseArrays (*all, verbose, jl);
-                                js = jstruct_t (xx[0]);
-                                if (verbose >= 2) {
-                                        myprintf (" old: ");
-                                        xx[0].show ();
-                                }
-                                delete all;
-                        } else {
-                                foldtest (js, al, jl, verbose);
-                        }
+
+                        foldtest (js, al, jl, verbose);
                         if (!js.allzero ()) {
                                 if (verbose >= 3) {
                                         myprintf (" new: ");
@@ -2852,6 +2841,8 @@ std::vector< int > array_link::Jcharacteristics (int jj) const {
         }
 }
 
+/** Calculate J_k for the specified k-tuple of columns
+*/
 int jvalue_conference (const array_link &ar, const int J, const int *column_indices) {
         int jval = 0;
 
@@ -3790,8 +3781,9 @@ void jstruct_t::showdata () {
 }
 
 std::string jstructbase_t::showstr () {
-        std::string s = "jstruct_t: " + printfstring ("jj %d, values ", jj);
-        return s;
+    std::string values_string = permutation2string(this->values, 40);
+    std::string s = "jstruct_t: " + printfstring ("jj %d, values %s", this->jj, values_string.c_str());
+    return s;
 }
 void jstructbase_t::show () {
         std::cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
@@ -4653,18 +4645,6 @@ void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int
 }
 #endif
 
-
-std::string printfstring(const char *message, ...) {
-	char buf[32 * 1024];
-
-	va_list va;
-	va_start(va, message);
-	vsprintf(buf, message, va);
-	va_end(va);
-
-	std::string str(buf);
-	return str;
-}
 
 /**
  * @brief Read file with design of OA

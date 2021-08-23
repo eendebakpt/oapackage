@@ -114,18 +114,15 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
         }
 
         {
-                cprintf (verbose, "%s: conference matrix Fvalues\n", bstr);
+                cprintf(verbose, "%s: conference matrix Fvalues\n", bstr);
+                std::vector< int > jj5 = Jcharacteristics_conference(exampleArray(18, 0), 5);
+                myassert(jj5 == std::vector<int>{ -1, -1, -1, -5, 11, -3, 3, 3, -1, -1, 1, -1, 3, -1, 1, 7, 3, 5, -1, 1, 1}, "Jcharacteristics_conference result incorrect");
+
                 array_link al = exampleArray (22, 0);
                 if (verbose >= 2)
                         al.show ();
-                if (0) {
-                        std::vector< int > f3 = al.FvaluesConference (3);
-                        if (verbose >= 2) {
-                                printf ("F3: ");
-                                display_vector (f3);
-                                printf ("\n");
-                        }
-                }
+                std::vector< int > jj3 = Jcharacteristics_conference(al, 3);
+                myassert(jj3 == std::vector<int> { 0, 0, 0, 0 }, "Jcharacteristics_conference result incorrect");
 
                 const int N = al.n_rows;
                 jstructconference_t js (N, 4);
@@ -202,16 +199,6 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 
                 conference_transformation_t Ti = T.inverse ();
                 array_link alx = Ti.apply (T.apply (al));
-
-                if (0) {
-                        printf ("input array:\n");
-                        al.showarray ();
-                        T.show ();
-                        printf ("transformed array:\n");
-                        T.apply (al).showarray ();
-                        Ti.show ();
-                        alx.showarray ();
-                }
 
                 myassert (alx == al, "transformation of conference matrix\n");
         }
@@ -567,12 +554,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         array_link al2 = reduction.transformation->apply (al);
 
                         array_link alr = al2.reduceLMC ();
-                        if (0) {
-                                printf ("\n reduction complete:\n");
-                                al2.showarray ();
-                                printf ("	--->\n");
-                                alr.showarray ();
-                        }
+
                         bool c = (al == alr);
                         if (!c) {
                                 printf ("oaunittest: error: reduction of randomized array failed!\n");
@@ -647,7 +629,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         exit (1);
                 }
 
-                for (int ii = 11; ii < 11; ii++) {
+                for (int ii = 11; ii < 12; ii++) {
                         printf ("ii %d: ", ii);
                         al = exampleArray (ii, vb);
                         al.showarray ();
@@ -687,7 +669,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 boost::filesystem::path tmpdir = boost::filesystem::temp_directory_path ();
                 boost::filesystem::path temp = boost::filesystem::unique_path ("test-%%%%%%%.oa");
 
-                const std::string tempstr = (tmpdir / temp).native (); 
+                const std::string tempstr = (tmpdir / temp).native ();
 
                 if (verbose >= 2)
                         printf ("generate text OA file: %s\n", tempstr.c_str ());
@@ -697,7 +679,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                 int narrays = 10;
                 arrayfile_t afile (tempstr.c_str (), nrows, ncols, narrays, ATEXT);
                 for (int i = 0; i < narrays; i++) {
-                        array_link al (nrows, ncols, array_link::INDEX_DEFAULT);                        
+                        array_link al (nrows, ncols, array_link::INDEX_DEFAULT);
                         afile.append_array (al);
                 }
                 afile.closefile ();
