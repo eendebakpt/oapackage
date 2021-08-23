@@ -3781,7 +3781,7 @@ void jstruct_t::showdata () {
 }
 
 std::string jstructbase_t::showstr () {
-    std::string values_string = permutation2string(this->values);
+    std::string values_string = permutation2string(this->values, 40);
     std::string s = "jstruct_t: " + printfstring ("jj %d, values %s", this->jj, values_string.c_str());
     return s;
 }
