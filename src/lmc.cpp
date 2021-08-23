@@ -21,8 +21,8 @@
 bool operator!= (symmdataPointer const &ptr, int x) {
         // A friendly reminder to not test pointers against any values except 0 (NULL)
         myassert (!x, "invalid pointer in comparison");
-        bool equal = ptr == 0;
-        return !equal;
+        bool nonzero = valid_ptr(ptr)
+        return nonzero;
 }
 
 #else
@@ -30,6 +30,14 @@ bool operator!= (symmdataPointer const &ptr, int x) {
 #pragma GCC diagnostic ignored "-Wenum-compare"
 #endif
 #endif
+
+bool valid_ptr(const symmdataPointer& sd) {
+#ifdef SDSMART
+    return sd.get() != 0;
+#else
+    return sd != 0;
+#endif
+}
 
 #ifdef DOOPENMP
 #include <omp.h>
@@ -1174,8 +1182,8 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
 
                 /* pass to non-root stage */
                 if (oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
-                    (oaextend.getAlgorithm () == MODE_J5ORDERX && reduction->sd != 0) ||
-                    (oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL && reduction->sd != 0)) {
+                    (oaextend.getAlgorithm () == MODE_J5ORDERX && valid_ptr(reduction->sd)) ||
+                    (oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL && valid_ptr(reduction->sd))) {
                         dyndatatmp.initrowsortl ();
                         ret = LMCreduce_non_root_2level (original, ad, &dyndatatmp, reduction, oaextend,
                                                          tmpStatic);
