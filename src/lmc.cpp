@@ -21,7 +21,7 @@
 bool operator!= (symmdataPointer const &ptr, int x) {
         // A friendly reminder to not test pointers against any values except 0 (NULL)
         myassert (!x, "invalid pointer in comparison");
-        bool nonzero = valid_ptr(ptr)
+        bool nonzero = valid_ptr(ptr);
         return nonzero;
 }
 
