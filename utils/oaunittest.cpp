@@ -629,7 +629,7 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
                         exit (1);
                 }
 
-                for (int ii = 11; ii < 11; ii++) {
+                for (int ii = 11; ii < 12; ii++) {
                         printf ("ii %d: ", ii);
                         al = exampleArray (ii, vb);
                         al.showarray ();
