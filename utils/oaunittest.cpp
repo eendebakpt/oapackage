@@ -114,11 +114,15 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
         }
 
         {
-                cprintf (verbose, "%s: conference matrix Fvalues\n", bstr);
+                cprintf(verbose, "%s: conference matrix Fvalues\n", bstr);
+                std::vector< int > jj5 = Jcharacteristics_conference(exampleArray(18, 0), 5);
+                myassert(jj5 == std::vector<int>{ -1, -1, -1, -5, 11, -3, 3, 3, -1, -1, 1, -1, 3, -1, 1, 7, 3, 5, -1, 1, 1}, "Jcharacteristics_conference result incorrect");
+
                 array_link al = exampleArray (22, 0);
                 if (verbose >= 2)
                         al.show ();
-                std::vector< int > f3 = al.FvaluesConference (3);
+                std::vector< int > jj3 = Jcharacteristics_conference(al, 3);
+                myassert(jj3 == std::vector<int> { 0, 0, 0, 0 }, "Jcharacteristics_conference result incorrect");
 
                 const int N = al.n_rows;
                 jstructconference_t js (N, 4);

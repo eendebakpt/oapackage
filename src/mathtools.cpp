@@ -1,6 +1,19 @@
 #include <numeric>
+#include <stdarg.h>
 
 #include "mathtools.h"
+
+std::string printfstring(const char* message, ...) {
+    char buf[64 * 1024];
+
+    va_list va;
+    va_start(va, message);
+    vsprintf(buf, message, va);
+    va_end(va);
+
+    std::string str(buf);
+    return str;
+}
 
 void set_srand (unsigned int s) { srand (s); }
 

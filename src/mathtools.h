@@ -41,6 +41,12 @@ inline double round (double x) { return floor (x + 0.5); }
 
 #include <queue>
 
+/**
+ * @brief Function similar to printf returning C++ style string
+ * @param message
+ * @return
+ */
+std::string printfstring(const char* message, ...);
 
 /** Class to make a pool of objects that can be re-used
  *
@@ -539,29 +545,42 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
         }
 }
 
+/// Print permutation to string
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+std::string permutation2string(const permutationType* s, const int len, const int maxlen = 256, const bool add_return = true) {
+    int plen = std::min(len, maxlen);
+
+    std::string str = printfstring("{");
+
+    for (int i = 0; i < plen - 1; i++)
+        str += printfstring("%d,", s[i]);
+
+    if (len == 0) {
+        str += printfstring("}");
+    }
+    else {
+        if (plen < len)
+            str +=printfstring("%d,...", s[plen - 1]);
+        else
+            str +=printfstring("%d}", s[plen - 1]);
+    }
+    if (add_return) {
+        str +=printfstring("\n");
+    }
+    return str;
+}
+
+/// Print permutation to string
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+std::string permutation2string(const std::vector< permutationType > s, const int maxlen = 256, const bool add_return = true) {
+    return permutation2string(s.data(), s.size(), maxlen, add_return);
+}
 
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int(const permutationType*s, const int len, const int maxlen = 256, const bool ret = true) {
-    int plen = std::min(len, maxlen);
-
-    myprintf("{");
-
-    for (int i = 0; i < plen - 1; i++)
-        myprintf("%d,", s[i]);
-
-    if (len == 0) {
-        myprintf("}");
-    }
-    else {
-        if (plen < len)
-            myprintf("%d,...", s[plen - 1]);
-        else
-            myprintf("%d}", s[plen - 1]);
-    }
-    if (ret) {
-        myprintf("\n");
-    }
+    std::string str = permutation2string(s, len, maxlen, ret);
+    myprintf("%s", str.c_str());
 }
 
 /// Print permutation to output stream
