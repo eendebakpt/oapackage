@@ -41,6 +41,12 @@ inline double round (double x) { return floor (x + 0.5); }
 
 #include <queue>
 
+/**
+ * @brief Function similar to printf returning C++ style string
+ * @param message
+ * @return
+ */
+std::string printfstring(const char* message, ...);
 
 /** Class to make a pool of objects that can be re-used
  *
@@ -244,7 +250,7 @@ struct mvalue_t {
         /// vector containing the values
         std::vector< NumericType > values;
         // int direction;
-        enum direction_t {
+        enum class direction_t {
 			/// Order from high to low values
 			HIGH,
 			/// Order from low to high values
@@ -256,7 +262,7 @@ struct mvalue_t {
 		 *
 		 * The object consists of a vector of elements.
 		 */
-        mvalue_t () : ordering (HIGH){};
+        mvalue_t () : ordering (direction_t::HIGH){};
         ~mvalue_t (){};
 
 		/** @copydoc mvalue_t::mvalue_t()
@@ -264,7 +270,7 @@ struct mvalue_t {
 		 * \param element Single element to add to the vector
 		 * \param dd Ordering to use
 		 */
-        mvalue_t (NumericType element, direction_t dd = HIGH) {
+        mvalue_t (NumericType element, direction_t dd = direction_t::HIGH) {
                 values.push_back (element);
                 ordering = dd;
         }
@@ -273,7 +279,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		mvalue_t (std::vector< NumericType > elements, direction_t dd = HIGH) {
+		mvalue_t (std::vector< NumericType > elements, direction_t dd = direction_t::HIGH) {
                 ordering = dd;
                 this->values = elements;
         }
@@ -283,7 +289,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = HIGH) {
+		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = direction_t::HIGH) {
 			ordering = dd;
 			values.clear();
 			values.resize(elements.size());
@@ -331,7 +337,7 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == HIGH)
+                if (ordering == direction_t::HIGH)
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);
@@ -339,7 +345,7 @@ struct mvalue_t {
         }
         bool operator> (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == HIGH)
+                if (ordering == direction_t::HIGH)
                         val = (bool)better (rhs);
                 else
                         val = (bool)worse (rhs);
@@ -539,29 +545,42 @@ static void print_perm (std::ostream &out, const larray< permutationType > s, co
         }
 }
 
+/// Print permutation to string
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+std::string permutation2string(const permutationType* s, const int len, const int maxlen = 256, const bool add_return = true) {
+    int plen = std::min(len, maxlen);
+
+    std::string str = printfstring("{");
+
+    for (int i = 0; i < plen - 1; i++)
+        str += printfstring("%d,", s[i]);
+
+    if (len == 0) {
+        str += printfstring("}");
+    }
+    else {
+        if (plen < len)
+            str +=printfstring("%d,...", s[plen - 1]);
+        else
+            str +=printfstring("%d}", s[plen - 1]);
+    }
+    if (add_return) {
+        str +=printfstring("\n");
+    }
+    return str;
+}
+
+/// Print permutation to string
+template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
+std::string permutation2string(const std::vector< permutationType > s, const int maxlen = 256, const bool add_return = true) {
+    return permutation2string(s.data(), s.size(), maxlen, add_return);
+}
 
 /// Print permutation to output stream
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
 static void print_perm_int(const permutationType*s, const int len, const int maxlen = 256, const bool ret = true) {
-    int plen = std::min(len, maxlen);
-
-    myprintf("{");
-
-    for (int i = 0; i < plen - 1; i++)
-        myprintf("%d,", s[i]);
-
-    if (len == 0) {
-        myprintf("}");
-    }
-    else {
-        if (plen < len)
-            myprintf("%d,...", s[plen - 1]);
-        else
-            myprintf("%d}", s[plen - 1]);
-    }
-    if (ret) {
-        myprintf("\n");
-    }
+    std::string str = permutation2string(s, len, maxlen, ret);
+    myprintf("%s", str.c_str());
 }
 
 /// Print permutation to output stream

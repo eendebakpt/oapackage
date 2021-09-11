@@ -516,6 +516,13 @@ public:
     }
 }
 
+%extend jstructconference_t {
+public:
+    std::string __repr__() {
+      return $self->showstr();
+    }
+}
+
 #ifdef SWIGPYTHON
 // Add module docstring
 %pythoncode
@@ -528,6 +535,10 @@ Python Orthogonal Array Interface
 
 %extend ndarray {
 %insert("python") %{
+
+@property
+def shape(self):
+    return tuple(self.dims)
 
 def __getattr__(self, attr):
     if attr=='__array_interface__':
@@ -543,8 +554,8 @@ def __getattr__(self, attr):
           # assume signed integer type
           a['typestr']='<i%d' % sizeofdata
       a['data']=(self.data_pointer(), True)
-      # convert from the OAP column-major style to Numpy row-major style?
-      #a['strides']=(sizeofdata, sizeofdata*self.n_rows)
+      # convert from the OAP column-major style to Numpy row-major style
+      a['strides'] = tuple(sizeofdata*p for p in list(self.cumprod)[:-1] )
       return a
     else:
       raise AttributeError("%r object has no attribute %r" %

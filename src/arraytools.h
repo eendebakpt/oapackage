@@ -340,12 +340,6 @@ struct arraydata_t {
 /// Read array configuration from file
 arraydata_t *readConfigFile (const char *file);
 
-/**
- * @brief Function similar to printf returning C++ style string
- * @param message
- * @return
- */
-std::string printfstring(const char *message, ...);
 
 /**
  * @brief Make a copy of an array

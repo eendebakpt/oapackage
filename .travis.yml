@@ -1,11 +1,14 @@
 # C++ build
 language: cpp
-compiler:
-    - gcc
-    - clang
-os:
-- osx
-- linux
+
+jobs:
+   include:
+     - os: linux
+       compiler: gcc
+     - os: linux
+       compiler: clang
+     - os: osx
+       compiler: gcc
 
 #before_install:
 #  - sudo apt-get install cmake
@@ -35,5 +38,3 @@ script:
 
   - ./oaconference -N 12 -k 6 -v 0
   - ./oapareto result-20.2-2-2.oa -f B -o dummy.oa
-
-

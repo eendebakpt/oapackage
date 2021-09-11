@@ -87,7 +87,7 @@ enum algorithm_t {
 
 const algorithm_t MODE_ORIGINAL = MODE_LMC;
 
-/// Return string representation of available algorithm modes 
+/// Return string representation of available algorithm modes
 inline std::string algorithm_t_list () {
         std::string ss =
             printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (MODE_J5ORDERX, j5 order dominant), %d "
@@ -110,7 +110,7 @@ enum initcolumn_t {
 enum j5structure_t {
 	/// Ordering based in J5 in succesive columns
 	J5_ORIGINAL,
-	/// Ordering based on J5 and the 5-tuple of J4 values
+	/// Ordering based on J5 and the 5-tuple of J4 values. Also called the L5 ordering
 	J5_45 };
 
 /// return name of the algorithm
@@ -221,7 +221,7 @@ struct LMCreduction_helper_t {
                 rootrowperms = this->rootrowperms;
                 lperm_p = this->current_trans->lperms;
 
-                this->LMC_root_rowperms_init = 1; 
+                this->LMC_root_rowperms_init = 1;
         }
 
         /** @brief Static initialization of root row permutations (full group)
@@ -248,14 +248,14 @@ void clear_LMCreduction_pool ();
 enum REDUCTION_STATE {
 	/// the reduction is equal to the initial
 	REDUCTION_INITIAL,
-	/// the reduction was changed 
+	/// the reduction was changed
 	REDUCTION_CHANGED };
 //! main mode for the LMC routine: test, reduce or reduce with initialization
 enum OA_MODE {
   /// test for minimal form
   OA_TEST,
   /// reduce to minimal form
-  OA_REDUCE, 
+  OA_REDUCE,
   /// reduce to partial minimal form
   OA_REDUCE_PARTIAL };
 
@@ -285,17 +285,6 @@ typedef std::shared_ptr< symmdata > symmdataPointer;
 #include <memory>
 typedef std::shared_ptr< symmdata > symmdataPointer;
 
-/** @brief An operator to test whether a pointer holds a null value or not
- *
- * It is recomended to not compare pointers to integers and use explicit
- * conversion `ptr to bool` instead or as another approach to compare pointers against
- * nullptr which has type of std::nullptr. But such methods would force migration to C++11. Hence,
- * the purpose of this method is to avoid ether rewritting the whole project or changing the code
- * that already works on other platforms (aka Windows) by adding a missing in <memory> header
- * comparison `bool operator!=(smart_ptr, int)`
- */
-bool operator!= (symmdataPointer const &ptr, int x);
-
 #else
 #include <tr1/memory>
 typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
@@ -304,6 +293,9 @@ typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
 #else
 typedef symmdata *symmdataPointer;
 #endif
+
+/** Return true if the (smart) symmdataPointer pointer is allocated */
+bool valid_ptr(const symmdataPointer& sd);
 
 /// initial state for reduction algorithm
 enum INIT_STATE {
@@ -338,7 +330,7 @@ struct LMCreduction_t {
         OA_MODE mode;
         REDUCTION_STATE state;
 
-        INIT_STATE init_state; 
+        INIT_STATE init_state;
 
         //! maximum depth for search tree
         int maxdepth;
@@ -349,8 +341,8 @@ struct LMCreduction_t {
         //! counter for number of reductions made
         long nred;
 
-        int targetcol; 
-        int mincol;    
+        int targetcol;
+        int mincol;
 
         int nrows, ncols;
 
@@ -386,7 +378,7 @@ struct LMCreduction_t {
 #else
                 symmdata *sdp = sd;
 #endif
-                if (sdp != 0 && cache) { 
+                if (sdp != 0 && cache) {
                 } else {
                         // update symmetry data
                         this->sd = symmdataPointer (new symmdata (al, 1));
@@ -441,7 +433,7 @@ class rowsorter_t
 public:
   int number_of_rows;
   rowsort_t *rowsort;
-  
+
   rowsorter_t(int number_of_rows);
   ~rowsorter_t();
 
@@ -549,7 +541,7 @@ struct dyndata_t {
         void initdata (const dyndata_t &dd);
 };
 
-/** Return True if the array is in root form 
+/** Return True if the array is in root form
  *
  * \param array Array to check
  * \param strength Strength to use
@@ -591,10 +583,10 @@ lmc_t LMCcheckOriginal (const array_link &array);
 void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arrays, int verbose, int dopruning = 1,
                        int strength = 2, int dolmc = 1);
 
-/** Caculate the transformation reducing an array to delete-on-factor normal 
- * 
+/** Caculate the transformation reducing an array to delete-on-factor normal
+ *
  * The normal form is described in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014
- * 
+ *
  * \param array Orthogonal array
  * \param verbose Verbosity level
  * \returns The transformation that reduces the array to normal form
@@ -602,9 +594,9 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &reduced_arr
 array_transformation_t reductionDOP (const array_link &array, int verbose = 0);
 
 /** Reduce an array to canonical form using delete-1-factor ordering
- * 
+ *
  * The normal form is described in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014
- * 
+ *
  * \param array Orthogonal array
  * \param verbose Verbosity level
  * \returns The array transformed to normal form
@@ -632,7 +624,7 @@ lmc_t LMCcheckLex(array_link const &array, arraydata_t const &arrayclass);
 lmc_t LMCcheckj4 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend,
                   int jj = 4);
 
-/// Perform minimal form check for J5 ordering
+/// Perform minimal form check for J5 ordering (in the paper this is called the L5 ordering)
 lmc_t LMCcheckj5 (array_link const &array, arraydata_t const &arrayclass, LMCreduction_t &reduction, const OAextend &oaextend);
 
 
@@ -643,5 +635,3 @@ lmc_t LMCcheckj5 (array_link const &array, arraydata_t const &arrayclass, LMCred
 */
 void print_rowsort (rowsort_t *rowsort, int N);
 void print_column_rowsort (const array_t *arraycol, rowsort_t *rowsort, int N);
-
-
