@@ -560,7 +560,7 @@ std::string permutation2string(const permutationType* s, const int len, const in
     }
     else {
         if (plen < len)
-            str +=printfstring("%d,...", s[plen - 1]);
+            str +=printfstring("%d,...}", s[plen - 1]);
         else
             str +=printfstring("%d}", s[plen - 1]);
     }
