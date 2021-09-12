@@ -202,7 +202,7 @@ double get_time_ms (double t0)
 #ifdef WIN32
         struct timeb tb;
         ftime (&tb);
-        return (double)tb.time + ((double)tb.millitm / 1000.0f);
+        return (double)tb.time + ((double)tb.millitm / 1000.0f) - t0;
 #else
     struct timespec ts;
 
@@ -211,7 +211,7 @@ double get_time_ms (double t0)
 	}
     else
         return 0;
-#endif	
+#endif
 }
 
 double get_time_ms2 (double t0) {
