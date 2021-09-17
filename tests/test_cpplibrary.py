@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import tempfile
+import time
 import unittest
 import unittest.mock as mock
 from contextlib import redirect_stdout
@@ -399,6 +400,12 @@ class TestCppLibrary(unittest.TestCase):
     def setUp(self):
         if getattr(self, 'assertRaisesRegex', None) is None:
             self.assertRaisesRegex = self.assertRaisesRegexp
+
+    def test_get_time_ms(self):
+        t0=oapackage.get_time_ms()
+        time.sleep(.2)
+        dt=oapackage.get_time_ms(t0)
+        np.testing.assert_almost_equal(dt, 0.2, decimal=1)
 
     def test_root_form(self):
         array = oapackage.exampleArray(1, 0)

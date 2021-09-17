@@ -376,7 +376,7 @@ int main (int argc, char *argv[]) {
                                 }
 
                                 log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
-                                           current_col + 1, (int)solutions.size (), get_time_ms () - Tstart);
+                                           current_col + 1, (int)solutions.size (), get_time_ms (Tstart));
                                 nr_extensions = 0;
                                 arraylist_t::const_iterator cur_extension;
 

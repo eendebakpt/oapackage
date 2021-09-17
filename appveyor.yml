@@ -100,7 +100,7 @@ install:
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
 
-  - cinst -y swig --version 4.0.1
+  - cinst -y swig # --version 3.0.12
 
 build: off
 

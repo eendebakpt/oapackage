@@ -90,7 +90,7 @@ const algorithm_t MODE_ORIGINAL = MODE_LMC;
 /// Return string representation of available algorithm modes
 inline std::string algorithm_t_list () {
         std::string ss =
-            printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (j5 order dominant), %d "
+            printfstring ("%d (automatic), %d (original), %d (check j4), %d (j5 order), %d (MODE_J5ORDERX, j5 order dominant), %d "
                           "(MODE_J5ORDERXFAST)",
                           MODE_AUTOSELECT, MODE_ORIGINAL, MODE_J4, MODE_J5ORDER, MODE_J5ORDERX, MODE_J5ORDER_2LEVEL);
         ss += printfstring (", %d (MODE_LMC_SYMMETRY), %d (MODE_LMC_2LEVEL)", MODE_LMC_SYMMETRY, MODE_LMC_2LEVEL);
