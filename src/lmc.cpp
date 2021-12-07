@@ -1441,7 +1441,10 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
         return splits;
 }
 
-void _calculate_j4_values(std::vector<int> &j4_values, carray_t *array, const int N, const colperm_t comb)
+/** Calculate J4 values for all delete-one-factor combinations of the specified comb 5-column combination
+ *
+*/
+void _calculate_dof_j4_values(std::vector<int> &j4_values, carray_t *array, const int N, const colperm_t comb)
 {
 	colindex_t lc[4];
 	init_perm(lc, 4);
@@ -1471,8 +1474,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         // allocate buffer to hold the values
         std::vector< int > j4_values (5);
 
-        /* calculate the J4 values */
-		_calculate_j4_values(j4_values, array, N, comb);
+		_calculate_dof_j4_values(j4_values, array, N, comb);
 
         indexsort s (5);
         s.sort (j4_values);
@@ -1489,12 +1491,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
 
         // create the sorted column combination
         perform_inv_perm (comb, comby, jj, s.indices);
-        if (verbose >= 2) {
-                myprintf ("initial comb: ");
-                print_perm (comb, jj);
-                myprintf (" result comb: ");
-                print_perm (comby, jj);
-        }
+
         // make splits
         init_perm (perm, ad.ncols);
         create_perm_from_comb2< colindex_t > (perm, comby, jj, ad.ncols);
@@ -1689,7 +1686,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
         lmc_t ret = LMC_EQUAL;
 
-        /* loop over all possible column combinations for the first jj columns */
+        /* calculate invariants for the first jj columns */
         int jbase = abs (jvaluefast (array, ad.N, jj, firstcolcomb));
         jj45_t j54_base = jj45val (array, ad.N, firstcolcomb, 0);
 
