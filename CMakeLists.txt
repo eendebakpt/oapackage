@@ -34,7 +34,6 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-# find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
@@ -233,39 +232,6 @@ endif()
 
   TARGET_LINK_LIBRARIES(oaextendsingle oalib)
   set(extendprogs oaextendsingle )
-
-  if (MPI_FOUND AND NOT WIN32 AND 1)
-    message(STATUS "Found MPI package: adding oaextendmpi")
-    if (VERBOSE)
-	message(STATUS "MPI executable: ${MPIEXEC}, libs ${MPI_LIBRARIES}")
-    endif()
-    #message(STATUS "   libs ${MPI_LIBRARIES}; flags ${MPI_COMPILE_FLAGS}; libs ${MPI_LIBRARIES}")
-    include_directories( ${MPI_INCLUDE_PATH} )
-    include_directories( src/mpitools )
-
-  add_executable(oaextendmpi EXCLUDE_FROM_ALL "utils/oaextend.cpp" ${headersextend} ${srcsextend} "src/mpitools/mpitools.cpp")
-  target_link_libraries(oaextendmpi ${MPI_LIBRARIES})
-  if(MPI_COMPILE_FLAGS)
-    set_target_properties(oaextendmpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
-  endif()
-  if(MPI_LINK_FLAGS)
-      if (WIN32)
-		set_target_properties(oaextendmpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS} /MT")
-		endif()
-    set_target_properties(oaextendmpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-  endif()
-
-  set_target_properties(oaextendmpi PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_MULTICORE;NEWINTERFACE" )
-
-   if (WIN32)
-    if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
-    endif()
-   else()
-      TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
-   endif()
-
-  endif(MPI_FOUND AND NOT WIN32 AND 1)
 
 message(STATUS "Extend progs: ${extendprogs}")
 

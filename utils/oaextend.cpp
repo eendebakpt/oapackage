@@ -1,18 +1,14 @@
 /** \file oaextend.cpp
 
- C++ program: oaextendmpi / oaextendsingle
+ C++ program: oaextendsingle
 
- oaextendmpi and oaextendsingle can calculate series of non-isomorphic orthogonal arrays
+ oaextendsingle can calculate series of non-isomorphic orthogonal arrays
 
  Author: Pieter Eendebak <pieter.eendebak@gmail.com>, (C) 2014
 
  Copyright: See COPYING file that comes with this distribution
 */
 
-#ifdef OAEXTEND_MULTICORE
-// this must be included before stdio.h
-#include <mpi.h>
-#endif
 
 #include <errno.h>
 #include <list>
@@ -34,18 +30,12 @@
 #include "strength.h"
 #include "tools.h"
 
-#ifdef OAEXTEND_MULTICORE
 
-#include "mpi.h"
-#include "mpitools.h"
-
-#else
 /** number of master processor */
 const int MASTER = 0;
 
 /* OAEXTEND_SINGLECORE */
 int extend_slave_code (const int this_rank, OAextend const &oaextend) { return 0; }
-#endif
 
 /*!
 Save_arrays writes all the arrays from solutions to a file. The filename is obtained from the number of factors and the number of columns so far. Then the file header contains the number of columns in the
@@ -103,11 +93,7 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
         opt->setOption ("initcolprev", 'I'); /* algorithm method */
 
         opt->addUsage ("Orthonal Arrays: extend orthogonal arrays");
-#ifdef OAEXTEND_SINGLECORE
-        opt->addUsage ("Usage: oaextendmpi [OPTIONS]");
-#else
         opt->addUsage ("Usage: oaextendsingle [OPTIONS]");
-#endif
 
         opt->addUsage ("");
         opt->addUsage (" -h  --help  			Prints this help ");
@@ -168,40 +154,21 @@ int init_restart (const char *fname, colindex_t &cols, arraylist_t &solutions) {
 }
 
 /**
- * @brief Main function for oaextendmpi and oaextendsingle
+ * @brief Main function for  oaextendsingle
  * @param argc
  * @param argv[]
  * @return
  */
 int main (int argc, char *argv[]) {
-#ifdef OAEXTEND_SINGLECORE
         const int n_processors = 1;
         const int this_rank = 0;
-#else
-        MPI::Init (argc, argv);
-
-        const int n_processors = MPI::COMM_WORLD.Get_size ();
-        const int this_rank = MPI::COMM_WORLD.Get_rank ();
-#endif
-
-        // printf("MPI: this_rank %d\n", this_rank);
 
         /*----------SET STARTING ARRAY(S)-----------*/
         if (this_rank != MASTER) {
-#ifdef OAEXTEND_MULTICORE
-                slave_print (QUIET, "M: running core %d/%d\n", this_rank, n_processors);
-#endif
                 algorithm_t algorithm = MODE_INVALID;
                 AnyOption *opt = parseOptions (argc, argv, algorithm);
                 OAextend oaextend;
                 oaextend.setAlgorithm (algorithm);
-
-#ifdef OAEXTEND_MULTICORE
-                log_print (NORMAL, "slave: receiving algorithm int\n");
-                algorithm = (algorithm_t)receive_int_slave ();
-                oaextend.setAlgorithm (algorithm);
-// printf("slave %d: receive algorithm %d\n", this_rank, algorithm);
-#endif
 
                 extend_slave_code (this_rank, oaextend);
 
@@ -284,23 +251,11 @@ int main (int argc, char *argv[]) {
                                 oaextend.setAlgorithmAuto (ad);
                         }
 
-#ifdef OAEXTEND_SINGLECORE
                         if (initcolprev == 0) {
                                 log_print (NORMAL, "setting oaextend.init_column_previous to %d\n", INITCOLUMN_ZERO);
                                 oaextend.init_column_previous = INITCOLUMN_ZERO;
                         }
-#endif
 
-#ifdef OAEXTEND_MULTICORE
-                        int alg = oaextend.getAlgorithm ();
-                        for (int i = 0; i < n_processors; i++) {
-                                if (i == MASTER) {
-                                        continue;
-                                }
-                                log_print (NORMAL, "MASTER: sending algorithm %d to slave %d\n", alg, i);
-                                send_int (alg, i);
-                        }
-#endif
                         colindex_t col_start;
 
                         log_print (SYSTEM, "using algorithm %d (%s)\n", oaextend.getAlgorithm (),
@@ -315,9 +270,6 @@ int main (int argc, char *argv[]) {
                                         logstream (SYSTEM) << "Problem with restart from " << opt->getValue ('r') << ""
                                                            << endl;
 
-#ifdef OAEXTEND_MPI
-                                        MPI_Abort (MPI_COMM_WORLD, 1);
-#endif
                                         exit (1);
                                 }
 
@@ -343,9 +295,6 @@ int main (int argc, char *argv[]) {
                                 if (check_divisibility (ad) == false) {
                                         log_print (SYSTEM, "ERROR: Failed divisibility test!\n");
 
-#ifdef OAEXTEND_MPI
-                                        MPI_Abort (MPI_COMM_WORLD, 1);
-#endif
                                         exit (1);
                                 }
                                 create_root (ad, solutions);
@@ -390,29 +339,11 @@ int main (int argc, char *argv[]) {
                                                 nr_extensions += extend_array (*cur_extension, adcol,
                                                                                current_col, extensions, oaextend);
                                         } else {
-#ifdef OAEXTEND_MPI
-                                                throw_runtime_exception("mpi version of oextend is no longer supported");
-                                                double Ttmp = get_time_ms ();
-                                                int slave = collect_solutions_single (extensions, adcol);
-                                                log_print (DEBUG, "   time: %.2f, collect time %.2f\n",
-                                                           (get_time_ms () - Tstart), (get_time_ms () - Ttmp));
-
-                                                /* OPTIMIZE: send multiple arrays to slave 1 once step */
-                                                extend_array_mpi (cur_extension->array, 1, adcol, current_col, slave);
-#endif
                                         }
 
-#ifdef OAEXTEND_MPI
-                                        if ((csol + 1) % nsolsync == 0) {
-                                                collect_solutions_all (extensions, adcol);
-                                        }
-#endif
                                         // OPTIMIZE: periodically write part of the solutions to disk
                                         csol++; /* increase current solution */
                                 }
-#ifdef OAEXTEND_MPI
-                                collect_solutions_all (extensions, adcol);
-#endif
 
                                 if (checkloglevel (NORMAL)) {
                                         csol = 0;
@@ -438,10 +369,6 @@ int main (int argc, char *argv[]) {
 
                                 delete adcol;
 
-#ifdef OAANALYZE_DISCR
-                                logstream (NORMAL) << "Discriminant: " << endl;
-                                print_discriminant (ad->N, current_col + 1);
-#endif
                         }
                         /*------------------------*/
                         time (&seconds);
@@ -454,18 +381,10 @@ int main (int argc, char *argv[]) {
 
                         solutions.clear ();
                         delete ad;
-
-#ifdef OAEXTEND_MPI
-                        stop_slaves ();
-#endif
                 }
 
                 delete opt;
         } /* end of master code */
-
-#ifdef OAEXTEND_MPI
-        MPI_Finalize ();
-#endif
 
         return 0;
 }
