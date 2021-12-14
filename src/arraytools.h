@@ -116,7 +116,6 @@ typedef const short int carray_t;
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_SHORT
-/*other options for MPI_ARRAY_T are: char: MPI_CHAR, short: MPI_SHORT, int: MPI_INT, long: MPI_LONG */
 
 typedef short int rowindex_t;       /** type used for row indexing */
 typedef int colindex_t;             /** type used for column indexing */

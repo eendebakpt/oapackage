@@ -1,6 +1,4 @@
-#ifdef OAEXTEND_MULTICORE
-#include <mpi.h>
-#endif
+
 #include <algorithm>
 #include <errno.h>
 #include <list>
@@ -847,11 +845,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
 #endif
 
         const rowindex_t N = p->ad->N;
-#ifdef OAEXTEND_MULTICORE
-        const int node_rank = MPI::COMM_WORLD.Get_rank ();
-#else
         const int node_rank = 0;
-#endif
 
         LMCreduction_t reduction (ad);
         reduction.init_state = COPY;

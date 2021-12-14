@@ -6,9 +6,6 @@
 #ifndef EXTEND_H
 #define EXTEND_H
 
-#ifdef OAEXTEND_MULTICORE
-#include <mpi.h>
-#endif
 #include "arraytools.h"
 #include "lmc.h"
 #include "oaoptions.h"
