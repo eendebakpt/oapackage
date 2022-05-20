@@ -3647,6 +3647,7 @@ void jstruct_t::calcj4 (const array_link &al) {
 
 void jstruct_t::calcj5 (const array_link &al) {
         myassert (jj == 5, "jj should be 5");
+        myassert( k==al.n_columns, "number of columns of input array should match jstruct_t");
         int *pp = new_perm_init< int > (jj);
         int ncolcombs = ncombs (k, jj);
         const int nr = al.n_rows;

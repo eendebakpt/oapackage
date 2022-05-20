@@ -1010,6 +1010,9 @@ class jstruct_t {
 	/// return 1 if all J values are zero, otherwise return 0
 	int allzero() const;
 
+    /// calculate J-characteristics of a 2-level array, special function for jj=5
+	void calcj5(const array_link &al);
+
 private:
 	/// init data structures
 	void init(int N, int k, int jj);
@@ -1017,8 +1020,6 @@ private:
 	void calc(const array_link &al);
 	/// calculate J-characteristics of a 2-level array, special function for jj=4
 	void calcj4(const array_link &al);
-	/// calculate J-characteristics of a 2-level array, special function for jj=5
-	void calcj5(const array_link &al);
 
 };
 
