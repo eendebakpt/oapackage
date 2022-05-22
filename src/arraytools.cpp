@@ -4597,7 +4597,7 @@ void arrayfile_t::writeheader () {
                 if (this->mode == arrayfile::ABINARY_DIFFZERO) {
                         // NOTE: needed because in ABINARY_DIFFZERO we diff modulo 2
                         if (this->nbits != 1)
-                                myprintf ("not implemented...!\n");
+                                myprintf ("arrayfile_t::writeheader: not implemented for nbits %d!\n", this->nbits);
                         assert (this->nbits == 1);
                 }
                 fwrite ((const void *)&magic, sizeof (int), 1, this->nfid);
@@ -5345,8 +5345,7 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
 
                 this->write_array_binary (z);
         } else {
-                array_link z = rest;
-                this->write_array_binary (z);
+                this->write_array_binary (rest);
         }
 
         // update with previous array
@@ -5395,7 +5394,7 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
                                 if (array[i]) {
                                         bit_array_set_bit (bitarr, i);
                                 } else {
-                                        bit_array_clear_bit (bitarr, i);
+                                        bit_array_clear_bit_fast (bitarr, i);
                                 }
                         }
                         word_addr_t num_of_words =

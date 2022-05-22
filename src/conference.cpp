@@ -2088,7 +2088,7 @@ int selectZmax (int maxzpos, const conference_t::conference_type &ctype, const a
                         maxzpos = al.n_rows - 1;
                         break;
                 default:
-                        printfd ("not implemented...\n");
+                        printfd ("selectZmax: not implemented for case %d\n", ctype);
                         maxzpos = al.n_rows - 1;
                 }
         }

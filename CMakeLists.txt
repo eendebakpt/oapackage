@@ -201,7 +201,7 @@ set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oa
 set(progsextend )
 
 list(APPEND progs oacheck oastreaming oaranktest oatest oaclustergather)
-list(APPEND progs oa_depth_extend)
+list(APPEND progs oa_depth_extend oa_select_maxj)
 
 if (WIN32)
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
