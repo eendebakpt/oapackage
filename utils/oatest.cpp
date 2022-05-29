@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
         myprintf("perm: ");  print_perm(perm);
         return 0;
 
-        printf("test! %ld\n", choose(6,4));
+        printf("test! %ld\n", (long)choose(6,4));
         for (int i = 4; i < 12; i++)
             printf("choose(%d, %d): %ld\n", i, i-2, choose(i, i - 2) - ncombs(i, i - 2));
         fflush(0);

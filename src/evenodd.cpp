@@ -78,14 +78,14 @@ void counter_t::showcountscompact () const {
 void counter_t::showcounts (const arraydata_t &ad) const {
         myprintf ("--results--\n");
         for (size_t i = ad.strength; i <= (size_t)ad.ncols; i++) {
-                myprintf ("depth_extend: column %ld: found %ld\n", i, this->nfound[i]);
+                myprintf ("depth_extend: column %ld: found %ld\n", (long)i, (long)this->nfound[i]);
         }
 }
 
 void counter_t::showcounts (const char *str, int first, int last) const {
         myprintf ("--results--\n");
         for (size_t i = first; i <= (size_t)last; i++) {
-                myprintf ("%s: column %ld: found %ld\n", str, i, this->nfound[i]);
+                myprintf ("%s: column %ld: found %ld\n", str, (long)i, (long)this->nfound[i]);
         }
 }
 
@@ -352,13 +352,15 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
 
         int64_t ps = al.row_symmetry_group ().permsize ();
 
+        al.row_symmetry_group ().show();
+        
         depth_alg_t depthalg = DEPTH_DIRECT;
         depth_extend_sub_t dextendsub;
 
-        if (ps > 20000 || ps > 1999999) {
+        if (ps > 20000 || extensioncol < 9) {
                 // IDEA: enable caching of extensions at later stage!
 
-                printfd ("depth_extend_array: warning: direct extension due to large symmetry group!\n");
+                printfd ("depth_extend_array: warning: direct extension due to large symmetry group! (size %ld)\n", ps);
                 depthalg = DEPTH_DIRECT;
 
                 OAextend oaextendDirect = oaextendx;

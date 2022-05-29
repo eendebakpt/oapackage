@@ -738,22 +738,10 @@ bool return_stack (split *stack, extendpos *p, array_t *array, int col_offset) {
 
 inline void showLoopProgress (array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0,
                               int nlmcarrays = -1) {
-#ifdef _OPENMPX
-#define SAFEOMP
-#ifdef SAFEOMP
-        static long _nloops[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        int tid = omp_get_thread_num ();
-        _nloops[tid % 16]++;
-        long nloops = _nloops[tid % 16];
-#else
+
         static long nloops = 0;
         nloops++;
-#endif
-#else
-        static long nloops = 0;
-        nloops++;
-#endif
-        if (nloops % 10000 == 0) {
+        if (nloops % 20000 == 0) {
                 fflush (stdout);
 
                 if (nloops % (500 * 1000 * 1000) == 0) {

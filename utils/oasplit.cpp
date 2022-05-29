@@ -82,12 +82,11 @@ int main (int argc, char *argv[]) {
         if (mode == ABINARY_DIFFZERO) {
                 nb = 1;
         }
-        /* open the file containint the arrays */
-        int rows, cols, narrays;
+        /* open the file containing the arrays */
         arrayfile_t *afile = new arrayfile_t (inputfile);
-        rows = afile->nrows;
-        cols = afile->ncols;
-        narrays = afile->narrays;
+        const int rows = afile->nrows;
+        const int cols = afile->ncols;
+        const int narrays = afile->narrays;
 
         if (!afile->isopen ()) {
                 printf ("oasplit: problem opening file %s\n", inputfile);
