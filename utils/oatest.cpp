@@ -121,6 +121,22 @@ int main(int argc, char* argv[]) {
     if (input == 0)
         input = "test.oa";
 
+    int run_size = 100;
+int strength = 2;
+int number_of_factors = 4;
+     int factor_levels = 10;
+     arraydata_t adata(10, run_size, strength, number_of_factors);
+     adata.show();
+     
+     arraylist_t ll;
+     ll.push_back(adata.create_root());
+     
+     extend_arraylist(ll, adata);
+     
+     printf("done\n");
+     exit(0);
+//array_list_3columns=oapackage.extend_arraylist(array_list, arrayclass)
+
     array_link G(4, 4, 0);
     G.at(0, 0) = 1;
     G.at(1, 0) = 1;
@@ -142,7 +158,7 @@ int main(int argc, char* argv[]) {
 
         printf("test! %ld\n", (long)choose(6,4));
         for (int i = 4; i < 12; i++)
-            printf("choose(%d, %d): %ld\n", i, i-2, choose(i, i - 2) - ncombs(i, i - 2));
+            printf("choose(%d, %d): %ld\n", i, i-2, (long)(choose(i, i - 2) - ncombs(i, i - 2)) );
         fflush(0);
 
         array_link A = exampleArray(56, 1);
