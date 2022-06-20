@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <math.h>
+#include <limits>
 
 #include "arraytools.h"
 #include "extend.h"
@@ -7,7 +8,6 @@
 #include "mathtools.h"
 #include "oaoptions.h"
 #include "tools.h"
-
 #include "nonroot.h"
 
 #ifndef DOOPENMP
@@ -716,12 +716,18 @@ void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lper
 * @return
 */
 rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr) {
-        /* OPTIMIZE: can this function be made simpler by noting that all permutations of N/oaindex occur ??*/
+        /* OPTIMIZE: can this function be made simpler by noting that all permutations of N/oaindex occur */
 
         totalpermsr = 1;
-        for (int i = 0; i < ad->strength; i++)
-                totalpermsr *= factorial< int > (ad->s[i]);
-
+        for (int i = 0; i < ad->strength; i++) {
+                int f = factorial< int > (ad->s[i]);
+                if (totalpermsr>std::numeric_limits<int>::max()/f) {
+                    myprintf("create_root_permutations_index: design specification: %s\n", ad->fullidstr().c_str());
+                        throw_runtime_exception(printfstring("integer overflow for specified factor levels"));
+                }
+                totalpermsr *= f;
+        }
+        
         log_print (DEBUG, "create_root_permutations_index: allocating rootrowperms table of size "
                           "%d*%d*sizeof(rowsort_t)=%ld=%.1f MB (sizeof(rowsort_t)=%d)\n",
                    totalpermsr, ad->N, (long)totalpermsr * (long)ad->N * (long)sizeof (rowsort_t),
