@@ -53,12 +53,12 @@ int main (int argc, char *argv[]) {
         opt.setOption ("verbose", 'v');
         opt.setOption ("format", 'f');
 
-        opt.addUsage ("oa_select_maxj: Split an array file into several files");
+        opt.addUsage ("oa_select_maxj: Select designs with max(J5)");
         opt.addUsage ("Usage: oa_select_maxj -i [FILE] -o file [OPTIONS]");
         opt.addUsage ("");
         opt.addUsage (" -h  --help  		Prints this help ");
         opt.addUsage (" -i [FILE]  --input [FILE]		Input file ");
-        opt.addUsage (" -o [STR]  --output [FILE]		Output prefix (default: split) ");
+        opt.addUsage (" -o [STR]  --output [FILE]		Output file ");
         opt.addUsage (" -f [FORMAT]					Output format (default: TEXT, or BINARY; B, or DIFF; D, or DIFFZERO; Z) ");
         opt.addUsage (" -v [INTEGER]					Verbose (default: 2) ");
         opt.processCommandArgs (argc, argv);
@@ -98,7 +98,7 @@ int main (int argc, char *argv[]) {
         if (mode == ABINARY_DIFFZERO) {
                 nb = 1;
         }
-        /* open the file containint the arrays */
+        /* open the file containing the arrays */
         arrayfile_t *afile = new arrayfile_t (inputfile);
         const int rows = afile->nrows;
         const int cols = afile->ncols;
@@ -115,8 +115,6 @@ int main (int argc, char *argv[]) {
         arrayfile_t *outfid = 0;
 
         outfid = new arrayfile_t(outputfile, rows, cols, -1, mode, nb);
-        
-
         
         jstruct_t *js = 0;
         array_link al (rows, cols, 0);

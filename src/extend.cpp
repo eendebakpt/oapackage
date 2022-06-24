@@ -745,9 +745,11 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
                 fflush (stdout);
 
                 if (nloops % (500 * 1000 * 1000) == 0) {
+                    if (checkloglevel(QUIET)) {
                         std::cout << "node [" << node_rank << "]: extend loop " << nloops / (1000 * 1000);
                         cout << "m, ";
                         print_perm (array + col_offset, N, 28);
+                    }
                 }
         }
 }
@@ -772,12 +774,10 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         array_t *array = create_array (fullad->N, ncolsextension);
         copy_array (origarray, array, fullad->N, extensioncol);
 
-#ifdef OACHECK
         if (fullad->strength < 1) {
                 log_print (SYSTEM, " extend_array: error: function not defined for strength < 1\n");
                 throw_runtime_exception("extend_array: strength should be >=1");
         }
-#endif
 
         /* array data */
         arraydata_t *ad = new arraydata_t (fullad, ncolsextension);
@@ -806,7 +806,6 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         } else {
                 if (oaextend.init_column_previous == INITCOLUMN_J5) {
                         if (extensioncol > 5) {
-                                // printf("extensioncol %d: here\n", extensioncol);
                                 init_column_previous (array, p, col_offset, stack, es, oaextend);
                         } else
                                 init_column_full (array, p, col_offset, stack, es);
