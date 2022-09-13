@@ -24,7 +24,7 @@ class TestGWLP(unittest.TestCase):
         al = oapackage.exampleArray(4, 0)
         self.assertEqual(al.GWLP(), (1.0, 0.0, 0.0, 3.5, 2.5, 0.5, 0.5, 0.0))
 
-    def test_regression_gwlp_mixed2(self):
+    def test_regression_gwlp_non_mixed(self):
         al = oapackage.exampleArray(57, 0)
         gwlp = al.GWLP()
         self.assertEqual(gwlp, (1.0, 0.0, 0.0, 13.0, 13.5, 9.0, 4.0))
