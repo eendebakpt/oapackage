@@ -396,7 +396,7 @@ lmc_t LMC_check_col_ft_2level (const array_t *originalcol, const array_t *arrayc
         const int scol = dd->col - 1;
         rowsortlight_t *rowsort = dd->rowsortl;
 
-        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol); 
+        int nb = sd.ft.atfast (sd.ft.n_rows - 1, scol);
         array_t *symmdata_column_pointer = sd.ft.array + scol * sd.ft.n_rows;
 
         /* we check in blocks determined by the ft */
@@ -612,7 +612,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
         assert (ad->order == ORDER_J5);
 
         const int cpoffset = ad->N * dd->colperm[dd->col];
-        if (dd->col < 4) { 
+        if (dd->col < 4) {
                 lmc_t ret = LMC_check_col (original + dd->col * +ad->N, array + cpoffset, lperm, ad, dd);
                 return ret;
         }
@@ -630,7 +630,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
         for (int x = 0; x < 5; x++)
                 pp[x] = dd->colperm[x];
         pp[4] = dd->colperm[dd->col];
-        int jcol = abs (jvaluefast (array, ad->N, 5, pp)); 
+        int jcol = abs (jvaluefast (array, ad->N, 5, pp));
         if ( dd->col > 4) {
                 if (log_print (DEBUG, "")) {
                         myprintf ("  xxx col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol);
@@ -674,13 +674,13 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
 
         helper_structure.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, ad);
 
-        const int number_remaining = ad->ncols - dyndata->col; 
-        const int number_levels = ad->s[dyndata->col];      
+        const int number_remaining = ad->ncols - dyndata->col;
+        const int number_levels = ad->s[dyndata->col];
 
         levelperm_t lperm = lperm_p[dyndata->col];
         colperm_t colpermloop = localcolperm_p[dyndata->col];
         dyndata_t *dyndatacpy = dynd_p[dyndata->col];
-        const int current_column_group = ad->get_col_group (dyndata->col); 
+        const int current_column_group = ad->get_col_group (dyndata->col);
         /* number of columns remaining in this group */
         const int ncolsremgroup = ad->colgroupsize[current_column_group] + ad->colgroupindex[current_column_group] - dyndata->col;
 
@@ -806,7 +806,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
 
         helper_structure.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, arrayclass);
 
-        const int number_remaining = arrayclass->ncols - dyndata->col; 
+        const int number_remaining = arrayclass->ncols - dyndata->col;
         const int nlevels = arrayclass->s[dyndata->col];      /* number of levels at this column */
 
         levelperm_t lperm = lperm_p[dyndata->col];
@@ -838,7 +838,7 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
                 for (int j = 0; j < nlevelperms; j++) {
                         /* copy dyndata rowsort data */
                         cpy_dyndata_rowsort (dyndata, dyndatacpy);
-                        dyndatacpy->col = dyndata->col; 
+                        dyndatacpy->col = dyndata->col;
 
                         /* LMC_check_col performs level permutations, updates the sorting structure and compares with
                          * the original array on blocks of oaindex */
@@ -863,16 +863,16 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
 
                                         if ((oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
                                              oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL) &&
-                                            reduction->sd != 0) { 
-                                                myassert (reduction->sd != 0, "LMC_check_col_ft");
+                                            valid_ptr(reduction->sd)) {
+                                                myassert (valid_ptr(reduction->sd), "LMC_check_col_ft: no valid pointer");
                                                 ret = LMC_check_col_ft_2level (
                                                     reduction->array + dyndata->col * +arrayclass->N, original + cpoffset,
-                                                    lperm, arrayclass, dyndatacpy, *(reduction->sd)); 
+                                                    lperm, arrayclass, dyndatacpy, *(reduction->sd));
                                         } else {
                                                 ret = LMC_check_col (reduction->array + dyndata->col * +arrayclass->N,
                                                                      original + cpoffset, lperm, arrayclass, dyndatacpy);
                                         }
-                                        dyndatacpy->col = dyndata->col; 
+                                        dyndatacpy->col = dyndata->col;
 
                                 } else {
                                         ret =
@@ -970,7 +970,7 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
         dyndatacpy->allocate_rowsortl ();
         dyndatacpy->col = dyndata->col;
 
-        const int current_column_group = ad->get_col_group (dyndata->col); 
+        const int current_column_group = ad->get_col_group (dyndata->col);
         /* number of columns remaining in this group */
         const int ncolsremgroup = ad->colgroupsize[current_column_group] + ad->colgroupindex[current_column_group] - dyndata->col;
 
@@ -992,9 +992,9 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                 /* loop over all level permutations */
                 for (int j = 0; j < nlevelperms; j++) {
                         /* copy dyndata rowsort data */
-                        cpy_dyndata_rowsortl (dyndata, dyndatacpy); 
+                        cpy_dyndata_rowsortl (dyndata, dyndatacpy);
 
-                        dyndatacpy->col = dyndata->col; 
+                        dyndatacpy->col = dyndata->col;
 
                         /* LMC_check_col performs level permutations, updates the sorting structure and compares with
                          * the original array on blocks of oaindex */
@@ -1014,7 +1014,7 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                                                                                original + cpoffset, lperm, ad,
                                                                                dyndatacpy, *(reduction->sd), 0);
                                         }
-                                        dyndatacpy->col = dyndata->col; 
+                                        dyndatacpy->col = dyndata->col;
 
                                 } else {
                                         ret =
@@ -1041,7 +1041,7 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                                                                                  oaextend, tmpStatic);
                                         }
                                 }
-                                
+
                         }
                         if (ret == LMC_LESS) {
                                 break; // break from levelperms loop

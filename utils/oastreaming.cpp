@@ -142,7 +142,7 @@ int main (int argc, char *argv[]) {
 
         OAextend oaextend;
         oaextend.setAlgorithm (algorithm);
-        oaextend.extendarraymode = OAextend::STOREARRAY;
+        oaextend.extendarraymode = OAextend::extendarray_mode_t::STOREARRAY;
 
         // J5_45
         int xx = opt->getFlag ('x');

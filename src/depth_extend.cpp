@@ -57,12 +57,12 @@ int extend_array_dynamic ( const arraylist_t &alist, arraydata_t &adx, OAextend 
 		std::vector<std::vector<double> > edata0;
 
 		extend_array_dynamic ( al, adx, oaextend, earrays0, edata0, dextend, kfinal, Dfinal, rs, verbose );
-		#pragma omp critical(extenddynamic) 
+		#pragma omp critical(extenddynamic)
 		{
 			appendArrays ( earrays0, earrays );
 			edata.insert ( edata.end(), edata0.begin(), edata0.end() );
 
-		
+
 			ntotal += dextend.ntotal;
 			nlmc += dextend.nlmc;
 			n += dextend.n;
@@ -162,7 +162,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	oaextendx.use_row_symmetry=rs;
 	oaextendx.nLMC=500000;
 	oaextendx.setAlgorithmAuto ( &adx );
-	oaextendx.extendarraymode=OAextend::APPENDEXTENSION;	// save memory by only appending the partial array
+	oaextendx.extendarraymode=OAextend::extendarray_mode_t::APPENDEXTENSION;	// save memory by only appending the partial array
 
 	if ( kfinal<input_array.n_columns+1 ) {
 		printf ( "extend_array_dynamic: kfinal too small! kfinal %d, cols in extension %d\n", kfinal, input_array.n_columns+1 );
@@ -213,7 +213,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 
 				reduction.lastcol=-1;
 				reduction.init_state=COPY; // INIT
-				
+
 				lmc_t v = LMCcheck ( tmparray, *ad, oaextendx, reduction );
 				if ( verbose>=4 )
 					printf ( "lmc_t %d, col %d\n", v, reduction.lastcol );
@@ -240,12 +240,12 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 		tmparray.setcolumn ( lastcol, earrays[ii] );
 
 		dextend.Deff[ii] = dextend_t::NO_VALUE;
-		if ( dextend.Dcheck==DCALC_ALWAYS || dextend.lmctype[ii]==LMC_MORE ) {
+		if ( dextend.Dcheck== dcalc_mode::DCALC_ALWAYS || dextend.lmctype[ii]==LMC_MORE ) {
 			if (adx.is2level() )
 				dextend.Deff[ii] = Defficiency ( tmparray, verbose>=2 );
 			else {
 				array_link altmp = hstack(tmparray, earrays[ii] );
-				dextend.Deff[ii] =altmp.Defficiencies ()[0];				
+				dextend.Deff[ii] =altmp.Defficiencies ()[0];
 			}
 		}
 
@@ -280,7 +280,7 @@ int extend_array_dynamic ( const array_link &input_array, arraydata_t &adx, OAex
 	dextend.DefficiencyFilter ( Dfinal, k, kfinal, Lmax, verbose );
 
 
-	//int ngood =std::accumulate ( dextend.filter.begin(),dextend.filter.end(),0 ); 
+	//int ngood =std::accumulate ( dextend.filter.begin(),dextend.filter.end(),0 );
 	int ngoodlmc = countOccurences ( dextend.lmctype, LMC_MORE );
 
 	std::vector<int> ctype = dextend.filterArrays ( input_array, earrays, earraysout, edata,verbose );

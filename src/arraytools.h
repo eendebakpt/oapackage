@@ -116,7 +116,6 @@ typedef const short int carray_t;
 
 /* change definition below together with array_t !!!! */
 #define MPI_ARRAY_T MPI_SHORT
-/*other options for MPI_ARRAY_T are: char: MPI_CHAR, short: MPI_SHORT, int: MPI_INT, long: MPI_LONG */
 
 typedef short int rowindex_t;       /** type used for row indexing */
 typedef int colindex_t;             /** type used for column indexing */
@@ -340,12 +339,6 @@ struct arraydata_t {
 /// Read array configuration from file
 arraydata_t *readConfigFile (const char *file);
 
-/**
- * @brief Function similar to printf returning C++ style string
- * @param message
- * @return
- */
-std::string printfstring(const char *message, ...);
 
 /**
  * @brief Make a copy of an array
@@ -1017,6 +1010,9 @@ class jstruct_t {
 	/// return 1 if all J values are zero, otherwise return 0
 	int allzero() const;
 
+    /// calculate J-characteristics of a 2-level array, special function for jj=5
+	void calcj5(const array_link &al);
+
 private:
 	/// init data structures
 	void init(int N, int k, int jj);
@@ -1024,8 +1020,6 @@ private:
 	void calc(const array_link &al);
 	/// calculate J-characteristics of a 2-level array, special function for jj=4
 	void calcj4(const array_link &al);
-	/// calculate J-characteristics of a 2-level array, special function for jj=5
-	void calcj5(const array_link &al);
 
 };
 

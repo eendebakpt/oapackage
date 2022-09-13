@@ -62,6 +62,9 @@ void bit_array_set_bit(BIT_ARRAY* bitarr, bit_index_t b);
 // clear a bit (to 0) at position b
 void bit_array_clear_bit(BIT_ARRAY* bitarr, bit_index_t b);
 
+// clear a bit (to 0) at position b (no error checking)
+void bit_array_clear_bit_fast(BIT_ARRAY* bitarr, bit_index_t b);
+
 // Get the value of a bit (returns 0 or 1)
 char bit_array_get_bit(BIT_ARRAY* bitarr, bit_index_t b);
 char bit_array_get_bit_nocheck(BIT_ARRAY* bitarr, bit_index_t b);

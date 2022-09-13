@@ -516,6 +516,13 @@ public:
     }
 }
 
+%extend jstructconference_t {
+public:
+    std::string __repr__() {
+      return $self->showstr();
+    }
+}
+
 #ifdef SWIGPYTHON
 // Add module docstring
 %pythoncode

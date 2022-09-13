@@ -229,7 +229,6 @@ DataType **malloc2d_irr (const int nrows, const rtype *rowsizes, int &nelements)
 template < class DataType, class numtype >
 DataType **malloc2d (const numtype nrows, const int rowsize) {
         DataType **data;
-
         data = new DataType *[nrows];
         if (data == 0) {
                 throw_runtime_exception ("malloc2d: error with memory allocation");

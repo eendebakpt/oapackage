@@ -136,6 +136,12 @@ void bit_array_set_bit(BIT_ARRAY* bitarr, bit_index_t b)
   bitarr->words[bindex(b)] |= ((word_t)1 << (boffset(b)));
 }
 
+
+void bit_array_clear_bit_fast(BIT_ARRAY* bitarr, bit_index_t b)
+{
+  bitarr->words[bindex(b)] &= ~((word_t)1 << (boffset(b)));
+}
+
 void bit_array_clear_bit(BIT_ARRAY* bitarr, bit_index_t b)
 {
   if(b < 0 || b >= bitarr->num_of_bits)

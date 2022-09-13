@@ -1,6 +1,4 @@
-#ifdef OAEXTEND_MULTICORE
-#include <mpi.h>
-#endif
+
 #include <algorithm>
 #include <errno.h>
 #include <list>
@@ -90,13 +88,13 @@ void dextend_t::DefficiencyFilter (double Dfinal, int k, int kfinal, double Lmax
 
                 int chk = 1;
                 switch (dextend.filtermode) {
-                case DFILTER_NONE:
+                case dfilter_t::DFILTER_NONE:
                         chk = 1;
                         break;
-                case DFILTER_BASIC:
+                case dfilter_t::DFILTER_BASIC:
                         chk = Ci >= Cfinal;
                         break;
-                case DFILTER_MULTI:
+                case dfilter_t::DFILTER_MULTI:
                         // chk= Ci >= Cfinalmulti;
                         chk = Lmaxmulti * Ci >= Cfinal;
                         break;
@@ -393,7 +391,7 @@ int check_branch (extend_data_t *es, carray_t *array, extendpos *p, split *stack
 #else
                 if (1) {
 #endif
-                        p->value = i; 
+                        p->value = i;
                         /* strength t check */
                         if (valid_element (es, p, array)) {
                                 stack->valid[stack->count][npos] = p->value;
@@ -457,7 +455,7 @@ int check_branch_2level (extend_data_t *es, carray_t *array_colstart, extendpos 
 #else
                 if (1) {
 #endif
-                        p->value = i; 
+                        p->value = i;
                         /* strength t check */
                         if (valid_element_2level (es, p)) {
                                 stack->valid[stack->count][npos] = p->value;
@@ -740,28 +738,18 @@ bool return_stack (split *stack, extendpos *p, array_t *array, int col_offset) {
 
 inline void showLoopProgress (array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0,
                               int nlmcarrays = -1) {
-#ifdef _OPENMPX
-#define SAFEOMP
-#ifdef SAFEOMP
-        static long _nloops[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        int tid = omp_get_thread_num ();
-        _nloops[tid % 16]++;
-        long nloops = _nloops[tid % 16]; 
-#else
+
         static long nloops = 0;
         nloops++;
-#endif
-#else
-        static long nloops = 0;
-        nloops++;
-#endif
-        if (nloops % 10000 == 0) {
+        if (nloops % 20000 == 0) {
                 fflush (stdout);
 
                 if (nloops % (500 * 1000 * 1000) == 0) {
+                    if (checkloglevel(QUIET)) {
                         std::cout << "node [" << node_rank << "]: extend loop " << nloops / (1000 * 1000);
                         cout << "m, ";
                         print_perm (array + col_offset, N, 28);
+                    }
                 }
         }
 }
@@ -786,12 +774,10 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         array_t *array = create_array (fullad->N, ncolsextension);
         copy_array (origarray, array, fullad->N, extensioncol);
 
-#ifdef OACHECK
         if (fullad->strength < 1) {
                 log_print (SYSTEM, " extend_array: error: function not defined for strength < 1\n");
                 throw_runtime_exception("extend_array: strength should be >=1");
         }
-#endif
 
         /* array data */
         arraydata_t *ad = new arraydata_t (fullad, ncolsextension);
@@ -820,7 +806,6 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         } else {
                 if (oaextend.init_column_previous == INITCOLUMN_J5) {
                         if (extensioncol > 5) {
-                                // printf("extensioncol %d: here\n", extensioncol);
                                 init_column_previous (array, p, col_offset, stack, es, oaextend);
                         } else
                                 init_column_full (array, p, col_offset, stack, es);
@@ -847,11 +832,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
 #endif
 
         const rowindex_t N = p->ad->N;
-#ifdef OAEXTEND_MULTICORE
-        const int node_rank = MPI::COMM_WORLD.Get_rank ();
-#else
         const int node_rank = 0;
-#endif
 
         LMCreduction_t reduction (ad);
         reduction.init_state = COPY;
@@ -966,15 +947,15 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                                 }
                                 /* the extension found is LMC */
                                 switch (oaextend.extendarraymode) {
-                                case OAextend::APPENDFULL: {
+                                case OAextend::extendarray_mode_t::APPENDFULL: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
                                         extensions.push_back (tmp_extension);
                                 } break;
-                                case OAextend::APPENDEXTENSION: {
+                                case OAextend::extendarray_mode_t::APPENDEXTENSION: {
                                         array_link tmp_extension (array + p->col * N, N, 1, nlmcarrays);
                                         extensions.push_back (tmp_extension);
                                 } break;
-                                case OAextend::STOREARRAY: {
+                                case OAextend::extendarray_mode_t::STOREARRAY: {
                                         array_link tmp_extension (array, N, p->col + 1, nlmcarrays);
                                         arrayfile_t *storefile =
                                             (arrayfile_t *)&oaextend.storefile; // trick to prevent const warnings
@@ -986,7 +967,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                                                                                 */
                                         storefile->append_array (tmp_extension);
                                 } break;
-                                case OAextend::NONE: {
+                                case OAextend::extendarray_mode_t::NONE: {
 
                                         // do nothing
                                 } break;

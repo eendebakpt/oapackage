@@ -1,5 +1,5 @@
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 PROJECT(OApackage)
 
@@ -8,9 +8,7 @@ PROJECT(OApackage)
 # ----------------------------------------------------------------------------
 
 if(WIN32)
-	#message(STATUS "Set build type...")
 	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
-	#set(CMAKE_BUILD_TYPE Release STRING)
 endif()
 
 if (NOT WIN32)
@@ -27,8 +25,6 @@ if(ZLIB_FOUND)
 endif()
 message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
 if(ZLIB_FOUND)
-	#message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
-	#message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
 	include_directories(${ZLIB_INCLUDE_DIRS})
 endif()
 
@@ -38,11 +34,12 @@ if (NumPy_FOUND)
   message(STATUS "NumPy was found")
 endif()
 
-# find_package(MPI)	# Needed for legacy code and OpenMP functionality
 
 # ----------------------------------------------------------------------------
 #   Code
 # ----------------------------------------------------------------------------
+
+set (CMAKE_CXX_STANDARD 11)
 
 include_directories(.)
 include_directories(src)
@@ -151,10 +148,6 @@ if("$ENV{OADEBUG}" STREQUAL "1")
   set(COPTS "-g -O0 -DOADEBUG" ) # -std=c++0x -Weffc++")
 endif()
 
-if(WIN32)
-else()
-    set(LINKOPTS "${LINKOPTS}") # or use -s option
-endif()
 
 if(WIN32)
   set(COPTS "/MT /wd4018 /wd4996")
@@ -167,7 +160,7 @@ endif()
 
 set(COPTS "${COPTS} -DFULLPACKAGE")
 
-if(ZLIB_FOUND AND 1)
+if(ZLIB_FOUND)
   set(COPTS "${COPTS} -DUSEZLIB")
   include_directories(ZLIB_INCLUDE_DIRS)
 else()
@@ -208,7 +201,7 @@ set(progs oacat oajoin oapareto oasplit oaanalyse oainfo oaunittest oaconvert oa
 set(progsextend )
 
 list(APPEND progs oacheck oastreaming oaranktest oatest oaclustergather)
-list(APPEND progs oa_depth_extend)
+list(APPEND progs oa_depth_extend oa_select_maxj)
 
 if (WIN32)
   add_library(oalib STATIC ${srcsextend} ${headersextend} ${nautysrc} ${graphsrc})
@@ -239,39 +232,6 @@ endif()
 
   TARGET_LINK_LIBRARIES(oaextendsingle oalib)
   set(extendprogs oaextendsingle )
-
-  if (MPI_FOUND AND NOT WIN32 AND 1)
-    message(STATUS "Found MPI package: adding oaextendmpi")
-    if (VERBOSE)
-	message(STATUS "MPI executable: ${MPIEXEC}, libs ${MPI_LIBRARIES}")
-    endif()
-    #message(STATUS "   libs ${MPI_LIBRARIES}; flags ${MPI_COMPILE_FLAGS}; libs ${MPI_LIBRARIES}")
-    include_directories( ${MPI_INCLUDE_PATH} )
-    include_directories( src/mpitools )
-
-  add_executable(oaextendmpi EXCLUDE_FROM_ALL "utils/oaextend.cpp" ${headersextend} ${srcsextend} "src/mpitools/mpitools.cpp")
-  target_link_libraries(oaextendmpi ${MPI_LIBRARIES})
-  if(MPI_COMPILE_FLAGS)
-    set_target_properties(oaextendmpi PROPERTIES COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
-  endif()
-  if(MPI_LINK_FLAGS)
-      if (WIN32)
-		set_target_properties(oaextendmpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS} /MT")
-		endif()
-    set_target_properties(oaextendmpi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-  endif()
-
-  set_target_properties(oaextendmpi PROPERTIES COMPILE_DEFINITIONS "OAEXTEND_MULTICORE;NEWINTERFACE" )
-
-   if (WIN32)
-    if(ZLIB_FOUND)
-      TARGET_LINK_LIBRARIES(oaextendmpi ${ZLIB_LIBRARIES})
-    endif()
-   else()
-      TARGET_LINK_LIBRARIES(oaextendmpi m ${ZLIB_LIBRARIES})
-   endif()
-
-  endif(MPI_FOUND AND NOT WIN32 AND 1)
 
 message(STATUS "Extend progs: ${extendprogs}")
 

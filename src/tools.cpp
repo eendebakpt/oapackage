@@ -197,7 +197,24 @@ double get_time_ms () {
 #include <time.h>
 #include <stdio.h>
 
-double get_time_ms (double t0) {
+double get_time_ms (double t0)
+{
+#ifdef WIN32
+        struct timeb tb;
+        ftime (&tb);
+        return (double)tb.time + ((double)tb.millitm / 1000.0f) - t0;
+#else
+    struct timespec ts;
+
+    if (clock_gettime (CLOCK_MONOTONIC, &ts) == 0)  {
+        return (double) (double(ts.tv_sec) + double(ts.tv_nsec ) / 1000000000) - t0;
+	}
+    else
+        return 0;
+#endif
+}
+
+double get_time_ms2 (double t0) {
 	const time_t epoch = 0;
 	time_t now;
     time(&now);

@@ -40,7 +40,7 @@ mvalue_t< long > A3A4 (const array_link &al) {
         w.push_back (w3);
         w.push_back (w4);
 
-        mvalue_t< long > wm (w, mvalue_t< long >::LOW);
+        mvalue_t< long > wm (w, mvalue_t< long >::direction_t::LOW);
         return wm;
 }
 
@@ -520,16 +520,16 @@ std::vector< double > GWLP (const array_link &al, int verbose, int truncate) {
         int N = al.n_rows;
         int n = al.n_columns;
 
-		int domixed = al.is_mixed_level();
+		int is2level = al.is2level();
 
         if (verbose)
-                myprintf ("GWLP: N %d, domixed %d\n", N, domixed);
+                myprintf ("GWLP: N %d, is2level %d\n", N, is2level);
 
-        if (domixed) {
-                std::vector< double > gma = GWLPmixed (al, verbose, truncate);
+        if (is2level) {
+				std::vector< double > gma = GWLP_two_level_design(al, verbose, truncate);
                 return gma;
         } else {
-				std::vector< double > gma = GWLP_two_level_design(al, verbose, truncate);
+                std::vector< double > gma = GWLPmixed (al, verbose, truncate);
                 return gma;
         }
 }

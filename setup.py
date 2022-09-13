@@ -14,7 +14,6 @@ from distutils.command.build import build as distutils_build
 from os import path
 
 import setuptools.command.build_ext
-# %% Load packages
 from setuptools import Extension, find_packages, setup
 from setuptools.command.install import install as setuptools_install
 from setuptools.command.test import test as TestCommand
@@ -384,6 +383,8 @@ setup(name='OApackage',
                    'Programming Language :: Python :: 3.7',
                    "Programming Language :: Python :: 3.8",
                    "Programming Language :: Python :: 3.9",
+                   "Programming Language :: Python :: 3.10",
+                   "Programming Language :: Python :: 3.11",
                    'License :: OSI Approved :: BSD License'
                    ]
       )

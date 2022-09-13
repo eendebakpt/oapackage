@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <math.h>
+#include <limits>
 
 #include "arraytools.h"
 #include "extend.h"
@@ -7,7 +8,6 @@
 #include "mathtools.h"
 #include "oaoptions.h"
 #include "tools.h"
-
 #include "nonroot.h"
 
 #ifndef DOOPENMP
@@ -21,7 +21,8 @@
 bool operator!= (symmdataPointer const &ptr, int x) {
         // A friendly reminder to not test pointers against any values except 0 (NULL)
         myassert (!x, "invalid pointer in comparison");
-        return ptr;
+        bool nonzero = valid_ptr(ptr);
+        return nonzero;
 }
 
 #else
@@ -29,6 +30,14 @@ bool operator!= (symmdataPointer const &ptr, int x) {
 #pragma GCC diagnostic ignored "-Wenum-compare"
 #endif
 #endif
+
+bool valid_ptr(const symmdataPointer& sd) {
+#ifdef SDSMART
+    return sd.get() != 0;
+#else
+    return sd != 0;
+#endif
+}
 
 #ifdef DOOPENMP
 #include <omp.h>
@@ -282,7 +291,7 @@ LMCreduction_t::LMCreduction_t (const LMCreduction_t &at) {
         array = create_array (transformation->ad);
 }
 
-LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at) 
+LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at)
 {
         mode = at.mode;
         state = at.state;
@@ -296,7 +305,7 @@ LMCreduction_t &LMCreduction_t::operator= (const LMCreduction_t &at)
         ncols = at.ncols;
         nrows = at.nrows;
 
-        staticdata = at.staticdata; 
+        staticdata = at.staticdata;
 
         free ();
 
@@ -489,9 +498,9 @@ void deallocate_rowsort(rowsort_t *& rowsort) {
 
 rowsorter_t::rowsorter_t(int number_of_rows) {
       this->number_of_rows = number_of_rows;
-      this->rowsort = allocate_rowsort(number_of_rows);	
+      this->rowsort = allocate_rowsort(number_of_rows);
 	  this->reset_rowsort();
-  }  
+  }
 
 void rowsorter_t::reset_rowsort()
 {
@@ -502,19 +511,19 @@ void rowsorter_t::reset_rowsort()
 }
 
 rowsorter_t::~rowsorter_t() {
- deallocate_rowsort(this->rowsort); 
+ deallocate_rowsort(this->rowsort);
 }
 
 dyndata_t::dyndata_t (int N_, int col_) {
         this->N = N_;
         this->col = col_;
         this->rowsort = allocate_rowsort(this->N);
-        this->colperm = new_perm_init< colindex_t > (this->N); 
+        this->colperm = new_perm_init< colindex_t > (this->N);
         this->rowsortl = 0;
 
         for (int i = 0; i < N; i++) {
                 this->rowsort[i].r = i;
-                this->rowsort[i].val = 0; 
+                this->rowsort[i].val = 0;
         }
 }
 
@@ -555,7 +564,7 @@ void dyndata_t::initdata (const dyndata_t &dd) {
                 memcpy (this->rowsort, dd.rowsort, N * sizeof (rowsort_t));
         }
         if (dd.rowsortl != 0) {
-                this->rowsortl = new_perm< rowindex_t > (this->N); 
+                this->rowsortl = new_perm< rowindex_t > (this->N);
                 copy_perm (dd.rowsortl, this->rowsortl, this->N);
         }
 }
@@ -590,7 +599,7 @@ void dyndata_t::copydata (const dyndata_t &dd) {
                 }
                 if (dd.rowsortl != 0) {
                         deleterowsortl ();
-                        this->rowsortl = new_perm< rowindex_t > (this->N); 
+                        this->rowsortl = new_perm< rowindex_t > (this->N);
                         copy_perm (dd.rowsortl, this->rowsortl, this->N);
                 }
         }
@@ -707,12 +716,18 @@ void create_root_permutations_index_helper (rowperm_t *rperms, levelperm_t *lper
 * @return
 */
 rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalpermsr) {
-        /* OPTIMIZE: can this function be made simpler by noting that all permutations of N/oaindex occur ??*/
+        /* OPTIMIZE: can this function be made simpler by noting that all permutations of N/oaindex occur */
 
         totalpermsr = 1;
-        for (int i = 0; i < ad->strength; i++)
-                totalpermsr *= factorial< int > (ad->s[i]);
-
+        for (int i = 0; i < ad->strength; i++) {
+                int f = factorial< int > (ad->s[i]);
+                if (totalpermsr>std::numeric_limits<int>::max()/f) {
+                    myprintf("create_root_permutations_index: design specification: %s\n", ad->fullidstr().c_str());
+                        throw_runtime_exception(printfstring("create_root_permutations_index: integer overflow for specified factor levels"));
+                }
+                totalpermsr *= f;
+        }
+        
         log_print (DEBUG, "create_root_permutations_index: allocating rootrowperms table of size "
                           "%d*%d*sizeof(rowsort_t)=%ld=%.1f MB (sizeof(rowsort_t)=%d)\n",
                    totalpermsr, ad->N, (long)totalpermsr * (long)ad->N * (long)sizeof (rowsort_t),
@@ -765,7 +780,7 @@ rowperm_t *create_root_permutations_index_full (const arraydata_t *ad, int &tota
                 // loop over all columns permutations
                 for (int j = 0; j < pow (double(2), ad->strength); j++) {
                         // loop over all possible level permutations
-                        root_row_permutation_from_index (j, ad, lperms); 
+                        root_row_permutation_from_index (j, ad, lperms);
 
                         cperm_lperms_to_rowsort (tmprperm, lperms, rperms[permcounter], cp, ad);
                         permcounter++;
@@ -1173,14 +1188,14 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
 
                 /* pass to non-root stage */
                 if (oaextend.getAlgorithm () == MODE_LMC_2LEVEL ||
-                    (oaextend.getAlgorithm () == MODE_J5ORDERX && reduction->sd != 0) ||
-                    (oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL && reduction->sd != 0)) {
+                    (oaextend.getAlgorithm () == MODE_J5ORDERX && valid_ptr(reduction->sd)) ||
+                    (oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL && valid_ptr(reduction->sd))) {
                         dyndatatmp.initrowsortl ();
                         ret = LMCreduce_non_root_2level (original, ad, &dyndatatmp, reduction, oaextend,
-                                                         tmpStatic); 
+                                                         tmpStatic);
                 } else
                         ret = LMCreduce_non_root (original, ad, &dyndatatmp, reduction, oaextend,
-                                                  tmpStatic); 
+                                                  tmpStatic);
 
                 if (ret == LMC_LESS) {
                         break;
@@ -1432,7 +1447,10 @@ std::vector< int > symmetrygroup2splits (const symmetry_group &sg, int ncols, in
         return splits;
 }
 
-void _calculate_j4_values(std::vector<int> &j4_values, carray_t *array, const int N, const colperm_t comb)
+/** Calculate J4 values for all delete-one-factor combinations of the specified comb 5-column combination
+ *
+*/
+void _calculate_dof_j4_values(std::vector<int> &j4_values, carray_t *array, const int N, const colperm_t comb)
 {
 	colindex_t lc[4];
 	init_perm(lc, 4);
@@ -1462,8 +1480,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         // allocate buffer to hold the values
         std::vector< int > j4_values (5);
 
-        /* calculate the J4 values */
-		_calculate_j4_values(j4_values, array, N, comb);
+		_calculate_dof_j4_values(j4_values, array, N, comb);
 
         indexsort s (5);
         s.sort (j4_values);
@@ -1480,12 +1497,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
 
         // create the sorted column combination
         perform_inv_perm (comb, comby, jj, s.indices);
-        if (verbose >= 2) {
-                myprintf ("initial comb: ");
-                print_perm (comb, jj);
-                myprintf (" result comb: ");
-                print_perm (comby, jj);
-        }
+
         // make splits
         init_perm (perm, ad.ncols);
         create_perm_from_comb2< colindex_t > (perm, comby, jj, ad.ncols);
@@ -1496,7 +1508,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         }
 
         dyndata_t dyndata (ad.N);
-        dyndata.col = 0; 
+        dyndata.col = 0;
         dyndata.setColperm (perm, ad.ncols);
 
         if (oaextend.getAlgorithm () == MODE_J5ORDERX || oaextend.getAlgorithm () == MODE_J5ORDER_2LEVEL) {
@@ -1606,7 +1618,7 @@ jj45_t jj45val (carray_t *array, rowindex_t N, const colperm_t comb, int dosort 
                 int ii = 5 - i - 1;
                 fastJupdate (array, N, 1, comb + ii, tmpval);
                 ww[i + 1] = abs (fastJupdateValue (N, tmpval));
-                fastJupdate (array, N, 1, comb + ii, tmpval); 
+                fastJupdate (array, N, 1, comb + ii, tmpval);
         }
 
         if (dosort) {
@@ -1680,7 +1692,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
 
         lmc_t ret = LMC_EQUAL;
 
-        /* loop over all possible column combinations for the first jj columns */
+        /* calculate invariants for the first jj columns */
         int jbase = abs (jvaluefast (array, ad.N, jj, firstcolcomb));
         jj45_t j54_base = jj45val (array, ad.N, firstcolcomb, 0);
 
@@ -1691,7 +1703,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
         const int orig = oaextend.j5structure == J5_ORIGINAL;
 
         int ncolsfirst = adin.colgroupsize[0];
-        int nc = ncombs (ncolsfirst, jj);     
+        int nc = ncombs (ncolsfirst, jj);
 
         if (dverbose) {
                 myprintf ("LMCcheckj5: selected ncolsfirst %d, nc %d, jbase %d, wbase %f\n", ncolsfirst, nc, jbase,
@@ -1772,7 +1784,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                                         break;
                                 }
 
-                                next_combination (combroot, ad.strength, jj); 
+                                next_combination (combroot, ad.strength, jj);
                         }
                 }
                 int retx = ret;
@@ -1787,7 +1799,7 @@ lmc_t LMCcheckj5 (array_link const &al, arraydata_t const &adin, LMCreduction_t 
                         break;
                 }
 
-                next_combination (firstcolcomb, jj, ncolsfirst); 
+                next_combination (firstcolcomb, jj, ncolsfirst);
         }
         delete_perm (perm);
         delete_perm (pp);
@@ -2071,7 +2083,7 @@ lmc_t LMCreduction_train(const array_link &al, const arraydata_t *ad, LMCreducti
 /// full reduction, no root-trick
 lmc_t LMCreduceFull (carray_t *original, const array_t *array, const arraydata_t *adx, const dyndata_t *dyndata,
                      LMCreduction_t *reduction, const OAextend &oaextend, LMCreduction_helper_t &tmpStatic) {
-        arraydata_t *ad = new arraydata_t (*adx); 
+        arraydata_t *ad = new arraydata_t (*adx);
         ad->oaindex = ad->N;                      // NOTE: this is to prevent processing on blocks in LMC_check_col
 
         if (dyndata->col == 0) {
@@ -2302,7 +2314,7 @@ inline int predictJrowsort (const array_t *array, const int N, const rowsort_t *
 
 /// select the unique arrays in a list, the original list is sorted in place
 void selectUniqueArrays (arraylist_t &input_arrays, arraylist_t &output_arrays, int verbose) {
-        sort (input_arrays.begin (), input_arrays.end ()); 
+        sort (input_arrays.begin (), input_arrays.end ());
         if (input_arrays.size () > 0) {
                 std::vector< int > vv (input_arrays.size ());
                 vv[0] = 1;
@@ -2359,8 +2371,8 @@ array_link reduceDOPform (const array_link &al, int verbose) {
 }
 
 
-/** Calculate mixed-level projection GWLP values from normal GWLP values. 
- * 
+/** Calculate mixed-level projection GWLP values from normal GWLP values.
+ *
  * These are the normal projection values, with added the factor level of the removed column.
  *
  */
@@ -2387,10 +2399,10 @@ std::vector< GWLPvalue > mixedProjGWLP (const std::vector< GWLPvalue > dopgwp, c
 }
 
 std::vector< GWLPvalue > projectionDOFvalues (const array_link &array, int verbose ) {
-	
+
 	arraydata_t arrayclass=arraylink2arraydata(array);
 	std::vector< GWLPvalue > projection_dof_values = projectionGWLPs(array);
-	
+
 	if (arrayclass.ismixed() ) {
 		projection_dof_values =  mixedProjGWLP(projection_dof_values, arrayclass, verbose);
 	}
@@ -2420,7 +2432,7 @@ else {
 }
 }
 
-bool _check_dof_order_minimal(std::vector<GWLPvalue> &dopgwp, int ncols, int verbose) 
+bool _check_dof_order_minimal(std::vector<GWLPvalue> &dopgwp, int ncols, int verbose)
 {
 	GWLPvalue x = *(min_element(dopgwp.begin(), dopgwp.begin() + ncols - 1));
 	if (verbose >= 2) {
@@ -2490,7 +2502,7 @@ array_transformation_t reductionDOP (const array_link &input_array, int verbose)
                 reduction.init_state = INIT;
                 reduction.setArray (alf);
                 int changed = check_root_update (alf.array, ad, reduction.array);
-                copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns); 
+                copy_array (alf.array, reduction.array, input_array.n_rows, input_array.n_columns);
         }
 
         lmc_t ret = LMCcheck (alf, ad, oaextend, reduction);
@@ -2578,7 +2590,7 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
                         printfd ("reduceArraysGWLP: ret %d (LMC_MORE %d, strength %d)\n", ret, LMC_MORE, ad.strength);
 
 				helper_compare_dof_reductions(alf, lm, verbose, ret);
-			
+
                 xlist.push_back (lm);
         }
         if (verbose) {
@@ -2590,7 +2602,7 @@ void reduceArraysGWLP (const arraylist_t &input_arrays, arraylist_t &output_arra
                 selectUniqueArrays (xlist, output_arrays, verbose);
 
         } else {
-                sort (xlist.begin (), xlist.end ()); 
+                sort (xlist.begin (), xlist.end ());
 
                 for (size_t i = 0; i < xlist.size (); i++) {
                         output_arrays.push_back (xlist[i]);

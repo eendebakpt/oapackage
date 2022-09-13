@@ -633,19 +633,8 @@ std::vector< int > getJcounts (arraylist_t *arraylist, int N, int k, int verbose
                 int jl = 5;
                 while (jl <= al.n_columns) {
                         jstruct_t js (al.n_rows, al.n_columns, jl);
-                        if (0) {
-                                arraylist_t *all = new arraylist_t ();
-                                all->push_back (al);
-                                std::vector< jstruct_t > xx = analyseArrays (*all, verbose, jl);
-                                js = jstruct_t (xx[0]);
-                                if (verbose >= 2) {
-                                        myprintf (" old: ");
-                                        xx[0].show ();
-                                }
-                                delete all;
-                        } else {
-                                foldtest (js, al, jl, verbose);
-                        }
+
+                        foldtest (js, al, jl, verbose);
                         if (!js.allzero ()) {
                                 if (verbose >= 3) {
                                         myprintf (" new: ");
@@ -1093,6 +1082,7 @@ int compareLMC(const array_link &lhs, const array_link &rhs) {
  * \return Selected example array
  */
 array_link exampleArray (int idx, int verbose) {
+        /* Note: to generate C code from python, use oapackage.oahelper.formatC(A) */
         if (idx == -1) {
                 for (int i = 0; i < 1000; i++) {
 					try { array_link al = exampleArray(i, verbose); }
@@ -2072,7 +2062,15 @@ array_link exampleArray (int idx, int verbose) {
              array.setarraydata(array_data_tmp, array.n_rows* array.n_columns);
              return array;
          }
-
+         case 57: {
+             dstr = "design in OA(18, 3^{6})";
+             if (verbose) {
+                 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+             }
+	array_link array ( 18,6, 0 );
+	int array_data_tmp[] = {0,0,0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,0,0,1,1,2,2,0,0,1,1,2,2,0,0,1,1,2,2,0,0,1,1,2,2,1,2,0,2,0,1,1,2,0,2,0,1,0,1,0,2,1,2,1,0,2,0,2,1,2,2,1,1,0,0,0,1,0,2,1,2,2,2,1,1,0,0,1,0,2,0,2,1,0,1,2,1,2,0,0,2,0,1,2,1,2,1,2,0,1,0};	array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+             return array;
+         }
         } // end of switch
 
         return array_link ();
@@ -2217,10 +2215,7 @@ bool array_link::is2level () const {
         int N = this->n_rows;
         for (int r = 0; r < this->n_rows; r++) {
                 for (int c = 0; c < this->n_columns; c++) {
-                        if (this->array[r + c * N] < 0) {
-                                return false;
-                        }
-                        if (this->array[r + c * N] > 1) {
+                        if (this->array[r + c * N] < 0 || this->array[r + c * N] > 1) {
                                 return false;
                         }
                 }
@@ -2852,6 +2847,8 @@ std::vector< int > array_link::Jcharacteristics (int jj) const {
         }
 }
 
+/** Calculate J_k for the specified k-tuple of columns
+*/
 int jvalue_conference (const array_link &ar, const int J, const int *column_indices) {
         int jval = 0;
 
@@ -3299,11 +3296,9 @@ array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         array_link al (this->N, n_columns, -1);
         al.create_root (*this);
 
-        for (int i = this->strength; i < al.n_columns; i++) {
-                for (int r = 0; r < this->N; r++) {
-                        al.at (r, i) = fill_value;
-                }
-        }
+        const int N = this->N;
+        std::fill(al.array+this->strength*N, al.array+ al.n_columns*N,  fill_value);
+        
         return al;
 }
 
@@ -3656,6 +3651,7 @@ void jstruct_t::calcj4 (const array_link &al) {
 
 void jstruct_t::calcj5 (const array_link &al) {
         myassert (jj == 5, "jj should be 5");
+        myassert( k==al.n_columns, "number of columns of input array should match jstruct_t");
         int *pp = new_perm_init< int > (jj);
         int ncolcombs = ncombs (k, jj);
         const int nr = al.n_rows;
@@ -3790,8 +3786,9 @@ void jstruct_t::showdata () {
 }
 
 std::string jstructbase_t::showstr () {
-        std::string s = "jstruct_t: " + printfstring ("jj %d, values ", jj);
-        return s;
+    std::string values_string = permutation2string(this->values, 16);
+    std::string s = "jstruct_t: " + printfstring ("jj %d, values %s", this->jj, values_string.c_str());
+    return s;
 }
 void jstructbase_t::show () {
         std::cout << "jstruct_t: " << printfstring ("jj %d, values ", jj);
@@ -4604,7 +4601,7 @@ void arrayfile_t::writeheader () {
                 if (this->mode == arrayfile::ABINARY_DIFFZERO) {
                         // NOTE: needed because in ABINARY_DIFFZERO we diff modulo 2
                         if (this->nbits != 1)
-                                myprintf ("not implemented...!\n");
+                                myprintf ("arrayfile_t::writeheader: not implemented for nbits %d!\n", this->nbits);
                         assert (this->nbits == 1);
                 }
                 fwrite ((const void *)&magic, sizeof (int), 1, this->nfid);
@@ -4653,18 +4650,6 @@ void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int
 }
 #endif
 
-
-std::string printfstring(const char *message, ...) {
-	char buf[32 * 1024];
-
-	va_list va;
-	va_start(va, message);
-	vsprintf(buf, message, va);
-	va_end(va);
-
-	std::string str(buf);
-	return str;
-}
 
 /**
  * @brief Read file with design of OA
@@ -5364,8 +5349,7 @@ void arrayfile_t::write_array_binary_diffzero (const array_link &A) {
 
                 this->write_array_binary (z);
         } else {
-                array_link z = rest;
-                this->write_array_binary (z);
+                this->write_array_binary (rest);
         }
 
         // update with previous array
@@ -5414,7 +5398,7 @@ void arrayfile_t::write_array_binary (carray_t *array, const int nrows, const in
                                 if (array[i]) {
                                         bit_array_set_bit (bitarr, i);
                                 } else {
-                                        bit_array_clear_bit (bitarr, i);
+                                        bit_array_clear_bit_fast (bitarr, i);
                                 }
                         }
                         word_addr_t num_of_words =

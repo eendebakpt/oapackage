@@ -578,6 +578,15 @@ def write_text_arrayfile(filename: str, designs: List[Any], comment: str = None)
     afile.append_arrays(designs)
     afile.closefile()
 
+def arrayfile_generator(afile):
+    """ Return generator to read all files in the array file """
+    af = oapackage.arrayfile_t(afile)
+    
+    na=af.narrays
+    for ii in range(na):
+        yield af.readnext()
+    af.closefile()
+
 
 def runcommand(cmd: str, dryrun=0, idstr: Optional[None] = None, verbose: int = 1, logfile: Optional[str] = None, shell: bool = True):
     """ Run specified command in external environment

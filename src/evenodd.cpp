@@ -63,7 +63,7 @@ void counter_t::addNumberFound (const counter_t &de) {
                 }
         }
 }
-        
+
 void counter_t::showcountscompact () const {
 #ifdef DOOPENMP
 #pragma omp critical
@@ -78,14 +78,14 @@ void counter_t::showcountscompact () const {
 void counter_t::showcounts (const arraydata_t &ad) const {
         myprintf ("--results--\n");
         for (size_t i = ad.strength; i <= (size_t)ad.ncols; i++) {
-                myprintf ("depth_extend: column %ld: found %d\n", i, this->nfound[i]);
+                myprintf ("depth_extend: column %ld: found %ld\n", (long)i, (long)this->nfound[i]);
         }
 }
 
 void counter_t::showcounts (const char *str, int first, int last) const {
         myprintf ("--results--\n");
         for (size_t i = first; i <= (size_t)last; i++) {
-                myprintf ("%s: column %ld: found %d\n", str, i, this->nfound[i]);
+                myprintf ("%s: column %ld: found %ld\n", str, (long)i, (long)this->nfound[i]);
         }
 }
 
@@ -182,9 +182,6 @@ arraylist_t depth_extend_sub_t::initialize (const arraylist_t &alist, const arra
                 valididx[i] = i;
         }
 
-        if (verbose >= 3) {
-                myprintf ("   v %ld\n", v.size ());
-        }
         return v;
 }
 
@@ -225,7 +222,7 @@ void processDepth (const arraylist_t &goodarrays, depth_alg_t depthalg, depth_ex
 
                 OAextend oaextendDirect = dextend.oaextend;
                 oaextendDirect.use_row_symmetry = 1;
-                oaextendDirect.extendarraymode = OAextend::APPENDFULL;
+                oaextendDirect.extendarraymode = OAextend::extendarray_mode_t::APPENDFULL;
                 oaextendDirect.checkarrays = 1;
 
                 depth_extend_hybrid (goodarrays, dextend, extensioncol, oaextendDirect, 1);
@@ -355,18 +352,20 @@ void depth_extend_array (const array_link &al, depth_extend_t &dextend, const ar
 
         int64_t ps = al.row_symmetry_group ().permsize ();
 
+        al.row_symmetry_group ().show();
+        
         depth_alg_t depthalg = DEPTH_DIRECT;
         depth_extend_sub_t dextendsub;
 
-        if (ps > 20000 || ps > 1999999) {
+        if (ps > 20000 || extensioncol < 9) {
                 // IDEA: enable caching of extensions at later stage!
 
-                printfd ("depth_extend_array: warning: direct extension due to large symmetry group!\n");
+                printfd ("depth_extend_array: warning: direct extension due to large symmetry group! (size %ld)\n", ps);
                 depthalg = DEPTH_DIRECT;
 
                 OAextend oaextendDirect = oaextendx;
                 oaextendDirect.use_row_symmetry = 1;
-                oaextendDirect.extendarraymode = OAextend::APPENDFULL;
+                oaextendDirect.extendarraymode = OAextend::extendarray_mode_t::APPENDFULL;
                 oaextendDirect.checkarrays = 1;
 
                 extend_array (al, &adfull, extensioncol, goodarrays, oaextendDirect);
@@ -514,7 +513,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
 
                         if (b) {
                                 // do lmc check
-                                LMCreduction_t reduction (&adlocal); 
+                                LMCreduction_t reduction (&adlocal);
                                 LMCreduction_t tmp = reduction;
 
                                 // make sure code is thread safe
@@ -769,7 +768,7 @@ void Jcounter::showcompact () const {
         }
         myprintf ("; total %ld\n", nt);
 }
-        
+
 std::vector< long > Jcounter::getTotalsJvalue (int jval) const {
         int nmax = maxCols ();
         std::vector< long > k (nmax + 1);
@@ -801,7 +800,7 @@ std::vector< long > Jcounter::getTotals () const {
         }
         return k;
 }
-        
+
 /// show statistics of the object
 void Jcounter::show () const {
 
@@ -998,7 +997,7 @@ int compareJ54(const array_link &lhs, const array_link &rhs) {
 	else if(j5l < j5r ) {
 		return 1;
 	}
-	
+
 	std::vector<int> lj4 = lhs5.Jcharacteristics(4);
 	std::vector<int> rj4 = rhs5.Jcharacteristics(4);
 
