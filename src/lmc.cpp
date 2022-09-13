@@ -723,7 +723,7 @@ rowperm_t *create_root_permutations_index (const arraydata_t *ad, int &totalperm
                 int f = factorial< int > (ad->s[i]);
                 if (totalpermsr>std::numeric_limits<int>::max()/f) {
                     myprintf("create_root_permutations_index: design specification: %s\n", ad->fullidstr().c_str());
-                        throw_runtime_exception(printfstring("integer overflow for specified factor levels"));
+                        throw_runtime_exception(printfstring("create_root_permutations_index: integer overflow for specified factor levels"));
                 }
                 totalpermsr *= f;
         }
