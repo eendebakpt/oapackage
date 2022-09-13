@@ -124,11 +124,12 @@ int main(int argc, char* argv[]) {
     int run_size = 100;
 int strength = 2;
 int number_of_factors = 4;
-     int factor_levels = 10;
-     arraydata_t adata(10, run_size, strength, number_of_factors);
+     int factor_levels = 8;
+     arraydata_t adata(8, run_size, strength, number_of_factors);
      adata.show();
      
      arraylist_t ll;
+     printf("create root:\n");
      ll.push_back(adata.create_root());
      
      extend_arraylist(ll, adata);

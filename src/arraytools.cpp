@@ -1082,6 +1082,7 @@ int compareLMC(const array_link &lhs, const array_link &rhs) {
  * \return Selected example array
  */
 array_link exampleArray (int idx, int verbose) {
+        /* Note: to generate C code from python, use oapackage.oahelper.formatC(A) */
         if (idx == -1) {
                 for (int i = 0; i < 1000; i++) {
 					try { array_link al = exampleArray(i, verbose); }
@@ -2061,7 +2062,15 @@ array_link exampleArray (int idx, int verbose) {
              array.setarraydata(array_data_tmp, array.n_rows* array.n_columns);
              return array;
          }
-
+         case 57: {
+             dstr = "design in OA(18, 3^{6})";
+             if (verbose) {
+                 myprintf("exampleArray %d: %s\n", idx, dstr.c_str());
+             }
+	array_link array ( 18,6, 0 );
+	int array_data_tmp[] = {0,0,0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,0,0,1,1,2,2,0,0,1,1,2,2,0,0,1,1,2,2,0,0,1,1,2,2,1,2,0,2,0,1,1,2,0,2,0,1,0,1,0,2,1,2,1,0,2,0,2,1,2,2,1,1,0,0,0,1,0,2,1,2,2,2,1,1,0,0,1,0,2,0,2,1,0,1,2,1,2,0,0,2,0,1,2,1,2,1,2,0,1,0};	array.setarraydata(array_data_tmp, array.n_rows * array.n_columns);
+             return array;
+         }
         } // end of switch
 
         return array_link ();
@@ -2206,10 +2215,7 @@ bool array_link::is2level () const {
         int N = this->n_rows;
         for (int r = 0; r < this->n_rows; r++) {
                 for (int c = 0; c < this->n_columns; c++) {
-                        if (this->array[r + c * N] < 0) {
-                                return false;
-                        }
-                        if (this->array[r + c * N] > 1) {
+                        if (this->array[r + c * N] < 0 || this->array[r + c * N] > 1) {
                                 return false;
                         }
                 }
@@ -3290,11 +3296,9 @@ array_link arraydata_t::create_root (int n_columns, int fill_value) const {
         array_link al (this->N, n_columns, -1);
         al.create_root (*this);
 
-        for (int i = this->strength; i < al.n_columns; i++) {
-                for (int r = 0; r < this->N; r++) {
-                        al.at (r, i) = fill_value;
-                }
-        }
+        const int N = this->N;
+        std::fill(al.array+this->strength*N, al.array+ al.n_columns*N,  fill_value);
+        
         return al;
 }
 
