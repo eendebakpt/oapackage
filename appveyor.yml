@@ -15,10 +15,6 @@ environment:
       PYTHON_VERSION: "3.10.4"
       PYTHON_ARCH: "64"
 
-    - PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.1"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python38-x64"
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
@@ -27,8 +23,8 @@ environment:
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.x"
+    - PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.1"
       PYTHON_ARCH: "64"
 
 matrix:
@@ -144,6 +140,3 @@ after_test:
 artifacts:
   - path: dist\*
     name: binaries
-
-#on_success:
-#  - TODO: automatically upload the content of dist/*.whl to pypi

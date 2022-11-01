@@ -8,7 +8,7 @@ PROJECT(OApackage)
 # ----------------------------------------------------------------------------
 
 if(WIN32)
-	set(CMAKE_CONFIGURATION_TYPES Release CACHE TYPE INTERNAL FORCE) # no Debug
+	set(CMAKE_CONFIGURATION_TYPES "Release" CACHE TYPE INTERNAL FORCE) # no Debug
 endif()
 
 if (NOT WIN32)

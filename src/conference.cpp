@@ -69,7 +69,7 @@ void getConferenceNumbers (int N, int k, int &q, int &q1, int &q2, int &v) {
 array_link conference2DSD(const array_link &conf, bool add_zeros)
 {
 	array_link dsd(2 * conf.n_rows + add_zeros, conf.n_columns, array_link::INDEX_DEFAULT);
-	
+
 	for(int row=0; row<conf.n_rows; row++) {
 		for (int column = 0; column < conf.n_columns; column++) {
 			dsd.atfast(row, column) = conf.atfast(row, column);
@@ -117,7 +117,7 @@ conference_t::conference_t (int N, int k, int _j1zero) {
 }
 
 array_link conference_t::create_root_three_columns () const {
-        array_link array (this->N, 3, 0); 
+        array_link array (this->N, 3, 0);
 
         array.at (0, 0) = 0;
         for (int i = 1; i < this->N; i++) {
@@ -250,16 +250,16 @@ array_link conference_t::create_root () const {
 
 std::vector<int> double_conference_foldover_permutation(const array_link &double_conference) {
         int N = double_conference.n_rows/2;
-        
+
         if (! double_conference.is_conference() ) {
-         throw_runtime_exception("input array should be conference design");    
-             
+         throw_runtime_exception("input array should be conference design");
+
         }
-        
+
         if (2*N != double_conference.n_rows) {
-         throw_runtime_exception("double conference design should have even number of rows");    
+         throw_runtime_exception("double conference design should have even number of rows");
         }
-        
+
         array_link alt = double_conference.transposed ();
         array_link alt_minus = alt * -1;
 
@@ -267,7 +267,7 @@ std::vector<int> double_conference_foldover_permutation(const array_link &double
         std::fill (ri.begin (), ri.end (), -1);
         std::vector< int > foldover_permutation (double_conference.n_rows);
         foldover_permutation[0]=-1;
-        
+
         for (int row = 0; row < double_conference.n_rows; row++) {
                 if (ri[row] > -1)
                         continue;
@@ -294,10 +294,10 @@ std::vector<int> double_conference_foldover_permutation(const array_link &double
                row_index++;
              }
         }
-        
+
         return foldover_permutation;
- 
-     
+
+
 }
 bool isConferenceFoldover (const array_link &array, int verbose) {
         array_link alt = array.transposed ();
@@ -348,7 +348,7 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
         for (int c = 0; c < array.n_columns; c++) {
                 std::vector< int > lp = at.lvlperm (c);
                 myassert (lp[1] == 1, "error in reduction");                  // 0 should go to 0
-                t.cswitch[c] = (lp[0] == 0) ? 1 : -1; 
+                t.cswitch[c] = (lp[0] == 0) ? 1 : -1;
         }
 
         return t;
@@ -356,7 +356,7 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
 
 /** Convert a conference design to a colored graph representation
  *
- * The conversion is such that conferrence design isomorphisms correspond to isomorphisms of the colored graph 
+ * The conversion is such that conferrence design isomorphisms correspond to isomorphisms of the colored graph
  * (e.g. permutations of the nodes respecting the edges and colors).
  *
  * The colored graph consists of N=(2*number_of_rows + 2*number_of_columns). The first section of size 2*number_of_rows encodes +1, -1 value
@@ -367,7 +367,7 @@ conference_transformation_t reduceDoubleConferenceTransformation (const array_li
  *	(2)  r[i]--c[j] and r'[i]--c'[j] for all A[i,j] = +1
  *	(3)  r[i]--c'[j] and r'[i]--c[j] for all A[i,j] = -1.
  *	Zeros in A don't cause any edges.
- * 
+ *
  * The first 2*number_of_rows are colored with 0, the remaining nodes with color 1.
  *
  * \param al Conference design
@@ -1352,7 +1352,7 @@ indexsort rowsorter (const array_link &al) {
 /// special structure for branch-and-bound generation of candidates
 struct branch_t {
 		/// current row
-        int row; 
+        int row;
 		/// value assigned to current row
         int rval;
         int nvals[3]; /// number of 0, 1, and -1 remaining
@@ -1728,7 +1728,7 @@ std::vector< conference_column > generateSingleConferenceExtensions (const array
                         b.show ();
                 }
                 branch_count[b.row]++;
-                
+
                 branches.pop ();
                 current_column[b.row] = b.rval; // update column vector
 
@@ -2148,7 +2148,7 @@ conference_extend_t extend_conference_matrix (const array_link &al, const confer
         const int maxzval = maxz (al);
 
         if (verbose)
-                printf ("--- extend_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype);
+                myprintf ("--- extend_conference_matrix: extcol %d, maxz %d, itype %d ---\n", extcol, maxzval, ct.itype);
 
         const int zstart = maxzval + 1;
 
@@ -2345,7 +2345,7 @@ arraylist_t extend_double_conference (const arraylist_t &lst, const conference_t
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 1000 == 0 || i == lst.size () - 1))) {
                         double dt = get_time_ms () - t0;
-                        printf ("extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", (int)i,
+                        myprintf ("extend_conference: extended array %d/%d to %d/%d arrays (%.1f [s])\n", (int)i,
                                 (int)lst.size (), (int)ll.size (), (int)outlist.size (), dt);
                         fflush (0);
                 }
@@ -2372,7 +2372,7 @@ arraylist_t extend_conference_restricted (const arraylist_t &lst, const conferen
                 outlist.insert (outlist.end (), ll.begin (), ll.end ());
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 200 == 0 || i == lst.size () - 1))) {
-					printf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (), (int)ll.size());
+					myprintf ("extend_conference: extended array %d/%d to %d arrays\n", (int)i, (int)lst.size (), (int)ll.size());
                         fflush (0);
                 }
         }
@@ -2525,7 +2525,7 @@ arraylist_t extend_conference_plain (const arraylist_t &lst, const conference_t 
                 selector.add (ll);
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 1000 == 0 || i == lst.size () - 1))) {
-                        printf ("extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", (int)i,
+                        myprintf ("extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", (int)i,
                                 (int)lst.size (), nn, (long)selector.size (), get_time_ms () - t0);
                         fflush (0);
                 }
@@ -2561,7 +2561,7 @@ arraylist_t extend_conference (const arraylist_t &lst, const conference_t confer
                 selector.add (ll);
 
                 if (verbose >= 2 || (verbose >= 1 && (i % 400 == 0 || i == lst.size () - 1))) {
-                        printf ("extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", (int)i,
+                        myprintf ("extend_conference: extended array %d/%d to %d arrays (total %ld, %.1f [s])\n", (int)i,
                                 (int)lst.size (), (int)ll.size (), (long)selector.size (), get_time_ms () - t0);
                         fflush (0);
                 }
@@ -3076,13 +3076,13 @@ lmc_t init_lmc0_sort_comp (const array_link &al, int column, int sel_col, rowsor
         lmc_t r = LMC_NONSENSE;
         for (int i = 0; i < n_rows; i++) {
 
-                int rx = rowperm[i].r; 
+                int rx = rowperm[i].r;
                 int posit_al = al.at (rx, sel_col);
                 int trans_val = (colsignperm[sel_col] * rowsignperm[rx]) * posit_al;
                 int m = ((trans_val + 3) % 3);
                 rowperm[i].val = m;
         }
-        std::stable_sort (rowperm, rowperm + n_rows); 
+        std::stable_sort (rowperm, rowperm + n_rows);
 
         // Compare zero position
         r = lmc0_compare_zeropos_block (al, 0, n_rows, rowperm, colperm, column, rowsignperm, colsignperm);
@@ -3343,4 +3343,3 @@ lmc_t LMC0check (const array_link &al, int verbose) {
 
         return result;
 }
-
