@@ -3184,8 +3184,7 @@ void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
 		if (!this->is_factor_levels_sorted() ) {
-			warning("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
-			this->show();
+			warning("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour: %s\n", this->showstr().c_str());
 		}
 
 		if (!check_divisibility(this)) {
