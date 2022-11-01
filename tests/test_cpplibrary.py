@@ -272,21 +272,17 @@ class TestArraydata_t(unittest.TestCase):
             arrayclass = oapackage.arraydata_t([2, 2, 2], 4 * ii, 2, 3)
             self.assertEqual(arrayclass.oaindex, ii)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        expected_regex = '.*warning: no orthogonal arrays exist with the specified strength.*'
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([4, 3, 3], 20, 2, 3)
-            std_output = mock_stdout.getvalue()
-            self.assertIn('arraydata_t: warning: no orthogonal arrays exist with the specified strength', std_output)
-            self.assertEqual(arrayclass.oaindex, 0)
+        self.assertEqual(arrayclass.oaindex, 0)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([2, 3, 4], 20, 2, 3)
-            std_output = mock_stdout.getvalue()
-            self.assertIn('the factor levels of the structure are not sorted, this can lead to undefined behaviour', std_output)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([6, 5], 10, 1, 2)
             self.assertEqual(arrayclass.oaindex, 0)
-            std_output = mock_stdout.getvalue()
 
 
 class TestJcharacteristics(unittest.TestCase):
@@ -419,10 +415,10 @@ class TestCppLibrary(unittest.TestCase):
         t = 2
         l = [2, 3]
         rr = []
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+
+        expected_regex = '.*warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour.*'
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             oapackage.oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
-            self.assertIn(
-                'warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour', mock_stdout.getvalue())
 
         self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
 
@@ -689,7 +685,10 @@ class TestCppLibrary(unittest.TestCase):
         lst = [al]
         conference_type = oapackage.conference_t(al.n_rows, al.n_rows, 0)
 
-        extensions = oapackage.extend_conference_restricted(lst, conference_type, verbose=1)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            extensions = oapackage.extend_conference_restricted(lst, conference_type, verbose=1)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('extend_conference', std_output)
         self.assertEqual(len(extensions), 10)
 
         self.assertEqual(extensions[0].md5(), 'f759e75d3ce6adda5489fed4c528a6fb')
