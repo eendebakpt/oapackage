@@ -51,7 +51,7 @@ if rtd:
     print('##############################')
 
 if rtd:
-    subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i', shell=True)
+    subprocess.call('cd ../; doxygen Doxyfile; python doxy2swig.py -a docs/xml/index.xml oadoxy.i', shell=True)
 else:
     print('executing doxygen')
     if platform.system() == 'Windows':
