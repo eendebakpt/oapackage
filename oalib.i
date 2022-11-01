@@ -316,14 +316,14 @@ def __setitem__(self, index, value):
 
 
 // to generate the oadoxy.i:
-// doxygen Doxyfile; python doxy2swig.py docs/xml/index.xml oadoxy.i
+// doxygen Doxyfile; python doxy2swig.py -a -c docs/xml/index.xml oadoxy.i
 // see also: http://www.enricozini.org/2007/tips/swig-doxygen-docstring/
 // replaced by the -doxygen option of swig
 %feature("autodoc", "1");
 %include "oadoxy.i"
 
 
-// see http://www.swig.org/Doc2.0/Python.html#Python_nn47
+// see https://www.swig.org/Doc4.0/Python.html#Python_nn47
 
 %include "cpointer.i"
 %include "std_map.i"

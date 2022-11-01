@@ -166,6 +166,22 @@ string oafilestring (rowindex_t rows, colindex_t cols, const array_t *s) {
  */
 std::string oafilestring (const arraydata_t *ad) { return oafilestring (ad->N, ad->ncols, ad->s); }
 
+void warning(const char* message, ...) {
+    char buf[12 * 1024];
+
+    va_list va;
+    va_start(va, message);
+    vsprintf(buf, message, va);
+    va_end(va);
+
+#ifdef SWIGCODE
+    // will be converted to warning on the SWIG interface
+    PyErr_WarnEx(PyExc_RuntimeWarning, buf, 2);
+#else
+    myprintf(buf);
+#endif
+}
+
 #define XPFS
 #ifndef XPFS
 /**
@@ -174,7 +190,7 @@ std::string oafilestring (const arraydata_t *ad) { return oafilestring (ad->N, a
  * @return
  */
 std::string printfstring (const char *message, ...) {
-        char buf[8 * 1024];
+        char buf[12 * 1024];
 
         va_list va;
         va_start (va, message);

@@ -6,6 +6,12 @@
 
 %feature("docstring") _my_lldiv_t "
 
+Attributes
+----------
+* `quot` : `long long`
+
+* `rem` : `long long`
+
 C++ includes: InfInt.h
 ";
 
@@ -13,6 +19,17 @@ C++ includes: InfInt.h
 
 
 %feature("docstring") AnyOption "
+`AnyOption()`
+`AnyOption(maxoptions)`
+`AnyOption(maxoptions, maxcharoptions)`
+
+Constructors
+------------
+* `AnyOption()`
+
+* `AnyOption(maxoptions)`
+
+* `AnyOption(maxoptions, maxcharoptions)`
 
 C++ includes: anyoption.h
 ";
@@ -192,6 +209,99 @@ C++ includes: anyoption.h
 
 
 %feature("docstring") array_link "
+`array_link()`
+`array_link(nrows, ncols, index)`
+`array_link(nrows, ncols, index, data)`
+`array_link(arg1)`
+`array_link(eigen_matrix)`
+`array_link(array, column_permutation)`
+`array_link(array, nrows, ncols, index=0)`
+`array_link(array, nrows, ncolsorig, ncols, index)`
+`array_link(values, nrows, ncols, index=0)`
+
+Constructors
+------------
+* `array_link()`
+
+    A class representing an integer valued array
+
+* `array_link(nrows, ncols, index)`
+
+    A class representing an integer valued array
+
+    The array is intialized with zeros.
+
+    Parameters:
+    * `nrows` :
+        Number of rows
+    * `ncols` :
+        Number of columns
+    * `index` :
+        Number to keep track of lists of designs
+
+* `array_link(nrows, ncols, index, data)`
+
+    A class representing an integer valued array
+
+    Initialize with data from a pointer.
+
+* `array_link(arg1)`
+
+    A class representing an integer valued array
+
+    Initialize with data from another array_link object.
+
+* `array_link(eigen_matrix)`
+
+    A class representing an integer valued array
+
+    Initialize with data from an Eigen matrix.
+
+* `array_link(array, column_permutation)`
+
+    A class representing an integer valued array
+
+    The array is initialized by permuting the columns of another array
+
+    Parameters:
+    * `array` :
+        Source to copy from
+    * `column_permutation` :
+        The permuntation to apply
+
+* `array_link(array, nrows, ncols, index=0)`
+
+    A class representing an integer valued array
+
+* `array_link(array, nrows, ncolsorig, ncols, index)`
+
+    A class representing an integer valued array
+
+* `array_link(values, nrows, ncols, index=0)`
+
+    A class representing an integer valued array
+
+    The array is initialized by copying the values from a vector.
+
+Attributes
+----------
+* `n_rows` : `rowindex_t`
+    Number of rows in array.
+
+* `n_columns` : `colindex_t`
+    Number of columns in array.
+
+* `index` : `int`
+    Index number.
+
+* `array` : `array_t *`
+    Pointer to array data.
+
+* `INDEX_NONE` : `const int`
+
+* `INDEX_ERROR` : `const int`
+
+* `INDEX_DEFAULT` : `const int`
 
 C++ includes: arraytools.h
 ";
@@ -704,6 +814,10 @@ return true of specified column is smaller than column in another array
 
 
 %feature("docstring") array_transformation_t "
+`array_transformation_t(arrayclass)`
+`array_transformation_t(arrayclass)`
+`array_transformation_t()`
+`array_transformation_t(transformation)`
 
 Contains a transformation of an array.
 
@@ -711,6 +825,32 @@ Contains an array transformation. The transformation consists of column, row and
 level permutations. The level and column permutations are not commutative (since
 the level permutations are tied to a particular column). We apply the column
 permutations first.
+
+Constructors
+------------
+* `array_transformation_t(arrayclass)`
+
+* `array_transformation_t(arrayclass)`
+
+* `array_transformation_t()`
+
+* `array_transformation_t(transformation)`
+
+    copy constructor
+
+Attributes
+----------
+* `rperm` : `rowperm_t`
+    row permutation
+
+* `cperm` : `colperm_t`
+    column permutation
+
+* `lperms` : `levelperm_t *`
+    level permutations
+
+* `ad` : `const arraydata_t *`
+    type of array
 
 C++ includes: arraytools.h
 ";
@@ -824,11 +964,140 @@ set the level permutation of the transformation
 
 
 %feature("docstring") arraydata_t "
+`arraydata_t()`
+`arraydata_t(s, N, strength, ncols)`
+`arraydata_t(s, N, strength, ncols)`
+`arraydata_t(s_, N, strength, ncols)`
+`arraydata_t(adp)`
+`arraydata_t(adp, newncols)`
 
 Specifies a class of arrays.
 
 The specification includes the number of rows, number of columns, factor levels
 and strength.
+
+Constructors
+------------
+* `arraydata_t()`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+* `arraydata_t(s, N, strength, ncols)`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+    Parameters:
+    * `s` :
+        Factor levels
+    * `N` :
+        Number of rows
+    * `strength` :
+        Strength for class
+    * `ncols` :
+        Number of columns for the class
+
+* `arraydata_t(s, N, strength, ncols)`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+    Parameters:
+    * `s` :
+        Factor levels
+    * `N` :
+        Number of rows
+    * `strength` :
+        Strength for class
+    * `ncols` :
+        Number of columns for the class
+
+* `arraydata_t(s_, N, strength, ncols)`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+* `arraydata_t(adp)`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+* `arraydata_t(adp, newncols)`
+
+    Specifies a class of orthogonal arrays
+
+    The specification includes the number of rows, number of columns, factor
+    levels and strength.
+
+    An orthogonal array of strength t, N runs, k factors (columns) and factor
+    levels s[i] is an N times k array with symbols 0, 1, ..., s[i]-1 in column i
+    such that for every t columns every t-tuple of elements occurs equally
+    often.
+
+Attributes
+----------
+* `N` : `rowindex_t`
+    number of runs
+
+* `ncols` : `colindex_t`
+    total number of columns (factors) in the design
+
+* `strength` : `colindex_t`
+    strength of the design
+
+* `s` : `array_t *`
+    pointer to factor levels of the array
+
+* `order` : `ordering_t`
+    Ordering used for arrays.
+
+* `ncolgroups` : `colindex_t`
+    number of groups of columns with the same number of levels
+
+* `colgroupindex` : `colindex_t *`
+    specifies for each column the index of the column group
+
+* `colgroupsize` : `colindex_t *`
+    specifies for each column the size of the column group
+
+* `oaindex` : `int`
+    index of the array
 
 C++ includes: arraytools.h
 ";
@@ -1058,12 +1327,92 @@ Return True if the factor levels are sorted from large to small.
 
 
 %feature("docstring") arrayfile::arrayfile_t "
+`arrayfile_t()`
+`arrayfile_t(filename, verbose=1)`
+`arrayfile_t(filename, nrows, ncols, narrays=-1, mode=ATEXT, number_of_bits=8)`
 
 Structure for reading or writing a file with arrays.
 
 The format of the file is determined by the `arrayfilemode_t` The format
 described in detail in the documentation of the OApackage
 https://oapackage.readthedocs.io/en/latest/.
+
+Constructors
+------------
+* `arrayfile_t()`
+
+    Structure for reading or writing a file with arrays
+
+* `arrayfile_t(filename, verbose=1)`
+
+    Structure for reading or writing a file with arrays
+
+    Parameters:
+    * `filename` :
+        File to open for reading
+    * `verbose` :
+        Verbosity level
+
+* `arrayfile_t(filename, nrows, ncols, narrays=-1, mode=ATEXT,
+    number_of_bits=8)`
+
+    Structure for reading or writing a file with arrays
+
+    Open new array file for writing
+
+    Parameters:
+    * `filename` :
+        File to open
+    * `nrows` :
+        Number of rows
+    * `ncols` :
+        Number of columns
+    * `narrays` :
+        Specify a number of arrays, or -1 to add dynamically
+    * `mode` :
+        File mode
+    * `number_of_bits` :
+        Number of bits to use for storage. For 2-level arrays only 1 bit is
+        needed
+
+Attributes
+----------
+* `filename` : `std::string`
+    location of file on disk
+
+* `iscompressed` : `int`
+    True of the file is compressed with gzip.
+
+* `nrows` : `int`
+    number of rows of the arrays
+
+* `ncols` : `int`
+    number of columns of the arrays
+
+* `nbits` : `int`
+    number of bits used when storing an array
+
+* `mode` : `arrayfilemode_t`
+    file mode, can be ATEXT or ABINARY, ABINARY_DIFF, ABINARY_DIFFZERO
+
+* `rwmode` : `afilerw_t`
+    file opened for reading or writing
+
+* `narrays` : `int`
+    number of arrays in the file
+
+* `narraycounter` : `int`
+
+* `nfid` : `FILE *`
+
+* `gzfid` : `int`
+    pointer to compressed file
+
+* `verbose` : `int`
+    verbosity level
+
+* `NARRAYS_MAX` : `const int`
+    maximum number of arrays in structure
 
 C++ includes: arraytools.h
 ";
@@ -1230,8 +1579,30 @@ return number of bits necessary to store an array
 
 
 %feature("docstring") arraywriter_t "
+`arraywriter_t()`
 
 structure to write arrays to disk, thread safe
+
+Constructors
+------------
+* `arraywriter_t()`
+
+Attributes
+----------
+* `afiles` : `std::vector< arrayfile_t * >`
+    Pointers to different data files.
+
+    Since depth_extend is a depth first approach we need to store arrays with a
+    different number of columns
+
+* `writearrays` : `bool`
+    only write arrays if this variable is true
+
+* `nwritten` : `int`
+    number of arrays written to disk
+
+* `verbose` : `int`
+    verbosity level
 
 C++ includes: arraytools.h
 ";
@@ -1274,6 +1645,7 @@ return the total number arrays written to disk
 
 
 %feature("docstring") CandidateGeneratorBase "
+`CandidateGeneratorBase(al, ct)`
 
 Class to generate candidate extensions with caching
 
@@ -1285,6 +1657,24 @@ permutation of a valid extension of the design B obtained by taking the first l
 < k columns of A. The permutations that are allowed are called the symmetry
 inflations. All the j2 checks performed for the extension of B do not have to be
 repeated for the permutations of this extension.
+
+Constructors
+------------
+* `CandidateGeneratorBase(al, ct)`
+
+Attributes
+----------
+* `ct` : `conference_t`
+    type of designs to generate
+
+* `verbose` : `int`
+    verbosity level
+
+* `al` : `array_link`
+    last array analyzed
+
+* `last_valid` : `int`
+    index of last valid column
 
 C++ includes: conference.h
 ";
@@ -1306,8 +1696,13 @@ return all candidates for the kth column
 
 
 %feature("docstring") CandidateGeneratorConference "
+`CandidateGeneratorConference(al, ct)`
 
 Class to generate conference candidate extensions.
+
+Constructors
+------------
+* `CandidateGeneratorConference(al, ct)`
 
 C++ includes: conference.h
 ";
@@ -1329,8 +1724,13 @@ generate all candidate extensions with a zero at the specified position
 
 
 %feature("docstring") CandidateGeneratorDouble "
+`CandidateGeneratorDouble(al, ct)`
 
 Class to generate double conference candidate extensions with caching.
+
+Constructors
+------------
+* `CandidateGeneratorDouble(al, ct)`
 
 C++ includes: conference.h
 ";
@@ -1411,6 +1811,16 @@ C++ includes: timsort.hpp
 
 Helper structure containing extensions of conference designs
 
+Attributes
+----------
+* `first` : `std::vector< conference_column >`
+
+* `second` : `std::vector< conference_column >`
+    list of first block candidate extensions
+
+* `extensions` : `std::vector< conference_column >`
+    list of first block candidate extensions
+
 C++ includes: conference.h
 ";
 
@@ -1431,8 +1841,53 @@ return the set of extension arrays
 
 
 %feature("docstring") conference_t "
+`conference_t()`
+`conference_t(N, k, j1zero)`
+`conference_t(rhs)`
 
 Structure representing the type of conference designs.
+
+Constructors
+------------
+* `conference_t()`
+
+    Structure representing the type of conference designs
+
+* `conference_t(N, k, j1zero)`
+
+    Structure representing the type of conference designs
+
+    Parameters:
+    * `N` :
+        Number of rows
+    * `k` :
+        Number of columns
+    * `j1zero` :
+        If True then require the J1-characteristics to be zero
+
+* `conference_t(rhs)`
+
+    Structure representing the type of conference designs
+
+Attributes
+----------
+* `N` : `rowindex_t`
+    number of runs
+
+* `ncols` : `colindex_t`
+    total number of columns (factors) in the design
+
+* `ctype` : `conference_type`
+    defines the type of designs
+
+* `itype` : `matrix_isomorphism_t`
+    defines the isomorphism type
+
+* `j1zero` : `bool`
+    if true then J1 values should be zero
+
+* `j3zero` : `bool`
+    if true then J3 values should be zero
 
 C++ includes: conference.h
 ";
@@ -1493,6 +1948,10 @@ return string representation of the object
 
 
 %feature("docstring") conference_transformation_t "
+`conference_transformation_t()`
+`conference_transformation_t(nrows, ncols)`
+`conference_transformation_t(al)`
+`conference_transformation_t(T)`
 
 Contains a transformation of a conference matrix.
 
@@ -1501,6 +1960,38 @@ permutations, row permutations and sign switches for both the rows and columns.
 
 The sign switches and the permutations are not commutative. We apply the
 permutations first and then the sign flips.
+
+Constructors
+------------
+* `conference_transformation_t()`
+
+* `conference_transformation_t(nrows, ncols)`
+
+    default constructor
+
+* `conference_transformation_t(al)`
+
+* `conference_transformation_t(T)`
+
+Attributes
+----------
+* `rperm` : `std::vector< int >`
+    row permutation of the transformation
+
+* `cperm` : `std::vector< int >`
+    column permutation of the transformation
+
+* `cswitch` : `std::vector< int >`
+    sign flips for the columns
+
+* `rswitch` : `std::vector< int >`
+    sign flips for the rows
+
+* `nrows` : `int`
+    number of rows
+
+* `ncols` : `int`
+    number of columns
 
 C++ includes: arraytools.h
 ";
@@ -1579,9 +2070,18 @@ apply transformation to an array_link object
 
 
 %feature("docstring") counter_t "
+`counter_t(n)`
 
 structure to count and show number of arrays generated, the structure is thread
 safe
+
+Constructors
+------------
+* `counter_t(n)`
+
+Attributes
+----------
+* `nfound` : `std::vector< int >`
 
 C++ includes: evenodd.h
 ";
@@ -1623,8 +2123,39 @@ show information about the number of arrays found
 
 
 %feature("docstring") DconferenceFilter "
+`DconferenceFilter(_als, filter_symmetry, filterj2_, filterj3_=1)`
 
 class to filter single or double conference designs
+
+Constructors
+------------
+* `DconferenceFilter(_als, filter_symmetry, filterj2_, filterj3_=1)`
+
+Attributes
+----------
+* `als` : `array_link`
+
+* `filtersymm` : `int`
+    filter based on symmetry
+
+* `filterj2` : `int`
+    filter based on j2 value
+
+* `filterj3` : `int`
+    filter based on j3 value
+
+* `filterfirst` : `int`
+    filter only columns with first value >=0
+
+* `filterzero` : `int`
+    filter based on first occurence of zero in a column
+
+* `ngood` : `long`
+
+* `inline_row` : `int`
+    row at which infile filtering is performed
+
+* `sd` : `symmdata`
 
 C++ includes: conference.h
 ";
@@ -1726,10 +2257,28 @@ This means that the first entries of the extension do not contain a zero.
 
 
 %feature("docstring") depth_extend_sub_t "
+`depth_extend_sub_t(nn=0)`
 
 Helper structure for dynamic extension
 
 In this structure we keep track of pointers to valid column extensions
+
+Constructors
+------------
+* `depth_extend_sub_t(nn=0)`
+
+Attributes
+----------
+* `lmctype` : `std::vector< int >`
+
+* `lastcol` : `std::vector< int >`
+    last column changed in lmc check
+
+* `strengthcheck` : `std::vector< double >`
+
+* `valididx` : `std::vector< int >`
+
+* `verbose` : `int`
 
 C++ includes: evenodd.h
 ";
@@ -1766,6 +2315,8 @@ select the arrays with are LMC and hence need to be written to disk
 
 
 %feature("docstring") depth_extend_t "
+`depth_extend_t(ad_, _logtime=10000000, _discardJ5=-1)`
+`depth_extend_t(de)`
 
 Helper structure for dynamic extension.
 
@@ -1774,6 +2325,43 @@ functions to print progress of the extension.
 
 Multiple copies of this class are made, but they all share the same counter_t
 and arraywriter_t object. Also t0 and tp are shared
+
+Constructors
+------------
+* `depth_extend_t(ad_, _logtime=10000000, _discardJ5=-1)`
+
+* `depth_extend_t(de)`
+
+Attributes
+----------
+* `verbose` : `int`
+
+* `oaextend` : `OAextend`
+
+* `ad` : `const arraydata_t *`
+
+* `loglevelcol` : `int`
+
+* `logtime` : `double`
+    print progress every x seconds
+
+* `extension_column_list` : `arraylist_t`
+
+* `writearrays` : `int`
+    if set to true write arrays to disk
+
+* `discardJ5` : `int`
+
+* `discardJ5number` : `long`
+    if true, then we discard the designs which have J5 maximal
+
+* `arraywriter` : `arraywriter_t *`
+
+* `counter` : `counter_t *`
+
+* `t0` : `double`
+
+* `tp` : `double`
 
 C++ includes: evenodd.h
 ";
@@ -1824,6 +2412,16 @@ set the position in the dextend structure
 
 Helper structure for the even-odd depth extension.
 
+Attributes
+----------
+* `columnextensionsList` : `std::vector< arraylist_t >`
+
+* `goodarrayslist` : `std::vector< arraylist_t >`
+
+* `depthalglist` : `std::vector< depth_alg_t >`
+
+* `dextendsubList` : `std::vector< depth_extend_sub_t >`
+
 C++ includes: evenodd.h
 ";
 
@@ -1837,8 +2435,29 @@ C++ includes: evenodd.h
 
 
 %feature("docstring") depth_path_t "
+`depth_path_t()`
 
 structure containing current position in search tree
+
+Constructors
+------------
+* `depth_path_t()`
+
+Attributes
+----------
+* `ncurr` : `std::vector< int >`
+    vector with current position
+
+* `nmax` : `std::vector< int >`
+    vector with target
+
+* `necols` : `std::vector< int >`
+    number of extension columns
+
+* `ngecols` : `std::vector< int >`
+    number of good extension columns
+
+* `depthstart` : `int`
 
 C++ includes: evenodd.h
 ";
@@ -1862,8 +2481,49 @@ C++ includes: evenodd.h
 
 
 %feature("docstring") dextend_t "
+`dextend_t()`
 
 Structure for dynamic extension of arrays based on D-efficiencies.
+
+Constructors
+------------
+* `dextend_t()`
+
+Attributes
+----------
+* `NO_VALUE` : `const int`
+
+* `lmctype` : `std::vector< lmc_t >`
+    results of minimal form calculations
+
+* `lastcol` : `std::vector< int >`
+    last column changed in lmc check
+
+* `Deff` : `std::vector< double >`
+    calculated efficiency values
+
+* `filter` : `std::vector< int >`
+    indices of filtered arrays
+
+* `filtermode` : `dfilter_t`
+
+* `Dcheck` : `dcalc_mode`
+
+* `directcheck` : `int`
+    perform immediate LMC check in extension
+
+* `ntotal` : `long`
+    total number of arrays found
+
+* `nlmc` : `long`
+    total number of arrays found in LMC form
+
+* `n` : `long`
+    total number of arrays found passing all tests
+
+* `DmaxDiscard` : `double`
+
+* `nmaxrnktotal` : `long`
 
 C++ includes: extend.h
 ";
@@ -1891,6 +2551,19 @@ filter the arrays based on values in filter
 
 Structure containing results of the Doptimize function
 
+Attributes
+----------
+* `dds` : `std::vector< std::vector< double > >`
+    calculated efficiencies for the generated designs
+
+* `designs` : `arraylist_t`
+    designs generated
+
+* `nrestarts` : `int`
+    number of restarts performed
+
+* `_nimproved` : `int`
+
 C++ includes: Deff.h
 ";
 
@@ -1898,6 +2571,9 @@ C++ includes: Deff.h
 
 
 %feature("docstring") dyndata_t "
+`dyndata_t(N, col=0)`
+`dyndata_t(dd)`
+`dyndata_t(arg1)`
 
 Contains dynamic data of an array.
 
@@ -1914,6 +2590,30 @@ the algorithm.
 *   colperm: changes at all levels
 
     See also: arraydata_t
+
+Constructors
+------------
+* `dyndata_t(N, col=0)`
+
+* `dyndata_t(dd)`
+
+* `dyndata_t(arg1)`
+
+Attributes
+----------
+* `col` : `colindex_t`
+    active column
+
+* `N` : `rowindex_t`
+    number of rows
+
+* `rowsort` : `rowsort_t *`
+    ordering of rows
+
+* `rowsortl` : `rowsortlight_t *`
+
+* `colperm` : `colperm_t`
+    current column permutation
 
 C++ includes: lmc.h
 ";
@@ -1995,8 +2695,74 @@ copy rowsortl variable to rowsrt
 
 
 %feature("docstring") extend_data_t "
+`extend_data_t(ad, extcol)`
 
 Contains static data for the extend loop.
+
+Constructors
+------------
+* `extend_data_t(ad, extcol)`
+
+Attributes
+----------
+* `adata` : `const arraydata_t *`
+
+* `extcolumn` : `const colindex_t`
+
+* `oaindextmin` : `rowindex_t`
+
+* `N` : `const rowindex_t`
+    number of rows
+
+    index of t-1 columns
+
+* `colcombs` : `colindex_t **`
+    column combinations used in strength check
+
+* `indices` : `int **`
+
+* `ncolcombs` : `int`
+
+* `r_index` : `rev_index *`
+    number of relevant column combinations
+
+* `r_index_total` : `rev_index *`
+    reverse pointer to column combinations
+
+* `lambda` : `int *`
+    index of each column
+
+* `lambda2lvl` : `int`
+
+* `nvalues` : `int *`
+
+* `gidx` : `rowindex_t *`
+    for row symmetry calculations
+
+* `gstart` : `rowindex_t *`
+
+* `gsize` : `rowindex_t *`
+
+* `freqtablesize` : `int`
+
+* `freqtable` : `strength_freq_table`
+    frequency table for strength check. For each column combination this table
+    contains the frequencies of tuples found so far
+
+* `freqtable_cache` : `strength_freq_table *`
+    strength check, cache
+
+* `freqtable_elem` : `int **`
+    used strength check, cache for each element
+
+* `element2freqtable` : `int **`
+    used strength check, for each row+element combination and column combination
+    give a pointer to the position in the tuple frequence table
+
+* `range_low` : `array_t`
+    used for setting the range, range_high is inclusive
+
+* `range_high` : `array_t`
 
 C++ includes: strength.h
 ";
@@ -2016,10 +2782,29 @@ Initialize the table of t-tuple frequencies.
 
 
 %feature("docstring") indexsort "
+`indexsort(nn)`
+`indexsort(vals)`
+`indexsort(vals)`
 
 Class to sort data without moving the data in memory.
 
 The data is sorted by using a list of indices. A stable sort is being used.
+
+Constructors
+------------
+* `indexsort(nn)`
+
+* `indexsort(vals)`
+
+    Constructor for deque class.
+
+* `indexsort(vals)`
+
+    Constructor for vector class.
+
+Attributes
+----------
+* `indices` : `std::vector< int >`
 
 C++ includes: mathtools.h
 ";
@@ -2094,6 +2879,32 @@ Returns true of the data is sorted descending.
 
 
 %feature("docstring") InfInt "
+`InfInt()`
+`InfInt(c)`
+`InfInt(s)`
+`InfInt(l)`
+`InfInt(l)`
+`InfInt(l)`
+`InfInt(l)`
+`InfInt(l)`
+
+Constructors
+------------
+* `InfInt()`
+
+* `InfInt(c)`
+
+* `InfInt(s)`
+
+* `InfInt(l)`
+
+* `InfInt(l)`
+
+* `InfInt(l)`
+
+* `InfInt(l)`
+
+* `InfInt(l)`
 
 C++ includes: InfInt.h
 ";
@@ -2153,8 +2964,30 @@ C++ includes: InfInt.h
 
 
 %feature("docstring") Jcounter "
+`Jcounter()`
+`Jcounter(N, jj=5, k=-1)`
 
 object to hold counts of maximum J_k-values
+
+Constructors
+------------
+* `Jcounter()`
+
+* `Jcounter(N, jj=5, k=-1)`
+
+Attributes
+----------
+* `N` : `int`
+    number of rows
+
+* `jj` : `int`
+
+* `fvals` : `std::vector< int >`
+
+* `maxJcounts` : `std::map< jindex_t, long >`
+
+* `dt` : `double`
+    time needed for calculation
 
 C++ includes: evenodd.h
 ";
@@ -2218,11 +3051,24 @@ add single array to statistics object
 
 
 %feature("docstring") jindex_t "
+`jindex_t(colindex, jvalue)`
 
 helper class for indexing statistics of designs
 
 The index consists of the number of columns and the value for the
 J-characteristic
+
+Constructors
+------------
+* `jindex_t(colindex, jvalue)`
+
+Attributes
+----------
+* `k` : `int`
+    number of columns
+
+* `j` : `int`
+    J-value.
 
 C++ includes: evenodd.h
 ";
@@ -2237,12 +3083,54 @@ C++ includes: evenodd.h
 
 
 %feature("docstring") jstruct_t "
+`jstruct_t()`
+`jstruct_t(al, jj=4)`
+`jstruct_t(N, K, jj=4)`
+`jstruct_t(js)`
 
 struct to hold data of an array, e.g. J-characteristic, rank
 
 See papers: Minimum G2-aberration properties of two-level foldover designs,
 Butler, 2004 Design Selection and Classification for Hadamard Matrices Using
 Generalized Minimum Aberration Criteria, Deng and Tang
+
+Constructors
+------------
+* `jstruct_t()`
+
+    Create an object to calculate J-characteristics.
+
+* `jstruct_t(al, jj=4)`
+
+    Create an object to calculate J-characteristics.
+
+* `jstruct_t(N, K, jj=4)`
+
+    Create an object to calculate J-characteristics.
+
+* `jstruct_t(js)`
+
+    Create an object to calculate J-characteristics.
+
+Attributes
+----------
+* `N` : `int`
+    number of rows in array
+
+* `k` : `int`
+    number of columns in array
+
+* `jj` : `int`
+    J-characteristic that is calculated.
+
+* `nc` : `int`
+    number of column combinations possible
+
+* `values` : `std::vector< int >`
+    contains calculated J-values
+
+* `abberration` : `double`
+    calculated abberation
 
 C++ includes: arraytools.h
 ";
@@ -2332,6 +3220,19 @@ return 1 if all J values are zero, otherwise return 0
 
 struct to hold data of an array, e.g. J-characteristic. Abstract base class
 
+Attributes
+----------
+* `values` : `std::vector< int >`
+    calculated J-characteristics
+
+* `jvalues` : `std::vector< int >`
+
+* `jvalue2index` : `std::map< int, int >`
+    map from Jk-value to index in the jvalues variable
+
+* `jj` : `int`
+    number of columns
+
 C++ includes: arraytools.h
 ";
 
@@ -2380,8 +3281,32 @@ return 1 if all vals are zero
 
 
 %feature("docstring") jstructconference_t "
+`jstructconference_t(N, jj=4)`
+`jstructconference_t(array, jj=4)`
 
 Calculate J-characteristics of conference designs
+
+Constructors
+------------
+* `jstructconference_t(N, jj=4)`
+
+    Create structure to calculate J-characteristics of conference designs
+
+    Parameters:
+    * `N` :
+        Number of rows
+    * `jj` :
+        Number of columns to use for the Jk-characteristics
+
+* `jstructconference_t(array, jj=4)`
+
+    Calculate J-characteristics of a conference design
+
+    Parameters:
+    * `array` :
+        Array to calculate the J-characteristics for
+    * `jj` :
+        Number of columns to use for the Jk-characteristics
 
 C++ includes: arraytools.h
 ";
@@ -2416,6 +3341,12 @@ Parameters
 %feature("docstring") larray "
 
 lightweight array class
+
+Attributes
+----------
+* `data_pointer` : `numtype *`
+
+* `data_size` : `int`
 
 C++ includes: mathtools.h
 ";
@@ -2458,12 +3389,55 @@ add constant value to the elements of the array
 
 
 %feature("docstring") LMCreduction_helper_t "
+`LMCreduction_helper_t()`
 
 Contains structures used by the LMC reduction or LMC check.
 
 Part of the allocations is for structures that are constant and are re-used each
 time an LMC calculation is performed. Some other structures are temporary
 buffers that are written to all the time.
+
+Constructors
+------------
+* `LMCreduction_helper_t()`
+
+Attributes
+----------
+* `LMC_non_root_init` : `int`
+
+* `LMC_root_init` : `int`
+
+* `LMC_reduce_root_rowperms_init` : `int`
+
+* `ad` : `arraydata_t *`
+
+* `LMC_root_rowperms_init` : `int`
+
+* `nrootrowperms` : `int`
+    number of root row permutations
+
+* `rootrowperms` : `rowperm_t *`
+    pointer to row permutations that leave the root unchanged
+
+* `LMC_root_rowperms_init_full` : `int`
+
+* `nrootrowperms_full` : `int`
+
+* `rootrowperms_full` : `rowperm_t *`
+
+* `colbuffer` : `array_t *`
+
+* `dyndata_p` : `dyndata_t **`
+    buffer for a single column
+
+* `colperm_p` : `colindex_t **`
+    dynamic data; row permutations
+
+* `localcolperm_p` : `colindex_t **`
+    column permutations
+
+* `current_trans` : `array_transformation_t *`
+    local column permutation
 
 C++ includes: lmc.h
 ";
@@ -2511,12 +3485,56 @@ Static initialization of root row permutations (full group)
 
 
 %feature("docstring") LMCreduction_t "
+`LMCreduction_t(at)`
+`LMCreduction_t(arrayclass)`
 
 Class to describe an LMC reduction.
 
 The most important variable is the transformation itself, contained in
 transformation. The state contains information about how the reduction was
 performed.
+
+Constructors
+------------
+* `LMCreduction_t(at)`
+
+* `LMCreduction_t(arrayclass)`
+
+    copy constructor
+
+Attributes
+----------
+* `array` : `array_t *`
+
+* `transformation` : `array_transformation_t *`
+    pointer to transformation_t structure
+
+* `mode` : `OA_MODE`
+
+* `state` : `REDUCTION_STATE`
+
+* `init_state` : `INIT_STATE`
+
+* `maxdepth` : `int`
+    maximum depth for search tree
+
+* `lastcol` : `int`
+    last column visited in algorithm
+
+* `nred` : `long`
+    counter for number of reductions made
+
+* `targetcol` : `int`
+
+* `mincol` : `int`
+
+* `nrows` : `int`
+
+* `ncols` : `int`
+
+* `staticdata` : `LMCreduction_helper_t *`
+
+* `sd` : `symmdataPointer`
 
 C++ includes: lmc.h
 ";
@@ -2595,6 +3613,14 @@ Multi-value type.
 This object represents a multi-valued object. The objects are ordered using
 lexicographic ordering.
 
+Attributes
+----------
+* `values` : `std::vector< NumericType >`
+    vector containing the values
+
+* `ordering` : `direction_t`
+    value representing the ordering used
+
 C++ includes: mathtools.h
 ";
 
@@ -2672,10 +3698,57 @@ return a string representation of the object
 
 
 %feature("docstring") OAextend "
+`OAextend()`
+`OAextend(o)`
+`OAextend(arrayclass)`
 
 Options for the extend code.
 
 class containing parameters of the extension and LMC algorithm
+
+Constructors
+------------
+* `OAextend()`
+
+    Options for the extension algorithm
+
+* `OAextend(o)`
+
+    Options for the extension algorithm
+
+* `OAextend(arrayclass)`
+
+    Options for the extension algorithm
+
+    The algorithm is automatically determined from the specified arrayclass.
+
+Attributes
+----------
+* `singleExtendTime` : `double`
+    time before printing progress of single extension, [seconds]
+
+* `nLMC` : `int`
+    number of arrays LMC tested before printing progress of single extension
+
+* `checkarrays` : `int`
+    perform LMC test after generation of array
+
+* `check_maximal` : `int`
+    if true then return at once if a single extension has been found
+
+* `use_row_symmetry` : `int`
+    adds a symmetry check to the extension algorithm based in symmetry of row
+    permutations
+
+* `init_column_previous` : `int`
+    init column with previous column in extension (if in the same column group)
+
+* `extendarraymode` : `extendarray_mode_t`
+    determines how the extension arrays are stored
+
+* `storefile` : `arrayfile_t`
+
+* `j5structure` : `j5structure_t`
 
 C++ includes: extend.h
 ";
@@ -2756,6 +3829,11 @@ Class to make a pool of objects that can be re-used
 From: http://codereview.stackexchange.com/questions/13979/simple-object-pool-
 template-container-in-c
 
+Attributes
+----------
+* `verbose` : `int`
+    verbosity level
+
 C++ includes: mathtools.h
 ";
 
@@ -2807,6 +3885,14 @@ The class is templated by the type of values to be compared and an index type.
 The index type is used to index the elements.
 
 For elements added to the Pareto structure larger is better.
+
+Attributes
+----------
+* `verbose` : `int`
+    Verbosity level.
+
+* `elements` : `std::deque< pareto_element< ValueType, IndexType > >`
+    contains a list of all Pareto optimal elements
 
 C++ includes: pareto.h
 ";
@@ -2869,6 +3955,12 @@ show a Pareto element
 
 helper class for the Pareto class to hold elements
 
+Attributes
+----------
+* `value` : `pValue`
+
+* `indices` : `std::vector< IndexType >`
+
 C++ includes: pareto.h
 ";
 
@@ -2891,6 +3983,8 @@ return true of the argument element is equal to this element
 
 
 %feature("docstring") rankStructure "
+`rankStructure(al, nsub=3, verbose=0)`
+`rankStructure(nsub=3, id=-1)`
 
 Structure to efficiently calculate the rank of the second order interaction
 matrix of many arrays
@@ -2898,6 +3992,34 @@ matrix of many arrays
 The efficiency is obtained if the arrays share a common subarray. The theory is
 described in \"Efficient rank calculation for matrices with a common
 submatrix\", Eendebak, 2016
+
+Constructors
+------------
+* `rankStructure(al, nsub=3, verbose=0)`
+
+    constructor
+
+* `rankStructure(nsub=3, id=-1)`
+
+    constructor
+
+Attributes
+----------
+* `alsub` : `array_link`
+
+* `r` : `int`
+
+* `verbose` : `int`
+    verbosity level
+
+* `ks` : `int`
+    number of columns of subarray in cache
+
+* `nsub` : `int`
+    number of columns to subtract from array when updating cache
+
+* `id` : `int`
+    used for debugging
 
 C++ includes: arrayproperties.h
 ";
@@ -2942,8 +4064,19 @@ cache system
 
 
 %feature("docstring") rowsorter_t "
+`rowsorter_t(number_of_rows)`
 
 Structure to sort rows of arrays.
+
+Constructors
+------------
+* `rowsorter_t(number_of_rows)`
+
+Attributes
+----------
+* `number_of_rows` : `int`
+
+* `rowsort` : `rowsort_t *`
 
 C++ includes: lmc.h
 ";
@@ -3012,8 +4145,21 @@ C++ includes: mathtools.h
 
 
 %feature("docstring") symmdata "
+`symmdata(al, minlen=1)`
 
 structure containing data related to symmetries of arrays
+
+Constructors
+------------
+* `symmdata(al, minlen=1)`
+
+Attributes
+----------
+* `rowvalue` : `array_link`
+
+* `orig` : `array_link`
+
+* `ft` : `array_link`
 
 C++ includes: arraytools.h
 ";
@@ -3033,6 +4179,15 @@ list with indices set to check for symmetry reductions
 
 
 %feature("docstring") symmetry_group "
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(vals, ascending=true, verbose=0)`
+`symmetry_group(sgx)`
+`symmetry_group()`
 
 Class to describe the symmetry group of a list of elements.
 
@@ -3040,6 +4195,47 @@ The class assumes the list is sorted. The symmetry group is then a direct
 product of full permutation groups.
 
 We do not implement this using templates because we want to export to Python.
+
+Constructors
+------------
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(vals, ascending=true, verbose=0)`
+
+* `symmetry_group(sgx)`
+
+* `symmetry_group()`
+
+    default constructor
+
+Attributes
+----------
+* `gidx` : `std::vector< int >`
+
+* `gstart` : `std::vector< int >`
+    start of the subgroups
+
+* `gsize` : `std::vector< int >`
+    size of the subgroups
+
+* `ngroups` : `int`
+    number of subgroups
+
+* `n` : `int`
+    number of elements
+
+* `ascending` : `bool`
+    ordering of elements
 
 C++ includes: mathtools.h
 ";
@@ -3104,10 +4300,23 @@ show the symmetry group
 
 
 %feature("docstring") symmetry_group_walker "
+`symmetry_group_walker(sg)`
 
 Class to walk over all elements of a symmetry group
 
 The elements are generated by walking over all product permutations.
+
+Constructors
+------------
+* `symmetry_group_walker(sg)`
+
+Attributes
+----------
+* `sg` : `symmetry_group`
+    symmetry group
+
+* `perms` : `std::vector< std::vector< int > >`
+    current element of the symmetry group
 
 C++ includes: mathtools.h
 ";
@@ -5975,7 +7184,7 @@ Parameters
 
 %feature("docstring") display_vector "
 
-print vector using generic std::cout print functionality
+Print vector using generic std::cout print functionality.
 ";
 
 %feature("docstring") printf_vector "

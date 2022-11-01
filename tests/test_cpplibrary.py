@@ -16,8 +16,6 @@ import numpy as np
 
 import oapackage
 
-python3 = True
-
 
 def is_sorted(l):
     return all(a <= b for a, b in zip(l, l[1:]))
@@ -272,21 +270,17 @@ class TestArraydata_t(unittest.TestCase):
             arrayclass = oapackage.arraydata_t([2, 2, 2], 4 * ii, 2, 3)
             self.assertEqual(arrayclass.oaindex, ii)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        expected_regex = '.*warning: no orthogonal arrays exist with the specified strength.*'
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([4, 3, 3], 20, 2, 3)
-            std_output = mock_stdout.getvalue()
-            self.assertIn('arraydata_t: warning: no orthogonal arrays exist with the specified strength', std_output)
-            self.assertEqual(arrayclass.oaindex, 0)
+        self.assertEqual(arrayclass.oaindex, 0)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([2, 3, 4], 20, 2, 3)
-            std_output = mock_stdout.getvalue()
-            self.assertIn('the factor levels of the structure are not sorted, this can lead to undefined behaviour', std_output)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([6, 5], 10, 1, 2)
             self.assertEqual(arrayclass.oaindex, 0)
-            std_output = mock_stdout.getvalue()
 
 
 class TestJcharacteristics(unittest.TestCase):
@@ -419,10 +413,10 @@ class TestCppLibrary(unittest.TestCase):
         t = 2
         l = [2, 3]
         rr = []
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+
+        expected_regex = '.*warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour.*'
+        with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             oapackage.oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
-            self.assertIn(
-                'warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour', mock_stdout.getvalue())
 
         self.assertEqual(rr, [3, 15, 48, 19, 12, 3, 0])
 
@@ -547,8 +541,7 @@ class TestCppLibrary(unittest.TestCase):
         array2 = oapackage.exampleArray(46, 0)
         rank_structure = oapackage.rankStructure(array)
         rank_structure.verbose = 2
-        if python3:
-            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 rank_structure.info()
 
         rank_structure.verbose = 0
@@ -595,7 +588,7 @@ class TestCppLibrary(unittest.TestCase):
 
         B = oapackage.ndarray_double(dims)
         oapackage.distance_distribution_mixed_inplace(array, B, verbose=0)
-        dd_mixed = np.array(B)
+        dd_mixed = np.asarray(B)
 
         dd = oapackage.distance_distribution(array)
 
@@ -605,10 +598,13 @@ class TestCppLibrary(unittest.TestCase):
     def test_distance_distribution_mixed_2(self):
         A=oapackage.exampleArray(5,1)
         N=A.n_rows
-        d=oapackage.distance_distribution_mixed(A, verbose=1)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            d=oapackage.distance_distribution_mixed(A, verbose=1)
+            s=mock_stdout.getvalue()
+        self.assertTrue(s.startswith('distance_distribution_mixed: \nB[0] = B[0][0][0] = 1.666667'))
         dd=np.array(d)
 
-        gt = np.array([[[ 40.,   0.,   0.,   8.],        [ 16.,  16.,  16.,  48.]],       [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
+        gt = np.array([[[ 40.,   0.,   0.,   8.], [ 16.,  16.,  16.,  48.]], [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
         self.assertEqual(dd.shape, tuple(d.dims) )
         np.testing.assert_array_equal(N*dd, gt)
 
@@ -689,7 +685,10 @@ class TestCppLibrary(unittest.TestCase):
         lst = [al]
         conference_type = oapackage.conference_t(al.n_rows, al.n_rows, 0)
 
-        extensions = oapackage.extend_conference_restricted(lst, conference_type, verbose=1)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            extensions = oapackage.extend_conference_restricted(lst, conference_type, verbose=1)
+            std_output = mock_stdout.getvalue()
+            self.assertIn('extend_conference', std_output)
         self.assertEqual(len(extensions), 10)
 
         self.assertEqual(extensions[0].md5(), 'f759e75d3ce6adda5489fed4c528a6fb')
