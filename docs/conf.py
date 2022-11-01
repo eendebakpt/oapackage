@@ -75,7 +75,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax']
 extensions += ['sphinxcontrib.bibtex']
 extensions += ['nbsphinx']
-extensions += ['sphinxcontrib.napoleon']
+#extensions += ['sphinxcontrib.napoleon']
+extensions += ['sphinx.ext.napoleon']
 extensions += ['sphinx.ext.intersphinx']
 extensions += ['sphinx.ext.autosectionlabel']
 extensions += ['IPython.sphinxext.ipython_console_highlighting']
@@ -124,7 +125,7 @@ release = version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

@@ -260,9 +260,9 @@ std::vector< double > PICsequence(const array_link &array, int verbose = 0);
 
 /** @brief Calculate MacWilliams transform
  * @param B Input array
- * @param N
- * @param verbose Verbosity level
+ * @param N Number of rows
  * @param factor_levels_for_groups Factor levels for the groups
+ * @param verbose Verbosity level
  * @return MacWilliams transform of the input array
 */
 ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N, const std::vector<int>& factor_levels_for_groups, int verbose = 0);
@@ -271,7 +271,7 @@ ndarray< double >  macwilliams_transform_mixed(const ndarray< double >& B, int N
  *
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001
  *
- * @param al Array for which to calculate the distribution
+ * @param array Array for which to calculate the distribution
  * @return Distance distribution
  */
 std::vector< double > distance_distribution (const array_link &array);
@@ -288,7 +288,7 @@ std::vector<int> distance_distribution_shape(const arraydata_t arrayclass);
  * The distance distribution is described in "Generalized minimum aberration for asymmetrical fractional factorial designs", Wu and Xu, 2001.
  * For mixed-level designs more details can be found in "A canonical form for non-regular arrays based on generalized wordlength pattern values of delete-one-factor projections", Eendebak, 2014.
  *
- * @param al Array for which to calculate the distribution
+ * @param array Array for which to calculate the distribution
  * @param verbose Verbosity level
  * @return Distance distribution
 */
