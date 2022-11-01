@@ -356,6 +356,9 @@ inline std::string itos (numtype integer_value) {
 /// printf-style function that returns std::string
 std::string printfstring (const char *message, ...);
 
+/// Raise warning. In C++ this is a message to stdout. In Python a runtime warning
+void warning(const char* message, ...);
+
 /**
  * @brief Template for insertionSort
  * @param array Data to be sorted

@@ -2098,7 +2098,7 @@ MatrixFloat array_link::getEigenMatrix() const {
 int array_link::columnGreater (int c1, const array_link &rhs, int rhs_column) const {
 
           if ((this->n_rows != rhs.n_rows) || c1 < 0 || rhs_column < 0 || (c1 > this->n_columns - 1)) {
-               myprintf ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
+               warning ("array_link::columnGreater: warning: comparing arrays with different sizes\n");
                return 0;
           }
 
@@ -2356,8 +2356,7 @@ std::vector< int > numberModelParametersConference(const array_link &conference_
 std::vector< int > numberModelParams(const array_link &array, int order)
 {
 	if (order > 0) {
-		myprintf("numberModelParams: warning: order argument is not used any more\n");
-                exit(0);
+		throw runtime_error("numberModelParams: warning: order argument is not used any more");
 	}
 
 	if (array.is_conference()) {
@@ -2991,7 +2990,7 @@ arraydata_t::arraydata_t (const arraydata_t *adp, colindex_t newncols) {
         colgroupsize = 0;
 
         if (ncols > adp->ncols) {
-                myprintf ("arraydata_t: warning: number of columns %d is too large (object %d cols)\n", ncols,
+                warning ("arraydata_t: warning: number of columns %d is too large (object %d cols)\n", ncols,
                           adp->ncols);
                 s = new array_t[ncols];
                 for (size_t i = 0; i < (size_t)ncols; i++) {
@@ -3028,7 +3027,7 @@ arraydata_t& arraydata_t::operator= (const arraydata_t &ad2) {
 	this->s = new array_t[this->ncols];
 
 	if (ad2.s == 0) {
-		myprintf("error: invalid arraydata_t structure\n");
+		myprintf("error: invalid arraydata_t structure: s==0\n");
 	}
 	std::copy(ad2.s, ad2.s + this->ncols, s);
 	return *this;
@@ -3185,12 +3184,12 @@ void arraydata_t::complete_arraydata () {
         const int verbose = 0;
 
 		if (!this->is_factor_levels_sorted() ) {
-			myprintf("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
+			warning("arraydata_t: warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour\n");
 			this->show();
 		}
 
 		if (!check_divisibility(this)) {
-			myprintf("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
+			warning("arraydata_t: warning: no orthogonal arrays exist with the specified strength %d and specified factor levels\n", this->strength);
 		}
 
         if (verbose) {
@@ -3200,13 +3199,13 @@ void arraydata_t::complete_arraydata () {
                 }
         }
         if (this->strength > this->ncols) {
-                myprintf ("arraydata_t: warning strength %d > ncols %d, reducing strength\n", this->strength,
+                warning ("arraydata_t: warning strength %d > ncols %d, reducing strength\n", this->strength,
                           this->ncols);
                 this->strength = this->ncols;
         }
         if (this->strength < 1) {
                 if (verbose >= 2) {
-                        myprintf ("arraydata_t: warning strength < 1\n");
+                        warning ("arraydata_t: warning strength < 1\n");
                 }
         }
         arraydata_t *ad = this;
@@ -3298,7 +3297,7 @@ array_link arraydata_t::create_root (int n_columns, int fill_value) const {
 
         const int N = this->N;
         std::fill(al.array+this->strength*N, al.array+ al.n_columns*N,  fill_value);
-        
+
         return al;
 }
 
@@ -4236,7 +4235,7 @@ void arrayfile_t::append_array (const array_link &a, int specialindex) {
                 break;
         }
         default:
-                std::cout << "warning: arrayfile_t::append_array: no such mode " << afile->mode << std::endl;
+                warning("warning: arrayfile_t::append_array: no such mode %d", afile->mode);
                 break;
         }
         narraycounter++;
@@ -4692,7 +4691,7 @@ arraydata_t *readConfigFile (const char *file) {
         for (int j = 0; j < ncols; j++) {
                 inFile >> s[j];
                 if ((s[j] < 1) || (s[j] > 25)) {
-                        myprintf ("warning: number of levels specified is %d\n", s[j]);
+                        myprintf ("warning: number of levels specified at column %d is %d\n", j, s[j]);
 						throw_runtime_exception("incorrect specification of factor levels");
                 }
         }
@@ -4750,7 +4749,7 @@ void convert_array_file(std::string input_filename, std::string output_filename,
 
 		if (input_array_file.narrays < 0) {
 			narrays = arrayfile_t::NARRAYS_MAX;
-			printf("warning: untested code! (number of arrays undefined)\n");
+			myprintf("untested code! (number of arrays undefined)\n");
 		}
 
 		int index;
@@ -4854,7 +4853,7 @@ int writearrayfile (const char *fname, const arraylist_t *arraylist, arrayfile::
                         nb = 1;
                 }
                 if (nrows <= 0) {
-                        myprintf ("writearrayfile: warning: empty list, using nrows %d, ncols %d\n", nrows, ncols);
+                        warning ("writearrayfile: warning: empty list, using nrows %d, ncols %d\n", nrows, ncols);
                 }
         } else {
                 nrows = arraylist->at (0).n_rows;
@@ -5472,7 +5471,7 @@ void vectorvector2binfile(const std::string fname, const std::vector< std::vecto
 		writebinheader(fid, vals.size(), na);
 	}
 	else {
-		myprintf("warning: legacy file format\n");
+		warning("vectorvector2binfile: warning: legacy file format\n");
 	}
 	for (unsigned int i = 0; i < vals.size(); i++) {
 		const std::vector< double > x = vals[i];

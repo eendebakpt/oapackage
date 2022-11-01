@@ -22,13 +22,10 @@ try:
     import numpy as np
 except ImportError:
     raise RuntimeError(
-        "numpy cannot be imported. numpy must be installed "
-        "prior to installing OApackage")
+        "numpy cannot be imported. numpy must be installed prior to installing OApackage")
 
 npinclude = np.get_include()
 setup_directory = path.abspath(path.dirname(__file__))
-
-is_python3 = sys.version_info >= (3, 4)
 
 # %%
 
@@ -99,15 +96,12 @@ def get_version_info(verbose=0):
     """ Extract version information from source code """
 
     GIT_REVISION = None
-    try:
-        if os.path.exists('src/version.h'):
-            with open('src/version.h') as f:
-                ln = f.readline()
-                m = re.search('.* "(.*)"', ln)
-                FULLVERSION = (m.group(1))
-        else:
-            FULLVERSION = '0.0'
-    except Exception as E:
+    if os.path.exists('src/version.h'):
+        with open('src/version.h') as f:
+            ln = f.readline()
+            m = re.search('.* "(.*)"', ln)
+            FULLVERSION = (m.group(1))
+    else:
         FULLVERSION = '0.0'
     if verbose:
         print('get_version_info: %s' % FULLVERSION)
@@ -143,22 +137,6 @@ except BaseException:
     def get_swig_executable():
         return None, None, False
     swig_valid = False
-
-# %% Trick to remove option for c++ code compilation
-try:
-    # see
-    # http://stackoverflow.com/questions/8106258/cc1plus-warning-command-line-option-wstrict-prototypes-is-valid-for-ada-c-o
-    from setuptools.py31compat import get_config_vars
-
-    (opt,) = get_config_vars('OPT')
-
-    if not opt is None:
-        opt = " ".join(flag for flag in opt.split()
-                       if flag != '-Wstrict-prototypes')
-        os.environ['OPT'] = opt
-except BaseException:
-    import setuptools
-    print('old version of setuptools: %s' % setuptools.__version__)
 
 
 # %% Test suite
