@@ -16,8 +16,6 @@ import numpy as np
 
 import oapackage
 
-python3 = True
-
 
 def is_sorted(l):
     return all(a <= b for a, b in zip(l, l[1:]))
@@ -543,8 +541,7 @@ class TestCppLibrary(unittest.TestCase):
         array2 = oapackage.exampleArray(46, 0)
         rank_structure = oapackage.rankStructure(array)
         rank_structure.verbose = 2
-        if python3:
-            with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 rank_structure.info()
 
         rank_structure.verbose = 0
@@ -591,7 +588,7 @@ class TestCppLibrary(unittest.TestCase):
 
         B = oapackage.ndarray_double(dims)
         oapackage.distance_distribution_mixed_inplace(array, B, verbose=0)
-        dd_mixed = np.array(B)
+        dd_mixed = np.asarray(B)
 
         dd = oapackage.distance_distribution(array)
 
@@ -601,10 +598,13 @@ class TestCppLibrary(unittest.TestCase):
     def test_distance_distribution_mixed_2(self):
         A=oapackage.exampleArray(5,1)
         N=A.n_rows
-        d=oapackage.distance_distribution_mixed(A, verbose=1)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            d=oapackage.distance_distribution_mixed(A, verbose=1)
+            s=mock_stdout.getvalue()
+        self.assertTrue(s.startswith('distance_distribution_mixed: \nB[0] = B[0][0][0] = 1.666667'))
         dd=np.array(d)
 
-        gt = np.array([[[ 40.,   0.,   0.,   8.],        [ 16.,  16.,  16.,  48.]],       [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
+        gt = np.array([[[ 40.,   0.,   0.,   8.], [ 16.,  16.,  16.,  48.]], [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
         self.assertEqual(dd.shape, tuple(d.dims) )
         np.testing.assert_array_equal(N*dd, gt)
 
