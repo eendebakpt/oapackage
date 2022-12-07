@@ -352,7 +352,7 @@ setup(name='OApackage',
       zip_safe=False,
       install_requires=['numpy>=1.22', 'python-dateutil'],
       extras_require={
-          'GUI': ['matplotlib'],
+          'GUI': ['matplotlib>=3.5'],
           'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']
       },
       requires=['numpy', 'matplotlib'],

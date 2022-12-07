@@ -105,7 +105,7 @@ except BaseException:
 
 def guitest_monitorSizes():
     sizes = monitorSizes()
-    assert(isinstance(sizes, list))
+    assert (isinstance(sizes, list))
 
 
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
@@ -567,7 +567,7 @@ def array2html(X, header=1, tablestyle='border-collapse: collapse;', trclass='',
     return page
 
 
-def write_text_arrayfile(filename: str, designs: List[Any], comment: str = None):
+def write_text_arrayfile(filename: str, designs: List[Any], comment: Optional[str] = None):
     """ Write designs to disk in text format """
     nrows = designs[0].n_rows
     ncols = designs[0].n_columns
@@ -578,11 +578,12 @@ def write_text_arrayfile(filename: str, designs: List[Any], comment: str = None)
     afile.append_arrays(designs)
     afile.closefile()
 
+
 def arrayfile_generator(afile):
     """ Return generator to read all files in the array file """
     af = oapackage.arrayfile_t(afile)
-    
-    na=af.narrays
+
+    na = af.narrays
     for ii in range(na):
         yield af.readnext()
     af.closefile()
@@ -739,10 +740,10 @@ def test_checkFiles():
 
     lst = [tempfile.mktemp()]
     r = checkFiles(lst, cache=1, verbose=1)
-    assert(r is False)
+    assert (r is False)
     touch(lst[0])
     r = checkFiles(lst, cache=1, verbose=1)
-    assert(r is True)
+    assert (r is True)
 
 # %%
 
@@ -987,7 +988,7 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=','):
             pass
         else:
             gmadata[gmadata < 0] = 0
-        if not(np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
+        if not (np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
             warnings.warn('data does not represent GWPL data', UserWarning)
             return ''
     bgma = np.around(gmadata, decimals=12)
@@ -1026,7 +1027,7 @@ def test_selectJ():
     al = oapackage.exampleArray(12, 1)
     sols0 = [al]
     r = selectJ(sols0)
-    assert(len(r) == 0)
+    assert (len(r) == 0)
 
 
 def extendSingleArray(A, adata, t=3, verbose=1):
@@ -1038,7 +1039,7 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     sols0.push_back(A)
     k = A.n_columns
     n = oalib.extend_arraylist(sols0, adata, oaoptions, k, solsx)
-    assert(n >= len(solsx))
+    assert (n >= len(solsx))
     sys.stdout.flush()
     return solsx
 
@@ -1200,7 +1201,7 @@ def testHtml(html_code=None):
     page.add(html_code)
     page.body.close()
     _, f = tempfile.mkstemp('.html')
-    with open(f, 'wt') as fname:
+    with open(f, 'w') as fname:
         fname.write(str(page))
         fname.close()
         webbrowser.open(fname.name)
