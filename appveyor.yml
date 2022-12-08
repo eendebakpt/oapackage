@@ -11,6 +11,10 @@ environment:
 
   matrix:
 
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.x"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python311-x64"
       PYTHON_VERSION: "3.11.0"
       PYTHON_ARCH: "64"
@@ -29,10 +33,6 @@ environment:
 
     - PYTHON: "C:\\Python39-x64"
       PYTHON_VERSION: "3.9.1"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "64"
 
 matrix:
