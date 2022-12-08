@@ -348,10 +348,10 @@ setup(name='OApackage',
       packages=packages,
       data_files=data_files,
       scripts=scripts,
-      tests_require=['numpy', 'numpy<1.24; python_version <= "3.7"', 'nose',
+      tests_require=['numpy>=1.22,<1.24; python_version <= "3.7"', 'nose',
                      'coverage', 'mock', 'python-dateutil', 'types-python-dateutil'],
       zip_safe=False,
-      install_requires=['numpy>=1.22', 'numpy<1.24; python_version <= "3.7"', 'python-dateutil'],
+      install_requires=['numpy>=1.22, <1.24; python_version <= "3.7"', 'python-dateutil'],
       extras_require={
           'GUI': ['matplotlib>=3.5'],
           'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']
