@@ -350,7 +350,7 @@ setup(name='OApackage',
       scripts=scripts,
       tests_require=['numpy', 'nose', 'coverage', 'mock', 'python-dateutil', 'types-python-dateutil'],
       zip_safe=False,
-      install_requires=['numpy>=1.22', 'python-dateutil'],
+      install_requires=['numpy>=1.22', 'numpy<1.24; python_version <= "3.7"', 'python-dateutil'],
       extras_require={
           'GUI': ['matplotlib>=3.5'],
           'doc': ['sphinx', 'sphinxcontrib.bibtex', 'sphinxcontrib.napoleon', 'breathe']
