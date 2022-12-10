@@ -10,7 +10,7 @@ import logging
 import os
 import time
 import warnings
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -34,13 +34,13 @@ class MissingMatplotLibException(Exception):
 # %%
 
 
-def array2Dtable(array_list : List, verbose : int =1, titlestr : str =None):
+def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = None):
     """ Generate HTML table with information about for a list of designs
 
     Args:
-        array_list (list): list of arrays
-        verbose (int): verbosity level
-        titlestr (str): Not used
+        array_list: list of arrays
+        verbose: verbosity level
+        titlestr: Not used
     """
     page = markup.page()
     page.table(style=' border-collapse: collapse;')
@@ -147,7 +147,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
         if not nofig:
             plt.show()
-        ax.grid(b=True, which='both', color='0.85', linestyle='-')
+        ax.grid(visible=True, which='both', color='0.85', linestyle='-')
         ax.set_axisbelow(True)
 
         if nofig:
@@ -281,7 +281,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=(1, 0
            (oalib.version(), oahelper.timeString()))
 
     outfile = os.path.join(outputdir, 'Dresults.html')
-    fid = open(outfile, 'wt')
+    fid = open(outfile, 'w')
     fid.write(str(page))
     fid.close()
     print('written to file %s' % outfile)

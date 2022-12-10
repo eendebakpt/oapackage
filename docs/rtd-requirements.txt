@@ -2,7 +2,7 @@ numpy
 matplotlib
 iPython
 
-sphinx==1.7
+sphinx
 sphinxcontrib.bibtex
 nbsphinx
 sphinxcontrib.napoleon

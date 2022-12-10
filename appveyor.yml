@@ -11,6 +11,14 @@ environment:
 
   matrix:
 
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.x"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python311-x64"
+      PYTHON_VERSION: "3.11.0"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python310-x64"
       PYTHON_VERSION: "3.10.4"
       PYTHON_ARCH: "64"
@@ -69,20 +77,19 @@ install:
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install wheel"
 
+  #- "%CMD_IN_ENV37% pip install numpy==1.22"
+  - "%CMD_IN_ENV% pip install python-dateutil numpy"
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
-  - "powershell ./appveyor/install_numpy.ps1"
-
+  #- "powershell ./appveyor/install_numpy.ps1"
   # This is where I install numpy from the pre-built wheel I compiled either
   # earlier in this session, or in a previous session.
-  - "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
+  #- "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython38 = $env:PYTHON.Contains("Python38")
 
   # part of the testing requirements
-  - "%CMD_IN_ENV% pip install python-dateutil"
-  - "%CMD_IN_ENV% python -c \"import dateutil; print(dateutil)\""
   - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks

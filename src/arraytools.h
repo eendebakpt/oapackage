@@ -879,7 +879,7 @@ class jstructbase_t {
 		 *
 		 * \return Histogram of J values
 		 *
-		 * The histogram bins are given by the values of @ref Jvalues.
+		 * The histogram bins are given by the values of jvalues.
 		 *
 		 **/
         std::vector< int > calculateF () const;
