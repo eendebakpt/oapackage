@@ -56,7 +56,7 @@ def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = N
         gwlp = al.GWLP()
         page.tr(style='font-weight: normal;')
         page.td('%d' % aidx, style='padding-right:10px;')
-        for statistic in [D, Ds, D1]:
+        for statistic in (D, Ds, D1):
             page.td('%.4f' % statistic, style='padding-right:1px;')
         gstr = oahelper.gwlp2str(gwlp)
         page.td(e.small(gstr), style='padding-right:1px;')
@@ -159,7 +159,7 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         ax = None
         xlabelhandle = None
         pltlegend = None
-    hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
+    hh = {'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend}
     return hh
 
 
@@ -212,7 +212,7 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=(1, 0
                   css=('../oastyle.css'),
                   lang='en', htmlattrs=dict({'xmlns': 'http://www.w3.org/1999/xhtml', 'xml:lang': 'en'}),
                   header="<!-- Start of page -->",
-                  bodyattrs=dict({'style': 'padding-left: 3px;'}),
+                  bodyattrs={'style': 'padding-left: 3px;'},
                        doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
                        metainfo=({'text/html': 'charset=utf-8', 'keywords': 'orthogonal arrays designs',
                                   'robots': 'index, follow', 'description': 'Even-Odd arrays'}),
