@@ -4,6 +4,8 @@
 """
 
 # %% Load packages
+from typing import Any, List, Tuple
+
 import numpy as np
 
 import oapackage
@@ -25,7 +27,7 @@ def oa2graph(al, adata, verbose=1):
     """
     A = al.getarray(verbose=0)
     if verbose:
-        print('oa2graph: array of shape %s' % (A.shape, ))
+        print("oa2graph: array of shape %s" % (A.shape,))
     nrows = adata.N
     ncols = A.shape[1]
     nColumnLevelVertices = sum(adata.factor_levels())
@@ -38,12 +40,11 @@ def oa2graph(al, adata, verbose=1):
     sc0 = np.hstack(([0], sc))
     qq = np.ones(nColumnLevelVertices)  # colors for column level vertices
     for ii in range(sc.size):
-        qq[sc0[ii]:sc0[ii + 1]] = 2 + ii
+        qq[sc0[ii] : sc0[ii + 1]] = 2 + ii
     qq = 2 * np.ones(nColumnLevelVertices)  # colors for column level vertices
 
     vertexOffsets = adata.N + ncols + np.hstack((0, s[0:-1])).cumsum()
-    colors = np.hstack(
-        (np.zeros(adata.N), np.ones(ncols), qq))
+    colors = np.hstack((np.zeros(adata.N), np.ones(ncols), qq))
 
     im = np.zeros((nVertices, nVertices))  # incidence matrix
 
@@ -61,11 +62,11 @@ def oa2graph(al, adata, verbose=1):
 
     # The non-row vertices do not have any connections to other non-row
     # vertices.
-    return im, colors, dict({'adata': adata, 'im': im, 'colors': colors, 'nVertices': nVertices})
+    return im, colors, dict({"adata": adata, "im": im, "colors": colors, "nVertices": nVertices})
 
 
-def selectIsomorphismClasses(sols, verbose=1):
-    """ Select isomorphism classes from a list of designs
+def selectIsomorphismClasses(sols, verbose: int = 1) -> Tuple[List[int], List[Any]]:
+    """Select isomorphism classes from a list of designs
 
     Args:
         sols (list of arrays): list of arrays from which to determine the unique ones
@@ -89,8 +90,7 @@ def selectIsomorphismClasses(sols, verbose=1):
     mm = []
     for ii, al in enumerate(sols):
         if verbose:
-            oapackage.tprint(
-                'selectIsomorphismClasses: process aray %d/%d' % (ii, len(sols)))
+            oapackage.tprint("selectIsomorphismClasses: process aray %d/%d" % (ii, len(sols)))
         al = oapackage.makearraylink(al)
 
         tt = oapackage.reduceOAnauty(al, verbose >= 2)
@@ -108,7 +108,6 @@ def selectIsomorphismClasses(sols, verbose=1):
     _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)
 
     if verbose >= 1:
-        print('selectIsomorphismClasses: reduce %d to %d' %
-              (len(sols), np.unique(indices).size))
+        print("selectIsomorphismClasses: reduce %d to %d" % (len(sols), np.unique(indices).size))
 
     return indices, mm
