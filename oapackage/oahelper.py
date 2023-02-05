@@ -408,7 +408,7 @@ def findfilesR(directory, pattern):
     return lst
 
 
-def findfiles(directory: str, pattern: Optional[str] = None) -> list[str]:
+def findfiles(directory: str, pattern: Optional[str] = None) -> List[str]:
     """Get a list of files
     Args:
         directory: directory to search
@@ -423,7 +423,7 @@ def findfiles(directory: str, pattern: Optional[str] = None) -> list[str]:
     return lst
 
 
-def finddirectories(directory: str, pattern: Optional[str] = None) -> list[str]:
+def finddirectories(directory: str, pattern: Optional[str] = None) -> List[str]:
     """Get a list of directories
     Args:
         directory: directory to search
