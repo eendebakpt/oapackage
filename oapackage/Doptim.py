@@ -35,7 +35,7 @@ class MissingMatplotLibException(Exception):
 
 
 def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = None):
-    """ Generate HTML table with information about for a list of designs
+    """Generate HTML table with information about for a list of designs
 
     Args:
         array_list: list of arrays
@@ -43,33 +43,43 @@ def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = N
         titlestr: Not used
     """
     page = markup.page()
-    page.table(style=' border-collapse: collapse;')
-    page.tr(style='font-weight: bold; border-bottom: solid 1px black;')
-    page.th('Array', style='padding-right:30px; ')
-    page.th(('D-efficiency', 'Ds-efficiency', 'D1-efficiency'),
-            style='padding-right:14px;')
-    page.th(('GWLP'), style='padding-right:14px;')
+    page.table(style=" border-collapse: collapse;")
+    page.tr(style="font-weight: bold; border-bottom: solid 1px black;")
+    page.th("Array", style="padding-right:30px; ")
+    page.th(("D-efficiency", "Ds-efficiency", "D1-efficiency"), style="padding-right:14px;")
+    page.th(("GWLP"), style="padding-right:14px;")
     page.tr.close()
     for ii, al in enumerate(array_list):
         aidx = ii
         (D, Ds, D1) = al.Defficiencies()
         gwlp = al.GWLP()
-        page.tr(style='font-weight: normal;')
-        page.td('%d' % aidx, style='padding-right:10px;')
+        page.tr(style="font-weight: normal;")
+        page.td("%d" % aidx, style="padding-right:10px;")
         for statistic in [D, Ds, D1]:
-            page.td('%.4f' % statistic, style='padding-right:1px;')
+            page.td("%.4f" % statistic, style="padding-right:1px;")
         gstr = oahelper.gwlp2str(gwlp)
-        page.td(e.small(gstr), style='padding-right:1px;')
+        page.td(e.small(gstr), style="padding-right:1px;")
         page.tr.close()
     page.table.close()
     return page
 
+
 # %%
 
 
-def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nofig=False, fig=20,
-                     scatterarea=80, verbose=0, setWindowRectangle=False):
-    """ Generate scatter plot for D and Ds efficiencies
+def generateDscatter(
+    dds,
+    second_index=0,
+    first_index=1,
+    lbls=None,
+    ndata=3,
+    nofig=False,
+    fig=20,
+    scatterarea=80,
+    verbose=0,
+    setWindowRectangle=False,
+):
+    """Generate scatter plot for D and Ds efficiencies
 
     Args:
         dds (array): array with D-efficiencies
@@ -83,7 +93,13 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
     paretoidx = np.array(pp.allindices())
 
     nn = dds.shape[0]
-    area = scatterarea * np.ones(nn,) / 2
+    area = (
+        scatterarea
+        * np.ones(
+            nn,
+        )
+        / 2
+    )
     area[np.array(pp.allindices())] = scatterarea
     alpha = 1.0
 
@@ -95,27 +111,35 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
     idx = np.unique(colors).astype(int)
 
     if verbose:
-        print('generateDscatter: unique colors: %s' % (idx, ))
+        print("generateDscatter: unique colors: %s" % (idx,))
     ncolors = idx.size
     try:
         import brewer2mpl
+
         ncolors = max(ncolors, 4)
-        mycmap = brewer2mpl.get_map('Set1', 'qualitative', ncolors).mpl_colors
+        mycmap = brewer2mpl.get_map("Set1", "qualitative", ncolors).mpl_colors
     except BaseException:
         mycmap = [matplotlib.cm.jet(ii) for ii in np.linspace(0, 1, ncolors)]
 
     nonparetoidx = np.setdiff1d(range(nn), paretoidx)
     if lbls is None:
-        lbls = ['%d' % i for i in range(len(idx))]
+        lbls = ["%d" % i for i in range(len(idx))]
 
     if fig is not None:
         figh = plt.figure(fig)
         plt.clf()
-        figh.set_facecolor('w')
+        figh.set_facecolor("w")
         ax = plt.subplot(111)
 
-        ax.scatter(data[first_index, nonparetoidx], data[second_index, nonparetoidx], s=.33 * scatterarea,
-                   c=[(.5, .5, .5)], linewidths=0, alpha=alpha, label='Non-pareto design')
+        ax.scatter(
+            data[first_index, nonparetoidx],
+            data[second_index, nonparetoidx],
+            s=0.33 * scatterarea,
+            c=[(0.5, 0.5, 0.5)],
+            linewidths=0,
+            alpha=alpha,
+            label="Non-pareto design",
+        )
 
         for jj, ii in enumerate(idx):
             gidx = (colors == ii).nonzero()[0]
@@ -124,30 +148,37 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
             color = mycmap[jj]
             cc = [color] * len(gp)
             if verbose:
-                print('index %d: %d points' % (ii, gidx.size))
-            ax.scatter(data[first_index, gp], data[second_index, gp], s=scatterarea, c=cc,
-                       linewidths=0, alpha=alpha, label=lbls[jj])
+                print("index %d: %d points" % (ii, gidx.size))
+            ax.scatter(
+                data[first_index, gp],
+                data[second_index, gp],
+                s=scatterarea,
+                c=cc,
+                linewidths=0,
+                alpha=alpha,
+                label=lbls[jj],
+            )
             plt.draw()
 
         if data[second_index, :].std() < 1e-3:
             y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
             ax.yaxis.set_major_formatter(y_formatter)
 
-        xlabelhandle = plt.xlabel('$D_s$-efficiency', fontsize=16)
-        plt.ylabel('D-efficiency', fontsize=16)
+        xlabelhandle = plt.xlabel("$D_s$-efficiency", fontsize=16)
+        plt.ylabel("D-efficiency", fontsize=16)
 
         if setWindowRectangle:
             try:
                 oahelper.setWindowRectangle(10, 10, 860, 600)
             except Exception as ex:
-                print('generateDscatter: setWindowRectangle failed')
+                print("generateDscatter: setWindowRectangle failed")
                 logging.exception(ex)
 
-        plt.axis('image')
+        plt.axis("image")
         pltlegend = ax.legend(loc=3, scatterpoints=1)  # , fontcolor=almost_black)
         if not nofig:
             plt.show()
-        ax.grid(visible=True, which='both', color='0.85', linestyle='-')
+        ax.grid(visible=True, which="both", color="0.85", linestyle="-")
         ax.set_axisbelow(True)
 
         if nofig:
@@ -159,15 +190,26 @@ def generateDscatter(dds, second_index=0, first_index=1, lbls=None, ndata=3, nof
         ax = None
         xlabelhandle = None
         pltlegend = None
-    hh = dict({'ax': ax, 'xlabelhandle': xlabelhandle, 'pltlegend': pltlegend})
+    hh = dict({"ax": ax, "xlabelhandle": xlabelhandle, "pltlegend": pltlegend})
     return hh
 
 
-def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=(1, 0, 0),
-                  nofig=False, urlprefix='', makeheader=True, verbose=1, lbls=None):
-    """ Helper function to generate web page with D-optimal design results """
+def generateDpage(
+    outputdir,
+    arrayclass,
+    dds,
+    allarrays,
+    fig=20,
+    optimfunc=(1, 0, 0),
+    nofig=False,
+    urlprefix="",
+    makeheader=True,
+    verbose=1,
+    lbls=None,
+):
+    """Helper function to generate web page with D-optimal design results"""
     if verbose:
-        print('generateDpage: dds %s' % str(dds.shape))
+        print("generateDpage: dds %s" % str(dds.shape))
 
     pp = oahelper.createPareto(dds)
 
@@ -175,122 +217,128 @@ def generateDpage(outputdir, arrayclass, dds, allarrays, fig=20, optimfunc=(1, 0
     npareto = pp.number()
 
     if verbose:
-        print('generateDpage: narrays %d' % narrays)
+        print("generateDpage: narrays %d" % narrays)
 
     xstr = oahelper.series2htmlstr(arrayclass, case=1)
     xstrplain = oahelper.series2htmlstr(arrayclass, html=0, case=1)
 
     if verbose:
-        print('generateDpage: selectParetoArrays ')
+        print("generateDpage: selectParetoArrays ")
     paretoarrays = oahelper.selectParetoArrays(allarrays, pp)
     at = array2Dtable(paretoarrays, verbose=1)
 
     if verbose:
-        print('generateDpage: write file with Pareto arrays')
+        print("generateDpage: write file with Pareto arrays")
 
-    pfile0 = 'paretoarrays.oa'
+    pfile0 = "paretoarrays.oa"
     pfile = os.path.join(outputdir, pfile0)
     oalib.writearrayfile(pfile, paretoarrays)
 
-    istrlnk = markup.oneliner.a('paretoarrays.oa', href=urlprefix + pfile0)
+    istrlnk = markup.oneliner.a("paretoarrays.oa", href=urlprefix + pfile0)
 
     if lbls is None:
-        lbls = ['Optimization of $D$']
+        lbls = ["Optimization of $D$"]
     if fig is not None:
         hh = generateDscatter(dds, lbls=lbls, fig=fig, nofig=nofig)
-        oahelper.niceplot(hh.get('ax', None), despine=True, legend=hh['pltlegend'])
+        oahelper.niceplot(hh.get("ax", None), despine=True, legend=hh["pltlegend"])
 
-        scatterfile = os.path.join(outputdir, 'scatterplot.png')
+        scatterfile = os.path.join(outputdir, "scatterplot.png")
         if verbose:
-            print('generateDpage: writen scatterplot to %s' % scatterfile)
-        plt.savefig(scatterfile, bbox_inches='tight', pad_inches=0.25, dpi=160)
+            print("generateDpage: writen scatterplot to %s" % scatterfile)
+        plt.savefig(scatterfile, bbox_inches="tight", pad_inches=0.25, dpi=160)
 
     page = markup.page()
 
     if makeheader:
-        page.init(title="Class %s" % xstrplain,
-                  css=('../oastyle.css'),
-                  lang='en', htmlattrs=dict({'xmlns': 'http://www.w3.org/1999/xhtml', 'xml:lang': 'en'}),
-                  header="<!-- Start of page -->",
-                  bodyattrs=dict({'style': 'padding-left: 3px;'}),
-                       doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
-                       metainfo=({'text/html': 'charset=utf-8', 'keywords': 'orthogonal arrays designs',
-                                  'robots': 'index, follow', 'description': 'Even-Odd arrays'}),
-                       footer="<!-- End of page -->")
+        page.init(
+            title="Class %s" % xstrplain,
+            css=("../oastyle.css"),
+            lang="en",
+            htmlattrs=dict({"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"}),
+            header="<!-- Start of page -->",
+            bodyattrs=dict({"style": "padding-left: 3px;"}),
+            doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+            metainfo=(
+                {
+                    "text/html": "charset=utf-8",
+                    "keywords": "orthogonal arrays designs",
+                    "robots": "index, follow",
+                    "description": "Even-Odd arrays",
+                }
+            ),
+            footer="<!-- End of page -->",
+        )
 
-    page.h1('Results for array class %s ' % xstr)
+    page.h1("Results for array class %s " % xstr)
 
-    ss = r'The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>.'
+    ss = r"The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>."
     if npareto == 1:
-        page.p('Generated %d arrays, %d is Pareto optimal. %s' %
-               (narrays, npareto, ss))
+        page.p("Generated %d arrays, %d is Pareto optimal. %s" % (narrays, npareto, ss))
     else:
-        page.p('Generated %d arrays, %d are Pareto optimal. %s' %
-               (narrays, npareto, ss))
+        page.p("Generated %d arrays, %d are Pareto optimal. %s" % (narrays, npareto, ss))
 
     if narrays > 0:
 
         scores = calcScore(dds, optimfunc)
         _, dd, sols = selectDn(scores, dds, allarrays, nout=1)
         A = sols[0]
-        bestdesignfile = os.path.join(outputdir, 'best-design.oa')
+        bestdesignfile = os.path.join(outputdir, "best-design.oa")
         oalib.writearrayfile(bestdesignfile, A)
 
-        page.h2('Best design')
-        page.p('The best design: %s.' %
-               e.a('best-design.oa', href=os.path.join(urlprefix, 'best-design.oa')))
+        page.h2("Best design")
+        page.p("The best design: %s." % e.a("best-design.oa", href=os.path.join(urlprefix, "best-design.oa")))
 
         page.p()
 
         dd = dd[0]
-        page.span('D-efficiency: %.4f, ' % A.Defficiency())  # page.br()
-        page.span('D<sub>s</sub>-efficiency: %.4f, ' % dd[1])  # page.br()
-        page.span('D<sub>1</sub>-efficiency: %.4f' % dd[2])
+        page.span("D-efficiency: %.4f, " % A.Defficiency())  # page.br()
+        page.span("D<sub>s</sub>-efficiency: %.4f, " % dd[1])  # page.br()
+        page.span("D<sub>1</sub>-efficiency: %.4f" % dd[2])
         page.br()
-        page.span('A-efficiency: %.3f' % A.Aefficiency())
+        page.span("A-efficiency: %.3f" % A.Aefficiency())
         page.br()
         gwlp = A.GWLP()
         # gwlp=','.join(['%.3f' % xq for xq in gwlp])
-        gwlp = oahelper.gwlp2str(gwlp, jstr=', ')
-        page.span('Generalized wordlength pattern: %s' % gwlp)
+        gwlp = oahelper.gwlp2str(gwlp, jstr=", ")
+        page.span("Generalized wordlength pattern: %s" % gwlp)
         page.br()
         # page.p('D-efficiency: %.3f' % A.Defficiency() )
         pec = oalib.PECsequence(A)
-        pec = ','.join(['%.3f' % xq for xq in pec])
-        page.span('PEC-sequence: %s' % pec)
+        pec = ",".join(["%.3f" % xq for xq in pec])
+        page.span("PEC-sequence: %s" % pec)
         page.br()
 
-    page.h2('Table of Pareto optimal arrays ')
+    page.h2("Table of Pareto optimal arrays ")
 
     page.span(str(at))
-    page.p('All Pareto optimal arrays: %s' % istrlnk)
+    page.p("All Pareto optimal arrays: %s" % istrlnk)
 
-    page.img(src=urlprefix + 'scatterplot.png',
-             style="margin: 10px; width:95%; min-width: 300px;  max-width:1100px; height: auto; ")
+    page.img(
+        src=urlprefix + "scatterplot.png",
+        style="margin: 10px; width:95%; min-width: 300px;  max-width:1100px; height: auto; ",
+    )
 
     citationstr = markup.oneliner.a(
-        'Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays', href='https://doi.org/10.1002/jcd.20236')
+        "Complete Enumeration of Pure-Level and Mixed-Level Orthogonal Arrays", href="https://doi.org/10.1002/jcd.20236"
+    )
 
-    page.br(clear='both')
-    page.p(
-        'Citation notice: if you make use of the results on this page, please cite the following paper:')
-    page.p('%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010.' %
-           citationstr)
+    page.br(clear="both")
+    page.p("Citation notice: if you make use of the results on this page, please cite the following paper:")
+    page.p("%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010." % citationstr)
 
-    page.p('Generated with oapackage %s, date %s.' %
-           (oalib.version(), oahelper.timeString()))
+    page.p("Generated with oapackage %s, date %s." % (oalib.version(), oahelper.timeString()))
 
-    outfile = os.path.join(outputdir, 'Dresults.html')
-    fid = open(outfile, 'w')
+    outfile = os.path.join(outputdir, "Dresults.html")
+    fid = open(outfile, "w")
     fid.write(str(page))
     fid.close()
-    print('written to file %s' % outfile)
+    print("written to file %s" % outfile)
 
     return outfile
 
 
 def scoreDn(dds, optimfunc):
-    """ Calculate scores from various efficiencies
+    """Calculate scores from various efficiencies
 
     Args:
         dds (array): calculated D-efficiencies
@@ -303,7 +351,7 @@ def scoreDn(dds, optimfunc):
 
 
 def calcScore(dds, optimfunc):
-    """ Calculate D-efficiency score using multiple efficiencies and a weight factor
+    """Calculate D-efficiency score using multiple efficiencies and a weight factor
 
     Args:
         dds (array): the rows contains the effieciencies for various designs
@@ -315,7 +363,7 @@ def calcScore(dds, optimfunc):
 
 
 def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1, 0, 0], method=0):
-    """ Optimize array using specified optimization method
+    """Optimize array using specified optimization method
 
     Args:
         A0 (array_link): design to optimize
@@ -343,7 +391,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
 
     Dinitial = A0.Defficiency()
     if verbose:
-        print('optimDeff: initial Deff %.4f' % Dinitial)
+        print("optimDeff: initial Deff %.4f" % Dinitial)
     N = A0.n_rows
     k = A0.n_columns
 
@@ -389,7 +437,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 lc = ii
                 efficiencies = dn
             if verbose >= 2:
-                print('ii %d: %.6f -> %.6f' % (ii, efficiencies, dn))
+                print("ii %d: %.6f -> %.6f" % (ii, efficiencies, dn))
 
         else:
             # restore to original
@@ -402,23 +450,22 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
                 A._setvalue(r, c, o)
         if (ii - lc) > nabort:
             if verbose:
-                print('optimDeff: early abort ii %d, lc %d' % (ii, lc))
+                print("optimDeff: early abort ii %d, lc %d" % (ii, lc))
             break
 
     if verbose:
         Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
-            print('optimDeff: final Deff improved: %.4f -> %.4f' %
-                  (Dinitial, A.Defficiency()))
+            print("optimDeff: final Deff improved: %.4f -> %.4f" % (Dinitial, A.Defficiency()))
         else:
-            print('optimDeff: final Deff %.4f' % A.Defficiency())
+            print("optimDeff: final Deff %.4f" % A.Defficiency())
 
     return efficiencies, A
 
 
 # %%
 def filterPareto(scores, dds, arrays, verbose=0):
-    """ From a list of designs select only the pareto optimal designs
+    """From a list of designs select only the pareto optimal designs
 
     Args:
         scores (array): array of scores
@@ -440,7 +487,7 @@ def filterPareto(scores, dds, arrays, verbose=0):
 
 
 def selectDn(scores, dds, sols, nout=1, sortfull=True):
-    """ Select best arrays according to given scores
+    """Select best arrays according to given scores
 
     The resulting data is sorted
 
@@ -483,14 +530,25 @@ def selectDn(scores, dds, sols, nout=1, sortfull=True):
     return scores, dds, sols
 
 
-def Doptimize(arrayclass, nrestarts=10, optimfunc=[
-              1, 0, 0], verbose=1, maxtime=180, selectpareto=True, nout=None, method=oalib.DOPTIM_UPDATE, niter=100000, nabort=0, dverbose=1):
-    """ Calculate D-efficient designs
+def Doptimize(
+    arrayclass,
+    nrestarts=10,
+    optimfunc=[1, 0, 0],
+    verbose=1,
+    maxtime=180,
+    selectpareto=True,
+    nout=None,
+    method=oalib.DOPTIM_UPDATE,
+    niter=100000,
+    nabort=0,
+    dverbose=1,
+):
+    """Calculate D-efficient designs
 
-    The method uses a coordinate-exchange algorithm find a D-efficient (sometimes called D-optimal) design in the class specified by the
-    arrayclass. The optimality is defined in terms of the optimization parameters. The optimization is performed
-    multiple times (specified by the nrestarts parameter) to prevent finding a design in a local minmum of the
-    target function.
+    The method uses a coordinate-exchange algorithm find a D-efficient (sometimes called D-optimal) design in the
+    class specified by the arrayclass. The optimality is defined in terms of the optimization parameters.
+    The optimization is performed multiple times (specified by the nrestarts parameter) to prevent finding a design
+    in a local minmum of the target function.
 
 
     Args:
@@ -501,7 +559,8 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
       maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
       nout (int or None): Maximum number of designs to return. If None,  return all designs
-      method (coordinate_exchange_method_t): Specifies the method use for updating elements in the coordinate-exchange algorithm.
+      method (coordinate_exchange_method_t): Specifies the method use for updating elements
+              in the coordinate-exchange algorithm.
       niter (int): Maximum number of iterations of the coordinate-exchange algorithm
       nabort (int): If no improvements have been found after this number of updates, then abort this run
       dverbose (int): Verbosity level passed to the C++ Doptimize function
@@ -526,29 +585,35 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
 
     """
     if arrayclass.strength != 0:
-        warnings.warn('Doptimize can only handle designs with strength 0', UserWarning)
+        warnings.warn("Doptimize can only handle designs with strength 0", UserWarning)
 
     if verbose:
-        print('Doptim: optimization class %s' % arrayclass.idstr())
+        print("Doptim: optimization class %s" % arrayclass.idstr())
     t0 = time.time()
 
     if optimfunc is None:
         optimfunc = [1, 2, 0]
 
     if isinstance(optimfunc, list):
-        rr = oalib.Doptimize(arrayclass, nrestarts, alpha=optimfunc, verbose=dverbose,
-                             method=method, niter=niter, maxtime=maxtime, nabort=nabort)
+        rr = oalib.Doptimize(
+            arrayclass,
+            nrestarts,
+            alpha=optimfunc,
+            verbose=dverbose,
+            method=method,
+            niter=niter,
+            maxtime=maxtime,
+            nabort=nabort,
+        )
         dds, sols = rr.dds, rr.designs
         dds = np.array([x for x in dds])
         # needed because of SWIG wrapping of struct type
         sols = [design.clone() for design in sols]
         nrestarts = rr.nrestarts
-        scores = np.array(
-            [oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
+        scores = np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
 
         if verbose >= 3:
-            print('Doptimize: max score %.3f, max D: %.6f' %
-                  (np.max(scores), np.max([A.Defficiency() for A in sols])))
+            print("Doptimize: max score %.3f, max D: %.6f" % (np.max(scores), np.max([A.Defficiency() for A in sols])))
     else:
         # assume optimfunc is a function
         scores = np.zeros((0, 1))
@@ -559,24 +624,23 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
         nrestarts = 0
         for ii in range(nrestarts_requested):
             if verbose:
-                oahelper.tprint('Doptim: iteration %d/%d (time %.1f/%.1f)' %
-                                (ii, nrestarts, time.time() - t0, maxtime), dt=4)
+                oahelper.tprint(
+                    "Doptim: iteration %d/%d (time %.1f/%.1f)" % (ii, nrestarts, time.time() - t0, maxtime), dt=4
+                )
             al = arrayclass.randomarray(1)
 
             if isinstance(optimfunc, list):
                 alpha = optimfunc
-                Ax = oalib.optimDeff(
-                    al, arrayclass, alpha, verbose >= 2, method, niter, nabort)
+                Ax = oalib.optimDeff(al, arrayclass, alpha, verbose >= 2, method, niter, nabort)
                 dd = Ax.Defficiencies()
                 score = oalib.scoreD(dd, optimfunc)
             else:
-                score, Ax = optimDeffPython(
-                    al, verbose=0, niter=niter, alpha=optimfunc, method=method, nabort=nabort)
+                score, Ax = optimDeffPython(al, verbose=0, niter=niter, alpha=optimfunc, method=method, nabort=nabort)
                 dd = Ax.Defficiencies()
 
             if time.time() - t0 > maxtime:
                 if verbose:
-                    print('Doptim: max time exceeded, aborting')
+                    print("Doptim: max time exceeded, aborting")
                 break
 
             scores = np.vstack((scores, [score]))
@@ -585,19 +649,19 @@ def Doptimize(arrayclass, nrestarts=10, optimfunc=[
             nrestarts = nrestarts + 1
 
             if verbose >= 2:
-                print('  generated array: %f %f %f' % (dd[0], dd[1], dd[2]))
+                print("  generated array: %f %f %f" % (dd[0], dd[1], dd[2]))
 
             if selectpareto and ii % 502 == 0:
                 scores, dds, sols = filterPareto(scores, dds, sols)
 
     if selectpareto:
         if verbose >= 2:
-            print('Doptim: before Pareto filter (%d arrays)' % len(sols))
+            print("Doptim: before Pareto filter (%d arrays)" % len(sols))
         scores, dds, sols = filterPareto(scores, dds, sols)
 
     if verbose:
         dt = time.time() - t0
-        print('Doptim: done (%d arrays, %.1f [s])' % (len(sols), dt))
+        print("Doptim: done (%d arrays, %.1f [s])" % (len(sols), dt))
 
     # sort & select
     scores, dds, sols = selectDn(scores, dds, sols, nout=nout)

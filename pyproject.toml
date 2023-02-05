@@ -19,3 +19,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:.*qc_snapshot_widget",
     "ignore:::.*quantify_core\\.visualization\\.pyqt_plotmon",
 ]
+
+[tool.ruff]
+line-length = 120
