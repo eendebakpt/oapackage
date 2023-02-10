@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Eendebak"
+  given-names: "Pieter Thijs"
+  orcid: "https://orcid.org/0000-0001-7018-1124"
+- family-names: "Vazquez"
+  given-names: "Alan Roberto"
+  orcid: "https://orcid.org/0000-0002-3658-0911"
+title: "OAPackage"
+version: 2.7.6
+doi: 10.21105/joss.01097
+date-released: 2019-02-27
+url: "https://github.com/eendebakpt/oapackage"
+preferred-citation:
+  type: article
+  authors:
+  authors:
+  - family-names: "Eendebak"
+    given-names: "Pieter Thijs"
+    orcid: "https://orcid.org/0000-0001-7018-1124"
+  - family-names: "Vazquez"
+    given-names: "Alan Roberto"
+    orcid: "https://orcid.org/0000-0002-3658-0911"
+  doi: 10.21105/joss.01097
+  journal: "The Journal of Open Source Software"
+  month: 2
+  title: "OApackage: A Python package for generation and analysis of orthogonal arrays, optimal designs and conference designs"
+  issue: 34
+  volume: 4
+  year: 2019
