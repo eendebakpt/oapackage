@@ -1,6 +1,7 @@
-from . import scanf
-from .Doptim import *  # type: ignore
-from .oahelper import *
+import oapackage.Doptim
+
+from .Doptim import *  # noqa
+from .oahelper import *  # noqa
 
 """ Orthogonal Array package
 
@@ -11,17 +12,10 @@ http://github.com/eendebakpt/oapackage
 
 """
 
-import oalib
-import oapackage.Doptim
-from oalib import *
-from oalib import (ParetoDoubleLong, array_link, arraydata_t, arrayfile_t,
-                   arraylink2arraydata, exampleArray, reduceGraphNauty,
-                   reduceOAnauty, transformGraphMatrix)
-
-from . import conference
+from oalib import *  # noqa
 
 oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
-oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, '')
+oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, "")
 __version__ = oapackage.oalib.version()
 
 __description__ = "Orthogonal Array package"

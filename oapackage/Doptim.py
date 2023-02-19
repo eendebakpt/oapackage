@@ -257,7 +257,8 @@ def generateDpage(
             htmlattrs=dict({"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"}),
             header="<!-- Start of page -->",
             bodyattrs=dict({"style": "padding-left: 3px;"}),
-            doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+            doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"'
+            + ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
             metainfo=(
                 {
                     "text/html": "charset=utf-8",
@@ -278,7 +279,6 @@ def generateDpage(
         page.p("Generated %d arrays, %d are Pareto optimal. %s" % (narrays, npareto, ss))
 
     if narrays > 0:
-
         scores = calcScore(dds, optimfunc)
         _, dd, sols = selectDn(scores, dds, allarrays, nout=1)
         A = sols[0]
@@ -554,7 +554,8 @@ def Doptimize(
     Args:
       arrayclass (object): Specifies the type of design to optimize
       nrestarts (int): Number of restarts of the algorithm
-      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
+      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target
+                                  function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
       verbose (int): Verbosity level. A higher numer gives more output
       maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
@@ -579,8 +580,11 @@ def Doptimize(
 
     The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
     (or Ds-optimality) and the D1-efficiency of the design. A full definition of these efficiencies is available
-    in the documentation at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs. For more details and motivation of these efficiencies,
-    see the paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903.
+    in the documentation
+    at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs.
+    For more details and motivation of these efficiencies, see the
+    paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions",
+    https://doi.org/10.1080/00401706.2016.1142903.
 
 
     """

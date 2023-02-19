@@ -1,6 +1,7 @@
 # This code is in the public domain, it comes
 # with absolutely no warranty and you can do
 # absolutely whatever you want with it.
+import keyword
 
 __date__ = "16 March 2015"
 __version__ = "1.10"
@@ -29,10 +30,6 @@ Installation: drop markup.py somewhere into your Python path.
 basestring = str
 string = str
 long = int
-
-# tags which are reserved python keywords will be referred
-# to by a leading underscore otherwise we end up with a syntax error
-import keyword
 
 
 class element:
@@ -272,7 +269,6 @@ class page:
             raise ModeError(mode)
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
@@ -285,7 +281,6 @@ class page:
         return element(attr, case=self.case, parent=self)
 
     def __str__(self):
-
         if self._full and (self.mode == "strict_html" or self.mode == "loose_html"):
             end = ["</body>", "</html>"]
         else:
@@ -472,7 +467,6 @@ class _oneliner:
         self.case = case
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
@@ -491,7 +485,7 @@ given_oneliner = _oneliner(case="given")
 
 
 def _argsdicts(args, mydict):
-    """A utility generator that pads argument list and dictionary values, will only be called with len( args ) = 0, 1."""
+    """A utility generator that pads argument list and dictionary values, will only be called with len(args) = 0, 1."""
 
     if len(args) == 0:
         args = (None,)

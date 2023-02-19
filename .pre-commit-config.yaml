@@ -22,17 +22,17 @@ repos:
         args: [--remove]
 
 -   repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 23.1.0
     hooks:
       - id: black
 
 -   repo: https://github.com/PyCQA/isort/
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
     -   id: isort
 
 - repo: https://github.com/nbQA-dev/nbQA
-  rev: 1.5.3
+  rev: 1.6.3
   hooks:
     - id: nbqa-black
       additional_dependencies: [black==20.8b1]
@@ -40,6 +40,13 @@ repos:
     - id: nbqa-isort
       additional_dependencies: [isort==5.7.0]
       args: [--profile=black, --nbqa-mutate, --line-length=120]
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  # Ruff version.
+  rev: 'v0.0.248'
+  hooks:
+    - id: ruff
+      args: [--fix, --exit-non-zero-on-fix]
 
 #- repo: https://gitlab.com/daverona/pre-commit/cpp
 #  rev: 0.8.0                 # use the most recent version
