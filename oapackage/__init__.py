@@ -12,7 +12,18 @@ http://github.com/eendebakpt/oapackage
 
 """
 
-from oalib import *  # noqa
+from oalib import *  # noqa # legacy structure
+from oalib import arrayfile_t  # noqa
+from oalib import reduceGraphNauty  # noqa
+from oalib import (  # noqa
+    ParetoDoubleLong,
+    array_link,
+    arraydata_t,
+    arraylink2arraydata,
+    exampleArray,
+    reduceOAnauty,
+    transformGraphMatrix,
+)
 
 oapackage.oalib.setloglevel(oapackage.oalib.SYSTEM)
 oapackage.oalib.log_print(-oapackage.oalib.SYSTEM, "")

@@ -118,7 +118,7 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - "%CMD_IN_ENV38% mypy --version"
-   - "%CMD_IN_ENV38% mypy oapackage --ignore-missing-imports --follow-imports skip"
+   - "%CMD_IN_ENV38% mypy oapackage --follow-imports skip"
 
    # only run nbconvert for python3.8
    - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
