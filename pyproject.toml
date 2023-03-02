@@ -21,7 +21,7 @@ filterwarnings = [
 ]
 
 [tool.ruff]
-select = ["E", "F", "UP"]
+select = ["E", "F", "UP", "I"]
 ignore = [ #"UP031", # use format specifiers instead of percent format
         ]
 line-length = 120
