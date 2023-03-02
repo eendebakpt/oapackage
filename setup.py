@@ -132,11 +132,11 @@ try:
                     swig_valid = True
                     break
         if verbose:
-            print("Found SWIG: %s (version %s)" % (swig_executable, swig_version))
+            print(f"Found SWIG: {swig_executable} (version {swig_version})")
         return swig_executable, swig_version, swig_valid
 
     swig_executable, swig_version, swig_valid = get_swig_executable()
-    print("swig_version %s, swig_executable %s" % (swig_version, swig_executable))
+    print(f"swig_version {swig_version}, swig_executable {swig_executable}")
 except BaseException:
 
     def get_swig_executable():
@@ -257,7 +257,7 @@ if platform.system() == "Windows":
     swig_opts += ["-DWIN32", "-D_WIN32"]
 
 rtd = os.environ.get("READTHEDOCS", False)
-print("Readthedocs environment: %s" % (rtd,))
+print(f"Readthedocs environment: {rtd}")
 
 if "VSC_SCRATCH" in os.environ.keys():
     # we are running on the VSC cluster
@@ -383,15 +383,16 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        'numpy>=1.21,<1.23; python_version <= "3.7"',
+        "numpy>=1.22",
         "nose",
         "coverage",
+        "matplotlib",
         "mock",
         "python-dateutil",
         "types-python-dateutil",
     ],
     zip_safe=False,
-    install_requires=['numpy>=1.21, <1.23; python_version <= "3.7"', "python-dateutil", "matplotlib"],
+    install_requires=["numpy>=1.22", "python-dateutil", "matplotlib"],
     extras_require={
         "doc": ["sphinx", "sphinxcontrib.bibtex", "sphinxcontrib.napoleon", "breathe"],
     },
