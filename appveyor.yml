@@ -74,7 +74,7 @@ install:
   - "%CMD_IN_ENV% pip install wheel"
 
   #- "%CMD_IN_ENV37% pip install numpy==1.22"
-  - "%CMD_IN_ENV% pip install python-dateutil numpy"
+  - "%CMD_IN_ENV% pip install python-dateutil numpy matplotlib"
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
   #- "powershell ./appveyor/install_numpy.ps1"
