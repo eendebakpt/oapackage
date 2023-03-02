@@ -27,7 +27,7 @@ def oa2graph(al, adata, verbose=1):
     """
     A = al.getarray(verbose=0)
     if verbose:
-        print("oa2graph: array of shape %s" % (A.shape,))
+        print(f"oa2graph: array of shape {A.shape}")
     nrows = adata.N
     ncols = A.shape[1]
     nColumnLevelVertices = sum(adata.factor_levels())

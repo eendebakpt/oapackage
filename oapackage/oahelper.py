@@ -156,7 +156,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
                 print(
                     "problem with window manager: ",
                 )
-                print("backend %s" % (be,))
+                print(f"backend {be}")
                 logging.exception(ex)
         if raisewindows:
             mngr.window.raise_()
@@ -301,7 +301,7 @@ def helmert_contrasts(number_of_levels, verbose=0):
     for ii in range(0, md):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
-            print("helmert_contrasts: normalize number_of_levels tmp: %s " % (normalization,))
+            print(f"helmert_contrasts: normalize number_of_levels tmp: {normalization} ")
         main_effects[:, meoffset + ii : (meoffset + ii + 1)] = (
             np.sqrt(N) * Z[:, (ii + 1) : (ii + 2)] / np.sqrt(normalization)
         )
@@ -775,7 +775,7 @@ def checkFilesOA(lst, cache=1, verbose=0):
     Returns True if all files exist
     """
     if verbose >= 2:
-        print("checkFilesOA: cache %s" % (cache,))
+        print(f"checkFilesOA: cache {cache}")
     if cache == -1:
         return True
     if cache == 0:
@@ -959,7 +959,7 @@ def parseProcessingTime(logfile, verbose=0):
         dtt = -1
     if dtr is not None:
         if abs(dtr - dtt) > 10:
-            print("parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]" % (dtt, dtr))
+            print(f"parseProcessingTime: warning difference in reported times {dtt:.1f} dtr {dtr:.1f} [s]")
     return dtt
 
 
@@ -1124,7 +1124,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
         raise NotImplementedError("decompressing file not implemted")
 
     if verbose >= 2:
-        print("file %s: binary %s" % (afile, af.isbinary()))
+        print(f"file {afile}: binary {af.isbinary()}")
     if not (sys.platform == "linux2" or sys.platform == "linux"):
         if verbose:
             print("compressOAfile: not compressing file %s (platform not supported)" % afile)
@@ -1143,7 +1143,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
                 print("compressOAfile: not compressing file %s (file is in text mode)" % afile)
         else:
             if verbose:
-                print("compressOAfile: not compressing file %s (file %s is compressed)" % (afile, af.filename))
+                print(f"compressOAfile: not compressing file {afile} (file {af.filename} is compressed)")
         return False
 
 
@@ -1361,7 +1361,7 @@ def create_pareto_element(values, pareto=None):
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoDoubleLong):
         if not isinstance(values, (list, tuple, np.ndarray)):
-            raise Exception("cannot handle input of type %s" % (tuple(values),))
+            raise Exception(f"cannot handle input of type {tuple(values)}")
         vector_pareto = values
     else:
         raise Exception(

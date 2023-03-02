@@ -100,7 +100,7 @@ def generateDscatter(
     idx = np.unique(colors).astype(int)
 
     if verbose:
-        print("generateDscatter: unique colors: %s" % (idx,))
+        print(f"generateDscatter: unique colors: {idx}")
     ncolors = idx.size
     try:
         import brewer2mpl
@@ -315,7 +315,7 @@ def generateDpage(
     page.p("Citation notice: if you make use of the results on this page, please cite the following paper:")
     page.p("%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010." % citationstr)
 
-    page.p("Generated with oapackage %s, date %s." % (oalib.version(), oahelper.timeString()))
+    page.p(f"Generated with oapackage {oalib.version()}, date {oahelper.timeString()}.")
 
     outfile = os.path.join(outputdir, "Dresults.html")
     fid = open(outfile, "w")
@@ -445,7 +445,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     if verbose:
         Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
-            print("optimDeff: final Deff improved: %.4f -> %.4f" % (Dinitial, A.Defficiency()))
+            print(f"optimDeff: final Deff improved: {Dinitial:.4f} -> {A.Defficiency():.4f}")
         else:
             print("optimDeff: final Deff %.4f" % A.Defficiency())
 
@@ -606,7 +606,7 @@ def Doptimize(
         scores = np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
 
         if verbose >= 3:
-            print("Doptimize: max score %.3f, max D: %.6f" % (np.max(scores), np.max([A.Defficiency() for A in sols])))
+            print(f"Doptimize: max score {np.max(scores):.3f}, max D: {np.max([A.Defficiency() for A in sols]):.6f}")
     else:
         # assume optimfunc is a function
         scores = np.zeros((0, 1))
@@ -642,7 +642,7 @@ def Doptimize(
             nrestarts = nrestarts + 1
 
             if verbose >= 2:
-                print("  generated array: %f %f %f" % (dd[0], dd[1], dd[2]))
+                print(f"  generated array: {dd[0]:f} {dd[1]:f} {dd[2]:f}")
 
             if selectpareto and ii % 502 == 0:
                 scores, dds, sols = filterPareto(scores, dds, sols)

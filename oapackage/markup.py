@@ -13,7 +13,7 @@ It works with both python 2 and 3.
 
 The code is in the public domain.
 
-Version: %s as of %s.
+Version: {} as of {}.
 
 Documentation and further info is at http://markup.sourceforge.net/
 
@@ -21,7 +21,7 @@ Please send bug reports, feature requests, enhancement
 ideas or questions to nogradi at gmail dot com.
 
 Installation: drop markup.py somewhere into your Python path.
-""" % (
+""".format(
     __version__,
     __date__,
 )
@@ -93,11 +93,11 @@ class element:
                     key = "http-equiv"
                 elif key == "accept_charset":
                     key = "accept-charset"
-                out = '%s %s="%s"' % (out, key, escape(value))
+                out = f'{out} {key}="{escape(value)}"'
             else:
-                out = "%s %s" % (out, key)
+                out = f"{out} {key}"
         if between is not None:
-            out = "%s>%s</%s>" % (out, between, tag)
+            out = f"{out}>{between}</{tag}>"
         else:
             if single:
                 out = "%s />" % out
@@ -619,7 +619,7 @@ class ArgumentError(MarkupError):
 
 class InvalidElementError(MarkupError):
     def __init__(self, tag, mode):
-        self.message = "The element '%s' is not valid for your mode '%s'." % (tag, mode)
+        self.message = f"The element '{tag}' is not valid for your mode '{mode}'."
 
 
 class DeprecationError(MarkupError):

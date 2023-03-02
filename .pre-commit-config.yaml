@@ -1,25 +1,6 @@
 exclude: 'doc/conf.py'
 
 repos:
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    -   id: pyupgrade
-        # for now don't force to change from %-operator to {}
-        args: [--keep-percent-format, --py37-plus]
-
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: check-ast
-    -   id: check-builtin-literals
-    -   id: check-merge-conflict
-    -   id: debug-statements
-    -   id: end-of-file-fixer
-    -   id: mixed-line-ending
-    -   id: trailing-whitespace
-    -   id: fix-encoding-pragma
-        args: [--remove]
 
 -   repo: https://github.com/psf/black
     rev: 23.1.0
