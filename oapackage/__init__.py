@@ -6,12 +6,11 @@ from oapackage.Doptim import (  # noqa
     array2Dtable,
     calcScore,
     filterPareto,
+    generateDscatter,
     optimDeffPython,
     scoreDn,
     selectDn,
 )
-
-from .oahelper import *  # noqa
 
 """ Orthogonal Array package
 
@@ -21,16 +20,15 @@ arrays, optimal designs and conference matrices. For more information see
 http://github.com/eendebakpt/oapackage
 
 """
-
 from oalib import *  # noqa # legacy structure
-from oalib import arrayfile_t  # noqa
-from oalib import reduceGraphNauty  # noqa
 from oalib import (  # noqa
     ParetoDoubleLong,
     array_link,
     arraydata_t,
     arraylink2arraydata,
     exampleArray,
+    reduceGraphNauty,
+    arrayfile_t,
     reduceOAnauty,
     transformGraphMatrix,
 )
