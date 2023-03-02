@@ -12,24 +12,15 @@ import time
 import warnings
 from typing import List, Optional
 
+import matplotlib
+import matplotlib.cm
+import matplotlib.pyplot as plt
 import numpy as np
 
 import oalib
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 from oapackage.markup import oneliner as e
-
-try:
-    import matplotlib
-    import matplotlib.cm
-    import matplotlib.pyplot as plt
-except BaseException:
-    matplotlib = None
-
-
-class MissingMatplotLibException(Exception):
-    pass
-
 
 # %%
 
@@ -86,8 +77,6 @@ def generateDscatter(
     Returns:
         dict: contains handles to plotting elements
     """
-    if matplotlib is None:
-        raise MissingMatplotLibException
     data = dds.T
     pp = oahelper.createPareto(dds)
     paretoidx = np.array(pp.allindices())

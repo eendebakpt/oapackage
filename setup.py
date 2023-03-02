@@ -73,11 +73,11 @@ def checkZlib(verbose=0):
                 bin_file_name,
                 libraries=libraries,
             )
-        except CompileError as e:
+        except CompileError:
             if verbose:
                 print("checkZlib: compile error in %s, zlib not available" % file_name)
             ret_val = False
-        except LinkError as e:
+        except LinkError:
             if verbose:
                 print("checkZlib: link error in %s, zlib not available" % file_name)
             ret_val = False
@@ -86,7 +86,7 @@ def checkZlib(verbose=0):
                 print("checkZlib: unknown error in %s, zlib not available" % file_name)
                 logging.exception(e)
             ret_val = False
-    except Exception as e:
+    except Exception:
         ret_val = False
 
     return ret_val
@@ -391,9 +391,8 @@ setup(
         "types-python-dateutil",
     ],
     zip_safe=False,
-    install_requires=['numpy>=1.21, <1.23; python_version <= "3.7"', "python-dateutil"],
+    install_requires=['numpy>=1.21, <1.23; python_version <= "3.7"', "python-dateutil", "matplotlib"],
     extras_require={
-        "GUI": ["matplotlib>=3.5"],
         "doc": ["sphinx", "sphinxcontrib.bibtex", "sphinxcontrib.napoleon", "breathe"],
     },
     requires=["numpy", "matplotlib"],

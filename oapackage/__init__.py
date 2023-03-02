@@ -1,6 +1,16 @@
+import oapackage.conference
 import oapackage.Doptim
+import oapackage.oahelper
+from oapackage.Doptim import (  # noqa
+    Doptimize,
+    array2Dtable,
+    calcScore,
+    filterPareto,
+    optimDeffPython,
+    scoreDn,
+    selectDn,
+)
 
-from .Doptim import *  # noqa
 from .oahelper import *  # noqa
 
 """ Orthogonal Array package
