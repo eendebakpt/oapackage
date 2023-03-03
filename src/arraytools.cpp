@@ -4751,7 +4751,6 @@ void convert_array_file(std::string input_filename, std::string output_filename,
 			myprintf("untested code! (number of arrays undefined)\n");
 		}
 
-		int index;
 		for (long i = 0; i < narrays; i++) {
 			if ((i % 10000 == 0 && verbose) || (verbose >= 3)) {
 				log_print(QUIET, "oaconvert: loading arrays: %d/%d\n", i, input_array_file.narrays);
@@ -4989,10 +4988,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
         this->gzfid = 0;
 #endif
 
-        if (verbose >= 2) {
-                myprintf (" nfid %ld, gzfid %ld, isopen %d \n", (long)nfid, (long)gzfid, this->isopen ());
-        }
-
         if (!this->isopen ()) {
                 if (verbose) {
                         myprintf ("problem opening file %s (iscompressed %d)\n", fname.c_str (), this->iscompressed);
@@ -5181,9 +5176,6 @@ void arrayfile_t::updatenumbers () {
                 if (verbose >= 2) {
                         myprintf ("arrayfile_t: updating numbers %d->%d\n", narrays, narraycounter);
                 }
-                if (verbose >= 3) {
-                        myprintf ("arrayfile_t: nfid %ld\n", long(nfid));
-                }
                 if (nfid != 0) {
                         long pos = ftell (nfid);
                         int r = fseek (nfid, 4 * sizeof (int32_t), SEEK_SET);
@@ -5200,11 +5192,6 @@ arrayfile_t::~arrayfile_t () {
 #ifdef SWIG
         swigcheck ();
 #endif
-
-        if (verbose >= 2) {
-                myprintf ("arrayfile_t: destructor: filename %s, nfid %ld, narraycounter %d, this->rwmode %d\n",
-                          filename.c_str (), (long)nfid, narraycounter, this->rwmode);
-        }
 
         closefile ();
 }

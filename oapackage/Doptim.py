@@ -10,26 +10,20 @@ import logging
 import os
 import time
 import warnings
-from typing import List, Optional
+from typing import Any, Callable, List, Optional, Tuple, Union
 
+import matplotlib
+import matplotlib.cm
+import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing
 
-import oalib
+import oalib  # type: ignore
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 from oapackage.markup import oneliner as e
 
-try:
-    import matplotlib
-    import matplotlib.cm
-    import matplotlib.pyplot as plt
-except BaseException:
-    matplotlib = None
-
-
-class MissingMatplotLibException(Exception):
-    pass
-
+FloatArray = np.typing.NDArray[np.float64]
 
 # %%
 
@@ -86,8 +80,6 @@ def generateDscatter(
     Returns:
         dict: contains handles to plotting elements
     """
-    if matplotlib is None:
-        raise MissingMatplotLibException
     data = dds.T
     pp = oahelper.createPareto(dds)
     paretoidx = np.array(pp.allindices())
@@ -111,7 +103,7 @@ def generateDscatter(
     idx = np.unique(colors).astype(int)
 
     if verbose:
-        print("generateDscatter: unique colors: %s" % (idx,))
+        print(f"generateDscatter: unique colors: {idx}")
     ncolors = idx.size
     try:
         import brewer2mpl
@@ -257,7 +249,8 @@ def generateDpage(
             htmlattrs=dict({"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"}),
             header="<!-- Start of page -->",
             bodyattrs=dict({"style": "padding-left: 3px;"}),
-            doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+            doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"'
+            + ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
             metainfo=(
                 {
                     "text/html": "charset=utf-8",
@@ -278,7 +271,6 @@ def generateDpage(
         page.p("Generated %d arrays, %d are Pareto optimal. %s" % (narrays, npareto, ss))
 
     if narrays > 0:
-
         scores = calcScore(dds, optimfunc)
         _, dd, sols = selectDn(scores, dds, allarrays, nout=1)
         A = sols[0]
@@ -326,7 +318,7 @@ def generateDpage(
     page.p("Citation notice: if you make use of the results on this page, please cite the following paper:")
     page.p("%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010." % citationstr)
 
-    page.p("Generated with oapackage %s, date %s." % (oalib.version(), oahelper.timeString()))
+    page.p(f"Generated with oapackage {oalib.version()}, date {oahelper.timeString()}.")
 
     outfile = os.path.join(outputdir, "Dresults.html")
     fid = open(outfile, "w")
@@ -337,32 +329,40 @@ def generateDpage(
     return outfile
 
 
-def scoreDn(dds, optimfunc):
+def scoreDn(dds: FloatArray, optimfunc: List) -> FloatArray:
     """Calculate scores from various efficiencies
 
     Args:
-        dds (array): calculated D-efficiencies
-        optimfunc (list): parameters for optimization function
+        dds: calculated D-efficiencies
+        optimfunc: parameters for optimization function
     Returns:
-        scores (array)
+        Calculated scores
     """
     scores = np.array([oalib.scoreD(dd, optimfunc) for dd in dds])
     return scores
 
 
-def calcScore(dds, optimfunc):
+def calcScore(dds: FloatArray, optimfunc: FloatArray) -> FloatArray:
     """Calculate D-efficiency score using multiple efficiencies and a weight factor
 
     Args:
         dds (array): the rows contains the effieciencies for various designs
         optimfunc (array): aray with the weight factors for the efficiencies
     """
-    scores = np.array(dds).dot(np.array(optimfunc))
+    scores = np.asarray(dds).dot(np.asarray(optimfunc))
 
     return scores
 
 
-def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, alpha=[1, 0, 0], method=0):
+def optimDeffPython(
+    A0,
+    arrayclass=None,
+    niter: int = 10000,
+    nabort: int = 2500,
+    verbose: int = 1,
+    alpha: Union[Callable, List[float]] = [1, 0, 0],
+    method: int = 0,
+) -> Tuple[FloatArray, Any]:
     """Optimize array using specified optimization method
 
     Args:
@@ -371,8 +371,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
         alpha (list): specifies the optimization function
 
     Returns:
-        d (array): efficiencies
-        A (array): optimized design
+        Tuple with efficiencies and optimized design
     """
     # get factor levels
     if arrayclass is None:
@@ -398,7 +397,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
     # initialize score
     if alpha_is_function:
-        efficiencies = alpha(A0)
+        efficiencies = alpha(A0)  # type: ignore
     else:
         D, Ds, D1 = A0.Defficiencies()
         efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
@@ -427,11 +426,11 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
             A._setvalue(r, c, 1 - o)
 
         if alpha_is_function:
-            dn = alpha(A)
+            dn = alpha(A)  # type: ignore
         else:
             D, Ds, D1 = A.Defficiencies()
             nx = nx + 1
-            dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
+            dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1  # type: ignore
         if dn >= efficiencies:
             if dn > efficiencies:
                 lc = ii
@@ -456,7 +455,7 @@ def optimDeffPython(A0, arrayclass=None, niter=10000, nabort=2500, verbose=1, al
     if verbose:
         Dfinal = A.Defficiency()
         if Dfinal > Dinitial:
-            print("optimDeff: final Deff improved: %.4f -> %.4f" % (Dinitial, A.Defficiency()))
+            print(f"optimDeff: final Deff improved: {Dinitial:.4f} -> {A.Defficiency():.4f}")
         else:
             print("optimDeff: final Deff %.4f" % A.Defficiency())
 
@@ -554,7 +553,8 @@ def Doptimize(
     Args:
       arrayclass (object): Specifies the type of design to optimize
       nrestarts (int): Number of restarts of the algorithm
-      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
+      optimfunc (list with 3 floats): Gives the optimization weights :math:`\\alpha` of the target
+                                  function :math:`\\alpha[0] D+\\alpha[1] D_s+\\alpha[2] D_1`
       verbose (int): Verbosity level. A higher numer gives more output
       maxtime (float): Maximum running time of the algorithm. If this time is exceeded the algorithm is aborted.
       selectpareto (bool): default is True. If True then only the Pareto optimal designs are returned
@@ -579,8 +579,11 @@ def Doptimize(
 
     The optimization target and the Pareto optimality are defined in terms of the D-efficiency, main effect robustness
     (or Ds-optimality) and the D1-efficiency of the design. A full definition of these efficiencies is available
-    in the documentation at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs. For more details and motivation of these efficiencies,
-    see the paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions", https://doi.org/10.1080/00401706.2016.1142903.
+    in the documentation
+    at https://oapackage.readthedocs.io/en/latest/properties.html#optimality-criteria-for-d-efficient-designs.
+    For more details and motivation of these efficiencies, see the
+    paper "Two-Level Designs to Estimate All Main Effects and Two-Factor Interactions",
+    https://doi.org/10.1080/00401706.2016.1142903.
 
 
     """
@@ -589,7 +592,7 @@ def Doptimize(
 
     if verbose:
         print("Doptim: optimization class %s" % arrayclass.idstr())
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     if optimfunc is None:
         optimfunc = [1, 2, 0]
@@ -613,7 +616,7 @@ def Doptimize(
         scores = np.array([oalib.scoreD(A.Defficiencies(), optimfunc) for A in sols])
 
         if verbose >= 3:
-            print("Doptimize: max score %.3f, max D: %.6f" % (np.max(scores), np.max([A.Defficiency() for A in sols])))
+            print(f"Doptimize: max score {np.max(scores):.3f}, max D: {np.max([A.Defficiency() for A in sols]):.6f}")
     else:
         # assume optimfunc is a function
         scores = np.zeros((0, 1))
@@ -625,7 +628,8 @@ def Doptimize(
         for ii in range(nrestarts_requested):
             if verbose:
                 oahelper.tprint(
-                    "Doptim: iteration %d/%d (time %.1f/%.1f)" % (ii, nrestarts, time.time() - t0, maxtime), dt=4
+                    "Doptim: iteration %d/%d (time %.1f/%.1f)" % (ii, nrestarts, time.perf_counter() - t0, maxtime),
+                    dt=4,
                 )
             al = arrayclass.randomarray(1)
 
@@ -638,7 +642,7 @@ def Doptimize(
                 score, Ax = optimDeffPython(al, verbose=0, niter=niter, alpha=optimfunc, method=method, nabort=nabort)
                 dd = Ax.Defficiencies()
 
-            if time.time() - t0 > maxtime:
+            if time.perf_counter() - t0 > maxtime:
                 if verbose:
                     print("Doptim: max time exceeded, aborting")
                 break
@@ -649,7 +653,7 @@ def Doptimize(
             nrestarts = nrestarts + 1
 
             if verbose >= 2:
-                print("  generated array: %f %f %f" % (dd[0], dd[1], dd[2]))
+                print(f"  generated array: {dd[0]:f} {dd[1]:f} {dd[2]:f}")
 
             if selectpareto and ii % 502 == 0:
                 scores, dds, sols = filterPareto(scores, dds, sols)
@@ -660,7 +664,7 @@ def Doptimize(
         scores, dds, sols = filterPareto(scores, dds, sols)
 
     if verbose:
-        dt = time.time() - t0
+        dt = time.perf_counter() - t0
         print("Doptim: done (%d arrays, %.1f [s])" % (len(sols), dt))
 
     # sort & select

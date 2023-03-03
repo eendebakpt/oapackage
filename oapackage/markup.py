@@ -1,6 +1,7 @@
 # This code is in the public domain, it comes
 # with absolutely no warranty and you can do
 # absolutely whatever you want with it.
+import keyword
 
 __date__ = "16 March 2015"
 __version__ = "1.10"
@@ -12,7 +13,7 @@ It works with both python 2 and 3.
 
 The code is in the public domain.
 
-Version: %s as of %s.
+Version: {} as of {}.
 
 Documentation and further info is at http://markup.sourceforge.net/
 
@@ -20,7 +21,7 @@ Please send bug reports, feature requests, enhancement
 ideas or questions to nogradi at gmail dot com.
 
 Installation: drop markup.py somewhere into your Python path.
-""" % (
+""".format(
     __version__,
     __date__,
 )
@@ -29,10 +30,6 @@ Installation: drop markup.py somewhere into your Python path.
 basestring = str
 string = str
 long = int
-
-# tags which are reserved python keywords will be referred
-# to by a leading underscore otherwise we end up with a syntax error
-import keyword
 
 
 class element:
@@ -96,11 +93,11 @@ class element:
                     key = "http-equiv"
                 elif key == "accept_charset":
                     key = "accept-charset"
-                out = '%s %s="%s"' % (out, key, escape(value))
+                out = f'{out} {key}="{escape(value)}"'
             else:
-                out = "%s %s" % (out, key)
+                out = f"{out} {key}"
         if between is not None:
-            out = "%s>%s</%s>" % (out, between, tag)
+            out = f"{out}>{between}</{tag}>"
         else:
             if single:
                 out = "%s />" % out
@@ -272,7 +269,6 @@ class page:
             raise ModeError(mode)
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
@@ -285,7 +281,6 @@ class page:
         return element(attr, case=self.case, parent=self)
 
     def __str__(self):
-
         if self._full and (self.mode == "strict_html" or self.mode == "loose_html"):
             end = ["</body>", "</html>"]
         else:
@@ -472,7 +467,6 @@ class _oneliner:
         self.case = case
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
@@ -491,7 +485,7 @@ given_oneliner = _oneliner(case="given")
 
 
 def _argsdicts(args, mydict):
-    """A utility generator that pads argument list and dictionary values, will only be called with len( args ) = 0, 1."""
+    """A utility generator that pads argument list and dictionary values, will only be called with len(args) = 0, 1."""
 
     if len(args) == 0:
         args = (None,)
@@ -625,7 +619,7 @@ class ArgumentError(MarkupError):
 
 class InvalidElementError(MarkupError):
     def __init__(self, tag, mode):
-        self.message = "The element '%s' is not valid for your mode '%s'." % (tag, mode)
+        self.message = f"The element '{tag}' is not valid for your mode '{mode}'."
 
 
 class DeprecationError(MarkupError):

@@ -7,16 +7,16 @@ environment:
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
     CMD_IN_ENV_ARCH64: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env_arch64.cmd"
-    CMD_IN_ENV38: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env38.cmd"
+    CMD_IN_ENV310: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env310.cmd"
 
   matrix:
 
-    - PYTHON: "C:\\Python311-x64"
-      PYTHON_VERSION: "3.11.0"
-      PYTHON_ARCH: "64"
-
     - PYTHON: "C:\\Python310-x64"
       PYTHON_VERSION: "3.10.4"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python311-x64"
+      PYTHON_VERSION: "3.11.0"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python38-x64"
@@ -74,7 +74,7 @@ install:
   - "%CMD_IN_ENV% pip install wheel"
 
   #- "%CMD_IN_ENV37% pip install numpy==1.22"
-  - "%CMD_IN_ENV% pip install python-dateutil numpy"
+  - "%CMD_IN_ENV% pip install python-dateutil numpy matplotlib"
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
   #- "powershell ./appveyor/install_numpy.ps1"
@@ -84,16 +84,17 @@ install:
 
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
   - ps: $env:ispython38 = $env:PYTHON.Contains("Python38")
+  - ps: $env:ispython310 = $env:PYTHON.Contains("Python310")
 
   # part of the testing requirements
   - "%CMD_IN_ENV% pip install pytest"
 
   # for running the jupyter notebooks
-  - "%CMD_IN_ENV38% pip install jupyter matplotlib"
-  - "%CMD_IN_ENV38% jupyter --version"
+  - "%CMD_IN_ENV310% pip install jupyter matplotlib"
+  - "%CMD_IN_ENV310% jupyter --version"
 
   # for running the mypy check
-  - "%CMD_IN_ENV38% pip install mypy types-python-dateutil"
+  - "%CMD_IN_ENV310% pip install mypy types-python-dateutil"
 
   # to run the tests
   - "%CMD_IN_ENV% pip install mock"
@@ -117,27 +118,27 @@ test_script:
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
-   - "%CMD_IN_ENV38% mypy --version"
-   - "%CMD_IN_ENV38% mypy oapackage --ignore-missing-imports --follow-imports skip"
+   - "%CMD_IN_ENV310% mypy --version"
+   - "%CMD_IN_ENV310% mypy -p oapackage --follow-imports skip"
 
    # only run nbconvert for python3.8
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
-   - "%CMD_IN_ENV38% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
+   - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel"
-  - "%CMD_IN_ENV38% %PYTHON%/python setup.py sdist"
+  - "%CMD_IN_ENV310% %PYTHON%/python setup.py sdist"
   - ps: "ls dist"
 
 artifacts:

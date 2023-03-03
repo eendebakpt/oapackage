@@ -18,7 +18,6 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #include "arraytools.h"
 #include "graphtools.h"
 
-
 /// print a candidate extension
 void print_column(const conference_column &column, const char *msg = 0);
 

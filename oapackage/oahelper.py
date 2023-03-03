@@ -31,7 +31,7 @@ try:
 except BaseException:
     warnings.warn("oahelper: matplotlib cannot be found, not all functionality is available")
 
-import oalib
+import oalib  # type: ignore
 import oapackage
 from oapackage import markup
 
@@ -156,7 +156,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
                 print(
                     "problem with window manager: ",
                 )
-                print("backend %s" % (be,))
+                print(f"backend {be}")
                 logging.exception(ex)
         if raisewindows:
             mngr.window.raise_()
@@ -301,7 +301,7 @@ def helmert_contrasts(number_of_levels, verbose=0):
     for ii in range(0, md):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
-            print("helmert_contrasts: normalize number_of_levels tmp: %s " % (normalization,))
+            print(f"helmert_contrasts: normalize number_of_levels tmp: {normalization} ")
         main_effects[:, meoffset + ii : (meoffset + ii + 1)] = (
             np.sqrt(N) * Z[:, (ii + 1) : (ii + 2)] / np.sqrt(normalization)
         )
@@ -350,7 +350,7 @@ def createPareto(dds, verbose=1):
 # %% Utils
 
 
-def static_var(varname, value):
+def static_var(varname: str, value: Any):
     """Helper function to create a static variable"""
 
     def decorate(func):
@@ -391,7 +391,7 @@ def timeString(tt=None) -> str:
     return ts
 
 
-def findfilesR(directory, pattern):
+def findfilesR(directory: str, pattern) -> List[str]:
     """Get a list of files (recursive)
 
     Args:
@@ -404,7 +404,7 @@ def findfilesR(directory, pattern):
     for root, _, files in os.walk(directory, topdown=False):
         lst += [os.path.join(root, f) for f in files]
     rr = re.compile(pattern)
-    lst = [l for l in lst if re.match(rr, l)]
+    lst = [filename for filename in lst if re.match(rr, filename)]
     return lst
 
 
@@ -419,7 +419,7 @@ def findfiles(directory: str, pattern: Optional[str] = None) -> List[str]:
     lst = os.listdir(directory)
     if pattern is not None:
         rr = re.compile(pattern)
-        lst = [l for l in lst if re.match(rr, l)]
+        lst = [filename for filename in lst if re.match(rr, filename)]
     return lst
 
 
@@ -434,12 +434,12 @@ def finddirectories(directory: str, pattern: Optional[str] = None) -> List[str]:
     lst = os.listdir(directory)
     if pattern is not None:
         rr = re.compile(pattern)
-        lst = [l for l in lst if re.match(rr, l)]
-    lst = [l for l in lst if os.path.isdir(os.path.join(directory, l))]
+        lst = [filename for filename in lst if re.match(rr, filename)]
+    lst = [filename for filename in lst if os.path.isdir(os.path.join(directory, filename))]
     return lst
 
 
-def oainfo(filename, verbose=1):
+def oainfo(filename: str, verbose: int = 1):
     """Print information about a file containing arrays"""
     af = oapackage.arrayfile_t(filename, verbose)
     print(af.showstr())
@@ -454,7 +454,7 @@ def oaIsBinary(filename: str) -> bool:
     return ret
 
 
-def fac(n):
+def fac(n: int) -> int:
     """Return n! (factorial)
 
     Args:
@@ -588,7 +588,7 @@ def write_text_arrayfile(filename: str, designs: List[Any], comment: Optional[st
     afile.closefile()
 
 
-def arrayfile_generator(afile):
+def arrayfile_generator(afile: str):
     """Return generator to read all files in the array file"""
     af = oapackage.arrayfile_t(afile)
 
@@ -620,7 +620,6 @@ def runcommand(
         print("cmd: %s" % cmd)
     r: Optional[int] = 0
     if not dryrun:
-
         process = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
             r = process.poll()
@@ -776,7 +775,7 @@ def checkFilesOA(lst, cache=1, verbose=0):
     Returns True if all files exist
     """
     if verbose >= 2:
-        print("checkFilesOA: cache %s" % (cache,))
+        print(f"checkFilesOA: cache {cache}")
     if cache == -1:
         return True
     if cache == 0:
@@ -960,7 +959,7 @@ def parseProcessingTime(logfile, verbose=0):
         dtt = -1
     if dtr is not None:
         if abs(dtr - dtt) > 10:
-            print("parseProcessingTime: warning difference in reported times %.1f dtr %.1f [s]" % (dtt, dtr))
+            print(f"parseProcessingTime: warning difference in reported times {dtt:.1f} dtr {dtr:.1f} [s]")
     return dtt
 
 
@@ -1059,7 +1058,7 @@ def extendSingleArray(A, adata, t=3, verbose=1):
     return solsx
 
 
-def runExtend(N, k, t=3, l=2, verbose=1, initsols=None, nums=[], algorithm=None):
+def runExtend(N: int, k: int, t: int = 3, l: int = 2, verbose: int = 1, initsols=None, nums=[], algorithm=None):  # noqa
     """Run extension algorithm and return arrays
 
     Args:
@@ -1125,7 +1124,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
         raise NotImplementedError("decompressing file not implemted")
 
     if verbose >= 2:
-        print("file %s: binary %s" % (afile, af.isbinary()))
+        print(f"file {afile}: binary {af.isbinary()}")
     if not (sys.platform == "linux2" or sys.platform == "linux"):
         if verbose:
             print("compressOAfile: not compressing file %s (platform not supported)" % afile)
@@ -1144,7 +1143,7 @@ def compressOAfile(afile, decompress=False, verbose=1):
                 print("compressOAfile: not compressing file %s (file is in text mode)" % afile)
         else:
             if verbose:
-                print("compressOAfile: not compressing file %s (file %s is compressed)" % (afile, af.filename))
+                print(f"compressOAfile: not compressing file {afile} (file {af.filename} is compressed)")
         return False
 
 
@@ -1248,16 +1247,16 @@ def designStandardError(al) -> Tuple[float, float, float]:
 
 
 # %%
-def DefficiencyBound(D, k, k2):
+def DefficiencyBound(D: float, k: int, k2: int) -> float:
     """Calculate the D-efficiency bound of an array extension
 
     Args:
-        D (float): D-efficiency of the design
-        k (int): numbers of columns
-        k2 (int): numbers of columns
+        D: D-efficiency of the design
+        k: numbers of columns
+        k2: numbers of columns in extension
 
     Returns:
-        float: bound on the D-efficiency of extensions of a design with k columns to k2 columns
+        Bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1.0 + k + k * (k - 1) / 2
@@ -1316,8 +1315,8 @@ def formatC(al, wrap: bool = True) -> str:
     Returns:
         Formatted string
     """
-    l = np.array(al).T.flatten().tolist()
-    s = ",".join(["%d" % x for x in l])
+    A = np.array(al).T.flatten().tolist()
+    s = ",".join(["%d" % x for x in A])
     if wrap:
         s = "\tarray_link array ( %d,%d, 0 );\n\tint array_data_tmp[] = {" % (al.n_rows, al.n_columns) + s + "};"
         s += "\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n"
@@ -1362,7 +1361,7 @@ def create_pareto_element(values, pareto=None):
             vector_pareto.push_back(vec)
     elif isinstance(pareto, oalib.ParetoDoubleLong):
         if not isinstance(values, (list, tuple, np.ndarray)):
-            raise Exception("cannot handle input of type %s" % (tuple(values),))
+            raise Exception(f"cannot handle input of type {tuple(values)}")
         vector_pareto = values
     else:
         raise Exception(
