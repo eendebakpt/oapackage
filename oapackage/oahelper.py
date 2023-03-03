@@ -350,7 +350,7 @@ def createPareto(dds, verbose=1):
 # %% Utils
 
 
-def static_var(varname, value):
+def static_var(varname: str, value: Any):
     """Helper function to create a static variable"""
 
     def decorate(func):
@@ -439,7 +439,7 @@ def finddirectories(directory: str, pattern: Optional[str] = None) -> List[str]:
     return lst
 
 
-def oainfo(filename, verbose=1):
+def oainfo(filename: str, verbose: int = 1):
     """Print information about a file containing arrays"""
     af = oapackage.arrayfile_t(filename, verbose)
     print(af.showstr())
@@ -454,7 +454,7 @@ def oaIsBinary(filename: str) -> bool:
     return ret
 
 
-def fac(n):
+def fac(n: int) -> int:
     """Return n! (factorial)
 
     Args:
@@ -588,7 +588,7 @@ def write_text_arrayfile(filename: str, designs: List[Any], comment: Optional[st
     afile.closefile()
 
 
-def arrayfile_generator(afile):
+def arrayfile_generator(afile: str):
     """Return generator to read all files in the array file"""
     af = oapackage.arrayfile_t(afile)
 
@@ -1247,16 +1247,16 @@ def designStandardError(al) -> Tuple[float, float, float]:
 
 
 # %%
-def DefficiencyBound(D, k, k2):
+def DefficiencyBound(D: float, k: int, k2: int) -> float:
     """Calculate the D-efficiency bound of an array extension
 
     Args:
-        D (float): D-efficiency of the design
-        k (int): numbers of columns
-        k2 (int): numbers of columns
+        D: D-efficiency of the design
+        k: numbers of columns
+        k2: numbers of columns in extension
 
     Returns:
-        float: bound on the D-efficiency of extensions of a design with k columns to k2 columns
+        Bound on the D-efficiency of extensions of a design with k columns to k2 columns
 
     """
     m = 1.0 + k + k * (k - 1) / 2

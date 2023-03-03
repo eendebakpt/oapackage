@@ -19,8 +19,11 @@ _build
 .kdev4
 .spyproject/
 
-# Misc
+# Config
+.pylintrc
 
+# Misc
+.eggs
 old
 *txt~
 *~
@@ -94,6 +97,7 @@ oaoptions.o
 strength.o
 anyoption.o
 untitled*.py
+untitled*.ipynb
 modules.rst
 oapackage.rst
 oapackage.*.rst

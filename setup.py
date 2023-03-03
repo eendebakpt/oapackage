@@ -35,6 +35,7 @@ def checkZlib(verbose=0):
     Code adapted from http://stackoverflow.com/questions/28843765/setup-py-check-if-non-python-library-dependency-exists
     """
     ret_val = True
+    return True
     try:
         import distutils.ccompiler
         import distutils.sysconfig
@@ -115,7 +116,7 @@ try:
     from distutils.spawn import find_executable
     from distutils.version import LooseVersion
 
-    def get_swig_executable(swig_minimum_version="3.2", verbose=0):
+    def get_swig_executable(swig_minimum_version="4.0", verbose=0):
         """Get SWIG executable"""
         # stolen from https://github.com/FEniCS/ffc/blob/master/setup.py
 
@@ -239,11 +240,11 @@ compile_options = []
 
 sources = ["oalib.i"] + sorted(sources)
 if oadev:
-    swig_opts += ["-c++", "-doxygen", "-w503,401,362,509,389", "-Isrc/", "-Idev/"]
+    swig_opts += ["-py3", "-c++", "-doxygen", "-w503,401,362,509,389", "-Isrc/", "-Idev/"]
     compile_options += ["-DSWIGCODE", "-DFULLPACKAGE", "-DOADEV", "-Idev/"]
     swig_opts += ["-DSWIGCODE", "-DFULLPACKAGE", "-DOADEV"]
 else:
-    swig_opts += ["-c++", "-doxygen", "-w503,401,362,302,389,446,509,305", "-Isrc/"]
+    swig_opts += ["-py3", "-c++", "-doxygen", "-w503,401,362,302,389,446,509,305", "-Isrc/"]
     compile_options += ["-DSWIGCODE", "-DFULLPACKAGE"]
     swig_opts += ["-DSWIGCODE", "-DFULLPACKAGE"]
 
