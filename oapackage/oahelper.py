@@ -31,7 +31,7 @@ try:
 except BaseException:
     warnings.warn("oahelper: matplotlib cannot be found, not all functionality is available")
 
-import oalib
+import oalib  # type: ignore
 import oapackage
 from oapackage import markup
 
