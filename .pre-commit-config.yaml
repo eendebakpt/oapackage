@@ -12,7 +12,6 @@ repos:
   hooks:
     - id: nbqa-black
       additional_dependencies: [black==23.1]
-      args: [--nbqa-mutate]
     - id: nbqa-ruff
       args: [--fix, --exit-non-zero-on-fix]
 
