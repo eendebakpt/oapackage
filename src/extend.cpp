@@ -739,9 +739,9 @@ bool return_stack (split *stack, extendpos *p, array_t *array, int col_offset) {
 inline void showLoopProgress (array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0,
                               int nlmcarrays = -1) {
 
-        static long nloops = 0;
+        static unsigned long long nloops = 0;
         nloops++;
-        if (nloops % 20000 == 0) {
+        if (nloops % 50 * 1000 == 0) {
                 fflush (stdout);
 
                 if (nloops % (500 * 1000 * 1000) == 0) {
