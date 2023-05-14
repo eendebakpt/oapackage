@@ -2784,7 +2784,7 @@ std::vector< double > array_link::Defficiencies (int verbose, int addDs0) const 
                 x[1] = NaN;
                 return x;
         }
-        arraydata_t arrayclass = arraylink2arraydata (al);
+        arraydata_t arrayclass = arraylink2arraydata (al, 0, 0);
 
         return ::Defficiencies (al, arrayclass, verbose, addDs0);
 }
