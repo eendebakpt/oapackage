@@ -649,7 +649,7 @@ void init_column_previous (array_t *array, extendpos *p, int &col_offset, split 
         if (stack->count == 0) {
                 /* since all elements of the column are set the extend loop thinks it will return to a braching point,
                  * since there is no branching point set we make the last element -1 */
-                log_print (DEBUG, "init_column_previous: there is a unique extention to the array??\n");
+                log_print (DEBUG, "init_column_previous: there is a unique extention to the array\n");
                 log_print (DEBUG, "stack->count %d, p->row %d (N %d)\n", stack->count, p->row, p->ad->N);
                 array[col_offset + N - 1] = -1;
         }
@@ -739,9 +739,9 @@ bool return_stack (split *stack, extendpos *p, array_t *array, int col_offset) {
 inline void showLoopProgress (array_t *array, const int col_offset, const rowindex_t N, const int node_rank = 0,
                               int nlmcarrays = -1) {
 
-        static long nloops = 0;
+        static unsigned long long nloops = 0;
         nloops++;
-        if (nloops % 20000 == 0) {
+        if (nloops % 50 * 1000 == 0) {
                 fflush (stdout);
 
                 if (nloops % (500 * 1000 * 1000) == 0) {
@@ -921,7 +921,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                             ((get_time_ms () - extendTime) > oaextend.singleExtendTime)) {
                                 extendTime = get_time_ms ();
                                 if (log_print (QUIET, "")) {
-                                        logstream (QUIET) << printfstring ("  OA extension: ") << narrays - 1
+                                        logstream (QUIET) << printfstring ("  OA extension: ") << narrays
                                                           << " arrays checked, " << extensions.size ()
                                                           << " solutions so far";
                                         logstream (QUIET) << ", time " << printtime ();
