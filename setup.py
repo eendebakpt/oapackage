@@ -363,7 +363,7 @@ def readme():
 long_description = readme()
 
 version = get_version_info()[0]
-print("OApackage: version %s" % version)
+#print("OApackage: version %s" % version)
 
 
 setup(
@@ -409,3 +409,4 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
 )
+

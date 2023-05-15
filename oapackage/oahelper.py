@@ -759,10 +759,6 @@ def test_checkFiles():
     r = checkFiles(lst, cache=1, verbose=1)
     assert r is True
 
-
-# %%
-
-
 def checkFilesOA(lst, cache=1, verbose=0):
     """Check whether a file or list of files exists
 
@@ -793,8 +789,6 @@ def checkFilesOA(lst, cache=1, verbose=0):
             break
     return c
 
-
-# %%
 
 
 def randomizearrayfile(input_filename, output_filename, verbose=1):
