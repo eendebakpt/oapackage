@@ -71,7 +71,7 @@ $ pip install OApackage
 ```
 (or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy and Swig 3.x.
 
-The command line tools have been tested using Linux, Windows XP/Win7/Win10 and Raspberry Pi.
+The command line tools have been tested using Linux, Windows Win7/Win10 and Raspberry Pi.
 The program uses a `cmake` build system. From the command line type:
 ```
 $ mkdir -p build; cd build

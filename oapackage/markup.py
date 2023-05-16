@@ -1,9 +1,10 @@
 # This code is in the public domain, it comes
 # with absolutely no warranty and you can do
 # absolutely whatever you want with it.
+import keyword
 
-__date__ = '16 March 2015'
-__version__ = '1.10'
+__date__ = "16 March 2015"
+__version__ = "1.10"
 __doc__ = """
 This is markup.py - a Python module that attempts to
 make it easier to generate HTML/XML from a Python program
@@ -12,7 +13,7 @@ It works with both python 2 and 3.
 
 The code is in the public domain.
 
-Version: %s as of %s.
+Version: {} as of {}.
 
 Documentation and further info is at http://markup.sourceforge.net/
 
@@ -20,34 +21,29 @@ Please send bug reports, feature requests, enhancement
 ideas or questions to nogradi at gmail dot com.
 
 Installation: drop markup.py somewhere into your Python path.
-""" % (__version__, __date__)
+""".format(
+    __version__,
+    __date__,
+)
 
-try:
-    basestring
-    import string
-except BaseException:
-    # python 3
-    basestring = str
-    string = str
-    long = int
-
-# tags which are reserved python keywords will be referred
-# to by a leading underscore otherwise we end up with a syntax error
-import keyword
+# python 3
+basestring = str
+string = str
+long = int
 
 
 class element:
 
     """This class handles the addition of a new element."""
 
-    def __init__(self, tag, case='lower', parent=None):
+    def __init__(self, tag, case="lower", parent=None):
         self.parent = parent
 
-        if case == 'upper':
+        if case == "upper":
             self.tag = tag.upper()
-        elif case == 'lower':
+        elif case == "lower":
             self.tag = tag.lower()
-        elif case == 'given':
+        elif case == "given":
             self.tag = tag
         else:
             self.tag = tag
@@ -58,17 +54,15 @@ class element:
 
         # if class_ was defined in parent it should be added to every element
         if self.parent is not None and self.parent.class_ is not None:
-            if 'class_' not in kwargs:
-                kwargs['class_'] = self.parent.class_
+            if "class_" not in kwargs:
+                kwargs["class_"] = self.parent.class_
 
         if self.parent is None and len(args) == 1:
-            x = [self.render(self.tag, False, myarg, mydict)
-                 for myarg, mydict in _argsdicts(args, kwargs)]
-            return '\n'.join(x)
+            x = [self.render(self.tag, False, myarg, mydict) for myarg, mydict in _argsdicts(args, kwargs)]
+            return "\n".join(x)
         elif self.parent is None and len(args) == 0:
-            x = [self.render(self.tag, True, myarg, mydict)
-                 for myarg, mydict in _argsdicts(args, kwargs)]
-            return '\n'.join(x)
+            x = [self.render(self.tag, True, myarg, mydict) for myarg, mydict in _argsdicts(args, kwargs)]
+            return "\n".join(x)
 
         if self.tag in self.parent.twotags:
             for myarg, mydict in _argsdicts(args, kwargs):
@@ -80,7 +74,7 @@ class element:
                     self.render(self.tag, True, myarg, mydict)
             else:
                 raise ClosingError(self.tag)
-        elif self.parent.mode == 'strict_html' and self.tag in self.parent.deptags:
+        elif self.parent.mode == "strict_html" and self.tag in self.parent.deptags:
             raise DeprecationError(self.tag)
         else:
             raise InvalidElementError(self.tag, self.parent.mode)
@@ -93,17 +87,17 @@ class element:
             # when value is None that means stuff like <... checked>
             if value is not None:
                 # strip this so class_ will mean class, etc.
-                key = key.strip('_')
+                key = key.strip("_")
                 # special cases, maybe change _ to - overall?
-                if key == 'http_equiv':
-                    key = 'http-equiv'
-                elif key == 'accept_charset':
-                    key = 'accept-charset'
-                out = "%s %s=\"%s\"" % (out, key, escape(value))
+                if key == "http_equiv":
+                    key = "http-equiv"
+                elif key == "accept_charset":
+                    key = "accept-charset"
+                out = f'{out} {key}="{escape(value)}"'
             else:
-                out = "%s %s" % (out, key)
+                out = f"{out} {key}"
         if between is not None:
-            out = "%s>%s</%s>" % (out, between, tag)
+            out = f"{out}>{between}</{tag}>"
         else:
             if single:
                 out = "%s />" % out
@@ -121,7 +115,7 @@ class element:
             self.parent.content.append("</%s>" % self.tag)
         elif self.tag in self.parent.onetags:
             raise ClosingError(self.tag)
-        elif self.parent.mode == 'strict_html' and self.tag in self.parent.deptags:
+        elif self.parent.mode == "strict_html" and self.tag in self.parent.deptags:
             raise DeprecationError(self.tag)
 
     def open(self, **kwargs):
@@ -129,7 +123,7 @@ class element:
 
         if self.tag in self.parent.twotags or self.tag in self.parent.onetags:
             self.render(self.tag, False, None, kwargs)
-        elif self.mode == 'strict_html' and self.tag in self.parent.deptags:
+        elif self.mode == "strict_html" and self.tag in self.parent.deptags:
             raise DeprecationError(self.tag)
 
 
@@ -138,7 +132,7 @@ class page:
     """This is our main class representing a document. Elements are added
     as attributes of an instance of this class."""
 
-    def __init__(self, mode='strict_html', case='lower', onetags=None, twotags=None, separator='\n', class_=None):
+    def __init__(self, mode="strict_html", case="lower", onetags=None, twotags=None, separator="\n", class_=None):
         """Stuff that effects the whole document.
 
         mode -- 'strict_html'   for HTML 4.01 (default)
@@ -160,18 +154,81 @@ class page:
 
         class_ --               a class that will be added to every element if defined"""
 
-        valid_onetags = ["AREA", "BASE", "BR", "COL", "FRAME",
-                         "HR", "IMG", "INPUT", "LINK", "META", "PARAM"]
-        valid_twotags = ["A", "ABBR", "ACRONYM", "ADDRESS", "B", "BDO", "BIG", "BLOCKQUOTE", "BODY", "BUTTON",
-                         "CAPTION", "CITE", "CODE", "COLGROUP", "DD", "DEL", "DFN", "DIV", "DL", "DT", "EM", "FIELDSET",
-                         "FORM", "FRAMESET", "H1", "H2", "H3", "H4", "H5", "H6", "HEAD", "HTML", "I", "IFRAME", "INS",
-                         "KBD", "LABEL", "LEGEND", "LI", "MAP", "NOFRAMES", "NOSCRIPT", "OBJECT", "OL", "OPTGROUP",
-                         "OPTION", "P", "PRE", "Q", "SAMP", "SCRIPT", "SELECT", "SMALL", "SPAN", "STRONG", "STYLE",
-                         "SUB", "SUP", "TABLE", "TBODY", "TD", "TEXTAREA", "TFOOT", "TH", "THEAD", "TITLE", "TR",
-                         "TT", "UL", "VAR"]
+        valid_onetags = ["AREA", "BASE", "BR", "COL", "FRAME", "HR", "IMG", "INPUT", "LINK", "META", "PARAM"]
+        valid_twotags = [
+            "A",
+            "ABBR",
+            "ACRONYM",
+            "ADDRESS",
+            "B",
+            "BDO",
+            "BIG",
+            "BLOCKQUOTE",
+            "BODY",
+            "BUTTON",
+            "CAPTION",
+            "CITE",
+            "CODE",
+            "COLGROUP",
+            "DD",
+            "DEL",
+            "DFN",
+            "DIV",
+            "DL",
+            "DT",
+            "EM",
+            "FIELDSET",
+            "FORM",
+            "FRAMESET",
+            "H1",
+            "H2",
+            "H3",
+            "H4",
+            "H5",
+            "H6",
+            "HEAD",
+            "HTML",
+            "I",
+            "IFRAME",
+            "INS",
+            "KBD",
+            "LABEL",
+            "LEGEND",
+            "LI",
+            "MAP",
+            "NOFRAMES",
+            "NOSCRIPT",
+            "OBJECT",
+            "OL",
+            "OPTGROUP",
+            "OPTION",
+            "P",
+            "PRE",
+            "Q",
+            "SAMP",
+            "SCRIPT",
+            "SELECT",
+            "SMALL",
+            "SPAN",
+            "STRONG",
+            "STYLE",
+            "SUB",
+            "SUP",
+            "TABLE",
+            "TBODY",
+            "TD",
+            "TEXTAREA",
+            "TFOOT",
+            "TH",
+            "THEAD",
+            "TITLE",
+            "TR",
+            "TT",
+            "UL",
+            "VAR",
+        ]
         deprecated_onetags = ["BASEFONT", "ISINDEX"]
-        deprecated_twotags = [
-            "APPLET", "CENTER", "DIR", "FONT", "MENU", "S", "STRIKE", "U"]
+        deprecated_twotags = ["APPLET", "CENTER", "DIR", "FONT", "MENU", "S", "STRIKE", "U"]
 
         self.header = []
         self.content = []
@@ -184,21 +241,21 @@ class page:
         self._full = False
         self.class_ = class_
 
-        if mode == 'strict_html' or mode == 'html':
+        if mode == "strict_html" or mode == "html":
             self.onetags = valid_onetags
             self.onetags += list(map(string.lower, self.onetags))
             self.twotags = valid_twotags
             self.twotags += list(map(string.lower, self.twotags))
             self.deptags = deprecated_onetags + deprecated_twotags
             self.deptags += list(map(string.lower, self.deptags))
-            self.mode = 'strict_html'
-        elif mode == 'loose_html':
+            self.mode = "strict_html"
+        elif mode == "loose_html":
             self.onetags = valid_onetags + deprecated_onetags
             self.onetags += list(map(string.lower, self.onetags))
             self.twotags = valid_twotags + deprecated_twotags
             self.twotags += list(map(string.lower, self.twotags))
             self.mode = mode
-        elif mode == 'xml':
+        elif mode == "xml":
             if onetags and twotags:
                 self.onetags = onetags
                 self.twotags = twotags
@@ -212,22 +269,20 @@ class page:
             raise ModeError(mode)
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
         # tag with single underscore should be a reserved keyword
-        if attr.startswith('_'):
-            attr = attr.lstrip('_')
+        if attr.startswith("_"):
+            attr = attr.lstrip("_")
             if attr not in keyword.kwlist:
                 raise AttributeError(attr)
 
         return element(attr, case=self.case, parent=self)
 
     def __str__(self):
-
-        if self._full and (self.mode == 'strict_html' or self.mode == 'loose_html'):
-            end = ['</body>', '</html>']
+        if self._full and (self.mode == "strict_html" or self.mode == "loose_html"):
+            end = ["</body>", "</html>"]
         else:
             end = []
 
@@ -261,8 +316,23 @@ class page:
         """Add some text to the main part of the document"""
         self.content.append(text)
 
-    def init(self, lang='en', css=None, metainfo=None, title=None, header=None, htmlheader=None,
-             footer=None, charset=None, encoding=None, doctype=None, bodyattrs=None, htmlattrs=None, script=None, base=None):
+    def init(
+        self,
+        lang="en",
+        css=None,
+        metainfo=None,
+        title=None,
+        header=None,
+        htmlheader=None,
+        footer=None,
+        charset=None,
+        encoding=None,
+        doctype=None,
+        bodyattrs=None,
+        htmlattrs=None,
+        script=None,
+        base=None,
+    ):
         """This method is used for complete documents with appropriate
         doctype, encoding, title, etc information. For an HTML/XML snippet
         omit this method.
@@ -309,7 +379,7 @@ class page:
 
         self._full = True
 
-        if self.mode == 'strict_html' or self.mode == 'loose_html':
+        if self.mode == "strict_html" or self.mode == "loose_html":
             if doctype is None:
                 doctype = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>"
             self.header.append(doctype)
@@ -319,8 +389,7 @@ class page:
                 self.html(lang=lang)
             self.head()
             if charset is not None:
-                self.meta(
-                    http_equiv='Content-Type', content="text/html; charset=%s" % charset)
+                self.meta(http_equiv="Content-Type", content="text/html; charset=%s" % charset)
             if metainfo is not None:
                 self.metainfo(metainfo)
             if css is not None:
@@ -332,7 +401,7 @@ class page:
             if htmlheader is not None:
                 self.content.append(htmlheader)
             if base is not None:
-                self.base(href='%s' % base)
+                self.base(href="%s" % base)
             self.head.close()
             if bodyattrs is not None:
                 self.body(**bodyattrs)
@@ -343,7 +412,7 @@ class page:
             if footer is not None:
                 self.footer.append(footer)
 
-        elif self.mode == 'xml':
+        elif self.mode == "xml":
             if doctype is None:
                 if encoding is not None:
                     doctype = "<?xml version='1.0' encoding='%s' ?>" % encoding
@@ -356,12 +425,10 @@ class page:
         It adds css stylesheet(s) to the document via the <link> element."""
 
         if isinstance(filelist, basestring):
-            self.link(
-                href=filelist, rel='stylesheet', type='text/css', media='all')
+            self.link(href=filelist, rel="stylesheet", type="text/css", media="all")
         else:
             for file in filelist:
-                self.link(
-                    href=file, rel='stylesheet', type='text/css', media='all')
+                self.link(href=file, rel="stylesheet", type="text/css", media="all")
 
     def metainfo(self, mydict):
         """This convenience function is only useful for html.
@@ -372,8 +439,7 @@ class page:
             for name, content in list(mydict.items()):
                 self.meta(name=name, content=content)
         else:
-            raise TypeError(
-                "Metainfo should be called with a dictionary argument of name:content pairs.")
+            raise TypeError("Metainfo should be called with a dictionary argument of name:content pairs.")
 
     def scripts(self, mydict):
         """Only useful in html, mydict is dictionary of src:type pairs or a list
@@ -382,14 +448,13 @@ class page:
 
         if isinstance(mydict, dict):
             for src, type in list(mydict.items()):
-                self.script('', src=src, type='text/%s' % type)
+                self.script("", src=src, type="text/%s" % type)
         else:
             try:
                 for src in mydict:
-                    self.script('', src=src, type='text/javascript')
+                    self.script("", src=src, type="text/javascript")
             except BaseException:
-                raise TypeError(
-                    "Script should be given a dictionary of src:type pairs or a list of javascript src's.")
+                raise TypeError("Script should be given a dictionary of src:type pairs or a list of javascript src's.")
 
 
 class _oneliner:
@@ -398,33 +463,32 @@ class _oneliner:
     This class can be used to write 'oneliners' that return a string
     immediately so there is no need to instantiate the page class."""
 
-    def __init__(self, case='lower'):
+    def __init__(self, case="lower"):
         self.case = case
 
     def __getattr__(self, attr):
-
         # tags should start with double underscore
         if attr.startswith("__") and attr.endswith("__"):
             raise AttributeError(attr)
         # tag with single underscore should be a reserved keyword
-        if attr.startswith('_'):
-            attr = attr.lstrip('_')
+        if attr.startswith("_"):
+            attr = attr.lstrip("_")
             if attr not in keyword.kwlist:
                 raise AttributeError(attr)
 
         return element(attr, case=self.case, parent=None)
 
 
-oneliner = _oneliner(case='lower')
-upper_oneliner = _oneliner(case='upper')
-given_oneliner = _oneliner(case='given')
+oneliner = _oneliner(case="lower")
+upper_oneliner = _oneliner(case="upper")
+given_oneliner = _oneliner(case="given")
 
 
 def _argsdicts(args, mydict):
-    """A utility generator that pads argument list and dictionary values, will only be called with len( args ) = 0, 1."""
+    """A utility generator that pads argument list and dictionary values, will only be called with len(args) = 0, 1."""
 
     if len(args) == 0:
-        args = None,
+        args = (None,)
     elif len(args) == 1:
         args = _totuple(args[0])
     else:
@@ -454,11 +518,11 @@ def _totuple(x):
     """Utility stuff to convert string, int, long, float, None or anything to a usable tuple."""
 
     if isinstance(x, basestring):
-        out = x,
+        out = (x,)
     elif isinstance(x, (int, long, float)):
-        out = str(x),
+        out = (str(x),)
     elif x is None:
-        out = None,
+        out = (None,)
     else:
         out = tuple(x)
 
@@ -469,19 +533,19 @@ def escape(text, newline=False):
     """Escape special html characters."""
 
     if isinstance(text, basestring):
-        if '&' in text:
-            text = text.replace('&', '&amp;')
-        if '>' in text:
-            text = text.replace('>', '&gt;')
-        if '<' in text:
-            text = text.replace('<', '&lt;')
-        if '\"' in text:
-            text = text.replace('\"', '&quot;')
-        if '\'' in text:
-            text = text.replace('\'', '&quot;')
+        if "&" in text:
+            text = text.replace("&", "&amp;")
+        if ">" in text:
+            text = text.replace(">", "&gt;")
+        if "<" in text:
+            text = text.replace("<", "&lt;")
+        if '"' in text:
+            text = text.replace('"', "&quot;")
+        if "'" in text:
+            text = text.replace("'", "&quot;")
         if newline:
-            if '\n' in text:
-                text = text.replace('\n', '<br>')
+            if "\n" in text:
+                text = text.replace("\n", "<br>")
 
     return text
 
@@ -493,14 +557,14 @@ def unescape(text):
     """Inverse of escape."""
 
     if isinstance(text, basestring):
-        if '&amp;' in text:
-            text = text.replace('&amp;', '&')
-        if '&gt;' in text:
-            text = text.replace('&gt;', '>')
-        if '&lt;' in text:
-            text = text.replace('&lt;', '<')
-        if '&quot;' in text:
-            text = text.replace('&quot;', '\"')
+        if "&amp;" in text:
+            text = text.replace("&amp;", "&")
+        if "&gt;" in text:
+            text = text.replace("&gt;", ">")
+        if "&lt;" in text:
+            text = text.replace("&lt;", "<")
+        if "&quot;" in text:
+            text = text.replace("&quot;", '"')
 
     return text
 
@@ -508,13 +572,18 @@ def unescape(text):
 class dummy:
 
     """A dummy class for attaching attributes."""
+
     pass
 
 
 doctype = dummy()
-doctype.frameset = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">"""
+doctype.frameset = (
+    """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">"""
+)
 doctype.strict = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">"""
-doctype.loose = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">"""
+doctype.loose = (
+    """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">"""
+)
 
 
 class russell:
@@ -534,48 +603,45 @@ class MarkupError(Exception):
 
 
 class ClosingError(MarkupError):
-
     def __init__(self, tag):
         self.message = "The element '%s' does not accept non-keyword arguments (has no closing tag)." % tag
 
 
 class OpeningError(MarkupError):
-
     def __init__(self, tag):
         self.message = "The element '%s' can not be opened." % tag
 
 
 class ArgumentError(MarkupError):
-
     def __init__(self, tag):
         self.message = "The element '%s' was called with more than one non-keyword argument." % tag
 
 
 class InvalidElementError(MarkupError):
-
     def __init__(self, tag, mode):
-        self.message = "The element '%s' is not valid for your mode '%s'." % (
-            tag, mode)
+        self.message = f"The element '{tag}' is not valid for your mode '{mode}'."
 
 
 class DeprecationError(MarkupError):
-
     def __init__(self, tag):
-        self.message = "The element '%s' is deprecated, instantiate markup.page with mode='loose_html' to allow it." % tag
+        self.message = (
+            "The element '%s' is deprecated, instantiate markup.page with mode='loose_html' to allow it." % tag
+        )
 
 
 class ModeError(MarkupError):
-
     def __init__(self, mode):
-        self.message = "Mode '%s' is invalid, possible values: strict_html, html (alias for strict_html), loose_html, xml." % mode
+        self.message = (
+            "Mode '%s' is invalid, possible values: strict_html, html (alias for strict_html), loose_html, xml." % mode
+        )
 
 
 class CustomizationError(MarkupError):
-
     def __init__(self):
         self.message = "If you customize the allowed elements, you must define both types 'onetags' and 'twotags'."
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     sys.stdout.write(__doc__)

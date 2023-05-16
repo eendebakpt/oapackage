@@ -1,5 +1,6 @@
-import sys
 import re
+import sys
+
 """ https://github.com/joshburnett/scanf
 
 This file is extracted from https://github.com/joshburnett/scanf. The code is protected by an MIT license.
@@ -31,9 +32,9 @@ try:
 except ImportError:
     from backports.functools_lru_cache import lru_cache  # type: ignore
 
-__version__ = '1.5.2'
+__version__ = "1.5.2"
 
-__all__ = ["scanf", 'extractdata', 'scanf_translate', 'scanf_compile']
+__all__ = ["scanf", "extractdata", "scanf_translate", "scanf_compile"]
 
 
 DEBUG = False
@@ -43,34 +44,28 @@ DEBUG = False
 # Make sure you add a second entry for each new item that adds the extra
 #   few characters needed to handle the field ommision.
 scanf_translate = [
-    (re.compile(_token), _pattern, _cast) for _token, _pattern, _cast in [
-        (r"%c", r"(.)", lambda x:x),
+    (re.compile(_token), _pattern, _cast)
+    for _token, _pattern, _cast in [
+        (r"%c", r"(.)", lambda x: x),
         (r"%\*c", r"(?:.)", None),
-
-        (r"%(\d)c", r"(.{%s})", lambda x:x),
+        (r"%(\d)c", r"(.{%s})", lambda x: x),
         (r"%\*(\d)c", r"(?:.{%s})", None),
-
         (r"%(\d)[di]", r"([+-]?\d{%s})", int),
         (r"%\*(\d)[di]", r"(?:[+-]?\d{%s})", None),
-
         ("%[di]", r"([+-]?\d+)", int),
         (r"%\*[di]", r"(?:[+-]?\d+)", None),
-
         ("%u", r"(\d+)", int),
         (r"%\*u", r"(?:\d+)", None),
-
         (r"%[fgeE]", r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", float),
         (r"%\*[fgeE]", r"(?:[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", None),
-
-        (r"%s", r"(\S+)", lambda x:x),
+        (r"%s", r"(\S+)", lambda x: x),
         (r"%\*s", r"(?:\S+)", None),
-
-        (r"%([xX])", r"(0%s[\dA-Za-f]+)", lambda x:int(x, 16)),
+        (r"%([xX])", r"(0%s[\dA-Za-f]+)", lambda x: int(x, 16)),
         (r"%\*([xX])", r"(?:0%s[\dA-Za-f]+)", None),
-
-        (r"%o", r"(0[0-7]*)", lambda x:int(x, 8)),
+        (r"%o", r"(0[0-7]*)", lambda x: int(x, 8)),
         (r"%\*o", r"(?:0[0-7]*)", None),
-    ]]
+    ]
+]
 
 
 # Cache formats
@@ -115,9 +110,9 @@ def scanf_compile(format, collapseWhitespace=True):
             format_pat += char
             i += 1
     if DEBUG:
-        print("DEBUG: %r -> %s" % (format, format_pat))
+        print(f"DEBUG: {format!r} -> {format_pat}")
     if collapseWhitespace:
-        format_pat = re.sub(r'\s+', r'\\s+', format_pat)
+        format_pat = re.sub(r"\s+", r"\\s+", format_pat)
 
     format_re = re.compile(format_pat)
     return format_re, cast_list
@@ -170,7 +165,7 @@ def extractdata(pattern, text=None, filepath=None):
     """
     y = []
     if text is None:
-        textsource = open(filepath, 'r')
+        textsource = open(filepath)
     else:
         textsource = text.splitlines()
 
@@ -191,4 +186,5 @@ def extractdata(pattern, text=None, filepath=None):
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod(verbose=True, report=True)

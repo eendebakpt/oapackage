@@ -1,4 +1,4 @@
-:: Run command only in 64-bit Python3.6 environment
+:: Run command only in 64-bit Python3.X environment
 ::
 :: To build extensions for 64 bit Python 3, we need to configure environment
 :: variables to use the MSVC 2010 C++ compilers from GRMSDKX_EN_DVD.iso of:
@@ -73,7 +73,7 @@ set branch=%APPVEYOR_REPO_BRANCH%
 echo "current branch is:%branch%"
 
 IF %MAJOR_PYTHON_VERSION% == 3 (
-IF %MINOR_PYTHON_VERSION% == 8 (
+IF %MINOR_PYTHON_VERSION% == 10 (
 
 IF %PYTHON_ARCH% == 64 (
     IF %SET_SDK_64% == Y (

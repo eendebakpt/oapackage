@@ -1410,9 +1410,8 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
 typedef MatrixFloat EigenMatrixFloat;
 
 std::vector< double > Defficiencies (const array_link &array, const arraydata_t &arrayclass, int verbose, int addDs0) {
-        if ((array.n_rows > 500) || (array.n_columns > 500)) {
-                myprintf ("Defficiencies: array size not supported\n");
-                return std::vector< double > (3);
+        if ((array.n_rows > 50000) || (array.n_columns > 500)) {
+                throw_runtime_exception( printfstring("Defficiencies: array size %d x %d not supported\n", array.n_rows, array.n_columns));
         }
 
         int k = array.n_columns;
@@ -1551,28 +1550,6 @@ double Defficiency (const array_link &al, int verbose) {
                         S[j] = 0;
                 } else {
                         S[j] = sqrt (S[j]);
-                }
-        }
-
-        if (verbose >= 2) {
-                JacobiSVD< DMatrix > svd (mymatrix);
-                const DVector S2 = svd.singularValues ();
-
-                if (!(S2[m - 1] < 1e-15)) {
-                        for (int ii = 0; ii < m - 3; ii++) {
-                                myprintf ("ii %d: singular values sqrt(SelfAdjointEigenSolver) SelfAdjointEigenSolver "
-                                          "svd %f %f %f\n",
-                                          ii, (double)S[m - ii - 1], (double)evs[m - ii - 1], (double)S2[ii]);
-                        }
-                        for (int ii = m - 3; ii < m - 1; ii++) {
-                                myprintf ("ii %d: %f %f %f\n", ii, (double)S[m - ii - 1], (double)evs[m - ii - 1],
-                                          (double)S2[ii]);
-                        }
-
-                        DMatrix Smat (S);
-                        DArray Sa = Smat.array ();
-                        Deff = exp (2 * Sa.log ().sum () / m) / N;
-                        myprintf ("  Aold: %.6f\n", Deff);
                 }
         }
 

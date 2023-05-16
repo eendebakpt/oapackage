@@ -19,3 +19,20 @@ filterwarnings = [
     "ignore::DeprecationWarning:.*qc_snapshot_widget",
     "ignore:::.*quantify_core\\.visualization\\.pyqt_plotmon",
 ]
+
+[tool.ruff]
+select = ["E", "F", "UP", "I"]
+ignore = [ #"UP031", # use format specifiers instead of percent format
+            #"F401", # imported but unused
+        ]
+line-length = 120
+
+target-version = "py38"
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = ["oalib.py",  "../oalib.py"]
+
+[tool.mypy-oalib.py]
+follow_imports = "skip"
+ignore_errors = true

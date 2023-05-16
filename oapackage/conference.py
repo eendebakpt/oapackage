@@ -12,8 +12,8 @@ import oapackage
 # %%
 
 
-def momentMatrix(k):
-    """ Return the moment matrix of a conference design
+def momentMatrix(k: int) -> np.ndarray:
+    """Return the moment matrix of a conference design
 
     Args:
         k (int): number of columns of the conference design
@@ -23,16 +23,16 @@ def momentMatrix(k):
     pk = int(1 + 0.5 * k * (k + 1) + k)
     M = np.zeros((pk, pk))
     M[0, 0] = 1
-    M[0, int(0.5 * k * (k + 1) + 1):] = 1. / 3
-    M[int(0.5 * k * (k + 1) + 1):, 0] = 1. / 3
-    M[1:(k + 1), 1:(k + 1)] = np.eye(k) * 1. / 3
-    M[(k + 1):int(0.5 * k * (k + 1) + 1), (k + 1):int(0.5 * k * (k + 1) + 1)] = np.eye(int(0.5 * k * (k - 1))) / 9.
-    M[int(0.5 * k * (k + 1) + 1):, int(0.5 * k * (k + 1) + 1):] = np.eye(k) / 5 + (np.ones((k, k)) - np.eye(k)) / 9.
+    M[0, int(0.5 * k * (k + 1) + 1) :] = 1.0 / 3
+    M[int(0.5 * k * (k + 1) + 1) :, 0] = 1.0 / 3
+    M[1 : (k + 1), 1 : (k + 1)] = np.eye(k) * 1.0 / 3
+    M[(k + 1) : int(0.5 * k * (k + 1) + 1), (k + 1) : int(0.5 * k * (k + 1) + 1)] = np.eye(int(0.5 * k * (k - 1))) / 9.0
+    M[int(0.5 * k * (k + 1) + 1) :, int(0.5 * k * (k + 1) + 1) :] = np.eye(k) / 5 + (np.ones((k, k)) - np.eye(k)) / 9.0
     return M
 
 
 def _leftDivide(A, B):
-    r""" Perform left division of a matrix
+    r"""Perform left division of a matrix
 
     Args:
         A (aray)
@@ -45,7 +45,7 @@ def _leftDivide(A, B):
 
 
 def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=True):
-    """ Calculate statistics of a definitive screening design from the model matrix
+    """Calculate statistics of a definitive screening design from the model matrix
 
     Args:
         dsd (array): definitive screening design
@@ -53,19 +53,25 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=Tru
       list: calculated statistics. Calculated are whether the model is estible, the Defficiency and the inverse APV.
     """
     ncolumns = dsd.shape[1]
-    modelmatrix = np.array(oapackage.conference_design2modelmatrix(dsd, 'q', verbose=0))
+    modelmatrix = np.array(oapackage.conference_design2modelmatrix(dsd, "q", verbose=0))
     M = (modelmatrix.T).dot(modelmatrix)
 
     if use_condition_number:
         fullrank = np.linalg.cond(M) < 1000
     else:
         mr = np.linalg.matrix_rank(M)
-        fullrank = (mr == modelmatrix.shape[1])
+        fullrank = mr == modelmatrix.shape[1]
         if verbose >= 2:
-            print('modelStatistics: fullrank %d, condition number %.4f' % (fullrank, np.linalg.cond(M), ))
+            print(
+                "modelStatistics: fullrank %d, condition number %.4f"
+                % (
+                    fullrank,
+                    np.linalg.cond(M),
+                )
+            )
 
     if verbose >= 2:
-        print('modelStatistics: condition number: %s' % (np.linalg.cond(M)))
+        print("modelStatistics: condition number: %s" % (np.linalg.cond(M)))
     if fullrank:
         if moment_matrix is None:
             moment_matrix = momentMatrix(ncolumns)
@@ -86,7 +92,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=Tru
 
 
 def conferenceProjectionStatistics(array, ncolumns=4, verbose=0):
-    """ Calculate the projection statistics of a conference design
+    """Calculate the projection statistics of a conference design
 
     The PECk, PICk and PPCk are calculated with k the number of columns specified.
     The projection statistics are calculated by determined the :meth:`modelStatistics` of all k-column subdesigns
@@ -117,6 +123,8 @@ def conferenceProjectionStatistics(array, ncolumns=4, verbose=0):
         invAPV_values[idx] = invAPV
     pec, pic, ppc = np.mean(Eestx), np.mean(Deff), np.mean(invAPV_values)
     if verbose:
-        print('conferenceProjectionStatistics: projection to %d columns: PEC %.3f PIC %.3f PPC %.3f  ' %
-              (ncolumns, pec, pic, ppc))
+        print(
+            "conferenceProjectionStatistics: projection to %d columns: PEC %.3f PIC %.3f PPC %.3f  "
+            % (ncolumns, pec, pic, ppc)
+        )
     return pec, pic, ppc
