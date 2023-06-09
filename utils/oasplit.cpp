@@ -45,7 +45,7 @@ int main (int argc, char *argv[]) {
         opt.addUsage (" -i [FILE]  --input [FILE]		Input file ");
         opt.addUsage (" -n [NUMBER]  --number [NUMBER]	Number of files to split into (default: 8) ");
         opt.addUsage (
-            " --nwritemax [NUMBER]  					Max number of files to actucally write "
+            " --nwritemax [NUMBER]  					Max number of files to actually write "
             "(default: 1000) ");
         opt.addUsage (
             " --nb [NUMBER]  					Number of bits for binary file (1 or 8, default: 8) ");

@@ -275,7 +275,7 @@ int main (int argc, char *argv[]) {
 
                                 if (dosort) {
                                         double Ttmp = get_time_ms ();
-                                        sort (solutions.begin (), solutions.end ()); // solutions.sort();
+                                        sort (solutions.begin (), solutions.end ());
 
                                         log_print (QUIET, "   sorting of initial solutions: %.3f [s]\n",
                                                    get_time_ms () - Ttmp);
@@ -285,7 +285,6 @@ int main (int argc, char *argv[]) {
                                 if (solutions.size () > 0) {
                                         if (ad->N != solutions[0].n_rows) {
                                                 printf ("Problem: oaconfig does not agree with loaded arrays!\n");
-                                                // free_sols(solutions); ??
                                                 solutions.clear ();
                                         }
                                 }
@@ -316,12 +315,12 @@ int main (int argc, char *argv[]) {
 
                                         string fname = resultprefix;
                                         fname += "-streaming";
-                                        fname += "-" + oafilestring (ad);
+                                        fname += "-" + oafilestring (adcol);
                                         logstream (NORMAL) << "oaextend: streaming mode: create file " << fname
                                                            << std::endl;
                                         int nb = arrayfile_t::arrayNbits (*ad);
 
-                                        oaextend.storefile.createfile (fname, adcol->N, ad->ncols, -1, ABINARY, nb);
+                                        oaextend.storefile.createfile (fname, adcol->N, adcol->ncols, -1, ABINARY, nb);
                                 }
 
                                 log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
@@ -341,7 +340,6 @@ int main (int argc, char *argv[]) {
                                         } else {
                                         }
 
-                                        // OPTIMIZE: periodically write part of the solutions to disk
                                         csol++; /* increase current solution */
                                 }
 
@@ -360,7 +358,15 @@ int main (int argc, char *argv[]) {
                                         log_print (DEBUG, "   sorting time: %.3f [s]\n", get_time_ms () - Ttmp);
                                 }
 
-                                save_arrays (extensions, adcol, resultprefix, mode);
+                                if (streaming) {
+                                    // the extensions have already been written, only close the file
+                                    std::cout << "fname " << oaextend.storefile.filename << std::endl;
+                                    oaextend.storefile.setVerbose(2);
+                                    oaextend.storefile.closefile();
+                                } else
+                                {
+                                    save_arrays(extensions, adcol, resultprefix, mode);
+                                }
                                 solutions.swap (extensions); // swap old and newly found solutions
                                 extensions.clear ();         // clear old to free up space for new extensions
 
