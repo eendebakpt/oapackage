@@ -1,3 +1,7 @@
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["numpy", "setuptools"]  # PEP 508 specifications.
+
 [tool.autopep8]
 max_line_length = 120
 # ignore = ["E501", "W6"]
