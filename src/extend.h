@@ -68,7 +68,7 @@ class OAextend {
 	 *
 	 */
         OAextend ()
-            : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
+            : singleExtendTime (10.0), nLMC (100000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
               init_column_previous (1), extendarraymode (extendarray_mode_t::APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT){};
 	/// @copydoc OAextend()
         OAextend (const OAextend &o) : singleExtendTime (o.singleExtendTime) {

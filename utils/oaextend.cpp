@@ -111,8 +111,7 @@ AnyOption *parseOptions (int argc, char *argv[], algorithm_t &algorithm) {
         opt->addUsage (
             " --maxk [INTEGER] Maximum number of columns to exten to (default: extracted from config file) ");
         opt->addUsage (
-            " --streaming			Operate in streaming mode. Generated arrays will be written to disk "
-            "immediately. ");
+            " --streaming			Operate in streaming mode. Generated arrays will be written to disk immediately. ");
 
         std::string ss = printfstring (" -m [MODE]			Algorithm (") + algorithm_t_list () + ")\n";
         opt->addUsage (ss.c_str ());
@@ -160,20 +159,8 @@ int init_restart (const char *fname, colindex_t &cols, arraylist_t &solutions) {
  * @return
  */
 int main (int argc, char *argv[]) {
-        const int n_processors = 1;
-        const int this_rank = 0;
 
-        /*----------SET STARTING ARRAY(S)-----------*/
-        if (this_rank != MASTER) {
-                algorithm_t algorithm = MODE_INVALID;
-                AnyOption *opt = parseOptions (argc, argv, algorithm);
-                OAextend oaextend;
-                oaextend.setAlgorithm (algorithm);
-
-                extend_slave_code (this_rank, oaextend);
-
-                delete opt;
-        } else {
+        {
                 double Tstart = get_time_ms ();
                 int nr_extensions;
                 arraylist_t solutions, extensions;
@@ -275,7 +262,7 @@ int main (int argc, char *argv[]) {
 
                                 if (dosort) {
                                         double Ttmp = get_time_ms ();
-                                        sort (solutions.begin (), solutions.end ()); // solutions.sort();
+                                        sort (solutions.begin (), solutions.end ());
 
                                         log_print (QUIET, "   sorting of initial solutions: %.3f [s]\n",
                                                    get_time_ms () - Ttmp);
@@ -285,7 +272,6 @@ int main (int argc, char *argv[]) {
                                 if (solutions.size () > 0) {
                                         if (ad->N != solutions[0].n_rows) {
                                                 printf ("Problem: oaconfig does not agree with loaded arrays!\n");
-                                                // free_sols(solutions); ??
                                                 solutions.clear ();
                                         }
                                 }
@@ -301,10 +287,7 @@ int main (int argc, char *argv[]) {
                                 col_start = ad->strength;
                         }
 
-                        /*-----------MAIN EXTENSION LOOP-------------*/
-
-                        log_print (SYSTEM, "M: running with %d procs\n", n_processors);
-
+                        /*-----------MAIN EXTENSION LOOP-------------*/                        
                         maxk = std::min (maxk, ad->ncols);
 
                         time_t seconds;
@@ -316,12 +299,12 @@ int main (int argc, char *argv[]) {
 
                                         string fname = resultprefix;
                                         fname += "-streaming";
-                                        fname += "-" + oafilestring (ad);
+                                        fname += "-" + oafilestring (adcol);
                                         logstream (NORMAL) << "oaextend: streaming mode: create file " << fname
                                                            << std::endl;
                                         int nb = arrayfile_t::arrayNbits (*ad);
 
-                                        oaextend.storefile.createfile (fname, adcol->N, ad->ncols, -1, ABINARY, nb);
+                                        oaextend.storefile.createfile (fname, adcol->N, adcol->ncols, -1, ABINARY, nb);
                                 }
 
                                 log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
@@ -335,13 +318,9 @@ int main (int argc, char *argv[]) {
                                         print_progress (csol, solutions, extensions, Tstart, current_col);
                                         logstream (NORMAL) << cur_extension[0];
 
-                                        if (n_processors == 1) {
-                                                nr_extensions += extend_array (*cur_extension, adcol,
+                                        nr_extensions += extend_array (*cur_extension, adcol,
                                                                                current_col, extensions, oaextend);
-                                        } else {
-                                        }
 
-                                        // OPTIMIZE: periodically write part of the solutions to disk
                                         csol++; /* increase current solution */
                                 }
 
@@ -360,7 +339,14 @@ int main (int argc, char *argv[]) {
                                         log_print (DEBUG, "   sorting time: %.3f [s]\n", get_time_ms () - Ttmp);
                                 }
 
-                                save_arrays (extensions, adcol, resultprefix, mode);
+                                if (streaming) {
+                                    // the extensions have already been written, only close the file
+                                    std::cout << "streaming mode: closing file " << oaextend.storefile.filename << std::endl;
+                                    oaextend.storefile.closefile();
+                                } else
+                                {
+                                    save_arrays(extensions, adcol, resultprefix, mode);
+                                }
                                 solutions.swap (extensions); // swap old and newly found solutions
                                 extensions.clear ();         // clear old to free up space for new extensions
 

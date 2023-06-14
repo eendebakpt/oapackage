@@ -741,10 +741,10 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
 
         static unsigned long long nloops = 0;
         nloops++;
-        if (nloops % 50 * 1000 == 0) {
+        if (nloops % 100 * 1000 == 0) {
                 fflush (stdout);
 
-                if (nloops % (500 * 1000 * 1000) == 0) {
+                if (nloops % (1000 * 1000 * 1000) == 0) {
                     if (checkloglevel(QUIET)) {
                         std::cout << "node [" << node_rank << "]: extend loop " << nloops / (1000 * 1000);
                         cout << "m, ";
@@ -922,7 +922,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                                 extendTime = get_time_ms ();
                                 if (log_print (QUIET, "")) {
                                         logstream (QUIET) << printfstring ("  OA extension: ") << narrays
-                                                          << " arrays checked, " << extensions.size ()
+                                                          << " arrays checked, " << nlmcarrays
                                                           << " solutions so far";
                                         logstream (QUIET) << ", time " << printtime ();
                                         myprintf ("  OA extension: current row: ");
