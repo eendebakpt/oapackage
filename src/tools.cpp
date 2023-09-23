@@ -215,7 +215,7 @@ double get_time_ms () {
 
 double get_time_ms (double t0)
 {
-#ifdef WIN32
+#ifdef WIN32 || _WIN32 || WIN64
         struct timeb tb;
         ftime (&tb);
         return (double)tb.time + ((double)tb.millitm / 1000.0f) - t0;

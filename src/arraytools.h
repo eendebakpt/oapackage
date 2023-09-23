@@ -143,8 +143,8 @@ int sizeof_double ();
 
 /// possible values for J-values of 2-level design
 inline std::vector< int > possible_F_values (int N, int strength) {
-        int x = pow ((double)2, strength + 1);
-        int nn = floor ((double)N / x) + 1;
+        int x = (int) pow ((double)2, strength + 1);
+        int nn = (int) floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
                 Fv[i] = N - x * i;

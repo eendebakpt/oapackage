@@ -30,11 +30,11 @@ mvalue_t< long > A3A4 (const array_link &al) {
         std::vector< double > gwlp = al.GWLP ();
         long w3 = 0;
         if (gwlp.size () > 3) {
-                w3 = N * N * gwlp[3]; // the maximum value for w3 is N*choose(k, jj)
+                w3 = (long)(N * N * gwlp[3]); // the maximum value for w3 is N*choose(k, jj)
         }
         long w4 = 0;
         if (gwlp.size () > 4) {
-                w4 = N * N * gwlp[4];
+                w4 = (long)(N * N * gwlp[4]);
         }
         std::vector< long > w;
         w.push_back (w3);
@@ -166,8 +166,7 @@ void distance_distribution_mixed_inplace (const array_link &al, ndarray< double 
                                 myprintf ("distance_distribution_mixed: rows %d %d: index ", r1, r2);
                                 print_perm (dh, sg.ngroups);
                         }
-                        int v = B.get (dh);
-                        B.set (dh, v + 2);
+                        B.set (dh, B.get(dh) + 2);
 
                         if (verbose >= 3) {
                                 int w = B.getlinearidx (dh);
@@ -185,8 +184,7 @@ void distance_distribution_mixed_inplace (const array_link &al, ndarray< double 
         // along diagonal
         for (unsigned int i = 0; i < dims.size (); i++)
                 dh[i] = 0;
-        int v = B.get (dh);
-        B.set (dh, v + N);
+        B.set (dh, B.get(dh) + N);
 
         if (verbose >= 3) {
                 myprintf ("distance_distribution_mixed integer: \n");

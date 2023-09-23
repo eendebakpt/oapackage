@@ -249,7 +249,6 @@ struct mvalue_t {
       public:
         /// vector containing the values
         std::vector< NumericType > values;
-        // int direction;
         enum class direction_t {
 			/// Order from high to low values
 			HIGH,
@@ -262,7 +261,7 @@ struct mvalue_t {
 		 *
 		 * The object consists of a vector of elements.
 		 */
-        mvalue_t () : ordering (direction_t::HIGH){};
+        mvalue_t () : ordering (mvalue_t<NumericType>::direction_t::HIGH){};
         ~mvalue_t (){};
 
 		/** @copydoc mvalue_t::mvalue_t()
