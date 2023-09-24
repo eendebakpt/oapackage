@@ -20,7 +20,7 @@ void set_srand (unsigned int s) { srand (s); }
 template < class Type > void symmetry_group::init (const std::vector< Type > vals, bool ascendingx, int verbose) {
 
         if (verbose >= 2) {
-                myprintf ("symmetry_group::init: %ld elements: ", vals.size ());
+                myprintf ("symmetry_group::init: %zd elements: ", vals.size ());
                 for (size_t i = 0; i < vals.size (); i++)
                         std::cout << vals[i] << ", ";
                 myprintf ("\n");
