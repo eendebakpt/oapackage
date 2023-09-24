@@ -48,11 +48,9 @@ static boolean filterschreier(schreier*,int*,permnode**,boolean,int,int);
 #define TESTP(id,p,n)
 
 /************************************************************************/
-
+/*
 static void
 testispermutation(int id, int *p, int n)
-/* For debugging purposes, crash with a message if p[0..n-1] is
-   not a permutation. */
 {
     int i,m;
     DYNALLSTAT(set,seen,seen_sz);
@@ -83,7 +81,8 @@ testispermutation(int id, int *p, int n)
         ADDELEMENT(seen,p[i]);
     }
 }
-    
+    */
+
 /************************************************************************/
 
 int
@@ -554,7 +553,7 @@ filterschreier(schreier *gp, int *p, permnode **ring,
     schreier *sh;
     int *orbits,*pwr;
     permnode **vec,*curr;
-    boolean changed,lchanged,ident;
+    boolean changed,lchanged,ident=FALSE;
 #if !MAXN
     DYNALLOC1(int,workperm,workperm_sz,n,"filterschreier");
 #endif
@@ -770,7 +769,7 @@ getorbitsmin(int *fix, int nfix, schreier *gp, permnode **ring,
 {
     schreier *sh,*sha;
     int *fixorbs;
-    int i,j,k,icell,nfails,wordlen,skips;
+    int i,j,k,icell=0,nfails,wordlen,skips;
     permnode *pn;
 #if !MAXN
     DYNALLOC1(int,workperm2,workperm2_sz,n,"expandschreier");
