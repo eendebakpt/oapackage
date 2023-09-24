@@ -724,7 +724,7 @@ struct array_link {
                 }
                 //std::copy (tmp, tmp + n, this->array);
         }
-        /*
+        
         template < class numtype > void setarraydata_transposed (const numtype *input_data, int n) {
                 if (n != this->n_rows * this->n_columns)
                         myprintf ("array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n,
@@ -732,13 +732,13 @@ struct array_link {
                      int i = 0;
                     for (int row = 0; row < this->n_rows; row++) {
                             for (int col = 0; col < this->n_columns; col++) {
-                                    this->array[row + col * this->n_rows] = input_data[i];
+                                    this->array[row + col * this->n_rows] = (array_t)(input_data[i]);
                                     i++;
                             }
                     }
 
         }
-        */
+        
         /// special method for SWIG interface
         void setarraydata (std::vector< int > tmp, int n) { std::copy (tmp.begin (), tmp.begin () + n, this->array); }
 
