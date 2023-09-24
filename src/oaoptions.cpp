@@ -86,11 +86,7 @@ std::string print_options_string () {
 
         outx << tabsep << "eigen: JacobiSVD threshold " << lu_decomp.threshold () << std::endl;
 
-// http://sourceforge.net/p/predef/wiki/Compilers/
-#ifdef WIN32 || _WIN32 || WIN64
-#else
-        outx << tabsep << "Compiler: __VERSION__ " << __VERSION__ << std::endl;
-#endif
+        // http://sourceforge.net/p/predef/wiki/Compilers/
         outx << tabsep << "Compiler: __GNUC_VERSION__ " << __GNUC_VERSION__ << std::endl;
         outx << tabsep << "Compiler: __INTEL_COMPILER " << __INTEL_COMPILER << std::endl;
 

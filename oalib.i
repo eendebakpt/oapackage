@@ -5,7 +5,6 @@
  */
 %module(docstring="Python Orthogonal Array interface") oalib
 
-
 // basic features, see http://realmike.org/blog/2010/07/18/python-extensions-in-cpp-using-swig/
 %include "std_string.i"
 %include "std_vector.i"

@@ -269,7 +269,7 @@ struct mvalue_t {
 		 * \param element Single element to add to the vector
 		 * \param dd Ordering to use
 		 */
-        mvalue_t (NumericType element, direction_t dd = direction_t::HIGH) {
+        mvalue_t (NumericType element, direction_t dd = mvalue_t<NumericType>::direction_t::HIGH) {
                 values.push_back (element);
                 ordering = dd;
         }
@@ -278,7 +278,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		mvalue_t (std::vector< NumericType > elements, direction_t dd = direction_t::HIGH) {
+		mvalue_t (std::vector< NumericType > elements, direction_t dd = mvalue_t<NumericType>::direction_t::HIGH) {
                 ordering = dd;
                 this->values = elements;
         }
@@ -288,7 +288,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = direction_t::HIGH) {
+		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = mvalue_t<NumericType>::direction_t::HIGH) {
 			ordering = dd;
 			values.clear();
 			values.resize(elements.size());
@@ -336,7 +336,7 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == direction_t::HIGH)
+                if (ordering == mvalue_t<NumericType>::direction_t::HIGH)
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);
@@ -344,7 +344,7 @@ struct mvalue_t {
         }
         bool operator> (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == direction_t::HIGH)
+                if (ordering == mvalue_t<NumericType>::direction_t::HIGH)
                         val = (bool)better (rhs);
                 else
                         val = (bool)worse (rhs);

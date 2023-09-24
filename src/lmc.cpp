@@ -1520,9 +1520,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         if (verbose >= 4) {
                 adfix.show_colgroups ();
         }
-
-        lmc_t ret1;
-
+        
         std::vector< int > splits = symmetrygroup2splits (sg, ad.ncols, verbose);
 
         adfix.set_colgroups (splits);
@@ -1536,10 +1534,7 @@ int jj45split (carray_t *array, rowindex_t N, int jj, const colperm_t comb, cons
         if (verbose)
                 myprintf ("  ret %d\n", ret);
 
-        ret1 = ret;
-
-        double val = ret1;
-        return val;
+        return ret;
 }
 
 /** Convert J5 and tuple of J4 values to a single number
@@ -1622,7 +1617,7 @@ jj45_t jj45val (carray_t *array, rowindex_t N, const colperm_t comb, int dosort 
         }
 
         if (dosort) {
-                std::sort (ww + 1, ww + 6, std::greater< int > ());
+                std::sort (ww + 1, ww + 6, std::greater< double > ());
         }
         double val = jj452double (ww);
 

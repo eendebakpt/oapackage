@@ -17,7 +17,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #pragma warning(disable : 4244)
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
 #ifdef FULLPACKAGE
 #include "msstdint.h"
 #endif

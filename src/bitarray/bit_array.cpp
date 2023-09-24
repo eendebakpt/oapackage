@@ -31,9 +31,6 @@
 #include <limits.h> // ULONG_MAX
 #include <string.h> // memset
 
-#ifdef _WIN32
-#define inline __inline
-#endif
 
 #include "bit_array.h"
 
@@ -125,7 +122,7 @@ void bit_array_set_bit(BIT_ARRAY* bitarr, bit_index_t b)
     // out of bounds error
     fprintf(stderr, "bit_array.c: bit_array_set_bit() - "
             "out of bounds error (index: %lu; length: %lu)\n",
-            b, bitarr->num_of_bits);
+        (unsigned long)b, (unsigned long)bitarr->num_of_bits);
 
     errno = EDOM;
 
@@ -149,7 +146,7 @@ void bit_array_clear_bit(BIT_ARRAY* bitarr, bit_index_t b)
     // out of bounds error
     fprintf(stderr, "bit_array.c: bit_array_clear_bit() - "
                     "out of bounds error (index: %lu; length: %lu)\n",
-            b, bitarr->num_of_bits);
+        (unsigned long)b, (unsigned long)bitarr->num_of_bits);
 
     errno = EDOM;
 
@@ -172,7 +169,7 @@ char bit_array_get_bit(BIT_ARRAY* bitarr, bit_index_t b)
     // out of bounds error
     fprintf(stderr, "bit_array.c: bit_array_get_bit() - "
                     "out of bounds error (index: %lu; length: %lu)\n",
-            b, bitarr->num_of_bits);
+        (unsigned long)b, (unsigned long)bitarr->num_of_bits);
 
     errno = EDOM;
 
@@ -583,7 +580,7 @@ long bit_array_get_long(BIT_ARRAY* bitarr, bit_index_t start)
   if(start >= bitarr->num_of_bits)
   {
     fprintf(stdout, "bit_array.c: bit_array_get_long() - out of bounds error "
-                    "(index: %lu, length: %lu)\n", start, bitarr->num_of_bits);
+                    "(index: %lu, length: %lu)\n", (unsigned long)start, (unsigned long)bitarr->num_of_bits);
     throw;
     //exit(EXIT_FAILURE);
   }
@@ -613,7 +610,7 @@ int bit_array_get_int(BIT_ARRAY* bitarr, bit_index_t start)
   if(start >= bitarr->num_of_bits)
   {
     fprintf(stderr, "bit_array.c: bit_array_get_long() - out of bounds error "
-                    "(index: %lu, length: %lu)\n", start, bitarr->num_of_bits);
+                    "(index: %lu, length: %lu)\n", (unsigned long)start, (unsigned long)bitarr->num_of_bits);
     throw;
     //exit(EXIT_FAILURE);
   }
@@ -644,7 +641,7 @@ char bit_array_get_char(BIT_ARRAY* bitarr, bit_index_t start)
   if(start >= bitarr->num_of_bits)
   {
     fprintf(stderr, "bit_array.c: bit_array_get_long() - out of bounds error "
-                    "(index: %lu, length: %lu)\n", start, bitarr->num_of_bits);
+                    "(index: %lu, length: %lu)\n", (unsigned long)start, (unsigned long)bitarr->num_of_bits);
     throw;
     //exit(EXIT_FAILURE);
   }
@@ -654,7 +651,7 @@ char bit_array_get_char(BIT_ARRAY* bitarr, bit_index_t start)
   word_addr_t word_index = bindex(start);
   unsigned int start_offset = boffset(start);
 
-  char result = get_word(bitarr, word_index, num_of_words) >> start_offset;
+  char result = (char) get_word(bitarr, word_index, num_of_words) >> start_offset;
   result |= get_word(bitarr, word_index+1, num_of_words) << (WORD_SIZE - start_offset);
 
   return result;
