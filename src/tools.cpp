@@ -178,7 +178,7 @@ void warning(const char* message, ...) {
     // will be converted to warning on the SWIG interface
     PyErr_WarnEx(PyExc_RuntimeWarning, buf, 2);
 #else
-    myprintf(buf);
+    myprintf("%s", buf);
 #endif
 }
 
