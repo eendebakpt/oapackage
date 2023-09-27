@@ -1,5 +1,5 @@
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 
 PROJECT(OApackage)
 
@@ -9,9 +9,7 @@ PROJECT(OApackage)
 
 if(WIN32)
 	set(CMAKE_CONFIGURATION_TYPES "Release" CACHE TYPE INTERNAL FORCE) # no Debug
-endif()
-
-if (NOT WIN32)
+else()
   find_package(Boost QUIET COMPONENTS system filesystem  )
   message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
   if (Boost_FOUND)
@@ -40,6 +38,7 @@ endif()
 # ----------------------------------------------------------------------------
 
 set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(.)
 include_directories(src)
@@ -130,9 +129,9 @@ if( "$ENV{USER}" STREQUAL "vsc20149")
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wreturn-type -Wno-alloc-size-larger-than -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  #
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-alloc-size-larger-than -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-result -Wno-unknown-pragmas -fPIC  -g") # -fpermissive  #
   set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
-  set(COPTS "${COPTS}  -O3 ") # -fpermissive
+  set(COPTS "${COPTS}  -O3 ")
   set(COPTS "${COPTS}  -DEIGEN_MPL2_ONLY")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings") # remove warnings
@@ -322,9 +321,6 @@ if(MATLAB_FOUND)
 		  endif()
 
 		  endif()
-
-	    else(WIN32)
-		     # set_target_properties(${item} PROPERTIES LINK_FLAGS "-s")	# strip
 	    endif(WIN32)
 
 	    if (${itemtype} MATCHES "EXECUTABLE")

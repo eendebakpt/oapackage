@@ -152,10 +152,6 @@ arraylist_t depth_extend_sub_t::initialize (const arraylist_t &alist, const arra
         }
 
         for (size_t k = 0; k < alist.size (); ++k) {
-                if (verbose >= 1) {
-                        myprintf ("  depth_extend_sub_t.initialize: array %ld: lmc %d, lastcol %d, ncolumns %d\n", k,
-                                  (int)this->lmctype[k], this->lastcol[k], ncolsx);
-                }
                 bool b1 = (this->lastcol[k] >= ncolsx || this->lastcol[k] == -1);
                 bool b2 = lmctype[k] >= LMC_EQUAL;
                 if (b1 != b2) {
@@ -174,7 +170,7 @@ arraylist_t depth_extend_sub_t::initialize (const arraylist_t &alist, const arra
 
         if (verbose) {
                 myprintf ("depth_extend_sub_t: initialize: selected %ld valid extension indices of %ld arrays\n",
-                          valididx.size (), alist.size ());
+                          (long)valididx.size (), (long)alist.size ());
         }
         arraylist_t v = ::selectArrays (alist, valididx);
 
@@ -491,7 +487,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                 // check possible extensions
                 for (size_t j = 0; j < nn; j++) {
                         if (dlocal.verbose >= 2) {
-                                myprintf ("%sdepth_extend: col %d: j %ld: %d %zu\n", sp.c_str (), extcol, j,
+                                myprintf ("%sdepth_extend: col %d: j %ld: %d %zu\n", sp.c_str (), extcol, (long)j,
                                           dextendsub.valididx[j], dextend.extension_column_list.size ());
                         }
 
@@ -575,7 +571,7 @@ void depth_extend_omp (const arraylist_t &alist, depth_extend_t &dextend, depth_
                                 if (dv >= 1) {
                                         myprintf (
                                             "depth_extend_omp: extcol %d, i %ld/%ld, recursive on %ld arrays!\n ",
-                                            extcol, i, alist.size (), alocal.size ());
+                                            extcol, (long)i, (long)alist.size (), (long)alocal.size ());
                                 }
                                 // recursive method
                                 depth_extend_sub_t dlocal2 (0);

@@ -274,16 +274,16 @@ SORT_NAME(SORT_TYPE1 *x, SORT_TYPE2 *y, int n)
 	    --xc; --yc;
         }
     
-        a = xa - x0;
-        ba = xb - xa;
+        a = (int)(xa - x0);
+        ba = (int)(xb - xa);
         if (ba > a) s = a; else s = ba;
         for (xl = x0, xh = xb-s, yl = y0, yh = yb-s; s > 0; --s)
         {
 	    *xl = *xh; *xh = v; ++xl; ++xh;
 	    SORT_SWAP2(*yl,*yh); ++yl; ++yh;
         }
-        d = xd - x0;
-        dc = xd - xc;
+        d = (int)(xd - x0);
+        dc = (int)(xd - xc);
         if (dc > nn-1-d) s = nn-1-d; else s = dc;
         for (xl = xb, xh = x0+(nn-s), yl = yb, yh = y0+(nn-s); s > 0; --s)
         {

@@ -4,11 +4,11 @@
 
 #include <Python.h>
 inline void pyprintf (const char *message, ...) {
-        char buf[32 * 1024];
+        char buf[8 * 1024];
 
         va_list va;
         va_start (va, message);
-        vsprintf (buf, message, va);
+        vsnprintf (buf, 8 * 1024, message, va);
         va_end (va);
 
         PyObject *f = PySys_GetObject ((char *)"stdout");

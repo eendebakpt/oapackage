@@ -17,7 +17,7 @@ Copyright: See LICENSE.txt file that comes with this distribution
 #pragma warning(disable : 4244)
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
 #ifdef FULLPACKAGE
 #include "msstdint.h"
 #endif
@@ -143,8 +143,8 @@ int sizeof_double ();
 
 /// possible values for J-values of 2-level design
 inline std::vector< int > possible_F_values (int N, int strength) {
-        int x = pow ((double)2, strength + 1);
-        int nn = floor ((double)N / x) + 1;
+        int x = (int) pow ((double)2, strength + 1);
+        int nn = (int) floor ((double)N / x) + 1;
         std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
                 Fv[i] = N - x * i;
@@ -719,23 +719,26 @@ struct array_link {
                 if (n != this->n_rows * this->n_columns)
                         myprintf ("array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n,
                                   this->n_rows, this->n_columns);
-                std::copy (tmp, tmp + n, this->array);
+                for(size_t i=0; i<n; i++) {
+                    this->array[i] = (array_t)tmp[i];
+                }
+                //std::copy (tmp, tmp + n, this->array);
         }
-        /// internal function
+        
         template < class numtype > void setarraydata_transposed (const numtype *input_data, int n) {
                 if (n != this->n_rows * this->n_columns)
                         myprintf ("array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n,
                                   this->n_rows, this->n_columns);
                      int i = 0;
-        for (int row = 0; row < this->n_rows; row++) {
-                for (int col = 0; col < this->n_columns; col++) {
-                        this->array[row + col * this->n_rows] = input_data[i];
-                        i++;
-                }
-        }
+                    for (int row = 0; row < this->n_rows; row++) {
+                            for (int col = 0; col < this->n_columns; col++) {
+                                    this->array[row + col * this->n_rows] = (array_t)(input_data[i]);
+                                    i++;
+                            }
+                    }
 
         }
-
+        
         /// special method for SWIG interface
         void setarraydata (std::vector< int > tmp, int n) { std::copy (tmp.begin (), tmp.begin () + n, this->array); }
 
@@ -1649,7 +1652,7 @@ void write_array_latex (std::ostream &ss, const atype *array, const int nrows, c
                 count = j;
                 for (int k = 0; k < ncols; k++) {
                         const char *s = (k < ncols - 1) ? " & " : " \\\\ \n";
-                        ss << array[count] << s;
+                        ss << (int)(array[count]) << s;
                         count += nrows;
                 }
         }

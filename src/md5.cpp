@@ -308,7 +308,7 @@ class MD5 {
                 int pos;
 
                 for (pos = 0; pos < 16; pos++)
-                        sprintf (digestChars + (pos * 2), "%02x", digestRaw[pos]);
+                        snprintf (digestChars + (pos * 2), 33, "%02x", digestRaw[pos]);
         }
 
       public:
@@ -325,13 +325,11 @@ class MD5 {
                 Init ();
 
                 FILE *file;
-
-                int len;
-
                 if ((file = fopen (filename, "rb")) == NULL)
                         printf ("%s can't be opened\n", filename);
                 else {
 		                unsigned char buffer[1024];
+                        size_t len;
                         while ((len = fread (buffer, 1, 1024, file)))
                                 Update (buffer, len);
                         Final ();
