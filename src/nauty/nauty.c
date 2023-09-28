@@ -247,7 +247,7 @@ nauty(graph *g_arg, int *lab, int *ptn, set *active_arg,
 {
     int i;
     int numcells;
-    int retval;
+    int retval=-1;
     int initstatus;
 #if !MAXN
     tcnode *tcp,*tcq;

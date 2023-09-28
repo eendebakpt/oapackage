@@ -1564,7 +1564,7 @@ semirefine(graph *g, int *lab, int *ptn, int level, int *numcells,
 	int cnt,bmin,bmax;
 	long longcode;
 	set *gptr;
-	int maxcell,maxpos,hint;
+	int maxcell,maxpos=-1,hint;
 
 #if !MAXN
 	DYNALLOC1(int,workperm,workperm_sz,n,"refine");

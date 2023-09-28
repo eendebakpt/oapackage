@@ -265,31 +265,17 @@ typedef larray< colindex_t > colpermtypelight;
 typedef std::vector< int > colpermtype;
 typedef std::vector< colpermtype > colpermset;
 
-#ifdef _WIN32
+#if defined(_WIN32)
 // on windows do not use smart pointers, it is a mess
 //#if _MSC_VER >= 1600
-#elif __APPLE__
-#define SDSMART
 #else
 #define SDSMART
 #endif
 
 #ifdef SDSMART
-#ifdef WIN32
-
 #include <memory>
 typedef std::shared_ptr< symmdata > symmdataPointer;
-
-#elif defined(__APPLE__)
-
-#include <memory>
-typedef std::shared_ptr< symmdata > symmdataPointer;
-
-#else
-#include <tr1/memory>
-typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
-#endif
-
+//typedef std::tr1::shared_ptr< symmdata > symmdataPointer;
 #else
 typedef symmdata *symmdataPointer;
 #endif

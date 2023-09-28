@@ -2238,7 +2238,7 @@ void array_link::showproperties () const {
         return;
 }
 
-void array_link::debug () const { myprintf ("debug: %p %p %p", this->array, (void *)array, (void *)array); }
+void array_link::debug () const { myprintf ("debug: %p %p %p", (void *)this->array, (void *)array, (void *)array); }
 #ifdef SWIGCODE
 void *array_link::data () {
         return ((void *)(this->array));

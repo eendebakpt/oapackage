@@ -719,7 +719,7 @@ struct array_link {
                 if (n != this->n_rows * this->n_columns)
                         myprintf ("array_link:setarraydata: warning: number of elements incorrect: n %d, %d %d\n", n,
                                   this->n_rows, this->n_columns);
-                for(size_t i=0; i<n; i++) {
+                for(size_t i=0; i< (size_t)n; i++) {
                     this->array[i] = (array_t)tmp[i];
                 }
                 //std::copy (tmp, tmp + n, this->array);
