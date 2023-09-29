@@ -384,7 +384,7 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        "numpy>=1.22",
+        "numpy>=1.24",
         "nose",
         "coverage",
         "matplotlib",
@@ -393,7 +393,7 @@ setup(
         "types-python-dateutil",
     ],
     zip_safe=False,
-    install_requires=["numpy>=1.22", "python-dateutil", "matplotlib"],
+    install_requires=["numpy>=1.24", "python-dateutil", "matplotlib"],
     extras_require={
         "doc": ["sphinx", "sphinxcontrib.bibtex", "sphinxcontrib.napoleon", "breathe"],
     },
