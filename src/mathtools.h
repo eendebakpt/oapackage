@@ -240,7 +240,7 @@ class larray {
         }
 };
 
-enum class direction_t {
+enum direction_t {
     /// Order from high to low values
     HIGH,
     /// Order from low to high values
