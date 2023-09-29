@@ -240,11 +240,11 @@ compile_options = []
 
 sources = ["oalib.i"] + sorted(sources)
 if oadev:
-    swig_opts += ["-py3", "-c++", "-doxygen", "-w503,401,362,509,389", "-Isrc/", "-Idev/"]
+    swig_opts += ["-c++", "-doxygen", "-w503,401,362,509,389", "-Isrc/", "-Idev/"]
     compile_options += ["-DSWIGCODE", "-DFULLPACKAGE", "-DOADEV", "-Idev/"]
     swig_opts += ["-DSWIGCODE", "-DFULLPACKAGE", "-DOADEV"]
 else:
-    swig_opts += ["-py3", "-c++", "-doxygen", "-w503,401,362,302,389,446,509,305", "-Isrc/"]
+    swig_opts += ["-c++", "-doxygen", "-w503,401,362,302,389,446,509,305", "-Isrc/"]
     compile_options += ["-DSWIGCODE", "-DFULLPACKAGE"]
     swig_opts += ["-DSWIGCODE", "-DFULLPACKAGE"]
 
@@ -363,7 +363,7 @@ def readme():
 long_description = readme()
 
 version = get_version_info()[0]
-#print("OApackage: version %s" % version)
+# print("OApackage: version %s" % version)
 
 
 setup(
@@ -409,4 +409,3 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
 )
-

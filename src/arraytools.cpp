@@ -24,7 +24,8 @@ using namespace std;
 int sizeof_array_t () { return sizeof (array_t); }
 int sizeof_double () { return sizeof (double); }
 
-#ifdef WIN32
+/*
+#ifdef WIN32 || _WIN32 || WIN64
 #else
 #include <fcntl.h>
 int get_file_status (FILE *f) {
@@ -33,6 +34,7 @@ int get_file_status (FILE *f) {
 }
 
 #endif
+*/
 
 array_transformation_t array_transformation_t::operator* (const array_transformation_t b) const {
 
@@ -691,7 +693,7 @@ array_link::array_link (Eigen::MatrixXd &m) {
         this->n_rows = m.rows ();
         this->array = create_array (this->n_rows, this->n_columns);
         for (int i = 0; i < this->n_columns * this->n_rows; i++) {
-                this->array[i] = m (i);
+                this->array[i] = (array_t) m (i);
         }
 }
 
@@ -737,7 +739,7 @@ void array_link::setvalue (int r, int c, double val) {
                 return;
         }
 
-        this->array[r + this->n_rows * c] = val;
+        this->array[r + this->n_rows * c] = (array_t) val;
 }
 
 void array_link::_setvalue (int r, int c, int val) { this->array[r + this->n_rows * c] = val; }
@@ -2236,7 +2238,7 @@ void array_link::showproperties () const {
         return;
 }
 
-void array_link::debug () const { myprintf ("debug: %ld %p %p", (long)this->array, (void *)array, (void *)array); }
+void array_link::debug () const { myprintf ("debug: %p %p %p", (void *)this->array, (void *)array, (void *)array); }
 #ifdef SWIGCODE
 void *array_link::data () {
         return ((void *)(this->array));
@@ -2573,7 +2575,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
 
                 // make Helmert contrasts (these are automatically orthogonal)
                 for (int r = 0; r < N; r++) {
-                        int array_value = AA (r, column);
+                        int array_value = (int) AA (r, column);
                         Z (r, 0) = 1;
                         if (array_value > 0) {
                                 Z (r, array_value) = array_value;
@@ -3254,7 +3256,7 @@ array_link arraydata_t::randomarray (int strength, int ncols) const {
                 int coloffset = this->N * i;
                 array_t s = this->getfactorlevel (i);
 
-                int step = floor (double(N) / s);
+                int step = (int) floor (double(N) / s);
                 if (strength == 1) {
                         for (int j = 0; j < s; j++) {
                                 std::fill (al.array + coloffset + step * j, al.array + coloffset + step * (j + 1), j);
@@ -3519,13 +3521,13 @@ int jstruct_t::maxJ () const {
 
 int jstruct_t::number_J_values(int strength) const {
 	assert(strength >= 1);
-	int Jstep = pow((double)2, strength + 1);
-	int nn = floor((double)N / Jstep) + 1;
+	int Jstep = (int)pow((double)2, strength + 1);
+	int nn = (int)floor((double)N / Jstep) + 1;
 	return nn;
 }
 
 std::vector< int > jstruct_t::Fval (int strength) const {
-		int Jstep = pow((double)2, strength + 1);
+		int Jstep = (int) pow((double)2, strength + 1);
 		int nn = this->number_J_values(strength);
 		std::vector< int > Fv (nn);
         for (int i = 0; i < nn; i++) {
@@ -3538,7 +3540,7 @@ std::vector< int > jstruct_t::calculateF (int strength) const {
         int Nmax = N;
 
 		int nn = this->number_J_values(strength);
-		int Jstep = pow((double)2, strength + 1);
+		int Jstep = (int)pow((double)2, strength + 1);
 		std::vector< int > F (nn);
 
         for (int i = 0; i < nc; i++) {
@@ -3580,7 +3582,7 @@ void jstructconference_t::calcJvalues(int N, int jj) {
 	if (N % 2) {
 		throw_runtime_exception("calculation of J-characteristics for conference matrices only supported for even number of runs");
 	}
-	int nn = floor(double(int((N - jj + 1) / 4))) + 1;
+	int nn = (int)floor(double(int((N - jj + 1) / 4))) + 1;
 	this->jvalues = std::vector< int >(nn);
 	this->jvalue2index.clear();
 	for (size_t i = 0; i < jvalues.size(); i++) {
@@ -5136,10 +5138,6 @@ arrayfile_t::arrayfile_t (const std::string fnamein, int verbose) {
 }
 
 void arrayfile_t::closefile () {
-        if (verbose >= 2) {
-                myprintf ("arrayfile_t::closefile(): nfid %ld\n", (long)nfid);
-        }
-
         if (!this->isopen ()) {
                 if (verbose >= 2) {
                         myprintf ("arrayfile_t::closefile(): file already closed\n");

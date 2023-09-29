@@ -179,7 +179,7 @@ array_link optimDeff (const array_link &A0, const arraydata_t &arrayclass, const
         if (nabort <= 0) {
 			/// select a sane default
                 if (arrayclass.is2level ()) {
-                        nabort = (N * k) * 2.5 + 1; // factor 2 to compensate for equal error switches
+                        nabort = (int)((N * k) * 2.5 + 1); // factor 2 to compensate for equal error switches
                 } else {
                         nabort = (N * k) * (arrayclass.s[0]) + 2;
                 }

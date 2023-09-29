@@ -240,6 +240,13 @@ class larray {
         }
 };
 
+enum class direction_t {
+    /// Order from high to low values
+    HIGH,
+    /// Order from low to high values
+    LOW
+};
+
 /** @brief Multi-value type
  *
  * This object represents a multi-valued object. The objects are ordered using lexicographic ordering.
@@ -249,12 +256,7 @@ struct mvalue_t {
       public:
         /// vector containing the values
         std::vector< NumericType > values;
-        // int direction;
-        enum class direction_t {
-			/// Order from high to low values
-			HIGH,
-			/// Order from low to high values
-			LOW };
+
         /// value representing the ordering used
         direction_t ordering;
 
@@ -337,7 +339,7 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == direction_t::HIGH)
+                if (ordering ==direction_t::HIGH)
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);

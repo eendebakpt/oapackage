@@ -604,7 +604,7 @@ inline mvalue_t< long > F4 (const array_link &al, int verbose = 1) {
                 myprintf ("\n");
         }
 
-        mvalue_t< long > v (FF, mvalue_t< long >::direction_t::LOW);
+        mvalue_t< long > v (FF, direction_t::LOW);
         return v;
 }
 

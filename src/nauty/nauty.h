@@ -31,7 +31,10 @@ it is necessary to check they are correct.
 #else
 #define SIZEOF_LONG 8
 #endif
+
+#ifndef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 0  /* 0 if nonexistent */
+#endif
 
 #define HAVE_CONST 1    /* compiler properly supports const */
 

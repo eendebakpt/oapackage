@@ -178,7 +178,7 @@ void warning(const char* message, ...) {
     // will be converted to warning on the SWIG interface
     PyErr_WarnEx(PyExc_RuntimeWarning, buf, 2);
 #else
-    myprintf(buf);
+    myprintf("%s", buf);
 #endif
 }
 
@@ -215,7 +215,7 @@ double get_time_ms () {
 
 double get_time_ms (double t0)
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
         struct timeb tb;
         ftime (&tb);
         return (double)tb.time + ((double)tb.millitm / 1000.0f) - t0;
