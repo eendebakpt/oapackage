@@ -240,12 +240,12 @@ class larray {
         }
 };
 
-enum class direction_t {
-    /// Order from high to low values
-    HIGH,
-    /// Order from low to high values
-    LOW
-};
+/// Order from high to low values
+const int HIGH = 0;
+/// Order from low to high values
+const int LOW = 1;
+typedef int direction_t;
+
 
 /** @brief Multi-value type
  *
@@ -264,7 +264,7 @@ struct mvalue_t {
 		 *
 		 * The object consists of a vector of elements.
 		 */
-        mvalue_t () : ordering (::direction_t::HIGH){};
+        mvalue_t () : ordering (HIGH){};
         ~mvalue_t (){};
 
 		/** @copydoc mvalue_t::mvalue_t()
@@ -272,7 +272,7 @@ struct mvalue_t {
 		 * \param element Single element to add to the vector
 		 * \param dd Ordering to use
 		 */
-        mvalue_t (NumericType element, direction_t dd = ::direction_t::HIGH) {
+        mvalue_t (NumericType element, direction_t dd = HIGH) {
                 values.push_back (element);
                 ordering = dd;
         }
@@ -281,7 +281,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		mvalue_t (std::vector< NumericType > elements, direction_t dd = ::direction_t::HIGH) {
+		mvalue_t (std::vector< NumericType > elements, direction_t dd = HIGH) {
                 ordering = dd;
                 this->values = elements;
         }
@@ -291,7 +291,7 @@ struct mvalue_t {
 		 * \param elements Vector to use for initalization of the object
 		 * \param dd Ordering to use
 		 */
-		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = ::direction_t::HIGH) {
+		template < class T > mvalue_t(std::vector< T > elements, direction_t dd = HIGH) {
 			ordering = dd;
 			values.clear();
 			values.resize(elements.size());
@@ -339,7 +339,7 @@ struct mvalue_t {
 
         bool operator< (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == ::direction_t::HIGH)
+                if (ordering == HIGH)
                         val = (bool)worse (rhs);
                 else
                         val = (bool)better (rhs);
@@ -347,7 +347,7 @@ struct mvalue_t {
         }
         bool operator> (const mvalue_t &rhs) const {
                 bool val = 0;
-                if (ordering == ::direction_t::HIGH)
+                if (ordering == HIGH)
                         val = (bool)better (rhs);
                 else
                         val = (bool)worse (rhs);

@@ -252,6 +252,9 @@ else:
 swig_opts += ["-Isrc/nauty/"]
 compile_options += ["-Isrc/nauty/"]
 
+# specifically for clang
+# compile_options += ["-std=c++11"]
+
 
 if platform.system() == "Windows":
     compile_options += ["-DWIN32", "-D_WIN32"]
