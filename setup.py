@@ -238,6 +238,7 @@ sources = sources
 swig_opts = []
 compile_options = []
 
+
 sources = ["oalib.i"] + sorted(sources)
 if oadev:
     swig_opts += ["-c++", "-doxygen", "-w503,401,362,509,389", "-Isrc/", "-Idev/"]
@@ -251,6 +252,9 @@ else:
 # add nauty files
 swig_opts += ["-Isrc/nauty/"]
 compile_options += ["-Isrc/nauty/"]
+
+# tmp fix for clang
+compile_options += ["-std=c++11"]
 
 
 if platform.system() == "Windows":
