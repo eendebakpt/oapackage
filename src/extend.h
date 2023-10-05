@@ -40,7 +40,7 @@ class OAextend {
         int init_column_previous;
 
         /// Specification of how to use the generated extensions
-        enum class extendarray_mode_t {
+        enum extendarray_mode_t {
 			/// append extension column to extension list
 			APPENDEXTENSION,
 			/// append full array to extension list
@@ -215,7 +215,7 @@ int extend_array (const array_link &array, const arraydata_t *arrayclass, const 
 arraylist_t runExtendRoot (arraydata_t arrayclass, int max_number_columns, int verbose = 0);
 
 
-enum class dfilter_t {
+enum dfilter_t {
   /// no filtering on D-efficiency
   DFILTER_NONE,
   /// filtering on D-efficiency
@@ -223,7 +223,7 @@ enum class dfilter_t {
   /// filtering on D-efficiency with multi column prediction
   DFILTER_MULTI };
 
-enum class dcalc_mode {
+enum dcalc_mode {
   /// always calculate efficiency
   DCALC_ALWAYS,
   /// only calculate efficiency for LMC_LESS
