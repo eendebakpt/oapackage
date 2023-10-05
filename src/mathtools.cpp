@@ -8,7 +8,7 @@ std::string printfstring(const char* message, ...) {
 
     va_list va;
     va_start(va, message);
-    vsprintf(buf, message, va);
+    vsnprintf(buf, 64*1024, message, va);
     va_end(va);
 
     std::string str(buf);
