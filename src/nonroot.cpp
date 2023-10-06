@@ -844,20 +844,8 @@ lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass
                          * the original array on blocks of oaindex */
 
                         if (reduction->mode >= OA_REDUCE) {
-                                if (1) {
-                                        ret = LMC_check_col_less (reduction->array + dyndata->col * +arrayclass->N,
-                                                                  original + cpoffset, lperm, arrayclass, dyndatacpy);
-
-                                } else {
-#ifdef SAFELPERM
-                                        safe_perform_level_perm< array_t > (original + cpoffset, colbuffer, ad->N,
-                                                                            lperm, (int)ad->s[dyndata->col]);
-#else
-                                        perform_level_perm (original + cpoffset, colbuffer, arrayclass->N, lperm);
-#endif
-                                        ret = LMC_check_col_complete (reduction->array + dyndata->col * arrayclass->N,
-                                                                      colbuffer, arrayclass, dyndatacpy);
-                                }
+                                ret = LMC_check_col_less (reduction->array + dyndata->col * +arrayclass->N,
+                                                            original + cpoffset, lperm, arrayclass, dyndatacpy);
                         } else {
                                 if (arrayclass->order == ORDER_LEX) {
 

@@ -713,7 +713,6 @@ Jcounter calculateJstatistics (const char *inputfile, int jj, int verbose) {
         }
 
         double t0 = get_time_ms ();
-        int loop = 0;
         while (true) {
                 if (verbose >= 1) {
                         myprintf ("calculate stats: read %ld/%ld\n", naread, narrays);
@@ -727,7 +726,6 @@ Jcounter calculateJstatistics (const char *inputfile, int jj, int verbose) {
 
                 jcounter.addArrays (arraylist);
                 naread += arraylist.size ();
-                loop++;
         }
         afile.closefile ();
         jcounter.dt = get_time_ms () - t0;
