@@ -252,6 +252,9 @@ else:
 swig_opts += ["-Isrc/nauty/"]
 compile_options += ["-Isrc/nauty/"]
 
+# specifically for clang
+# compile_options += ["-std=c++11"]
+
 
 if platform.system() == "Windows":
     compile_options += ["-DWIN32", "-D_WIN32"]
@@ -384,7 +387,7 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        "numpy>=1.22",
+        "numpy>=1.24",
         "nose",
         "coverage",
         "matplotlib",
@@ -393,7 +396,7 @@ setup(
         "types-python-dateutil",
     ],
     zip_safe=False,
-    install_requires=["numpy>=1.22", "python-dateutil", "matplotlib"],
+    install_requires=["numpy>=1.24", "python-dateutil", "matplotlib"],
     extras_require={
         "doc": ["sphinx", "sphinxcontrib.bibtex", "sphinxcontrib.napoleon", "breathe"],
     },

@@ -32,11 +32,11 @@ void printfd_handler (const char *file, const char *func, int line, const char *
 
         const char *fileshort = s.c_str ();
         myprintf ("file %s: function %s: line %d: ", fileshort, func, line);
-        char buf[64 * 1024];
+        char buf[32 * 1024];
 
         va_list va;
         va_start (va, message);
-        vsprintf (buf, message, va);
+        vsnprintf (buf, 32*1024, message, va);
         va_end (va);
         myprintf ("%s", buf);
 }
@@ -171,7 +171,7 @@ void warning(const char* message, ...) {
 
     va_list va;
     va_start(va, message);
-    vsprintf(buf, message, va);
+    vsnprintf(buf, 12 * 1024, message, va);
     va_end(va);
 
 #ifdef SWIGCODE
@@ -182,25 +182,6 @@ void warning(const char* message, ...) {
 #endif
 }
 
-#define XPFS
-#ifndef XPFS
-/**
- * @brief Function similar to printf returning C++ style string
- * @param message
- * @return
- */
-std::string printfstring (const char *message, ...) {
-        char buf[12 * 1024];
-
-        va_list va;
-        va_start (va, message);
-        vsprintf (buf, message, va);
-        va_end (va);
-
-        std::string str (buf);
-        return str;
-}
-#endif
 
 /*!Returns the actual time with millisecond precission, can be used for measuring times of small functions
   \brief Returns the actual time with millisecond precission
@@ -329,14 +310,14 @@ int log_print (const int level, const char *message, ...) {
         static int _loglevel = (int)QUIET;
 #endif
 
-		char buf[64 * 1024];
+		char buf[8 * 1024];
 
         if (level < 0) { // level < 0 means set level, any message appended is printed as well
 #pragma omp critical(logprint)
                 {
 						va_list va;
 						va_start(va, message);
-						vsprintf(buf, message, va);
+						vsnprintf(buf, 64 * 1024, message, va);
 						va_end(va);
                         int mlevel = -level;
                         _loglevel = mlevel;
@@ -348,7 +329,7 @@ int log_print (const int level, const char *message, ...) {
                         {
 							va_list va;
 							va_start(va, message);
-							vsprintf(buf, message, va);
+							vsnprintf(buf, 64 * 1024, message, va);
 							va_end(va);
 							myprintf ("%s", buf);
                         }
