@@ -1088,14 +1088,11 @@ inline void static_init_rootrowperms (const arraydata_t *adp, int &totalperms, r
 
 /// show array with rowsort and colperm
 void show_array (carray_t *array, const int ncols, const int nrows, colperm_t colperm, rowsort_t *rs) {
-        int count;
         for (int j = 0; j < nrows; j++) {
-                count = j;
                 for (int k = 0; k < ncols; k++) {
                         const char *s = (k < ncols - 1) ? " " : "\n";
                         int val = array[nrows * k + rs[j].r];
                         myprintf ("%3i%s", static_cast< int > (val), s);
-                        count += nrows;
                 }
         }
 }
