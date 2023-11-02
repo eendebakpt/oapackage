@@ -1,6 +1,6 @@
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["numpy", "setuptools"]  # PEP 508 specifications.
+requires = ["numpy", "setuptools", "wheel", "swig"]  # PEP 508 specifications.
 
 [tool.autopep8]
 max_line_length = 120
