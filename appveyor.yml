@@ -31,10 +31,6 @@ environment:
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
 
-    # - PYTHON: "C:\\Python38"
-    #   PYTHON_VERSION: "3.8.x"
-    #   PYTHON_ARCH: "32"
-
 
 matrix:
       fast_finish: true
@@ -117,7 +113,7 @@ test_script:
    - "%CMD_IN_ENV% pytest"
 
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
-   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
+   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -m pip install ."
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - "%CMD_IN_ENV310% mypy --version"
