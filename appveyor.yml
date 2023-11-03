@@ -46,9 +46,6 @@ cache:
   - C:\tmp2 -> \appveyor\install_numpy.ps1
 
 install:
-  #- ECHO "Filesystem root:"
-  #- ps: "ls \"C:/\""
-
   - ECHO "Installed SDKs:"
   - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
