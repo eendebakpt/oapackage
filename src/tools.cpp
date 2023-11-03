@@ -317,7 +317,7 @@ int log_print (const int level, const char *message, ...) {
                 {
 						va_list va;
 						va_start(va, message);
-						vsnprintf(buf, 64 * 1024, message, va);
+						vsnprintf(buf, 8 * 1024, message, va);
 						va_end(va);
                         int mlevel = -level;
                         _loglevel = mlevel;
