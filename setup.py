@@ -10,11 +10,13 @@ import platform
 import re
 import subprocess
 import sys
-from distutils.command.build import build as distutils_build
+
+# from distutils.command.build import build as distutils_build
 from os import path
 
 import setuptools.command.build_ext
 from setuptools import Extension, find_packages, setup
+from setuptools.command.build import build as setuptools_build
 from setuptools.command.install import install as setuptools_install
 from setuptools.command.test import test as TestCommand
 
@@ -340,10 +342,10 @@ ext_modules = [oalib_module]
 # see: http://stackoverflow.com/questions/12491328/python-distutils-not-include-the-swig-generated-module
 
 
-class CustomBuild(distutils_build):
+class CustomBuild(setuptools_build):
     def run(self):
         self.run_command("build_ext")
-        distutils_build.run(self)
+        setuptools_build.run(self)
 
 
 class CustomInstall(setuptools_install):

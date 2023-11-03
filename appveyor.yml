@@ -104,7 +104,7 @@ build: off
 
 build_script:
   # Build the compiled extension
-  - "%CMD_IN_ENV% python setup.py build"
+  - "%CMD_IN_ENV% python -m pip install ."
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
 
 
