@@ -16,7 +16,7 @@ environment:
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python311-x64"
-      PYTHON_VERSION: "3.11.x"
+      PYTHON_VERSION: "3.11.5"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python310-x64"
@@ -98,7 +98,7 @@ install:
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
 
-  - cinst -y swig # --version 3.0.12
+  - cinst -y swig 
 
 build: off
 
@@ -120,7 +120,7 @@ test_script:
    - "%CMD_IN_ENV310% mypy --version"
    - "%CMD_IN_ENV310% mypy -p oapackage --follow-imports skip"
 
-   # only run nbconvert for python3.8
+   # only run nbconvert for python3.10
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
