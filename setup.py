@@ -16,7 +16,11 @@ from os import path
 
 import setuptools.command.build_ext
 from setuptools import Extension, find_packages, setup
-from setuptools.command.build import build as setuptools_build
+
+if sys.version_info.minor > 10 or sys.version_info.major > 3:
+    from setuptools.command.build import build as setuptools_build
+else:
+    from distutils.command.build import build as setuptools_build
 from setuptools.command.install import install as setuptools_install
 from setuptools.command.test import test as TestCommand
 
