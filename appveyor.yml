@@ -11,8 +11,12 @@ environment:
 
   matrix:
 
+    - PYTHON: "C:\\Python312"
+      PYTHON_VERSION: "3.12.0"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python311-x64"
-      PYTHON_VERSION: "3.11.0"
+      PYTHON_VERSION: "3.11.5"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python310-x64"
@@ -27,10 +31,6 @@ environment:
       PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
 
-    # - PYTHON: "C:\\Python38"
-    #   PYTHON_VERSION: "3.8.x"
-    #   PYTHON_ARCH: "32"
-
 
 matrix:
       fast_finish: true
@@ -42,9 +42,6 @@ cache:
   - C:\tmp2 -> \appveyor\install_numpy.ps1
 
 install:
-  #- ECHO "Filesystem root:"
-  #- ps: "ls \"C:/\""
-
   - ECHO "Installed SDKs:"
   - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
@@ -101,13 +98,14 @@ install:
   - "%CMD_IN_ENV% pip install mock"
   - "%CMD_IN_ENV% python -c \"import mock\""
 
-  - cinst -y swig # --version 3.0.12
+  - cinst -y swig 
 
 build: off
 
 build_script:
   # Build the compiled extension
-  - "%CMD_IN_ENV% python setup.py build"
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip install setuptools"
   - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
 
 
@@ -116,13 +114,13 @@ test_script:
    - "%CMD_IN_ENV% pytest"
 
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
-   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python setup.py install"
+   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -m pip install ."
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
    - "%CMD_IN_ENV310% mypy --version"
    - "%CMD_IN_ENV310% mypy -p oapackage --follow-imports skip"
 
-   # only run nbconvert for python3.8
+   # only run nbconvert for python3.10
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
