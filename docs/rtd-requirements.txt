@@ -1,7 +1,7 @@
 numpy
 matplotlib
 iPython
-
+swig
 sphinx
 sphinxcontrib.bibtex
 nbsphinx
