@@ -6,10 +6,13 @@ build:
     python: "3.11"
 #    setup_py_install: true
 
+
 sphinx:
   configuration: docs/conf.py
-  
-#requirements_file: docs/rtd-requirements.txt
+
+python:
+   install:
+     - requirements: docs/rtd-requirements.txt
 
 # needed to get swig to install
 #conda:
