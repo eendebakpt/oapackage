@@ -20,7 +20,7 @@ import traceback
 import warnings
 import webbrowser
 from time import gmtime, strftime
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Literal
 
 import dateutil.parser
 import numpy as np
@@ -476,8 +476,17 @@ def choose(n: int, k: int) -> int:
     return ntok
 
 
-def array2latex(X, header=1, hlines=(), floatfmt="%g", comment=None, hlinespace=None, mode="tabular", tabchar="c"):
-    """Convert numpy array to Latex tabular"""
+def array2latex(
+    X,
+    header:bool=True,
+    hlines=(),
+    floatfmt : str ="%g",
+    comment : str|None=None,
+    hlinespace:None|float=None,
+    mode: Literal['tabular', 'psmallmatrix','pmatrix']="tabular",
+    tabchar:str="c",
+) -> str:
+    """Convert numpy array to Latex tabular or matrix """
     ss = ""
     if comment is not None:
         if isinstance(comment, list):
@@ -486,16 +495,19 @@ def array2latex(X, header=1, hlines=(), floatfmt="%g", comment=None, hlinespace=
         else:
             ss += "%% %s\n" % str(comment)
     if header:
-        if mode == "tabular":
-            if len(tabchar) == 1:
-                cc = tabchar * X.shape[1]
-            else:
-                cc = tabchar + tabchar[-1] * (X.shape[1] - len(tabchar))
-            ss += "\\begin{tabular}{%s}" % cc + chr(10)
-        elif mode == "psmallmatrix":
-            ss += "\\begin{psmallmatrix}" + chr(10)
-        else:
-            ss += "\\begin{pmatrix}" + chr(10)
+        match mode:
+            case  "tabular":
+                if len(tabchar) == 1:
+                    cc = tabchar * X.shape[1]
+                else:
+                    cc = tabchar + tabchar[-1] * (X.shape[1] - len(tabchar))
+                ss += "\\begin{tabular}{%s}" % cc + chr(10)
+            case  "psmallmatrix":
+                ss += "\\begin{psmallmatrix}" + chr(10)
+            case 'pmatrix':
+                ss += "\\begin{pmatrix}" + chr(10)
+            case _:
+                raise ValueError(f'mode {mode} is invalid')    
     for ii in range(X.shape[0]):
         r = X[ii, :]
         if isinstance(r[0], str):
@@ -511,12 +523,15 @@ def array2latex(X, header=1, hlines=(), floatfmt="%g", comment=None, hlinespace=
             if hlinespace is not None:
                 ss += "\\rule[+%.2fex]{0pt}{0pt}" % hlinespace
     if header:
-        if mode == "tabular":
-            ss += "\\end{tabular}"
-        elif mode == "psmallmatrix":
-            ss += "\\end{psmallmatrix}" + chr(10)
-        else:
-            ss += "\\end{pmatrix}" + chr(10)
+        match mode:
+            case  "tabular":
+                ss += "\\end{tabular}"
+            case  "psmallmatrix":
+                ss += "\\end{psmallmatrix}" + chr(10)
+            case 'pmatrix':
+                ss += "\\end{pmatrix}" + chr(10)
+            case _:
+                raise ValueError(f'mode {mode} is invalid')    
     return ss
 
 
