@@ -11,7 +11,11 @@ environment:
 
   matrix:
 
-    - PYTHON: "C:\\Python312"
+    - PYTHON: "C:\\Python313-x64"
+      PYTHON_VERSION: "3.13.0"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python312-x64"
       PYTHON_VERSION: "3.12.0"
       PYTHON_ARCH: "64"
 
@@ -26,11 +30,6 @@ environment:
     - PYTHON: "C:\\Python39-x64"
       PYTHON_VERSION: "3.9.1"
       PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python38-x64"
-      PYTHON_VERSION: "3.8.x"
-      PYTHON_ARCH: "64"
-
 
 matrix:
       fast_finish: true
