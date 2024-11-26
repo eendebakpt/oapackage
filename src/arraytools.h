@@ -454,7 +454,7 @@ struct array_link {
 
 #ifdef SWIGCODE
         /// Create array_link from a raw memory buffer
-        array_link (long *pymatinput, int nrows, int ncols);
+        array_link (long long *pymatinput, int nrows, int ncols);
 #endif
         array_link clone () const;
 
@@ -782,10 +782,10 @@ private:
 
 #ifdef SWIGCODE
 /// Create array_link from numpy array
-array_link create_array_link(long* pymatinput, int number_of_rows, int number_of_columns);
+array_link create_array_link(long long* pymatinput, int number_of_rows, int number_of_columns);
 
 /// Update the data of an array_link with the specified data
-void update_array_link(array_link &al, long* pymatinput, int number_of_rows, int number_of_columns);
+void update_array_link(array_link &al, long long* pymatinput, int number_of_rows, int number_of_columns);
 
 #endif
 

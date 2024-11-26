@@ -21,9 +21,9 @@
 import_array();
 %}
 
-%apply ( array_link &al, long* IN_ARRAY2, int DIM1, int DIM2 ) { (array_link &al, long* pymatinput, int number_of_rows, int number_of_columns) }
-%apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int number_of_rows, int number_of_columns) }
-%apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
+%apply ( array_link &al, long long* IN_ARRAY2, int DIM1, int DIM2 ) { (array_link &al, long long* pymatinput, int number_of_rows, int number_of_columns) }
+%apply ( long long* IN_ARRAY2, int DIM1, int DIM2 ) { (long long* pymatinput, int number_of_rows, int number_of_columns) }
+%apply ( long long* IN_ARRAY2, int DIM1, int DIM2 ) { (long long* pymatinput, int nrows, int ncols) }
 %apply ( double* IN_ARRAY2, int DIM1, int DIM2 ) { (double* pymatdoubleinput, int nrows, int ncols) }
 
 %apply (double* ARGOUT_ARRAY1, int DIM1) {(double* pymat1, int nrows)}
