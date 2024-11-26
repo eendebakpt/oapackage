@@ -616,7 +616,7 @@ def arrayfile_generator(afile: str):
 def runcommand(
     cmd: str,
     dryrun=0,
-    idstr: None | None = None,
+    idstr: str | None = None,
     verbose: int = 1,
     logfile: str | None = None,
     shell: bool = True,
