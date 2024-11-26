@@ -216,7 +216,6 @@ def getarray(self, verbose=0, *args):
   """ Return Numpy style array """
   if verbose:
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))
-  return None # XXXXX
   x=self.getarraydata( int(self.n_rows*self.n_columns) )
   return x.reshape((self.n_columns, self.n_rows)).transpose()
 
