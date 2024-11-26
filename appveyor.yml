@@ -91,11 +91,7 @@ install:
   - "%CMD_IN_ENV310% jupyter --version"
 
   # for running the mypy check
-  - "%CMD_IN_ENV310% pip install mypy types-python-dateutil"
-
-  # to run the tests
-  - "%CMD_IN_ENV% pip install mock"
-  - "%CMD_IN_ENV% python -c \"import mock\""
+  - "%CMD_IN_ENV310% pip install mypy types-python-dateutil mock"
 
   - cinst -y swig 
 
@@ -103,12 +99,12 @@ build: off
 
 build_script:
   # Build the compiled extension
-  - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
   - "%CMD_IN_ENV% %PYTHON%/python -m pip install setuptools"
-  - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
 
 
 test_script:
+   - ECHO "Run tests:"
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV% pytest"
 
@@ -120,6 +116,7 @@ test_script:
    - "%CMD_IN_ENV310% mypy -p oapackage --follow-imports skip"
 
    # only run nbconvert for python3.10
+   - ECHO "Installed SDKs:"
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"

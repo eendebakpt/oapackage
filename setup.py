@@ -118,8 +118,13 @@ def get_version_info(verbose=0):
 
 
 try:
-    from distutils.spawn import find_executable
-    from distutils.version import LooseVersion
+    from shutil import which as find_executable
+    # from distutils.spawn import find_executable
+
+    try:
+        from packaging.version import Version
+    except ImportError:
+        from distutils.version import LooseVersion as Version
 
     def get_swig_executable(swig_minimum_version="4.0", verbose=0):
         """Get SWIG executable"""
@@ -134,7 +139,7 @@ try:
                 # Check that SWIG version is ok
                 output = subprocess.check_output([swig_executable, "-version"]).decode("utf-8")
                 swig_version = re.findall(r"SWIG Version ([0-9.]+)", output)[0]
-                if LooseVersion(swig_version) >= LooseVersion(swig_minimum_version):
+                if Version(swig_version) >= Version(swig_minimum_version):
                     swig_valid = True
                     break
         if verbose:
