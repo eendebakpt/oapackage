@@ -63,11 +63,9 @@ struct strength_check_t {
 		void create_reverse_colcombs_fixed();
 
         void print_frequencies () const {
-                register int i, j;
-
-                for (i = 0; i < ncolcombs; i++) {
+                for (int i = 0; i < ncolcombs; i++) {
                         myprintf ("%i:\t", i);
-                        for (j = 0; j < nvalues[i]; j++) {
+                        for (int j = 0; j < nvalues[i]; j++) {
                                 myprintf ("%2i ", freqtable[i][j]);
                         }
                         myprintf ("\n");

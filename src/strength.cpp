@@ -79,7 +79,7 @@ int get_oaindex(const array_t *s, const colindex_t strength, const colindex_t N)
 colindex_t **set_colcombs_fixed(int *&xlambda, int *&nvalues, int &ncolcombs, const array_t *s, const int strength,
 	const int fixedcol, const int N) {
 	log_print(DEBUG + 1, "set_colcombs_fixed: strength %d, fixedcol %d, N%d\n", strength, fixedcol, N);
-	register int i, j;
+	int i, j;
 	int prod;
 	colindex_t **colcombs = 0;
 
@@ -206,7 +206,7 @@ extend_data_t::~extend_data_t () {
  * @return
  */
 rev_index *create_reverse_colcombs_fixed (const int ncolcombs) {
-        register int i, j;
+        int i, j;
         rev_index *rev_colcombs;
 
         log_print (DEBUG, "Creating reverse column combination index: ncolcombs %d\n", ncolcombs);
@@ -243,7 +243,7 @@ rev_index *create_reverse_colcombs (colindex_t **colcombs, const int ncols, cons
         const int ncolcombs = ncombs (ncols, strength);
 
         rev_colcombs = (rev_index *)malloc (ncols * sizeof (rev_index));
-        tmp = new int[ncombs (ncols, strength)];
+        tmp = new int[ncombs(ncols, strength)] {};
 
         log_print (DEBUG, "ncols = %i\n", ncols);
 
@@ -500,7 +500,7 @@ void add_element_freqtable (extend_data_t *es, rowindex_t activerow, carray_t *a
  * @param N
  */
 void print_frequencies (int **frequencies, const int nelements, const int *lambda, const int N) {
-        register int i, j;
+        int i, j;
 
         for (i = 0; i < nelements; i++) {
                 myprintf ("%i:\t", i);

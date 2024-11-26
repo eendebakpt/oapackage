@@ -87,6 +87,12 @@ import_array();
   }
 
 }
+%typemap(typecheck) Eigen::MatrixXd {
+	$1 = 1;
+}
+%typemap(typecheck) const Eigen::MatrixXd {
+	$1 = 1;
+}
 
 // see http://sourceforge.net/p/swig/mailman/message/32490448/
 //http://mail.scipy.org/pipermail/numpy-discussion/2013-February/065637.html
@@ -102,12 +108,11 @@ import_array();
 }
 %typemap(out) Eigen::MatrixXd
 {
-  /* note that Eigen is column-major by default and numpy is row major by default */
-
-  const int verbose=0;
-  if (verbose) {
-    printf("typemap out for Eigen::MatrixXd: \n");
-    eigenInfo($1);
+    /* note that Eigen is column-major by default and numpy is row major by default */
+	const int verbose=0;
+	if (verbose) {
+		printf("typemap out for Eigen::MatrixXd: \n");
+		eigenInfo($1);
     }
     Eigen::MatrixXd mt = $1.transpose();
 
@@ -211,6 +216,7 @@ def getarray(self, verbose=0, *args):
   """ Return Numpy style array """
   if verbose:
       print('getting array: size %d %d' % (self.n_rows, self.n_columns))
+  return None # XXXXX
   x=self.getarraydata( int(self.n_rows*self.n_columns) )
   return x.reshape((self.n_columns, self.n_rows)).transpose()
 
@@ -447,7 +453,7 @@ def __getattr__(self, attr):
 %template(ParetoMultiDoubleLong) Pareto<mvalue_t<double>,long>;
 %template(ParetoDoubleLong) Pareto<double,long>;
 %template(ParetoElementLong) pareto_element<mvalue_t<long>,long>;
-%template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
+#%template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
 %template(vector_mvalue_t_double) std::vector<mvalue_t<double> >;
 %template(vector_mvalue_t_int) std::vector<mvalue_t<int> >;
 %template(vector_mvalue_t_long) std::vector<mvalue_t<long> >;
