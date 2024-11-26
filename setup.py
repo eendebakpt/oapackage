@@ -22,7 +22,6 @@ if sys.version_info.minor > 10 or sys.version_info.major > 3:
 else:
     from distutils.command.build import build as setuptools_build
 from setuptools.command.install import install as setuptools_install
-from setuptools.command.test import test as TestCommand
 
 try:
     import numpy as np
@@ -150,44 +149,6 @@ except BaseException:
         return None, None, False
 
     swig_valid = False
-
-
-# %% Test suite
-
-
-class OATest(TestCommand):
-    """Run a limited set of tests for the package"""
-
-    user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        # New setuptools don't need this anymore, thus the try block.
-        try:
-            self.test_args = []
-            self.test_suite = True
-        except AttributeError:
-            pass
-
-    def run_tests(self):
-        print("## oapackage test: load package")
-        # import here, cause outside the eggs aren't loaded
-        import oapackage
-        import oapackage.oahelper
-        import oapackage.scanf
-
-        print("## oapackage test: oalib version %s" % oapackage.version())
-        print("## oapackage test: package compile options\n%s\n" % oapackage.oalib.compile_information())
-
-        oapackage.oalib.test_array_manipulation(verbose=0)
-        oapackage.oalib.test_conference_candidate_generators(verbose=0)
-
-        errno = 0
-        sys.exit(errno)
 
 
 # %% Define sources of the package
@@ -377,7 +338,7 @@ version = get_version_info()[0]
 
 setup(
     name="OApackage",
-    cmdclass={"test": OATest, "install": CustomInstall, "build": CustomBuild, "build_ext": BuildExtSwig3},
+    cmdclass={"install": CustomInstall, "build": CustomBuild, "build_ext": BuildExtSwig3},
     version=version,
     author="Pieter Eendebak",
     description="Package to generate and analyse orthogonal arrays, conference designs and optimal designs",
