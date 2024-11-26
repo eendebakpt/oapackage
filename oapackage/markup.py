@@ -5,7 +5,7 @@ import keyword
 
 __date__ = "16 March 2015"
 __version__ = "1.10"
-__doc__ = """
+__doc__ = f"""
 This is markup.py - a Python module that attempts to
 make it easier to generate HTML/XML from a Python program
 in an intuitive, lightweight, customizable and pythonic way.
@@ -13,7 +13,7 @@ It works with both python 2 and 3.
 
 The code is in the public domain.
 
-Version: {} as of {}.
+Version: {__version__} as of {__date__}.
 
 Documentation and further info is at http://markup.sourceforge.net/
 
@@ -21,10 +21,7 @@ Please send bug reports, feature requests, enhancement
 ideas or questions to nogradi at gmail dot com.
 
 Installation: drop markup.py somewhere into your Python path.
-""".format(
-    __version__,
-    __date__,
-)
+"""
 
 # python 3
 basestring = str
@@ -82,7 +79,7 @@ class element:
     def render(self, tag, single, between, kwargs):
         """Append the actual tags to content."""
 
-        out = "<%s" % tag
+        out = f"<{tag}"
         for key, value in list(kwargs.items()):
             # when value is None that means stuff like <... checked>
             if value is not None:
@@ -100,9 +97,9 @@ class element:
             out = f"{out}>{between}</{tag}>"
         else:
             if single:
-                out = "%s />" % out
+                out = f"{out} />"
             else:
-                out = "%s>" % out
+                out = f"{out}>"
         if self.parent is not None:
             self.parent.content.append(out)
         else:
@@ -112,7 +109,7 @@ class element:
         """Append a closing tag unless element has only opening tag."""
 
         if self.tag in self.parent.twotags:
-            self.parent.content.append("</%s>" % self.tag)
+            self.parent.content.append(f"</{self.tag}>")
         elif self.tag in self.parent.onetags:
             raise ClosingError(self.tag)
         elif self.parent.mode == "strict_html" and self.tag in self.parent.deptags:
@@ -389,7 +386,7 @@ class page:
                 self.html(lang=lang)
             self.head()
             if charset is not None:
-                self.meta(http_equiv="Content-Type", content="text/html; charset=%s" % charset)
+                self.meta(http_equiv="Content-Type", content=f"text/html; charset={charset}")
             if metainfo is not None:
                 self.metainfo(metainfo)
             if css is not None:
@@ -401,7 +398,7 @@ class page:
             if htmlheader is not None:
                 self.content.append(htmlheader)
             if base is not None:
-                self.base(href="%s" % base)
+                self.base(href=f"{base}")
             self.head.close()
             if bodyattrs is not None:
                 self.body(**bodyattrs)
@@ -415,7 +412,7 @@ class page:
         elif self.mode == "xml":
             if doctype is None:
                 if encoding is not None:
-                    doctype = "<?xml version='1.0' encoding='%s' ?>" % encoding
+                    doctype = f"<?xml version='1.0' encoding='{encoding}' ?>"
                 else:
                     doctype = "<?xml version='1.0' ?>"
             self.header.append(doctype)
@@ -448,7 +445,7 @@ class page:
 
         if isinstance(mydict, dict):
             for src, type in list(mydict.items()):
-                self.script("", src=src, type="text/%s" % type)
+                self.script("", src=src, type=f"text/{type}")
         else:
             try:
                 for src in mydict:
@@ -604,17 +601,17 @@ class MarkupError(Exception):
 
 class ClosingError(MarkupError):
     def __init__(self, tag):
-        self.message = "The element '%s' does not accept non-keyword arguments (has no closing tag)." % tag
+        self.message = f"The element '{tag}' does not accept non-keyword arguments (has no closing tag)."
 
 
 class OpeningError(MarkupError):
     def __init__(self, tag):
-        self.message = "The element '%s' can not be opened." % tag
+        self.message = f"The element '{tag}' can not be opened."
 
 
 class ArgumentError(MarkupError):
     def __init__(self, tag):
-        self.message = "The element '%s' was called with more than one non-keyword argument." % tag
+        self.message = f"The element '{tag}' was called with more than one non-keyword argument."
 
 
 class InvalidElementError(MarkupError):
@@ -624,15 +621,13 @@ class InvalidElementError(MarkupError):
 
 class DeprecationError(MarkupError):
     def __init__(self, tag):
-        self.message = (
-            "The element '%s' is deprecated, instantiate markup.page with mode='loose_html' to allow it." % tag
-        )
+        self.message = f"The element '{tag}' is deprecated, instantiate markup.page with mode='loose_html' to allow it."
 
 
 class ModeError(MarkupError):
     def __init__(self, mode):
         self.message = (
-            "Mode '%s' is invalid, possible values: strict_html, html (alias for strict_html), loose_html, xml." % mode
+            f"Mode '{mode}' is invalid, possible values: strict_html, html (alias for strict_html), loose_html, xml."
         )
 
 

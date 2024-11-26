@@ -22,7 +22,6 @@ if sys.version_info.minor > 10 or sys.version_info.major > 3:
 else:
     from distutils.command.build import build as setuptools_build
 from setuptools.command.install import install as setuptools_install
-from setuptools.command.test import test as TestCommand
 
 try:
     import numpy as np
@@ -119,8 +118,13 @@ def get_version_info(verbose=0):
 
 
 try:
-    from distutils.spawn import find_executable
-    from distutils.version import LooseVersion
+    from shutil import which as find_executable
+    # from distutils.spawn import find_executable
+
+    try:
+        from packaging.version import Version
+    except ImportError:
+        from distutils.version import LooseVersion as Version
 
     def get_swig_executable(swig_minimum_version="4.0", verbose=0):
         """Get SWIG executable"""
@@ -135,7 +139,7 @@ try:
                 # Check that SWIG version is ok
                 output = subprocess.check_output([swig_executable, "-version"]).decode("utf-8")
                 swig_version = re.findall(r"SWIG Version ([0-9.]+)", output)[0]
-                if LooseVersion(swig_version) >= LooseVersion(swig_minimum_version):
+                if Version(swig_version) >= Version(swig_minimum_version):
                     swig_valid = True
                     break
         if verbose:
@@ -150,44 +154,6 @@ except BaseException:
         return None, None, False
 
     swig_valid = False
-
-
-# %% Test suite
-
-
-class OATest(TestCommand):
-    """Run a limited set of tests for the package"""
-
-    user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        # New setuptools don't need this anymore, thus the try block.
-        try:
-            self.test_args = []
-            self.test_suite = True
-        except AttributeError:
-            pass
-
-    def run_tests(self):
-        print("## oapackage test: load package")
-        # import here, cause outside the eggs aren't loaded
-        import oapackage
-        import oapackage.oahelper
-        import oapackage.scanf
-
-        print("## oapackage test: oalib version %s" % oapackage.version())
-        print("## oapackage test: package compile options\n%s\n" % oapackage.oalib.compile_information())
-
-        oapackage.oalib.test_array_manipulation(verbose=0)
-        oapackage.oalib.test_conference_candidate_generators(verbose=0)
-
-        errno = 0
-        sys.exit(errno)
 
 
 # %% Define sources of the package
@@ -377,7 +343,7 @@ version = get_version_info()[0]
 
 setup(
     name="OApackage",
-    cmdclass={"test": OATest, "install": CustomInstall, "build": CustomBuild, "build_ext": BuildExtSwig3},
+    cmdclass={"install": CustomInstall, "build": CustomBuild, "build_ext": BuildExtSwig3},
     version=version,
     author="Pieter Eendebak",
     description="Package to generate and analyse orthogonal arrays, conference designs and optimal designs",
@@ -393,7 +359,7 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        "numpy>=1.24",
+        "numpy>=1.26",
         "nose",
         "coverage",
         "matplotlib",
@@ -411,10 +377,10 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "License :: OSI Approved :: BSD License",
     ],
 )

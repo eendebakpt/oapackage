@@ -701,9 +701,8 @@ static inline return_type factorial_return_argument (const argtype number) {
   \param k Number of entries in a certain combination
   */
 template < class Type > inline Type ncombs (const Type n, const Type k) {
-        register int i;
         Type sol = 1;                    // n!/(k! * (n-k)!) = (n - k + 1) * ..... * n/k!
-        for (i = n - k + 1; i <= n; i++) // since n-k > k usually
+        for (int i = n - k + 1; i <= n; i++) // since n-k > k usually
                 sol *= i;
         return sol / factorial<> (k);
 }

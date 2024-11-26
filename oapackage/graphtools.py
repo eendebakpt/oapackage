@@ -4,7 +4,7 @@
 """
 
 # %% Load packages
-from typing import Any, List, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -65,7 +65,7 @@ def oa2graph(al, adata, verbose=1):
     return im, colors, dict({"adata": adata, "im": im, "colors": colors, "nVertices": nVertices})
 
 
-def selectIsomorphismClasses(sols, verbose: int = 1) -> Tuple[List[int], List[Any]]:
+def selectIsomorphismClasses(sols, verbose: int = 1) -> tuple[list[int], list[Any]]:
     """Select isomorphism classes from a list of designs
 
     Args:
