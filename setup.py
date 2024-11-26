@@ -359,7 +359,7 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        "numpy>=1.24",
+        "numpy>=1.26",
         "nose",
         "coverage",
         "matplotlib",
@@ -377,10 +377,10 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "License :: OSI Approved :: BSD License",
     ],
 )

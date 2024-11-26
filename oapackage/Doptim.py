@@ -10,7 +10,8 @@ import logging
 import os
 import time
 import warnings
-from typing import Any, Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 import matplotlib
 import matplotlib.cm
@@ -28,7 +29,7 @@ FloatArray = np.typing.NDArray[np.float64]
 # %%
 
 
-def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = None):
+def array2Dtable(array_list: list, verbose: int = 1, titlestr: str | None = None):
     """Generate HTML table with information about for a list of designs
 
     Args:
@@ -50,7 +51,7 @@ def array2Dtable(array_list: List, verbose: int = 1, titlestr: Optional[str] = N
         page.tr(style="font-weight: normal;")
         page.td("%d" % aidx, style="padding-right:10px;")
         for statistic in [D, Ds, D1]:
-            page.td("%.4f" % statistic, style="padding-right:1px;")
+            page.td(f"{statistic:.4f}", style="padding-right:1px;")
         gstr = oahelper.gwlp2str(gwlp)
         page.td(e.small(gstr), style="padding-right:1px;")
         page.tr.close()
@@ -201,7 +202,7 @@ def generateDpage(
 ):
     """Helper function to generate web page with D-optimal design results"""
     if verbose:
-        print("generateDpage: dds %s" % str(dds.shape))
+        print(f"generateDpage: dds {str(dds.shape)}")
 
     pp = oahelper.createPareto(dds)
 
@@ -236,14 +237,14 @@ def generateDpage(
 
         scatterfile = os.path.join(outputdir, "scatterplot.png")
         if verbose:
-            print("generateDpage: writen scatterplot to %s" % scatterfile)
+            print(f"generateDpage: writen scatterplot to {scatterfile}")
         plt.savefig(scatterfile, bbox_inches="tight", pad_inches=0.25, dpi=160)
 
     page = markup.page()
 
     if makeheader:
         page.init(
-            title="Class %s" % xstrplain,
+            title=f"Class {xstrplain}",
             css=("../oastyle.css"),
             lang="en",
             htmlattrs=dict({"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"}),
@@ -262,7 +263,7 @@ def generateDpage(
             footer="<!-- End of page -->",
         )
 
-    page.h1("Results for array class %s " % xstr)
+    page.h1(f"Results for array class {xstr} ")
 
     ss = r"The Pareto optimaly was calculated according to the statistics D, D<sub>1</sub> and D<sub>s</sub>."
     if npareto == 1:
@@ -278,32 +279,32 @@ def generateDpage(
         oalib.writearrayfile(bestdesignfile, A)
 
         page.h2("Best design")
-        page.p("The best design: %s." % e.a("best-design.oa", href=os.path.join(urlprefix, "best-design.oa")))
+        page.p("The best design: {}.".format(e.a("best-design.oa", href=os.path.join(urlprefix, "best-design.oa"))))
 
         page.p()
 
         dd = dd[0]
-        page.span("D-efficiency: %.4f, " % A.Defficiency())  # page.br()
-        page.span("D<sub>s</sub>-efficiency: %.4f, " % dd[1])  # page.br()
-        page.span("D<sub>1</sub>-efficiency: %.4f" % dd[2])
+        page.span(f"D-efficiency: {A.Defficiency():.4f}, ")  # page.br()
+        page.span(f"D<sub>s</sub>-efficiency: {dd[1]:.4f}, ")  # page.br()
+        page.span(f"D<sub>1</sub>-efficiency: {dd[2]:.4f}")
         page.br()
-        page.span("A-efficiency: %.3f" % A.Aefficiency())
+        page.span(f"A-efficiency: {A.Aefficiency():.3f}")
         page.br()
         gwlp = A.GWLP()
         # gwlp=','.join(['%.3f' % xq for xq in gwlp])
         gwlp = oahelper.gwlp2str(gwlp, jstr=", ")
-        page.span("Generalized wordlength pattern: %s" % gwlp)
+        page.span(f"Generalized wordlength pattern: {gwlp}")
         page.br()
         # page.p('D-efficiency: %.3f' % A.Defficiency() )
         pec = oalib.PECsequence(A)
-        pec = ",".join(["%.3f" % xq for xq in pec])
-        page.span("PEC-sequence: %s" % pec)
+        pec = ",".join([f"{xq:.3f}" for xq in pec])
+        page.span(f"PEC-sequence: {pec}")
         page.br()
 
     page.h2("Table of Pareto optimal arrays ")
 
     page.span(str(at))
-    page.p("All Pareto optimal arrays: %s" % istrlnk)
+    page.p(f"All Pareto optimal arrays: {istrlnk}")
 
     page.img(
         src=urlprefix + "scatterplot.png",
@@ -316,7 +317,7 @@ def generateDpage(
 
     page.br(clear="both")
     page.p("Citation notice: if you make use of the results on this page, please cite the following paper:")
-    page.p("%s, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010." % citationstr)
+    page.p(f"{citationstr}, Journal of Combinatorial Designs, Volume 18, Issue 2, pages 123-140, 2010.")
 
     page.p(f"Generated with oapackage {oalib.version()}, date {oahelper.timeString()}.")
 
@@ -324,12 +325,12 @@ def generateDpage(
     fid = open(outfile, "w")
     fid.write(str(page))
     fid.close()
-    print("written to file %s" % outfile)
+    print(f"written to file {outfile}")
 
     return outfile
 
 
-def scoreDn(dds: FloatArray, optimfunc: List) -> FloatArray:
+def scoreDn(dds: FloatArray, optimfunc: list) -> FloatArray:
     """Calculate scores from various efficiencies
 
     Args:
@@ -360,9 +361,9 @@ def optimDeffPython(
     niter: int = 10000,
     nabort: int = 2500,
     verbose: int = 1,
-    alpha: Union[Callable, List[float]] = [1, 0, 0],
+    alpha: Callable | list[float] = [1, 0, 0],
     method: int = 0,
-) -> Tuple[FloatArray, Any]:
+) -> tuple[FloatArray, Any]:
     """Optimize array using specified optimization method
 
     Args:
@@ -390,7 +391,7 @@ def optimDeffPython(
 
     Dinitial = A0.Defficiency()
     if verbose:
-        print("optimDeff: initial Deff %.4f" % Dinitial)
+        print(f"optimDeff: initial Deff {Dinitial:.4f}")
     N = A0.n_rows
     k = A0.n_columns
 
@@ -457,7 +458,7 @@ def optimDeffPython(
         if Dfinal > Dinitial:
             print(f"optimDeff: final Deff improved: {Dinitial:.4f} -> {A.Defficiency():.4f}")
         else:
-            print("optimDeff: final Deff %.4f" % A.Defficiency())
+            print(f"optimDeff: final Deff {A.Defficiency():.4f}")
 
     return efficiencies, A
 
@@ -591,7 +592,7 @@ def Doptimize(
         warnings.warn("Doptimize can only handle designs with strength 0", UserWarning)
 
     if verbose:
-        print("Doptim: optimization class %s" % arrayclass.idstr())
+        print(f"Doptim: optimization class {arrayclass.idstr()}")
     t0 = time.perf_counter()
 
     if optimfunc is None:

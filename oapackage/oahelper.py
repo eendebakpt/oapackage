@@ -20,7 +20,7 @@ import traceback
 import warnings
 import webbrowser
 from time import gmtime, strftime
-from typing import Any, List, Optional, Tuple, Literal
+from typing import Any, Literal
 
 import dateutil.parser
 import numpy as np
@@ -135,7 +135,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
         if verbose:
             print("ii %d: %d %d: f %d: %d %d %d %d" % (ii, ix, iy, f, x, y, w, h))
             if verbose >= 2:
-                print("  window %s" % mngr.get_window_title())
+                print(f"  window {mngr.get_window_title()}")
         if be == "WXAgg":
             fig.canvas.manager.window.SetPosition((x, y))
             fig.canvas.manager.window.SetSize((w, h))
@@ -391,7 +391,7 @@ def timeString(tt=None) -> str:
     return ts
 
 
-def findfilesR(directory: str, pattern) -> List[str]:
+def findfilesR(directory: str, pattern) -> list[str]:
     """Get a list of files (recursive)
 
     Args:
@@ -408,7 +408,7 @@ def findfilesR(directory: str, pattern) -> List[str]:
     return lst
 
 
-def findfiles(directory: str, pattern: Optional[str] = None) -> List[str]:
+def findfiles(directory: str, pattern: str | None = None) -> list[str]:
     """Get a list of files
     Args:
         directory: directory to search
@@ -423,7 +423,7 @@ def findfiles(directory: str, pattern: Optional[str] = None) -> List[str]:
     return lst
 
 
-def finddirectories(directory: str, pattern: Optional[str] = None) -> List[str]:
+def finddirectories(directory: str, pattern: str | None = None) -> list[str]:
     """Get a list of directories
     Args:
         directory: directory to search
@@ -478,40 +478,40 @@ def choose(n: int, k: int) -> int:
 
 def array2latex(
     X,
-    header:bool=True,
+    header: bool = True,
     hlines=(),
-    floatfmt : str ="%g",
-    comment : str|None=None,
-    hlinespace:None|float=None,
-    mode: Literal['tabular', 'psmallmatrix','pmatrix']="tabular",
-    tabchar:str="c",
+    floatfmt: str = "%g",
+    comment: str | None = None,
+    hlinespace: None | float = None,
+    mode: Literal["tabular", "psmallmatrix", "pmatrix"] = "tabular",
+    tabchar: str = "c",
 ) -> str:
-    """Convert numpy array to Latex tabular or matrix """
+    """Convert numpy array to Latex tabular or matrix"""
     ss = ""
     if comment is not None:
         if isinstance(comment, list):
             for line in comment:
-                ss += "%% %s\n" % str(line)
+                ss += f"% {str(line)}\n"
         else:
-            ss += "%% %s\n" % str(comment)
+            ss += f"% {str(comment)}\n"
     if header:
         match mode:
-            case  "tabular":
+            case "tabular":
                 if len(tabchar) == 1:
                     cc = tabchar * X.shape[1]
                 else:
                     cc = tabchar + tabchar[-1] * (X.shape[1] - len(tabchar))
-                ss += "\\begin{tabular}{%s}" % cc + chr(10)
-            case  "psmallmatrix":
+                ss += f"\\begin{{tabular}}{{{cc}}}" + chr(10)
+            case "psmallmatrix":
                 ss += "\\begin{psmallmatrix}" + chr(10)
-            case 'pmatrix':
+            case "pmatrix":
                 ss += "\\begin{pmatrix}" + chr(10)
             case _:
-                raise ValueError(f'mode {mode} is invalid')    
+                raise ValueError(f"mode {mode} is invalid")
     for ii in range(X.shape[0]):
         r = X[ii, :]
         if isinstance(r[0], str):
-            ss += " & ".join(["%s" % x for x in r])
+            ss += " & ".join([f"{x}" for x in r])
         else:
             ss += " & ".join([floatfmt % x for x in r])
         if ii < (X.shape[0]) - 1 or not header:
@@ -521,17 +521,17 @@ def array2latex(
         if ii in hlines:
             ss += r"\hline" + chr(10)
             if hlinespace is not None:
-                ss += "\\rule[+%.2fex]{0pt}{0pt}" % hlinespace
+                ss += f"\\rule[+{hlinespace:.2f}ex]{{0pt}}{{0pt}}"
     if header:
         match mode:
-            case  "tabular":
+            case "tabular":
                 ss += "\\end{tabular}"
-            case  "psmallmatrix":
+            case "psmallmatrix":
                 ss += "\\end{psmallmatrix}" + chr(10)
-            case 'pmatrix':
+            case "pmatrix":
                 ss += "\\end{pmatrix}" + chr(10)
             case _:
-                raise ValueError(f'mode {mode} is invalid')    
+                raise ValueError(f"mode {mode} is invalid")
     return ss
 
 
@@ -591,7 +591,7 @@ def array2html(X, header=1, tablestyle="border-collapse: collapse;", trclass="",
     return page
 
 
-def write_text_arrayfile(filename: str, designs: List[Any], comment: Optional[str] = None):
+def write_text_arrayfile(filename: str, designs: list[Any], comment: str | None = None):
     """Write designs to disk in text format"""
     nrows = designs[0].n_rows
     ncols = designs[0].n_columns
@@ -616,9 +616,9 @@ def arrayfile_generator(afile: str):
 def runcommand(
     cmd: str,
     dryrun=0,
-    idstr: Optional[None] = None,
+    idstr: None | None = None,
     verbose: int = 1,
-    logfile: Optional[str] = None,
+    logfile: str | None = None,
     shell: bool = True,
 ):
     """Run specified command in external environment
@@ -630,10 +630,10 @@ def runcommand(
         r (int): return value of the shell command
     """
     if idstr is not None:
-        cmd = 'echo "idstr: %s";\n' % idstr + cmd
+        cmd = f'echo "idstr: {idstr}";\n' + cmd
     if verbose >= 2:
-        print("cmd: %s" % cmd)
-    r: Optional[int] = 0
+        print(f"cmd: {cmd}")
+    r: int | None = 0
     if not dryrun:
         process = subprocess.Popen(cmd, bufsize=1, stdout=subprocess.PIPE, shell=shell)
         for jj in range(10000000):
@@ -663,7 +663,7 @@ def runcommand(
                 print("end of loop...")
         r = process.poll()
         if not r == 0:
-            print("runcommand: cmd returned error! r=%s" % str(r))
+            print(f"runcommand: cmd returned error! r={str(r)}")
             print(cmd)
             return r
     else:
@@ -754,7 +754,7 @@ def checkFiles(lst, cache=1, verbose=0):
     for f in lst:
         if not os.path.exists(f):
             if verbose:
-                print("checkFiles: file %s does not exist" % f)
+                print(f"checkFiles: file {f} does not exist")
             c = False
             break
     return c
@@ -773,6 +773,7 @@ def test_checkFiles():
     touch(lst[0])
     r = checkFiles(lst, cache=1, verbose=1)
     assert r is True
+
 
 def checkFilesOA(lst, cache=1, verbose=0):
     """Check whether a file or list of files exists
@@ -799,11 +800,10 @@ def checkFilesOA(lst, cache=1, verbose=0):
         r = checkArrayFile(f, cache=True)
         if not r:
             if verbose:
-                print("checkFiles: file %s does not exist" % f)
+                print(f"checkFiles: file {f} does not exist")
             c = False
             break
     return c
-
 
 
 def randomizearrayfile(input_filename, output_filename, verbose=1):
@@ -861,7 +861,7 @@ def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cach
             print("selectArrays: write array file %s in mode %d" % (outfile, afmode))
     else:
         if verbose >= 2:
-            print("output file %s already exists" % outfile)
+            print(f"output file {outfile} already exists")
 
 
 selectArrays = deprecated(selectArraysInFile)
@@ -940,20 +940,20 @@ def parseProcessingTime(logfile, verbose=0):
         for line in fileinput.input([logfile]):
             if line.startswith("#time"):
                 if verbose >= 1:
-                    print("parseProcessingTime: line: %s" % line, end="")
+                    print(f"parseProcessingTime: line: {line}", end="")
             if line.startswith("#time start:"):
                 tstart = dateutil.parser.parse(line[13:])
                 if verbose >= 2:
-                    print("parseProcessingTime: tstart: %s" % tstart)
+                    print(f"parseProcessingTime: tstart: {tstart}")
             elif line.startswith("#time end:"):
                 tend = dateutil.parser.parse(line[10:])
                 if verbose >= 2:
-                    print("parseProcessingTime: tend: %s" % tend)
+                    print(f"parseProcessingTime: tend: {tend}")
             elif line.startswith("#time total:"):
                 dtr = line[13:]
                 dtr = float(dtr[:-5])
                 if verbose >= 2:
-                    print("parseProcessingTime: total: %s" % dtr)
+                    print(f"parseProcessingTime: total: {dtr}")
             else:
                 pass
         if tstart is not None and tend is not None:
@@ -963,7 +963,7 @@ def parseProcessingTime(logfile, verbose=0):
             dtt = -1
     except BaseException:
         if verbose:
-            print("error processing log %s" % logfile)
+            print(f"error processing log {logfile}")
             traceback.print_exc(file=sys.stdout)
         dtt = -1
     if dtr is not None:
@@ -1136,20 +1136,20 @@ def compressOAfile(afile, decompress=False, verbose=1):
         print(f"file {afile}: binary {af.isbinary()}")
     if not (sys.platform == "linux2" or sys.platform == "linux"):
         if verbose:
-            print("compressOAfile: not compressing file %s (platform not supported)" % afile)
+            print(f"compressOAfile: not compressing file {afile} (platform not supported)")
         return False
     if af.isbinary() and not af.iscompressed and sys.platform == "linux2":
         if verbose:
-            print("compressOAfile: compressing file %s" % afile)
-        cmd = "gzip -f %s" % afile
+            print(f"compressOAfile: compressing file {afile}")
+        cmd = f"gzip -f {afile}"
         r = os.system(cmd)
         if not r == 0:
-            print("compressOAfile: error compressing file %s" % afile)
+            print(f"compressOAfile: error compressing file {afile}")
         return True
     else:
         if not af.isbinary():
             if verbose:
-                print("compressOAfile: not compressing file %s (file is in text mode)" % afile)
+                print(f"compressOAfile: not compressing file {afile} (file is in text mode)")
         else:
             if verbose:
                 print(f"compressOAfile: not compressing file {afile} (file {af.filename} is compressed)")
@@ -1228,7 +1228,7 @@ def testHtml(html_code=None):
         webbrowser.open(fname.name)
 
 
-def designStandardError(al) -> Tuple[float, float, float]:
+def designStandardError(al) -> tuple[float, float, float]:
     """Return standard errors for a design
 
     Args:
@@ -1349,8 +1349,7 @@ def create_pareto_element(values, pareto=None):
                 v = [v]
             if not isinstance(v, (list, type)):
                 raise Exception(
-                    "creating Pareto element for Pareto object of type %s and input of type %s not supported"
-                    % (type(pareto), type(v))
+                    f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(v)} not supported"
                 )
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
@@ -1362,8 +1361,7 @@ def create_pareto_element(values, pareto=None):
                 v = [float(v)]
             if not isinstance(v, (list, tuple)):
                 raise Exception(
-                    "creating Pareto element for Pareto object of type %s and input of type %s not supported"
-                    % (type(pareto), type(v))
+                    f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(v)} not supported"
                 )
 
             vec = oalib.mvalue_t_double(list(v))
@@ -1374,7 +1372,6 @@ def create_pareto_element(values, pareto=None):
         vector_pareto = values
     else:
         raise Exception(
-            "creating Pareto element for Pareto object of type %s and input of type %s not supported"
-            % (type(pareto), type(values))
+            f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(values)} not supported"
         )
     return vector_pareto
