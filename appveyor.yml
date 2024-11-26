@@ -11,7 +11,11 @@ environment:
 
   matrix:
 
-    - PYTHON: "C:\\Python312"
+    - PYTHON: "C:\\Python313-x64"
+      PYTHON_VERSION: "3.13.0"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python312-x64"
       PYTHON_VERSION: "3.12.0"
       PYTHON_ARCH: "64"
 
@@ -22,15 +26,6 @@ environment:
     - PYTHON: "C:\\Python310-x64"
       PYTHON_VERSION: "3.10.4"
       PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python39-x64"
-      PYTHON_VERSION: "3.9.1"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python38-x64"
-      PYTHON_VERSION: "3.8.x"
-      PYTHON_ARCH: "64"
-
 
 matrix:
       fast_finish: true
@@ -92,11 +87,7 @@ install:
   - "%CMD_IN_ENV310% jupyter --version"
 
   # for running the mypy check
-  - "%CMD_IN_ENV310% pip install mypy types-python-dateutil"
-
-  # to run the tests
-  - "%CMD_IN_ENV% pip install mock"
-  - "%CMD_IN_ENV% python -c \"import mock\""
+  - "%CMD_IN_ENV310% pip install mypy types-python-dateutil mock"
 
   - cinst -y swig 
 
@@ -104,12 +95,12 @@ build: off
 
 build_script:
   # Build the compiled extension
-  - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
   - "%CMD_IN_ENV% %PYTHON%/python -m pip install setuptools"
-  - "%CMD_IN_ENV% %PYTHON%/python setup.py test"
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
 
 
 test_script:
+   - ECHO "Run tests:"
    - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
    - "%CMD_IN_ENV% pytest"
 
@@ -121,6 +112,7 @@ test_script:
    - "%CMD_IN_ENV310% mypy -p oapackage --follow-imports skip"
 
    # only run nbconvert for python3.10
+   - ECHO "Installed SDKs:"
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
    - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"

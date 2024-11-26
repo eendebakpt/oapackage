@@ -29,9 +29,6 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         n = vals.size ();
         ascending = ascendingx;
 
-        if (verbose >= 2)
-                myprintf ("symmetry_group::init: check sorting\n");
-
         indexsort is (vals.size ());
 
         if (ascending)
@@ -39,21 +36,6 @@ template < class Type > void symmetry_group::init (const std::vector< Type > val
         else
                 is.sortdescending (vals);
 
-        if (verbose >= 2) {
-                if (ascending) {
-                        if (!is.issorted ()) {
-                                myprintf ("symmetry_group: input group was not sorted!\n");
-                                is.show ();
-                                myprintf ("\n");
-                        }
-                } else {
-                        if (!is.issorted ()) {
-                                myprintf ("symmetry_group: input group was not sorted!\n");
-                                is.show ();
-                                myprintf ("\n");
-                        }
-                }
-        }
         // calc group
         int nsg = 0;
         Type prev;

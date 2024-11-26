@@ -260,9 +260,9 @@ void get_range (array_t *array, extendpos *p, extend_data_t *es, int use_row_sym
  */
 static inline array_t row_rank_partial (carray_t *array, const colindex_t start_idx, const colindex_t end_idx,
                                         const rowindex_t row, const rowindex_t n_rows, const int *index) {
-        register int i, sum = 0, j = row;
+        int sum = 0, j = row;
         j += n_rows * start_idx;
-        for (i = start_idx; i < end_idx; i++) {
+        for (int i = start_idx; i < end_idx; i++) {
                 sum += index[i] * array[j];
                 j += n_rows;
         }

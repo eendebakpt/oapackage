@@ -21,9 +21,9 @@
 import_array();
 %}
 
-%apply ( array_link &al, long* IN_ARRAY2, int DIM1, int DIM2 ) { (array_link &al, long* pymatinput, int number_of_rows, int number_of_columns) }
-%apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int number_of_rows, int number_of_columns) }
-%apply ( long* IN_ARRAY2, int DIM1, int DIM2 ) { (long* pymatinput, int nrows, int ncols) }
+%apply ( array_link &al, long long* IN_ARRAY2, int DIM1, int DIM2 ) { (array_link &al, long long* pymatinput, int number_of_rows, int number_of_columns) }
+%apply ( long long* IN_ARRAY2, int DIM1, int DIM2 ) { (long long* pymatinput, int number_of_rows, int number_of_columns) }
+%apply ( long long* IN_ARRAY2, int DIM1, int DIM2 ) { (long long* pymatinput, int nrows, int ncols) }
 %apply ( double* IN_ARRAY2, int DIM1, int DIM2 ) { (double* pymatdoubleinput, int nrows, int ncols) }
 
 %apply (double* ARGOUT_ARRAY1, int DIM1) {(double* pymat1, int nrows)}
@@ -87,6 +87,12 @@ import_array();
   }
 
 }
+%typemap(typecheck) Eigen::MatrixXd {
+	$1 = 1;
+}
+%typemap(typecheck) const Eigen::MatrixXd {
+	$1 = 1;
+}
 
 // see http://sourceforge.net/p/swig/mailman/message/32490448/
 //http://mail.scipy.org/pipermail/numpy-discussion/2013-February/065637.html
@@ -102,12 +108,11 @@ import_array();
 }
 %typemap(out) Eigen::MatrixXd
 {
-  /* note that Eigen is column-major by default and numpy is row major by default */
-
-  const int verbose=0;
-  if (verbose) {
-    printf("typemap out for Eigen::MatrixXd: \n");
-    eigenInfo($1);
+    /* note that Eigen is column-major by default and numpy is row major by default */
+	const int verbose=0;
+	if (verbose) {
+		printf("typemap out for Eigen::MatrixXd: \n");
+		eigenInfo($1);
     }
     Eigen::MatrixXd mt = $1.transpose();
 
@@ -447,7 +452,7 @@ def __getattr__(self, attr):
 %template(ParetoMultiDoubleLong) Pareto<mvalue_t<double>,long>;
 %template(ParetoDoubleLong) Pareto<double,long>;
 %template(ParetoElementLong) pareto_element<mvalue_t<long>,long>;
-%template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
+#%template(ParetoMElementLong) pareto_element<mvalue_t<long>,long>;
 %template(vector_mvalue_t_double) std::vector<mvalue_t<double> >;
 %template(vector_mvalue_t_int) std::vector<mvalue_t<int> >;
 %template(vector_mvalue_t_long) std::vector<mvalue_t<long> >;

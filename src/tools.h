@@ -189,7 +189,6 @@ inline int malloc2d_nelements (const int nrows, const rtype *rowsizes) {
 template < class DataType, class rtype >
 DataType **malloc2d_irr (const int nrows, const rtype *rowsizes) {
         // Create a 2D array, but with unequal rows (hence irregular -> irr)
-        register int i;
         DataType **data;
 
         int nelements = malloc2d_nelements (nrows, rowsizes);
@@ -199,7 +198,7 @@ DataType **malloc2d_irr (const int nrows, const rtype *rowsizes) {
         memset (data[0], 0, sizeof (DataType) * nelements);
 
         int offset = 0;
-        for (i = 0; i < nrows; i++) {
+        for (int i = 0; i < nrows; i++) {
                 data[i] = data[0] + offset;
                 offset += rowsizes[i];
         }

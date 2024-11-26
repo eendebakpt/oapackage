@@ -71,7 +71,7 @@ def modelStatistics(dsd, verbose=0, moment_matrix=None, use_condition_number=Tru
             )
 
     if verbose >= 2:
-        print("modelStatistics: condition number: %s" % (np.linalg.cond(M)))
+        print(f"modelStatistics: condition number: {np.linalg.cond(M)}")
     if fullrank:
         if moment_matrix is None:
             moment_matrix = momentMatrix(ncolumns)

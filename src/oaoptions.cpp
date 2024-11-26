@@ -73,6 +73,7 @@ std::string print_options_string () {
         outx << tabsep << "void * type: sizeof(void *) " << sizeof (void *) << std::endl;
         outx << tabsep << "array_t type: sizeof(array_t) " << sizeof (array_t) << std::endl;
         outx << tabsep << "integer types: sizeof(short int) " << sizeof (short int) << std::endl;
+        outx << tabsep << "integer types: sizeof(long) " << sizeof(long) << std::endl;
         outx << tabsep << "integer types: sizeof(unsigned long int) " << sizeof (unsigned long int) << ","
              << " sizeof(int) " << sizeof (int) << std::endl;
         outx << tabsep << "integer types: sizeof(long long) " << sizeof (long long) << std::endl;
