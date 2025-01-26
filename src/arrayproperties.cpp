@@ -355,10 +355,10 @@ std::vector< double > projDeff (const array_link &orthogonal_array, int number_o
         int m = 1 + number_of_factors + number_of_factors * (number_of_factors - 1) / 2;
         int N = orthogonal_array.n_rows;
 
-        if (verbose)
+        if (verbose) {
                 myprintf ("projDeff: k %d, kp %d: start with %ld combinations \n", number_of_columns,
                           number_of_factors, (long)number_combinations);
-
+        }
 		std::vector< double > efficiencies(number_combinations);
 		for (int64_t i = 0; i < number_combinations; i++) {
                 if (m > N)
