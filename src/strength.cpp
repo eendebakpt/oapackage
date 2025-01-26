@@ -243,7 +243,7 @@ rev_index *create_reverse_colcombs (colindex_t **colcombs, const int ncols, cons
         const int ncolcombs = ncombs (ncols, strength);
 
         rev_colcombs = (rev_index *)malloc (ncols * sizeof (rev_index));
-        tmp = new int[ncombs(ncols, strength)] {};
+        tmp = new int[ncombs(ncols, strength)] ();
 
         log_print (DEBUG, "ncols = %i\n", ncols);
 

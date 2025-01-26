@@ -644,11 +644,6 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
                 ret = LMC_check_col (original + dd->col * +ad->N, array + cpoffset, lperm, ad, dd);
                 return ret;
         } else {
-                if (log_print (DEBUG, "")) {
-                        myprintf ("  j5order: col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol);
-                        print_perm (pp, 5);
-                }
-
                 if (jbase ORDER_J5_SMALLER jcol)
                         ret = LMC_MORE;
                 else
