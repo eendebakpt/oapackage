@@ -2373,7 +2373,7 @@ std::vector< int > numberModelParams(const array_link &array, int order)
 		arraydata_t arrayclass = arraylink2arraydata(array, 0, 0);
 		std::vector< int > s = arrayclass.factor_levels();
 		std::vector< int > df = s;
-		std::transform(df.begin(), df.end(), df.begin(), std::bind2nd(std::minus< int >(), 1.0));
+		std::transform(df.begin(), df.end(), df.begin(), std::bind(std::minus< int >(), std::placeholders::_1, 1.0));
 
 		/* main effect contrasts */
 		int mesize = std::accumulate(df.begin(), df.end(), 0);
@@ -2542,7 +2542,7 @@ std::pair< MatrixFloat, MatrixFloat > array2eigenModelMatrixMixed (const array_l
         std::vector< int > s = arrayclass.factor_levels ();
 
         std::vector< int > df = s;
-        std::transform (df.begin (), df.end (), df.begin (), std::bind2nd (std::minus< int > (), 1.0));
+        std::transform (df.begin (), df.end (), df.begin (), std::bind (std::minus< int > (), std::placeholders::_1, 1.0));
 
         if (verbose >= 2) {
                 arrayclass.show ();
