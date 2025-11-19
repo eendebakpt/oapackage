@@ -4,7 +4,6 @@ requires = ["numpy", "setuptools", "wheel", "swig"]  # PEP 508 specifications.
 
 [tool.autopep8]
 max_line_length = 120
-# ignore = ["E501", "W6"]
 
 [tool.isort]
 profile = "black"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-setup.py file for OApackage
+setup.py file for oapackage
 """
 
 import logging
@@ -26,7 +26,7 @@ from setuptools.command.install import install as setuptools_install
 try:
     import numpy as np
 except ImportError:
-    raise RuntimeError("numpy cannot be imported. numpy must be installed prior to installing OApackage")
+    raise RuntimeError("numpy cannot be imported. numpy must be installed prior to installing oapackage")
 
 npinclude = np.get_include()
 setup_directory = path.abspath(path.dirname(__file__))
@@ -338,11 +338,11 @@ def readme():
 long_description = readme()
 
 version = get_version_info()[0]
-# print("OApackage: version %s" % version)
+# print("oapackage: version %s" % version)
 
 
 setup(
-    name="OApackage",
+    name="oapackage",
     cmdclass={"install": CustomInstall, "build": CustomBuild, "build_ext": BuildExtSwig3},
     version=version,
     author="Pieter Eendebak",
