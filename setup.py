@@ -81,15 +81,15 @@ def checkZlib(verbose=0):
             )
         except CompileError:
             if verbose:
-                print("checkZlib: compile error in %s, zlib not available" % file_name)
+                print(f"checkZlib: compile error in {file_name}, zlib not available")
             ret_val = False
         except LinkError:
             if verbose:
-                print("checkZlib: link error in %s, zlib not available" % file_name)
+                print(f"checkZlib: link error in {file_name}, zlib not available")
             ret_val = False
         except Exception as e:
             if verbose:
-                print("checkZlib: unknown error in %s, zlib not available" % file_name)
+                print(f"checkZlib: unknown error in {file_name}, zlib not available")
                 logging.exception(e)
             ret_val = False
     except Exception:
@@ -113,7 +113,7 @@ def get_version_info(verbose=0):
     else:
         FULLVERSION = "0.0"
     if verbose:
-        print("get_version_info: %s" % FULLVERSION)
+        print(f"get_version_info: {FULLVERSION}")
     return FULLVERSION, GIT_REVISION
 
 
@@ -295,7 +295,7 @@ if platform.node() == "marmot" or platform.node() == "goffer" or platform.node()
     oalib_module.extra_compile_args += ["-fopenmp", "-DDOOPENMP"]
     oalib_module.extra_link_args += ["-fopenmp"]
 
-print("find_packages: %s" % find_packages())
+print(f"find_packages: {find_packages()}")
 
 data_files = []
 scripts = ["misc/scripts/example_oapackage_python.py"]
@@ -359,7 +359,7 @@ setup(
     data_files=data_files,
     scripts=scripts,
     tests_require=[
-        "numpy>=1.26",
+        "numpy>=2.0",
         "nose",
         "coverage",
         "matplotlib",
@@ -368,7 +368,7 @@ setup(
         "types-python-dateutil",
     ],
     zip_safe=False,
-    install_requires=["numpy>=1.24", "python-dateutil", "matplotlib"],
+    install_requires=["numpy>=2.0", "python-dateutil", "matplotlib"],
     extras_require={
         "doc": ["sphinx", "sphinxcontrib.bibtex", "sphinxcontrib.napoleon", "breathe"],
     },
@@ -381,6 +381,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "License :: OSI Approved :: BSD License",
     ],
 )

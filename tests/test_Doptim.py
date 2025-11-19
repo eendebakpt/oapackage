@@ -1,5 +1,4 @@
-""" Orthogonal Array package test functions
-"""
+"""Orthogonal Array package test functions"""
 
 import io
 import tempfile

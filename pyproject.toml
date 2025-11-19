@@ -28,7 +28,6 @@ filterwarnings = [
 lint.select = ["E", "F", "UP", "I"]
 lint.ignore = [ #"UP031", # use format specifiers instead of percent format
             #"F401", # imported but unused
-            "UP038",
         ]
 line-length = 120
 

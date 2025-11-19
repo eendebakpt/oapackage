@@ -30,7 +30,6 @@ long = int
 
 
 class element:
-
     """This class handles the addition of a new element."""
 
     def __init__(self, tag, case="lower", parent=None):
@@ -125,7 +124,6 @@ class element:
 
 
 class page:
-
     """This is our main class representing a document. Elements are added
     as attributes of an instance of this class."""
 
@@ -455,7 +453,6 @@ class page:
 
 
 class _oneliner:
-
     """An instance of oneliner returns a string corresponding to one element.
     This class can be used to write 'oneliners' that return a string
     immediately so there is no need to instantiate the page class."""
@@ -567,7 +564,6 @@ def unescape(text):
 
 
 class dummy:
-
     """A dummy class for attaching attributes."""
 
     pass
@@ -584,7 +580,6 @@ doctype.loose = (
 
 
 class russell:
-
     """A dummy class that contains anything."""
 
     def __contains__(self, item):
@@ -592,7 +587,6 @@ class russell:
 
 
 class MarkupError(Exception):
-
     """All our exceptions subclass this."""
 
     def __str__(self):

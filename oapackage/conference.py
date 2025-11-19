@@ -1,7 +1,4 @@
-""" Module with functions to work with conference designs
-
-"""
-
+"""Module with functions to work with conference designs"""
 
 import itertools
 
