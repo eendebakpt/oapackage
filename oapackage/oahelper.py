@@ -1,4 +1,4 @@
-""" Collection of helper functions for OA package
+"""Collection of helper functions for OA package
 
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """
@@ -122,7 +122,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
     h = ww[3] / geometry[1]
 
     if verbose:
-        print("tilefigs: ww %s, w %d h %d" % (str(ww), w, h))
+        print(f"tilefigs: ww {str(ww)}, w {w} h {h}")
     for ii, f in enumerate(lst):
         if not plt.fignum_exists(f):
             continue

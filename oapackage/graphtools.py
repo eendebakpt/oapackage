@@ -1,4 +1,4 @@
-""" Module to work with designs and graphs
+"""Module to work with designs and graphs
 
 @author: Pieter Eendebak <pieter.eendebak@gmail.com>
 """

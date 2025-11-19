@@ -30,7 +30,7 @@ class OAextend {
         //! perform LMC test after generation of array
         int checkarrays;
 
-        //! if true then return at once if a single extension has been found
+        //! maximum number of extentions to generate from a single array. if zero, generate all possible extentions
         int check_maximal;
 
         //! adds a symmetry check to the extension algorithm based in symmetry of row permutations

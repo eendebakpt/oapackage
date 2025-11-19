@@ -1,5 +1,5 @@
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 
 PROJECT(OApackage)
 
@@ -10,7 +10,7 @@ PROJECT(OApackage)
 if(WIN32)
 	set(CMAKE_CONFIGURATION_TYPES "Release" CACHE TYPE INTERNAL FORCE) # no Debug
 else()
-  find_package(Boost QUIET COMPONENTS system filesystem  )
+  find_package(Boost CONFIG QUIET COMPONENTS system filesystem  )
   message(STATUS "Boost_LIBRARIES: ${Boost_LIBRARIES}")
   if (Boost_FOUND)
     message(STATUS "Boost was found")

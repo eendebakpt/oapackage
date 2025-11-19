@@ -979,7 +979,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                         }
                         more_branches = return_stack (stack, p, array, col_offset);
 
-                        if (oaextend.check_maximal) {
+                        if (oaextend.check_maximal && (narrays >= oaextend.check_maximal)) {
                                 // abort the algorithm
                                 more_branches = false;
                         }

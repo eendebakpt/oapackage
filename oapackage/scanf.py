@@ -2,7 +2,7 @@ import oapackage._scanf
 
 
 def sscanf(inputString, formatString):
-    """ Simple scanf function
+    """Simple scanf function
 
     Args:
         inputString (str): string to be parsed
