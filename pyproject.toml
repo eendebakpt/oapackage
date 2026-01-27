@@ -1,3 +1,6 @@
+[project]
+license = "BSD-2-Clause"
+
 [build-system]
 # Minimum requirements for the build system to execute.
 requires = ["numpy", "setuptools", "wheel", "swig"]  # PEP 508 specifications.
