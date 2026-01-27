@@ -766,6 +766,7 @@ typedef std::vector< array_link > extensioncol_list_t;
 int extend_array (const array_link &input_array, const arraydata_t *fullad, const colindex_t extensioncol,
                   arraylist_t &extensions, OAextend const &oaextend) {
 
+        double start_time = get_time_ms ();
         carray_t *origarray = input_array.array;
         const int start_number = extensions.size ();
         const colindex_t ncolsextension = extensioncol + 1;
@@ -979,7 +980,8 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                         }
                         more_branches = return_stack (stack, p, array, col_offset);
 
-                        if (oaextend.check_maximal && (narrays >= oaextend.check_maximal)) {
+                        if (oaextend.check_maximal && (narrays >= oaextend.check_maximal) ||
+                                 (oaextend.maximum_duration > 0.0 && get_time() - start_time > oaextend.maximum_duration)) {
                                 // abort the algorithm
                                 more_branches = false;
                         }
