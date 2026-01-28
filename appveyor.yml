@@ -127,7 +127,7 @@ test_script:
 
 
 after_test:
-  - "%CMD_IN_ENV% %PYTHON%/python wheel . -w dist"
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip wheel . -w dist"
   - "%CMD_IN_ENV310% %PYTHON%/python -m build . --sdist"
   - ps: "ls dist"
 
