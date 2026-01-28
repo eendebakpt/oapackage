@@ -101,10 +101,9 @@ build_script:
 
 test_script:
    - ECHO "Run tests:"
-   - "%CMD_IN_ENV% %PYTHON%/python setup.py install"
+   - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
    - "%CMD_IN_ENV% pytest"
 
-   - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -m pip install ."
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -c \"import oapackage; print(oapackage)\""
 
@@ -128,8 +127,8 @@ test_script:
 
 
 after_test:
-  - "%CMD_IN_ENV% %PYTHON%/python setup.py bdist_wheel"
-  - "%CMD_IN_ENV310% %PYTHON%/python setup.py sdist"
+  - "%CMD_IN_ENV% %PYTHON%/python wheel . -w dist"
+  - "%CMD_IN_ENV310% %PYTHON%/python -m build . --sdist"
   - ps: "ls dist"
 
 artifacts:

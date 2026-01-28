@@ -81,7 +81,8 @@ filterwarnings = [
 
 [tool.ruff]
 lint.select = ["E", "F", "UP", "I"]
-lint.ignore = []
+lint.ignore = ["UP031" # format specifiers
+                ]
 line-length = 120
 target-version = "py310"
 
@@ -92,3 +93,8 @@ exclude = ["oalib.py", "../oalib.py"]
 [tool.mypy-oalib.py]
 follow_imports = "skip"
 ignore_errors = true
+
+[tool.ty.rules]
+possibly-missing-attribute = "ignore"
+unresolved-attribute = "ignore"
+invalid-argument-type = "ignore"

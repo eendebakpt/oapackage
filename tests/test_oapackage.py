@@ -8,8 +8,8 @@ import unittest.mock as mock
 from unittest.mock import patch
 
 import numpy as np
-
 import oalib
+
 import oapackage
 import oapackage.graphtools
 import oapackage.scanf
@@ -350,7 +350,12 @@ class TestOAhelper(unittest.TestCase):
         c_code = oapackage.oahelper.formatC(self.test_array)
         self.assertEqual(
             c_code,
-            "\tarray_link array ( 16,5, 0 );\n\tint array_data_tmp[] = {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n",
+            (
+                "\tarray_link array ( 16,5, 0 );\n\tint array_data_tmp[] = "
+                "{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,1,0,1,1,1,0,1,1,1,0,0,0,1,0,0,1,0,1,0,"
+                "1,1,1,0,1,1,0,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0};"
+                "\tarray.setarraydata(array_data_tmp, array.n_rows * array.n_columns);\n",
+            ),
         )
 
     def test_runExtend(self):

@@ -83,15 +83,15 @@ arrays, optimal designs and conference matrices. For more information see
 http://github.com/eendebakpt/oapackage
 
 """
-from oalib import *  # noqa # legacy structure #type: ignore
-from oalib import (  # noqa #type: ignore
+# from oalib import *  # noqa # legacy structure
+from oalib import (  # noqa
     ParetoDoubleLong,
     array_link,
     arraydata_t,
+    arrayfile_t,
     arraylink2arraydata,
     exampleArray,
     reduceGraphNauty,
-    arrayfile_t,
     reduceOAnauty,
     transformGraphMatrix,
 )
