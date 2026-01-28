@@ -97,12 +97,14 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(
         -O3
-        -fPIC
         -Wno-unknown-pragmas
         -Wno-sign-compare
         -Wno-unused-variable
         -Wno-unused-result
     )
+    if(NOT WIN32)
+        add_compile_options(-fPIC)
+    endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(-Wno-c++11-compat-deprecated-writable-strings)
     endif()
