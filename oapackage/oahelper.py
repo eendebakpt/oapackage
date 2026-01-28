@@ -771,7 +771,7 @@ def test_checkFiles():
         else:
             open(fname, "a").close()
 
-    lst = [tempfile.mkstemp()]
+    lst = [tempfile.mkstemp()[1]]
     r = checkFiles(lst, cache=1, verbose=1)
     assert r is False
     touch(lst[0])
