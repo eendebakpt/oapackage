@@ -754,14 +754,12 @@ def checkFiles(lst, cache=1, verbose=0):
 
     if isstr(lst):
         lst = [lst]
-    c = True
     for f in lst:
         if not os.path.exists(f):
             if verbose:
                 print(f"checkFiles: file {f} does not exist")
-            c = False
-            break
-    return c
+            return False
+    return True
 
 
 def test_checkFiles():
@@ -771,7 +769,7 @@ def test_checkFiles():
         else:
             open(fname, "a").close()
 
-    lst = [tempfile.mkstemp()[1]]
+    lst = [tempfile.mktemp()]  # ty: ignore
     r = checkFiles(lst, cache=1, verbose=1)
     assert r is False
     touch(lst[0])
