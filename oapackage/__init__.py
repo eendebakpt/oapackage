@@ -158,7 +158,7 @@ from oalib import (  # noqa
     reduceLMCform,
     reduceOAnauty,
     reductionDOP,
-    selectConferenceIsomorphism,
+    selectConferenceIsomorpismClasses,
     selectLMC0,
     splitDir,
     splitFile,
