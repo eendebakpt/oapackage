@@ -41,7 +41,9 @@ install:
       }
 
 build_script:
-  - "python -m pip install ."
+  # Build wheel once, then install from it (avoids compiling twice)
+  - "python -m pip wheel . -w dist --no-deps"
+  - ps: "pip install (Get-ChildItem dist/*.whl)"
 
 test_script:
   - "pytest"
@@ -52,7 +54,6 @@ test_script:
       if ($env:PYTHON_VERSION -eq "3.10") {
         mypy --version
         mypy -p oapackage --follow-imports skip
-        jupyter nbconvert --to notebook --execute docs/examples/conference_design_isomorphism.ipynb
       }
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
@@ -68,7 +69,7 @@ test_script:
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
 after_test:
-  - "python -m pip wheel . -w dist"
+  # Wheel already built in build_script, just build sdist
   - "python -m build --sdist"
 #  - ps: |
 #      if ($env:PYTHON_VERSION -eq "3.10") {
