@@ -95,7 +95,7 @@ build: off
 
 build_script:
   # Build the compiled extension
-  - "%CMD_IN_ENV% %PYTHON%/python -m pip install setuptools"
+  - "%CMD_IN_ENV% %PYTHON%/python -m pip install setuptools build"
   - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
 
 
@@ -128,7 +128,7 @@ test_script:
 
 after_test:
   - "%CMD_IN_ENV% %PYTHON%/python -m pip wheel . -w dist"
-  - "%CMD_IN_ENV310% %PYTHON%/python -m build . --sdist"
+  - "%CMD_IN_ENV310% %PYTHON%/pyproject-build . --sdist"
   - ps: "ls dist"
 
 artifacts:
