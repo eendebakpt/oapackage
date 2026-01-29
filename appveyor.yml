@@ -1,11 +1,11 @@
 image: Visual Studio 2022
 
-global:
+environment:
+  global:
     # See: http://stackoverflow.com/a/13751649/163740
     WITH_COMPILER: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_compiler.cmd"
     CMD_IN_ENV310: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env310.cmd"
 
-environment:
   matrix:
     - PYTHON: "C:\\Python314-x64"
       PYTHON_VERSION: "3.14.0"
