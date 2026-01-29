@@ -11,16 +11,20 @@ environment:
 
   matrix:
 
-    - PYTHON: "C:\\Python313-x64"
-      PYTHON_VERSION: "3.13.0"
+    - PYTHON: "C:\\Python314-x64"
+      PYTHON_VERSION: "3.14"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python310-x64"
       PYTHON_VERSION: "3.10.4"
       PYTHON_ARCH: "64"
 
+    - PYTHON: "C:\\Python313-x64"
+      PYTHON_VERSION: "3.13"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python312-x64"
-      PYTHON_VERSION: "3.12.0"
+      PYTHON_VERSION: "3.12"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python311-x64"
@@ -66,7 +70,6 @@ install:
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install wheel"
 
-  #- "%CMD_IN_ENV37% pip install numpy==1.22"
   - "%CMD_IN_ENV% pip install python-dateutil numpy matplotlib"
   # Now that wheel has been installed, check to see if a numpy wheel has been
   # made yet. If it hasn't, compile it and put it in C:\tmp.
@@ -76,7 +79,6 @@ install:
   #- "%CMD_IN_ENV% pip install --no-index --find-links=c:\\tmp numpy"
 
   - ps: $env:ispython3 = $env:PYTHON.Contains("Python3")
-  - ps: $env:ispython38 = $env:PYTHON.Contains("Python38")
   - ps: $env:ispython310 = $env:PYTHON.Contains("Python310")
 
   # part of the testing requirements
@@ -101,7 +103,7 @@ build_script:
 
 test_script:
    - ECHO "Run tests:"
-   - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
+#   - "%CMD_IN_ENV% %PYTHON%/python -m pip install ."
    - "%CMD_IN_ENV% pytest"
 
    - "%CMD_IN_ENV_ARCH64% %PYTHON%/python -m pip install ."
