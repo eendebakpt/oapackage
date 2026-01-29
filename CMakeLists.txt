@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_UNITY_BUILD ON)
+set(CMAKE_UNITY_BUILD_BATCH_SIZE 8)
+
 # Options
 option(BUILD_PYTHON_MODULE "Build Python SWIG module" ON)
 option(BUILD_EXECUTABLES "Build command-line executables" OFF)
@@ -18,6 +21,12 @@ if(ZLIB_FOUND)
     message(STATUS "ZLIB found: ${ZLIB_LIBRARIES}")
 else()
     message(STATUS "ZLIB not found - building without compression support")
+endif()
+
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
 # ----------------------------------------------------------------------------
@@ -115,6 +124,8 @@ elseif(MSVC)
     add_compile_options(/EHsc /W0 /bigobj /wd4996 /wd4244 /wd26451 /wd26495 /wd6255 /D_SCL_SECURE_NO_WARNINGS)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
+
+
 
 # ----------------------------------------------------------------------------
 # Python SWIG module
@@ -241,6 +252,14 @@ if(BUILD_EXECUTABLES)
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/utils/${prog}.cpp")
             add_executable(${prog} utils/${prog}.cpp)
             target_link_libraries(${prog} PRIVATE oalib_static)
+
+            target_precompile_headers(${prog} PRIVATE
+                src/oaconfig.h
+                src/arraytools.h
+                <Eigen/Core>
+            )
+
+
         endif()
     endforeach()
 
