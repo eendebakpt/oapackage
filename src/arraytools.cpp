@@ -5810,7 +5810,7 @@ void invert_perm_switch (const std::vector< int > perm, const std::vector< int >
 }
 
 conference_transformation_t conference_transformation_t::inverse () const {
-        conference_transformation_t I (nrows, ncols);
+        conference_transformation_t I(nrows, ncols);
 
         invert_perm_switch (rperm, rswitch, I.rperm, I.rswitch);
         invert_perm_switch (cperm, cswitch, I.cperm, I.cswitch);
