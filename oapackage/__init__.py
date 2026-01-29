@@ -87,6 +87,7 @@ http://github.com/eendebakpt/oapackage
 from oalib import (  # noqa
     ParetoDoubleLong,
     array_link,
+    reduceConference,
     arraydata_t,
     arrayfile_t,
     arraylink2arraydata,

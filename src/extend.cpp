@@ -780,6 +780,11 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                 throw_runtime_exception("extend_array: strength should be >=1");
         }
 
+        if (fullad->ncols < ncolsextension) {
+                log_print (SYSTEM, " extend_array: error: specified arraydata_t does not have sufficient columns for extension\n");
+                throw_runtime_exception("extend_array: number of columns in arraydata_t insufficient");
+        }
+
         /* array data */
         arraydata_t *ad = new arraydata_t (fullad, ncolsextension);
         oaextend.updateArraydata (ad);
