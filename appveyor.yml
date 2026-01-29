@@ -15,16 +15,16 @@ environment:
       PYTHON_VERSION: "3.13.0"
       PYTHON_ARCH: "64"
 
+    - PYTHON: "C:\\Python310-x64"
+      PYTHON_VERSION: "3.10.4"
+      PYTHON_ARCH: "64"
+
     - PYTHON: "C:\\Python312-x64"
       PYTHON_VERSION: "3.12.0"
       PYTHON_ARCH: "64"
 
     - PYTHON: "C:\\Python311-x64"
       PYTHON_VERSION: "3.11.5"
-      PYTHON_ARCH: "64"
-
-    - PYTHON: "C:\\Python310-x64"
-      PYTHON_VERSION: "3.10.4"
       PYTHON_ARCH: "64"
 
 matrix:
