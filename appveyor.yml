@@ -60,7 +60,7 @@ for:
   - matrix:
       only:
         - PYTHON_VERSION: "3.10"
-    test_script:
+    after_test:
       - "ECHO Test notebooks for %PYTHON%"
       - jupyter nbconvert --to notebook --execute docs/examples/example_alan.ipynb
       - jupyter nbconvert --to notebook --execute docs/examples/conference_design_isomorphism.ipynb
@@ -74,7 +74,6 @@ for:
       - jupyter nbconvert --to notebook --execute docs/examples/example_oa_files.ipynb
       - jupyter nbconvert --to notebook --execute docs/examples/example_optimal_orthogonal_arrays.ipynb
       - jupyter nbconvert --to notebook --execute docs/examples/example_pareto.ipynb
-    after_test:
       # Wheel already built in build_script, just build sdist
       - "python -m build --sdist"
 

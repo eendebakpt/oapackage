@@ -11,8 +11,7 @@
 #include <Eigen/SVD>
 #include <Eigen/LU>
 
-#ifdef _WIN32
-#else
+#ifndef _WIN32
 #include <stdbool.h>
 #include <unistd.h>
 #endif
@@ -313,16 +312,14 @@ std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > 
         const ndarray<double> Bout = macwilliams_transform_mixed(B, N, factor_levels_for_groups, verbose);
 
         const int ngroups = B.k;
-        const int total_number_of_elements = B.n;
 
         int* index_in = new int[ngroups];
-        int* index_out = new int[ngroups];
 
         // use formula from page 555 in Xu and Wu (Theorem 4.i)
         int jmax = B.cumdims[B.k] - B.k;
         std::vector< double > A (jmax+1, 0);
 
-        for (int i = 0; i < total_number_of_elements; i++) {
+        for (int i = 0; i < Bout.n; i++) {
                 Bout.linear2idx (i, index_in);
                 int jsum = 0;
                 for (int j = 0; j < Bout.k; j++)
@@ -332,7 +329,6 @@ std::vector< double > gwpl_macwilliams_transform_mixed (const ndarray< double > 
                 A[jsum] += Bout.data[i];
         }
 
-        delete[] index_out;
         delete[] index_in;
 
         return A;
@@ -710,7 +706,6 @@ int arrayrankInfo (const array_link &al, int verbose) {
 
 /// helper function
 std::vector< int > subIndices (int ks, int k) {
-        const int m = 1 + k + k * (k - 1) / 2;
         const int msub = 1 + ks + ks * (ks - 1) / 2;
         std::vector< int > idxsub (msub);
         for (int i = 0; i < ks + 1; i++)
@@ -1136,9 +1131,6 @@ std::vector<int> array2modelmatrix_sizes(const array_link & array)
 	std::partial_sum(modelmatrix_components_sizes.begin(), modelmatrix_components_sizes.end(), modelmatrix_sizes.begin(), std::plus<int>());
 	return modelmatrix_sizes;
 }
-
-using namespace Eigen;
-
 
 void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose) {
         Eigen::FullPivLU< MatrixXd > lu_decomp (secondorder_interaction_matrix);
