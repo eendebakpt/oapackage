@@ -18,8 +18,8 @@ import matplotlib.cm
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing
+import oalib
 
-import oalib  # type: ignore
 import oapackage.markup as markup
 import oapackage.oahelper as oahelper
 from oapackage.markup import oneliner as e
@@ -107,7 +107,7 @@ def generateDscatter(
         print(f"generateDscatter: unique colors: {idx}")
     ncolors = idx.size
     try:
-        import brewer2mpl
+        import brewer2mpl  # ty: ignore
 
         ncolors = max(ncolors, 4)
         mycmap = brewer2mpl.get_map("Set1", "qualitative", ncolors).mpl_colors
@@ -401,7 +401,7 @@ def optimDeffPython(
         efficiencies = alpha(A0)  # type: ignore
     else:
         D, Ds, D1 = A0.Defficiencies()
-        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
+        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1  # ty: ignore
     A = A0.clone()
     lc = 0
     for ii in range(0, niter):

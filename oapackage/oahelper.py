@@ -31,8 +31,12 @@ try:
 except BaseException:
     warnings.warn("oahelper: matplotlib cannot be found, not all functionality is available")
 
-import oalib  # type: ignore
 import oapackage
+
+try:
+    import oalib
+except ImportError:
+    warnings.warn("oahelper: oalib cannot be found, not all functionality is available")
 from oapackage import markup
 
 
@@ -133,7 +137,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
         x = ww[0] + ix * w
         y = ww[1] + iy * h
         if verbose:
-            print("ii %d: %d %d: f %d: %d %d %d %d" % (ii, ix, iy, f, x, y, w, h))
+            print(f"ii {ii}: {ix} {iy}: f {f}: {x} {y} {w} {h}")
             if verbose >= 2:
                 print(f"  window {mngr.get_window_title()}")
         if be == "WXAgg":
@@ -293,7 +297,7 @@ def helmert_contrasts(number_of_levels, verbose=0):
             Z[value, q] = -1
 
     if verbose:
-        print("helmert_contrasts: %d\n" % (number_of_levels))
+        print(f"helmert_contrasts: {number_of_levels}\n")
         print("Z (initial creation)")
         print(Z)
 
@@ -642,12 +646,12 @@ def runcommand(
             line_bytes = process.stdout.readline()
             line = line_bytes.decode(encoding="UTF-8")
             if verbose >= 2:
-                print("runcommand: jj %d" % jj)
+                print(f"runcommand: jj {jj}")
             if verbose >= 3:
-                print('runcommand: jj %d: "%s"' % (jj, line))
+                print(f'runcommand: jj {jj}: "{line}"')
             if len(line) == 0:
                 if verbose >= 2:
-                    print("runcommand: len(line) %d" % len(line))
+                    print(f"runcommand: len(line) {len(line)}")
 
                 break
 
@@ -750,14 +754,12 @@ def checkFiles(lst, cache=1, verbose=0):
 
     if isstr(lst):
         lst = [lst]
-    c = True
     for f in lst:
         if not os.path.exists(f):
             if verbose:
                 print(f"checkFiles: file {f} does not exist")
-            c = False
-            break
-    return c
+            return False
+    return True
 
 
 def test_checkFiles():
@@ -767,7 +769,7 @@ def test_checkFiles():
         else:
             open(fname, "a").close()
 
-    lst = [tempfile.mktemp()]
+    lst = [tempfile.mktemp()]  # ty: ignore
     r = checkFiles(lst, cache=1, verbose=1)
     assert r is False
     touch(lst[0])
@@ -950,8 +952,7 @@ def parseProcessingTime(logfile, verbose=0):
                 if verbose >= 2:
                     print(f"parseProcessingTime: tend: {tend}")
             elif line.startswith("#time total:"):
-                dtr = line[13:]
-                dtr = float(dtr[:-5])
+                dtr = float(line[13:][:-5])
                 if verbose >= 2:
                     print(f"parseProcessingTime: total: {dtr}")
             else:
@@ -990,12 +991,12 @@ def series2htmlstr(ad, html=1, case=0):
     if case == 0:
         if bb[-1] > 1:
             bb[-1] = "a"
-    hstr = "OA(%d; %d; " % (ad.N, ad.strength)
+    hstr = f"OA({ad.N}; {ad.strength}; "
     for ii, _ in enumerate(levels):
         if html:
-            hstr += "%d<sup>%s</sup>" % (levels[ii], str(bb[ii]))
+            hstr += f"{levels[ii]}<sup>{bb[ii]}</sup>"
         else:
-            hstr += "%d^%s" % (levels[ii], str(bb[ii]))
+            hstr += f"{levels[ii]}^{bb[ii]}"
     hstr += ")"
     return hstr
 
@@ -1042,7 +1043,7 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
         if v[jj] > 0:
             solseo.append(sols0[jj])
     if verbose:
-        print("selectJ: kept %d/%d solutions" % (solseo.size(), len(sols0)))
+        print(f"selectJ: kept {solseo.size()}/{len(sols0)} solutions")
     return solseo
 
 
@@ -1085,7 +1086,7 @@ def runExtend(N: int, k: int, t: int = 3, l: int = 2, verbose: int = 1, initsols
        >>> designs = oapackage.oahelper.runExtend(16, 5, 3, verbose=0)
     """
     if verbose:
-        print("runExtend: N=%d, k=%d, t=%d" % (N, k, t))
+        print(f"runExtend: N={N}, k={k}, t={t}")
     if isinstance(l, list):
         ll = l
     else:
@@ -1113,7 +1114,7 @@ def runExtend(N: int, k: int, t: int = 3, l: int = 2, verbose: int = 1, initsols
         solsx = oalib.arraylist_t()
         oalib.extend_arraylist(sols0, adata, oaoptions, ii, solsx)
         if verbose >= 2:
-            print(" ii %d: %d" % (ii, solsx.size()))
+            print(f" ii {ii}: {solsx.size()}")
         sols0 = solsx
         nums.append(solsx.size())
         sys.stdout.flush()
@@ -1252,7 +1253,7 @@ def designStandardError(al) -> tuple[float, float, float]:
     m2 = mm[(1 + k) :]
     m2 = m2[np.argsort(m2)]
     m0 = mm[0]
-    return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)
+    return np.sqrt(m0), np.sqrt(m1), np.sqrt(m2)  # ty: ignore
 
 
 # %%
@@ -1287,19 +1288,20 @@ def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
     if mngr is None:
         mngr = plt.get_current_fig_manager()
     be = matplotlib.get_backend()
+    window = mngr.canvas.manager.window
     if be == "WXAgg":
-        mngr.canvas.manager.window.SetPosition((x, y))
-        mngr.canvas.manager.window.SetSize((w, h))
+        window.SetPosition((x, y))
+        window.SetSize((w, h))
     elif be == "agg":
-        mngr.canvas.manager.window.SetPosition((x, y))
-        mngr.canvas.manager.window.resize(w, h)
+        window.SetPosition((x, y))
+        window.resize(w, h)
     elif be == "module://IPython.kernel.zmq.pylab.backend_inline":
         pass
     else:
         # assume Qt canvas
-        mngr.canvas.manager.window.move(x, y)
-        mngr.canvas.manager.window.resize(w, h)
-        mngr.canvas.manager.window.setGeometry(x, y, w, h)
+        window.move(x, y)
+        window.resize(w, h)
+        window.setGeometry(x, y, w, h)
 
 
 def makearraylink(array):
@@ -1349,7 +1351,8 @@ def create_pareto_element(values, pareto=None):
                 v = [v]
             if not isinstance(v, (list, type)):
                 raise Exception(
-                    f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(v)} not supported"
+                    f"creating Pareto element for Pareto object of type {type(pareto)} "
+                    f"and input of type {type(v)} not supported"
                 )
             vec = oalib.mvalue_t_long(list(v))
             vector_pareto.push_back(vec)
@@ -1361,7 +1364,8 @@ def create_pareto_element(values, pareto=None):
                 v = [float(v)]
             if not isinstance(v, (list, tuple)):
                 raise Exception(
-                    f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(v)} not supported"
+                    f"creating Pareto element for Pareto object of type {type(pareto)} "
+                    f"and input of type {type(v)} not supported"
                 )
 
             vec = oalib.mvalue_t_double(list(v))
@@ -1372,6 +1376,7 @@ def create_pareto_element(values, pareto=None):
         vector_pareto = values
     else:
         raise Exception(
-            f"creating Pareto element for Pareto object of type {type(pareto)} and input of type {type(values)} not supported"
+            f"creating Pareto element for Pareto object of type {type(pareto)} "
+            f"and input of type {type(values)} not supported"
         )
     return vector_pareto
