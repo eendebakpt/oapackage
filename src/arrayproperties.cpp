@@ -9,6 +9,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
+#include <Eigen/LU>
 
 #ifdef _WIN32
 #else
@@ -707,9 +708,6 @@ int arrayrankInfo (const array_link &al, int verbose) {
 }
 
 
-#include <Eigen/Core>
-#include <Eigen/Dense>
-
 /// helper function
 std::vector< int > subIndices (int ks, int k) {
         const int m = 1 + k + k * (k - 1) / 2;
@@ -1141,7 +1139,6 @@ std::vector<int> array2modelmatrix_sizes(const array_link & array)
 
 using namespace Eigen;
 
-#include <Eigen/LU>
 
 void DAEefficiencyWithSVD (const Eigen::MatrixXd &secondorder_interaction_matrix, double &Deff, double &vif, double &Eeff, int &rank, int verbose) {
         Eigen::FullPivLU< MatrixXd > lu_decomp (secondorder_interaction_matrix);

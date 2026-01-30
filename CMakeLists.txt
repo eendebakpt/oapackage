@@ -253,6 +253,7 @@ if(BUILD_EXECUTABLES)
             target_precompile_headers(${prog} PRIVATE
                 src/arraytools.h
                 <Eigen/Core>
+                <Eigen/Dense>
             )
             message(STATUS "Adding executable: ${prog}")
 
