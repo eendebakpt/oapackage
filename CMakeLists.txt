@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options
 option(BUILD_PYTHON_MODULE "Build Python SWIG module" ON)
-option(BUILD_EXECUTABLES "Build command-line executables" OFF)
+option(BUILD_EXECUTABLES "Build command-line executables" ON)
 option(OADEV "Build development code" OFF)
 
 # ----------------------------------------------------------------------------
@@ -255,7 +255,7 @@ if(BUILD_EXECUTABLES)
                 src/arraytools.h
                 <Eigen/Core>
             )
-
+            message(STATUS "Adding executable: ${prog}")
 
         endif()
     endforeach()
@@ -265,5 +265,6 @@ if(BUILD_EXECUTABLES)
         add_executable(oaextendsingle utils/oaextend.cpp)
         target_link_libraries(oaextendsingle PRIVATE oalib_static)
         target_compile_definitions(oaextendsingle PRIVATE OAEXTEND_SINGLECORE NEWINTERFACE)
+        message(STATUS "Adding executable: oaextendsingle")
     endif()
 endif()

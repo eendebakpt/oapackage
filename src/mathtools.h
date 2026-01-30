@@ -1757,6 +1757,7 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
 #include <Eigen/Core>
 #include <Eigen/SVD>
 
+/*
 /// return the condition number of a matrix
 template < class Type >
 double conditionNumber (const Eigen::Matrix< Type, -1, -1 > A) {
@@ -1764,6 +1765,7 @@ double conditionNumber (const Eigen::Matrix< Type, -1, -1 > A) {
         double cond = svd.singularValues () (0) / svd.singularValues () (svd.singularValues ().size () - 1);
         return cond;
 }
+*/
 
 /// calculate the average value of a vector of numbers
 template < class NumericType >

@@ -57,7 +57,11 @@ test_script:
       }
   - jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb
   - echo $?
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+  - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+  - ps: |
+      if ($env:PYTHON_VERSION -eq "3.10") {
+          jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb
+      }
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
