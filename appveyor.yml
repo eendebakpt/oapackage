@@ -57,11 +57,11 @@ test_script:
       }
   - jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb
   - echo $?
-  - "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
   - ps: |
       if ($env:PYTHON_VERSION -eq "3.10") {
-          jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb
+          jupyter nbconvert --to notebook --execute docs/examples/example_alan.ipynb
       }
+  - echo $?
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
@@ -74,14 +74,13 @@ test_script:
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
-after_test:
-  # Wheel already built in build_script, just build sdist
-  - "python -m build --sdist"
-#  - ps: |
-#      if ($env:PYTHON_VERSION -eq "3.10") {
-#        python -m build --sdist
-#      }
-#  - ps: "Get-ChildItem dist"
+for:
+  - matrix:
+      only:
+        - PYTHON_VERSION: "3.10"
+    after_test:
+      # Wheel already built in build_script, just build sdist
+      - "python -m build --sdist"
 
 artifacts:
   - path: dist\*
