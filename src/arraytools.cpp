@@ -4036,10 +4036,10 @@ int append_arrays (FILE *fid, arraylist_t &arrays, int startidx = 0) {
 
 template < class TypeIn, class TypeOut >
 /// Write array to binary blob of selected datatype
-void writeblob (const TypeIn *src, size_t n, FILE *fid) {
+void writeblob (const TypeIn *src, int n, FILE *fid) {
         TypeOut *dst = new TypeOut[n];
 
-        for (size_t i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
                 dst[i] = src[i];
         }
         fwrite ((const void *)dst, sizeof (TypeOut), n, fid);
