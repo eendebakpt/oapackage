@@ -183,8 +183,8 @@ void warning(const char* message, ...) {
 }
 
 
-/*!Returns the actual time with millisecond precission, can be used for measuring times of small functions
-  \brief Returns the actual time with millisecond precission
+/*!Returns the actual time with millisecond precision, can be used for measuring times of small functions
+  \brief Returns the actual time in seconds with millisecond precision
 
   */
 double get_time_ms () {
@@ -211,13 +211,7 @@ double get_time_ms (double t0)
 #endif
 }
 
-double get_time_ms2 (double t0) {
-	const time_t epoch = 0;
-	time_t now;
-    time(&now);
-	double seconds = difftime(now, epoch) - t0;
-	return seconds;
-}
+
 const std::string whiteSpaces (" \f\n\r\t\v");
 
 void trimRight (std::string &str, const std::string &trimChars = whiteSpaces) {

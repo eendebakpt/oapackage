@@ -15,6 +15,21 @@
 #include "oaoptions.h"
 #include "tools.h"
 
+inline std::string print_eigen_options_string () {
+        std::string tabsep = "  ";
+        std::stringstream outx;
+
+        outx << tabsep << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "."
+             << EIGEN_MINOR_VERSION << std::endl;
+
+        Eigen::MatrixXd mymatrix (1, 1);
+        Eigen::FullPivLU< Eigen::MatrixXd > lu_decomp (mymatrix);
+
+        outx << tabsep << "eigen: JacobiSVD threshold " << lu_decomp.threshold () << std::endl;
+        const std::string s = outx.str ();
+        return s;
+}
+
 /** Class representing an n-dimensional array
  *
  * The data is stored in a flat array. The dimensions are stored in a vector \c dims.

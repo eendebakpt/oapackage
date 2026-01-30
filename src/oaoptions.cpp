@@ -1,6 +1,3 @@
-#include <Eigen/Core>
-#include <Eigen/SVD>
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -39,9 +36,6 @@ void print_copyright () {
  */
 void print_copyright_light () { myprintf ("Orthogonal Array package %s\n", version ().c_str ()); }
 
-#include <Eigen/Core>
-#include <Eigen/LU>
-#include <Eigen/SVD>
 
 // http://sourceforge.net/p/predef/wiki/Compilers/
 #if defined(__GNUC__)
@@ -63,7 +57,6 @@ void print_copyright_light () { myprintf ("Orthogonal Array package %s\n", versi
  */
 std::string print_options_string () {
         std::string tabsep = "  ";
-
         std::stringstream outx;
 
         outx << "Orthogonal Array Package " << version () << std::endl;
@@ -79,14 +72,6 @@ std::string print_options_string () {
         outx << tabsep << "integer types: sizeof(long long) " << sizeof (long long) << std::endl;
         outx << tabsep << "floating point type: sizeof(float) " << sizeof (float) << ", sizeof(double) "
              << sizeof (double) << ", sizeof(long double) " << sizeof (long double) << std::endl;
-        outx << tabsep << "Eigen version: " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "."
-             << EIGEN_MINOR_VERSION << std::endl;
-
-        Eigen::MatrixXd mymatrix (1, 1);
-        Eigen::FullPivLU< Eigen::MatrixXd > lu_decomp (mymatrix);
-
-        outx << tabsep << "eigen: JacobiSVD threshold " << lu_decomp.threshold () << std::endl;
-
         // http://sourceforge.net/p/predef/wiki/Compilers/
         outx << tabsep << "Compiler: __GNUC_VERSION__ " << __GNUC_VERSION__ << std::endl;
         outx << tabsep << "Compiler: __INTEL_COMPILER " << __INTEL_COMPILER << std::endl;

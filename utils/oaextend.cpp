@@ -31,8 +31,6 @@
 #include "tools.h"
 
 
-/** number of master processor */
-const int MASTER = 0;
 
 /* OAEXTEND_SINGLECORE */
 int extend_slave_code (const int this_rank, OAextend const &oaextend) { return 0; }
@@ -160,217 +158,215 @@ int init_restart (const char *fname, colindex_t &cols, arraylist_t &solutions) {
  */
 int main (int argc, char *argv[]) {
 
-        {
-                double Tstart = get_time_ms ();
-                int nr_extensions;
-                arraylist_t solutions, extensions;
+        double Tstart = get_time_ms ();
+        int nr_extensions;
+        arraylist_t solutions, extensions;
 
-                algorithm_t algorithm = MODE_INVALID;
-                AnyOption *opt = parseOptions (argc, argv, algorithm);
-                print_copyright ();
+        algorithm_t algorithm = MODE_INVALID;
+        AnyOption *opt = parseOptions (argc, argv, algorithm);
+        print_copyright ();
 
-                int loglevel = opt->getIntValue ('l', NORMAL);
-                setloglevel (loglevel);
+        int loglevel = opt->getIntValue ('l', NORMAL);
+        setloglevel (loglevel);
 
-                int dosort = opt->getIntValue ('s', 1);
-                int userowsymm = opt->getIntValue ("rowsymmetry", 1);
-                int maxk = opt->getIntValue ("maxk", 100000);
-                int initcolprev = opt->getIntValue ("initcolprev", 1);
+        int dosort = opt->getIntValue ('s', 1);
+        int userowsymm = opt->getIntValue ("rowsymmetry", 1);
+        int maxk = opt->getIntValue ("maxk", 100000);
+        int initcolprev = opt->getIntValue ("initcolprev", 1);
 
-                const bool streaming = opt->getFlag ("streaming");
+        const bool streaming = opt->getFlag ("streaming");
 
-                bool restart = false;
-                if (opt->getValue ("restart") != NULL || opt->getValue ('r') != NULL) {
-                        restart = true;
+        bool restart = false;
+        if (opt->getValue ("restart") != NULL || opt->getValue ('r') != NULL) {
+                restart = true;
+        }
+
+        const char *oaconfigfile = opt->getStringValue ('c', "oaconfig.txt");
+        const char *resultprefix = opt->getStringValue ('o', "result");
+
+        arrayfile::arrayfilemode_t mode = arrayfile_t::parseModeString (opt->getStringValue ('f', "T"));
+
+        OAextend oaextend;
+        oaextend.setAlgorithm (algorithm);
+
+        if (streaming) {
+                logstream (SYSTEM) << "operating in streaming mode, sorting of arrays will not work "
+                                        << std::endl;
+                oaextend.extendarraymode = OAextend::extendarray_mode_t::STOREARRAY;
+        }
+
+        // J5_45
+        int xx = opt->getFlag ('x');
+        if (xx) {
+                oaextend.j5structure = J5_45;
+        }
+
+        if (userowsymm == 0) {
+                oaextend.use_row_symmetry = userowsymm;
+                printf ("use row symmetry -> %d\n", oaextend.use_row_symmetry);
+        }
+        if (opt->getFlag ('g')) {
+                std::cout << "only generating arrays (no LMC check)" << endl;
+                oaextend.checkarrays = 0;
+        }
+
+        if (opt->getFlag ("help") || (opt->getValue ("coptions") != NULL)) {
+                if (opt->getFlag ("help")) {
+                        opt->printUsage ();
+                }
+                if (opt->getValue ("coptions") != NULL) {
+                        print_options (cout);
+                }
+        } else {
+                logstream (QUIET) << "#time start: " << currenttime () << std::endl;
+
+                arraydata_t *ad;
+                ad = readConfigFile (oaconfigfile);
+                ad->lmc_overflow_check ();
+
+                if (ad == 0) {
+                        return 1;
                 }
 
-                const char *oaconfigfile = opt->getStringValue ('c', "oaconfig.txt");
-                const char *resultprefix = opt->getStringValue ('o', "result");
+                log_print (NORMAL, "Using design file: %s (runs %d, strength %d)\n", oaconfigfile, ad->N,
+                                ad->strength);
 
-                arrayfile::arrayfilemode_t mode = arrayfile_t::parseModeString (opt->getStringValue ('f', "T"));
-
-                OAextend oaextend;
-                oaextend.setAlgorithm (algorithm);
-
-                if (streaming) {
-                        logstream (SYSTEM) << "operating in streaming mode, sorting of arrays will not work "
-                                           << std::endl;
-                        oaextend.extendarraymode = OAextend::extendarray_mode_t::STOREARRAY;
+                if (oaextend.getAlgorithm () == MODE_AUTOSELECT) {
+                        oaextend.setAlgorithmAuto (ad);
                 }
 
-                // J5_45
-                int xx = opt->getFlag ('x');
-                if (xx) {
-                        oaextend.j5structure = J5_45;
+                if (initcolprev == 0) {
+                        log_print (NORMAL, "setting oaextend.init_column_previous to %d\n", INITCOLUMN_ZERO);
+                        oaextend.init_column_previous = INITCOLUMN_ZERO;
                 }
 
-                if (userowsymm == 0) {
-                        oaextend.use_row_symmetry = userowsymm;
-                        printf ("use row symmetry -> %d\n", oaextend.use_row_symmetry);
-                }
-                if (opt->getFlag ('g')) {
-                        std::cout << "only generating arrays (no LMC check)" << endl;
-                        oaextend.checkarrays = 0;
+                colindex_t col_start;
+
+                log_print (SYSTEM, "using algorithm %d (%s)\n", oaextend.getAlgorithm (),
+                                oaextend.getAlgorithmName ().c_str ());
+                if (log_print (NORMAL, "")) {
+                        cout << oaextend.__repr__ ();
                 }
 
-                if (opt->getFlag ("help") || (opt->getValue ("coptions") != NULL)) {
-                        if (opt->getFlag ("help")) {
-                                opt->printUsage ();
+                if (restart) { // start from result file
+                        int initres = init_restart (opt->getValue ('r'), col_start, solutions);
+                        if (initres == 1) { // check if restarting went OK
+                                logstream (SYSTEM) << "Problem with restart from " << opt->getValue ('r') << ""
+                                                        << endl;
+
+                                exit (1);
                         }
-                        if (opt->getValue ("coptions") != NULL) {
-                                print_options (cout);
+
+                        if (dosort) {
+                                double Ttmp = get_time_ms ();
+                                sort (solutions.begin (), solutions.end ());
+
+                                log_print (QUIET, "   sorting of initial solutions: %.3f [s]\n",
+                                                get_time_ms () - Ttmp);
                         }
+
+                        // check that oaconfig agrees with loaded arrays
+                        if (solutions.size () > 0) {
+                                if (ad->N != solutions[0].n_rows) {
+                                        printf ("Problem: oaconfig does not agree with loaded arrays!\n");
+                                        solutions.clear ();
+                                }
+                        }
+
                 } else {
-                        logstream (QUIET) << "#time start: " << currenttime () << std::endl;
+                        // starting with root
+                        if (check_divisibility (ad) == false) {
+                                log_print (SYSTEM, "ERROR: Failed divisibility test!\n");
 
-                        arraydata_t *ad;
-                        ad = readConfigFile (oaconfigfile);
-                        ad->lmc_overflow_check ();
-
-                        if (ad == 0) {
-                                return 1;
+                                exit (1);
                         }
-
-                        log_print (NORMAL, "Using design file: %s (runs %d, strength %d)\n", oaconfigfile, ad->N,
-                                   ad->strength);
-
-                        if (oaextend.getAlgorithm () == MODE_AUTOSELECT) {
-                                oaextend.setAlgorithmAuto (ad);
-                        }
-
-                        if (initcolprev == 0) {
-                                log_print (NORMAL, "setting oaextend.init_column_previous to %d\n", INITCOLUMN_ZERO);
-                                oaextend.init_column_previous = INITCOLUMN_ZERO;
-                        }
-
-                        colindex_t col_start;
-
-                        log_print (SYSTEM, "using algorithm %d (%s)\n", oaextend.getAlgorithm (),
-                                   oaextend.getAlgorithmName ().c_str ());
-                        if (log_print (NORMAL, "")) {
-                                cout << oaextend.__repr__ ();
-                        }
-
-                        if (restart) { // start from result file
-                                int initres = init_restart (opt->getValue ('r'), col_start, solutions);
-                                if (initres == 1) { // check if restarting went OK
-                                        logstream (SYSTEM) << "Problem with restart from " << opt->getValue ('r') << ""
-                                                           << endl;
-
-                                        exit (1);
-                                }
-
-                                if (dosort) {
-                                        double Ttmp = get_time_ms ();
-                                        sort (solutions.begin (), solutions.end ());
-
-                                        log_print (QUIET, "   sorting of initial solutions: %.3f [s]\n",
-                                                   get_time_ms () - Ttmp);
-                                }
-
-                                // check that oaconfig agrees with loaded arrays
-                                if (solutions.size () > 0) {
-                                        if (ad->N != solutions[0].n_rows) {
-                                                printf ("Problem: oaconfig does not agree with loaded arrays!\n");
-                                                solutions.clear ();
-                                        }
-                                }
-
-                        } else {
-                                // starting with root
-                                if (check_divisibility (ad) == false) {
-                                        log_print (SYSTEM, "ERROR: Failed divisibility test!\n");
-
-                                        exit (1);
-                                }
-                                create_root (ad, solutions);
-                                col_start = ad->strength;
-                        }
-
-                        /*-----------MAIN EXTENSION LOOP-------------*/                        
-                        maxk = std::min (maxk, ad->ncols);
-
-                        time_t seconds;
-                        for (colindex_t current_col = col_start; current_col < maxk; current_col++) {
-                                fflush (stdout);
-                                arraydata_t *adcol = new arraydata_t (ad, current_col + 1);
-
-                                if (streaming) {
-
-                                        string fname = resultprefix;
-                                        fname += "-streaming";
-                                        fname += "-" + oafilestring (adcol);
-                                        logstream (NORMAL) << "oaextend: streaming mode: create file " << fname
-                                                           << std::endl;
-                                        int nb = arrayfile_t::arrayNbits (*ad);
-
-                                        oaextend.storefile.createfile (fname, adcol->N, adcol->ncols, -1, ABINARY, nb);
-                                }
-
-                                log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
-                                           current_col + 1, (int)solutions.size (), get_time_ms (Tstart));
-                                nr_extensions = 0;
-                                arraylist_t::const_iterator cur_extension;
-
-                                int csol = 0;
-                                for (cur_extension = solutions.begin (); cur_extension != solutions.end ();
-                                     cur_extension++) {
-                                        print_progress (csol, solutions, extensions, Tstart, current_col);
-                                        logstream (NORMAL) << cur_extension[0];
-
-                                        nr_extensions += extend_array (*cur_extension, adcol,
-                                                                               current_col, extensions, oaextend);
-
-                                        csol++; /* increase current solution */
-                                }
-
-                                if (checkloglevel (NORMAL)) {
-                                        csol = 0;
-                                        for (cur_extension = extensions.begin (); cur_extension != extensions.end ();
-                                             cur_extension++) {
-                                                log_print (DEBUG, "%i: -----\n", ++csol);
-                                                logstream (DEBUG) << cur_extension[0];
-                                        }
-                                }
-                                if (dosort) {
-                                        log_print (DEBUG, "Sorting solutions, necessary for multi-processor code\n");
-                                        double Ttmp = get_time_ms ();
-                                        sort (extensions.begin (), extensions.end ());
-                                        log_print (DEBUG, "   sorting time: %.3f [s]\n", get_time_ms () - Ttmp);
-                                }
-
-                                if (streaming) {
-                                    // the extensions have already been written, only close the file
-                                    std::cout << "streaming mode: closing file " << oaextend.storefile.filename << std::endl;
-                                    oaextend.storefile.closefile();
-                                } else
-                                {
-                                    save_arrays(extensions, adcol, resultprefix, mode);
-                                }
-                                solutions.swap (extensions); // swap old and newly found solutions
-                                extensions.clear ();         // clear old to free up space for new extensions
-
-                                log_print (SYSTEM, "Done with column %i, total of %i solutions (time %.2f s))\n",
-                                           current_col + 1, (int)solutions.size (), get_time_ms () - Tstart);
-
-                                delete adcol;
-
-                        }
-                        /*------------------------*/
-                        time (&seconds);
-                        struct tm *tminfo;
-                        tminfo = localtime (&seconds);
-                        log_print (SYSTEM, "TIME: %.2f s, %s", get_time_ms () - Tstart, asctime (tminfo));
-                        logstream (QUIET) << "#time end: " << currenttime () << std::endl;
-                        logstream (QUIET) << "#time total: " << printfstring ("%.1f", get_time_ms () - Tstart)
-                                          << " [s]" << std::endl;
-
-                        solutions.clear ();
-                        delete ad;
+                        create_root (ad, solutions);
+                        col_start = ad->strength;
                 }
 
-                delete opt;
-        } /* end of master code */
+                /*-----------MAIN EXTENSION LOOP-------------*/                        
+                maxk = std::min (maxk, ad->ncols);
+
+                time_t seconds;
+                for (colindex_t current_col = col_start; current_col < maxk; current_col++) {
+                        fflush (stdout);
+                        arraydata_t *adcol = new arraydata_t (ad, current_col + 1);
+
+                        if (streaming) {
+
+                                string fname = resultprefix;
+                                fname += "-streaming";
+                                fname += "-" + oafilestring (adcol);
+                                logstream (NORMAL) << "oaextend: streaming mode: create file " << fname
+                                                        << std::endl;
+                                int nb = arrayfile_t::arrayNbits (*ad);
+
+                                oaextend.storefile.createfile (fname, adcol->N, adcol->ncols, -1, ABINARY, nb);
+                        }
+
+                        log_print (SYSTEM, "Starting with column %d (%d, total time: %.2f [s])\n",
+                                        current_col + 1, (int)solutions.size (), get_time_ms (Tstart));
+                        nr_extensions = 0;
+                        arraylist_t::const_iterator cur_extension;
+
+                        int csol = 0;
+                        for (cur_extension = solutions.begin (); cur_extension != solutions.end ();
+                                cur_extension++) {
+                                print_progress (csol, solutions, extensions, Tstart, current_col);
+                                logstream (NORMAL) << cur_extension[0];
+
+                                nr_extensions += extend_array (*cur_extension, adcol,
+                                                                        current_col, extensions, oaextend);
+
+                                csol++; /* increase current solution */
+                        }
+
+                        if (checkloglevel (NORMAL)) {
+                                csol = 0;
+                                for (cur_extension = extensions.begin (); cur_extension != extensions.end ();
+                                        cur_extension++) {
+                                        log_print (DEBUG, "%i: -----\n", ++csol);
+                                        logstream (DEBUG) << cur_extension[0];
+                                }
+                        }
+                        if (dosort) {
+                                log_print (DEBUG, "Sorting solutions, necessary for multi-processor code\n");
+                                double Ttmp = get_time_ms ();
+                                sort (extensions.begin (), extensions.end ());
+                                log_print (DEBUG, "   sorting time: %.3f [s]\n", get_time_ms () - Ttmp);
+                        }
+
+                        if (streaming) {
+                                // the extensions have already been written, only close the file
+                                std::cout << "streaming mode: closing file " << oaextend.storefile.filename << std::endl;
+                                oaextend.storefile.closefile();
+                        } else
+                        {
+                                save_arrays(extensions, adcol, resultprefix, mode);
+                        }
+                        solutions.swap (extensions); // swap old and newly found solutions
+                        extensions.clear ();         // clear old to free up space for new extensions
+
+                        log_print (SYSTEM, "Done with column %i, total of %i solutions (time %.2f s))\n",
+                                        current_col + 1, (int)solutions.size (), get_time_ms () - Tstart);
+
+                        delete adcol;
+
+                }
+                /*------------------------*/
+                time (&seconds);
+                struct tm *tminfo;
+                tminfo = localtime (&seconds);
+                log_print (SYSTEM, "TIME: %.2f s, %s", get_time_ms () - Tstart, asctime (tminfo));
+                logstream (QUIET) << "#time end: " << currenttime () << std::endl;
+                logstream (QUIET) << "#time total: " << printfstring ("%.1f", get_time_ms () - Tstart)
+                                        << " [s]" << std::endl;
+
+                solutions.clear ();
+                delete ad;
+        }
+
+        delete opt;
 
         return 0;
 }

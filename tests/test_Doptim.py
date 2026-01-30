@@ -1,5 +1,4 @@
-""" Orthogonal Array package test functions
-"""
+"""Orthogonal Array package test functions"""
 
 import io
 import tempfile
@@ -7,8 +6,8 @@ import unittest
 import unittest.mock as mock
 
 import numpy as np
-
 import oalib
+
 import oapackage
 import oapackage.Doptim
 import oapackage.scanf

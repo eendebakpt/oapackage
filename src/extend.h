@@ -30,8 +30,11 @@ class OAextend {
         //! perform LMC test after generation of array
         int checkarrays;
 
-        //! if true then return at once if a single extension has been found
+        //! maximum number of extentions to generate from a single array. if zero, generate all possible extentions
         int check_maximal;
+
+        //! maximum duration of extention process for a single array, in seconds. if zero, no limit
+        double maximum_duration;
 
         //! adds a symmetry check to the extension algorithm based in symmetry of row permutations
         int use_row_symmetry;
@@ -68,7 +71,7 @@ class OAextend {
 	 *
 	 */
         OAextend ()
-            : singleExtendTime (10.0), nLMC (100000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
+            : singleExtendTime (10.0), nLMC (100000), checkarrays (1), check_maximal (0), maximum_duration (0.0), use_row_symmetry (1),
               init_column_previous (1), extendarraymode (extendarray_mode_t::APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT){};
 	/// @copydoc OAextend()
         OAextend (const OAextend &o) : singleExtendTime (o.singleExtendTime) {
@@ -79,6 +82,7 @@ class OAextend {
                 this->extendarraymode = o.extendarraymode;
                 this->j5structure = o.j5structure;
                 this->check_maximal = o.check_maximal;
+                this->maximum_duration = o.maximum_duration;
 
                 this->algmode = o.algmode;
                 // we do not copy the storefile: this->storefile = o.storefile;
@@ -89,7 +93,7 @@ class OAextend {
 	 *
 	 */
         OAextend (arraydata_t &arrayclass)
-            : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0), use_row_symmetry (1),
+            : singleExtendTime (10.0), nLMC (40000), checkarrays (1), check_maximal (0),maximum_duration(0.0), use_row_symmetry (1),
               init_column_previous (1), extendarraymode (extendarray_mode_t::APPENDFULL), j5structure (J5_45), algmode (MODE_AUTOSELECT) {
                 setAlgorithmAuto (&arrayclass);
         };

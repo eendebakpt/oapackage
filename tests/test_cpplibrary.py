@@ -1,10 +1,7 @@
-""" Orthogonal Array package test functions
-"""
+"""Orthogonal Array package test functions"""
 
 import io
-import logging
 import os
-import sys
 import tempfile
 import time
 import unittest
@@ -17,12 +14,11 @@ import numpy as np
 import oapackage
 
 
-def is_sorted(l):
-    return all(a <= b for a, b in zip(l, l[1:]))
+def is_sorted(lst):
+    return all(a <= b for a, b in zip(lst, lst[1:]))
 
 
 class TestCompareMethods(unittest.TestCase):
-
     def test_compareLMC(self):
         al1 = oapackage.exampleArray(24, 0)
         al2 = oapackage.exampleArray(25, 0)
@@ -49,7 +45,6 @@ class TestCompareMethods(unittest.TestCase):
 
 
 class TestMinimalFormCheck(unittest.TestCase):
-
     def test_LMCcheck(self):
         array = oapackage.exampleArray(1)
 
@@ -85,7 +80,6 @@ class TestMinimalFormCheck(unittest.TestCase):
 
 
 class TestReductions(unittest.TestCase):
-
     def test_LMC(self):
         al = oapackage.array_link(2, 2, 0)
         al[1, 1] = -1
@@ -116,22 +110,21 @@ class TestReductions(unittest.TestCase):
         al = oapackage.exampleArray(8, 0)
         transformation = oapackage.reductionDOP(al)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             transformation.show()
             stdout = mock_stdout.getvalue()
-            self.assertTrue(stdout.startswith('array transformation: N 40'))
-            self.assertIn('column permutation: {2,0,3,1,4,5,6}', stdout)
+            self.assertTrue(stdout.startswith("array transformation: N 40"))
+            self.assertIn("column permutation: {2,0,3,1,4,5,6}", stdout)
         alr = oapackage.reduceDOPform(al)
         self.assertTrue(transformation.apply(al) == alr)
 
 
 class TestModelmatrix(unittest.TestCase):
-
     def test_modelmatrix_main_effects(self):
         # test model matrix main effects are helmert contrasts
         array = oapackage.array_link(np.array([[0, 1, 2, 3]]).T)
 
-        M = oapackage.array2modelmatrix(array, 'm')
+        M = oapackage.array2modelmatrix(array, "m")
         hc = oapackage.oahelper.helmert_contrasts(4)
         np.testing.assert_array_almost_equal(hc, M[:, 1:])
 
@@ -163,41 +156,54 @@ class TestModelmatrix(unittest.TestCase):
         array = oapackage.exampleArray(0, 0)
         r = oapackage.array2eigenModelMatrixMixed(array.selectFirstColumns(1), verbose=0)
         main_effects = r[0]
-        np.testing.assert_array_equal(main_effects, np.array([[-1., -1., -1., -1., 1., 1., 1., 1.]]).T)
+        np.testing.assert_array_equal(main_effects, np.array([[-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0]]).T)
 
         array = oapackage.exampleArray(10, 0).selectFirstColumns(2)
         r = oapackage.array2eigenModelMatrixMixed(array, verbose=0)
         main_effects = r[0]
         interaction_model = r[1]
-        np.testing.assert_array_almost_equal(main_effects, np.array([[-1.22474487, -0.70710678, -1.22474487, -0.70710678],
-                                                                     [-1.22474487, -0.70710678, 1.22474487, -0.70710678],
-                                                                     [-1.22474487, -0.70710678, 0., 1.41421356],
-                                                                     [1.22474487, -0.70710678, 1.22474487, -0.70710678],
-                                                                     [1.22474487, -0.70710678, 1.22474487, -0.70710678],
-                                                                     [1.22474487, -0.70710678, 0., 1.41421356],
-                                                                     [0., 1.41421356, -1.22474487, -0.70710678],
-                                                                     [0., 1.41421356, -1.22474487, -0.70710678],
-                                                                     [0., 1.41421356, 0., 1.41421356]]))
-        np.testing.assert_array_almost_equal(interaction_model, np.array([[1.5, 0.8660254, 0.8660254, 0.5],
-                                                                          [-1.5, 0.8660254, -0.8660254, 0.5],
-                                                                          [-0., -1.73205081, -0., -1.],
-                                                                          [1.5, -0.8660254, -0.8660254, 0.5],
-                                                                          [1.5, -0.8660254, -0.8660254, 0.5],
-                                                                          [0., 1.73205081, -0., -1.],
-                                                                          [-0., -0., -1.73205081, -1.],
-                                                                          [-0., -0., -1.73205081, -1.],
-                                                                          [0., 0., 0., 2.]]))
+        np.testing.assert_array_almost_equal(
+            main_effects,
+            np.array(
+                [
+                    [-1.22474487, -0.70710678, -1.22474487, -0.70710678],
+                    [-1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                    [-1.22474487, -0.70710678, 0.0, 1.41421356],
+                    [1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                    [1.22474487, -0.70710678, 1.22474487, -0.70710678],
+                    [1.22474487, -0.70710678, 0.0, 1.41421356],
+                    [0.0, 1.41421356, -1.22474487, -0.70710678],
+                    [0.0, 1.41421356, -1.22474487, -0.70710678],
+                    [0.0, 1.41421356, 0.0, 1.41421356],
+                ]
+            ),
+        )
+        np.testing.assert_array_almost_equal(
+            interaction_model,
+            np.array(
+                [
+                    [1.5, 0.8660254, 0.8660254, 0.5],
+                    [-1.5, 0.8660254, -0.8660254, 0.5],
+                    [-0.0, -1.73205081, -0.0, -1.0],
+                    [1.5, -0.8660254, -0.8660254, 0.5],
+                    [1.5, -0.8660254, -0.8660254, 0.5],
+                    [0.0, 1.73205081, -0.0, -1.0],
+                    [-0.0, -0.0, -1.73205081, -1.0],
+                    [-0.0, -0.0, -1.73205081, -1.0],
+                    [0.0, 0.0, 0.0, 2.0],
+                ]
+            ),
+        )
 
     def test_modelmatrix_verbosity(self):
         conf_design = oapackage.exampleArray(41, 0)
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             oapackage.array2modelmatrix(conf_design, "i", 1)
             stdout = mock_stdout.getvalue()
-            self.assertIn('array2modelmatrix: type conference, model_type_idx 2', stdout)
+            self.assertIn("array2modelmatrix: type conference, model_type_idx 2", stdout)
 
 
 class TestArrayLink(unittest.TestCase):
-
     def test_selectFirstColumns(self):
         al = oapackage.exampleArray(41, 0)
         al = al.selectFirstColumns(3)
@@ -258,7 +264,6 @@ class TestArrayLink(unittest.TestCase):
 
 
 class TestArraydata_t(unittest.TestCase):
-
     def test_factor_levels(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
@@ -270,7 +275,7 @@ class TestArraydata_t(unittest.TestCase):
             arrayclass = oapackage.arraydata_t([2, 2, 2], 4 * ii, 2, 3)
             self.assertEqual(arrayclass.oaindex, ii)
 
-        expected_regex = '.*warning: no orthogonal arrays exist with the specified strength.*'
+        expected_regex = ".*warning: no orthogonal arrays exist with the specified strength.*"
         with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             arrayclass = oapackage.arraydata_t([4, 3, 3], 20, 2, 3)
         self.assertEqual(arrayclass.oaindex, 0)
@@ -284,7 +289,6 @@ class TestArraydata_t(unittest.TestCase):
 
 
 class TestJcharacteristics(unittest.TestCase):
-
     def test_jstruct_conference(self):
         conf_design = oapackage.exampleArray(30, 0)
         js = oapackage.jstructconference_t(conf_design, 4)
@@ -294,11 +298,11 @@ class TestJcharacteristics(unittest.TestCase):
             js = oapackage.jstructconference_t(conf_design, 3)
 
         array = oapackage.array_link(10, 4, 0)
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             with self.assertRaises(Exception):
                 js = oapackage.jstructconference_t(array, 4)
             std_output = mock_stdout.getvalue()
-            self.assertIn('array is not conference design', std_output)
+            self.assertIn("array is not conference design", std_output)
 
     def test_Jcharacteristics(self):
         al = oapackage.exampleArray(30, 0)
@@ -313,7 +317,6 @@ class TestJcharacteristics(unittest.TestCase):
 
 
 class TestConferenceDesigns(unittest.TestCase):
-
     def test_conf2dsd(self):
         al = oapackage.exampleArray(42, 0)
         dsd = oapackage.conference2DSD(al)
@@ -322,8 +325,8 @@ class TestConferenceDesigns(unittest.TestCase):
         conf = np.array(al)
         dsd = np.array(dsd)
 
-        np.testing.assert_array_equal(conf, dsd[0:al.n_rows, :])
-        np.testing.assert_array_equal(conf, -dsd[al.n_rows:2 * al.n_rows, :])
+        np.testing.assert_array_equal(conf, dsd[0 : al.n_rows, :])
+        np.testing.assert_array_equal(conf, -dsd[al.n_rows : 2 * al.n_rows, :])
         np.testing.assert_array_equal(0 * conf[0], dsd[-1, :])
 
     def test_isConferenceFoldover(self):
@@ -379,10 +382,9 @@ class TestMathTools(unittest.TestCase):
 
 
 class TestArrayFiles(unittest.TestCase):
-
     def test_write_latex_format(self):
         lst = [oapackage.exampleArray(2, 0)]
-        filename = tempfile.mktemp(suffix='.tex')
+        filename = tempfile.mktemp(suffix=".tex")
         oapackage.writearrayfile(filename, oapackage.arraylist_t(lst), oapackage.ALATEX)
         with open(filename) as fid:
             latex = fid.read()
@@ -390,15 +392,14 @@ class TestArrayFiles(unittest.TestCase):
 
 
 class TestCppLibrary(unittest.TestCase):
-
     def setUp(self):
-        if getattr(self, 'assertRaisesRegex', None) is None:
+        if getattr(self, "assertRaisesRegex", None) is None:
             self.assertRaisesRegex = self.assertRaisesRegexp
 
     def test_get_time_ms(self):
-        t0=oapackage.get_time_ms()
-        time.sleep(.2)
-        dt=oapackage.get_time_ms(t0)
+        t0 = oapackage.get_time_ms()
+        time.sleep(0.2)
+        dt = oapackage.get_time_ms(t0)
         np.testing.assert_almost_equal(dt, 0.2, decimal=1)
 
     def test_root_form(self):
@@ -407,14 +408,16 @@ class TestCppLibrary(unittest.TestCase):
         self.assertFalse(oapackage.is_root_form(array, 5))
 
     def test_runExtend_increasing_factor_levels(self):
-        """ We test the usage of an increasing factor levels raises are warning, but nevertheless gives the correct results """
+        """We test the usage of an increasing factor levels raises are warning, but nevertheless gives the correct results"""
         N = 18
         k = 9
         t = 2
         l = [2, 3]
         rr = []
 
-        expected_regex = '.*warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour.*'
+        expected_regex = (
+            ".*warning: the factor levels of the structure are not sorted, this can lead to undefined behaviour.*"
+        )
         with self.assertWarnsRegex(RuntimeWarning, expected_regex):
             oapackage.oahelper.runExtend(N, k, t, l, verbose=1, nums=rr)
 
@@ -423,40 +426,40 @@ class TestCppLibrary(unittest.TestCase):
     def test_print_column(self):
         with redirect_stdout(io.StringIO()) as f:
             oapackage.print_column([1, 2, 3])
-        self.assertEqual(f.getvalue(), '  1  2  3\n')
+        self.assertEqual(f.getvalue(), "  1  2  3\n")
 
     def test_projectionDOFvalues(self):
         array = oapackage.exampleArray(5, 0)
         arrayclass = oapackage.arraylink2arraydata(array)
         dof_values = oapackage.projectionDOFvalues(array)
         sg = oapackage.symmetry_group(dof_values, False)
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             sg.show(1)
-        self.assertIn('symmetry group: 5 elements, 5 subgroups: 1 1 1 1 1', mock_stdout.getvalue())
+        self.assertIn("symmetry group: 5 elements, 5 subgroups: 1 1 1 1 1", mock_stdout.getvalue())
 
         for column in range(array.n_columns):
             dof_element = list(dof_values[column].raw_values())
             self.assertEqual(dof_element[0], -arrayclass.factor_levels()[column])
 
     def test_exampleArray(self):
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(5, 1)
-            self.assertEqual(mock_stdout.getvalue(), 'exampleArray 5: array 0 in OA(24, 2, 4 3 2^a)\n')
-            self.assertEqual(al.md5(), '3885c883d3bee0c7546511255bb5c3ae')
+            self.assertEqual(mock_stdout.getvalue(), "exampleArray 5: array 0 in OA(24, 2, 4 3 2^a)\n")
+            self.assertEqual(al.md5(), "3885c883d3bee0c7546511255bb5c3ae")
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             al = oapackage.exampleArray(-1, 1)
-            lines = mock_stdout.getvalue().strip().split('\n')
-            self.assertTrue(np.all([lines[ii].startswith('exampleArray %d:' % ii) for ii in range(len(lines))]))
+            lines = mock_stdout.getvalue().strip().split("\n")
+            self.assertTrue(np.all([lines[ii].startswith(f"exampleArray {ii}:") for ii in range(len(lines))]))
 
         al = oapackage.exampleArray(51, 0)
-        self.assertEqual(al.md5(), '662c1d9c51475b42539620385fa22338')
+        self.assertEqual(al.md5(), "662c1d9c51475b42539620385fa22338")
 
         with self.assertRaises(Exception):
             al = oapackage.exampleArray(1000, 0)
 
     def test_mvalue_t(self):
-        input_vector = [1., 2., 2.]
+        input_vector = [1.0, 2.0, 2.0]
         m = oapackage.mvalue_t_double(input_vector)
         self.assertEqual(m.size(), len(input_vector))
         self.assertEqual(list(m.values), input_vector)
@@ -467,32 +470,34 @@ class TestCppLibrary(unittest.TestCase):
         self.assertEqual(list(mvalue_long.values), input_vector)
 
     def test_splits(self):
-        self.assertEqual(oapackage.splitTag([10, 12]), '10.12')
-        self.assertEqual(oapackage.splitFile([]), '')
-        self.assertEqual(oapackage.splitDir([1, 2]), 'sp0-split-1' + os.path.sep + 'sp1-split-2' + os.path.sep)
+        self.assertEqual(oapackage.splitTag([10, 12]), "10.12")
+        self.assertEqual(oapackage.splitFile([]), "")
+        self.assertEqual(oapackage.splitDir([1, 2]), "sp0-split-1" + os.path.sep + "sp1-split-2" + os.path.sep)
 
     def test_array_transformation_t(self):
         at = oapackage.array_transformation_t()
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             at.show()
             std_output = mock_stdout.getvalue()
-            self.assertEqual(std_output, 'array transformation: no class defined\n')
+            self.assertEqual(std_output, "array transformation: no class defined\n")
 
         al = oapackage.exampleArray(0, 0)
         arrayclass = oapackage.arraylink2arraydata(al)
         at = oapackage.array_transformation_t(arrayclass)
         at.setcolperm([1, 0])
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             _ = at.show()
             std_output = mock_stdout.getvalue()
             self.assertEqual(
-                std_output, 'array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n')
+                std_output,
+                "array transformation: N 8\ncolumn permutation: {1,0}\nlevel perms:\n{0,1}\n{0,1}\nrow permutation: {0,1,2,3,4,5,6,7}\n",
+            )
         self.assertEqual(at.colperm(), (1, 0))
 
     def test_arraylink2arraydata(self):
         al = oapackage.exampleArray(0, 0)
         adata = oapackage.arraylink2arraydata(al)
-        self.assertEqual(str(adata), r'arrayclass: N 8, k 2, strength 2, s {2,2}, order 0')
+        self.assertEqual(str(adata), r"arrayclass: N 8, k 2, strength 2, s {2,2}, order 0")
         al = oapackage.array_link(4, 4, 0)
         al.setconstant(0)
         adata = oapackage.arraylink2arraydata(al)
@@ -520,29 +525,31 @@ class TestCppLibrary(unittest.TestCase):
     def test_array2eigenModelMatrixMixed(self):
         array = oapackage.exampleArray(5, 0)
         model = oapackage.array2eigenModelMatrixMixed(array)
-        expected_main_effects = np.frombuffer(b'\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?').reshape(24, 8)
+        expected_main_effects = np.frombuffer(
+            b"\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6\xbf=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\xcc;\x7ff\x9e\xa0\xf6?=,\x0cp\xbd \xea\xbf\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00=,\x0cp\xbd \xfa?\x1c3\x90E\xa7y\xe2\xbf\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3\xbf\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?.!\t\x14\x8e\x98\xf3?\xcc;\x7ff\x9e\xa0\xe6\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xaaLX\xe8z\xb6\xfb?\x00\x00\x00\x00\x00\x00\x00\x00\xcc;\x7ff\x9e\xa0\xf6?\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0\xbf\x00\x00\x00\x00\x00\x00\xf0?"
+        ).reshape(24, 8)
         main_effects, interaction_effects = model[0], model[1]
         np.testing.assert_array_equal(main_effects, expected_main_effects)
         self.assertEqual(interaction_effects.shape, (24, 24))
 
     def test_mycheck_handler(self):
-        oapackage.mycheck_handler('a', 'b', 1, 1, 'test mycheck_handler')
+        oapackage.mycheck_handler("a", "b", 1, 1, "test mycheck_handler")
         with self.assertRaises(RuntimeError):
-            oapackage.mycheck_handler('a', 'b', 1, 0, 'mycheck_handler raise')
+            oapackage.mycheck_handler("a", "b", 1, 0, "mycheck_handler raise")
 
     def test_arrayrankInfo(self):
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             rank = oapackage.arrayrankInfo(oapackage.exampleArray(21))
             self.assertEqual(rank, 4)
-            self.assertIn('FullPivLU: rank 4', mock_stdout.getvalue())
+            self.assertIn("FullPivLU: rank 4", mock_stdout.getvalue())
 
     def test_rankStructure(self):
         array = oapackage.exampleArray(45, 0)
         array2 = oapackage.exampleArray(46, 0)
         rank_structure = oapackage.rankStructure(array)
         rank_structure.verbose = 2
-        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-                rank_structure.info()
+        with patch("sys.stdout", new_callable=io.StringIO):
+            rank_structure.info()
 
         rank_structure.verbose = 0
         rank_direct = rank_structure.rankxf(array)
@@ -558,7 +565,7 @@ class TestCppLibrary(unittest.TestCase):
 
         D = oapackage.distance_distribution_mixed(array, 0)
         np.testing.assert_array_equal(D, [2.5, 4.5, 7.5, 1.5])
-        self.assertEqual(np.sum(D), 16.)
+        self.assertEqual(np.sum(D), 16.0)
 
     def distance_distribution(self):
         al = oapackage.array_link(2, 2, 0)
@@ -596,17 +603,19 @@ class TestCppLibrary(unittest.TestCase):
         np.testing.assert_array_equal(dd0, dd_mixed)
 
     def test_distance_distribution_mixed_2(self):
-        A=oapackage.exampleArray(5,1)
-        N=A.n_rows
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            d=oapackage.distance_distribution_mixed(A, verbose=1)
-            s=mock_stdout.getvalue()
-        self.assertTrue(s.startswith('distance_distribution_mixed: \nB[0] = B[0][0][0] = 1.666667'))
-        dd=np.array(d)
+        A = oapackage.exampleArray(5, 1)
+        N = A.n_rows
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
+            d = oapackage.distance_distribution_mixed(A, verbose=1)
+            s = mock_stdout.getvalue()
+        self.assertTrue(s.startswith("distance_distribution_mixed: \nB[0] = B[0][0][0] = 1.666667"))
+        dd = np.array(d)
 
-        gt = np.array([[[ 40.,   0.,   0.,   8.], [ 16.,  16.,  16.,  48.]], [[  0.,  24., 120.,   0.],        [ 16., 176.,  80.,  16.]]])
-        self.assertEqual(dd.shape, tuple(d.dims) )
-        np.testing.assert_array_equal(N*dd, gt)
+        gt = np.array(
+            [[[40.0, 0.0, 0.0, 8.0], [16.0, 16.0, 16.0, 48.0]], [[0.0, 24.0, 120.0, 0.0], [16.0, 176.0, 80.0, 16.0]]]
+        )
+        self.assertEqual(dd.shape, tuple(d.dims))
+        np.testing.assert_array_equal(N * dd, gt)
 
     def test_Defficiencies(self):
         array = oapackage.exampleArray(0, 0)
@@ -633,19 +642,30 @@ class TestCppLibrary(unittest.TestCase):
 
     def test_projection_efficiencies(self):
         al = oapackage.exampleArray(11, 0)
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             d = oapackage.projDeff(al, 3, 1)
             D = al.selectFirstColumns(3).Defficiency()
             std_output = mock_stdout.getvalue()
-            self.assertIn('projDeff: k 8, kp 3: start with 56 combinations', std_output)
+            self.assertIn("projDeff: k 8, kp 3: start with 56 combinations", std_output)
         self.assertEqual(D, d[0])
         np.testing.assert_almost_equal(np.mean(d), 0.99064112542249538329031111061340197921)
 
         pec_seq = oapackage.PECsequence(al)
         np.testing.assert_equal(pec_seq, (1.0,) * len(pec_seq))
         pic_seq = oapackage.PICsequence(al)
-        np.testing.assert_almost_equal(pic_seq, (0.9985780064264659, 0.9965697009006985, 0.9906411254224957,
-                                                 0.9797170906488152, 0.9635206782887167, 0.9421350381959234, 0.9162739059686846, 0.8879176205539139))
+        np.testing.assert_almost_equal(
+            pic_seq,
+            (
+                0.9985780064264659,
+                0.9965697009006985,
+                0.9906411254224957,
+                0.9797170906488152,
+                0.9635206782887167,
+                0.9421350381959234,
+                0.9162739059686846,
+                0.8879176205539139,
+            ),
+        )
 
     def test_PICsequence_length(self):
         array = oapackage.exampleArray(8, 0)
@@ -680,21 +700,20 @@ class TestCppLibrary(unittest.TestCase):
             _ = al[-1, 1]
 
     def test_conference_generation(self):
-
         al = oapackage.exampleArray(42, 0)
         lst = [al]
         conference_type = oapackage.conference_t(al.n_rows, al.n_rows, 0)
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as mock_stdout:
             extensions = oapackage.extend_conference_restricted(lst, conference_type, verbose=1)
             std_output = mock_stdout.getvalue()
-            self.assertIn('extend_conference', std_output)
+            self.assertIn("extend_conference", std_output)
         self.assertEqual(len(extensions), 10)
 
-        self.assertEqual(extensions[0].md5(), 'f759e75d3ce6adda5489fed4c528a6fb')
-        self.assertEqual(extensions[-1].md5(), 'ec13ed02c70dbc9975a99e70e23154b3')
+        self.assertEqual(extensions[0].md5(), "f759e75d3ce6adda5489fed4c528a6fb")
+        self.assertEqual(extensions[-1].md5(), "ec13ed02c70dbc9975a99e70e23154b3")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """ Test code """
     unittest.main()
