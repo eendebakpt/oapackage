@@ -1754,9 +1754,6 @@ inline IntegerType krawtchouks (IntegerType j, IntegerType x, IntegerType n) {
         return val;
 }
 
-#include <Eigen/Core>
-#include <Eigen/SVD>
-
 /*
 /// return the condition number of a matrix
 template < class Type >

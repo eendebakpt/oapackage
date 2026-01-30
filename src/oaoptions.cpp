@@ -1,6 +1,3 @@
-#include <Eigen/Core>
-#include <Eigen/SVD>
-
 #include <iostream>
 #include <sstream>
 #include <string>
