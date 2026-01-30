@@ -30,7 +30,7 @@ install:
   - "python -c \"import struct; print('pointer size:', struct.calcsize('P') * 8, 'bit')\""
 
   - "python -m pip install --upgrade pip setuptools wheel build"
-  - "pip install python-dateutil numpy matplotlib pytest"
+  - "pip install python-dateutil numpy matplotlib pytest jupyter"
 
   - choco install swig -y
 
@@ -55,8 +55,10 @@ test_script:
         mypy --version
         mypy -p oapackage --follow-imports skip
       }
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
+  - jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb
+  - echo $?
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
+  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
   #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
