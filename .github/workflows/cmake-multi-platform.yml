@@ -56,7 +56,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBUILD_PYTHON_MODULE=OFF
-        -DBUILD_EXECUTABLES=OFF
+        -DBUILD_EXECUTABLES=ON
         -S ${{ github.workspace }}
 
     - name: Build
