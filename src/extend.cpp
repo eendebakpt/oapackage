@@ -852,6 +852,9 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
 
                 if (oaextend.maximum_duration > 0.0 && (loop_counter % 1000*1000)==0 && (get_time_ms() - start_time) > oaextend.maximum_duration) {
                         more_branches = false;
+                         if (log_print (NORMAL, "")) {
+                                        logstream (QUIET) << printfstring ("extend_array: early abort because maximum_duration has expired") << std::endl;
+                                }
                         break;
                 }
 
