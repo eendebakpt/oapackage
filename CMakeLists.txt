@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options
 option(BUILD_PYTHON_MODULE "Build Python SWIG module" ON)
-option(BUILD_EXECUTABLES "Build command-line executables" ON)
+option(BUILD_EXECUTABLES "Build command-line executables" OFF)
 option(OADEV "Build development code" OFF)
 
 # ----------------------------------------------------------------------------
