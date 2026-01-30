@@ -844,8 +844,16 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         reduction.init_state = COPY;
         reduction.initStatic (); // needed to make the extend code thread safe
 
+        unsigned long long loop_counter = 0;
         do {
+                loop_counter++;
+
                 showLoopProgress (array, col_offset, N, node_rank, nlmcarrays);
+
+                if (oaextend.maximum_duration > 0.0 && (loop_counter % 1000*1000)==0 && (get_time_ms() - start_time) > oaextend.maximum_duration) {
+                        more_branches = false;
+                        break;
+                }
 
                 if ((extensions.size () * ad->N * extensioncol) > (1024 * 1024 * 1024 / sizeof (array_t))) {
                         myprintf ("extend_array: ERROR: running out of memory! extensions.size() %d, ad->N %d\n",
@@ -985,8 +993,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
                         }
                         more_branches = return_stack (stack, p, array, col_offset);
 
-                        if (oaextend.check_maximal && (narrays >= oaextend.check_maximal) ||
-                                 (oaextend.maximum_duration > 0.0 && (get_time_ms() - start_time) > oaextend.maximum_duration)) {
+                        if (oaextend.check_maximal && (narrays >= oaextend.check_maximal)) {
                                 // abort the algorithm
                                 more_branches = false;
                         }

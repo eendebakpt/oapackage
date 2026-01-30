@@ -1397,7 +1397,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
 typedef MatrixFloat EigenMatrixFloat;
 
 std::vector< double > Defficiencies (const array_link &array, const arraydata_t &arrayclass, int verbose, int addDs0) {
-        if ((array.n_rows > 50000) || (array.n_columns > 500)) {
+        if ((array.n_rows > 10000) || (array.n_columns > 500)) {
                 throw_runtime_exception( printfstring("Defficiencies: array size %d x %d not supported\n", array.n_rows, array.n_columns));
         }
 
