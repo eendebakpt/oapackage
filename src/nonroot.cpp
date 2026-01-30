@@ -130,7 +130,6 @@ inline lmc_t LMC_check_col_tplus (const array_t *original, const array_t *array,
                 }
         }
 
-
         return ret;
 }
 
@@ -188,7 +187,6 @@ inline lmc_t LMC_check_col_less (const array_t *original, const array_t *array, 
                 if (ret == LMC_MORE)
                         break;
         }
-
 
         return ret;
 }
@@ -467,7 +465,6 @@ inline lmc_t LMC_check_col (const array_t *originalcol, const array_t *arraycol,
                         oacolSort (rowsort + (j * oaindex), 0, oaindex - 1);
                 }
 
-
                 for (int k = 0; k < oaindex; k++) {
                         cur_row = j * oaindex + k;
                         rowp = rowsort[cur_row].r;
@@ -598,8 +595,7 @@ inline lmc_t LMC_check_col_complete (const array_t *original, carray_t *array, c
                         ret = LMC_LESS;
                         break;
                 }
-                if (ret != LMC_EQUAL)
-                        break;
+                assert(ret == LMC_EQUAL);
         }
 
         return ret;
@@ -613,7 +609,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
 
         const int cpoffset = ad->N * dd->colperm[dd->col];
         if (dd->col < 4) {
-                lmc_t ret = LMC_check_col (original + dd->col * +ad->N, array + cpoffset, lperm, ad, dd);
+                lmc_t ret = LMC_check_col (original + dd->col * ad->N, array + cpoffset, lperm, ad, dd);
                 return ret;
         }
 
@@ -631,7 +627,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
                 pp[x] = dd->colperm[x];
         pp[4] = dd->colperm[dd->col];
         int jcol = abs (jvaluefast (array, ad->N, 5, pp));
-        if ( dd->col > 4) {
+        if (dd->col > 4) {
                 if (log_print (DEBUG, "")) {
                         myprintf ("  xxx col %d, jbase %d, jcol %d: colperm: ", dd->col, jbase, jcol);
                         print_perm (pp, 5);
@@ -641,7 +637,7 @@ inline lmc_t LMC_check_col_j5order (const array_t *original, const array_t *arra
 
         lmc_t ret;
         if (jbase == jcol) {
-                ret = LMC_check_col (original + dd->col * +ad->N, array + cpoffset, lperm, ad, dd);
+                ret = LMC_check_col (original + dd->col * ad->N, array + cpoffset, lperm, ad, dd);
                 return ret;
         } else {
                 if (jbase ORDER_J5_SMALLER jcol)
@@ -711,17 +707,17 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
 #else
                                 perform_level_perm (original + cpoffset, colbuffer, ad->N, lperm);
 #endif
-                                ret = LMC_check_col_less (reduction->array + dyndata->col * +ad->N,
+                                ret = LMC_check_col_less (reduction->array + dyndata->col * ad->N,
                                                           original + cpoffset, lperm, ad, dyndatacpy);
 
                         } else {
 
                                 if (ad->order == ORDER_LEX) {
 #ifdef TPLUSCOLUMN
-                                        ret = LMC_check_col_tplus (reduction->array + dyndata->col * +ad->N,
+                                        ret = LMC_check_col_tplus (reduction->array + dyndata->col * ad->N,
                                                                    original + cpoffset, lperm, ad, dyndatacpy);
 #else
-                                        ret = LMC_check_col (reduction->array + dyndata->col * +ad->N,
+                                        ret = LMC_check_col (reduction->array + dyndata->col * ad->N,
                                                              original + cpoffset, lperm, ad, dyndatacpy);
 #endif
                                 } else {

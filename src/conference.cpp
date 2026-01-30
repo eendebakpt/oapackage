@@ -18,7 +18,6 @@
 #include "graphtools.h"
 #include "conference.h"
 
-
 void print_column(const conference_column &c, const char *msg) {
 	if (msg != 0)
 		myprintf("%s: ", msg);
@@ -247,7 +246,6 @@ array_link conference_t::create_root () const {
         return al;
 }
 
-
 std::vector<int> double_conference_foldover_permutation(const array_link &double_conference) {
         int N = double_conference.n_rows/2;
 
@@ -296,9 +294,8 @@ std::vector<int> double_conference_foldover_permutation(const array_link &double
         }
 
         return foldover_permutation;
-
-
 }
+
 bool isConferenceFoldover (const array_link &array, int verbose) {
         array_link alt = array.transposed ();
         array_link alt_minus = alt * -1;
@@ -572,7 +569,6 @@ void insertzero (conference_column &target, const conference_column &c, int pos,
  *
  **/
 std::vector< conference_column > get_first (int N, int extcol, int verbose = 1) {
-        int k1 = -1;
         int n1 = -1;
         int k = extcol;
 
@@ -581,7 +577,6 @@ std::vector< conference_column > get_first (int N, int extcol, int verbose = 1) 
 
         int haszero = extcol < q + 2;
         if (haszero) {
-
                 n1 = q - 1;
         } else {
                 n1 = q;
@@ -619,7 +614,7 @@ std::vector< conference_column > get_first (int N, int extcol, int verbose = 1) 
 std::vector< conference_column > get_second (int N, int extcol, int target, int verbose = 0) {
         // verbose=2;
         if (verbose)
-                printfd ("get_second: N %d, extcol %d, target %d\n");
+                printfd ("get_second: N %d, extcol %d, target %d\n", N, extcol, target);
         int k = extcol;
         int q, q1, q2, v;
         getConferenceNumbers (N, k, q, q1, q2, v);
@@ -673,7 +668,6 @@ std::vector< conference_column > get_second (int N, int extcol, int target, int 
 /// calculate inner product between partial two permutations
 int partial_inner_product (const conference_column &a, const array_link &al, int column_idx, int rmax) {
         int ip = 0;
-        size_t nn = a.size ();
         const array_t *b = al.array + column_idx * al.n_rows;
 
         for (int row = 0; row < rmax; row++) {
@@ -2337,8 +2331,7 @@ arraylist_t extend_double_conference (const arraylist_t &lst, const conference_t
 
         for (size_t i = 0; i < lst.size (); i++) {
                 const array_link &al = lst[i];
-                int extcol = al.n_columns;
-                conference_extend_t ce = extend_double_conference_matrix (al, ctype, cgenerator, extcol, vb, -1);
+                conference_extend_t ce = extend_double_conference_matrix (al, ctype, cgenerator, al.n_columns, vb, -1);
 
                 arraylist_t ll = ce.getarrays (al);
                 outlist.insert (outlist.end (), ll.begin (), ll.end ());
@@ -2364,8 +2357,7 @@ arraylist_t extend_conference_restricted (const arraylist_t &lst, const conferen
 
         for (size_t i = 0; i < lst.size (); i++) {
                 const array_link &al = lst[i];
-                int extcol = al.n_columns;
-                conference_extend_t ce = extend_conference_matrix (al, ctype, extcol, vb, -1);
+                conference_extend_t ce = extend_conference_matrix (al, ctype, al.n_columns, vb, -1);
 
                 arraylist_t ll = ce.getarrays (al);
 

@@ -30,7 +30,7 @@ install:
   - "python -c \"import struct; print('pointer size:', struct.calcsize('P') * 8, 'bit')\""
 
   - "python -m pip install --upgrade pip setuptools wheel build"
-  - "pip install python-dateutil numpy matplotlib pytest"
+  - "pip install python-dateutil numpy matplotlib pytest jupyter"
 
   - choco install swig -y
 
@@ -55,27 +55,27 @@ test_script:
         mypy --version
         mypy -p oapackage --follow-imports skip
       }
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/conference_design_isomorphism.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_alan.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_conference_designs.ipynb"
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_delete_one_factor_projections.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_designs.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_design_generation.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_generation_optimal_designs.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_nauty.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_oapackage.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_oa_files.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_optimal_orthogonal_arrays.ipynb "
-  #- "%CMD_IN_ENV310% jupyter nbconvert --to notebook --execute  docs/examples/example_pareto.ipynb "
 
-after_test:
-  # Wheel already built in build_script, just build sdist
-  - "python -m build --sdist"
-#  - ps: |
-#      if ($env:PYTHON_VERSION -eq "3.10") {
-#        python -m build --sdist
-#      }
-#  - ps: "Get-ChildItem dist"
+for:
+  - matrix:
+      only:
+        - PYTHON_VERSION: "3.10"
+    after_test:
+      - "ECHO Test notebooks for %PYTHON%"
+      - jupyter nbconvert --to notebook --execute docs/examples/example_alan.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/conference_design_isomorphism.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_conference_designs.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_delete_one_factor_projections.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_designs.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_design_generation.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_generation_optimal_designs.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_nauty.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_oapackage.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_oa_files.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_optimal_orthogonal_arrays.ipynb
+      - jupyter nbconvert --to notebook --execute docs/examples/example_pareto.ipynb
+      # Wheel already built in build_script, just build sdist
+      - "python -m build --sdist"
 
 artifacts:
   - path: dist\*

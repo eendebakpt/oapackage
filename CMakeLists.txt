@@ -251,11 +251,11 @@ if(BUILD_EXECUTABLES)
             target_link_libraries(${prog} PRIVATE oalib_static)
 
             target_precompile_headers(${prog} PRIVATE
-                src/oaconfig.h
                 src/arraytools.h
                 <Eigen/Core>
+                <Eigen/Dense>
             )
-
+            message(STATUS "Adding executable: ${prog}")
 
         endif()
     endforeach()
@@ -265,5 +265,6 @@ if(BUILD_EXECUTABLES)
         add_executable(oaextendsingle utils/oaextend.cpp)
         target_link_libraries(oaextendsingle PRIVATE oalib_static)
         target_compile_definitions(oaextendsingle PRIVATE OAEXTEND_SINGLECORE NEWINTERFACE)
+        message(STATUS "Adding executable: oaextendsingle")
     endif()
 endif()
