@@ -251,7 +251,6 @@ if(BUILD_EXECUTABLES)
             target_link_libraries(${prog} PRIVATE oalib_static)
 
             target_precompile_headers(${prog} PRIVATE
-                src/oaconfig.h
                 src/arraytools.h
                 <Eigen/Core>
             )
