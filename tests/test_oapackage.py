@@ -334,9 +334,10 @@ class TestOAhelper(unittest.TestCase):
 
     def test_plot2Dline(self):
         if importlib.util.find_spec("matplotlib") is not None:
-            with mock.patch("matplotlib.pyplot.plot") as MockPlt:
-                oapackage.oahelper.plot2Dline([1, 0, 0])
-                self.assertTrue(MockPlt.called)
+            with mock.patch("matplotlib.pyplot.ylim"):
+                with mock.patch("matplotlib.pyplot.plot") as MockPlt:
+                    oapackage.oahelper.plot2Dline([1, 0, 0])
+                    self.assertTrue(MockPlt.called)
 
     def test_deprecated(self):
         def func():
