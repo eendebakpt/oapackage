@@ -23,6 +23,7 @@ _build
 .pylintrc
 
 # Misc
+.claude
 .eggs
 old
 *txt~
