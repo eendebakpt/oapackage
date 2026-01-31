@@ -24,7 +24,7 @@ _build
 
 # Misc
 .claude
-.*nbconvert.ipynb
+*nbconvert.ipynb
 .eggs
 old
 *txt~
