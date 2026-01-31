@@ -23,6 +23,8 @@ _build
 .pylintrc
 
 # Misc
+.claude
+*nbconvert.ipynb
 .eggs
 old
 *txt~
