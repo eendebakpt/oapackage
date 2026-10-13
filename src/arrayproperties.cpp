@@ -1347,9 +1347,9 @@ double detXtX (const Eigen::MatrixXd &mymatrix, int verbose) {
         return dd;
 }
 
-typedef Eigen::MatrixXf MyMatrixf;
-typedef Eigen::ArrayXf MyArrayf;
-typedef Eigen::VectorXf MyVectorf;
+using MyMatrixf = Eigen::MatrixXf;
+using MyArrayf = Eigen::ArrayXf;
+using MyVectorf = Eigen::VectorXf;
 
 /// calculate determinant of X^T X by using the SVD
 double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
@@ -1394,7 +1394,7 @@ double detXtXfloat (const MyMatrixf &mymatrix, int verbose) {
 }
 
 // typedef Eigen::MatrixXd MyMatrix;
-typedef MatrixFloat EigenMatrixFloat;
+using EigenMatrixFloat = MatrixFloat;
 
 std::vector< double > Defficiencies (const array_link &array, const arraydata_t &arrayclass, int verbose, int addDs0) {
         if ((array.n_rows > 10000) || (array.n_columns > 500)) {
@@ -1494,9 +1494,9 @@ std::vector< double > Defficiencies (const array_link &array, const arraydata_t 
         return efficiencies;
 }
 
-typedef MatrixFloat DMatrix;
-typedef VectorFloat DVector;
-typedef ArrayFloat DArray;
+using DMatrix = MatrixFloat;
+using DVector = VectorFloat;
+using DArray = ArrayFloat;
 
 double Defficiency (const array_link &al, int verbose) {
         int k = al.n_columns;
@@ -1574,7 +1574,7 @@ double CL2discrepancy (const array_link &al) {
 }
 
 
-typedef Pareto< mvalue_t< long >, array_link >::pValue (*pareto_cb) (const array_link &, int);
+using pareto_cb = Pareto< mvalue_t< long >, array_link >::pValue (*) (const array_link &, int);
 
 /** Calculate the Pareto optimal arrays from a list of array files
 

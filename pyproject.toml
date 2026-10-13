@@ -59,19 +59,6 @@ provider = "scikit_build_core.metadata.regex"
 input = "src/version.h"
 regex = 'const char \*__version__ = "(?P<value>[^"]+)"'
 
-[tool.autopep8]
-max_line_length = 120
-
-[tool.isort]
-profile = "black"
-line_length = 120
-
-[tool.black]
-line-length = 120
-
-[tool.pycodestyle]
-max_line_length = 120
-
 [tool.ruff]
 lint.select = ["E", "F", "UP", "I"]
 lint.ignore = ["UP031" # format specifiers
@@ -79,12 +66,16 @@ lint.ignore = ["UP031" # format specifiers
 line-length = 120
 target-version = "py310"
 
+[tool.ruff.lint.per-file-ignores]
+"doxy2swig.py" = ["E501"]
+"misc/performancetest/ptest.py" = ["E741"]
+
 [tool.mypy]
 ignore_missing_imports = true
-exclude = ["oalib.py", "../oalib.py"]
+exclude = ["oalib\\.py$"]
 
-[tool.mypy-oalib.py]
-follow_imports = "skip"
+[[tool.mypy.overrides]]
+module = ["oalib", "oapackage.markup"]
 ignore_errors = true
 
 [tool.ty.rules]

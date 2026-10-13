@@ -2,6 +2,7 @@
 
 import importlib
 import os
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -195,7 +196,26 @@ class TestOAfiles(unittest.TestCase):
 
         oapackage.oahelper.oainfo(array_filename)
 
-        _ = oapackage.oahelper.compressOAfile(array_filename)
+        compressed = oapackage.oahelper.compressOAfile(array_filename, verbose=0)
+        if sys.platform == "linux":
+            self.assertTrue(compressed)
+            self.assertFalse(os.path.exists(array_filename))
+            self.assertTrue(os.path.exists(array_filename + ".gz"))
+            self.assertEqual(oapackage.oahelper.getArrayFile(array_filename), array_filename + ".gz")
+            self.assertEqual(oapackage.oahelper.nArrayFile(array_filename + ".gz"), 1)
+        else:
+            self.assertFalse(compressed)
+
+    def test_getArrayFile(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            array_filename = os.path.join(tmpdir, "test.oa")
+            self.assertEqual(oapackage.oahelper.getArrayFile(array_filename), array_filename)
+            with open(array_filename + ".gz", "wb"):
+                pass
+            self.assertEqual(oapackage.oahelper.getArrayFile(array_filename), array_filename + ".gz")
+            with open(array_filename, "wb"):
+                pass
+            self.assertEqual(oapackage.oahelper.getArrayFile(array_filename), array_filename)
 
     def test_selectArrays(self):
         _, array_filename = tempfile.mkstemp(suffix=".oa", dir=tempfile.tempdir)
