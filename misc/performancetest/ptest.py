@@ -307,8 +307,8 @@ def main(argv=None):
             raise Usage(msg)
         # more code, unchanged
     except Usage as err:
-        print >> sys.stderr, err.msg
-        print >> sys.stderr, "for help use --help"
+        print(err.msg, file=sys.stderr)
+        print("for help use --help", file=sys.stderr)
         return 2
 
     print("\nRunning tests:\n")

@@ -679,14 +679,18 @@ def runcommand(
 
 
 def getArrayFile(afile: str) -> str:
-    """Return pointer to array file
-    Automatically check for compressed array files
+    """Return path to an array file
+
+    If the file does not exist but a gzip compressed version does, the path to the compressed file is returned.
+
+    Args:
+        afile: path to the array file
+    Returns:
+        Path to the array file or the compressed array file
     """
-    afilegz = afile = afile + ".gz"
+    afilegz = afile + ".gz"
     if not os.path.exists(afile) and os.path.exists(afilegz):
-        afile = afilegz
-    else:
-        afile = afile
+        return afilegz
     return afile
 
 
@@ -1110,16 +1114,15 @@ def compressOAfile(afile, decompress=False, verbose=1):
 
     if verbose >= 2:
         print(f"file {afile}: binary {af.isbinary()}")
-    if not (sys.platform == "linux2" or sys.platform == "linux"):
+    if sys.platform != "linux":
         if verbose:
             print(f"compressOAfile: not compressing file {afile} (platform not supported)")
         return False
-    if af.isbinary() and not af.iscompressed and sys.platform == "linux2":
+    if af.isbinary() and not af.iscompressed:
         if verbose:
             print(f"compressOAfile: compressing file {afile}")
-        cmd = f"gzip -f {afile}"
-        r = os.system(cmd)
-        if not r == 0:
+        r = subprocess.run(["gzip", "-f", afile], check=False).returncode
+        if r != 0:
             print(f"compressOAfile: error compressing file {afile}")
         return True
     if not af.isbinary():
@@ -1215,8 +1218,9 @@ def designStandardError(al) -> tuple[float, float, float]:
     X = np.array(al.getModelMatrix(2))
     k = al.n_columns
 
-    scalefac = 1
-    M = np.linalg.inv(X.transpose().dot(X) / scalefac)
+    # The pseudo-inverse equals the inverse for full-rank designs. For rank-deficient designs the inverse is
+    # numerically meaningless and platform dependent (NaN with Apple's Accelerate LAPACK).
+    M = np.linalg.pinv(X.transpose().dot(X))
 
     mm = np.array(M.diagonal()).flatten()
 

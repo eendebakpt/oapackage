@@ -19,7 +19,7 @@ Search for existing and closed issues first. If your problem or idea is not yet 
 
 ### Testing
 
-Continuous integration and testing for the C++ library is performed on [GitHub Actions](https://github.com/eendebakpt/oapackage/actions) and for the Python package on [AppVeyor](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8).
+Continuous integration runs on [GitHub Actions](https://github.com/eendebakpt/oapackage/actions): the C++ library is built with CMake, the Python package is tested on Linux, and wheels for Linux, macOS and Windows are built with [cibuildwheel](https://cibuildwheel.pypa.io/). Pushing a tag of the form `v2.7.21` builds the wheels and uploads them to PyPI.
 
 To perform tests run [`pytest`](https://docs.pytest.org/en/latest/). To obtain a [coverage](https://coverage.readthedocs.io) report, run
 ```

@@ -3805,7 +3805,7 @@ void jstructbase_t::showdata (int verbose) {
         std::cout << std::endl;
 
         if (verbose >= 2) {
-                typedef std::map< int, int >::const_iterator it_type;
+                using it_type = std::map< int, int >::const_iterator;
                 for (it_type iterator = this->jvalue2index.begin (); iterator != this->jvalue2index.end ();
                      iterator++) {
                         myprintf ("this->jvalue2index[%d]=%d\n", iterator->first, iterator->second);

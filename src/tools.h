@@ -56,7 +56,7 @@ bool checkloglevel (int level);
 /** \brief Null stream */
 class nullStream : public std::ostream {
       public:
-        nullStream () : std::ostream (NULL) {}
+        nullStream () : std::ostream (nullptr) {}
 };
 
 #ifdef FULLPACKAGE

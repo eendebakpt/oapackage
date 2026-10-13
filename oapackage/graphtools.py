@@ -100,7 +100,7 @@ def selectIsomorphismClasses(sols, verbose: int = 1) -> tuple[list[int], list[An
         qq[ii] = mm[ii].flatten()
 
     # Trick to make unique work...
-    _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)  # ty: ignore
+    _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)  # type: ignore[call-overload]  # ty: ignore
 
     if verbose >= 1:
         print(f"selectIsomorphismClasses: reduce {len(sols)} to {np.unique(indices).size}")

@@ -57,7 +57,7 @@ LMCreduction_helper_t *acquire_LMCreduction_object () {
 #endif
 
 
-        LMCreduction_helper_t *p = 0;
+        LMCreduction_helper_t *p = nullptr;
 #pragma omp critical
         { p = LMCreduction_pool.New (); }
         return p;
@@ -415,7 +415,7 @@ void apply_hadamard (const arraydata_t *ad, array_t *array, colindex_t hcol) {
 
         carray_t idperm[2] = {0, 1};
         carray_t swapperm[2] = {1, 0};
-        carray_t *perm = 0;
+        carray_t *perm = nullptr;
 
         for (rowindex_t r = 0; r < ad->N; r++) {
                 /* detemine action on this row */
@@ -1119,8 +1119,8 @@ lmc_t LMCreduce_root_level_perm_full (carray_t const *original, const arraydata_
         LMC_root_sort (original, ad, dyndata);
 
         int totalperms = 0;
-        rowperm_t *rootrowperms = 0;
-        levelperm_t *lperm_p = 0;
+        rowperm_t *rootrowperms = nullptr;
+        levelperm_t *lperm_p = nullptr;
         tmpStatic.init_rootrowperms_full (totalperms, rootrowperms, lperm_p);
         assert (rootrowperms);
 
@@ -1163,8 +1163,8 @@ lmc_t LMCreduce_root_level_perm (array_t const *original, const arraydata_t *ad,
         LMC_root_sort (original, ad, dyndata);
 
         int totalperms = 0;
-        rowperm_t *rootrowperms = 0; // pointer to root row permutations
-        levelperm_t *lperm_p = 0;
+        rowperm_t *rootrowperms = nullptr; // pointer to root row permutations
+        levelperm_t *lperm_p = nullptr;
         static_init_rootrowperms (ad, totalperms, rootrowperms, lperm_p, tmpStatic);
 
         /* perform fake level permutations */
@@ -1208,7 +1208,7 @@ lmc_t LMCreduce_root_level_perm_ME (carray_t const *original, const arraydata_t 
         lmc_t ret = LMC_EQUAL;
         rowsort_t *rowsort = dyndata->rowsort;
 
-        levelperm_t *lperm_p = 0;
+        levelperm_t *lperm_p = nullptr;
         static_init_lperms (ad, lperm_p);
 
         logstream (DEBUG + 1) << "LMCreduce_root_level_perm_ME: col " << dyndata->col << endl;
@@ -2169,8 +2169,8 @@ lmc_t LMCreduction (const array_t *original, const array_t *array, const arrayda
 
         lmc_t ret = LMC_NONSENSE;
 
-        levelperm_t *lperm_p = 0;
-        colperm_t *colperm_p = 0;
+        levelperm_t *lperm_p = nullptr;
+        colperm_t *colperm_p = nullptr;
         tmpStatic.init_root_stage (lperm_p, colperm_p, ad);
         log_print (DEBUG + 1, "LMC: entering root LMC phase (level %d) \n", dyndata->col);
 

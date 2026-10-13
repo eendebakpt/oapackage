@@ -60,8 +60,9 @@ Installation
 ------------
 
 [![PyPI version](https://badge.fury.io/py/OApackage.svg)](https://badge.fury.io/py/OApackage)
-[![Build status](https://ci.appveyor.com/api/projects/status/f6ia9br95soimf9u/branch/master?svg=true)](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8)
-[![Build Status](https://travis-ci.org/eendebakpt/oapackage.svg?branch=master)](https://travis-ci.org/eendebakpt/oapackage)
+[![Wheels](https://github.com/eendebakpt/oapackage/actions/workflows/wheels.yml/badge.svg?branch=main)](https://github.com/eendebakpt/oapackage/actions/workflows/wheels.yml)
+[![Python tests](https://github.com/eendebakpt/oapackage/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/eendebakpt/oapackage/actions/workflows/python-tests.yml)
+[![C++ build](https://github.com/eendebakpt/oapackage/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/eendebakpt/oapackage/actions/workflows/cmake-multi-platform.yml)
 [![Documentation Status](https://readthedocs.org/projects/oapackage/badge/?version=latest)](https://oapackage.readthedocs.io/en/latest/?badge=latest)
 
 The Python interface to the package is available on the [Python Package index](https://pypi.python.org/pypi/OApackage/).
@@ -83,4 +84,4 @@ $ make install
 Contributing, unit testing and support
 --------------------------------------
 
-See the file [CONTRIBUTING.md](https://github.com/eendebakpt/oapackage/blob/master/CONTRIBUTING.md) on GitHub.
+See the file [CONTRIBUTING.md](https://github.com/eendebakpt/oapackage/blob/main/CONTRIBUTING.md) on GitHub.

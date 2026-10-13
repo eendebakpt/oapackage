@@ -308,7 +308,7 @@ class MD5 {
                 int pos;
 
                 for (pos = 0; pos < 16; pos++)
-                        snprintf (digestChars + (pos * 2), 33, "%02x", digestRaw[pos]);
+                        snprintf (digestChars + (pos * 2), sizeof (digestChars) - (pos * 2), "%02x", digestRaw[pos]);
         }
 
       public:

@@ -366,7 +366,7 @@ inline int destroy_array (array_t *array) {
 static inline array_t *create_array (const int nrows, const int ncols) {
         array_t *array = (array_t *)malloc (nrows * ncols * sizeof (array_t));
 
-        if (array == NULL) {
+        if (array == nullptr) {
                 throw_runtime_exception(printfstring("create_array: problem with malloc of size %dx%d", nrows, ncols));
         }
         return array;
@@ -1619,7 +1619,7 @@ void write_array_format (const atype *array, const int nrows, const int ncols, i
         }
 #ifdef FULLPACKAGE
         fflush (stdout);
-        setbuf (stdout, NULL);
+        setbuf (stdout, nullptr);
 #endif
 }
 
