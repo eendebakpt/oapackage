@@ -89,3 +89,15 @@ DoptimReturn DoptimizeMixed (const arraylist_t &sols, const arraydata_t &arraycl
  */
 array_link optimDeff (const array_link &array, const arraydata_t &arrayclass, std::vector< double > alpha,
                       int verbose = 1, coordinate_exchange_method_t optimmethod = DOPTIM_AUTOMATIC, int niter = 100000, int nabort = 0);
+
+/** Verify the incremental calculation of D-efficiencies used in optimDeff
+ *
+ * Random coordinate exchanges are applied to a random design of the specified class. For each exchange the
+ * efficiencies calculated incrementally are compared to the direct calculation of Defficiencies.
+ *
+ * \param arrayclass Class of 2-level designs
+ * \param nsteps Number of coordinate exchanges to perform
+ * \param verbose Verbosity level
+ * \returns Maximum absolute deviation between the incremental and the direct calculation
+ */
+double check_incremental_Defficiencies (const arraydata_t &arrayclass, int nsteps = 2000, int verbose = 0);
