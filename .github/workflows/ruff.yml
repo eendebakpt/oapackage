@@ -2,9 +2,9 @@ name: Lint with ruff
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   ruff:
