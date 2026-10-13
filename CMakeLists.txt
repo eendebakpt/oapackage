@@ -117,6 +117,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     if(NOT WIN32)
         add_compile_options(-fPIC)
     endif()
+    if(EMSCRIPTEN)
+        # In an Emscripten side module every call to a symbol with default visibility goes through the
+        # dynamic linker (a JavaScript stub per call). Hidden visibility turns them into direct calls,
+        # which makes Doptimize about 7x faster in Pyodide. PyInit__oalib stays exported through SWIGEXPORT.
+        add_compile_options(-fvisibility=hidden -fvisibility-inlines-hidden)
+    endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(-Wno-c++11-compat-deprecated-writable-strings)
     endif()
