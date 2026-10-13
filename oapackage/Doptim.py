@@ -13,9 +13,6 @@ import warnings
 from collections.abc import Callable
 from typing import Any
 
-import matplotlib
-import matplotlib.cm
-import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing
 import oalib
@@ -27,6 +24,16 @@ from oapackage.markup import oneliner as e
 FloatArray = np.typing.NDArray[np.float64]
 
 # %%
+
+
+def _matplotlib():
+    """Import matplotlib on first use, so that `import oapackage` works without it (e.g. in Pyodide)."""
+    import matplotlib
+    import matplotlib.cm
+    import matplotlib.pyplot as plt
+    import matplotlib.ticker
+
+    return matplotlib, plt
 
 
 def array2Dtable(array_list: list, verbose: int = 1, titlestr: str | None = None):
@@ -81,6 +88,7 @@ def generateDscatter(
     Returns:
         dict: contains handles to plotting elements
     """
+    matplotlib, plt = _matplotlib()
     data = dds.T
     pp = oahelper.createPareto(dds)
     paretoidx = np.array(pp.allindices())
@@ -201,6 +209,7 @@ def generateDpage(
     lbls=None,
 ):
     """Helper function to generate web page with D-optimal design results"""
+    matplotlib, plt = _matplotlib()
     if verbose:
         print(f"generateDpage: dds {str(dds.shape)}")
 
