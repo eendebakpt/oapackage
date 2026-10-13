@@ -73,6 +73,16 @@ int oaunittest (int verbose, int writetests = 0, int randval = 0) {
 		cprintf(verbose, "%s: reduceConferenceTransformation\n", bstr);
 		myassert(unittest_reduceConferenceTransformation()==0, "unittest unittest_reduceConferenceTransformation failed");
 
+        {
+                cprintf (verbose, "%s: incremental D-efficiency calculation\n", bstr);
+                arraydata_t arrayclass (2, 40, 0, 7);
+                double deviation = check_incremental_Defficiencies (arrayclass, 2000, verbose >= 2);
+                myassert (deviation < 1e-9, "unittest error: incremental D-efficiency calculation deviates from direct calculation\n");
+                arraydata_t arrayclass_small (2, 16, 0, 7); // model matrix with more columns than rows
+                deviation = check_incremental_Defficiencies (arrayclass_small, 1000, verbose >= 2);
+                myassert (deviation < 1e-9, "unittest error: incremental D-efficiency calculation deviates from direct calculation\n");
+        }
+
         /* constructors */
         {
                 cprintf (verbose, "%s: array manipulation operations\n", bstr);
