@@ -81,10 +81,10 @@ target-version = "py310"
 
 [tool.mypy]
 ignore_missing_imports = true
-exclude = ["oalib.py", "../oalib.py"]
+exclude = ["oalib\\.py$"]
 
-[tool.mypy-oalib.py]
-follow_imports = "skip"
+[[tool.mypy.overrides]]
+module = ["oalib", "oapackage.markup"]
 ignore_errors = true
 
 [tool.ty.rules]

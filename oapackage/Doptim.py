@@ -11,7 +11,7 @@ import os
 import time
 import warnings
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeAlias
 
 import numpy as np
 import numpy.typing
@@ -20,7 +20,7 @@ import oalib
 from oapackage import markup, oahelper
 from oapackage.markup import oneliner as e
 
-FloatArray = np.typing.NDArray[np.float64]
+FloatArray: TypeAlias = np.typing.NDArray[np.float64]
 
 # %%
 
@@ -402,13 +402,12 @@ def optimDeffPython(
     N = A0.n_rows
     k = A0.n_columns
 
-    alpha_is_function = callable(alpha)
     # initialize score
-    if alpha_is_function:
-        efficiencies = alpha(A0)  # type: ignore
+    if callable(alpha):
+        efficiencies = alpha(A0)
     else:
         D, Ds, D1 = A0.Defficiencies()
-        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1  # ty: ignore
+        efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
     A = A0.clone()
     lc = 0
     for ii in range(niter):
@@ -433,12 +432,12 @@ def optimDeffPython(
             # flip
             A._setvalue(r, c, 1 - o)
 
-        if alpha_is_function:
-            dn = alpha(A)  # type: ignore
+        if callable(alpha):
+            dn = alpha(A)
         else:
             D, Ds, D1 = A.Defficiencies()
             nx = nx + 1
-            dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1  # type: ignore
+            dn = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1
         if dn >= efficiencies:
             if dn > efficiencies:
                 lc = ii
