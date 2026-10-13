@@ -69,7 +69,7 @@ Installation can be done using the following command:
 ``` console
 $ pip install OApackage
 ```
-(or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy and Swig 3.x.
+(or `pip install OApackage --user` if you do not have admin rights). To compile the package you need Python, Numpy, CMake and Swig 4.x.
 
 The command line tools have been tested using Linux, Windows Win7/Win10 and Raspberry Pi.
 The program uses a `cmake` build system. From the command line type:

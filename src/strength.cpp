@@ -16,7 +16,7 @@
 
 template < class basetype >
 vindex_t **set_indices (colindex_t **colcombs, basetype *bases, const int k, colindex_t ncolcombs) {
-        int prod, **indices = 0;
+        int prod, **indices = nullptr;
 
         indices = malloc2d< int > (ncolcombs, k);
 
@@ -81,7 +81,7 @@ colindex_t **set_colcombs_fixed(int *&xlambda, int *&nvalues, int &ncolcombs, co
 	log_print(DEBUG + 1, "set_colcombs_fixed: strength %d, fixedcol %d, N%d\n", strength, fixedcol, N);
 	int i, j;
 	int prod;
-	colindex_t **colcombs = 0;
+	colindex_t **colcombs = nullptr;
 
 	int n = fixedcol;
 	int k = strength - 1; // we keep 1 column fixed, choose k columns
@@ -711,7 +711,7 @@ bool strength_check (const arraydata_t &ad, const array_link &al, int verbose) {
 bool check_divisibility(int N, int ncols, int strength, const array_t * s) {
 
         const int ncolcombs = ncombs (ncols, strength);
-        int prod, *colcombs = 0;
+        int prod, *colcombs = nullptr;
         bool ret = true;
 
         colcombs = (int *)malloc (strength * sizeof (int));

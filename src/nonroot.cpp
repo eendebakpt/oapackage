@@ -652,16 +652,16 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
                              LMCreduction_t *reduction, const OAextend &oaextend, LMCreduction_helper_t &helper_structure) {
 
         /* static allocation of data structures for non-root stage of LMC check */
-        levelperm_t *lperm_p = 0;
-        colperm_t *colperm_p = 0;
-        colperm_t *localcolperm_p = 0;
+        levelperm_t *lperm_p = nullptr;
+        colperm_t *colperm_p = nullptr;
+        colperm_t *localcolperm_p = nullptr;
 
         /* static init of dyndata */
         dyndata_t **dynd_p;
         int dynd_p_nelem;
 
         /* static allocation of buffer for the column check */
-        array_t *colbuffer = 0;
+        array_t *colbuffer = nullptr;
 
         helper_structure.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, ad);
 
@@ -784,16 +784,16 @@ lmc_t LMCreduce_non_root_j4 (const array_t *original, const arraydata_t *ad, con
 lmc_t LMCreduce_non_root (const array_t *original, const arraydata_t *arrayclass, dyndata_t *dyndata,
                           LMCreduction_t *reduction, const OAextend &oaextend, const LMCreduction_helper_t &helper_structure) {
         /* static allocation of data structures for non-root stage of LMC check */
-        levelperm_t *lperm_p = 0;
-        colperm_t *colperm_p = 0;
-        colperm_t *localcolperm_p = 0;
+        levelperm_t *lperm_p = nullptr;
+        colperm_t *colperm_p = nullptr;
+        colperm_t *localcolperm_p = nullptr;
 
         /* static init of dyndata */
         dyndata_t **dynd_p;
         int dynd_p_nelem;
 
         /* static allocation of buffer for the column check */
-        array_t *colbuffer = 0;
+        array_t *colbuffer = nullptr;
 
         helper_structure.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, arrayclass);
 
@@ -924,16 +924,16 @@ lmc_t LMCreduce_non_root_2level (const array_t *original, const arraydata_t *ad,
                 myprintf ("LMCreduce_non_root_2level: level %d\n", dyndata->col);
 
         /* static allocation of data structures for non-root stage of LMC check */
-        levelperm_t *lperm_p = 0;
-        colperm_t *colperm_p = 0;
-        colperm_t *localcolperm_p = 0;
+        levelperm_t *lperm_p = nullptr;
+        colperm_t *colperm_p = nullptr;
+        colperm_t *localcolperm_p = nullptr;
 
         /* static init of dyndata */
         dyndata_t **dynd_p;
         int dynd_p_nelem;
 
         /* static allocation of buffer for the column check */
-        array_t *colbuffer = 0;
+        array_t *colbuffer = nullptr;
 
         tmpStatic.init_nonroot_stage (lperm_p, colperm_p, localcolperm_p, dynd_p, dynd_p_nelem, colbuffer, ad);
 

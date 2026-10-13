@@ -36,11 +36,6 @@ def oa2graph(al, adata, verbose=1):
     colOffset = adata.N
 
     s = np.array(adata.factor_levels())
-    sc = np.cumsum(s)
-    sc0 = np.hstack(([0], sc))
-    qq = np.ones(nColumnLevelVertices)  # colors for column level vertices
-    for ii in range(sc.size):
-        qq[sc0[ii] : sc0[ii + 1]] = 2 + ii
     qq = 2 * np.ones(nColumnLevelVertices)  # colors for column level vertices
 
     vertexOffsets = adata.N + ncols + np.hstack((0, s[0:-1])).cumsum()
@@ -48,21 +43,21 @@ def oa2graph(al, adata, verbose=1):
 
     im = np.zeros((nVertices, nVertices))  # incidence matrix
 
-    for row in range(0, nrows):
+    for row in range(nrows):
         idx = A[row, :] + vertexOffsets
         im[row, idx] = 1
         im[idx, row] = 1
 
     if nColVertices > 0:
         colidx = 2
-        for col in range(0, ncols):
-            sel = vertexOffsets[col] + range(0, s[col])
+        for col in range(ncols):
+            sel = vertexOffsets[col] + range(s[col])
             im[colOffset + col, sel] = colidx
             im[sel, colOffset + col] = colidx
 
     # The non-row vertices do not have any connections to other non-row
     # vertices.
-    return im, colors, dict({"adata": adata, "im": im, "colors": colors, "nVertices": nVertices})
+    return im, colors, {"adata": adata, "im": im, "colors": colors, "nVertices": nVertices}
 
 
 def selectIsomorphismClasses(sols, verbose: int = 1) -> tuple[list[int], list[Any]]:
@@ -105,7 +100,7 @@ def selectIsomorphismClasses(sols, verbose: int = 1) -> tuple[list[int], list[An
         qq[ii] = mm[ii].flatten()
 
     # Trick to make unique work...
-    _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)  # ty: ignore
+    _, indices = np.unique(np.vstack(qq), axis=0, return_inverse=True)  # type: ignore[call-overload]  # ty: ignore
 
     if verbose >= 1:
         print(f"selectIsomorphismClasses: reduce {len(sols)} to {np.unique(indices).size}")
