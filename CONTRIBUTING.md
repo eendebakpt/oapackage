@@ -2,7 +2,7 @@
 
 ### Code style
 
-* Try to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide. A usefull tool for automated formatting is [autopep8](https://pypi.python.org/pypi/autopep8). We do allow lines upto 120 characters.
+* Try to follow the [PEP 8](https://www.python.org/dev/peps/pep-0008/) style guide. A useful tool for automated formatting and linting is [ruff](https://docs.astral.sh/ruff/). We do allow lines upto 120 characters.
 * Document functions using the [Google docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) convention
 * Add unit tests using the [unittest](https://docs.python.org/3/library/unittest.html) framework
 
@@ -19,7 +19,7 @@ Search for existing and closed issues first. If your problem or idea is not yet 
 
 ### Testing
 
-Continuous integration and testing for the C++ library is performed on [Travis](https://travis-ci.org/eendebakpt/oapackage) and for the Python package on [AppVeyor](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8).
+Continuous integration and testing for the C++ library is performed on [GitHub Actions](https://github.com/eendebakpt/oapackage/actions) and for the Python package on [AppVeyor](https://ci.appveyor.com/project/eendebakpt/oapackage-4lws8).
 
 To perform tests run [`pytest`](https://docs.pytest.org/en/latest/). To obtain a [coverage](https://coverage.readthedocs.io) report, run
 ```

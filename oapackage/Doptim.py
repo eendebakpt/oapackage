@@ -17,8 +17,7 @@ import numpy as np
 import numpy.typing
 import oalib
 
-import oapackage.markup as markup
-import oapackage.oahelper as oahelper
+from oapackage import markup, oahelper
 from oapackage.markup import oneliner as e
 
 FloatArray = np.typing.NDArray[np.float64]
@@ -191,7 +190,7 @@ def generateDscatter(
         ax = None
         xlabelhandle = None
         pltlegend = None
-    hh = dict({"ax": ax, "xlabelhandle": xlabelhandle, "pltlegend": pltlegend})
+    hh = {"ax": ax, "xlabelhandle": xlabelhandle, "pltlegend": pltlegend}
     return hh
 
 
@@ -256,9 +255,9 @@ def generateDpage(
             title=f"Class {xstrplain}",
             css=("../oastyle.css"),
             lang="en",
-            htmlattrs=dict({"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"}),
+            htmlattrs={"xmlns": "http://www.w3.org/1999/xhtml", "xml:lang": "en"},
             header="<!-- Start of page -->",
-            bodyattrs=dict({"style": "padding-left: 3px;"}),
+            bodyattrs={"style": "padding-left: 3px;"},
             doctype='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"'
             + ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
             metainfo=(
@@ -331,9 +330,8 @@ def generateDpage(
     page.p(f"Generated with oapackage {oalib.version()}, date {oahelper.timeString()}.")
 
     outfile = os.path.join(outputdir, "Dresults.html")
-    fid = open(outfile, "w")
-    fid.write(str(page))
-    fid.close()
+    with open(outfile, "w") as fid:
+        fid.write(str(page))
     print(f"written to file {outfile}")
 
     return outfile
@@ -404,7 +402,7 @@ def optimDeffPython(
     N = A0.n_rows
     k = A0.n_columns
 
-    alpha_is_function = str(type(alpha)) == "<type 'function'>" or callable(alpha)
+    alpha_is_function = callable(alpha)
     # initialize score
     if alpha_is_function:
         efficiencies = alpha(A0)  # type: ignore
@@ -413,7 +411,7 @@ def optimDeffPython(
         efficiencies = alpha[0] * D + alpha[1] * Ds + alpha[2] * D1  # ty: ignore
     A = A0.clone()
     lc = 0
-    for ii in range(0, niter):
+    for ii in range(niter):
         r = np.random.randint(N)
         c = np.random.randint(k)
         r2 = np.random.randint(N)
@@ -448,15 +446,15 @@ def optimDeffPython(
             if verbose >= 2:
                 print("ii %d: %.6f -> %.6f" % (ii, efficiencies, dn))
 
+        elif method == oalib.DOPTIM_SWAP:
+            # restore to original
+            A._setvalue(r, c, o)
+            A._setvalue(r2, c2, o2)
+        elif method == oalib.DOPTIM_NONE:
+            pass
         else:
             # restore to original
-            if method == oalib.DOPTIM_SWAP:
-                A._setvalue(r, c, o)
-                A._setvalue(r2, c2, o2)
-            elif method == oalib.DOPTIM_NONE:
-                pass
-            else:
-                A._setvalue(r, c, o)
+            A._setvalue(r, c, o)
         if (ii - lc) > nabort:
             if verbose:
                 print("optimDeff: early abort ii %d, lc %d" % (ii, lc))
@@ -619,7 +617,7 @@ def Doptimize(
             nabort=nabort,
         )
         dds, sols = rr.dds, rr.designs
-        dds = np.array([x for x in dds])
+        dds = np.array(list(dds))
         # needed because of SWIG wrapping of struct type
         sols = [design.clone() for design in sols]
         nrestarts = rr.nrestarts

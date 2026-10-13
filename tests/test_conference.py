@@ -7,7 +7,7 @@ Pieter Eendebak <pieter.eendebak@gmail.com>
 import io
 import sys
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 import numpy as np
 
