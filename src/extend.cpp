@@ -754,7 +754,7 @@ inline void showLoopProgress (array_t *array, const int col_offset, const rowind
         }
 }
 
-typedef std::vector< array_link > extensioncol_list_t;
+using extensioncol_list_t = std::vector< array_link >;
 
 
 // This function is quite long (and complicated) since it performs the entire extension of arrays. The LMC test is
@@ -798,7 +798,7 @@ int extend_array (const array_link &input_array, const arraydata_t *fullad, cons
         log_print (DEBUG, "  number of row symmetry groups: %d\n", nsg); // print_perm(esdyn->gidx, p->N);
 
         /* the stack contains data about the branches found during the extension */
-        split *stack = 0;
+        split *stack = nullptr;
 
 #ifdef FREQELEM
         /* set elem frequencies */
