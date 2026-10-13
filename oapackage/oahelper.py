@@ -1218,8 +1218,9 @@ def designStandardError(al) -> tuple[float, float, float]:
     X = np.array(al.getModelMatrix(2))
     k = al.n_columns
 
-    scalefac = 1
-    M = np.linalg.inv(X.transpose().dot(X) / scalefac)
+    # The pseudo-inverse equals the inverse for full-rank designs. For rank-deficient designs the inverse is
+    # numerically meaningless and platform dependent (NaN with Apple's Accelerate LAPACK).
+    M = np.linalg.pinv(X.transpose().dot(X))
 
     mm = np.array(M.diagonal()).flatten()
 
