@@ -2,9 +2,8 @@ numpy
 matplotlib
 iPython
 swig
-sphinx<7 
+sphinx
 sphinxcontrib.bibtex
 nbsphinx
-sphinxcontrib.napoleon
 breathe
 sphinx_rtd_theme
