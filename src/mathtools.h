@@ -819,8 +819,11 @@ void set_srand (unsigned int s);
 template < class RandomIt > void my_random_shuffle (RandomIt first, RandomIt last) {
         if (first == last)
                 return;
-        for (auto i = (last - first) - 1; i > 0; --i) {
-                std::swap (first[i], first[std::rand () % (i + 1)]);
+        // same loop as the libstdc++ implementation, so the permutations are identical to earlier builds
+        for (auto i = first + 1; i != last; ++i) {
+                auto j = first + std::rand () % ((i - first) + 1);
+                if (i != j)
+                        std::iter_swap (i, j);
         }
 }
 
