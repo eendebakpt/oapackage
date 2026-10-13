@@ -59,6 +59,16 @@ provider = "scikit_build_core.metadata.regex"
 input = "src/version.h"
 regex = 'const char \*__version__ = "(?P<value>[^"]+)"'
 
+[tool.cibuildwheel]
+# CPython 3.10 and later follows from requires-python. Skip PyPy, musl, 32-bit and free-threaded builds,
+# and CPython 3.15 until numpy publishes wheels for it (the build would otherwise compile numpy from source).
+skip = ["pp*", "*-musllinux_*", "*_i686", "*-win32", "cp3*t-*", "cp315-*"]
+build-verbosity = 1
+test-requires = ["pytest"]
+# importlib mode makes the tests import the installed wheel instead of the source tree
+test-command = "pytest --import-mode=importlib -o addopts= -p no:cacheprovider {project}/tests"
+test-environment = { MPLBACKEND = "Agg" }
+
 [tool.ruff]
 lint.select = ["E", "F", "UP", "I"]
 lint.ignore = ["UP031" # format specifiers
