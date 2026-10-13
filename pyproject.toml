@@ -17,13 +17,11 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
     "numpy>=2.0",
     "python-dateutil",
@@ -60,9 +58,8 @@ input = "src/version.h"
 regex = 'const char \*__version__ = "(?P<value>[^"]+)"'
 
 [tool.cibuildwheel]
-# CPython 3.10 and later follows from requires-python. Skip PyPy, musl, 32-bit and free-threaded builds,
-# and CPython 3.15 until numpy publishes wheels for it (the build would otherwise compile numpy from source).
-skip = ["pp*", "*-musllinux_*", "*_i686", "*-win32", "cp3*t-*", "cp315-*"]
+# CPython 3.13 and later follows from requires-python. Skip PyPy, musl, 32-bit and free-threaded builds.
+skip = ["pp*", "*-musllinux_*", "*_i686", "*-win32", "cp3*t-*"]
 build-verbosity = 1
 test-requires = ["pytest"]
 # importlib mode makes the tests import the installed wheel instead of the source tree
@@ -74,7 +71,7 @@ lint.select = ["E", "F", "UP", "I"]
 lint.ignore = ["UP031" # format specifiers
                 ]
 line-length = 120
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint.per-file-ignores]
 "doxy2swig.py" = ["E501"]
