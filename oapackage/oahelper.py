@@ -225,10 +225,10 @@ def niceplot(
         # Remove the line around the legend box, and instead fill it with a light grey
         # Also only use one point for the scatterplot legend because the user will
         # get the idea after just one, they don't need three.
-        light_grey = np.array([float(241) / float(255)] * 3)
+        light_grey = np.array([241 / 255] * 3)
         rect = legend.get_frame()
         rect.set_facecolor(light_grey)
-        middle_grey = np.array([float(151) / float(255)] * 3)
+        middle_grey = np.array([151 / 255] * 3)
         rect.set_edgecolor(middle_grey)
         # rect.set_linewidth(0.0)
 
@@ -283,7 +283,7 @@ def helmert_contrasts(number_of_levels, verbose=0):
     Z = np.zeros((number_of_levels, md + 1))
 
     for value in range(number_of_levels):
-        for ii in range(0, md + 1):
+        for ii in range(md + 1):
             Z[value, ii] = value > ii - 1
 
         # make Helmert contrasts (these are automatically orthogonal)
@@ -302,7 +302,7 @@ def helmert_contrasts(number_of_levels, verbose=0):
         print(Z)
 
     # normalize the contrasts
-    for ii in range(0, md):
+    for ii in range(md):
         normalization = Z[:, (ii + 1)].T.dot(Z[:, ii + 1])
         if verbose:
             print(f"helmert_contrasts: normalize number_of_levels tmp: {normalization} ")
@@ -370,15 +370,8 @@ def tprint(string, dt=1, output=False):
     if (time.time() - tprint.time) > dt:
         print(string)
         tprint.time = time.time()
-        if output:
-            return True
-        else:
-            return
-    else:
-        if output:
-            return False
-        else:
-            return
+        return True if output else None
+    return False if output else None
 
 
 def timeString(tt=None) -> str:
@@ -468,8 +461,7 @@ def fac(n: int) -> int:
     """
     if n == 1 or n == 0:
         return 1
-    else:
-        return n * fac(n - 1)
+    return n * fac(n - 1)
 
 
 def choose(n: int, k: int) -> int:
@@ -670,16 +662,12 @@ def runcommand(
             print(f"runcommand: cmd returned error! r={str(r)}")
             print(cmd)
             return r
-    else:
-        if verbose >= 2 or (verbose and logfile is None):
-            print(f"### dryrun of {idstr}\n{cmd}\n###\n")
+    elif verbose >= 2 or (verbose and logfile is None):
+        print(f"### dryrun of {idstr}\n{cmd}\n###\n")
     if logfile is not None:
-        fid = open(logfile, "a")
-        fid.write("\n###\n")
-        fid.write(cmd)
-        fid.close()
-    else:
-        pass
+        with open(logfile, "a") as fid:
+            fid.write("\n###\n")
+            fid.write(cmd)
 
     return r
 
@@ -710,8 +698,7 @@ def checkOAfile(afile, verbose=0):
     nm = af.filename
     if af.isopen():
         return nm
-    else:
-        return None
+    return None
 
 
 def checkArrayFile(afile, cache=1):
@@ -726,14 +713,9 @@ def checkArrayFile(afile, cache=1):
 
     if os.path.exists(afile):
         return True
-    else:
-        if afile.endswith(".oa"):
-            if os.path.exists(afile + ".gz"):
-                return True
-            else:
-                return False
-        else:
-            return False
+    if afile.endswith(".oa"):
+        return os.path.exists(afile + ".gz")
+    return False
 
 
 def isstr(s: Any) -> bool:
@@ -861,9 +843,8 @@ def selectArraysInFile(infile, outfile, idx, afmode=oalib.ATEXT, verbose=1, cach
         _ = oalib.writearrayfile(outfile, sols, afmode, af.nrows, af.ncols)
         if verbose >= 2:
             print("selectArrays: write array file %s in mode %d" % (outfile, afmode))
-    else:
-        if verbose >= 2:
-            print(f"output file {outfile} already exists")
+    elif verbose >= 2:
+        print(f"output file {outfile} already exists")
 
 
 selectArrays = deprecated(selectArraysInFile)
@@ -874,8 +855,7 @@ def floatformat(number, mind=2, maxd=4):
     rounded = int(number * (10**mind)) / float(10**mind)
     if number == rounded:
         return ("%%.0%df" % mind) % number
-    else:
-        return ("%%.0%dg" % maxd) % number
+    return ("%%.0%dg" % maxd) % number
 
 
 def safemin(data, default=0):
@@ -940,9 +920,8 @@ def parseProcessingTime(logfile, verbose=0):
     dtr = None
     try:
         for line in fileinput.input([logfile]):
-            if line.startswith("#time"):
-                if verbose >= 1:
-                    print(f"parseProcessingTime: line: {line}", end="")
+            if line.startswith("#time") and verbose >= 1:
+                print(f"parseProcessingTime: line: {line}", end="")
             if line.startswith("#time start:"):
                 tstart = dateutil.parser.parse(line[13:])
                 if verbose >= 2:
@@ -955,8 +934,6 @@ def parseProcessingTime(logfile, verbose=0):
                 dtr = float(line[13:][:-5])
                 if verbose >= 2:
                     print(f"parseProcessingTime: total: {dtr}")
-            else:
-                pass
         if tstart is not None and tend is not None:
             dt = tend - tstart
             dtt = dt.total_seconds()
@@ -967,9 +944,8 @@ def parseProcessingTime(logfile, verbose=0):
             print(f"error processing log {logfile}")
             traceback.print_exc(file=sys.stdout)
         dtt = -1
-    if dtr is not None:
-        if abs(dtr - dtt) > 10:
-            print(f"parseProcessingTime: warning difference in reported times {dtt:.1f} dtr {dtr:.1f} [s]")
+    if dtr is not None and abs(dtr - dtt) > 10:
+        print(f"parseProcessingTime: warning difference in reported times {dtt:.1f} dtr {dtr:.1f} [s]")
     return dtt
 
 
@@ -988,15 +964,14 @@ def series2htmlstr(ad, html=1, case=0):
         else:
             bb[-1] += 1
         n = n + 1
-    if case == 0:
-        if bb[-1] > 1:
-            bb[-1] = "a"
+    if case == 0 and bb[-1] > 1:
+        bb[-1] = "a"
     hstr = f"OA({ad.N}; {ad.strength}; "
-    for ii, _ in enumerate(levels):
+    for level, b in zip(levels, bb):
         if html:
-            hstr += f"{levels[ii]}<sup>{bb[ii]}</sup>"
+            hstr += f"{level}<sup>{b}</sup>"
         else:
-            hstr += f"{levels[ii]}^{bb[ii]}"
+            hstr += f"{level}^{b}"
     hstr += ")"
     return hstr
 
@@ -1005,12 +980,8 @@ def gwlp2str(gmadata, t=None, sformat=None, jstr=","):
     """Convert GWLP value to string format"""
     if gmadata is None:
         return "-"
-    if isinstance(gmadata, tuple):
-        pass
-    else:
-        if isinstance(gmadata, list):
-            pass
-        else:
+    if not isinstance(gmadata, tuple):
+        if not isinstance(gmadata, list):
             gmadata[gmadata < 0] = 0
         if not (np.abs(gmadata[0] - 1) < 1e-12 and np.abs(gmadata[1]) < 1e-12):
             warnings.warn("data does not represent GWPL data", UserWarning)
@@ -1034,9 +1005,7 @@ def selectJ(sols0, jj=5, jresults=None, verbose=1):
         jresults = oalib.analyseArrays(sols0, verbose, jj)
 
     solseo = oalib.arraylist_t()
-    v = []
-    for ii, js in enumerate(jresults):
-        v.append(js.values[0])
+    v = [js.values[0] for js in jresults]
 
     si = [i for (i, j) in sorted(enumerate(v), key=operator.itemgetter(1))]
     for jj in si:
@@ -1147,14 +1116,12 @@ def compressOAfile(afile, decompress=False, verbose=1):
         if not r == 0:
             print(f"compressOAfile: error compressing file {afile}")
         return True
-    else:
-        if not af.isbinary():
-            if verbose:
-                print(f"compressOAfile: not compressing file {afile} (file is in text mode)")
-        else:
-            if verbose:
-                print(f"compressOAfile: not compressing file {afile} (file {af.filename} is compressed)")
-        return False
+    if not af.isbinary():
+        if verbose:
+            print(f"compressOAfile: not compressing file {afile} (file is in text mode)")
+    elif verbose:
+        print(f"compressOAfile: not compressing file {afile} (file {af.filename} is compressed)")
+    return False
 
 
 def argsort(seq):
@@ -1184,13 +1151,12 @@ def sortrows(x):
         nn = 1
         sind = np.argsort(x)
         return sind
-    else:
-        nn = x.shape[1]
-    dt = [("x%d" % xx, "f8") for xx in range(0, nn)]
+    nn = x.shape[1]
+    dt = [("x%d" % xx, "f8") for xx in range(nn)]
     if x.size == 0:
         sind = np.array([])
         return sind
-    v = [tuple(x[kk, :]) for kk in range(0, x.shape[0])]
+    v = [tuple(x[kk, :]) for kk in range(x.shape[0])]
     w = np.array(v, dtype=dt)
     sind = np.argsort(w)
     return sind

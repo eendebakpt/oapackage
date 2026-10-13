@@ -4,7 +4,7 @@ import importlib
 import os
 import tempfile
 import unittest
-import unittest.mock as mock
+from unittest import mock
 from unittest.mock import patch
 
 import numpy as np
@@ -128,9 +128,8 @@ def miscunittest(verbose=1):
 
     if not isinstance(al.getarray(), np.ndarray):
         print("oapackage: unittest: error: array interface not working properly")
-    else:
-        if not al[2, 0] == al.getarray()[2, 0]:
-            print("oapackage: unittest: error: array interface not working properly")
+    elif not al[2, 0] == al.getarray()[2, 0]:
+        print("oapackage: unittest: error: array interface not working properly")
 
     arrayclass = oalib.arraylink2arraydata(al)
 
@@ -410,7 +409,7 @@ class TestOAhelper(unittest.TestCase):
         p = oapackage.oahelper.create_pareto_element(values, pareto=None)
         self.assertEqual(p, values)
 
-        self.assertRaises(Exception, oapackage.oahelper.create_pareto_element, dict())
+        self.assertRaises(Exception, oapackage.oahelper.create_pareto_element, {})
 
         pareto = oalib.ParetoMultiDoubleLong()
         pareto_element = oapackage.oahelper.create_pareto_element([[1, 2], [3, 4]], pareto)

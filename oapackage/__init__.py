@@ -1,3 +1,12 @@
+"""Orthogonal Array package
+
+The Orthogonal Array package is a package to generate and analyse orthogonal
+arrays, optimal designs and conference matrices. For more information see
+
+http://github.com/eendebakpt/oapackage
+
+"""
+
 import oapackage.conference
 import oapackage.Doptim
 import oapackage.oahelper
@@ -75,14 +84,7 @@ from oapackage.oahelper import (  # noqa
     write_text_arrayfile,
 )
 
-""" Orthogonal Array package
-
-The Orthogonal Array package is a package to generate and analyse orthogonal
-arrays, optimal designs and conference matrices. For more information see
-
-http://github.com/eendebakpt/oapackage
-
-"""
+# isort: split
 from oalib import *  # noqa # legacy structure # ty: ignore
 from oalib import (  # noqa
     ABINARY,

@@ -34,7 +34,6 @@ dependencies = [
 test = [
     "pytest",
     "coverage",
-    "mock",
 ]
 doc = [
     "sphinx",
@@ -72,14 +71,6 @@ line-length = 120
 
 [tool.pycodestyle]
 max_line_length = 120
-
-[tool.pytest.ini_options]
-filterwarnings = [
-    "error",  # All warnings except below will be treated as errors
-    "ignore::DeprecationWarning:.*past\\.builtins\\.misc:45",
-    "ignore::DeprecationWarning:.*qc_snapshot_widget",
-    "ignore:::.*quantify_core\\.visualization\\.pyqt_plotmon",
-]
 
 [tool.ruff]
 lint.select = ["E", "F", "UP", "I"]
