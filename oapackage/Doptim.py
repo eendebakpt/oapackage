@@ -11,7 +11,7 @@ import os
 import time
 import warnings
 from collections.abc import Callable
-from typing import Any, TypeAlias
+from typing import Any
 
 import numpy as np
 import numpy.typing
@@ -20,7 +20,7 @@ import oalib
 from oapackage import markup, oahelper
 from oapackage.markup import oneliner as e
 
-FloatArray: TypeAlias = np.typing.NDArray[np.float64]
+type FloatArray = np.typing.NDArray[np.float64]
 
 # %%
 
