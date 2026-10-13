@@ -13,6 +13,7 @@
 #include <iostream>
 #endif
 #include <algorithm> /* defines max and min template functions */
+#include <utility>   /* std::swap */
 #include <assert.h>
 #include <cstdlib>
 #include <limits>
@@ -812,7 +813,19 @@ void set_srand (unsigned int s);
 
 #define myrand rand
 
-#define my_random_shuffle std::random_shuffle
+/// Replacement for std::random_shuffle (deprecated in C++14, removed in C++17).
+/// Uses the C rand() generator, so results stay reproducible after set_srand, like the
+/// libstdc++ implementation of std::random_shuffle did.
+template < class RandomIt > void my_random_shuffle (RandomIt first, RandomIt last) {
+        if (first == last)
+                return;
+        // same loop as the libstdc++ implementation, so the permutations are identical to earlier builds
+        for (auto i = first + 1; i != last; ++i) {
+                auto j = first + std::rand () % ((i - first) + 1);
+                if (i != j)
+                        std::iter_swap (i, j);
+        }
+}
 
 template < class permutationType > /* permtype should be a numeric type, i.e. int or long */
                                    /*

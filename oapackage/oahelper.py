@@ -25,12 +25,6 @@ from typing import Any, Literal
 import dateutil.parser
 import numpy as np
 
-try:
-    import matplotlib
-    import matplotlib.pyplot as plt
-except BaseException:
-    warnings.warn("oahelper: matplotlib cannot be found, not all functionality is available")
-
 import oapackage
 
 try:
@@ -38,6 +32,14 @@ try:
 except ImportError:
     warnings.warn("oahelper: oalib cannot be found, not all functionality is available")
 from oapackage import markup
+
+
+def _matplotlib():
+    """Import matplotlib on first use, so that `import oapackage` works without it (e.g. in Pyodide)."""
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    return matplotlib, plt
 
 
 def deprecated(func):
@@ -117,6 +119,7 @@ def guitest_monitorSizes():
 
 def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=0):
     """Tile figure windows on a specified area"""
+    matplotlib, plt = _matplotlib()
     mngr = plt.get_current_fig_manager()
     be = matplotlib.get_backend()
     if ww is None:
@@ -170,6 +173,7 @@ def tilefigs(lst, geometry, ww=None, raisewindows=False, tofront=False, verbose=
 
 def plot2Dline(line, *args, **kwargs):
     """Plot a 2D line in a matplotlib figure"""
+    matplotlib, plt = _matplotlib()
     if np.abs(line[1]) > 0.001:
         xx = plt.xlim()
         xx = np.array(xx)
@@ -195,6 +199,7 @@ def niceplot(
         - makes legend lighter
 
     """
+    matplotlib, plt = _matplotlib()
 
     if verbose:
         print("niceplot: remove spines")
@@ -253,6 +258,7 @@ def enlargelims(factor: float = 1.05):
     Args:
         factor (float): factor by which to make the plot margins wider
     """
+    matplotlib, plt = _matplotlib()
     xl = plt.xlim()
     d = (factor - 1) * (xl[1] - xl[0]) / 2
     xl = (xl[0] - d, xl[1] + d)
@@ -1280,6 +1286,7 @@ def DefficiencyBound(D: float, k: int, k2: int) -> float:
 
 def setWindowRectangle(x, y=None, w=None, h=None, mngr=None, be=None):
     """Position the current Matplotlib figure at the specified position"""
+    matplotlib, plt = _matplotlib()
     if y is None:
         y = x[1]
         w = x[2]
